@@ -1,0 +1,2 @@
+cd /tmp
+sh dogfish

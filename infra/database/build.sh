@@ -1,1 +1,1 @@
-# docker build -t openchs-database .
+docker build -t openchs-database .

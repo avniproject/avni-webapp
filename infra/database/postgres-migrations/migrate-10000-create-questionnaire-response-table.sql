@@ -1,0 +1,1 @@
+create table QuestionnaireResponse (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(255) NOT NULL, response jsonb not null);
