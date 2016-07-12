@@ -10,6 +10,10 @@ endif
 install: ansible_check
 	ansible-playbook setup/dev.yml -i setup/local
 
+stop:
+	@echo "Stopping httpd"
+	httpd -k stop
+
 run:
 	@echo "Restarting HTTPD"
 	httpd -k restart
