@@ -1,19 +1,9 @@
-ansible_exists := $(shell ansible-playbook --version)
-ansible_check:
-ifndef ansible_exists
-		@echo "Ansible is not installed. Installing Ansible"
-		brew install ansible
-else
-		@echo "Ansible is installed"
-endif
-
-install: ansible_check
-	ansible-playbook setup/dev.yml -i setup/local
+install:
+	docker build -t openchs-httpd .
 
 stop:
 	@echo "Stopping httpd"
-	httpd -k stop
 
 run:
-	@echo "Restarting HTTPD"
-	httpd -k restart
+	@echo "Starting HTTPD"
+	docker run -d -v $(shell pwd)/config:/usr/local/apache2/htdocs/config -p 127.0.0.1:3000:80 --name httpd openchs-httpd

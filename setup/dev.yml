@@ -1,6 +1,0 @@
----
-- name: Provision Development Environment
-  hosts: all
-  roles:
-      - dev
-      - httpd

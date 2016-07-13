@@ -1,6 +1,0 @@
----
-- name: Update Brew
-  homebrew: update_homebrew=yes
-  tags:
-    - dev
-    - brew
