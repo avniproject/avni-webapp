@@ -1,9 +1,13 @@
 install:
-	docker build -t openchs-httpd .
+	docker pull openchs/httpd:2.2
 
 stop:
 	@echo "Stopping httpd"
+	-docker kill httpd
+	-docker rm httpd
 
 run:
 	@echo "Starting HTTPD"
-	docker run -d -v $(shell pwd)/config:/usr/local/apache2/htdocs/config -p 127.0.0.1:3000:80 --name httpd openchs-httpd
+	-docker kill httpd
+	-docker rm httpd
+	docker run -d -v $(shell pwd)/config:/usr/local/apache2/htdocs/config -p 127.0.0.1:3000:80 --name httpd openchs/httpd:2.2
