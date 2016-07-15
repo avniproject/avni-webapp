@@ -1,0 +1,773 @@
+[
+  {
+    "name": "Multiple Choice Question 1",
+    "conceptNames": [
+      {
+        "name": "बहुविकल्पी सवाल",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Multiple Choice Question 1",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Question 1 - Answer 1"
+      },
+      {
+        "name": "Question 1 - Answer 2"
+      }
+    ]
+  },
+  {
+    "name": "Numeric Question",
+    "datatype": {
+      "name": "Numeric"
+    },
+    "conceptNames": [
+      {
+        "name": "संख्यात्मक सवाल",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Numeric Question",
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "Question 1 - Answer 1",
+    "conceptNameType": "FULLY_SPECIFIED",
+    "conceptNames": [
+      {
+        "name": "पहला सवाल पहला जवाब",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Question 1 - Answer 1",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Question 1 - Answer 2",
+    "conceptNames": [
+      {
+        "name": "पहला सवाल दूसरा  जवाब",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Question 1 - Answer 2",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Diabetes",
+    "conceptNames": [
+      {
+        "name": "मधुमेह:",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Diabetes",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Sample without control flow",
+    "conceptNames": [
+      {
+        "name": "नमूना",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Sample without control flow",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Treatment",
+    "conceptNames": [
+      {
+        "name": "उपचार",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Treatment",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Date of Birth",
+    "conceptNames": [
+      {
+        "name": "जन्मतिथि",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Date of Birth",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Date"
+    }
+  },
+  {
+    "name": "Name",
+    "conceptNames": [
+      {
+        "name": "नाव",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Name",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Age",
+    "conceptNames": [
+      {
+        "name": "वय",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Age",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 0,
+    "hiAbsolute": 130
+  },
+  {
+    "name": "Sex",
+    "conceptNames": [
+      {
+        "name": "लिंग",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Sex",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Male"
+      },
+      {
+        "name": "Female"
+      }
+    ]
+  },
+  {
+    "name": "Male",
+    "conceptNames": [
+      {
+        "name": "पुरुष",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Male",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Female",
+    "conceptNames": [
+      {
+        "name": "स्त्री",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Female",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Village",
+    "conceptNames": [
+      {
+        "name": "गाव",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Village",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Weight",
+    "conceptNames": [
+      {
+        "name": "वजन",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Weight",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 1,
+    "hiAbsolute": 120
+  },
+  {
+    "name": "Respiratory Rate",
+    "conceptNames": [
+      {
+        "name": "श्वसन दर",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Respiratory Rate",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 10,
+    "hiAbsolute": 40
+  },
+  {
+    "name": "Diagnosis",
+    "conceptNames": [
+      {
+        "name": "निदान",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Diagnosis",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Malaria"
+      },
+      {
+        "name": "Cold"
+      },
+      {
+        "name": "Cough"
+      },
+      {
+        "name": "Diarrhoea"
+      },
+      {
+        "name": "Vomiting"
+      },
+      {
+        "name": "Abdominal Pain"
+      },
+      {
+        "name": "Acidity"
+      },
+      {
+        "name": "Boils"
+      },
+      {
+        "name": "Wound"
+      },
+      {
+        "name": "Scabies"
+      },
+      {
+        "name": "Ring Worm"
+      },
+      {
+        "name": "Body Ache"
+      }
+    ]
+  },
+  {
+    "name": "Malaria",
+    "conceptNames": [
+      {
+        "name": "मलेरिया",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Malaria",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Cold",
+    "conceptNames": [
+      {
+        "name": "सर्दी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Cold",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "VHW Lokbiradari",
+    "conceptNames": [
+      {
+        "name": "",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "VHW Lokbiradari",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Temperature",
+    "conceptNames": [
+      {
+        "name": "ताप",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Temperature",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 93,
+    "hiAbsolute": 109.4
+  },
+  {
+    "name": "Height",
+    "conceptNames": [
+      {
+        "name": "जन्मतिथि",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Height",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    }
+  },
+  {
+    "name": "BMI",
+    "conceptNames": [
+      {
+        "name": "जन्मतिथि",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "BMI",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Pulse",
+    "conceptNames": [
+      {
+        "name": "पल्स",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Pulse",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 40,
+    "hiAbsolute": 150
+  },
+  {
+    "name": "Systolic",
+    "conceptNames": [
+      {
+        "name": "वरचा बी पी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Systolic",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 80,
+    "hiAbsolute": 200
+  },
+  {
+    "name": "Diastolic",
+    "conceptNames": [
+      {
+        "name": "खालचा बी पी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Diastolic",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 50,
+    "hiAbsolute": 120
+  },
+  {
+    "name": "Pedal Edema",
+    "conceptNames": [
+      {
+        "name": "पायावर सूज",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Pedal Edema",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Present"
+      },
+      {
+        "name": "Absent"
+      }
+    ]
+  },
+  {
+    "name": "Present",
+    "conceptNames": [
+      {
+        "name": "आहे",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Present",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Absent",
+    "conceptNames": [
+      {
+        "name": "नाही",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Absent",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Pallor",
+    "conceptNames": [
+      {
+        "name": "फिकेपणा",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Pallor",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Present"
+      },
+      {
+        "name": "Absent"
+      }
+    ]
+  },
+  {
+    "name": "Skin Condition",
+    "conceptNames": [
+      {
+        "name": "चामडीचे रोग",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Skin Condition",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Boils"
+      },
+      {
+        "name": "Wound"
+      },
+      {
+        "name": "Scabies"
+      },
+      {
+        "name": "Ring Worm"
+      }
+    ]
+  },
+  {
+    "name": "Scabies",
+    "conceptNames": [
+      {
+        "name": "Scabies",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Scabies",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Boils",
+    "conceptNames": [
+      {
+        "name": "फोड",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Boils",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Wound",
+    "conceptNames": [
+      {
+        "name": "जखम",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Wound",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Cough",
+    "conceptNames": [
+      {
+        "name": "खोकला",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Cough",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Diarrhoea",
+    "conceptNames": [
+      {
+        "name": "हगवण",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Diarrhoea",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Acidity",
+    "conceptNames": [
+      {
+        "name": "पोटात आग पडणे",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Acidity",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Abdominal Pain",
+    "conceptNames": [
+      {
+        "name": "पोटदुखी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Abdominal Pain",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Vomiting",
+    "conceptNames": [
+      {
+        "name": "उलटी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Vomiting",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Ring Worm",
+    "conceptNames": [
+      {
+        "name": "Ring Worm",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Ring Worm",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Body Ache",
+    "conceptNames": [
+      {
+        "name": "अंग दुखी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Body Ache",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Pregnancy",
+    "conceptNames": [
+      {
+        "name": "गर्भवती",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Pregnancy",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  }
+]

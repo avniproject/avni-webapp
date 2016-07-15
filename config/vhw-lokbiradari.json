@@ -1,0 +1,62 @@
+{
+  "name" : "VHW Lokbiradari",
+  "description" : "VHW app",
+  "questions" : [
+    {
+      "name": "Name"
+    },
+    {
+      "name": "Age"
+    },
+    {
+      "name": "Sex"
+    },
+    {
+      "name": "Village"
+    },
+    {
+      "name": "Weight"
+    },
+    {
+      "name": "Temperature",
+      "mandatory": false
+    },
+    {
+      "name": "Respiratory Rate",
+      "mandatory": false
+    },
+    {
+      "name": "Pulse",
+      "mandatory": false
+    },
+    {
+      "name": "Systolic",
+      "mandatory": false
+    },
+    {
+      "name": "Diastolic",
+      "mandatory": false
+    },
+    {
+      "name": "Pedal Edema",
+      "mandatory": false
+    },
+    {
+      "name": "Pallor",
+      "mandatory": false
+    },
+    {
+      "name": "Skin Condition",
+      "mandatory": false
+    },
+    {
+      "name": "Diagnosis"
+    }
+  ],
+  "decisionKeys": [
+    "Treatment"
+  ],
+  "summaryFields": [
+    "Name", "Village"
+  ]
+}

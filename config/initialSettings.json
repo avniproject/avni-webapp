@@ -1,0 +1,20 @@
+{
+  "serverURL": "http://server",
+  "locale": {
+    "selectedLocale": "en",
+    "availableValues": [
+      {
+        "locale": "en",
+        "option": "English"
+      },
+      {
+        "locale": "hi_IN",
+        "option": "Hindi"
+      },
+      {
+        "locale": "mr_IN",
+        "option": "Marathi"
+      }
+    ]
+  }
+}

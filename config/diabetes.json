@@ -1,0 +1,14 @@
+{
+  "name" : "Diabetes",
+  "description" : "Diabetes",
+  "questions" : [
+    {
+      "name": "Numeric Question"
+    }
+  ],
+  "decisionKeys": [
+    "Treatment"
+  ],
+  "summaryFields": [
+  ]
+}

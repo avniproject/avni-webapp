@@ -1,0 +1,24 @@
+{
+  "name" : "Sample without control flow",
+  "description" : "Sample questionnaire without control flow logic",
+  "questions" : [
+    {
+      "name": "Multiple Choice Question 1",
+      "multiSelect" : true
+    },
+    {
+      "name": "Numeric Question",
+      "mandatory" : false
+    },
+    {
+      "name": "Date of Birth",
+      "mandatory" : false
+    }
+  ],
+  "decisionKeys": [
+    "Treatment"
+  ],
+  "summaryFields": [
+    "Numeric Question", "Treatment"
+  ]
+}

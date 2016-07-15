@@ -1,5 +1,13 @@
 {
-  "filenames": [
-    "sample.json"
-  ]
+    "questionnaires": [
+        "sample-questionnaire.json",
+        "diabetes.json",
+        "vhw-lokbiradari.json"
+    ],
+    "concepts": [
+        "concepts.json",
+        "sample-concepts.json"
+    ],
+    "conclusions": [
+    ]
 }
