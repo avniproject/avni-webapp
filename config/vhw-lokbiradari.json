@@ -46,6 +46,10 @@
       "mandatory": false
     },
     {
+      "name": "Paracheck",
+      "mandatory": false
+    },
+    {
       "name": "Skin Condition",
       "mandatory": false
     },

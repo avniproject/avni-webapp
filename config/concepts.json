@@ -329,6 +329,12 @@
       },
       {
         "name": "Body Ache"
+      },
+      {
+        "name": "Pregnancy"
+      },
+      {
+        "name": "Chloroquine Resistant Malaria"
       }
     ]
   },
@@ -763,6 +769,116 @@
       },
       {
         "name": "Pregnancy",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Paracheck",
+    "conceptNames": [
+      {
+        "name": "Paracheck",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Paracheck",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Negative"
+      },
+      {
+        "name": "Positive for PF"
+      },
+      {
+        "name": "Positive for PV"
+      },
+      {
+        "name": "Positive for Both"
+      }
+    ]
+  },
+  {
+    "name": "Positive for PF",
+    "conceptNames": [
+      {
+        "name": "Positive for PF",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Positive for PF",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Positive for PV",
+    "conceptNames": [
+      {
+        "name": "Positive for PV",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Positive for PV",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Positive for Both",
+    "conceptNames": [
+      {
+        "name": "Positive for Both",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Positive for Both",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Negative",
+    "conceptNames": [
+      {
+        "name": "Negative",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Negative",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Chloroquine Resistant Malaria",
+    "conceptNames": [
+      {
+        "name": "Chloroquine Resistant Malaria",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Chloroquine Resistant Malaria",
         "locale": "en"
       }
     ],
