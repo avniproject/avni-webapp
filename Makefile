@@ -11,3 +11,5 @@ run:
 	-docker kill httpd
 	-docker rm httpd
 	docker run -d -v $(shell pwd)/config:/usr/local/apache2/htdocs/config -p 0.0.0.0:3000:80 --name httpd openchs/httpd:2.2
+
+restart: stop run
