@@ -1,13 +1,13 @@
 {
-    "questionnaires": [
-        "sample-questionnaire.json",
-        "diabetes.json",
-        "vhw-lokbiradari.json"
-    ],
-    "concepts": [
-        "concepts.json",
-        "sample-concepts.json"
-    ],
-    "conclusions": [
-    ]
+  "questionnaires": [
+    "sample-questionnaire.json",
+    "bmi.json",
+    "vhw-lokbiradari.json"
+  ],
+  "concepts": [
+    "concepts.json",
+    "sample-concepts.json"
+  ],
+  "conclusions": [
+  ]
 }
