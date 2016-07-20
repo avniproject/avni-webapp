@@ -1,25 +1,27 @@
 {
   "uuid": "7504b0ea-6a94-41db-bf05-dbd1750edd3e",
-  "name" : "Sample",
-  "description" : "Sample questionnaire without control flow logic",
-  "questions" : [
+  "name": "Sample without control flow",
+  "description": "Sample questionnaire without control flow logic",
+  "conceptUUID": "be5b3fce-71ec-4153-9172-afe6d04cc828",
+  "questions": [
     {
       "name": "Multiple Choice Question 1",
-      "multiSelect" : true
+      "multiSelect": true
     },
     {
       "name": "Numeric Question",
-      "mandatory" : false
+      "mandatory": false
     },
     {
       "name": "Date of Birth",
-      "mandatory" : false
+      "mandatory": false
     }
   ],
   "decisionKeys": [
     "Treatment"
   ],
   "summaryFields": [
-    "Numeric Question", "Treatment"
+    "Numeric Question",
+    "Treatment"
   ]
 }
