@@ -56,7 +56,8 @@
       "mandatory": false
     },
     {
-      "name": "Diagnosis"
+      "name": "Diagnosis",
+      "multiSelect" : true
     }
   ],
   "decisionKeys": [

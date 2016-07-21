@@ -1,0 +1,25 @@
+{
+  "uuid": "5772936e-4e53-11e6-beb8-9e71128cae77",
+  "name" : "Stroke",
+  "description" : "Stroke detection in community",
+  "questions" : [
+    {
+      "name": "Multiple Choice Question 1",
+      "multiSelect" : true
+    },
+    {
+      "name": "Numeric Question",
+      "mandatory" : false
+    },
+    {
+      "name": "Date of Birth",
+      "mandatory" : false
+    }
+  ],
+  "decisionKeys": [
+    "Treatment"
+  ],
+  "summaryFields": [
+    "Numeric Question", "Treatment"
+  ]
+}
