@@ -5,12 +5,11 @@
   "conceptUUID": "be5b3fce-71ec-4153-9172-afe6d04cc828",
   "questions": [
     {
-      "name": "Multiple Choice Question 1",
-      "multiSelect": true
+      "name": "Multiple Choice Question 1"
     },
     {
       "name": "Numeric Question",
-      "mandatory": false
+      "mandatory": true
     },
     {
       "name": "Date of Birth",
