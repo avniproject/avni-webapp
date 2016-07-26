@@ -311,9 +311,7 @@
             "name": "Coded"
         },
         "answers": [
-            {
-                "name": "Malaria"
-            },
+           
             {
                 "name": "Cold"
             },
@@ -321,16 +319,16 @@
                 "name": "Cough"
             },
             {
-                "name": "Diarrhoea"
-            },
-            {
                 "name": "Vomiting"
             },
             {
-                "name": "Abdominal Pain"
+                "name": "Diarrhoea"
             },
             {
                 "name": "Acidity"
+            },
+            {
+                "name": "Abdominal Pain"
             },
             {
                 "name": "Boils"
@@ -345,14 +343,17 @@
                 "name": "Ring Worm"
             },
             {
+                "name": "Malaria"
+            },
+            {
+                "name": "Chloroquine Resistant Malaria"
+            }
+             {
                 "name": "Body Ache"
             },
             {
                 "name": "Pregnancy"
             },
-            {
-                "name": "Chloroquine Resistant Malaria"
-            }
         ]
     },
     {
