@@ -1,15 +1,16 @@
-install:
-	docker pull openchs/httpd:2.2
+build:
+	@echo "Building HTTPD container"
+	-docker build -t openchs/httpd:2.2 .
+	-docker push openchs/httpd:2.2
 
 stop:
 	@echo "Stopping httpd"
-	-docker kill httpd
-	-docker rm httpd
+	-docker-compose stop
+	-docker-compose kill
+	-docker-compose rm
 
 run:
 	@echo "Starting HTTPD"
-	-docker kill httpd
-	-docker rm httpd
-	docker run -d -v $(shell pwd)/config:/usr/local/apache2/htdocs/config -p 0.0.0.0:3000:80 --name httpd openchs/httpd:2.2
+	docker-compose up
 
 restart: stop run
