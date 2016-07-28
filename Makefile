@@ -1,7 +1,7 @@
 build:
 	@echo "Building HTTPD container"
-	-docker build -t openchs/httpd:2.2 .
-	-docker push openchs/httpd:2.2
+	-docker-compose build
+	-docker-compose push httpd
 
 stop:
 	@echo "Stopping httpd"

@@ -6,6 +6,7 @@ services:
     volumes:
       - ./:/server/
   httpd:
+      build: ./
       image: openchs/httpd:2.2
       ports:
         - "0.0.0.0:3000:80"
