@@ -1,938 +1,937 @@
 [
-    {
+  {
+    "name": "Multiple Choice Question 1",
+    "uuid": "e29f910e-e001-4133-ab18-716578901c4c",
+    "conceptNames": [
+      {
+        "name": "बहुविकल्पी सवाल",
+        "locale": "hi_IN"
+      },
+      {
         "name": "Multiple Choice Question 1",
-        "uuid": "e29f910e-e001-4133-ab18-716578901c4c",
-        "conceptNames": [
-            {
-                "name": "बहुविकल्पी सवाल",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Multiple Choice Question 1",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Coded"
-        },
-        "answers": [
-            {
-                "name": "Question 1 - Answer 1"
-            },
-            {
-                "name": "Question 1 - Answer 2"
-            }
-        ]
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
     },
-    {
+    "answers": [
+      {
+        "name": "Question 1 - Answer 1"
+      },
+      {
+        "name": "Question 1 - Answer 2"
+      }
+    ]
+  },
+  {
+    "name": "Numeric Question",
+    "uuid": "65c314e2-be0d-4cf2-ab31-a0ee5b453bef",
+    "datatype": {
+      "name": "Numeric"
+    },
+    "conceptNames": [
+      {
+        "name": "संख्यात्मक सवाल",
+        "locale": "hi_IN"
+      },
+      {
         "name": "Numeric Question",
-        "uuid": "65c314e2-be0d-4cf2-ab31-a0ee5b453bef",
-        "datatype": {
-            "name": "Numeric"
-        },
-        "conceptNames": [
-            {
-                "name": "संख्यात्मक सवाल",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Numeric Question",
-                "locale": "en"
-            }
-        ]
-    },
-    {
+        "locale": "en"
+      }
+    ]
+  },
+  {
+    "name": "Question 1 - Answer 1",
+    "uuid": "9ff05809-1b7e-409c-8630-2baab297d9ac",
+    "conceptNameType": "FULLY_SPECIFIED",
+    "conceptNames": [
+      {
+        "name": "पहला सवाल पहला जवाब",
+        "locale": "hi_IN"
+      },
+      {
         "name": "Question 1 - Answer 1",
-        "uuid": "9ff05809-1b7e-409c-8630-2baab297d9ac",
-        "conceptNameType": "FULLY_SPECIFIED",
-        "conceptNames": [
-            {
-                "name": "पहला सवाल पहला जवाब",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Question 1 - Answer 1",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Question 1 - Answer 2",
-        "uuid": "5c9b9c99-06a3-4c22-a631-f68c07b277ba",
-        "conceptNames": [
-            {
-                "name": "पहला सवाल दूसरा  जवाब",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Question 1 - Answer 2",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Diabetes",
-        "uuid": "78c3969c-d987-43ea-aecf-83b8599b10c5",
-        "conceptNames": [
-            {
-                "name": "मधुमेह:",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Diabetes",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Sample without control flow",
-        "uuid": "be5b3fce-71ec-4153-9172-afe6d04cc828",
-        "conceptNames": [
-            {
-                "name": "नमूना",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Sample without control flow",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Treatment",
-        "uuid": "e3267eb3-a3e3-4106-b3cb-2ff306d18ffb",
-        "conceptNames": [
-            {
-                "name": "उपचार",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Treatment",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Text"
-        }
-    },
-    {
-        "name": "Date of Birth",
-        "uuid": "fc0dbe3b-9c4d-424f-ac13-fe9f563ae311",
-        "conceptNames": [
-            {
-                "name": "जन्मतिथि",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Date of Birth",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Date"
-        }
-    },
-    {
-        "name": "Name",
-        "uuid": "530b584c-1d94-4f74-a570-75d29daf7ca1",
-        "conceptNames": [
-            {
-                "name": "नाव",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Name",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Text"
-        }
-    },
-    {
-        "name": "Age",
-        "uuid": "aa1f1461-125f-4a06-b9de-ed9184c57dba",
-        "conceptNames": [
-            {
-                "name": "वय",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Age",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Numeric"
-        },
-        "lowAbsolute": 0,
-        "hiAbsolute": 130
-    },
-    {
-        "name": "Sex",
-        "uuid": "3c77a473-974d-4835-8be0-cdc92af715d4",
-        "conceptNames": [
-            {
-                "name": "लिंग",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Sex",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Coded"
-        },
-        "answers": [
-            {
-                "name": "Male"
-            },
-            {
-                "name": "Female"
-            }
-        ]
-    },
-    {
-        "name": "Male",
-        "uuid": "feffc2de-b1a5-4de4-995f-da11a91e456e",
-        "conceptNames": [
-            {
-                "name": "पुरुष",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Male",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Female",
-        "uuid": "d11575d7-2913-4961-b70f-d39cff142b86",
-        "conceptNames": [
-            {
-                "name": "स्त्री",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Female",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Village",
-        "uuid": "f24484b3-b9dd-4a06-a292-a21f4ca382f4",
-        "conceptNames": [
-            {
-                "name": "गाव",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Village",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Text"
-        }
-    },
-    {
-        "name": "Weight",
-        "uuid": "860f788e-eb75-4530-8804-fc8aca8f3996",
-        "conceptNames": [
-            {
-                "name": "वजन",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Weight",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Numeric"
-        },
-        "lowAbsolute": 1,
-        "hiAbsolute": 120
-    },
-    {
-        "name": "Respiratory Rate",
-        "uuid": "98d42128-7683-4258-bdea-8471e4b351a5",
-        "conceptNames": [
-            {
-                "name": "श्वसन दर",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Respiratory Rate",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Numeric"
-        },
-        "lowAbsolute": 10,
-        "hiAbsolute": 40
-    },
-    {
-        "name": "Diagnosis",
-        "uuid": "93a70513-dd1b-4d93-9edd-6173cb67a88b",
-        "conceptNames": [
-            {
-                "name": "निदान",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Diagnosis",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Coded"
-        },
-        "answers": [
-           
-            {
-                "name": "Cold"
-            },
-            {
-                "name": "Cough"
-            },
-            {
-                "name": "Vomiting"
-            },
-            {
-                "name": "Diarrhoea"
-            },
-            {
-                "name": "Acidity"
-            },
-            {
-                "name": "Abdominal Pain"
-            },
-            {
-                "name": "Boils"
-            },
-            {
-                "name": "Wound"
-            },
-            {
-                "name": "Scabies"
-            },
-            {
-                "name": "Ring Worm"
-            },
-            {
-                "name": "Malaria"
-            },
-            {
-                "name": "Chloroquine Resistant Malaria"
-            }
-             {
-                "name": "Body Ache"
-            },
-            {
-                "name": "Pregnancy"
-            },
-        ]
-    },
-    {
-        "name": "Malaria",
-        "uuid": "ce49cf92-fb44-4498-adaf-5bd95464e862",
-        "conceptNames": [
-            {
-                "name": "मलेरिया",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Malaria",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Cold",
-        "uuid": "6ebfc1f8-4c9a-44a1-851f-fbface23d2e5",
-        "conceptNames": [
-            {
-                "name": "सर्दी",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Cold",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "VHW Lokbiradari",
-        "uuid": "db7d9086-f5ce-4652-9925-741041b13a38",
-        "conceptNames": [
-            {
-                "name": "",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "VHW Lokbiradari",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Text"
-        }
-    },
-    {
-        "name": "Temperature",
-        "uuid": "fa8dee73-ed7d-4189-bdb2-a356dafff18a",
-        "conceptNames": [
-            {
-                "name": "ताप",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Temperature",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Numeric"
-        },
-        "lowAbsolute": 93,
-        "hiAbsolute": 109.4
-    },
-    {
-        "name": "Height",
-        "uuid": "9bcf1baa-0537-4475-bbe6-2d92952e4f3d",
-        "conceptNames": [
-            {
-                "name": "जन्मतिथि",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Height",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Numeric"
-        }
-    },
-    {
-        "name": "BMI",
-        "uuid": "05a67566-7446-4216-bce4-1e3495f4ed22",
-        "conceptNames": [
-            {
-                "name": "जन्मतिथि",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "BMI",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Text"
-        }
-    },
-    {
-        "name": "Pulse",
-        "uuid": "c621a22d-a9af-4a8d-917b-6a45995e7015",
-        "conceptNames": [
-            {
-                "name": "पल्स",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Pulse",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Numeric"
-        },
-        "lowAbsolute": 40,
-        "hiAbsolute": 150
-    },
-    {
-        "name": "Systolic",
-        "uuid": "26ad9fc8-93b6-4bf0-9b1d-e789d5e513b4",
-        "conceptNames": [
-            {
-                "name": "वरचा बी पी",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Systolic",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Numeric"
-        },
-        "lowAbsolute": 80,
-        "hiAbsolute": 200
-    },
-    {
-        "name": "Diastolic",
-        "uuid": "e7a28f6c-f4c5-4a38-b0ee-78017321ab68",
-        "conceptNames": [
-            {
-                "name": "खालचा बी पी",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Diastolic",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Numeric"
-        },
-        "lowAbsolute": 50,
-        "hiAbsolute": 120
-    },
-    {
-        "name": "Pedal Edema",
-        "uuid": "b2ab7c5f-fdf0-4545-beac-5d7fe6bd0264",
-        "conceptNames": [
-            {
-                "name": "पायावर सूज",
-                "locale": "hi_IN"
-            },
-            {
-                "name": "Pedal Edema",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Coded"
-        },
-        "answers": [
-            {
-                "name": "Present"
-            },
-            {
-                "name": "Absent"
-            }
-        ]
-    },
-    {
-        "name": "Present",
-        "uuid": "7505ec6c-45b5-4ddc-ac04-3de8e6145a28",
-        "conceptNames": [
-            {
-                "name": "आहे",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Present",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Absent",
-        "uuid": "78b2cbad-efab-4a76-9254-6955d2f0ffa8",
-        "conceptNames": [
-            {
-                "name": "नाही",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Absent",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Pallor",
-        "uuid": "d8050a2d-99f5-4eb8-8b79-9e3a25fe6efd",
-        "conceptNames": [
-            {
-                "name": "फिकेपणा",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Pallor",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Coded"
-        },
-        "answers": [
-            {
-                "name": "Present"
-            },
-            {
-                "name": "Absent"
-            }
-        ]
-    },
-    {
-        "name": "Skin Condition",
-        "uuid": "21b731dd-96b8-4090-b98b-d145473be52a",
-        "conceptNames": [
-            {
-                "name": "चामडीचे रोग",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Skin Condition",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Coded"
-        },
-        "answers": [
-            {
-                "name": "Boils"
-            },
-            {
-                "name": "Wound"
-            },
-            {
-                "name": "Scabies"
-            },
-            {
-                "name": "Ring Worm"
-            }
-        ]
-    },
-    {
-        "name": "Scabies",
-        "uuid": "565ebfdf-eb19-4a61-963b-63599b937044",
-        "conceptNames": [
-            {
-                "name": "Scabies",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Scabies",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Boils",
-        "uuid": "424a5762-78df-43b0-b4c9-d1eca369f32e",
-        "conceptNames": [
-            {
-                "name": "फोड",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Boils",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Wound",
-        "uuid": "4191416d-fef9-4c84-88d4-7cdc20a693ad",
-        "conceptNames": [
-            {
-                "name": "जखम",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Wound",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Cough",
-        "uuid": "68012abd-5dd8-4610-b453-7c70d435e2dd",
-        "conceptNames": [
-            {
-                "name": "खोकला",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Cough",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Diarrhoea",
-        "uuid": "b87ebf23-71c6-4634-aca7-05c163fda9a1",
-        "conceptNames": [
-            {
-                "name": "हगवण",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Diarrhoea",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Acidity",
-        "uuid": "c9537032-72f2-4f2f-98dc-f697f8c15137",
-        "conceptNames": [
-            {
-                "name": "पोटात आग पडणे",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Acidity",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Abdominal Pain",
-        "uuid": "2b319191-200e-4ed5-8b46-712c4d68af80",
-        "conceptNames": [
-            {
-                "name": "पोटदुखी",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Abdominal Pain",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Vomiting",
-        "uuid": "653c37d5-f811-40aa-b76b-cccfa08dd259",
-        "conceptNames": [
-            {
-                "name": "उलटी",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Vomiting",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Ring Worm",
-        "uuid": "0d8c2c84-2773-46e5-a3a4-d0e976d22796",
-        "conceptNames": [
-            {
-                "name": "Ring Worm",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Ring Worm",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Body Ache",
-        "uuid": "96e08800-63a9-4aa3-a8f6-7231782a2b9f",
-        "conceptNames": [
-            {
-                "name": "अंग दुखी",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Body Ache",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Pregnancy",
-        "uuid": "cffd6446-3f99-49cd-bb89-8192731569d3",
-        "conceptNames": [
-            {
-                "name": "गर्भवती",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Pregnancy",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Paracheck",
-        "uuid": "b7f7a42b-4b7e-486e-a431-e982dadcd8e9",
-        "conceptNames": [
-            {
-                "name": "Paracheck",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Paracheck",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "Coded"
-        },
-        "answers": [
-            {
-                "name": "Negative"
-            },
-            {
-                "name": "Positive for PF"
-            },
-            {
-                "name": "Positive for PV"
-            },
-            {
-                "name": "Positive for Both"
-            }
-        ]
-    },
-    {
-        "name": "Positive for PF",
-        "uuid": "4f703307-752d-47d4-b98f-015df71575ab",
-        "conceptNames": [
-            {
-                "name": "Positive for PF",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Positive for PF",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Positive for PV",
-        "uuid": "751044a1-332e-45cf-ba54-cdf4df23b5fb",
-        "conceptNames": [
-            {
-                "name": "Positive for PV",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Positive for PV",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Positive for Both",
-        "uuid": "6c424c3b-ed82-4170-9319-50187f509891",
-        "conceptNames": [
-            {
-                "name": "Positive for Both",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Positive for Both",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Negative",
-        "uuid": "3987046d-25af-49b1-9535-56f26b1b6df2",
-        "conceptNames": [
-            {
-                "name": "Negative",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Negative",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
-    },
-    {
-        "name": "Chloroquine Resistant Malaria",
-        "uuid": "38e69018-0218-4887-b426-c56ef156026d",
-        "conceptNames": [
-            {
-                "name": "Chloroquine Resistant Malaria",
-                "locale": "mr_IN"
-            },
-            {
-                "name": "Chloroquine Resistant Malaria",
-                "locale": "en"
-            }
-        ],
-        "datatype": {
-            "name": "N/A"
-        }
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
     }
+  },
+  {
+    "name": "Question 1 - Answer 2",
+    "uuid": "5c9b9c99-06a3-4c22-a631-f68c07b277ba",
+    "conceptNames": [
+      {
+        "name": "पहला सवाल दूसरा  जवाब",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Question 1 - Answer 2",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Diabetes",
+    "uuid": "78c3969c-d987-43ea-aecf-83b8599b10c5",
+    "conceptNames": [
+      {
+        "name": "मधुमेह:",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Diabetes",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Sample without control flow",
+    "uuid": "be5b3fce-71ec-4153-9172-afe6d04cc828",
+    "conceptNames": [
+      {
+        "name": "नमूना",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Sample without control flow",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Treatment",
+    "uuid": "e3267eb3-a3e3-4106-b3cb-2ff306d18ffb",
+    "conceptNames": [
+      {
+        "name": "उपचार",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Treatment",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Date of Birth",
+    "uuid": "fc0dbe3b-9c4d-424f-ac13-fe9f563ae311",
+    "conceptNames": [
+      {
+        "name": "जन्मतिथि",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Date of Birth",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Date"
+    }
+  },
+  {
+    "name": "Name",
+    "uuid": "530b584c-1d94-4f74-a570-75d29daf7ca1",
+    "conceptNames": [
+      {
+        "name": "नाव",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Name",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Age",
+    "uuid": "aa1f1461-125f-4a06-b9de-ed9184c57dba",
+    "conceptNames": [
+      {
+        "name": "वय",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Age",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 0,
+    "hiAbsolute": 130
+  },
+  {
+    "name": "Sex",
+    "uuid": "3c77a473-974d-4835-8be0-cdc92af715d4",
+    "conceptNames": [
+      {
+        "name": "लिंग",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Sex",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Male"
+      },
+      {
+        "name": "Female"
+      }
+    ]
+  },
+  {
+    "name": "Male",
+    "uuid": "feffc2de-b1a5-4de4-995f-da11a91e456e",
+    "conceptNames": [
+      {
+        "name": "पुरुष",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Male",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Female",
+    "uuid": "d11575d7-2913-4961-b70f-d39cff142b86",
+    "conceptNames": [
+      {
+        "name": "स्त्री",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Female",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Village",
+    "uuid": "f24484b3-b9dd-4a06-a292-a21f4ca382f4",
+    "conceptNames": [
+      {
+        "name": "गाव",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Village",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Weight",
+    "uuid": "860f788e-eb75-4530-8804-fc8aca8f3996",
+    "conceptNames": [
+      {
+        "name": "वजन",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Weight",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 1,
+    "hiAbsolute": 120
+  },
+  {
+    "name": "Respiratory Rate",
+    "uuid": "98d42128-7683-4258-bdea-8471e4b351a5",
+    "conceptNames": [
+      {
+        "name": "श्वसन दर",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Respiratory Rate",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 10,
+    "hiAbsolute": 40
+  },
+  {
+    "name": "Diagnosis",
+    "uuid": "93a70513-dd1b-4d93-9edd-6173cb67a88b",
+    "conceptNames": [
+      {
+        "name": "निदान",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Diagnosis",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Cold"
+      },
+      {
+        "name": "Cough"
+      },
+      {
+        "name": "Vomiting"
+      },
+      {
+        "name": "Diarrhoea"
+      },
+      {
+        "name": "Acidity"
+      },
+      {
+        "name": "Abdominal Pain"
+      },
+      {
+        "name": "Boils"
+      },
+      {
+        "name": "Wound"
+      },
+      {
+        "name": "Scabies"
+      },
+      {
+        "name": "Ring Worm"
+      },
+      {
+        "name": "Malaria"
+      },
+      {
+        "name": "Chloroquine Resistant Malaria"
+      },
+      {
+        "name": "Body Ache"
+      },
+      {
+        "name": "Pregnancy"
+      }
+    ]
+  },
+  {
+    "name": "Malaria",
+    "uuid": "ce49cf92-fb44-4498-adaf-5bd95464e862",
+    "conceptNames": [
+      {
+        "name": "मलेरिया",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Malaria",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Cold",
+    "uuid": "6ebfc1f8-4c9a-44a1-851f-fbface23d2e5",
+    "conceptNames": [
+      {
+        "name": "सर्दी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Cold",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "VHW Lokbiradari",
+    "uuid": "db7d9086-f5ce-4652-9925-741041b13a38",
+    "conceptNames": [
+      {
+        "name": "",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "VHW Lokbiradari",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Temperature",
+    "uuid": "fa8dee73-ed7d-4189-bdb2-a356dafff18a",
+    "conceptNames": [
+      {
+        "name": "ताप",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Temperature",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 93,
+    "hiAbsolute": 109.4
+  },
+  {
+    "name": "Height",
+    "uuid": "9bcf1baa-0537-4475-bbe6-2d92952e4f3d",
+    "conceptNames": [
+      {
+        "name": "जन्मतिथि",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Height",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    }
+  },
+  {
+    "name": "BMI",
+    "uuid": "05a67566-7446-4216-bce4-1e3495f4ed22",
+    "conceptNames": [
+      {
+        "name": "जन्मतिथि",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "BMI",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Text"
+    }
+  },
+  {
+    "name": "Pulse",
+    "uuid": "c621a22d-a9af-4a8d-917b-6a45995e7015",
+    "conceptNames": [
+      {
+        "name": "पल्स",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Pulse",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 40,
+    "hiAbsolute": 150
+  },
+  {
+    "name": "Systolic",
+    "uuid": "26ad9fc8-93b6-4bf0-9b1d-e789d5e513b4",
+    "conceptNames": [
+      {
+        "name": "वरचा बी पी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Systolic",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 80,
+    "hiAbsolute": 200
+  },
+  {
+    "name": "Diastolic",
+    "uuid": "e7a28f6c-f4c5-4a38-b0ee-78017321ab68",
+    "conceptNames": [
+      {
+        "name": "खालचा बी पी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Diastolic",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Numeric"
+    },
+    "lowAbsolute": 50,
+    "hiAbsolute": 120
+  },
+  {
+    "name": "Pedal Edema",
+    "uuid": "b2ab7c5f-fdf0-4545-beac-5d7fe6bd0264",
+    "conceptNames": [
+      {
+        "name": "पायावर सूज",
+        "locale": "hi_IN"
+      },
+      {
+        "name": "Pedal Edema",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Present"
+      },
+      {
+        "name": "Absent"
+      }
+    ]
+  },
+  {
+    "name": "Present",
+    "uuid": "7505ec6c-45b5-4ddc-ac04-3de8e6145a28",
+    "conceptNames": [
+      {
+        "name": "आहे",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Present",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Absent",
+    "uuid": "78b2cbad-efab-4a76-9254-6955d2f0ffa8",
+    "conceptNames": [
+      {
+        "name": "नाही",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Absent",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Pallor",
+    "uuid": "d8050a2d-99f5-4eb8-8b79-9e3a25fe6efd",
+    "conceptNames": [
+      {
+        "name": "फिकेपणा",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Pallor",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Present"
+      },
+      {
+        "name": "Absent"
+      }
+    ]
+  },
+  {
+    "name": "Skin Condition",
+    "uuid": "21b731dd-96b8-4090-b98b-d145473be52a",
+    "conceptNames": [
+      {
+        "name": "चामडीचे रोग",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Skin Condition",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Boils"
+      },
+      {
+        "name": "Wound"
+      },
+      {
+        "name": "Scabies"
+      },
+      {
+        "name": "Ring Worm"
+      }
+    ]
+  },
+  {
+    "name": "Scabies",
+    "uuid": "565ebfdf-eb19-4a61-963b-63599b937044",
+    "conceptNames": [
+      {
+        "name": "Scabies",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Scabies",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Boils",
+    "uuid": "424a5762-78df-43b0-b4c9-d1eca369f32e",
+    "conceptNames": [
+      {
+        "name": "फोड",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Boils",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Wound",
+    "uuid": "4191416d-fef9-4c84-88d4-7cdc20a693ad",
+    "conceptNames": [
+      {
+        "name": "जखम",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Wound",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Cough",
+    "uuid": "68012abd-5dd8-4610-b453-7c70d435e2dd",
+    "conceptNames": [
+      {
+        "name": "खोकला",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Cough",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Diarrhoea",
+    "uuid": "b87ebf23-71c6-4634-aca7-05c163fda9a1",
+    "conceptNames": [
+      {
+        "name": "हगवण",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Diarrhoea",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Acidity",
+    "uuid": "c9537032-72f2-4f2f-98dc-f697f8c15137",
+    "conceptNames": [
+      {
+        "name": "पोटात आग पडणे",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Acidity",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Abdominal Pain",
+    "uuid": "2b319191-200e-4ed5-8b46-712c4d68af80",
+    "conceptNames": [
+      {
+        "name": "पोटदुखी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Abdominal Pain",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Vomiting",
+    "uuid": "653c37d5-f811-40aa-b76b-cccfa08dd259",
+    "conceptNames": [
+      {
+        "name": "उलटी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Vomiting",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Ring Worm",
+    "uuid": "0d8c2c84-2773-46e5-a3a4-d0e976d22796",
+    "conceptNames": [
+      {
+        "name": "Ring Worm",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Ring Worm",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Body Ache",
+    "uuid": "96e08800-63a9-4aa3-a8f6-7231782a2b9f",
+    "conceptNames": [
+      {
+        "name": "अंग दुखी",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Body Ache",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Pregnancy",
+    "uuid": "cffd6446-3f99-49cd-bb89-8192731569d3",
+    "conceptNames": [
+      {
+        "name": "गर्भवती",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Pregnancy",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Paracheck",
+    "uuid": "b7f7a42b-4b7e-486e-a431-e982dadcd8e9",
+    "conceptNames": [
+      {
+        "name": "Paracheck",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Paracheck",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "Coded"
+    },
+    "answers": [
+      {
+        "name": "Negative"
+      },
+      {
+        "name": "Positive for PF"
+      },
+      {
+        "name": "Positive for PV"
+      },
+      {
+        "name": "Positive for Both"
+      }
+    ]
+  },
+  {
+    "name": "Positive for PF",
+    "uuid": "4f703307-752d-47d4-b98f-015df71575ab",
+    "conceptNames": [
+      {
+        "name": "Positive for PF",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Positive for PF",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Positive for PV",
+    "uuid": "751044a1-332e-45cf-ba54-cdf4df23b5fb",
+    "conceptNames": [
+      {
+        "name": "Positive for PV",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Positive for PV",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Positive for Both",
+    "uuid": "6c424c3b-ed82-4170-9319-50187f509891",
+    "conceptNames": [
+      {
+        "name": "Positive for Both",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Positive for Both",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Negative",
+    "uuid": "3987046d-25af-49b1-9535-56f26b1b6df2",
+    "conceptNames": [
+      {
+        "name": "Negative",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Negative",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  },
+  {
+    "name": "Chloroquine Resistant Malaria",
+    "uuid": "38e69018-0218-4887-b426-c56ef156026d",
+    "conceptNames": [
+      {
+        "name": "Chloroquine Resistant Malaria",
+        "locale": "mr_IN"
+      },
+      {
+        "name": "Chloroquine Resistant Malaria",
+        "locale": "en"
+      }
+    ],
+    "datatype": {
+      "name": "N/A"
+    }
+  }
 ]
