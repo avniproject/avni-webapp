@@ -7,7 +7,7 @@ stop:
 	@echo "Stopping httpd"
 	-docker-compose stop
 	-docker-compose kill
-	-docker-compose rm
+	-docker-compose rm -f
 
 run:
 	@echo "Starting HTTPD"
