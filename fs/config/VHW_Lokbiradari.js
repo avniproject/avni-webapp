@@ -1399,3 +1399,24 @@ let getDecision = function (questionnaireAnswers) {
 
     return [decision];
 };
+
+let validate = function(questionnaireAnswers) {
+    const diagnosis = questionnaireAnswers.getAnswerFor('Diagnosis');
+    const age = questionnaireAnswers.getAnswerFor('Age');
+    const sex = questionnaireAnswers.getAnswerFor('Sex');
+
+    var validationResult = {
+        "passed": false
+    };
+
+    if (sex === 'Male' && diagnosis === 'Pregnancy') {
+        validationResult.message = "Male cannot be pregnant"; //convert to marathi
+        return validationResult;
+    } else if (diagnosis === 'Pregnancy' && age < 10) {
+        validationResult.message = "One cannot be pregnant before 10"; //convert to marathi
+        return validationResult;
+    }
+
+    validationResult.passed = false;
+    return validationResult;
+};
