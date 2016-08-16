@@ -53,7 +53,8 @@
     },
     {
       "name": "Skin Condition",
-      "mandatory": false
+      "mandatory": false,
+      "multiSelect" : true
     },
     {
       "name": "Diagnosis",
