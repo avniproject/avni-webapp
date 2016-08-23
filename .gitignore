@@ -1,2 +1,4 @@
 .idea
 target
+fs/config/modules/*
+openchs-server.iml
