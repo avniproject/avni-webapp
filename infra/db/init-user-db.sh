@@ -2,7 +2,7 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-    CREATE USER erp_owner WITH PASSWORD 'erp_owner';
-    CREATE DATABASE egov;
-    GRANT ALL PRIVILEGES ON DATABASE egov TO erp_owner;
+    CREATE USER openchs WITH PASSWORD 'password';
+    CREATE DATABASE openchs;
+    GRANT ALL PRIVILEGES ON DATABASE openchs TO openchs;
 EOSQL
