@@ -6,7 +6,7 @@ services:
     volumes:
       - ./:/server/
   httpd:
-      build: ./
+      build: ./infra/
       image: openchs/httpd:2.2
       ports:
         - "0.0.0.0:3000:80"
@@ -14,3 +14,8 @@ services:
         - server
       volumes:
       - ./fs:/usr/local/apache2/htdocs/fs
+  postgres:
+      build: ./infra/db
+      image: openchs-db
+      ports:
+        - "5432:5432"

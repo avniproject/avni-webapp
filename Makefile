@@ -1,18 +1,20 @@
 build: stop
-	-docker-compose rm -f
-	@echo "Building HTTPD container"
-	-docker-compose build
+	@echo "Building all containers"
+	docker-compose rm -f
+	@echo "Building all containers"
+	docker-compose build
 
 release:
-	-docker-compose push httpd
+	@echo "Building all containers"
+	docker-compose push httpd
 
 stop:
-	@echo "Stopping httpd"
-	-docker-compose stop
-	-docker-compose kill
+	@echo "Stopping all services"
+	docker-compose stop
+	docker-compose kill
 
 start:
-	@echo "Starting HTTPD"
+	@echo "Starting all services"
 	docker-compose up
 
 restart: stop start
