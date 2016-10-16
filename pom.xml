@@ -5,12 +5,11 @@
     <groupId>org.openchs</groupId>
     <artifactId>openchs-server</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <name>openchs-server</name>
     <url>http://maven.apache.org</url>
 
     <properties>
-        <hibernate.version>4.3.11.Final</hibernate.version>
         <jetty.version>9.2.3.v20140905</jetty.version>
         <java.version>1.8</java.version>
     </properties>
@@ -64,6 +63,33 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.4-1200-jdbc41</version>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jadira.usertype</groupId>
+            <artifactId>usertype.core</artifactId>
+            <version>5.0.0.GA</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.7.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
     </dependencies>
 
