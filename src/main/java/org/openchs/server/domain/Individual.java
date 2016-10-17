@@ -1,15 +1,12 @@
 package org.openchs.server.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.swing.text.StringContent;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "individuals")
+@Table(name = "individual")
 public class Individual extends CHSEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,5 +22,14 @@ public class Individual extends CHSEntity {
     private boolean dateOfBirthEstimated;
 
     @NotNull
-    private String gender;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="gender_id")
+    private Gender gender;
+
+    @Column
+    private long catchment_id;
+
+    @Column
+    @Type(type = "JsonbType")
+    private KeyValuePairs profile;
 }

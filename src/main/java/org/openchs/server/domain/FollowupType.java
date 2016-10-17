@@ -4,8 +4,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "program")
-public class Program extends CHSEntity {
+@Table(name = "followup_type")
+public class FollowupType extends CHSEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

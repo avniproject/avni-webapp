@@ -10,7 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-public class CHSEntity {
+public abstract class CHSEntity {
     @CreatedBy
     private User createdBy;
 

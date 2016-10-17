@@ -4,7 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "concepts")
+@Table(name = "concept")
 public class Concept extends CHSEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,4 +18,9 @@ public class Concept extends CHSEntity {
 
     @NotNull
     private String dataType;
+
+    private double lowAbsolute;
+    private double highAbsolute;
+    private double lowNormal;
+    private double highNormal;
 }
