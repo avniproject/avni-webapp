@@ -1,4 +1,4 @@
-package org.openchs.server.framework.postgres;
+package org.openchs.server.framework.hibernate;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,27 +12,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.openchs.server.domain.KeyValuePairs;
 
-import java.util.Map;
-
-public class JsonbUserType implements UserType {
+public abstract class AbstractJsonbUserType implements UserType {
     public final static ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public int[] sqlTypes() {
         return new int[]{Types.JAVA_OBJECT};
-    }
-
-    @Override
-    public Class returnedClass() {
-        return KeyValuePairs.class;
     }
 
     @Override

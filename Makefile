@@ -18,3 +18,8 @@ start:
 	docker-compose up
 
 restart: stop start
+
+start-app:
+	@echo "Starting the application"
+	mvn clean install -DskipTests
+	java -jar target/openchs-server-0.1-SNAPSHOT.jar

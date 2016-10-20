@@ -1,11 +1,11 @@
 package org.openchs.server.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @Entity
 @Table(name = "individual")
@@ -32,12 +32,12 @@ public class Individual extends CHSEntity {
     private long catchment_id;
 
     @Column
-    @Type(type = "JsonbType")
-    private KeyValuePairs profile;
+    @Type(type = "KeyValuesJson")
+    private Map<String, Object> profile;
 
     @Column
-    @Type(type = "JsonbType")
-    private KeyValuePairs address;
+    @Type(type = "KeyValuesJson")
+    private Map<String, Object> address;
 
     public String getName() {
         return name;
@@ -79,19 +79,19 @@ public class Individual extends CHSEntity {
         this.catchment_id = catchment_id;
     }
 
-    public KeyValuePairs getProfile() {
+    public Map<String, Object> getProfile() {
         return profile;
     }
 
-    public void setProfile(KeyValuePairs profile) {
+    public void setProfile(Map<String, Object> profile) {
         this.profile = profile;
     }
 
-    public KeyValuePairs getAddress() {
+    public Map<String, Object> getAddress() {
         return address;
     }
 
-    public void setAddress(KeyValuePairs address) {
+    public void setAddress(Map<String, Object> address) {
         this.address = address;
     }
 
