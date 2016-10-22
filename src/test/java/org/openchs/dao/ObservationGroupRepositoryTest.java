@@ -1,6 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.LocalDate;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openchs.common.DataJpaTest;
@@ -28,7 +29,7 @@ public class ObservationGroupRepositoryTest {
     public TestEntityManager testEntityManager;
 
 
-    @Test
+    @Test @Ignore
     public void checkJSONLoading() throws SQLException {
         Gender gender = Gender.create("Other");
         testEntityManager.persist(gender);
