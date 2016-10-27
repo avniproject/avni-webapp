@@ -17,6 +17,26 @@ public class Gender extends CHSEntity {
     @JoinColumn(name="concept_id")
     private Concept concept;
 
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Concept getConcept() {
+        return concept;
+    }
+
+    public void setConcept(Concept concept) {
+        this.concept = concept;
+    }
+
     public static Gender create(String name) {
         Gender gender = new Gender();
         gender.name = name;
