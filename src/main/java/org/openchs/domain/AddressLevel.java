@@ -6,10 +6,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "address_level")
 public class AddressLevel extends CHSEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     @Column
     @NotNull
     private int title;

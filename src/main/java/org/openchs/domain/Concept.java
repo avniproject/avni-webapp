@@ -7,10 +7,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "concept")
 public class Concept extends CHSEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     @NotNull
     private String name;
 

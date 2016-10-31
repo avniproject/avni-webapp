@@ -1,0 +1,3 @@
+INSERT INTO gender (name, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id) VALUES ('Female', current_timestamp, current_timestamp, 1, 1);
+INSERT INTO gender (name, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id) VALUES ('Male', current_timestamp, current_timestamp, 1, 1);
+INSERT INTO gender (name, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id) VALUES ('Other', current_timestamp, current_timestamp, 1, 1);

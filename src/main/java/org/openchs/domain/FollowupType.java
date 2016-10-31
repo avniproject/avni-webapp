@@ -6,10 +6,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "followup_type")
 public class FollowupType extends CHSEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     @NotNull
     private String name;
 

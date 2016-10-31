@@ -10,10 +10,6 @@ import java.util.Map;
 @Entity
 @Table(name = "individual")
 public class Individual extends CHSEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     @NotNull
     private String name;
 

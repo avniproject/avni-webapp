@@ -6,20 +6,12 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "gender")
 public class Gender extends CHSEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     @NotNull
     private String name;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="concept_id")
     private Concept concept;
-
-    public long getId() {
-        return id;
-    }
 
     public String getName() {
         return name;

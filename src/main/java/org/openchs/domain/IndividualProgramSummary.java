@@ -10,10 +10,6 @@ import java.util.List;
 @Entity
 @Table(name = "individual_program_summary")
 public class IndividualProgramSummary extends CHSEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     @Column
     @NotNull
     private DateTime enrolmentDateTime;

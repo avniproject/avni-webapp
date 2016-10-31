@@ -11,10 +11,6 @@ import java.sql.SQLException;
 @Entity
 @Table(name = "observation_group")
 public class ObservationGroup extends CHSEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
     @Column
     @Type(type = "KeyValuesJson")
     private Object observations;
