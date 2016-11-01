@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class})
@@ -30,6 +31,10 @@ public abstract class CHSEntity {
 
     @LastModifiedDate
     private DateTime lastModifiedDateTime;
+
+    @Column
+    @NotNull
+    private String uuid;
 
     public User getCreatedBy() {
         return createdBy;
@@ -65,5 +70,13 @@ public abstract class CHSEntity {
 
     public Long getId() {
         return id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

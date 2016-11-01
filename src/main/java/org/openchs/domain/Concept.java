@@ -11,9 +11,6 @@ public class Concept extends CHSEntity {
     private String name;
 
     @NotNull
-    private String uuid;
-
-    @NotNull
     private String dataType;
 
     private double lowAbsolute;
@@ -27,14 +24,6 @@ public class Concept extends CHSEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public String getDataType() {
@@ -81,7 +70,7 @@ public class Concept extends CHSEntity {
         Concept concept = new Concept();
         concept.name = name;
         concept.dataType = dataType;
-        concept.uuid = UUID.randomUUID().toString();
+        concept.setUuid(UUID.randomUUID().toString());
         return concept;
     }
 }

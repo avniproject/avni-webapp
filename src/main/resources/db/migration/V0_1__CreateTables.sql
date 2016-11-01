@@ -15,6 +15,7 @@ CREATE TABLE concept (
 
 CREATE TABLE followup_type (
   id         SMALLSERIAL PRIMARY KEY,
+  uuid          CHARACTER VARYING(255) NOT NULL,
   name       CHARACTER VARYING(255) NOT NULL,
   concept_id BIGINT,
   created_by_id     BIGINT                 NOT NULL,
@@ -25,6 +26,7 @@ CREATE TABLE followup_type (
 
 CREATE TABLE gender (
   id         SMALLSERIAL PRIMARY KEY,
+  uuid          CHARACTER VARYING(255) NOT NULL,
   name       CHARACTER VARYING(255) NOT NULL,
   concept_id BIGINT,
   created_by_id     BIGINT                 NOT NULL,
@@ -35,6 +37,7 @@ CREATE TABLE gender (
 
 CREATE TABLE individual (
   id                      SERIAL PRIMARY KEY,
+  uuid          CHARACTER VARYING(255) NOT NULL,
   address                 JSONB,
   catchment_id            BIGINT,
   date_of_birth           DATE                   NOT NULL,
@@ -50,6 +53,7 @@ CREATE TABLE individual (
 
 CREATE TABLE individual_program_summary (
   id                  SERIAL PRIMARY KEY,
+  uuid          CHARACTER VARYING(255) NOT NULL,
   encounters          JSONB,
   enrolment_date_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
   program_id          BIGINT                      NOT NULL,
@@ -62,6 +66,7 @@ CREATE TABLE individual_program_summary (
 
 CREATE TABLE observation_group (
   id             SERIAL PRIMARY KEY,
+  uuid          CHARACTER VARYING(255) NOT NULL,
   encounter_time TIMESTAMP WITHOUT TIME ZONE,
   observations   JSONB,
   individual_id  BIGINT NOT NULL,
@@ -73,6 +78,7 @@ CREATE TABLE observation_group (
 
 CREATE TABLE program (
   id         SMALLSERIAL PRIMARY KEY,
+  uuid          CHARACTER VARYING(255) NOT NULL,
   name       CHARACTER VARYING(255) NOT NULL,
   concept_id BIGINT,
   created_by_id     BIGINT                 NOT NULL,
@@ -83,6 +89,7 @@ CREATE TABLE program (
 
 CREATE TABLE program_outcome (
   id         SERIAL PRIMARY KEY,
+  uuid          CHARACTER VARYING(255) NOT NULL,
   name       CHARACTER VARYING(255) NOT NULL,
   program_id BIGINT                 NOT NULL,
   created_by_id     BIGINT                 NOT NULL,
@@ -93,6 +100,7 @@ CREATE TABLE program_outcome (
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
+  uuid          CHARACTER VARYING(255) NOT NULL,
   created_by_id     BIGINT                 NOT NULL,
   last_modified_by_id     BIGINT                 NOT NULL,
   created_date_time  TIMESTAMP                   NOT NULL,
