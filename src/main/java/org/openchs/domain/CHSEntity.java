@@ -1,13 +1,12 @@
 package org.openchs.domain;
 
 import org.joda.time.DateTime;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
@@ -31,6 +30,10 @@ public abstract class CHSEntity {
 
     @LastModifiedDate
     private DateTime lastModifiedDateTime;
+
+    @Version
+    @Column(name = "version")
+    private int version;
 
     @Column
     @NotNull
@@ -78,5 +81,13 @@ public abstract class CHSEntity {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

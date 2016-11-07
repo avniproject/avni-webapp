@@ -18,5 +18,5 @@ import javax.transaction.Transactional;
 @RepositoryRestResource(collectionResourceRel = "gender", path = "gender")
 public interface GenderRepository extends PagingAndSortingRepository<Gender, Long> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<Gender> findByLastModifiedDateTimeGreaterThanEqual(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<Gender> findByLastModifiedDateTimeGreaterThan(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

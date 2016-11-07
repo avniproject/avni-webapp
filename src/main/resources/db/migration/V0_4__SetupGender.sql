@@ -1,3 +1,3 @@
-INSERT INTO gender (name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id) VALUES ('Female', 'ad7d1d14-54fd-45a2-86b7-ea329b744484', current_timestamp, current_timestamp, 1, 1);
-INSERT INTO gender (name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id) VALUES ('Male', '840de9fb-e565-4d7d-b751-90335ba20490', current_timestamp, current_timestamp, 1, 1);
-INSERT INTO gender (name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id) VALUES ('Other', '188ad77e-fe46-4328-b0e2-98f3a05c554c', current_timestamp, current_timestamp, 1, 1);
+INSERT INTO gender (name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version) VALUES ('Female', 'ad7d1d14-54fd-45a2-86b7-ea329b744484', current_timestamp, current_timestamp, 1, 1, 1);
+INSERT INTO gender (name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version) VALUES ('Male', '840de9fb-e565-4d7d-b751-90335ba20490', current_timestamp, current_timestamp, 1, 1, 1);
+INSERT INTO gender (name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version) VALUES ('Other', '188ad77e-fe46-4328-b0e2-98f3a05c554c', current_timestamp, current_timestamp, 1, 1, 1);
