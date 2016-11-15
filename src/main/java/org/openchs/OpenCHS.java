@@ -21,7 +21,7 @@ public class OpenCHS {
             @Override
             public Resource<Individual> process(Resource<Individual> resource) {
                 Individual individual = resource.getContent();
-                resource.add(new Link(individual.getAddress().getUuid(), "addressUUID"));
+                resource.add(new Link(individual.getAddressLevel().getUuid(), "addressUUID"));
                 resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
                 return resource;
             }

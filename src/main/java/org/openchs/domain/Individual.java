@@ -27,7 +27,7 @@ public class Individual extends CHSEntity {
     @Column
     private long catchment_id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private AddressLevel addressLevel;
 
@@ -71,7 +71,7 @@ public class Individual extends CHSEntity {
         this.catchment_id = catchment_id;
     }
 
-    public AddressLevel getAddress() {
+    public AddressLevel getAddressLevel() {
         return addressLevel;
     }
 
