@@ -5,6 +5,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openchs.common.DataJpaTest;
+import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
 import org.openchs.domain.ObservationGroup;
@@ -34,9 +35,9 @@ public class ObservationGroupRepositoryTest {
         Gender gender = Gender.create("Other");
         testEntityManager.persist(gender);
 
-        PGobject address = new PGobject();
-        address.setType("KeyValuesJson");
-        address.setValue("{'a':1}");
+        AddressLevel address = new AddressLevel();
+        address.setLevel(1);
+        address.setTitle("foo");
         Individual individual = Individual.create("Test patient", new LocalDate(System.currentTimeMillis()), false, gender, address);
         testEntityManager.persist(individual);
 

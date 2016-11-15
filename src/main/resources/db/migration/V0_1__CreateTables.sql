@@ -38,10 +38,23 @@ CREATE TABLE gender (
   last_modified_date_time  TIMESTAMP                   NOT NULL
 );
 
+CREATE TABLE address_level (
+  id SERIAL PRIMARY KEY,
+  title       CHARACTER VARYING(255) NOT NULL,
+  uuid          CHARACTER VARYING(255) NOT NULL,
+  level       SMALLINT NOT NULL,
+  version       INTEGER NOT NULL,
+  parent_id INTEGER,
+  created_by_id     BIGINT                 NOT NULL,
+  last_modified_by_id     BIGINT                 NOT NULL,
+  created_date_time  TIMESTAMP                   NOT NULL,
+  last_modified_date_time  TIMESTAMP                   NOT NULL
+);
+
 CREATE TABLE individual (
   id                      SERIAL PRIMARY KEY,
   uuid          CHARACTER VARYING(255) NOT NULL,
-  address                 JSONB,
+  address_id                 BIGINT,
   catchment_id            BIGINT,
   version       INTEGER NOT NULL,
   date_of_birth           DATE                   NOT NULL,
@@ -130,6 +143,10 @@ ALTER TABLE ONLY followup_type
   ADD CONSTRAINT followup_type_concept FOREIGN KEY (concept_id) REFERENCES concept (id);
 ALTER TABLE ONLY individual
   ADD CONSTRAINT individual_gender FOREIGN KEY (gender_id) REFERENCES gender (id);
+ALTER TABLE ONLY address_level
+  ADD CONSTRAINT address_level_parent FOREIGN KEY (parent_id) REFERENCES address_level (id);
+ALTER TABLE ONLY individual
+  ADD CONSTRAINT individual_address FOREIGN KEY (address_id) REFERENCES address_level (id);
 ALTER TABLE ONLY program
   ADD CONSTRAINT program_concept FOREIGN KEY (concept_id) REFERENCES concept (id);
 

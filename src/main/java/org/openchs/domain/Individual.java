@@ -27,13 +27,9 @@ public class Individual extends CHSEntity {
     @Column
     private long catchment_id;
 
-    @Column
-    @Type(type = "KeyValuesJson")
-    private Object profile;
-
-    @Column
-    @Type(type = "KeyValuesJson")
-    private Object address;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "address_id")
+    private AddressLevel addressLevel;
 
     public String getName() {
         return name;
@@ -75,29 +71,21 @@ public class Individual extends CHSEntity {
         this.catchment_id = catchment_id;
     }
 
-    public Object getProfile() {
-        return profile;
+    public AddressLevel getAddress() {
+        return addressLevel;
     }
 
-    public void setProfile(Object profile) {
-        this.profile = profile;
+    public void setAddressLevel(AddressLevel addressLevel) {
+        this.addressLevel = addressLevel;
     }
 
-    public Object getAddress() {
-        return address;
-    }
-
-    public void setAddress(Map<String, Object> address) {
-        this.address = address;
-    }
-
-    public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthEstimated, Gender gender, Object address) {
+    public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthEstimated, Gender gender, AddressLevel address) {
         Individual individual = new Individual();
         individual.name = name;
         individual.dateOfBirth = dateOfBirth;
         individual.dateOfBirthEstimated = dateOfBirthEstimated;
         individual.gender = gender;
-        individual.address = address;
+        individual.addressLevel = address;
         return individual;
     }
 }
