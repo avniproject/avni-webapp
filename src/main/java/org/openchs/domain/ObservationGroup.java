@@ -41,4 +41,16 @@ public class ObservationGroup extends CHSEntity {
     public Individual getIndividual() {
         return individual;
     }
+
+    public void setObservations(Object observations) {
+        this.observations = observations;
+    }
+
+    public DateTime getEncounterTime() {
+        return encounterTime;
+    }
+
+    public void setEncounterTime(DateTime encounterTime) {
+        this.encounterTime = encounterTime;
+    }
 }

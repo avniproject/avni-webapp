@@ -90,4 +90,20 @@ public abstract class CHSEntity {
     public void setVersion(int version) {
         this.version = version;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CHSEntity chsEntity = (CHSEntity) o;
+
+        return uuid != null ? uuid.equals(chsEntity.uuid) : chsEntity.uuid == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid != null ? uuid.hashCode() : 0;
+    }
 }

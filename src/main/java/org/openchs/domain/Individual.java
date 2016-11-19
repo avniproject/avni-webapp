@@ -1,11 +1,10 @@
 package org.openchs.domain;
 
-import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Table(name = "individual")
@@ -30,6 +29,9 @@ public class Individual extends CHSEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private AddressLevel addressLevel;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProgramEnrolment> programEnrolments;
 
     public String getName() {
         return name;

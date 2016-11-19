@@ -1,6 +1,34 @@
+delete from program_encounter;
+delete from program_enrolment;
+delete from individual;
 delete from address_level;
+delete from program;
+delete from followup_type;
+delete from concept;
+
+ALTER SEQUENCE concept_id_seq RESTART WITH 1;
+INSERT INTO concept (name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Temperature', 'numeric', '95c4b174-6ce6-4d9a-b223-1f9000b60006', 1, 1, 1, current_timestamp, current_timestamp);
+
+ALTER SEQUENCE address_level_id_seq RESTART WITH 1;
 INSERT INTO address_level (title, level, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time) VALUES ('Nijhma', 1, 'ae35fe6d-910e-47bd-a0c7-0c10182a4085', 1, 1, 1, current_timestamp, current_timestamp);
 INSERT INTO address_level (title, level, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time) VALUES ('Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1, 1, 1, current_timestamp, current_timestamp);
 
-delete from individual;
+ALTER SEQUENCE followup_type_id_seq RESTART WITH 1;
+INSERT INTO followup_type (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Sample Followup', '577f1454-ddfd-4d74-8f86-81c5207e04cc', 1, 1, 1, current_timestamp, current_timestamp);
+
+ALTER SEQUENCE individual_id_seq RESTART WITH 1;
 INSERT INTO individual (uuid, address_id, catchment_id, version, date_of_birth, date_of_birth_estimated, name, gender_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time) VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, 1, current_timestamp, FALSE, 'Prabhu', 2, 1, 1, current_timestamp, current_timestamp);
+
+ALTER SEQUENCE program_id_seq RESTART WITH 1;
+INSERT INTO program (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Sample Program', 'db62a322-0ec2-4bb0-ac24-296dc7216c9a', 1, 1, 1, current_timestamp, current_timestamp);
+
+ALTER SEQUENCE program_enrolment_id_seq RESTART WITH 1;
+INSERT INTO program_enrolment (individual_id, program_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1, 1, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1, 1, 1, current_timestamp, current_timestamp);
+
+ALTER SEQUENCE program_encounter_id_seq RESTART WITH 1;
+INSERT INTO program_encounter (program_enrolment_id, followup_type_id, observations, actual_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1, 1, '{"concept": 1, "value": 98.9}'::JSONB, current_timestamp, 'f5c3d56c-3d69-41bd-9e6a-52963adb6e76', 1, 1, 1, current_timestamp, current_timestamp);

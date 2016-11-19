@@ -1,14 +1,33 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
-public class ProgramEncounter {
+@Entity
+@Table(name = "program_encounter")
+public class ProgramEncounter extends CHSEntity {
+    @ManyToOne
+    @NotNull
+    @JoinColumn(name = "followup_type_id")
     private FollowupType followupType;
+
+    @Column
     private DateTime scheduledDateTime;
+
+    @Column
     private DateTime actualDateTime;
-    private Map<String, Object> observations;
+
+    @Column
+    @Type(type = "KeyValuesJson")
+    private Object observations;
+
+    @ManyToOne
+    @JoinColumn(name = "program_enrolment_id")
+    private ProgramEnrolment programEnrolment;
 
     public FollowupType getFollowupType() {
         return followupType;
@@ -34,11 +53,19 @@ public class ProgramEncounter {
         this.actualDateTime = actualDateTime;
     }
 
-    public Map<String, Object> getObservations() {
+    public Object getObservations() {
         return observations;
     }
 
-    public void setObservations(Map<String, Object> observations) {
+    public ProgramEnrolment getProgramEnrolment() {
+        return programEnrolment;
+    }
+
+    public void setProgramEnrolment(ProgramEnrolment programEnrolment) {
+        this.programEnrolment = programEnrolment;
+    }
+
+    public void setObservations(Object observations) {
         this.observations = observations;
     }
 }
