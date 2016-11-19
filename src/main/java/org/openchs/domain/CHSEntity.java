@@ -98,12 +98,14 @@ public abstract class CHSEntity {
 
         CHSEntity chsEntity = (CHSEntity) o;
 
+        if (id != null ? !id.equals(chsEntity.id) : chsEntity.id != null) return false;
         return uuid != null ? uuid.equals(chsEntity.uuid) : chsEntity.uuid == null;
-
     }
 
     @Override
     public int hashCode() {
-        return uuid != null ? uuid.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
+        return result;
     }
 }

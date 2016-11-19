@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "program")
 public class Program extends CHSEntity {
     @NotNull
+    @Column
     private String name;
 
     @ManyToOne(fetch=FetchType.LAZY)

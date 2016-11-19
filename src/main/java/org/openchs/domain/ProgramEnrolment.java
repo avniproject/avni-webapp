@@ -1,15 +1,18 @@
 package org.openchs.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
 @Table(name = "program_enrolment")
 public class ProgramEnrolment extends CHSEntity {
+    @NotNull
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="program_id")
     private Program program;
 
+    @NotNull
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="individual_id")
     private Individual individual;

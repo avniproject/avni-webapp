@@ -5,12 +5,13 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Map;
 
 @Entity
 @Table(name = "program_encounter")
 public class ProgramEncounter extends CHSEntity {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "followup_type_id")
     private FollowupType followupType;
@@ -23,9 +24,10 @@ public class ProgramEncounter extends CHSEntity {
 
     @Column
     @Type(type = "KeyValuesJson")
-    private Object observations;
+    private ObservationCollection observations;
 
-    @ManyToOne
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
 
@@ -53,10 +55,6 @@ public class ProgramEncounter extends CHSEntity {
         this.actualDateTime = actualDateTime;
     }
 
-    public Object getObservations() {
-        return observations;
-    }
-
     public ProgramEnrolment getProgramEnrolment() {
         return programEnrolment;
     }
@@ -65,7 +63,11 @@ public class ProgramEncounter extends CHSEntity {
         this.programEnrolment = programEnrolment;
     }
 
-    public void setObservations(Object observations) {
+    public ObservationCollection getObservations() {
+        return observations;
+    }
+
+    public void setObservations(ObservationCollection observations) {
         this.observations = observations;
     }
 }

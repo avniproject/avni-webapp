@@ -23,8 +23,8 @@ public class Individual extends CHSEntity {
     @JoinColumn(name = "gender_id")
     private Gender gender;
 
-    @Column
-    private long catchment_id;
+    @Column(name = "catchment_id")
+    private long catchmentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
@@ -65,12 +65,20 @@ public class Individual extends CHSEntity {
         this.gender = gender;
     }
 
-    public long getCatchment_id() {
-        return catchment_id;
+    public long getCatchmentId() {
+        return catchmentId;
     }
 
-    public void setCatchment_id(long catchment_id) {
-        this.catchment_id = catchment_id;
+    public void setCatchmentId(long catchmentId) {
+        this.catchmentId = catchmentId;
+    }
+
+    public Set<ProgramEnrolment> getProgramEnrolments() {
+        return programEnrolments;
+    }
+
+    public void setProgramEnrolments(Set<ProgramEnrolment> programEnrolments) {
+        this.programEnrolments = programEnrolments;
     }
 
     public AddressLevel getAddressLevel() {

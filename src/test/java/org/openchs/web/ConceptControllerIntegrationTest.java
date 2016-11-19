@@ -5,9 +5,11 @@ import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.domain.Concept;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Sql({"/test-data.sql"})
 public class ConceptControllerIntegrationTest extends AbstractControllerIntegrationTest {
     @Test
     public void create() {

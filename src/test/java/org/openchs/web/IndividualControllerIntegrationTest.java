@@ -9,6 +9,5 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
     public void testGetAll() throws Exception {
         ResponseEntity<String> response = template.getForEntity(base.toString() + "/individual",
                 String.class);
-        System.out.println(response);
     }
 }
