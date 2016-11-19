@@ -2,6 +2,7 @@ package org.openchs.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.util.UUID;
 
 @Entity
@@ -13,10 +14,10 @@ public class Concept extends CHSEntity {
     @NotNull
     private String dataType;
 
-    private double lowAbsolute;
-    private double highAbsolute;
-    private double lowNormal;
-    private double highNormal;
+    private Double lowAbsolute;
+    private Double highAbsolute;
+    private Double lowNormal;
+    private Double highNormal;
 
     public String getName() {
         return name;
@@ -34,35 +35,35 @@ public class Concept extends CHSEntity {
         this.dataType = dataType;
     }
 
-    public double getLowAbsolute() {
+    public Double getLowAbsolute() {
         return lowAbsolute;
     }
 
-    public void setLowAbsolute(double lowAbsolute) {
+    public void setLowAbsolute(Double lowAbsolute) {
         this.lowAbsolute = lowAbsolute;
     }
 
-    public double getHighAbsolute() {
+    public Double getHighAbsolute() {
         return highAbsolute;
     }
 
-    public void setHighAbsolute(double highAbsolute) {
+    public void setHighAbsolute(Double highAbsolute) {
         this.highAbsolute = highAbsolute;
     }
 
-    public double getLowNormal() {
+    public Double getLowNormal() {
         return lowNormal;
     }
 
-    public void setLowNormal(double lowNormal) {
+    public void setLowNormal(Double lowNormal) {
         this.lowNormal = lowNormal;
     }
 
-    public double getHighNormal() {
+    public Double getHighNormal() {
         return highNormal;
     }
 
-    public void setHighNormal(double highNormal) {
+    public void setHighNormal(Double highNormal) {
         this.highNormal = highNormal;
     }
 
