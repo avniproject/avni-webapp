@@ -5,16 +5,8 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import java.io.Serializable;
 
 public class Observation implements Serializable {
-    private int concept;
+    private String conceptUUID;
     private Object value;
-
-    public int getConcept() {
-        return concept;
-    }
-
-    public void setConcept(int concept) {
-        this.concept = concept;
-    }
 
     @JsonRawValue
     public Object getValue() {
@@ -25,9 +17,17 @@ public class Observation implements Serializable {
         this.value = value;
     }
 
-    public static Observation create(int concept, Object value) {
+    public String getConceptUUID() {
+        return conceptUUID;
+    }
+
+    public void setConceptUUID(String conceptUUID) {
+        this.conceptUUID = conceptUUID;
+    }
+
+    public static Observation create(String conceptUUID, Object value) {
         Observation observation = new Observation();
-        observation.setConcept(concept);
+        observation.setConceptUUID(conceptUUID);
         observation.setValue(value);
         return observation;
     }

@@ -31,7 +31,7 @@ public class ProgramEncounterRepositoryTest {
         ProgramEncounter programEncounter = programEncounterRepository.findOne(1L);
         ObservationCollection observationCollection = programEncounter.getObservations();
         Assert.assertEquals(1, observationCollection.size());
-        Assert.assertEquals(1, observationCollection.get(0).getConcept());
+        Assert.assertEquals("95c4b174-6ce6-4d9a-b223-1f9000b60006", observationCollection.get(0).getConceptUUID());
         ProgramEnrolment programEnrolment = programEncounter.getProgramEnrolment();
         Assert.assertNotNull(programEnrolment);
     }

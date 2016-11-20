@@ -24,7 +24,7 @@ public class JsonbUserTypeTest {
     public void serialiseObservationCollection() throws JsonProcessingException {
         ProgramEncounter programEncounter = new ProgramEncounter();
         ObservationCollection observations = new ObservationCollection();
-        observations.add(Observation.create(1, 10));
+        observations.add(Observation.create("a8d3da51-33f8-4b0d-a867-678471603151", 10));
         programEncounter.setObservations(observations);
         String string = AbstractJsonbUserType.mapper.writeValueAsString(programEncounter);
         Assert.assertEquals(true, string.contains("\"observations\":[{"));

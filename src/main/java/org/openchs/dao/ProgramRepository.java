@@ -1,7 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
-import org.openchs.domain.FollowupType;
+import org.openchs.domain.Program;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -15,8 +15,8 @@ import javax.transaction.Transactional;
 
 @Transactional
 @Repository
-@RepositoryRestResource(collectionResourceRel = "followupType", path = "followupType")
-public interface FollowupTypeRepository extends PagingAndSortingRepository<FollowupType, Long> {
+@RepositoryRestResource(collectionResourceRel = "program", path = "program")
+public interface ProgramRepository extends PagingAndSortingRepository<Program, Long> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<FollowupType> findByLastModifiedDateTimeGreaterThan(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<Program> findByLastModifiedDateTimeGreaterThan(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

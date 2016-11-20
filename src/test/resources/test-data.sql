@@ -31,4 +31,4 @@ VALUES (1, 1, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1, 1, 1, current_timestamp
 
 ALTER SEQUENCE program_encounter_id_seq RESTART WITH 1;
 INSERT INTO program_encounter (program_enrolment_id, followup_type_id, observations, actual_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (1, 1, '[{"concept": 1, "value": 98.9}]'::JSONB, current_timestamp, 'f5c3d56c-3d69-41bd-9e6a-52963adb6e76', 1, 1, 1, current_timestamp, current_timestamp);
+VALUES (1, 1, '[{"conceptUUID": "95c4b174-6ce6-4d9a-b223-1f9000b60006", "value": 98.9}]'::JSONB, current_timestamp, 'f5c3d56c-3d69-41bd-9e6a-52963adb6e76', 1, 1, 1, current_timestamp, current_timestamp);

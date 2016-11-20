@@ -1,13 +1,14 @@
 package org.openchs;
 
 import org.openchs.domain.Individual;
+import org.openchs.domain.ProgramEncounter;
+import org.openchs.domain.ProgramEnrolment;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
-
 
 @SpringBootApplication
 public class OpenCHS {
@@ -21,8 +22,37 @@ public class OpenCHS {
             @Override
             public Resource<Individual> process(Resource<Individual> resource) {
                 Individual individual = resource.getContent();
+                resource.removeLinks();
                 resource.add(new Link(individual.getAddressLevel().getUuid(), "addressUUID"));
                 resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<ProgramEncounter>> programEncounterProcessor() {
+        return new ResourceProcessor<Resource<ProgramEncounter>>() {
+            @Override
+            public Resource<ProgramEncounter> process(Resource<ProgramEncounter> resource) {
+                ProgramEncounter programEncounter = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(programEncounter.getFollowupType().getUuid(), "followupTypeUUID"));
+                resource.add(new Link(programEncounter.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<ProgramEnrolment>> programEnrolmentProcessor() {
+        return new ResourceProcessor<Resource<ProgramEnrolment>>() {
+            @Override
+            public Resource<ProgramEnrolment> process(Resource<ProgramEnrolment> resource) {
+                ProgramEnrolment programEnrolment = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(programEnrolment.getProgram().getUuid(), "programUUID"));
+                resource.add(new Link(programEnrolment.getIndividual().getUuid(), "individualUUID"));
                 return resource;
             }
         };
