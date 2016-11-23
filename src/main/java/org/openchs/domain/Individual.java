@@ -33,6 +33,9 @@ public class Individual extends CHSEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProgramEnrolment> programEnrolments;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Encounter> encounters;
+
     public String getName() {
         return name;
     }
@@ -87,6 +90,14 @@ public class Individual extends CHSEntity {
 
     public void setAddressLevel(AddressLevel addressLevel) {
         this.addressLevel = addressLevel;
+    }
+
+    public Set<Encounter> getEncounters() {
+        return encounters;
+    }
+
+    public void setEncounters(Set<Encounter> encounters) {
+        this.encounters = encounters;
     }
 
     public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthEstimated, Gender gender, AddressLevel address) {

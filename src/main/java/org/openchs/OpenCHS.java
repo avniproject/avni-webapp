@@ -1,5 +1,6 @@
 package org.openchs;
 
+import org.openchs.domain.Encounter;
 import org.openchs.domain.Individual;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.domain.ProgramEnrolment;
@@ -39,6 +40,20 @@ public class OpenCHS {
                 resource.removeLinks();
                 resource.add(new Link(programEncounter.getFollowupType().getUuid(), "followupTypeUUID"));
                 resource.add(new Link(programEncounter.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<Encounter>> encounterProcessor() {
+        return new ResourceProcessor<Resource<Encounter>>() {
+            @Override
+            public Resource<Encounter> process(Resource<Encounter> resource) {
+                Encounter encounter = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(encounter.getEncounterType().getUuid(), "encounterTypeUUID"));
+                resource.add(new Link(encounter.getIndividual().getUuid(), "individualUUID"));
                 return resource;
             }
         };

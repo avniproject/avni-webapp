@@ -3,10 +3,9 @@ package org.openchs.domain;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-//MUSTDO - Rename followuptype to programencountertype
 @Entity
-@Table(name = "followup_type")
-public class FollowupType extends CHSEntity {
+@Table(name = "encounter_type")
+public class EncounterType extends CHSEntity {
     @NotNull
     @Column
     private String name;
