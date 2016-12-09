@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
 
 import javax.persistence.*;
@@ -35,6 +36,10 @@ public class Individual extends CHSEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Encounter> encounters;
+
+    @Column
+    @Type(type = "KeyValuesJson")
+    private ObservationCollection customProfile;
 
     public String getName() {
         return name;
@@ -98,6 +103,14 @@ public class Individual extends CHSEntity {
 
     public void setEncounters(Set<Encounter> encounters) {
         this.encounters = encounters;
+    }
+
+    public ObservationCollection getCustomProfile() {
+        return customProfile;
+    }
+
+    public void setCustomProfile(ObservationCollection customProfile) {
+        this.customProfile = customProfile;
     }
 
     public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthEstimated, Gender gender, AddressLevel address) {

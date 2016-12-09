@@ -2,6 +2,9 @@ CREATE TABLE program_enrolment (
   id SERIAL PRIMARY KEY,
   program_id SMALLINT NOT NULL,
   individual_id BIGINT NOT NULL,
+  program_outcome_id SMALLINT,
+  enrolment_profile JSONB,
+  enrolment_date_time  TIMESTAMP  NOT NULL,
   uuid  CHARACTER VARYING(255) NOT NULL,
   version INTEGER NOT NULL,
   created_by_id  BIGINT NOT NULL,
@@ -18,6 +21,8 @@ ALTER TABLE ONLY program_enrolment
   ADD CONSTRAINT program_enrolment_program FOREIGN KEY (program_id) REFERENCES program (id);
 ALTER TABLE ONLY program_enrolment
   ADD CONSTRAINT program_enrolment_individual FOREIGN KEY (individual_id) REFERENCES individual (id);
+ALTER TABLE ONLY program_enrolment
+  ADD CONSTRAINT program_enrolment_program_outcome FOREIGN KEY (program_outcome_id) REFERENCES program_outcome (id);
 
 
 CREATE TABLE program_encounter (

@@ -1,5 +1,8 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
@@ -19,6 +22,18 @@ public class ProgramEnrolment extends CHSEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProgramEncounter> programEncounters;
+
+    @Column
+    @NotNull
+    private DateTime enrolmentDateTime;
+
+    @Column
+    @Type(type = "KeyValuesJson")
+    private ObservationCollection enrolmentProfile;
+
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name = "program_outcome_id")
+    private ProgramOutcome programOutcome;
 
     public Program getProgram() {
         return program;
@@ -42,5 +57,29 @@ public class ProgramEnrolment extends CHSEntity {
 
     public void setProgramEncounters(Set<ProgramEncounter> programEncounters) {
         this.programEncounters = programEncounters;
+    }
+
+    public DateTime getEnrolmentDateTime() {
+        return enrolmentDateTime;
+    }
+
+    public void setEnrolmentDateTime(DateTime enrolmentDateTime) {
+        this.enrolmentDateTime = enrolmentDateTime;
+    }
+
+    public ObservationCollection getEnrolmentProfile() {
+        return enrolmentProfile;
+    }
+
+    public void setEnrolmentProfile(ObservationCollection enrolmentProfile) {
+        this.enrolmentProfile = enrolmentProfile;
+    }
+
+    public ProgramOutcome getProgramOutcome() {
+        return programOutcome;
+    }
+
+    public void setProgramOutcome(ProgramOutcome programOutcome) {
+        this.programOutcome = programOutcome;
     }
 }

@@ -9,8 +9,4 @@ public class ProgramOutcome extends CHSEntity {
     @Column
     @NotNull
     private String name;
-
-    @ManyToOne
-    @NotNull
-    private Program program;
 }
