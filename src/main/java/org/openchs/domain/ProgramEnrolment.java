@@ -35,6 +35,14 @@ public class ProgramEnrolment extends CHSEntity {
     @JoinColumn(name = "program_outcome_id")
     private ProgramOutcome programOutcome;
 
+    @Column
+    @NotNull
+    private DateTime programLeaveDateTime;
+
+    @Column
+    @Type(type = "KeyValuesJson")
+    private ObservationCollection programLeaveObservations;
+
     public Program getProgram() {
         return program;
     }
@@ -81,5 +89,21 @@ public class ProgramEnrolment extends CHSEntity {
 
     public void setProgramOutcome(ProgramOutcome programOutcome) {
         this.programOutcome = programOutcome;
+    }
+
+    public DateTime getProgramLeaveDateTime() {
+        return programLeaveDateTime;
+    }
+
+    public void setProgramLeaveDateTime(DateTime programLeaveDateTime) {
+        this.programLeaveDateTime = programLeaveDateTime;
+    }
+
+    public ObservationCollection getProgramLeaveObservations() {
+        return programLeaveObservations;
+    }
+
+    public void setProgramLeaveObservations(ObservationCollection programLeaveObservations) {
+        this.programLeaveObservations = programLeaveObservations;
     }
 }
