@@ -23,7 +23,7 @@ public class ProgramEncounter extends CHSEntity {
     private DateTime actualDateTime;
 
     @Column
-    @Type(type = "KeyValuesJson")
+    @Type(type = "observations")
     private ObservationCollection observations;
 
     @NotNull

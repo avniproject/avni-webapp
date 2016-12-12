@@ -28,7 +28,7 @@ public class ProgramEnrolment extends CHSEntity {
     private DateTime enrolmentDateTime;
 
     @Column
-    @Type(type = "KeyValuesJson")
+    @Type(type = "observations")
     private ObservationCollection enrolmentProfile;
 
     @ManyToOne(fetch= FetchType.LAZY)
@@ -37,11 +37,11 @@ public class ProgramEnrolment extends CHSEntity {
 
     @Column
     @NotNull
-    private DateTime programLeaveDateTime;
+    private DateTime programExitDateTime;
 
     @Column
-    @Type(type = "KeyValuesJson")
-    private ObservationCollection programLeaveObservations;
+    @Type(type = "observations")
+    private ObservationCollection programExitObservations;
 
     public Program getProgram() {
         return program;
@@ -91,19 +91,19 @@ public class ProgramEnrolment extends CHSEntity {
         this.programOutcome = programOutcome;
     }
 
-    public DateTime getProgramLeaveDateTime() {
-        return programLeaveDateTime;
+    public DateTime getProgramExitDateTime() {
+        return programExitDateTime;
     }
 
-    public void setProgramLeaveDateTime(DateTime programLeaveDateTime) {
-        this.programLeaveDateTime = programLeaveDateTime;
+    public void setProgramExitDateTime(DateTime programExitDateTime) {
+        this.programExitDateTime = programExitDateTime;
     }
 
-    public ObservationCollection getProgramLeaveObservations() {
-        return programLeaveObservations;
+    public ObservationCollection getProgramExitObservations() {
+        return programExitObservations;
     }
 
-    public void setProgramLeaveObservations(ObservationCollection programLeaveObservations) {
-        this.programLeaveObservations = programLeaveObservations;
+    public void setProgramExitObservations(ObservationCollection programExitObservations) {
+        this.programExitObservations = programExitObservations;
     }
 }

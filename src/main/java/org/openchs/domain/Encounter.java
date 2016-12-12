@@ -18,7 +18,7 @@ public class Encounter extends CHSEntity {
     private DateTime encounterDateTime;
 
     @Column
-    @Type(type = "KeyValuesJson")
+    @Type(type = "observations")
     private ObservationCollection observations;
 
     @NotNull

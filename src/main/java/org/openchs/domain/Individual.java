@@ -38,7 +38,7 @@ public class Individual extends CHSEntity {
     private Set<Encounter> encounters;
 
     @Column
-    @Type(type = "KeyValuesJson")
+    @Type(type = "observations")
     private ObservationCollection customProfile;
 
     public String getName() {
