@@ -36,4 +36,12 @@ public class FormElementGroup extends CHSEntity {
     public void setFormElements(Set<FormElement> formElements) {
         this.formElements = formElements;
     }
+
+    public Form getForm() {
+        return form;
+    }
+
+    public void setForm(Form form) {
+        this.form = form;
+    }
 }

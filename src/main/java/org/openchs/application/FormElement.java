@@ -94,4 +94,12 @@ public class FormElement extends CHSEntity {
     public void setGenerated(boolean generated) {
         isGenerated = generated;
     }
+
+    public FormElementGroup getFormElementGroup() {
+        return formElementGroup;
+    }
+
+    public void setFormElementGroup(FormElementGroup formElementGroup) {
+        this.formElementGroup = formElementGroup;
+    }
 }

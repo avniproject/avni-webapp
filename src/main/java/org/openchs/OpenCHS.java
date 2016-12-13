@@ -1,5 +1,8 @@
 package org.openchs;
 
+import org.openchs.application.Form;
+import org.openchs.application.FormElement;
+import org.openchs.application.FormElementGroup;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.Individual;
 import org.openchs.domain.ProgramEncounter;
@@ -68,6 +71,34 @@ public class OpenCHS {
                 resource.removeLinks();
                 resource.add(new Link(programEnrolment.getProgram().getUuid(), "programUUID"));
                 resource.add(new Link(programEnrolment.getIndividual().getUuid(), "individualUUID"));
+                if (programEnrolment.getProgramOutcome() != null)
+                    resource.add(new Link(programEnrolment.getProgramOutcome().getUuid(), "programOutcomeUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<FormElement>> formElementProcessor() {
+        return new ResourceProcessor<Resource<FormElement>>() {
+            @Override
+            public Resource<FormElement> process(Resource<FormElement> resource) {
+                FormElement formElement = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(formElement.getFormElementGroup().getUuid(), "formElementGroupUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<FormElementGroup>> FormElementGroupProcessor() {
+        return new ResourceProcessor<Resource<FormElementGroup>>() {
+            @Override
+            public Resource<FormElementGroup> process(Resource<FormElementGroup> resource) {
+                FormElementGroup formElementGroup = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(formElementGroup.getForm().getUuid(), "formUUID"));
                 return resource;
             }
         };
