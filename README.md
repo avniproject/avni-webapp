@@ -18,3 +18,7 @@ OpenCHS Server is based on Maven and Spring Boot
 `mvn clean install`
 
 `mvn spring-boot:run`
+
+## You may need the following as well
+Download and install a Postgres client so that you cannot to the server
+For connecting to Postgres you can use the - `psql -h 0.0.0.0 -U openchs`
