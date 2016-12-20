@@ -49,7 +49,7 @@ INSERT INTO encounter (individual_id, encounter_type_id, observations, encounter
 VALUES (1, 1, '[{"conceptUUID": "95c4b174-6ce6-4d9a-b223-1f9000b60006", "value": 98.9}]'::JSONB, current_timestamp, '63a7d615-b965-4830-9dd2-e8f533d9a4e9', 1, 1, 1, current_timestamp, current_timestamp);
 
 INSERT INTO program (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Nutrition', 'db62a322-0ec2-4bb0-ac24-296dc7216c9a', 1, 1, 1, current_timestamp, current_timestamp);
+VALUES ('Nutrition', 'ac8cfbcb-39d2-4fcb-b02f-4ef80335f553', 1, 1, 1, current_timestamp, current_timestamp);
 
 insert into individual (address_id, catchment_id, date_of_birth, date_of_birth_estimated, name, gender_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1,1,'1950-09-17',FALSE, 'Ramesh Kumar', 2, '8d3d49af-f776-4cca-8413-ee571d9042fd', 1, 1, 1, current_timestamp, current_timestamp);
