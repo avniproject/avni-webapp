@@ -17,7 +17,7 @@ public class Individual extends CHSEntity {
     private LocalDate dateOfBirth;
 
     @NotNull
-    private boolean dateOfBirthEstimated;
+    private boolean dateOfBirthVerified;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,12 +57,12 @@ public class Individual extends CHSEntity {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public boolean isDateOfBirthEstimated() {
-        return dateOfBirthEstimated;
+    public boolean isDateOfBirthVerified() {
+        return dateOfBirthVerified;
     }
 
-    public void setDateOfBirthEstimated(boolean dateOfBirthEstimated) {
-        this.dateOfBirthEstimated = dateOfBirthEstimated;
+    public void setDateOfBirthVerified(boolean dateOfBirthVerified) {
+        this.dateOfBirthVerified = dateOfBirthVerified;
     }
 
     public Gender getGender() {
@@ -113,11 +113,11 @@ public class Individual extends CHSEntity {
         this.customProfile = customProfile;
     }
 
-    public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthEstimated, Gender gender, AddressLevel address) {
+    public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address) {
         Individual individual = new Individual();
         individual.name = name;
         individual.dateOfBirth = dateOfBirth;
-        individual.dateOfBirthEstimated = dateOfBirthEstimated;
+        individual.dateOfBirthVerified = dateOfBirthVerified;
         individual.gender = gender;
         individual.addressLevel = address;
         return individual;
