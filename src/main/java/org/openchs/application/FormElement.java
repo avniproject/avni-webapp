@@ -8,7 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "formElement")
+@Table(name = "form_element")
 public class FormElement extends CHSEntity {
     @NotNull
     private String name;
@@ -29,7 +29,7 @@ public class FormElement extends CHSEntity {
     private Concept concept;
 
     @NotNull
-    private boolean usedInSummary;
+    private boolean isUsedInSummary;
 
     @NotNull
     private boolean isGenerated;
@@ -80,11 +80,11 @@ public class FormElement extends CHSEntity {
     }
 
     public boolean isUsedInSummary() {
-        return usedInSummary;
+        return isUsedInSummary;
     }
 
     public void setUsedInSummary(boolean usedInSummary) {
-        this.usedInSummary = usedInSummary;
+        this.isUsedInSummary = usedInSummary;
     }
 
     public boolean isGenerated() {

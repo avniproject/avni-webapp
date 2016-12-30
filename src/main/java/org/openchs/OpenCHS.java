@@ -86,6 +86,7 @@ public class OpenCHS {
                 FormElement formElement = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(formElement.getFormElementGroup().getUuid(), "formElementGroupUUID"));
+                resource.add(new Link(formElement.getConcept().getUuid(), "conceptUUID"));
                 return resource;
             }
         };

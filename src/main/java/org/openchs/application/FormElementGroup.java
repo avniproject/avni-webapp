@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
-@Table(name = "formElementGroup")
+@Table(name = "form_element_group")
 public class FormElementGroup extends CHSEntity {
     @NotNull
     private String name;

@@ -10,6 +10,7 @@ import java.util.Set;
 @Table(name = "form")
 public class Form extends CHSEntity {
     @NotNull
+    @Enumerated(EnumType.STRING)
     private FormType formType;
 
     @NotNull
