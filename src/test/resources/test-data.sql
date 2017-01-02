@@ -1,3 +1,6 @@
+delete from form_element;
+delete from form_element_group;
+delete from form;
 delete from encounter;
 delete from program_encounter;
 delete from program_enrolment;
@@ -8,9 +11,6 @@ delete from encounter_type;
 delete from followup_type;
 delete from program_outcome;
 delete from concept;
-delete from form_element;
-delete from form_element_group;
-delete from form;
 
 ALTER SEQUENCE concept_id_seq RESTART WITH 1;
 INSERT INTO concept (name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
@@ -68,13 +68,11 @@ VALUES (1,1,'1955-01-05',FALSE, 'Ram Kumari', 1, 'c415ef96-8ff9-4cbb-8407-e7618c
 
 ALTER SEQUENCE form_id_seq RESTART WITH 1;
 insert into form (NAME, form_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('encounter_form' , 'encounter_type', '2c32a184-6d27-4c51-841d-551ca94594a5', 1, 1, 1, current_timestamp, current_timestamp);
+VALUES ('encounter_form' , 'Encounter', '2c32a184-6d27-4c51-841d-551ca94594a5', 1, 1, 1, current_timestamp, current_timestamp);
 
 ALTER SEQUENCE form_element_group_id_seq RESTART WITH 1;
 insert into form_element_group (NAME, form_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('default_group',1, '4b317705-4372-4405-a628-6c8bb8da8671', 1, 1, 1, current_timestamp, current_timestamp);
 
-
-insert into form_element (name, display_order, is_mandatory, concept_id, used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+insert into form_element (name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('temp',1,true,1,false,false,1,'2f256e95-3011-4f42-8ebe-1c1af5e6b8d2', 1, 1, 1, current_timestamp, current_timestamp);
-
