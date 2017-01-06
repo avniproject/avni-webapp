@@ -17,15 +17,13 @@ ALTER SEQUENCE concept_id_seq RESTART WITH 1;
 INSERT INTO concept (name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Temperature', 'numeric', '95c4b174-6ce6-4d9a-b223-1f9000b60006', 1, 1, 1, current_timestamp, current_timestamp);
 
+/* muliselect */
 insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Complaint', 'multiselect' ,'9daa0b8a-985a-464d-a5ab-8a4f90e8a26b', 1, 1, 1, current_timestamp, current_timestamp);
-
 insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Fever', 'N/A' ,'d2e35080-ec9b-46f6-bf8c-7087fcf0ecfd', 1, 1, 1, current_timestamp, current_timestamp);
-
 insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Vomiting' ,'N/A', '627c8cbc-a03d-4e3f-9e4d-7059e60f3225', 1, 1, 1, current_timestamp, current_timestamp);
-
 insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Chloroquine Resistant', 'N/A' ,'9d9e3cab-3a45-4f85-bc19-2d2d736bb17a', 1, 1, 1, current_timestamp, current_timestamp);
 insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
@@ -87,6 +85,28 @@ insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, ve
 VALUES (2, 17, 15 ,'eb592ded-2467-4d32-a48d-deb4916cda31', 1, 1, 1, current_timestamp, current_timestamp);
 insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 18, 16 ,'a9ca3096-6f4d-4af2-8b91-9cf87f5d4d13', 1, 1, 1, current_timestamp, current_timestamp);
+
+/* single select */
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Paracheck', 'singleselect' ,'405f25bb-4553-4b7c-b6bc-a44082ef576f', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Negative', 'N/A' ,'782d6227-b815-4fed-aef1-52354e1dcf77', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Positive for PV' ,'N/A', '3bdd6dfe-1113-4930-90df-a20cff9ea0f4', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Positive for PF', 'N/A' ,'6c71b496-7df2-4ee2-afa7-248d622b9760', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Positive for PV and PF','N/A','0d6f3dbd-c758-4b03-aa45-fd40699d6138', 1, 1, 1, current_timestamp, current_timestamp);
+
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (19, 20, 1,'2e91c2ea-ca5f-4674-b98b-9c0f8cb48069', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (19, 21, 2,'0a4d1804-7404-4f29-be18-eaff80c3d503', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (19, 22, 3, '676c358d-0d21-46cf-bb38-c3a5bfb5ead1', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (19, 23, 4,'7dc1c6db-419b-483d-8b47-0d2b89d9919b', 1, 1, 1, current_timestamp, current_timestamp);
+
 
 ALTER SEQUENCE program_outcome_id_seq RESTART WITH 1;
 -- insert
@@ -151,4 +171,9 @@ VALUES ('Complaint',2,true,2,false,false,1,'2f256e95-3011-4f42-8ebe-1c1af5e6b8d2
 
 insert into form_element (name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Temperature',1,true,1,false,false,1,'2b2e9964-d942-4f83-a296-1096db2c2f0b', 1, 1, 1, current_timestamp, current_timestamp);
+
+insert into form_element (name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Paracheck',3,true,19,false,false,1,'b6edbb87-22d8-4265-9231-aad499475d0c', 1, 1, 1, current_timestamp, current_timestamp);
+
+
 
