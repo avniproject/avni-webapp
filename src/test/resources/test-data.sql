@@ -10,6 +10,7 @@ delete from program;
 delete from encounter_type;
 delete from followup_type;
 delete from program_outcome;
+delete from concept_answer;
 delete from concept;
 
 ALTER SEQUENCE concept_id_seq RESTART WITH 1;
@@ -21,14 +22,71 @@ VALUES ('Complaint', 'multiselect' ,'9daa0b8a-985a-464d-a5ab-8a4f90e8a26b', 1, 1
 
 insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Fever', 'N/A' ,'d2e35080-ec9b-46f6-bf8c-7087fcf0ecfd', 1, 1, 1, current_timestamp, current_timestamp);
+
 insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Vomiting' ,'N/A', '627c8cbc-a03d-4e3f-9e4d-7059e60f3225', 1, 1, 1, current_timestamp, current_timestamp);
+
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Chloroquine Resistant', 'N/A' ,'9d9e3cab-3a45-4f85-bc19-2d2d736bb17a', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Cough','N/A','002173d4-2f59-4a6c-b315-049ecdb7cf68', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Bodyache','N/A','6c9cd213-0822-42d5-8ef3-47f0da1738f9', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Cold','N/A','7eae07be-a340-4ced-ac8d-c910cf91a672', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Headache','N/A','5f14ae60-1ae4-4d1e-ae10-d312d47e529a', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Acidity','N/A','637c8ae1-f6a8-45f7-bd8f-10964632c05a', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Giddyness','N/A','f9498304-50a8-4725-8071-04f623ddacf4', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Abdominal Pain','N/A','db848b92-dda9-4510-988e-a06b71acbaf5', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Diarrhoea','N/A','e491b590-2f34-4fb7-8b46-7e533a9903f1', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Pregnancy','N/A','74a4ed09-f9a9-4647-8e48-a00432a65c35', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Wound','N/A','18e30591-41e0-4da0-9e78-ee52c6f6c4fe', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Scabies','N/A','57e2e29f-9691-4f2d-a4db-4df4a17a9255', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Ringworm','N/A','122cb9cb-3fdc-48e7-a68f-682c5e744c22', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Boils','N/A','aee32344-0ea0-4833-9387-2cb21586f1a9', 1, 1, 1, current_timestamp, current_timestamp);
 
 insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 3, 1,'00828291-c2fe-415f-a51e-ba8a02607da0', 1, 1, 1, current_timestamp, current_timestamp);
 insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 4, 2,'85841889-9676-40e7-a587-9da9d05bb89b', 1, 1, 1, current_timestamp, current_timestamp);
-
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 5, 3, '3cd01910-bd15-45ff-aec8-392ec11f2357', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 6, 4,'3ec9b9e6-355b-4db1-bb4e-92db6d14edc5', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 7, 5 ,'6a29ed8e-d5aa-4581-b5da-d650fa1b51ff', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 8, 6 ,'8cab0a2a-d47f-44f7-9727-f7cf52687b8d', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 9, 7 ,'5c2a8604-1abf-4091-9023-b7b18db54a60', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 10, 8 ,'180d05cf-35ea-42ca-a1c0-9345424cf14c', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 11, 9 ,'e94fa8a5-1f12-40b9-9b95-075a83c45901', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 12, 10 ,'2a394f0e-03b0-44cf-9199-29e31da84e3b', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 13, 11 ,'539d046c-3381-4068-a853-1915f5270d78', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 14, 12 ,'2a0e7e1c-620a-4ca0-b46e-21db36a5ff4d', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 15, 13 ,'7c0fd5bd-c8ef-4f09-a5df-dc0bf4aaba67', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 16, 14 ,'81bf9fb9-a19b-415e-a9fe-fbef9d17ada0', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 17, 15 ,'eb592ded-2467-4d32-a48d-deb4916cda31', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 18, 16 ,'a9ca3096-6f4d-4af2-8b91-9cf87f5d4d13', 1, 1, 1, current_timestamp, current_timestamp);
 
 ALTER SEQUENCE program_outcome_id_seq RESTART WITH 1;
 -- insert
