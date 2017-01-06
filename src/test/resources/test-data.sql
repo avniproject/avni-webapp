@@ -16,6 +16,20 @@ ALTER SEQUENCE concept_id_seq RESTART WITH 1;
 INSERT INTO concept (name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Temperature', 'numeric', '95c4b174-6ce6-4d9a-b223-1f9000b60006', 1, 1, 1, current_timestamp, current_timestamp);
 
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Complaint', 'multiselect' ,'9daa0b8a-985a-464d-a5ab-8a4f90e8a26b', 1, 1, 1, current_timestamp, current_timestamp);
+
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Fever', 'N/A' ,'d2e35080-ec9b-46f6-bf8c-7087fcf0ecfd', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Vomiting' ,'N/A', '627c8cbc-a03d-4e3f-9e4d-7059e60f3225', 1, 1, 1, current_timestamp, current_timestamp);
+
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 3, 1,'00828291-c2fe-415f-a51e-ba8a02607da0', 1, 1, 1, current_timestamp, current_timestamp);
+insert into concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (2, 4, 2,'85841889-9676-40e7-a587-9da9d05bb89b', 1, 1, 1, current_timestamp, current_timestamp);
+
+
 ALTER SEQUENCE program_outcome_id_seq RESTART WITH 1;
 -- insert
 
@@ -75,4 +89,8 @@ insert into form_element_group (NAME, form_id, uuid, version, created_by_id, las
 VALUES ('default_group',1, '4b317705-4372-4405-a628-6c8bb8da8671', 1, 1, 1, current_timestamp, current_timestamp);
 
 insert into form_element (name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('temp',1,true,1,false,false,1,'2f256e95-3011-4f42-8ebe-1c1af5e6b8d2', 1, 1, 1, current_timestamp, current_timestamp);
+VALUES ('Complaint',2,true,2,false,false,1,'2f256e95-3011-4f42-8ebe-1c1af5e6b8d2', 1, 1, 1, current_timestamp, current_timestamp);
+
+insert into form_element (name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('Temperature',1,true,1,false,false,1,'2b2e9964-d942-4f83-a296-1096db2c2f0b', 1, 1, 1, current_timestamp, current_timestamp);
+

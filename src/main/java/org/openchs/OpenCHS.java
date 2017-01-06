@@ -3,10 +3,7 @@ package org.openchs;
 import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
-import org.openchs.domain.Encounter;
-import org.openchs.domain.Individual;
-import org.openchs.domain.ProgramEncounter;
-import org.openchs.domain.ProgramEnrolment;
+import org.openchs.domain.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -93,7 +90,7 @@ public class OpenCHS {
     }
 
     @Bean
-    public ResourceProcessor<Resource<FormElementGroup>> FormElementGroupProcessor() {
+    public ResourceProcessor<Resource<FormElementGroup>> formElementGroupProcessor() {
         return new ResourceProcessor<Resource<FormElementGroup>>() {
             @Override
             public Resource<FormElementGroup> process(Resource<FormElementGroup> resource) {
@@ -103,5 +100,20 @@ public class OpenCHS {
                 return resource;
             }
         };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<ConceptAnswer>> conceptAnswerProcessor() {
+        return new ResourceProcessor<Resource<ConceptAnswer>>() {
+            @Override
+            public Resource<ConceptAnswer> process(Resource<ConceptAnswer> resource) {
+                ConceptAnswer conceptAnswer = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(conceptAnswer.getConcept().getUuid(), "conceptUUID"));
+                resource.add(new Link(conceptAnswer.getAnswerConcept().getUuid(), "conceptAnswerUUID"));
+                return resource;
+            }
+        };
+
     }
 }
