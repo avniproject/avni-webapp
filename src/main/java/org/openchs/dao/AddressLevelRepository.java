@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
 @Transactional
 @Repository
 @RepositoryRestResource(collectionResourceRel = "addressLevel", path = "addressLevel")
-public interface AddressLevelRepository extends PagingAndSortingRepository<AddressLevel, Long> {
+public interface AddressLevelRepository extends PagingAndSortingRepository<AddressLevel, Long>, CHSRepository<AddressLevel> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<AddressLevel> findByLastModifiedDateTimeGreaterThan(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

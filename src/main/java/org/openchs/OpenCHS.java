@@ -1,6 +1,5 @@
 package org.openchs;
 
-import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
 import org.openchs.domain.*;

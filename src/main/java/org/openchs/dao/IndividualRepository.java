@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 @Transactional
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual")
-public interface IndividualRepository extends PagingAndSortingRepository<Individual, Long> {
+public interface IndividualRepository extends PagingAndSortingRepository<Individual, Long>, CHSRepository<Individual> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<Individual> findByLastModifiedDateTimeGreaterThan(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }
