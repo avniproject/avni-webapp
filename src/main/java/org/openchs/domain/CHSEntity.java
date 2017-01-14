@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class})
-public abstract class CHSEntity {
+public class CHSEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
@@ -75,6 +75,10 @@ public abstract class CHSEntity {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getUuid() {
         return uuid;
     }
@@ -107,5 +111,10 @@ public abstract class CHSEntity {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (uuid != null ? uuid.hashCode() : 0);
         return result;
+    }
+
+    public boolean isNew() {
+        Long id = getId();
+        return (id == null || id == 0);
     }
 }
