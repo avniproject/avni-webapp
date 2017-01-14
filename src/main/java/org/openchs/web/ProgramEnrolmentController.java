@@ -41,6 +41,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             Individual individual = individualRepository.findByUuid(request.getIndividualUUID());
             programEnrolment.setIndividual(individual);
             individual.addEnrolment(programEnrolment);
+            individualRepository.save(individual);
         } else {
             programEnrolmentRepository.save(programEnrolment);
         }

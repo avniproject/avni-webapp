@@ -36,7 +36,6 @@ public class ProgramEnrolment extends CHSEntity {
     private ProgramOutcome programOutcome;
 
     @Column
-    @NotNull
     private DateTime programExitDateTime;
 
     @Column
