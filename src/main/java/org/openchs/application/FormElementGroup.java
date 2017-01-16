@@ -13,6 +13,9 @@ public class FormElementGroup extends CHSEntity {
     @NotNull
     private String name;
 
+    @NotNull
+    private short displayOrder;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FormElement> formElements;
 
@@ -43,5 +46,13 @@ public class FormElementGroup extends CHSEntity {
 
     public void setForm(Form form) {
         this.form = form;
+    }
+
+    public short getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(short displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }
