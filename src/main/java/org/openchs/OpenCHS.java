@@ -2,6 +2,8 @@ package org.openchs;
 
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
+import org.openchs.application.FormMapping;
+import org.openchs.application.KeyValue;
 import org.openchs.domain.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -113,6 +115,18 @@ public class OpenCHS {
                 return resource;
             }
         };
+    }
 
+    @Bean
+    public ResourceProcessor<Resource<FormMapping>> FormMappingProcessor() {
+        return new ResourceProcessor<Resource<FormMapping>>() {
+            @Override
+            public Resource<FormMapping> process(Resource<FormMapping> resource) {
+                FormMapping formMapping = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(formMapping.getForm().getUuid(), "UUID"));
+                return resource;
+            }
+        };
     }
 }
