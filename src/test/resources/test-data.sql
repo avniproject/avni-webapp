@@ -53,37 +53,37 @@ VALUES ('Ringworm', 'N/A', '122cb9cb-3fdc-48e7-a68f-682c5e744c22', 1, 1, 1, curr
 INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Boils', 'N/A', 'aee32344-0ea0-4833-9387-2cb21586f1a9', 1, 1, 1, current_timestamp, current_timestamp);
 
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 3, 1, '00828291-c2fe-415f-a51e-ba8a02607da0', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 4, 2, '85841889-9676-40e7-a587-9da9d05bb89b', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 5, 3, '3cd01910-bd15-45ff-aec8-392ec11f2357', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 6, 4, '3ec9b9e6-355b-4db1-bb4e-92db6d14edc5', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 7, 5, '6a29ed8e-d5aa-4581-b5da-d650fa1b51ff', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 8, 6, '8cab0a2a-d47f-44f7-9727-f7cf52687b8d', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 9, 7, '5c2a8604-1abf-4091-9023-b7b18db54a60', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 10, 8, '180d05cf-35ea-42ca-a1c0-9345424cf14c', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 11, 9, 'e94fa8a5-1f12-40b9-9b95-075a83c45901', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 12, 10, '2a394f0e-03b0-44cf-9199-29e31da84e3b', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 13, 11, '539d046c-3381-4068-a853-1915f5270d78', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 14, 12, '2a0e7e1c-620a-4ca0-b46e-21db36a5ff4d', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 15, 13, '7c0fd5bd-c8ef-4f09-a5df-dc0bf4aaba67', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 16, 14, '81bf9fb9-a19b-415e-a9fe-fbef9d17ada0', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 17, 15, 'eb592ded-2467-4d32-a48d-deb4916cda31', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 18, 16, 'a9ca3096-6f4d-4af2-8b91-9cf87f5d4d13', 1, 1, 1, current_timestamp, current_timestamp);
 
 /* single select */
@@ -98,13 +98,13 @@ VALUES ('Positive for PF', 'N/A', '6c71b496-7df2-4ee2-afa7-248d622b9760', 1, 1, 
 INSERT INTO concept (NAME, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Positive for PV and PF', 'N/A', '0d6f3dbd-c758-4b03-aa45-fd40699d6138', 1, 1, 1, current_timestamp, current_timestamp);
 
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (19, 20, 1, '2e91c2ea-ca5f-4674-b98b-9c0f8cb48069', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (19, 21, 2, '0a4d1804-7404-4f29-be18-eaff80c3d503', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (19, 22, 3, '676c358d-0d21-46cf-bb38-c3a5bfb5ead1', 1, 1, 1, current_timestamp, current_timestamp);
-INSERT INTO concept_answer (concept_id, answer_concept_id, sort_weight, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (19, 23, 4, '7dc1c6db-419b-483d-8b47-0d2b89d9919b', 1, 1, 1, current_timestamp, current_timestamp);
 
 

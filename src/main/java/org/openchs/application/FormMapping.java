@@ -1,6 +1,5 @@
 package org.openchs.application;
 
-import org.hibernate.annotations.Type;
 import org.openchs.domain.CHSEntity;
 
 import javax.persistence.*;
@@ -14,9 +13,8 @@ public class FormMapping extends CHSEntity {
     @JoinColumn(name = "form_id")
     private Form form;
 
-    @Column(name = "related_entity")
-    @Type(type = "keyValues")
-    private KeyValues keyValues;
+    @Column(name = "entity_id")
+    private Long entityId;
 
     public Form getForm() {
         return form;
@@ -26,11 +24,11 @@ public class FormMapping extends CHSEntity {
         this.form = form;
     }
 
-    public KeyValues getKeyValues() {
-        return keyValues;
+    public Long getEntityId() {
+        return entityId;
     }
 
-    public void setKeyValues(KeyValues keyValues) {
-        this.keyValues = keyValues;
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
     }
 }

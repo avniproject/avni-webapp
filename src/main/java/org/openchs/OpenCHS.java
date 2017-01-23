@@ -124,7 +124,7 @@ public class OpenCHS {
             public Resource<FormMapping> process(Resource<FormMapping> resource) {
                 FormMapping formMapping = resource.getContent();
                 resource.removeLinks();
-                resource.add(new Link(formMapping.getForm().getUuid(), "UUID"));
+                resource.add(new Link(formMapping.getForm().getUuid(), "formUUID"));
                 return resource;
             }
         };

@@ -18,8 +18,8 @@ public class ConceptAnswer extends CHSEntity{
     private Concept answerConcept;
 
     @NotNull
-    @Column(name = "sort_weight")
-    private Double sortWeight;
+    @Column(name = "answer_order")
+    private short order;
 
     public Concept getConcept() {
         return concept;
@@ -37,26 +37,11 @@ public class ConceptAnswer extends CHSEntity{
         this.answerConcept = answerConcept;
     }
 
-    public Double getSortWeight() {
-        return sortWeight;
+    public short getOrder() {
+        return order;
     }
 
-    public void setSortWeight(Double sortWeight) {
-        this.sortWeight = sortWeight;
+    public void setOrder(short order) {
+        this.order = order;
     }
-
-    public int compareTo(ConceptAnswer ca) {
-        if ((getSortWeight() == null) && (ca.getSortWeight() != null)) {
-            return -1;
-        }
-        if ((getSortWeight() != null) && (ca.getSortWeight() == null)) {
-            return 1;
-        }
-        if ((getSortWeight() == null) && (ca.getSortWeight() == null)) {
-            return 0;
-        }
-        return (getSortWeight() < ca.getSortWeight()) ? -1 : (getSortWeight() > ca.getSortWeight()) ? 1 : 0;
-    }
-
-
 }
