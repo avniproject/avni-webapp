@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION deleteMetaDataCascade(formName VARCHAR(70))
   RETURNS VOID AS $$
     DECLARE formId BIGINT;
+    DECLARE conceptCount BIGINT;
 BEGIN
       raise notice 'Deleting all data for form: %', formName;
       select id into formId from form WHERE name = formName;
@@ -15,10 +16,12 @@ BEGIN
       raise notice 'Deleted all form_element for formId: %', formId;
 
 --       delete concepts which are not referenced to by any form element and also not present in any concept answer. not incorporated gender, followup_type and encounter_type having concepts since we are not using it yet
-      DELETE FROM concept WHERE id NOT IN
+      SELECT count(id) INTO conceptCount FROM concept c
+        where id not in (select concept_id from form_element) and id not in (select concept_id from concept_answer) and id not in (select answer_concept_id from concept_answer);
+      DELETE FROM concept WHERE id IN
                 (SELECT id FROM concept c
                     where id not in (select concept_id from form_element) and id not in (select concept_id from concept_answer) and id not in (select answer_concept_id from concept_answer));
-      raise notice 'Deleted all concepts not being used in any forms';
+      raise notice 'Deleted % concepts that are not being used in any forms', conceptCount;
 
       DELETE FROM form_element_group where form_id = formId;
       raise notice 'Deleted all form_element_group for formId: %', formId;
@@ -32,7 +35,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION insert_concept(name VARCHAR(70), data_type VARCHAR(20), uuid VARCHAR(70))
+CREATE OR REPLACE FUNCTION create_concept(name VARCHAR(70), data_type VARCHAR(20), uuid VARCHAR(70))
   RETURNS BIGINT AS $$
 DECLARE conceptid BIGINT;
 BEGIN
@@ -46,18 +49,17 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION insert_concept_and_answers(name VARCHAR(70), uuid VARCHAR(70), answers JSON)
+CREATE OR REPLACE FUNCTION create_concept_and_answers(name VARCHAR(70), uuid VARCHAR(70), answers JSON)
   RETURNS BIGINT AS $$
 DECLARE answerConceptId BIGINT;
   DECLARE conceptId BIGINT;
   DECLARE answer JSON;
 BEGIN
-  conceptId = insert_concept(name, 'Coded', uuid);
+  conceptId = create_concept(name, 'Coded', uuid);
 
   FOR answer IN SELECT *
                 FROM json_array_elements(answers)
   LOOP
-    RAISE NOTICE '%, %', answer, answer->>'answerOrder';
     INSERT INTO concept (name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
     VALUES (answer->>'name', 'N/A', answer->>'uuid', 1, 1, 1, current_timestamp, current_timestamp) RETURNING id into answerConceptId;
 
@@ -102,16 +104,26 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-CREATE OR REPLACE FUNCTION insert_form_element_for_concept_with_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, conceptUUID VARCHAR(70), answer_concepts JSON)
+CREATE OR REPLACE FUNCTION create_form_element(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, conceptId BIGINT, keyValues JSON)
   RETURNS BIGINT AS $$
-DECLARE conceptId BIGINT;
+DECLARE formElementId BIGINT;
+BEGIN
+  INSERT INTO form_element (id, name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, key_values, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+  VALUES (DEFAULT, formElementName, displayOrder, isMandatory, conceptId, FALSE, FALSE, formElementGroupId, keyValues, formElementUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO formElementId;
+
+  raise notice 'Created form_element with id: %, name: %', formElementId, formElementName;
+
+  RETURN formElementId;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION create_form_element_for_concept_with_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, keyValues JSON, conceptUUID VARCHAR(70), answer_concepts JSON)
+  RETURNS BIGINT AS $$
+  DECLARE conceptId BIGINT;
   DECLARE formElementId BIGINT;
 BEGIN
-  conceptId = insert_concept_and_answers(formElementName, conceptUUID, answer_concepts);
-
-  INSERT INTO form_element (id, name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-  VALUES (DEFAULT, formElementName, displayOrder, isMandatory, conceptId, FALSE, FALSE, formElementGroupId, formElementUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO formElementId;
+  conceptId = create_concept_and_answers(formElementName, conceptUUID, answer_concepts);
+  formElementId = create_form_element(formElementName, formElementUUID, displayOrder, isMandatory, formElementGroupId, conceptId, keyValues);
 
   raise notice 'Created form_element, concept and its answers with formElement id as: %, name: %', formElementId, formElementName;
 
@@ -120,18 +132,29 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION insert_form_element_for_concept(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, conceptUUID VARCHAR(70), dataType VARCHAR(70))
+CREATE OR REPLACE FUNCTION create_form_element_for_concept(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, keyValues JSON, conceptUUID VARCHAR(70), dataType VARCHAR(70))
   RETURNS BIGINT AS $$
 DECLARE conceptId BIGINT;
   DECLARE formElementId BIGINT;
 BEGIN
-  conceptId = insert_concept(formElementName, dataType, conceptUUID);
-
-  INSERT INTO form_element (id, name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-  VALUES (DEFAULT, formElementName, displayOrder, isMandatory, conceptId, FALSE, FALSE, formElementGroupId, formElementUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO formElementId;
+  conceptId = create_concept(formElementName, dataType, conceptUUID);
+  formElementId = create_form_element(formElementName, formElementUUID, displayOrder, isMandatory, formElementGroupId, conceptId, keyValues);
 
   raise notice 'Created form_element and concept with formElement id as: %, name: %', formElementId, formElementName;
 
   RETURN formElementId;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION add_answer_to_concept(parentConceptName VARCHAR(70), childConceptName VARCHAR(70), displayOrder NUMERIC, conceptAnswerUUID VARCHAR(70))
+  RETURNS BIGINT AS $$
+  DECLARE conceptAnswerId BIGINT;
+BEGIN
+  INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+  VALUES ((SELECT id from concept where name = parentConceptName), (SELECT id from concept where name = childConceptName), displayOrder, conceptAnswerUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO conceptAnswerId;
+
+  raise notice 'Added answer % to concept % with id:%', childConceptName, parentConceptName, conceptAnswerId;
+    RETURN conceptAnswerId;
 END;
 $$ LANGUAGE plpgsql;

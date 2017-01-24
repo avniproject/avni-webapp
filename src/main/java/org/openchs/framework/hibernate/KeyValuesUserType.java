@@ -1,10 +1,10 @@
 package org.openchs.framework.hibernate;
 
-import org.openchs.domain.ObservationCollection;
+import org.openchs.application.KeyValues;
 
 public class KeyValuesUserType extends AbstractJsonbUserType {
     @Override
     public Class returnedClass() {
-        return ObservationCollection.class;
+        return KeyValues.class;
     }
 }
