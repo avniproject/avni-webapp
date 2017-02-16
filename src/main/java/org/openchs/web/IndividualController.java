@@ -33,7 +33,6 @@ public class IndividualController extends AbstractController<Individual> {
         individual.setDateOfBirth(individualRequest.getDateOfBirth());
         individual.setAddressLevel(addressLevel);
         individual.setGender(gender);
-        individual.setLastModifiedDateTime(DateTime.now());
         individualRepository.save(individual);
     }
 }

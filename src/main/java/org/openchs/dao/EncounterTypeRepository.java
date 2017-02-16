@@ -2,6 +2,7 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.EncounterType;
+import org.openchs.domain.Gender;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;

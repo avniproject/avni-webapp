@@ -20,6 +20,7 @@ public abstract class AbstractController<T extends CHSEntity> {
             t.setUuid(chsRequest.getUuid());
         }
         t.setLastModifiedBy(userRepository.findByUuid(chsRequest.getUserUUID()));
+        t.setLastModifiedDateTime(DateTime.now());
         return t;
     }
 }

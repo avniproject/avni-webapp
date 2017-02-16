@@ -1,31 +1,19 @@
 package org.openchs.web.request;
 
-import org.openchs.domain.Individual;
-import org.openchs.domain.Observation;
-
+import org.joda.time.DateTime;
 import java.util.List;
 
 public class EncounterRequest extends CHSRequest {
-
-    private String encounterTypeUUID;
-    private String encounterDateTime;
+    private DateTime encounterDateTime;
     private String individualUUID;
-    private List<Observation> observations;
+    private String encounterTypeUUID;
+    private List<ObservationRequest> observations;
 
-
-    public String getEncounterTypeUUID() {
-        return encounterTypeUUID;
-    }
-
-    public void setEncounterTypeUUID(String encounterTypeUUID) {
-        this.encounterTypeUUID = encounterTypeUUID;
-    }
-
-    public String getEncounterDateTime() {
+    public DateTime getEncounterDateTime() {
         return encounterDateTime;
     }
 
-    public void setEncounterDateTime(String encounterDateTime) {
+    public void setEncounterDateTime(DateTime encounterDateTime) {
         this.encounterDateTime = encounterDateTime;
     }
 
@@ -37,11 +25,20 @@ public class EncounterRequest extends CHSRequest {
         this.individualUUID = individualUUID;
     }
 
-    public List<Observation> getObservations() {
+
+    public String getEncounterTypeUUID() {
+        return encounterTypeUUID;
+    }
+
+    public void setEncounterTypeUUID(String encounterTypeUUID) {
+        this.encounterTypeUUID = encounterTypeUUID;
+    }
+
+    public List<ObservationRequest> getObservations() {
         return observations;
     }
 
-    public void setObservations(List<Observation> observations) {
+    public void setObservations(List<ObservationRequest> observations) {
         this.observations = observations;
     }
 }
