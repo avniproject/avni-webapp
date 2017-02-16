@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
 @Transactional
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter")
-public interface EncounterRepository extends PagingAndSortingRepository<Encounter, Long> {
+public interface EncounterRepository extends PagingAndSortingRepository<Encounter, Long>, CHSRepository<Encounter> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<Encounter> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }
