@@ -3,18 +3,20 @@ package org.openchs.domain;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Observation implements Serializable {
     private String conceptUUID;
-    private Object value;
+    private Object valuePrimitive; // all primitives
+    private List<String> valueCoded; // all coded
 
     @JsonRawValue
-    public Object getValue() {
-        return value;
+    public Object getValuePrimitive() {
+        return valuePrimitive;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public void setValuePrimitive(Object valuePrimitive) {
+        this.valuePrimitive = valuePrimitive;
     }
 
     public String getConceptUUID() {
@@ -28,7 +30,15 @@ public class Observation implements Serializable {
     public static Observation create(String conceptUUID, Object value) {
         Observation observation = new Observation();
         observation.setConceptUUID(conceptUUID);
-        observation.setValue(value);
+        observation.setValuePrimitive(value);
         return observation;
+    }
+
+    public List<String> getValueCoded() {
+        return valueCoded;
+    }
+
+    public void setValueCoded(List<String> valueCoded) {
+        this.valueCoded = valueCoded;
     }
 }

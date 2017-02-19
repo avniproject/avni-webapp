@@ -43,7 +43,8 @@ public class EncounterController extends AbstractController<Encounter> {
             }
 
             observation.setConceptUUID(observationRequest.getConceptUUID());
-            observation.setValue(observationRequest.getValue());
+            observation.setValuePrimitive(observationRequest.getValuePrimitive());
+            observation.setValueCoded(observationRequest.getValueCoded());
             observations.add(observation);
         }
         encounter.setObservations(observations);

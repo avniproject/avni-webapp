@@ -142,7 +142,7 @@ INSERT INTO program_encounter (program_enrolment_id, followup_type_id, observati
 VALUES (1, 1, '[
   {
     "conceptUUID": "95c4b174-6ce6-4d9a-b223-1f9000b60006",
-    "value": 98.9
+    "valuePrimitive": 98.9
   }
 ]' :: JSONB, current_timestamp, 'f5c3d56c-3d69-41bd-9e6a-52963adb6e76', 1, 1, 1, current_timestamp, current_timestamp);
 
@@ -151,7 +151,7 @@ INSERT INTO encounter (individual_id, encounter_type_id, observations, encounter
 VALUES (1, 1, '[
   {
     "conceptUUID": "95c4b174-6ce6-4d9a-b223-1f9000b60006",
-    "value": 98.9
+    "valuePrimitive": 98.9
   }
 ]' :: JSONB, current_timestamp, '63a7d615-b965-4830-9dd2-e8f533d9a4e9', 1, 1, 1, current_timestamp, current_timestamp);
 
