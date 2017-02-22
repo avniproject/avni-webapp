@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -113,6 +114,7 @@ public class CHSEntity {
         return result;
     }
 
+    @JsonIgnore
     public boolean isNew() {
         Long id = getId();
         return (id == null || id == 0);

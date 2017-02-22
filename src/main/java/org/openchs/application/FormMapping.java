@@ -1,5 +1,6 @@
 package org.openchs.application;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openchs.domain.CHSEntity;
 
 import javax.persistence.*;
@@ -24,6 +25,7 @@ public class FormMapping extends CHSEntity {
         this.form = form;
     }
 
+    @JsonIgnore
     public Long getEntityId() {
         return entityId;
     }

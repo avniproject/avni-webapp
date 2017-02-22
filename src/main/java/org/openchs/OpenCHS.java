@@ -3,7 +3,9 @@ package org.openchs;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
 import org.openchs.application.FormMapping;
+import org.openchs.dao.ProgramRepository;
 import org.openchs.domain.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
@@ -14,6 +16,9 @@ import org.springframework.hateoas.ResourceProcessor;
 
 @SpringBootApplication
 public class OpenCHS {
+    @Autowired
+    private ProgramRepository programRepository;
+
     public static void main(String[] args) {
         SpringApplication.run(OpenCHS.class, args);
     }
@@ -125,6 +130,11 @@ public class OpenCHS {
                 FormMapping formMapping = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(formMapping.getForm().getUuid(), "formUUID"));
+                Long entityId = formMapping.getEntityId();
+                if (entityId != null) {
+                    Program program = programRepository.findOne(entityId);
+                    resource.add(new Link(program.getUuid(), "entityUUID"));
+                }
                 return resource;
             }
         };
