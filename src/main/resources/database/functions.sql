@@ -9,7 +9,8 @@ BEGIN
       DELETE FROM form_mapping where form_id = formId;
       raise notice 'Deleted all form_mapping for formId: %', formId;
 
-      DELETE FROM concept_answer WHERE concept_id IN (SELECT concept_id FROM form_element where form_element_group_id in (SELECT id from form_element_group where form_id = formId));
+      DELETE FROM concept_answer WHERE concept_id IN (SELECT concept_id FROM form_element where form_element_group_id in (SELECT id from form_element_group where form_id = formId))
+                                       AND concept_id NOT IN (SELECT id from concept where name = 'Gender');
       raise notice 'Deleted all concept_answer for formId: %', formId;
 
       DELETE FROM form_element where form_element_group_id in (SELECT id from form_element_group where form_id = formId);
@@ -20,7 +21,9 @@ BEGIN
         where id not in (select concept_id from form_element) and id not in (select concept_id from concept_answer) and id not in (select answer_concept_id from concept_answer);
       DELETE FROM concept WHERE id IN
                 (SELECT id FROM concept c
-                    where id not in (select concept_id from form_element) and id not in (select concept_id from concept_answer) and id not in (select answer_concept_id from concept_answer));
+                    where id not in (select concept_id from form_element)
+                          and id not in (select concept_id from concept_answer)
+                          and id not in (select answer_concept_id from concept_answer));
       raise notice 'Deleted % concepts that are not being used in any forms', conceptCount;
 
       DELETE FROM form_element_group where form_id = formId;
@@ -51,7 +54,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION create_concept_and_answers(name VARCHAR(70), uuid VARCHAR(70), answers JSON)
   RETURNS BIGINT AS $$
-DECLARE answerConceptId BIGINT;
+  DECLARE answerConceptId BIGINT;
   DECLARE conceptId BIGINT;
   DECLARE answer JSON;
 BEGIN
@@ -156,5 +159,20 @@ BEGIN
 
   raise notice 'Added answer % to concept % with id:%', childConceptName, parentConceptName, conceptAnswerId;
     RETURN conceptAnswerId;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION create_form_element_with_gender_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, keyValues JSON)
+  RETURNS BIGINT AS $$
+  DECLARE conceptId BIGINT;
+  DECLARE formElementId BIGINT;
+BEGIN
+
+  SELECT id FROM concept WHERE name = 'Gender' INTO conceptId;
+  formElementId = create_form_element(formElementName, formElementUUID, displayOrder, isMandatory, formElementGroupId, conceptId, keyValues);
+
+  raise notice 'Created gender form_element as: %, name: %', formElementId, formElementName;
+
+  RETURN formElementId;
 END;
 $$ LANGUAGE plpgsql;
