@@ -10,7 +10,6 @@ public class Observation implements Serializable {
     private Object valuePrimitive; // all primitives
     private List<String> valueCoded; // all coded
 
-    @JsonRawValue
     public Object getValuePrimitive() {
         return valuePrimitive;
     }
