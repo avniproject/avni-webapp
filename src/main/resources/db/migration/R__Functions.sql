@@ -1,43 +1,3 @@
-CREATE OR REPLACE FUNCTION deleteMetaDataCascade(formName VARCHAR(70))
-  RETURNS VOID AS $$
-    DECLARE formId BIGINT;
-    DECLARE conceptCount BIGINT;
-BEGIN
-      raise notice 'Deleting all data for form: %', formName;
-      select id into formId from form WHERE name = formName;
-
-      DELETE FROM form_mapping where form_id = formId;
-      raise notice 'Deleted all form_mapping for formId: %', formId;
-
-      DELETE FROM concept_answer WHERE concept_id IN (SELECT concept_id FROM form_element where form_element_group_id in (SELECT id from form_element_group where form_id = formId))
-                                       AND concept_id NOT IN (SELECT id from concept where name = 'Gender');
-      raise notice 'Deleted all concept_answer for formId: %', formId;
-
-      DELETE FROM form_element where form_element_group_id in (SELECT id from form_element_group where form_id = formId);
-      raise notice 'Deleted all form_element for formId: %', formId;
-
---       delete concepts which are not referenced to by any form element and also not present in any concept answer. not incorporated gender, followup_type and encounter_type having concepts since we are not using it yet
-      SELECT count(id) INTO conceptCount FROM concept c
-        where id not in (select concept_id from form_element) and id not in (select concept_id from concept_answer) and id not in (select answer_concept_id from concept_answer);
-      DELETE FROM concept WHERE id IN
-                (SELECT id FROM concept c
-                    where id not in (select concept_id from form_element)
-                          and id not in (select concept_id from concept_answer)
-                          and id not in (select answer_concept_id from concept_answer));
-      raise notice 'Deleted % concepts that are not being used in any forms', conceptCount;
-
-      DELETE FROM form_element_group where form_id = formId;
-      raise notice 'Deleted all form_element_group for formId: %', formId;
-
-      DELETE FROM form where id = formId;
-      raise notice 'Deleted form with id: %', formId;
-
-      EXCEPTION WHEN others THEN
-        raise notice '% %', SQLERRM, SQLSTATE;
-END;
-$$ LANGUAGE plpgsql;
-
-
 CREATE OR REPLACE FUNCTION create_concept(name VARCHAR(70), data_type VARCHAR(20), uuid VARCHAR(70))
   RETURNS BIGINT AS $$
 DECLARE conceptid BIGINT;
@@ -162,15 +122,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_form_element_with_gender_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, keyValues JSON)
+CREATE OR REPLACE FUNCTION create_form_element_with_gender_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, conceptUUID VARCHAR(70), keyValues JSON, conceptAnswerUUIDs JSON)
   RETURNS BIGINT AS $$
   DECLARE conceptId BIGINT;
   DECLARE formElementId BIGINT;
 BEGIN
 
-  SELECT id FROM concept WHERE name = 'Gender' INTO conceptId;
-  formElementId = create_form_element(formElementName, formElementUUID, displayOrder, isMandatory, formElementGroupId, conceptId, keyValues);
-
+  formElementId = create_form_element_for_concept(formElementName, formElementUUID, displayOrder, isMandatory, formElementGroupId, keyValues, conceptUUID, 'Coded');
+  SELECT id FROM concept WHERE uuid = conceptUUID INTO conceptId;
+  INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+    VALUES (conceptId, (SELECT id FROM concept WHERE name = 'Male'), 1::SMALLINT, conceptAnswerUUIDs->>0, 1, 1, 1, current_timestamp, current_timestamp);
+  INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+    VALUES (conceptId, (SELECT id FROM concept WHERE name = 'Female'), 2::SMALLINT, conceptAnswerUUIDs->>1, 1, 1, 1, current_timestamp, current_timestamp);
+  INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+    VALUES (conceptId, (SELECT id FROM concept WHERE name = 'Other Gender'), 3::SMALLINT, conceptAnswerUUIDs->>2, 1, 1, 1, current_timestamp, current_timestamp);
   raise notice 'Created gender form_element as: %, name: %', formElementId, formElementName;
 
   RETURN formElementId;
