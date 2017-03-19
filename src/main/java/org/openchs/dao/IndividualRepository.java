@@ -20,4 +20,8 @@ import org.springframework.stereotype.Repository;
 public interface IndividualRepository extends PagingAndSortingRepository<Individual, Long>, CHSRepository<Individual> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<Individual> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+
+    @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
+    Page<Individual> findByCatchmentIdAndLastModifiedDateTimeGreaterThanOrderById(@Param("catchmentId") long catchmentId, @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+
 }
