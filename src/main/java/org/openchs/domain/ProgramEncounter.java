@@ -5,16 +5,14 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "program_encounter")
 public class ProgramEncounter extends CHSEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
-    @JoinColumn(name = "followup_type_id")
-    private FollowupType followupType;
+    @JoinColumn(name = "encounter_type_id")
+    private EncounterType encounterType;
 
     @Column
     private DateTime scheduledDateTime;
@@ -31,12 +29,12 @@ public class ProgramEncounter extends CHSEntity {
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
 
-    public FollowupType getFollowupType() {
-        return followupType;
+    public EncounterType getEncounterType() {
+        return encounterType;
     }
 
-    public void setFollowupType(FollowupType followupType) {
-        this.followupType = followupType;
+    public void setEncounterType(EncounterType encounterType) {
+        this.encounterType = encounterType;
     }
 
     public DateTime getScheduledDateTime() {

@@ -37,15 +37,15 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION create_form(form VARCHAR(70), formUUID VARCHAR(70), formType VARCHAR(70), entityId BIGINT, formMappingUUID VARCHAR(70))
+CREATE OR REPLACE FUNCTION create_form(form VARCHAR(70), formUUID VARCHAR(70), formType VARCHAR(70), entityId BIGINT, formMappingUUID VARCHAR(70), observationsTypeEntityId INT)
   RETURNS BIGINT AS $$
 DECLARE formId BIGINT;
 BEGIN
   INSERT INTO form (name, form_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
   VALUES (form, formType, formUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO formId;
 
-  INSERT INTO form_mapping (form_id, entity_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-  VALUES (formId, entityId, formMappingUUID, 1, 1, 1, current_timestamp, current_timestamp);
+  INSERT INTO form_mapping (form_id, entity_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, observations_type_entity_id)
+  VALUES (formId, entityId, formMappingUUID, 1, 1, 1, current_timestamp, current_timestamp, observationsTypeEntityId);
 
   raise notice 'Created form with id: %, name: %', formId, form;
 

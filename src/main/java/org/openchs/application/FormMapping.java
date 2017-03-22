@@ -17,6 +17,9 @@ public class FormMapping extends CHSEntity {
     @Column(name = "entity_id")
     private Long entityId;
 
+    @Column(name = "observations_type_entity_id")
+    private Long observationsTypeEntityId;
+
     public Form getForm() {
         return form;
     }
@@ -32,5 +35,14 @@ public class FormMapping extends CHSEntity {
 
     public void setEntityId(Long entityId) {
         this.entityId = entityId;
+    }
+
+    @JsonIgnore
+    public Long getObservationsTypeEntityId() {
+        return observationsTypeEntityId;
+    }
+
+    public void setObservationsTypeEntityId(Long observationsTypeEntityId) {
+        this.observationsTypeEntityId = observationsTypeEntityId;
     }
 }

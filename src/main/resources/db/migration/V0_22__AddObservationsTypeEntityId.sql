@@ -1,0 +1,1 @@
+ALTER TABLE form_mapping ADD COLUMN observations_type_entity_id INT NULL;
