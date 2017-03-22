@@ -15,7 +15,7 @@ public class ProgramEncounter extends CHSEntity {
     private EncounterType encounterType;
 
     @Column
-    private DateTime scheduledDateTime;
+    private DateTime encounterDateTime;
 
     @Column
     private DateTime actualDateTime;
@@ -37,12 +37,12 @@ public class ProgramEncounter extends CHSEntity {
         this.encounterType = encounterType;
     }
 
-    public DateTime getScheduledDateTime() {
-        return scheduledDateTime;
+    public DateTime getEncounterDateTime() {
+        return encounterDateTime;
     }
 
-    public void setScheduledDateTime(DateTime scheduledDateTime) {
-        this.scheduledDateTime = scheduledDateTime;
+    public void setEncounterDateTime(DateTime encounterDateTime) {
+        this.encounterDateTime = encounterDateTime;
     }
 
     public DateTime getActualDateTime() {

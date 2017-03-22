@@ -1,0 +1,1 @@
+ALTER TABLE program_encounter RENAME COLUMN actual_date_time TO encounter_date_time;
