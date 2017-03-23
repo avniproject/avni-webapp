@@ -1,3 +1,8 @@
+DROP FUNCTION openchs.create_form( CHARACTER VARYING, CHARACTER VARYING, CHARACTER VARYING, BIGINT, CHARACTER VARYING, CHARACTER VARYING);
+DROP FUNCTION openchs.create_form_element(CHARACTER VARYING, CHARACTER VARYING, SMALLINT, BOOLEAN, BIGINT, BIGINT, JSON);
+DROP FUNCTION openchs.create_form_element_for_concept_with_answers(VARCHAR, VARCHAR, NUMERIC, BOOLEAN, BIGINT, JSON, VARCHAR, JSON);
+DROP FUNCTION openchs.create_form_element_for_concept(VARCHAR, VARCHAR, NUMERIC, BOOLEAN, BIGINT, JSON, VARCHAR, VARCHAR);
+
 CREATE OR REPLACE FUNCTION create_concept(name VARCHAR(70), data_type VARCHAR(20), uuid VARCHAR(70))
   RETURNS BIGINT AS $$
 DECLARE conceptid BIGINT;
@@ -37,15 +42,21 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION create_form(form VARCHAR(70), formUUID VARCHAR(70), formType VARCHAR(70), entityId BIGINT, formMappingUUID VARCHAR(70), observationsTypeEntityId INT)
+CREATE OR REPLACE FUNCTION create_form(form VARCHAR(70), formUUID VARCHAR(70), formType VARCHAR(70), entityId BIGINT, formMappingUUID VARCHAR(70), encounterTypeUUID VARCHAR(70))
   RETURNS BIGINT AS $$
-DECLARE formId BIGINT;
+  DECLARE formId BIGINT;
+  DECLARE encounterTypeId BIGINT;
 BEGIN
   INSERT INTO form (name, form_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
   VALUES (form, formType, formUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO formId;
 
+  IF encounterTypeUUID IS NOT NULL THEN
+    INSERT INTO encounter_type (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+      VALUES (form, encounterTypeUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO encounterTypeId;
+  END IF;
+
   INSERT INTO form_mapping (form_id, entity_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, observations_type_entity_id)
-  VALUES (formId, entityId, formMappingUUID, 1, 1, 1, current_timestamp, current_timestamp, observationsTypeEntityId);
+  VALUES (formId, entityId, formMappingUUID, 1, 1, 1, current_timestamp, current_timestamp, encounterTypeId);
 
   raise notice 'Created form with id: %, name: %', formId, form;
 
@@ -67,11 +78,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_form_element(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, conceptId BIGINT, keyValues JSON)
+CREATE OR REPLACE FUNCTION create_form_element(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder SMALLINT, isMandatory BOOLEAN, formElementGroupId BIGINT, conceptId BIGINT, keyValues JSON)
   RETURNS BIGINT AS $$
 DECLARE formElementId BIGINT;
 BEGIN
-  INSERT INTO form_element (id, name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, key_values, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+  IF conceptId = 0 THEN
+    SELECT id INTO conceptId from openchs.concept WHERE name = formElementName;
+  END IF;
+  INSERT INTO openchs.form_element (id, name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, key_values, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
   VALUES (DEFAULT, formElementName, displayOrder, isMandatory, conceptId, FALSE, FALSE, formElementGroupId, keyValues, formElementUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO formElementId;
 
   raise notice 'Created form_element with id: %, name: %', formElementId, formElementName;
@@ -80,7 +94,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_form_element_for_concept_with_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, keyValues JSON, conceptUUID VARCHAR(70), answer_concepts JSON)
+CREATE OR REPLACE FUNCTION create_form_element_for_concept_with_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder SMALLINT, isMandatory BOOLEAN, formElementGroupId BIGINT, keyValues JSON, conceptUUID VARCHAR(70), answer_concepts JSON)
   RETURNS BIGINT AS $$
   DECLARE conceptId BIGINT;
   DECLARE formElementId BIGINT;
@@ -95,7 +109,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION create_form_element_for_concept(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, keyValues JSON, conceptUUID VARCHAR(70), dataType VARCHAR(70))
+CREATE OR REPLACE FUNCTION create_form_element_for_concept(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder SMALLINT, isMandatory BOOLEAN, formElementGroupId BIGINT, keyValues JSON, conceptUUID VARCHAR(70), dataType VARCHAR(70))
   RETURNS BIGINT AS $$
 DECLARE conceptId BIGINT;
   DECLARE formElementId BIGINT;
