@@ -17,14 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> {
+    private final ProgramRepository programRepository;
+    private final IndividualRepository individualRepository;
+    private final ProgramOutcomeRepository programOutcomeRepository;
+    private final ProgramEnrolmentRepository programEnrolmentRepository;
+
     @Autowired
-    private ProgramRepository programRepository;
-    @Autowired
-    private IndividualRepository individualRepository;
-    @Autowired
-    private ProgramOutcomeRepository programOutcomeRepository;
-    @Autowired
-    private ProgramEnrolmentRepository programEnrolmentRepository;
+    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository) {
+        this.programRepository = programRepository;
+        this.individualRepository = individualRepository;
+        this.programOutcomeRepository = programOutcomeRepository;
+        this.programEnrolmentRepository = programEnrolmentRepository;
+    }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
     void save(@RequestBody ProgramEnrolmentRequest request) {
