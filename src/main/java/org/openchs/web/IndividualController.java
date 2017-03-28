@@ -1,6 +1,5 @@
 package org.openchs.web;
 
-import org.joda.time.DateTime;
 import org.openchs.dao.AddressLevelRepository;
 import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
@@ -33,6 +32,7 @@ public class IndividualController extends AbstractController<Individual> {
         individual.setDateOfBirth(individualRequest.getDateOfBirth());
         individual.setAddressLevel(addressLevel);
         individual.setGender(gender);
+        individual.setRegistrationDate(individualRequest.getRegistrationDate());
         individualRepository.save(individual);
     }
 }

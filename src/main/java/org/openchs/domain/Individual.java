@@ -20,6 +20,9 @@ public class Individual extends CHSEntity {
     private boolean dateOfBirthVerified;
 
     @NotNull
+    private LocalDate registrationDate;
+
+    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gender_id")
     private Gender gender;
@@ -113,13 +116,22 @@ public class Individual extends CHSEntity {
         this.customProfile = customProfile;
     }
 
-    public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address) {
+    public LocalDate getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDate registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
         Individual individual = new Individual();
         individual.name = name;
         individual.dateOfBirth = dateOfBirth;
         individual.dateOfBirthVerified = dateOfBirthVerified;
         individual.gender = gender;
         individual.addressLevel = address;
+        individual.registrationDate = registrationDate;
         return individual;
     }
 

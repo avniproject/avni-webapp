@@ -1,10 +1,11 @@
 package org.openchs.domain;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Observation implements Serializable {
     private String conceptUUID;
     private Object valuePrimitive; // all primitives

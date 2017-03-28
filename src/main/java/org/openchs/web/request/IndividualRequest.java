@@ -8,6 +8,7 @@ public class IndividualRequest extends CHSRequest {
     private boolean dateOfBirthVerified;
     private String genderUUID;
     private String addressLevelUUID;
+    private LocalDate registrationDate;
 
     public String getName() {
         return name;
@@ -47,5 +48,13 @@ public class IndividualRequest extends CHSRequest {
 
     public void setAddressLevelUUID(String addressLevelUUID) {
         this.addressLevelUUID = addressLevelUUID;
+    }
+
+    public LocalDate getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDate registrationDate) {
+        this.registrationDate = registrationDate;
     }
 }
