@@ -9,6 +9,7 @@ public class IndividualRequest extends CHSRequest {
     private String genderUUID;
     private String addressLevelUUID;
     private LocalDate registrationDate;
+    private Long catchmentId;
 
     public String getName() {
         return name;
@@ -56,5 +57,13 @@ public class IndividualRequest extends CHSRequest {
 
     public void setRegistrationDate(LocalDate registrationDate) {
         this.registrationDate = registrationDate;
+    }
+
+    public Long getCatchmentId() {
+        return catchmentId;
+    }
+
+    public void setCatchmentId(Long catchmentId) {
+        this.catchmentId = catchmentId;
     }
 }
