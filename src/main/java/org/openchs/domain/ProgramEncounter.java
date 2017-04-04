@@ -9,6 +9,9 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "program_encounter")
 public class ProgramEncounter extends CHSEntity {
+    @Column
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "encounter_type_id")
@@ -19,6 +22,9 @@ public class ProgramEncounter extends CHSEntity {
 
     @Column
     private DateTime scheduledDateTime;
+
+    @Column
+    private DateTime maxDateTime;
 
     @Column
     @Type(type = "observations")
@@ -67,5 +73,21 @@ public class ProgramEncounter extends CHSEntity {
 
     public void setObservations(ObservationCollection observations) {
         this.observations = observations;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public DateTime getMaxDateTime() {
+        return maxDateTime;
+    }
+
+    public void setMaxDateTime(DateTime maxDateTime) {
+        this.maxDateTime = maxDateTime;
     }
 }

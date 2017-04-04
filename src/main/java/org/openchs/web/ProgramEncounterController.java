@@ -34,6 +34,9 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         encounter.setProgramEnrolment(programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID()));
         encounter.setEncounterType(encounterType);
         encounter.setObservations(EncounterControllerUtil.createObservationCollection(conceptRepository, request));
+        encounter.setName(request.getName());
+        encounter.setScheduledDateTime(request.getScheduledDateTime());
+        encounter.setMaxDateTime(request.getMaxDateTime());
 
         programEncounterRepository.save(encounter);
     }
