@@ -136,7 +136,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_form_element_with_gender_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder NUMERIC, isMandatory BOOLEAN, formElementGroupId BIGINT, conceptUUID VARCHAR(70), keyValues JSON, conceptAnswerUUIDs JSON)
+CREATE OR REPLACE FUNCTION create_form_element_with_gender_answers(formElementName VARCHAR(70), formElementUUID VARCHAR(70), displayOrder SMALLINT, isMandatory BOOLEAN, formElementGroupId BIGINT, conceptUUID VARCHAR(70), keyValues JSON, conceptAnswerUUIDs JSON)
   RETURNS BIGINT AS $$
   DECLARE conceptId BIGINT;
   DECLARE formElementId BIGINT;
