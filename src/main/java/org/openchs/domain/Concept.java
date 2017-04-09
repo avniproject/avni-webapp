@@ -2,7 +2,7 @@ package org.openchs.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,7 +15,7 @@ public class Concept extends CHSEntity {
     @NotNull
     private String dataType;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "concept")
     private Set<ConceptAnswer> conceptAnswers;
 
     private Double lowAbsolute;
@@ -79,13 +79,18 @@ public class Concept extends CHSEntity {
         this.conceptAnswers = conceptAnswers;
     }
 
-
     public static Concept create(String name, String dataType) {
         Concept concept = new Concept();
         concept.name = name;
         concept.dataType = dataType;
-        concept.setUuid(UUID.randomUUID().toString());
+        if (ConceptDataType.Coded.toString().equals(dataType)) {
+            concept.conceptAnswers = new HashSet<>();
+        }
+        concept.assignUUID();
         return concept;
     }
 
+    public ConceptAnswer findConceptAnswer(String answerConceptName) {
+        return conceptAnswers.stream().filter(x -> x.getAnswerConcept().getName().equals(answerConceptName)).findAny().orElse(null);
+    }
 }

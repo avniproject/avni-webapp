@@ -8,7 +8,6 @@ DELETE FROM individual;
 DELETE FROM address_level;
 DELETE FROM program;
 DELETE FROM encounter_type;
-DELETE FROM followup_type;
 DELETE FROM program_outcome;
 DELETE FROM concept_answer;
 DELETE FROM concept;
@@ -111,10 +110,6 @@ VALUES (19, 23, 4, '7dc1c6db-419b-483d-8b47-0d2b89d9919b', 1, 1, 1, current_time
 ALTER SEQUENCE program_outcome_id_seq RESTART WITH 1;
 -- insert
 
-ALTER SEQUENCE followup_type_id_seq RESTART WITH 1;
-INSERT INTO followup_type (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('Sample Followup', '577f1454-ddfd-4d74-8f86-81c5207e04cc', 1, 1, 1, current_timestamp, current_timestamp);
-
 ALTER SEQUENCE encounter_type_id_seq RESTART WITH 1;
 INSERT INTO encounter_type (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Sample Encounter Type', '3a1535d0-81fd-48fc-85b5-dc9da81064a3', 1, 1, 1, current_timestamp, current_timestamp);
@@ -138,7 +133,7 @@ INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, u
 VALUES (1, 1, current_timestamp, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1, 1, 1, current_timestamp, current_timestamp);
 
 ALTER SEQUENCE program_encounter_id_seq RESTART WITH 1;
-INSERT INTO program_encounter (program_enrolment_id, followup_type_id, observations, actual_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO program_encounter (program_enrolment_id, encounter_type_id, observations, encounter_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1, 1, '[
   {
     "conceptUUID": "95c4b174-6ce6-4d9a-b223-1f9000b60006",

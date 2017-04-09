@@ -19,4 +19,5 @@ import javax.transaction.Transactional;
 public interface FormMappingRepository extends PagingAndSortingRepository<FormMapping, Long> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<FormMapping> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    FormMapping findByFormUuid(String uuid);
 }

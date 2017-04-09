@@ -2,6 +2,7 @@ package org.openchs.dao.application;
 
 import org.joda.time.DateTime;
 import org.openchs.application.FormElementGroup;
+import org.openchs.dao.ReferenceDataRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -16,7 +17,7 @@ import javax.transaction.Transactional;
 @Transactional
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formElementGroup", path = "formElementGroup")
-public interface FormElementGroupRepository extends PagingAndSortingRepository<FormElementGroup, Long> {
+public interface FormElementGroupRepository extends PagingAndSortingRepository<FormElementGroup, Long>, ReferenceDataRepository<FormElementGroup> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<FormElementGroup> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

@@ -5,7 +5,11 @@ import org.openchs.domain.Individual;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "form_element_group")
@@ -16,7 +20,7 @@ public class FormElementGroup extends CHSEntity {
     @NotNull
     private short displayOrder;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "formElementGroup")
     private Set<FormElement> formElements;
 
     @NotNull
@@ -54,5 +58,32 @@ public class FormElementGroup extends CHSEntity {
 
     public void setDisplayOrder(short displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public void clearElements() {
+        this.formElements.clear();
+    }
+
+    public static FormElementGroup create() {
+        FormElementGroup formElementGroup = new FormElementGroup();
+        formElementGroup.formElements = new HashSet<>();
+        return formElementGroup;
+    }
+
+    public FormElement findFormElement(String uuid) {
+        return formElements.stream().filter(x -> x.getUuid().equals(uuid)).findAny().orElse(null);
+    }
+
+    public FormElement addFormElement(String formElementUUID) {
+        FormElement formElement = new FormElement();
+        formElement.setUuid(formElementUUID);
+        formElements.add(formElement);
+        formElement.setFormElementGroup(this);
+        return formElement;
+    }
+
+    public void removeFormElements(List<String> formElementUUIDs) {
+        List<FormElement> orphanedFormElements = getFormElements().stream().filter(formElement -> !formElementUUIDs.contains(formElement.getUuid())).collect(Collectors.toList());
+        formElements.removeAll(orphanedFormElements);
     }
 }

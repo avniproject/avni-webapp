@@ -1,1 +1,1 @@
-ALTER TABLE openchs.program_encounter ADD COLUMN max_date_time TIMESTAMP NULL;
+ALTER TABLE program_encounter ADD COLUMN max_date_time TIMESTAMP NULL;

@@ -20,7 +20,7 @@ public class ProgramEnrolment extends CHSEntity {
     @JoinColumn(name="individual_id")
     private Individual individual;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "programEnrolment")
     private Set<ProgramEncounter> programEncounters;
 
     @Column

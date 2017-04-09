@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class IndividualController extends AbstractController<Individual> {
+    private final IndividualRepository individualRepository;
+    private final AddressLevelRepository addressLevelRepository;
+    private final GenderRepository genderRepository;
+
     @Autowired
-    private IndividualRepository individualRepository;
-    @Autowired
-    private AddressLevelRepository addressLevelRepository;
-    @Autowired
-    private GenderRepository genderRepository;
+    public IndividualController(IndividualRepository individualRepository, AddressLevelRepository addressLevelRepository, GenderRepository genderRepository) {
+        this.individualRepository = individualRepository;
+        this.addressLevelRepository = addressLevelRepository;
+        this.genderRepository = genderRepository;
+    }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     void save(@RequestBody IndividualRequest individualRequest) {

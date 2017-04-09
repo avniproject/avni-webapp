@@ -1,1 +1,1 @@
-ALTER TABLE openchs.program_encounter ADD COLUMN name VARCHAR(50) NULL;
+ALTER TABLE program_encounter ADD COLUMN name VARCHAR(50) NULL;

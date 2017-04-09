@@ -1,1 +1,1 @@
-ALTER TABLE openchs.individual ADD COLUMN registration_date DATE NOT NULL DEFAULT '2017-01-01';
+ALTER TABLE individual ADD COLUMN registration_date DATE NOT NULL DEFAULT '2017-01-01';

@@ -23,5 +23,4 @@ public interface IndividualRepository extends PagingAndSortingRepository<Individ
 
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
     Page<Individual> findByCatchmentIdAndLastModifiedDateTimeGreaterThanOrderById(@Param("catchmentId") long catchmentId, @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
-
 }

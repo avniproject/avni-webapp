@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.persistence.Id;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class})
@@ -86,6 +87,10 @@ public class CHSEntity {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public void assignUUID() {
+        this.uuid = UUID.randomUUID().toString();
     }
 
     public int getVersion() {

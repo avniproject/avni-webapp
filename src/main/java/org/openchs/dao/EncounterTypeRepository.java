@@ -2,7 +2,6 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.EncounterType;
-import org.openchs.domain.Gender;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -17,7 +16,7 @@ import javax.transaction.Transactional;
 @Transactional
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounterType", path = "encounterType")
-public interface EncounterTypeRepository extends PagingAndSortingRepository<EncounterType, Long>, CHSRepository<EncounterType> {
+public interface EncounterTypeRepository extends PagingAndSortingRepository<EncounterType, Long>, ReferenceDataRepository<EncounterType> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<EncounterType> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }
