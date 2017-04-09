@@ -102,4 +102,9 @@ public class FormElement extends CHSEntity {
     public void setFormElementGroup(FormElementGroup formElementGroup) {
         this.formElementGroup = formElementGroup;
     }
+
+
+    public boolean isFormElementNameSameAsConceptName() {
+        return getConcept().getName().equals(getName());
+    }
 }

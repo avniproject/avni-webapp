@@ -1,16 +1,29 @@
 package org.openchs.web.request.application;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.openchs.application.KeyValues;
-import org.openchs.web.request.ReferenceDataRequest;
+import org.openchs.web.request.ReferenceDataDocument;
 
 import java.util.List;
 
-public class FormElementRequest extends ReferenceDataRequest {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class FormElementContract extends ReferenceDataDocument {
     private boolean isMandatory;
     private KeyValues keyValues;
     private String conceptName;
     private String dataType;
     private List<String> answers;
+
+    public FormElementContract() {
+    }
+
+    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, String conceptName, String dataType) {
+        super(uuid, userUUID, name);
+        this.isMandatory = isMandatory;
+        this.keyValues = keyValues;
+        this.conceptName = conceptName;
+        this.dataType = dataType;
+    }
 
     public boolean isMandatory() {
         return isMandatory;

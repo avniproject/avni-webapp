@@ -93,4 +93,9 @@ public class Concept extends CHSEntity {
     public ConceptAnswer findConceptAnswer(String answerConceptName) {
         return conceptAnswers.stream().filter(x -> x.getAnswerConcept().getName().equals(answerConceptName)).findAny().orElse(null);
     }
+
+    public void addAnswer(ConceptAnswer conceptAnswer) {
+        conceptAnswers.add(conceptAnswer);
+        conceptAnswer.setConcept(this);
+    }
 }

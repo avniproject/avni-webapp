@@ -8,17 +8,15 @@ import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.CHSRequest;
-import org.openchs.web.request.application.FormElementGroupRequest;
-import org.openchs.web.request.application.FormElementRequest;
-import org.openchs.web.request.application.FormRequest;
+import org.openchs.web.request.application.FormElementGroupContract;
+import org.openchs.web.request.application.FormElementContract;
+import org.openchs.web.request.application.FormContract;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -41,7 +39,7 @@ public class FormController {
     //update scenario
     @RequestMapping(value = "/forms", method = RequestMethod.POST)
     @Transactional
-    void save(@RequestBody FormRequest formRequest) {
+    void save(@RequestBody FormContract formRequest) {
         Form form = formRepository.findByUuid(formRequest.getUuid());
         if (form == null) {
             form = Form.create();
@@ -67,7 +65,7 @@ public class FormController {
         }
 
         for (int formElementGroupIndex = 0; formElementGroupIndex < formRequest.getFormElementGroups().size(); formElementGroupIndex++) {
-            FormElementGroupRequest formElementGroupRequest = formRequest.getFormElementGroups().get(formElementGroupIndex);
+            FormElementGroupContract formElementGroupRequest = formRequest.getFormElementGroups().get(formElementGroupIndex);
             FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
             if (formElementGroup == null) {
                 formElementGroup = form.addFormElementGroup(formElementGroupRequest.getUuid());
@@ -76,7 +74,7 @@ public class FormController {
             formElementGroup.setDisplayOrder((short) formElementGroupIndex);
 
             for (int formElementIndex = 0; formElementIndex < formElementGroupRequest.getFormElements().size(); formElementIndex++) {
-                FormElementRequest formElementRequest = formElementGroupRequest.getFormElements().get(formElementIndex);
+                FormElementContract formElementRequest = formElementGroupRequest.getFormElements().get(formElementIndex);
                 String conceptName = formElementRequest.getConceptName() == null ? formElementRequest.getName() : formElementRequest.getConceptName();
                 Concept concept = conceptRepository.findByName(conceptName);
                 if (concept == null) {
@@ -89,7 +87,6 @@ public class FormController {
                         if (conceptAnswer == null) {
                             conceptAnswer = new ConceptAnswer();
                             conceptAnswer.setOrder((short) (answerIndex + 1));
-                            conceptAnswer.setConcept(concept);
                             conceptAnswer.assignUUID();
 
                             Concept answer = conceptRepository.findByName(answerConceptName);
@@ -102,6 +99,7 @@ public class FormController {
                             }
                             conceptAnswer.setAnswerConcept(answer);
                         }
+                        concept.addAnswer(conceptAnswer);
                     }
                 }
                 conceptRepository.save(concept);
@@ -136,5 +134,35 @@ public class FormController {
 
         formRepository.save(form);
         formMappingRepository.save(formMapping);
+    }
+
+    @RequestMapping(value = "/forms/export", method = RequestMethod.GET)
+    public FormContract export(@RequestParam String formUUID) {
+        Form form = formRepository.findByUuid(formUUID);
+        FormMapping formMapping = formMappingRepository.findByFormUuid(form.getUuid());
+        Long entityId = formMapping.getEntityId();
+        FormContract formContract;
+        if (entityId != null && entityId != 0) {
+            formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), programRepository.findOne(entityId).getName());
+        } else {
+            formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), null);
+        }
+
+        Set<FormElementGroup> formElementGroups = form.getFormElementGroups();
+        formElementGroups.forEach(formElementGroup -> {
+            FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
+            formContract.addFormElementGroup(formElementGroupContract);
+            formElementGroup.getFormElements().forEach(formElement -> {
+                String conceptName = formElement.isFormElementNameSameAsConceptName() ? null : formElement.getConcept().getName();
+                FormElementContract formElementContract = new FormElementContract(formElement.getUuid(), null, formElement.getName(), formElement.isMandatory(), formElement.getKeyValues(), conceptName, formElement.getConcept().getDataType());
+                if (ConceptDataType.Coded.toString().equals(formElement.getConcept().getDataType())) {
+                    List<String> answers = formElement.getConcept().getConceptAnswers().stream().map(conceptAnswer -> conceptAnswer.getAnswerConcept().getName()).collect(Collectors.toList());
+                    formElementContract.setAnswers(answers);
+                }
+                formElementGroupContract.addFormElement(formElementContract);
+            });
+        });
+
+        return formContract;
     }
 }

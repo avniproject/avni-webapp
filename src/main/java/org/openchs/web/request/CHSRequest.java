@@ -4,6 +4,14 @@ public class CHSRequest {
     private String uuid;
     private String userUUID;
 
+    public CHSRequest() {
+    }
+
+    public CHSRequest(String uuid, String userUUID) {
+        this.uuid = uuid;
+        this.userUUID = userUUID;
+    }
+
     public String getUuid() {
         return uuid;
     }
