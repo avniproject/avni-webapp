@@ -17,9 +17,10 @@ public class FormContract extends ReferenceDataDocument {
     public FormContract() {
     }
 
-    public FormContract(String uuid, String userUUID, String name, String programName) {
+    public FormContract(String uuid, String userUUID, String name, String formType, String programName) {
         super(uuid, userUUID, name);
         this.programName = programName;
+        this.formType = formType;
         formElementGroups = new ArrayList<>();
     }
 

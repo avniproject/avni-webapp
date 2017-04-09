@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class FormController {
     @RequestMapping(value = "/forms", method = RequestMethod.POST)
     @Transactional
     void save(@RequestBody FormContract formRequest) {
+        System.out.println(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         Form form = formRepository.findByUuid(formRequest.getUuid());
         if (form == null) {
             form = Form.create();
@@ -48,22 +50,6 @@ public class FormController {
         }
         form.setFormType(FormType.valueOf(formRequest.getFormType()));
 
-        EncounterType encounterType = encounterTypeRepository.findByName(formRequest.getProgramName());
-        if (encounterType == null) {
-            encounterType = new EncounterType();
-            encounterType.assignUUID();
-            encounterType.setName(formRequest.getProgramName());
-            encounterType = encounterTypeRepository.save(encounterType);
-        }
-
-        Program program = programRepository.findByName(formRequest.getProgramName());
-        if (program == null) {
-            program = new Program();
-            program.assignUUID();
-            program.setName(formRequest.getProgramName());
-            program = programRepository.save(program);
-        }
-
         for (int formElementGroupIndex = 0; formElementGroupIndex < formRequest.getFormElementGroups().size(); formElementGroupIndex++) {
             FormElementGroupContract formElementGroupRequest = formRequest.getFormElementGroups().get(formElementGroupIndex);
             FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
@@ -71,7 +57,7 @@ public class FormController {
                 formElementGroup = form.addFormElementGroup(formElementGroupRequest.getUuid());
             }
             formElementGroup.setName(formElementGroupRequest.getName());
-            formElementGroup.setDisplayOrder((short) formElementGroupIndex);
+            formElementGroup.setDisplayOrder(formElementGroupRequest.getDisplayOrder() == 0 ? (short) (formElementGroupIndex + 1) : formElementGroupRequest.getDisplayOrder());
 
             for (int formElementIndex = 0; formElementIndex < formElementGroupRequest.getFormElements().size(); formElementIndex++) {
                 FormElementContract formElementRequest = formElementGroupRequest.getFormElements().get(formElementIndex);
@@ -109,7 +95,7 @@ public class FormController {
                     formElement = formElementGroup.addFormElement(formElementRequest.getUuid());
                 }
                 formElement.setName(formElementRequest.getName());
-                formElement.setDisplayOrder((short) (formElementIndex + 1));
+                formElement.setDisplayOrder(formElementRequest.getDisplayOrder() == 0 ? (short) (formElementIndex + 1) : formElementRequest.getDisplayOrder());
                 formElement.setFormElementGroup(formElementGroup);
                 formElement.setMandatory(formElementRequest.isMandatory());
                 formElement.setKeyValues(formElementRequest.getKeyValues());
@@ -129,8 +115,27 @@ public class FormController {
             formMapping.assignUUID();
             formMapping.setForm(form);
         }
-        formMapping.setEntityId(program.getId());
-        formMapping.setObservationsTypeEntityId(encounterType.getId());
+
+        if (formRequest.getProgramName() != null) {
+            Program program = programRepository.findByName(formRequest.getProgramName());
+            if (program == null) {
+                program = new Program();
+                program.assignUUID();
+                program.setName(formRequest.getProgramName());
+                program = programRepository.save(program);
+                formMapping.setEntityId(program.getId());
+            }
+        }
+        if (formRequest.getProgramName() != null) {
+            EncounterType encounterType = encounterTypeRepository.findByName(formRequest.getProgramName());
+            if (encounterType == null) {
+                encounterType = new EncounterType();
+                encounterType.assignUUID();
+                encounterType.setName(formRequest.getProgramName());
+                encounterTypeRepository.save(encounterType);
+                formMapping.setObservationsTypeEntityId(encounterType.getId());
+            }
+        }
 
         formRepository.save(form);
         formMappingRepository.save(formMapping);
@@ -143,20 +148,27 @@ public class FormController {
         Long entityId = formMapping.getEntityId();
         FormContract formContract;
         if (entityId != null && entityId != 0) {
-            formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), programRepository.findOne(entityId).getName());
+            formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString(), programRepository.findOne(entityId).getName());
         } else {
-            formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), null);
+            formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString(), null);
         }
 
-        Set<FormElementGroup> formElementGroups = form.getFormElementGroups();
-        formElementGroups.forEach(formElementGroup -> {
+        form.getFormElementGroups().stream().sorted(Comparator.comparingInt(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
             formContract.addFormElementGroup(formElementGroupContract);
-            formElementGroup.getFormElements().forEach(formElement -> {
+            formElementGroup.getFormElements().stream().sorted(Comparator.comparingInt(FormElement::getDisplayOrder)).forEach(formElement -> {
                 String conceptName = formElement.isFormElementNameSameAsConceptName() ? null : formElement.getConcept().getName();
-                FormElementContract formElementContract = new FormElementContract(formElement.getUuid(), null, formElement.getName(), formElement.isMandatory(), formElement.getKeyValues(), conceptName, formElement.getConcept().getDataType());
+                FormElementContract formElementContract = new FormElementContract();
+                formElementContract.setUuid(formElement.getUuid());
+                formElementContract.setName(formElement.getName());
+                formElementContract.setMandatory(formElement.isMandatory());
+                formElementContract.setKeyValues(formElement.getKeyValues());
+                formElementContract.setConceptName(conceptName);
+                formElementContract.setDataType(formElement.getConcept().getDataType());
+                formElementContract.setDisplayOrder(formElement.getDisplayOrder());
+
                 if (ConceptDataType.Coded.toString().equals(formElement.getConcept().getDataType())) {
-                    List<String> answers = formElement.getConcept().getConceptAnswers().stream().map(conceptAnswer -> conceptAnswer.getAnswerConcept().getName()).collect(Collectors.toList());
+                    List<String> answers = formElement.getConcept().getConceptAnswers().stream().sorted(Comparator.comparingInt(ConceptAnswer::getOrder)).map(conceptAnswer -> conceptAnswer.getAnswerConcept().getName()).collect(Collectors.toList());
                     formElementContract.setAnswers(answers);
                 }
                 formElementGroupContract.addFormElement(formElementContract);

@@ -1,18 +1,21 @@
 package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.KeyValues;
 import org.openchs.web.request.ReferenceDataDocument;
 
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "name", "uuid", "isMandatory", "keyValues", "conceptName", "dataType", "displayOrder", "answers" })
 public class FormElementContract extends ReferenceDataDocument {
     private boolean isMandatory;
     private KeyValues keyValues;
     private String conceptName;
     private String dataType;
     private List<String> answers;
+    private short displayOrder;
 
     public FormElementContract() {
     }
@@ -63,5 +66,13 @@ public class FormElementContract extends ReferenceDataDocument {
 
     public void setAnswers(List<String> answers) {
         this.answers = answers;
+    }
+
+    public short getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(short displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }
