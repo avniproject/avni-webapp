@@ -26,3 +26,6 @@ $$ LANGUAGE plpgsql;
 
 SELECT test();
 SELECT test();
+
+-- USEFUL QUERIES
+select f.name, f.form_type, fm.form_id, fm.entity_id, fm.observations_type_entity_id from form_mapping fm, form f where fm.form_id = f.id order by fm.entity_id, fm.observations_type_entity_id;
