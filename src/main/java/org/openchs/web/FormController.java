@@ -127,11 +127,11 @@ public class FormController {
             }
         }
         if (formRequest.getProgramName() != null) {
-            EncounterType encounterType = encounterTypeRepository.findByName(formRequest.getProgramName());
+            EncounterType encounterType = encounterTypeRepository.findByName(formRequest.getName());
             if (encounterType == null) {
                 encounterType = new EncounterType();
                 encounterType.assignUUID();
-                encounterType.setName(formRequest.getProgramName());
+                encounterType.setName(formRequest.getName());
                 encounterTypeRepository.save(encounterType);
                 formMapping.setObservationsTypeEntityId(encounterType.getId());
             }
