@@ -42,12 +42,17 @@ public class FormController {
     @Transactional
     void save(@RequestBody FormContract formRequest) {
         System.out.println(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
+        String associatedEncounterTypeName;
+
         Form form = formRepository.findByUuid(formRequest.getUuid());
         if (form == null) {
             form = Form.create();
-            form.setName(formRequest.getName());
             form.setUuid(formRequest.getUuid());
+            associatedEncounterTypeName = formRequest.getName();
+        } else {
+            associatedEncounterTypeName = form.getName();
         }
+        form.setName(formRequest.getName());
         form.setFormType(FormType.valueOf(formRequest.getFormType()));
 
         for (int formElementGroupIndex = 0; formElementGroupIndex < formRequest.getFormElementGroups().size(); formElementGroupIndex++) {
@@ -123,18 +128,18 @@ public class FormController {
                 program.assignUUID();
                 program.setName(formRequest.getProgramName());
                 program = programRepository.save(program);
-                formMapping.setEntityId(program.getId());
             }
+            formMapping.setEntityId(program.getId());
         }
         if (formRequest.getProgramName() != null) {
-            EncounterType encounterType = encounterTypeRepository.findByName(formRequest.getName());
+            EncounterType encounterType = encounterTypeRepository.findByName(associatedEncounterTypeName);
             if (encounterType == null) {
                 encounterType = new EncounterType();
                 encounterType.assignUUID();
-                encounterType.setName(formRequest.getName());
-                encounterTypeRepository.save(encounterType);
-                formMapping.setObservationsTypeEntityId(encounterType.getId());
             }
+            encounterType.setName(formRequest.getName());
+            encounterTypeRepository.save(encounterType);
+            formMapping.setObservationsTypeEntityId(encounterType.getId());
         }
 
         formRepository.save(form);
