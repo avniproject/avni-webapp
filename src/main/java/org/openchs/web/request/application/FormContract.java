@@ -2,14 +2,14 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.openchs.web.request.ReferenceDataDocument;
+import org.openchs.web.request.ReferenceDataContract;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "name", "uuid", "formType", "programName", "userUUID", "formElementGroups" })
-public class FormContract extends ReferenceDataDocument {
+public class FormContract extends ReferenceDataContract {
     private String formType;
     private String programName;
     private List<FormElementGroupContract> formElementGroups;

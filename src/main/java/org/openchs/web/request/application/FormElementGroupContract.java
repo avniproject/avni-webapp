@@ -1,13 +1,13 @@
 package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.openchs.web.request.ReferenceDataDocument;
+import org.openchs.web.request.ReferenceDataContract;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FormElementGroupContract extends ReferenceDataDocument {
+public class FormElementGroupContract extends ReferenceDataContract {
     private short displayOrder;
     private List<FormElementContract> formElements;
 

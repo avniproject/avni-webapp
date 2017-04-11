@@ -28,4 +28,8 @@ SELECT test();
 SELECT test();
 
 -- USEFUL QUERIES
-select f.name, f.form_type, fm.form_id, fm.entity_id, fm.observations_type_entity_id from form_mapping fm, form f where fm.form_id = f.id order by fm.entity_id, fm.observations_type_entity_id;
+-- Understanding form mapping
+select f.name as Form, f.form_type, fm.form_id, fm.entity_id, fm.observations_type_entity_id, et.name as EncounterType from form_mapping fm, form f, encounter_type et where fm.form_id = f.id and fm.observations_type_entity_id = et.id order by fm.entity_id, fm.observations_type_entity_id;
+
+-- Understanding concept with coded answers
+select ca.id, c.name, ca.answer_order, ac.name from concept c, concept ac, concept_answer ca where ca.concept_id = c.id and ca.answer_concept_id = ac.id and c.name = 'Complaint' order by ca.answer_order;

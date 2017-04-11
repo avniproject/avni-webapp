@@ -80,13 +80,17 @@ public class Concept extends CHSEntity {
     }
 
     public static Concept create(String name, String dataType) {
+        return create(name, dataType, UUID.randomUUID().toString());
+    }
+
+    public static Concept create(String name, String dataType, String uuid) {
         Concept concept = new Concept();
         concept.name = name;
         concept.dataType = dataType;
         if (ConceptDataType.Coded.toString().equals(dataType)) {
             concept.conceptAnswers = new HashSet<>();
         }
-        concept.assignUUID();
+        concept.setUuid(uuid);
         return concept;
     }
 

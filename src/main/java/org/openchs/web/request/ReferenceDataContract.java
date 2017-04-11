@@ -1,12 +1,12 @@
 package org.openchs.web.request;
 
-public class ReferenceDataDocument extends CHSRequest {
+public class ReferenceDataContract extends CHSRequest {
     private String name;
 
-    public ReferenceDataDocument() {
+    public ReferenceDataContract() {
     }
 
-    public ReferenceDataDocument(String uuid, String userUUID, String name) {
+    public ReferenceDataContract(String uuid, String userUUID, String name) {
         super(uuid, userUUID);
         this.name = name;
     }
