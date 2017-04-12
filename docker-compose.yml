@@ -1,12 +1,5 @@
 version: '2'
 services:
-  httpd:
-      build: ./infra/httpd
-      image: openchs/httpd:2.2
-      ports:
-        - "0.0.0.0:3000:80"
-      volumes:
-      - ./fs:/usr/local/apache2/htdocs/fs
   postgres:
       build: ./infra/db
       image: openchs-db
