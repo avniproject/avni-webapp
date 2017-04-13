@@ -4,6 +4,7 @@ import org.openchs.application.*;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramRepository;
+import org.openchs.dao.application.FormElementGroupRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
@@ -27,14 +28,16 @@ public class FormController {
     private EncounterTypeRepository encounterTypeRepository;
     private FormMappingRepository formMappingRepository;
     private ConceptRepository conceptRepository;
+    private FormElementGroupRepository formElementGroupRepository;
 
     @Autowired
-    public FormController(FormRepository formRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, ConceptRepository conceptRepository) {
+    public FormController(FormRepository formRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, ConceptRepository conceptRepository, FormElementGroupRepository formElementGroupRepository) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
         this.conceptRepository = conceptRepository;
+        this.formElementGroupRepository = formElementGroupRepository;
     }
 
     //update scenario
@@ -55,6 +58,18 @@ public class FormController {
         form.setName(formRequest.getName());
         form.setFormType(FormType.valueOf(formRequest.getFormType()));
 
+        //hack because commit is getting called before end of the method
+        int randomOffsetToAvoidClash = 100;
+        for (int formElementGroupIndex = 0; formElementGroupIndex < formRequest.getFormElementGroups().size(); formElementGroupIndex++) {
+            FormElementGroupContract formElementGroupRequest = formRequest.getFormElementGroups().get(formElementGroupIndex);
+            FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
+            if (formElementGroup != null) {
+                formElementGroup.setDisplayOrder((short) (getDisplayOrder(formElementGroupIndex, formElementGroupRequest) + randomOffsetToAvoidClash));
+                formElementGroupRepository.save(formElementGroup);
+            }
+        }
+        //end hack
+
         for (int formElementGroupIndex = 0; formElementGroupIndex < formRequest.getFormElementGroups().size(); formElementGroupIndex++) {
             FormElementGroupContract formElementGroupRequest = formRequest.getFormElementGroups().get(formElementGroupIndex);
             FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
@@ -62,7 +77,7 @@ public class FormController {
                 formElementGroup = form.addFormElementGroup(formElementGroupRequest.getUuid());
             }
             formElementGroup.setName(formElementGroupRequest.getName());
-            formElementGroup.setDisplayOrder(formElementGroupRequest.getDisplayOrder() == 0 ? (short) (formElementGroupIndex + 1) : formElementGroupRequest.getDisplayOrder());
+            formElementGroup.setDisplayOrder(getDisplayOrder(formElementGroupIndex, formElementGroupRequest));
 
             for (int formElementIndex = 0; formElementIndex < formElementGroupRequest.getFormElements().size(); formElementIndex++) {
                 FormElementContract formElementRequest = formElementGroupRequest.getFormElements().get(formElementIndex);
@@ -145,6 +160,10 @@ public class FormController {
 
         formRepository.save(form);
         formMappingRepository.save(formMapping);
+    }
+
+    private short getDisplayOrder(int formElementGroupIndex, FormElementGroupContract formElementGroupRequest) {
+        return formElementGroupRequest.getDisplayOrder() == 0 ? (short) (formElementGroupIndex + 1) : formElementGroupRequest.getDisplayOrder();
     }
 
     @RequestMapping(value = "/forms/export", method = RequestMethod.GET)
