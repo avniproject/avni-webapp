@@ -2,4 +2,3 @@
 target
 fs/config/modules/*
 openchs-server.iml
-external/*.*
