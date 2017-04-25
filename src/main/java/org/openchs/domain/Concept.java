@@ -15,7 +15,7 @@ public class Concept extends CHSEntity {
     @NotNull
     private String dataType;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "concept")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "concept")
     private Set<ConceptAnswer> conceptAnswers;
 
     private Double lowAbsolute;

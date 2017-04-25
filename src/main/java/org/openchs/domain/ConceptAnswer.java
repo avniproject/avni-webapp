@@ -6,7 +6,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "concept_answer")
 public class ConceptAnswer extends CHSEntity{
-
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concept_id")
