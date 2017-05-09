@@ -16,10 +16,14 @@ import org.springframework.hateoas.ResourceProcessor;
 
 @SpringBootApplication
 public class OpenCHS {
+    private final ProgramRepository programRepository;
+    private final EncounterTypeRepository encounterTypeRepository;
+
     @Autowired
-    private ProgramRepository programRepository;
-    @Autowired
-    private EncounterTypeRepository encounterTypeRepository;
+    public OpenCHS(ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository) {
+        this.programRepository = programRepository;
+        this.encounterTypeRepository = encounterTypeRepository;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(OpenCHS.class, args);
