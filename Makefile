@@ -29,3 +29,14 @@ download-app:
 
 push-binary-to-demo:
 	scp target/openchs-server-0.1-SNAPSHOT.jar root@139.59.8.249:/root/openchs-server/target/openchs-server-0.1-SNAPSHOT.jar
+
+init-db:
+	-psql -h localhost postgres -c "create user openchs with password 'password'";
+	-psql -h localhost postgres -c 'create database openchs with owner openchs';
+	-psql -h localhost openchs -c 'create extension if not exists "uuid-ossp"';
+
+reset-db:
+	-psql -h localhost -U postgres postgres -c 'drop database openchs';
+	-psql -h localhost -U postgres postgres -c 'create database openchs with owner openchs';
+	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public clean
+	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public -locations=filesystem:./src/main/resources/db/migration/ migrate
