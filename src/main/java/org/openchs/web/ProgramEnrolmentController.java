@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
+
 @RestController
 public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> {
     private final ProgramRepository programRepository;
@@ -31,6 +33,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
+    @Transactional
     void save(@RequestBody ProgramEnrolmentRequest request) {
         Program program = programRepository.findByUuid(request.getProgramUUID());
         ProgramOutcome programOutcome = programOutcomeRepository.findByUuid(request.getProgramOutcomeUUID());

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
+
 @RestController
 public class EncounterController extends AbstractController<Encounter> {
     private final IndividualRepository individualRepository;
@@ -30,6 +32,7 @@ public class EncounterController extends AbstractController<Encounter> {
     }
 
     @RequestMapping(value = "/encounters", method = RequestMethod.POST)
+    @Transactional
     void save(@RequestBody EncounterRequest encounterRequest) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterRequest.getEncounterTypeUUID());
         Individual individual = individualRepository.findByUuid(encounterRequest.getIndividualUUID());

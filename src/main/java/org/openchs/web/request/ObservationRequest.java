@@ -4,6 +4,7 @@ import java.util.List;
 
 public class ObservationRequest {
     private String conceptUUID;
+    private String conceptName;
     private Object valuePrimitive; //all primitives
     private List<String> valueCoded; // all coded
 
@@ -29,5 +30,13 @@ public class ObservationRequest {
 
     public void setValueCoded(List<String> valueCoded) {
         this.valueCoded = valueCoded;
+    }
+
+    public String getConceptName() {
+        return conceptName;
+    }
+
+    public void setConceptName(String conceptName) {
+        this.conceptName = conceptName;
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
+
 @RestController
 public class ProgramEncounterController extends AbstractController<ProgramEncounter> {
     private EncounterTypeRepository encounterTypeRepository;
@@ -26,6 +28,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     }
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
+    @Transactional
     void save(@RequestBody ProgramEncounterRequest request) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(request.getEncounterTypeUUID());
 

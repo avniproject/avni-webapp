@@ -1,7 +1,9 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.DateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProgramEncounterRequest extends AbstractEncounterRequest {
     private String programEnrolmentUUID;
     private String name;

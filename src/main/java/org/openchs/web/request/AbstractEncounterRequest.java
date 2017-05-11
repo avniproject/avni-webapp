@@ -6,6 +6,7 @@ import java.util.List;
 public class AbstractEncounterRequest extends CHSRequest {
     private DateTime encounterDateTime;
     private String encounterTypeUUID;
+    private String encounterType;
     private List<ObservationRequest> observations;
 
     public DateTime getEncounterDateTime() {
@@ -30,5 +31,13 @@ public class AbstractEncounterRequest extends CHSRequest {
 
     public void setObservations(List<ObservationRequest> observations) {
         this.observations = observations;
+    }
+
+    public String getEncounterType() {
+        return encounterType;
+    }
+
+    public void setEncounterType(String encounterType) {
+        this.encounterType = encounterType;
     }
 }

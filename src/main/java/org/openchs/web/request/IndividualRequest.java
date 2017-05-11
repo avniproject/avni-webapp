@@ -1,13 +1,17 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.LocalDate;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class IndividualRequest extends CHSRequest {
     private String name;
     private LocalDate dateOfBirth;
     private boolean dateOfBirthVerified;
     private String genderUUID;
+    private String gender;
     private String addressLevelUUID;
+    private String addressLevel;
     private LocalDate registrationDate;
     private Long catchmentId;
 
@@ -65,5 +69,21 @@ public class IndividualRequest extends CHSRequest {
 
     public void setCatchmentId(Long catchmentId) {
         this.catchmentId = catchmentId;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getAddressLevel() {
+        return addressLevel;
+    }
+
+    public void setAddressLevel(String addressLevel) {
+        this.addressLevel = addressLevel;
     }
 }
