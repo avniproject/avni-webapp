@@ -1,0 +1,1 @@
+ALTER TABLE checklist ADD COLUMN base_date TIMESTAMP NOT NULL;

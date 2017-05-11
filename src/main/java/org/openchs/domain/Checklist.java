@@ -1,5 +1,7 @@
 package org.openchs.domain;
 
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -17,6 +19,10 @@ public class Checklist extends CHSEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
+
+    @NotNull
+    @Column
+    private DateTime baseDate;
 
     public String getName() {
         return name;
@@ -40,5 +46,17 @@ public class Checklist extends CHSEntity {
 
     public void setProgramEnrolment(ProgramEnrolment programEnrolment) {
         this.programEnrolment = programEnrolment;
+    }
+
+    public DateTime getBaseDate() {
+        return baseDate;
+    }
+
+    public void setBaseDate(DateTime baseDate) {
+        this.baseDate = baseDate;
+    }
+
+    public void addItem(ChecklistItem checklistItem) {
+        this.items.add(checklistItem);
     }
 }

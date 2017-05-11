@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import javax.persistence.*;
@@ -14,11 +15,11 @@ public class ChecklistItem extends CHSEntity {
     private Concept concept;
 
     @Column
-    private LocalDate dueDate;
+    private DateTime dueDate;
     @Column
-    private LocalDate maxDate;
+    private DateTime maxDate;
     @Column
-    private LocalDate completionDate;
+    private DateTime completionDate;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,27 +34,27 @@ public class ChecklistItem extends CHSEntity {
         this.concept = concept;
     }
 
-    public LocalDate getDueDate() {
+    public DateTime getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(LocalDate dueDate) {
+    public void setDueDate(DateTime dueDate) {
         this.dueDate = dueDate;
     }
 
-    public LocalDate getMaxDate() {
+    public DateTime getMaxDate() {
         return maxDate;
     }
 
-    public void setMaxDate(LocalDate maxDate) {
+    public void setMaxDate(DateTime maxDate) {
         this.maxDate = maxDate;
     }
 
-    public LocalDate getCompletionDate() {
+    public DateTime getCompletionDate() {
         return completionDate;
     }
 
-    public void setCompletionDate(LocalDate completionDate) {
+    public void setCompletionDate(DateTime completionDate) {
         this.completionDate = completionDate;
     }
 

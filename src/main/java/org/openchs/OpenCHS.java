@@ -151,4 +151,31 @@ public class OpenCHS {
             }
         };
     }
+
+    @Bean
+    public ResourceProcessor<Resource<Checklist>> ChecklistProcessor() {
+        return new ResourceProcessor<Resource<Checklist>>() {
+            @Override
+            public Resource<Checklist> process(Resource<Checklist> resource) {
+                Checklist checklist = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(checklist.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<ChecklistItem>> ChecklistItemProcessor() {
+        return new ResourceProcessor<Resource<ChecklistItem>>() {
+            @Override
+            public Resource<ChecklistItem> process(Resource<ChecklistItem> resource) {
+                ChecklistItem checklistItem = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(checklistItem.getChecklist().getUuid(), "checklistUUID"));
+                resource.add(new Link(checklistItem.getConcept().getUuid(), "conceptUUID"));
+                return resource;
+            }
+        };
+    }
 }
