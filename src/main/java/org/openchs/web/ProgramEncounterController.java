@@ -2,7 +2,7 @@ package org.openchs.web;
 
 import org.openchs.dao.*;
 import org.openchs.domain.*;
-import org.openchs.web.request.ObservationRequest;
+import org.openchs.web.request.ObservationService;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,16 +15,16 @@ import javax.transaction.Transactional;
 @RestController
 public class ProgramEncounterController extends AbstractController<ProgramEncounter> {
     private EncounterTypeRepository encounterTypeRepository;
-    private ConceptRepository conceptRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private ProgramEnrolmentRepository programEnrolmentRepository;
+    private ObservationService observationService;
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ConceptRepository conceptRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService) {
         this.encounterTypeRepository = encounterTypeRepository;
-        this.conceptRepository = conceptRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
+        this.observationService = observationService;
     }
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
@@ -36,7 +36,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         encounter.setEncounterDateTime(request.getEncounterDateTime());
         encounter.setProgramEnrolment(programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID()));
         encounter.setEncounterType(encounterType);
-        encounter.setObservations(EncounterControllerUtil.createObservationCollection(conceptRepository, request));
+        encounter.setObservations(observationService.createObservations(request.getObservations()));
         encounter.setName(request.getName());
         encounter.setScheduledDateTime(request.getScheduledDateTime());
         encounter.setMaxDateTime(request.getMaxDateTime());

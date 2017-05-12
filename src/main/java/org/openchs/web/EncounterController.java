@@ -8,6 +8,7 @@ import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
 import org.openchs.web.request.EncounterRequest;
+import org.openchs.web.request.ObservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,15 +21,15 @@ import javax.transaction.Transactional;
 public class EncounterController extends AbstractController<Encounter> {
     private final IndividualRepository individualRepository;
     private final EncounterTypeRepository encounterTypeRepository;
-    private final ConceptRepository conceptRepository;
     private final EncounterRepository encounterRepository;
+    private ObservationService observationService;
 
     @Autowired
-    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, ConceptRepository conceptRepository, EncounterRepository encounterRepository) {
+    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
-        this.conceptRepository = conceptRepository;
         this.encounterRepository = encounterRepository;
+        this.observationService = observationService;
     }
 
     @RequestMapping(value = "/encounters", method = RequestMethod.POST)
@@ -41,7 +42,7 @@ public class EncounterController extends AbstractController<Encounter> {
         encounter.setEncounterDateTime(encounterRequest.getEncounterDateTime());
         encounter.setIndividual(individual);
         encounter.setEncounterType(encounterType);
-        encounter.setObservations(EncounterControllerUtil.createObservationCollection(conceptRepository, encounterRequest));
+        encounter.setObservations(observationService.createObservations(encounterRequest.getObservations()));
         encounterRepository.save(encounter);
     }
 }

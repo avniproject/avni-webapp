@@ -3,6 +3,8 @@ package org.openchs.web.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.LocalDate;
 
+import java.util.List;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class IndividualRequest extends CHSRequest {
     private String name;
@@ -14,6 +16,7 @@ public class IndividualRequest extends CHSRequest {
     private String addressLevel;
     private LocalDate registrationDate;
     private Long catchmentId;
+    private List<ObservationRequest> observations;
 
     public String getName() {
         return name;
@@ -85,5 +88,13 @@ public class IndividualRequest extends CHSRequest {
 
     public void setAddressLevel(String addressLevel) {
         this.addressLevel = addressLevel;
+    }
+
+    public List<ObservationRequest> getObservations() {
+        return observations;
+    }
+
+    public void setObservations(List<ObservationRequest> observations) {
+        this.observations = observations;
     }
 }

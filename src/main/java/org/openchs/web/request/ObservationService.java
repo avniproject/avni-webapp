@@ -1,15 +1,27 @@
-package org.openchs.web;
+package org.openchs.web.request;
 
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Observation;
 import org.openchs.domain.ObservationCollection;
 import org.openchs.web.request.AbstractEncounterRequest;
 import org.openchs.web.request.ObservationRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class EncounterControllerUtil {
-    static ObservationCollection createObservationCollection(ConceptRepository conceptRepository, AbstractEncounterRequest request) {
+import java.util.List;
+
+@Service
+public class ObservationService {
+    private ConceptRepository conceptRepository;
+
+    @Autowired
+    public ObservationService(ConceptRepository conceptRepository) {
+        this.conceptRepository = conceptRepository;
+    }
+
+    public ObservationCollection createObservations(List<ObservationRequest> observationRequests) {
         ObservationCollection observations = new ObservationCollection();
-        for (ObservationRequest observationRequest : request.getObservations()) {
+        for (ObservationRequest observationRequest : observationRequests) {
             Observation observation = new Observation();
 
             if (conceptRepository.findByUuid(observationRequest.getConceptUUID()) == null) {

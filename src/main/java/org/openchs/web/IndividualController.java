@@ -8,6 +8,7 @@ import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
+import org.openchs.web.request.ObservationService;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,14 +25,16 @@ public class IndividualController extends AbstractController<Individual> {
     private final GenderRepository genderRepository;
     private ProgramEncounterController programEncounterController;
     private ProgramEnrolmentController programEnrolmentController;
+    private ObservationService observationService;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, AddressLevelRepository addressLevelRepository, GenderRepository genderRepository, ProgramEncounterController programEncounterController, ProgramEnrolmentController programEnrolmentController) {
+    public IndividualController(IndividualRepository individualRepository, AddressLevelRepository addressLevelRepository, GenderRepository genderRepository, ProgramEncounterController programEncounterController, ProgramEnrolmentController programEnrolmentController, ObservationService observationService) {
         this.individualRepository = individualRepository;
         this.addressLevelRepository = addressLevelRepository;
         this.genderRepository = genderRepository;
         this.programEncounterController = programEncounterController;
         this.programEnrolmentController = programEnrolmentController;
+        this.observationService = observationService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -47,6 +50,7 @@ public class IndividualController extends AbstractController<Individual> {
         individual.setGender(gender);
         individual.setRegistrationDate(individualRequest.getRegistrationDate());
         individual.setCatchmentId(individualRequest.getCatchmentId());
+        individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
         individualRepository.save(individual);
     }
 

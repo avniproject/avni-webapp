@@ -29,7 +29,7 @@ public class ProgramEnrolment extends CHSEntity {
 
     @Column
     @Type(type = "observations")
-    private ObservationCollection enrolmentProfile;
+    private ObservationCollection observations;
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "program_outcome_id")
@@ -74,12 +74,12 @@ public class ProgramEnrolment extends CHSEntity {
         this.enrolmentDateTime = enrolmentDateTime;
     }
 
-    public ObservationCollection getEnrolmentProfile() {
-        return enrolmentProfile;
+    public ObservationCollection getObservations() {
+        return observations;
     }
 
-    public void setEnrolmentProfile(ObservationCollection enrolmentProfile) {
-        this.enrolmentProfile = enrolmentProfile;
+    public void setObservations(ObservationCollection observations) {
+        this.observations = observations;
     }
 
     public ProgramOutcome getProgramOutcome() {

@@ -8,6 +8,7 @@ import org.openchs.domain.Individual;
 import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.domain.ProgramOutcome;
+import org.openchs.web.request.ObservationService;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,13 +24,15 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     private final IndividualRepository individualRepository;
     private final ProgramOutcomeRepository programOutcomeRepository;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
+    private ObservationService observationService;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService) {
         this.programRepository = programRepository;
         this.individualRepository = individualRepository;
         this.programOutcomeRepository = programOutcomeRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
+        this.observationService = observationService;
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
@@ -43,6 +46,8 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         programEnrolment.setProgramOutcome(programOutcome);
         programEnrolment.setEnrolmentDateTime(request.getEnrolmentDateTime());
         programEnrolment.setProgramExitDateTime(request.getProgramExitDateTime());
+        programEnrolment.setObservations(observationService.createObservations(request.getObservations()));
+        programEnrolment.setProgramExitObservations(observationService.createObservations(request.getProgramExitObservations()));
 
         if (programEnrolment.isNew()) {
             Individual individual = individualRepository.findByUuid(request.getIndividualUUID());

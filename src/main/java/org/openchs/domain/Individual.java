@@ -42,7 +42,7 @@ public class Individual extends CHSEntity {
 
     @Column
     @Type(type = "observations")
-    private ObservationCollection customProfile;
+    private ObservationCollection observations;
 
     public String getName() {
         return name;
@@ -108,12 +108,12 @@ public class Individual extends CHSEntity {
         this.encounters = encounters;
     }
 
-    public ObservationCollection getCustomProfile() {
-        return customProfile;
+    public ObservationCollection getObservations() {
+        return observations;
     }
 
-    public void setCustomProfile(ObservationCollection customProfile) {
-        this.customProfile = customProfile;
+    public void setObservations(ObservationCollection observations) {
+        this.observations = observations;
     }
 
     public LocalDate getRegistrationDate() {

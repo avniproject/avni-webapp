@@ -14,6 +14,7 @@ public class ProgramEnrolmentRequest extends CHSRequest {
     private String programOutcomeUUID;
     private DateTime programExitDateTime;
     private List<ObservationRequest> observations;
+    private List<ObservationRequest> programExitObservations;
 
     public String getProgramUUID() {
         return programUUID;
@@ -69,5 +70,13 @@ public class ProgramEnrolmentRequest extends CHSRequest {
 
     public void setObservations(List<ObservationRequest> observations) {
         this.observations = observations;
+    }
+
+    public List<ObservationRequest> getProgramExitObservations() {
+        return programExitObservations;
+    }
+
+    public void setProgramExitObservations(List<ObservationRequest> programExitObservations) {
+        this.programExitObservations = programExitObservations;
     }
 }
