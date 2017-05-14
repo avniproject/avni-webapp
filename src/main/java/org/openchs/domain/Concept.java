@@ -22,6 +22,7 @@ public class Concept extends CHSEntity {
     private Double highAbsolute;
     private Double lowNormal;
     private Double highNormal;
+    private String unit;
 
     public String getName() {
         return name;
@@ -101,5 +102,13 @@ public class Concept extends CHSEntity {
     public void addAnswer(ConceptAnswer conceptAnswer) {
         conceptAnswers.add(conceptAnswer);
         conceptAnswer.setConcept(this);
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

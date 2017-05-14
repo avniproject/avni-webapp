@@ -1,0 +1,1 @@
+ALTER TABLE concept ADD COLUMN unit VARCHAR (50) NULL;
