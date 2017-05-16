@@ -2,6 +2,7 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.AddressLevel;
+import org.openchs.domain.Catchment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -15,8 +16,8 @@ import javax.transaction.Transactional;
 
 @Transactional
 @Repository
-@RepositoryRestResource(collectionResourceRel = "addressLevel", path = "addressLevel")
-public interface AddressLevelRepository extends PagingAndSortingRepository<AddressLevel, Long>, CHSRepository<AddressLevel> {
-    @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
-    Page<AddressLevel> findByCatchmentsIdAndLastModifiedDateTimeGreaterThanOrderById(@Param("catchmentId") long catchmentId, @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+@RepositoryRestResource(collectionResourceRel = "catchment", path = "catchment")
+public interface CatchmentRepository extends PagingAndSortingRepository<Catchment, Long>, CHSRepository<Catchment> {
+    @RestResource(path = "lastModified", rel = "lastModified")
+    Page<Catchment> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

@@ -27,9 +27,6 @@ public class Individual extends CHSEntity {
     @JoinColumn(name = "gender_id")
     private Gender gender;
 
-    @Column(name = "catchment_id")
-    private long catchmentId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private AddressLevel addressLevel;
@@ -74,14 +71,6 @@ public class Individual extends CHSEntity {
 
     public void setGender(Gender gender) {
         this.gender = gender;
-    }
-
-    public long getCatchmentId() {
-        return catchmentId;
-    }
-
-    public void setCatchmentId(long catchmentId) {
-        this.catchmentId = catchmentId;
     }
 
     public Set<ProgramEnrolment> getProgramEnrolments() {

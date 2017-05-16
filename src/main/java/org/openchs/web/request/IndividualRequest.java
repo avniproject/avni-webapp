@@ -15,7 +15,6 @@ public class IndividualRequest extends CHSRequest {
     private String addressLevelUUID;
     private String addressLevel;
     private LocalDate registrationDate;
-    private Long catchmentId;
     private List<ObservationRequest> observations;
 
     public String getName() {
@@ -64,14 +63,6 @@ public class IndividualRequest extends CHSRequest {
 
     public void setRegistrationDate(LocalDate registrationDate) {
         this.registrationDate = registrationDate;
-    }
-
-    public Long getCatchmentId() {
-        return catchmentId;
-    }
-
-    public void setCatchmentId(Long catchmentId) {
-        this.catchmentId = catchmentId;
     }
 
     public String getGender() {

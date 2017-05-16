@@ -1,0 +1,1 @@
+ALTER TABLE individual DROP COLUMN catchment_id;

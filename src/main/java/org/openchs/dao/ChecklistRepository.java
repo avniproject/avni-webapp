@@ -19,5 +19,5 @@ import javax.transaction.Transactional;
 @RepositoryRestResource(collectionResourceRel = "checklist", path = "checklist")
 public interface ChecklistRepository extends PagingAndSortingRepository<Checklist, Long>, CHSRepository<Checklist> {
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")
-    Page<Checklist> findByProgramEnrolmentIndividualCatchmentIdAndLastModifiedDateTimeGreaterThanOrderById(@Param("catchmentId") long catchmentId, @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<Checklist> findByProgramEnrolmentIndividualAddressLevelCatchmentsIdAndLastModifiedDateTimeGreaterThanOrderById(@Param("catchmentId") long catchmentId, @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }
