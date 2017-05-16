@@ -57,6 +57,8 @@ public class ConceptController {
         if (conceptAlreadyExists(concept, conceptContract)) {
             return null;
         }
+
+        concept = conceptRepository.findByUuid(conceptContract.getUuid());
         if (concept == null) {
             concept = new Concept();
             concept.setUuid(conceptContract.getUuid());
