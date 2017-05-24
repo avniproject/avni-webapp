@@ -40,3 +40,7 @@ reset-db:
 	-psql -h localhost -U postgres postgres -c 'create database openchs with owner openchs';
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public clean
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public -locations=filesystem:./src/main/resources/db/migration/ migrate
+
+app-server-start:
+	mvn clean install -DskipTests
+	mvn sprint-boot:run

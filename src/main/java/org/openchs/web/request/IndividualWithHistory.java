@@ -1,33 +1,37 @@
 package org.openchs.web.request;
 
+import org.openchs.web.request.keyvalue.KeyValueIndividualRequest;
+import org.openchs.web.request.keyvalue.KeyValueProgramEncounterRequest;
+import org.openchs.web.request.keyvalue.KeyValueProgramEnrolmentRequest;
+
 import java.util.List;
 
 public class IndividualWithHistory {
-    private IndividualRequest individual;
-    private ProgramEnrolmentRequest enrolment;
-    private List<ProgramEncounterRequest> encounters;
+    private KeyValueIndividualRequest individual;
+    private KeyValueProgramEnrolmentRequest enrolment;
+    private List<KeyValueProgramEncounterRequest> encounters;
 
-    public IndividualRequest getIndividual() {
+    public KeyValueIndividualRequest getIndividual() {
         return individual;
     }
 
-    public void setIndividual(IndividualRequest individual) {
+    public void setIndividual(KeyValueIndividualRequest individual) {
         this.individual = individual;
     }
 
-    public ProgramEnrolmentRequest getEnrolment() {
+    public KeyValueProgramEnrolmentRequest getEnrolment() {
         return enrolment;
     }
 
-    public void setEnrolment(ProgramEnrolmentRequest enrolment) {
+    public void setEnrolment(KeyValueProgramEnrolmentRequest enrolment) {
         this.enrolment = enrolment;
     }
 
-    public List<ProgramEncounterRequest> getEncounters() {
+    public List<KeyValueProgramEncounterRequest> getEncounters() {
         return encounters;
     }
 
-    public void setEncounters(List<ProgramEncounterRequest> encounters) {
+    public void setEncounters(List<KeyValueProgramEncounterRequest> encounters) {
         this.encounters = encounters;
     }
 }

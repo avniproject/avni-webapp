@@ -19,5 +19,5 @@ import javax.transaction.Transactional;
 @RepositoryRestResource(collectionResourceRel = "formElementGroup", path = "formElementGroup")
 public interface FormElementGroupRepository extends PagingAndSortingRepository<FormElementGroup, Long>, ReferenceDataRepository<FormElementGroup> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<FormElementGroup> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<FormElementGroup> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

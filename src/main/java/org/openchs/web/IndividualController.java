@@ -10,6 +10,7 @@ import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
 import org.openchs.web.request.ObservationService;
 import org.openchs.web.request.ProgramEnrolmentRequest;
+import org.openchs.web.request.keyvalue.KeyValueIndividualRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,32 +41,37 @@ public class IndividualController extends AbstractController<Individual> {
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     @Transactional
     void save(@RequestBody IndividualRequest individualRequest) {
+        Individual individual = createIndividualWithoutObservations(individualRequest);
+        individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
+        individualRepository.save(individual);
+    }
+
+    private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {
         AddressLevel addressLevel = addressLevelRepository.findByUuid(individualRequest.getAddressLevelUUID());
         Gender gender = genderRepository.findByUuid(individualRequest.getGenderUUID());
-
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
         individual.setName(individualRequest.getName());
         individual.setDateOfBirth(individualRequest.getDateOfBirth());
         individual.setAddressLevel(addressLevel);
         individual.setGender(gender);
         individual.setRegistrationDate(individualRequest.getRegistrationDate());
-        individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
-        individualRepository.save(individual);
+        return individual;
     }
 
     @RequestMapping(value = "/individualAndHistory", method = RequestMethod.POST)
     @Transactional
     void save(@RequestBody IndividualWithHistory individualWithHistory) {
-        IndividualRequest individual = individualWithHistory.getIndividual();
-        this.save(individual);
 
-        ProgramEnrolmentRequest programEnrolmentRequest = individualWithHistory.getEnrolment();
-        programEnrolmentRequest.setIndividualUUID(individual.getUuid());
-        programEnrolmentController.save(programEnrolmentRequest);
-
-        individualWithHistory.getEncounters().forEach(programEncounterRequest -> {
-            programEncounterRequest.setProgramEnrolmentUUID(programEnrolmentRequest.getUuid());
-            programEncounterController.save(programEncounterRequest);
-        });
+//        KeyValueIndividualRequest individual = individualWithHistory.getIndividual();
+//        this.save(individual);
+//
+//        ProgramEnrolmentRequest programEnrolmentRequest = individualWithHistory.getEnrolment();
+//        programEnrolmentRequest.setIndividualUUID(individual.getUuid());
+//        programEnrolmentController.save(programEnrolmentRequest);
+//
+//        individualWithHistory.getEncounters().forEach(programEncounterRequest -> {
+//            programEncounterRequest.setProgramEnrolmentUUID(programEnrolmentRequest.getUuid());
+//            programEncounterController.save(programEncounterRequest);
+//        });
     }
 }
