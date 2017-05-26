@@ -17,6 +17,9 @@ public class FormElementGroup extends CHSEntity {
     @NotNull
     private String name;
 
+    @Column
+    private String display;
+
     @NotNull
     private short displayOrder;
 
@@ -85,5 +88,13 @@ public class FormElementGroup extends CHSEntity {
     public void removeFormElements(List<String> formElementUUIDs) {
         List<FormElement> orphanedFormElements = getFormElements().stream().filter(formElement -> !formElementUUIDs.contains(formElement.getUuid())).collect(Collectors.toList());
         formElements.removeAll(orphanedFormElements);
+    }
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(String display) {
+        this.display = display;
     }
 }

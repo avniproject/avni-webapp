@@ -1,0 +1,1 @@
+ALTER TABLE form_element_group ADD COLUMN display VARCHAR(100) NULL;

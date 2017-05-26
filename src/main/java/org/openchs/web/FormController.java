@@ -77,6 +77,7 @@ public class FormController {
                 formElementGroup = form.addFormElementGroup(formElementGroupRequest.getUuid());
             }
             formElementGroup.setName(formElementGroupRequest.getName());
+            formElementGroup.setDisplay(formElementGroupRequest.getDisplay());
             formElementGroup.setDisplayOrder(getDisplayOrder(formElementGroupIndex, formElementGroupRequest));
 
             for (int formElementIndex = 0; formElementIndex < formElementGroupRequest.getFormElements().size(); formElementIndex++) {

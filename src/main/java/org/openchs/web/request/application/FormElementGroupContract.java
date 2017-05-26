@@ -9,6 +9,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FormElementGroupContract extends ReferenceDataContract {
     private short displayOrder;
+    private String display;
     private List<FormElementContract> formElements;
 
     public FormElementGroupContract() {
@@ -38,5 +39,13 @@ public class FormElementGroupContract extends ReferenceDataContract {
 
     public void addFormElement(FormElementContract formElementContract) {
         this.formElements.add(formElementContract);
+    }
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(String display) {
+        this.display = display;
     }
 }

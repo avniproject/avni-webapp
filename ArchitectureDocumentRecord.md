@@ -1,0 +1,2 @@
+For Sync order by id in the JPA query is used and Last Modified DateTime is used on the output page. The first should go in the query and second in the http request applicable on the output of the query (not affecting the query itself).
+Order by id is needed because if order by last modified datetime is done then database wouldn't guarantee the order when the datetime value is same for two records. This may result in indeteminate paging of the records. 

@@ -19,5 +19,5 @@ import javax.transaction.Transactional;
 @RepositoryRestResource(collectionResourceRel = "conceptAnswer", path = "conceptAnswer")
 public interface ConceptAnswerRepository extends PagingAndSortingRepository<ConceptAnswer, Long> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<ConceptAnswer> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<ConceptAnswer> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }
