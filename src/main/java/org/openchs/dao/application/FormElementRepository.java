@@ -14,10 +14,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
-@Transactional
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formElement", path = "formElement")
 public interface FormElementRepository extends PagingAndSortingRepository<FormElement, Long>, ReferenceDataRepository<FormElement> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<FormElement> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<FormElement> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

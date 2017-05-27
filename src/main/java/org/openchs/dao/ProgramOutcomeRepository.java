@@ -13,10 +13,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
-@Transactional
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programOutcome", path = "programOutcome")
 public interface ProgramOutcomeRepository extends PagingAndSortingRepository<ProgramOutcome, Long>, CHSRepository<ProgramOutcome> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<ProgramOutcome> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<ProgramOutcome> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

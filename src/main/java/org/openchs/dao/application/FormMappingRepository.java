@@ -13,11 +13,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
-@Transactional
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formMapping", path = "formMapping")
 public interface FormMappingRepository extends PagingAndSortingRepository<FormMapping, Long> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<FormMapping> findByLastModifiedDateTimeGreaterThanOrderById(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<FormMapping> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
     FormMapping findByFormUuid(String uuid);
 }
