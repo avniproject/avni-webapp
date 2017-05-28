@@ -29,8 +29,25 @@ public class ConceptController {
     void save(@RequestBody List<ConceptContract> conceptRequests) {
         conceptRequests.forEach(conceptRequest -> {
             System.out.println(String.format("Creating concept: %s", conceptRequest.toString()));
-            Concept concept = createConceptIfNotExists(conceptRequest);
-            if (concept == null) return;
+            if (conceptExistsWithSameNameAndDifferentUUID(conceptRequest)) {
+                throw new RuntimeException(String.format("Concept %s exists with different uuid", conceptRequest.getName()));
+            }
+
+            Concept concept = conceptRepository.findByUuid(conceptRequest.getUuid());
+            if (concept == null) {
+                concept = createConcept(conceptRequest);
+            }
+
+            concept.setName(conceptRequest.getName());
+            concept.setDataType(conceptRequest.getDataType());
+
+            if (ConceptDataType.Numeric.toString().equals(conceptRequest.getDataType())) {
+                concept.setHighAbsolute(conceptRequest.getHighAbsolute());
+                concept.setLowAbsolute(conceptRequest.getLowAbsolute());
+                concept.setHighNormal(conceptRequest.getHighNormal());
+                concept.setLowNormal(conceptRequest.getLowNormal());
+                concept.setUnit(conceptRequest.getUnit());
+            }
 
             if (ConceptDataType.Coded.toString().equals(conceptRequest.getDataType())) {
                 if (concept.getConceptAnswers() == null) concept.setConceptAnswers(new HashSet<>());
@@ -45,30 +62,21 @@ public class ConceptController {
                         conceptAnswer.setOrder(order);
                     }
                     concept.addAnswer(conceptAnswer);
-                };
+                }
             }
 
             conceptRepository.save(concept);
         });
     }
 
-    private Concept createConceptIfNotExists(ConceptContract conceptContract) {
-        Concept concept = conceptRepository.findByName(conceptContract.getName());
-        if (conceptAlreadyExists(concept, conceptContract)) {
-            return null;
-        }
-
-        concept = conceptRepository.findByUuid(conceptContract.getUuid());
-        if (concept == null) {
-            concept = new Concept();
-            concept.setUuid(conceptContract.getUuid());
-        }
-        concept.setName(conceptContract.getName());
-        concept.setDataType(conceptContract.getDataType());
+    private Concept createConcept(ConceptContract conceptContract) {
+        Concept concept = new Concept();
+        concept.setUuid(conceptContract.getUuid());
         return concept;
     }
 
-    private boolean conceptAlreadyExists(Concept concept, ConceptContract conceptRequest) {
-        return concept != null && concept.getDataType().equals(conceptRequest.getDataType()) && !ConceptDataType.Coded.toString().equals(conceptRequest.getDataType());
+    private boolean conceptExistsWithSameNameAndDifferentUUID(ConceptContract conceptRequest) {
+        Concept concept = conceptRepository.findByName(conceptRequest.getName());
+        return concept != null && !concept.getUuid().equals(conceptRequest.getUuid());
     }
 }

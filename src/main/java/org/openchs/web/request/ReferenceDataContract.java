@@ -12,7 +12,7 @@ public class ReferenceDataContract extends CHSRequest {
     }
 
     public String getName() {
-        return name;
+        return name == null ? null : name.trim();
     }
 
     public void setName(String name) {

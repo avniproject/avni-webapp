@@ -5,9 +5,14 @@ import java.util.List;
 public class ConceptContract extends ReferenceDataContract {
     private String dataType;
     private List<String> answers;
+    private Double lowAbsolute;
+    private Double highAbsolute;
+    private Double lowNormal;
+    private Double highNormal;
+    private String unit;
 
     public String getDataType() {
-        return dataType;
+        return dataType == null ? null : dataType.trim();
     }
 
     public void setDataType(String dataType) {
@@ -20,6 +25,46 @@ public class ConceptContract extends ReferenceDataContract {
 
     public void setAnswers(List<String> answers) {
         this.answers = answers;
+    }
+
+    public Double getLowAbsolute() {
+        return lowAbsolute;
+    }
+
+    public void setLowAbsolute(Double lowAbsolute) {
+        this.lowAbsolute = lowAbsolute;
+    }
+
+    public Double getHighAbsolute() {
+        return highAbsolute;
+    }
+
+    public void setHighAbsolute(Double highAbsolute) {
+        this.highAbsolute = highAbsolute;
+    }
+
+    public Double getLowNormal() {
+        return lowNormal;
+    }
+
+    public void setLowNormal(Double lowNormal) {
+        this.lowNormal = lowNormal;
+    }
+
+    public Double getHighNormal() {
+        return highNormal;
+    }
+
+    public void setHighNormal(Double highNormal) {
+        this.highNormal = highNormal;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     @Override

@@ -13,7 +13,7 @@ public class CHSRequest {
     }
 
     public String getUuid() {
-        return uuid;
+        return uuid == null ? null : uuid.trim();
     }
 
     public void setUuid(String uuid) {
