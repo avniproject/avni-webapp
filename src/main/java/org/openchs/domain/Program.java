@@ -14,6 +14,8 @@ public class Program extends CHSEntity {
     @JoinColumn(name="concept_id")
     private Concept concept;
 
+    private String colour;
+
     public String getName() {
         return name;
     }
@@ -28,5 +30,13 @@ public class Program extends CHSEntity {
 
     public void setConcept(Concept concept) {
         this.concept = concept;
+    }
+
+    public String getColour() {
+        return colour;
+    }
+
+    public void setColour(String colour) {
+        this.colour = colour;
     }
 }

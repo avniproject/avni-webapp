@@ -1,0 +1,1 @@
+ALTER TABLE program ADD COLUMN colour VARCHAR(20) NULL;
