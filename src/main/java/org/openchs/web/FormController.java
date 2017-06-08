@@ -139,12 +139,6 @@ public class FormController {
 
         if (formRequest.getProgramName() != null) {
             Program program = programRepository.findByName(formRequest.getProgramName());
-            if (program == null) {
-                program = new Program();
-                program.assignUUID();
-                program.setName(formRequest.getProgramName());
-                program = programRepository.save(program);
-            }
             formMapping.setEntityId(program.getId());
         }
 
