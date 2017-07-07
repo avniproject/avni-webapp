@@ -3,8 +3,6 @@ package org.openchs.web.request;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Observation;
 import org.openchs.domain.ObservationCollection;
-import org.openchs.web.request.AbstractEncounterRequest;
-import org.openchs.web.request.ObservationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +27,7 @@ public class ObservationService {
             }
 
             observation.setConceptUUID(observationRequest.getConceptUUID());
-            observation.setValuePrimitive(observationRequest.getValuePrimitive());
-            observation.setValueCoded(observationRequest.getValueCoded());
+            observation.setValue(observationRequest.getValue());
             observations.add(observation);
         }
         return observations;

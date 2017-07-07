@@ -5,8 +5,7 @@ import java.util.List;
 public class ObservationRequest {
     private String conceptUUID;
     private String conceptName;
-    private Object valuePrimitive; //all primitives
-    private List<String> valueCoded; // all coded
+    private Object value;
 
     public String getConceptUUID() {
         return conceptUUID;
@@ -16,27 +15,19 @@ public class ObservationRequest {
         this.conceptUUID = conceptUUID;
     }
 
-    public Object getValuePrimitive() {
-        return valuePrimitive;
-    }
-
-    public void setValuePrimitive(Object valuePrimitive) {
-        this.valuePrimitive = valuePrimitive;
-    }
-
-    public List<String> getValueCoded() {
-        return valueCoded;
-    }
-
-    public void setValueCoded(List<String> valueCoded) {
-        this.valueCoded = valueCoded;
-    }
-
     public String getConceptName() {
         return conceptName;
     }
 
     public void setConceptName(String conceptName) {
         this.conceptName = conceptName;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 }

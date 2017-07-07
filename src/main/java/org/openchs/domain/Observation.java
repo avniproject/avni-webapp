@@ -8,16 +8,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Observation implements Serializable {
     private String conceptUUID;
-    private Object valuePrimitive; // all primitives
-    private List<String> valueCoded; // all coded
+    private Object value;
 
-    public Object getValuePrimitive() {
-        return valuePrimitive;
-    }
-
-    public void setValuePrimitive(Object valuePrimitive) {
-        this.valuePrimitive = valuePrimitive;
-    }
 
     public String getConceptUUID() {
         return conceptUUID;
@@ -30,15 +22,15 @@ public class Observation implements Serializable {
     public static Observation create(String conceptUUID, Object value) {
         Observation observation = new Observation();
         observation.setConceptUUID(conceptUUID);
-        observation.setValuePrimitive(value);
+        observation.setValue(value);
         return observation;
     }
 
-    public List<String> getValueCoded() {
-        return valueCoded;
+    public Object getValue() {
+        return value;
     }
 
-    public void setValueCoded(List<String> valueCoded) {
-        this.valueCoded = valueCoded;
+    public void setValue(Object value) {
+        this.value = value;
     }
 }
