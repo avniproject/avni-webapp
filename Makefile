@@ -41,6 +41,3 @@ reset-db:
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public clean
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public -locations=filesystem:./src/main/resources/db/migration/ migrate
 
-app-server-start:
-	mvn clean install -DskipTests
-	mvn sprint-boot:run
