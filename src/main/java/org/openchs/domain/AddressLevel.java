@@ -55,4 +55,9 @@ public class AddressLevel extends CHSEntity {
     public void setCatchments(Set<Catchment> catchments) {
         this.catchments = catchments;
     }
+
+
+    public void addCatchment(Catchment catchment) {
+        catchments.add(catchment);
+    }
 }

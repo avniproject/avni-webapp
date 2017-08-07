@@ -16,7 +16,7 @@ import javax.transaction.Transactional;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "catchment", path = "catchment")
-public interface CatchmentRepository extends PagingAndSortingRepository<Catchment, Long>, CHSRepository<Catchment> {
+public interface CatchmentRepository extends PagingAndSortingRepository<Catchment, Long>, ReferenceDataRepository<Catchment> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<Catchment> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }
