@@ -13,11 +13,4 @@ public class WebConfigurer extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/ext/**").addResourceLocations(O.getFullPath("external"));
     }
-
-//    @Override
-//    public void configurePathMatch(PathMatchConfigurer configurer) {
-//        AntPathMatcher matcher = new AntPathMatcher();
-//        matcher.setCaseSensitive(false);
-//        configurer.setPathMatcher(matcher);
-//    }
 }
