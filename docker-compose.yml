@@ -1,0 +1,7 @@
+version: '2'
+services:
+  postgres:
+      build: ./infra/db
+      image: openchs-db
+      ports:
+        - "5432:5432"
