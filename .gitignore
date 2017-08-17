@@ -3,3 +3,4 @@ target
 fs/config/modules/*
 openchs-server.iml
 external/*.apk
+**/.DS_Store
