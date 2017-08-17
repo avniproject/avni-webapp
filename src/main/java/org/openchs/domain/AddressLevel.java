@@ -60,4 +60,8 @@ public class AddressLevel extends CHSEntity {
     public void addCatchment(Catchment catchment) {
         catchments.add(catchment);
     }
+
+    public void removeCatchment(Catchment catchment) {
+        catchments.remove(catchment);
+    }
 }

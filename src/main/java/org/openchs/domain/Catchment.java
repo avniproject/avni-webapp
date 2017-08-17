@@ -33,8 +33,8 @@ public class Catchment extends CHSEntity {
         this.addressLevels = addressLevels;
     }
 
-    public AddressLevel findAddressLevel(String addressLevelName) {
-        return addressLevels.stream().filter(x -> x.getTitle().equals(addressLevelName)).findAny().orElse(null);
+    public AddressLevel findAddressLevel(String addressLevelUUID) {
+        return addressLevels.stream().filter(x -> x.getUuid().equals(addressLevelUUID)).findAny().orElse(null);
     }
 
     public void addAddressLevel(AddressLevel addressLevel) {
@@ -43,4 +43,8 @@ public class Catchment extends CHSEntity {
     }
 
 
+    public void remove(AddressLevel addressLevel) {
+        addressLevels.remove(addressLevel);
+        addressLevel.removeCatchment(this);
+    }
 }

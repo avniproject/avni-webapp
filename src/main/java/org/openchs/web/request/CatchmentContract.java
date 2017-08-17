@@ -3,14 +3,15 @@ package org.openchs.web.request;
 import java.util.List;
 
 public class CatchmentContract extends ReferenceDataContract {
-    private List<String> villages;
 
-    public List<String> getVillages() {
-        return villages;
+    private List<AddressLevelContract> addressLevels;
+
+    public List<AddressLevelContract> getAddressLevels() {
+        return addressLevels;
     }
 
-    public void setVillages(List<String> villages) {
-        this.villages = villages;
+    public void setAddressLevels(List<AddressLevelContract> addressLevels) {
+        this.addressLevels = addressLevels;
     }
 
     @Override
