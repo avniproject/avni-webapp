@@ -58,7 +58,15 @@ public class ConceptController {
                         conceptAnswer = new ConceptAnswer();
                         conceptAnswer.assignUUID();
                         conceptAnswer.setConcept(concept);
-                        conceptAnswer.setAnswerConcept(conceptRepository.findByName(answer));
+                        Concept answerConcept = conceptRepository.findByName(answer);
+                        if (answerConcept == null) {
+                            answerConcept = new Concept();
+                            answerConcept.setDataType(ConceptDataType.NA.toString());
+                            answerConcept.setName(answer);
+                            answerConcept.assignUUID();
+                            answerConcept = conceptRepository.save(answerConcept);
+                        }
+                        conceptAnswer.setAnswerConcept(answerConcept);
                         conceptAnswer.setOrder(order);
                     }
                     concept.addAnswer(conceptAnswer);
