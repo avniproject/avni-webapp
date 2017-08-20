@@ -1,7 +1,5 @@
 package org.openchs.web.request;
 
-import java.util.List;
-
 public class ObservationRequest {
     private String conceptUUID;
     private String conceptName;

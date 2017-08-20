@@ -40,7 +40,7 @@ public class IndividualController extends AbstractController<Individual> {
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     @Transactional
-    void save(@RequestBody IndividualRequest individualRequest) {
+    public void save(@RequestBody IndividualRequest individualRequest) {
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
         individualRepository.save(individual);

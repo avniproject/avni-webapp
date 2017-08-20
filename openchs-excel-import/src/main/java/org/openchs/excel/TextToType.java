@@ -1,0 +1,30 @@
+package org.openchs.excel;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class TextToType {
+    private static Map<String, Boolean> booleanMap = new HashMap<String, Boolean>();
+    private static Map<String, String> genderMap = new HashMap<String, String>();
+
+    static {
+        booleanMap.put("yes", true);
+        booleanMap.put("true", true);
+        booleanMap.put("no", false);
+        booleanMap.put("false", false);
+    }
+
+    static {
+        genderMap.put("male", "Male");
+        genderMap.put("female", "Female");
+        genderMap.put("other", "Other");
+    }
+
+    static boolean toBoolean(String str) {
+        return booleanMap.get(str.toLowerCase());
+    }
+
+    static String toGender(String str) {
+        return genderMap.get(str.toLowerCase());
+    }
+}

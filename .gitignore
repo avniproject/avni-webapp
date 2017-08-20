@@ -5,3 +5,4 @@ openchs-server.iml
 external/*.apk
 **/.DS_Store
 openchs-server-api/openchs-server-api.iml
+input/*.xlsx

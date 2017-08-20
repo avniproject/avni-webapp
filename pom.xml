@@ -9,5 +9,6 @@
 
     <modules>
         <module>openchs-server-api</module>
+        <module>openchs-excel-import</module>
     </modules>
 </project>
