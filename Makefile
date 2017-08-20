@@ -24,7 +24,7 @@ restart: stop start
 start-app:
 	@echo "Starting the application"
 	mvn clean install -DskipTests
-	java -jar target/openchs-server-0.1-SNAPSHOT.jar
+	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
 
 download-app:
 	wget https://drive.google.com/open?id=0B8GldZt10g1IMVNsMk9Oc21URTA -O openchs-server-0.1-SNAPSHOT.jar
@@ -44,4 +44,4 @@ binary:
 	mvn clean install -DskipTests
 
 app-server-start: binary
-	mvn sprint-boot:run
+	cd openchs-server-api && mvn sprint-boot:run
