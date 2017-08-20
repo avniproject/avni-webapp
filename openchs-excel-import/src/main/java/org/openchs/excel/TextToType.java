@@ -10,8 +10,10 @@ public class TextToType {
     static {
         booleanMap.put("yes", true);
         booleanMap.put("true", true);
+        booleanMap.put("positive", true);
         booleanMap.put("no", false);
         booleanMap.put("false", false);
+        booleanMap.put("negative", false);
     }
 
     static {

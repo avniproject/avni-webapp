@@ -21,9 +21,8 @@ start:
 
 restart: stop start
 
-start-app:
+start-app: binary
 	@echo "Starting the application"
-	mvn clean install -DskipTests
 	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
 
 download-app:
@@ -41,7 +40,8 @@ reset-db:
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public -locations=filesystem:./src/main/resources/db/migration/ migrate
 
 binary:
-	mvn clean install -DskipTests
+	mvn clean compile
+	mvn install -DskipTests
 
 app-server-start: binary
 	cd openchs-server-api && mvn sprint-boot:run
