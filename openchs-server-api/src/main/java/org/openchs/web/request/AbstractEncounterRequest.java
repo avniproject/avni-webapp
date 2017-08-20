@@ -12,4 +12,8 @@ public class AbstractEncounterRequest extends org.openchs.web.request.common.Com
     public void setObservations(List<ObservationRequest> observations) {
         this.observations = observations;
     }
+
+    public void addObservation(ObservationRequest observationRequest) {
+        this.observations.add(observationRequest);
+    }
 }

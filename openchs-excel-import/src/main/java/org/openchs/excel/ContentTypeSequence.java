@@ -13,8 +13,8 @@ public class ContentTypeSequence {
         contentTypes.add(ContentType.EnrolmentHeader);
         contentTypes.add(ContentType.Enrolment);
         contentTypes.add(ContentType.None);
-        contentTypes.add(ContentType.EncounterHeader);
-        contentTypes.add(ContentType.Encounter);
+        contentTypes.add(ContentType.ProgramEncounterHeader);
+        contentTypes.add(ContentType.ProgramEncounter);
     }
 
     ContentType getNextType(ContentType currentContentType, String text) {

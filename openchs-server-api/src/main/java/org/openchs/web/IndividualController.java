@@ -48,7 +48,7 @@ public class IndividualController extends AbstractController<Individual> {
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {
         AddressLevel addressLevel = addressLevelRepository.findByUuid(individualRequest.getAddressLevelUUID());
-        Gender gender = genderRepository.findByUuid(individualRequest.getGenderUUID());
+        Gender gender =  individualRequest.getGender() == null ? genderRepository.findByUuid(individualRequest.getGenderUUID()) : genderRepository.findByName(individualRequest.getGender());
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
         individual.setName(individualRequest.getName());
         individual.setDateOfBirth(individualRequest.getDateOfBirth());

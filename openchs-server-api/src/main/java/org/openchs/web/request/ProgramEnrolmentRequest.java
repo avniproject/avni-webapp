@@ -25,4 +25,8 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
     public void setProgramExitObservations(List<ObservationRequest> programExitObservations) {
         this.programExitObservations = programExitObservations;
     }
+
+    public void addObservation(ObservationRequest observationRequest) {
+        this.observations.add(observationRequest);
+    }
 }

@@ -27,11 +27,15 @@ public class Importer implements CommandLineRunner {
             rowProcessor.readRegistrationHeader(row);
         } else if (contentType == ContentType.Registration) {
             rowProcessor.processRegistration(row);
+        } else if (contentType == ContentType.EnrolmentHeader) {
+            rowProcessor.readEnrolmentHeader(row);
+        } else if (contentType == ContentType.Enrolment) {
+            rowProcessor.processEnrolment(row);
+        } else if (contentType == ContentType.ProgramEncounterHeader) {
+            rowProcessor.readProgramEncounterHeader(row);
+        } else if (contentType == ContentType.ProgramEncounter) {
+            rowProcessor.processProgramEncounter(row);
         }
-//            RegistrationRowProcessor registrationProcessor = new RegistrationRowProcessor();
-//            registrationProcessor.pro(row, contentType);
-//        }
-//        if (getText())
     }
 
     public void run(String... strings) throws Exception {

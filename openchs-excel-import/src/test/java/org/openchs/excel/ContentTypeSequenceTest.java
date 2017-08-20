@@ -17,8 +17,8 @@ public class ContentTypeSequenceTest {
         Assert.assertEquals(ContentType.Enrolment, contentTypeSequence.getNextType(ContentType.Enrolment, "bar"));
         Assert.assertEquals(ContentType.None, contentTypeSequence.getNextType(ContentType.Enrolment, ""));
         Assert.assertEquals(ContentType.None, contentTypeSequence.getNextType(ContentType.None, ""));
-        Assert.assertEquals(ContentType.EncounterHeader, contentTypeSequence.getNextType(ContentType.None, "baz"));
-        Assert.assertEquals(ContentType.Encounter, contentTypeSequence.getNextType(ContentType.EncounterHeader, "baz"));
-        Assert.assertEquals(ContentType.Encounter, contentTypeSequence.getNextType(ContentType.Encounter, "baz"));
+        Assert.assertEquals(ContentType.ProgramEncounterHeader, contentTypeSequence.getNextType(ContentType.None, "baz"));
+        Assert.assertEquals(ContentType.ProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounterHeader, "baz"));
+        Assert.assertEquals(ContentType.ProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounter, "baz"));
     }
 }
