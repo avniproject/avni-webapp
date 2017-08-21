@@ -6,3 +6,4 @@ external/*.apk
 **/.DS_Store
 openchs-server-api/openchs-server-api.iml
 input/*.xlsx
+openchs-excel-import/openchs-excel-import.iml
