@@ -12,6 +12,8 @@ import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.FormElementGroupContract;
 import org.openchs.web.request.application.FormElementContract;
 import org.openchs.web.request.application.FormContract;
+import org.openchs.web.validation.ValidationException;
+import org.openchs.web.validation.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,6 +84,10 @@ public class FormController {
 
             for (int formElementIndex = 0; formElementIndex < formElementGroupRequest.getFormElements().size(); formElementIndex++) {
                 FormElementContract formElementRequest = formElementGroupRequest.getFormElements().get(formElementIndex);
+                ValidationResult validationResult = formElementRequest.validate();
+                if (validationResult.isFailure()) {
+                    throw new ValidationException(validationResult.getMessage());
+                }
                 String conceptName = formElementRequest.getConceptName() == null ? formElementRequest.getName() : formElementRequest.getConceptName();
                 Concept concept = conceptRepository.findByName(conceptName);
                 if (concept == null) {

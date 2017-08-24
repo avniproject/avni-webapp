@@ -1,9 +1,7 @@
 .idea
 target
 fs/config/modules/*
-openchs-server.iml
 external/*.apk
 **/.DS_Store
-openchs-server-api/openchs-server-api.iml
+**/*.iml
 input/*.xlsx
-openchs-excel-import/openchs-excel-import.iml

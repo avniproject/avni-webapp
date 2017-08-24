@@ -2,7 +2,11 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.application.KeyType;
 import org.openchs.application.KeyValues;
+import org.openchs.application.ValueType;
+import org.openchs.domain.ConceptDataType;
+import org.openchs.web.validation.ValidationResult;
 import org.openchs.web.request.ReferenceDataContract;
 
 import java.util.List;
@@ -74,5 +78,13 @@ public class FormElementContract extends ReferenceDataContract {
 
     public void setDisplayOrder(short displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public ValidationResult validate() {
+        if (ConceptDataType.Coded.toString().equals(this.dataType)) {
+            if (keyValues == null || keyValues.isEmpty() || !keyValues.containsKey(KeyType.Select) || !keyValues.containsOneOfTheValues(KeyType.Select, ValueType.getSelectValueTypes()))
+                return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
+        }
+        return ValidationResult.Success;
     }
 }

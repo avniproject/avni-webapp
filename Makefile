@@ -44,7 +44,8 @@ redeploy_schema: clean_schema deploy_schema ## clean and deploy schema
 
 ## <server>
 start_server: build_server ## Builds and starts the server
-	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
+	mvn sprint-boot:run
+#	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
 	mvn clean compile
