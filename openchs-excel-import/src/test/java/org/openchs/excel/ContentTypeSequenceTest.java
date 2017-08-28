@@ -20,5 +20,6 @@ public class ContentTypeSequenceTest {
         Assert.assertEquals(ContentType.ProgramEncounterHeader, contentTypeSequence.getNextType(ContentType.None, "baz"));
         Assert.assertEquals(ContentType.ProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounterHeader, "baz"));
         Assert.assertEquals(ContentType.ProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounter, "baz"));
+        Assert.assertEquals(ContentType.None, contentTypeSequence.getNextType(ContentType.ProgramEncounter, null));
     }
 }

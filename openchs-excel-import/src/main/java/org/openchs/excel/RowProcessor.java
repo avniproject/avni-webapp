@@ -3,11 +3,17 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.openchs.domain.ProgramEnrolment;
 import org.openchs.web.IndividualController;
+import org.openchs.web.ProgramEncounterController;
+import org.openchs.web.ProgramEnrolmentController;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.ObservationRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -18,9 +24,13 @@ public class RowProcessor {
     private List<String> enrolmentHeader = new ArrayList<String>();
     private List<String> programEncounterHeader = new ArrayList<String>();
     private IndividualController individualController;
+    private ProgramEnrolmentController programEnrolmentController;
+    private ProgramEncounterController programEncounterController;
 
-    RowProcessor(IndividualController individualController) {
+    RowProcessor(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController) {
         this.individualController = individualController;
+        this.programEnrolmentController = programEnrolmentController;
+        this.programEncounterController = programEncounterController;
     }
 
     public void processRow(Row row) {
@@ -44,8 +54,8 @@ public class RowProcessor {
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setUuid(ExcelUtil.getText(row, 0));
         individualRequest.setObservations(new ArrayList<ObservationRequest>());
-        for (int i = 0; i < registrationHeader.size(); i++) {
-            String cellHeader = registrationHeader.get(i + 1);
+        for (int i = 1; i < registrationHeader.size() + 1; i++) {
+            String cellHeader = registrationHeader.get(i - 1);
             if (cellHeader.equals("Name")) {
                 individualRequest.setName(ExcelUtil.getText(row, i));
             } else if (cellHeader.equals("Date of Birth")) {
@@ -79,27 +89,31 @@ public class RowProcessor {
         readHeader(row, programEncounterHeader, 1);
     }
 
-    void processEnrolment(Row row) {
+    void processEnrolment(Row row, String programName) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
+        programEnrolmentRequest.setProgram(programName);
         programEnrolmentRequest.setObservations(new ArrayList<ObservationRequest>());
+        programEnrolmentRequest.setProgramExitObservations(new ArrayList<ObservationRequest>());
         programEnrolmentRequest.setIndividualUUID(ExcelUtil.getText(row, 0));
         programEnrolmentRequest.setUuid(ExcelUtil.getText(row, 1));
-        for (int i = 0; i < enrolmentHeader.size(); i++) {
-            String cellHeader = enrolmentHeader.get(i + 2);
+        for (int i = 2; i < enrolmentHeader.size() + 2; i++) {
+            String cellHeader = enrolmentHeader.get(i - 2);
             if (cellHeader.equals("Enrolment Date")) {
                 programEnrolmentRequest.setEnrolmentDateTime(new DateTime(ExcelUtil.getDate(row, i)));
             } else {
                 programEnrolmentRequest.addObservation(getObservationRequest(row, i, cellHeader));
             }
         }
+        programEnrolmentController.save(programEnrolmentRequest);
     }
 
     void processProgramEncounter(Row row) {
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<ObservationRequest>());
         programEncounterRequest.setProgramEnrolmentUUID(ExcelUtil.getText(row, 0));
-        for (int i = 0; i < programEncounterHeader.size(); i++) {
-            String cellHeader = enrolmentHeader.get(i + 1);
+        programEncounterRequest.setUuid("Enrolment ID");
+        for (int i = 2; i < programEncounterHeader.size() + 2; i++) {
+            String cellHeader = programEncounterHeader.get(i - 2);
             if (cellHeader.equals("Visit Type")) {
                 programEncounterRequest.setEncounterType(ExcelUtil.getText(row, i));
             } else if (cellHeader.equals("Visit Name")) {
@@ -114,5 +128,6 @@ public class RowProcessor {
                 programEncounterRequest.addObservation(getObservationRequest(row, i, cellHeader));
             }
         }
+        programEncounterController.save(programEncounterRequest);
     }
 }

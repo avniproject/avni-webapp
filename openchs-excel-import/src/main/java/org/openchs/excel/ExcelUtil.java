@@ -14,8 +14,14 @@ public class ExcelUtil {
     }
 
     public static Date getDate(Row row, int cellNum) {
-        Cell cell = row.getCell(cellNum);
-        if (cell == null) return null;
-        return cell.getDateCellValue();
+        Cell cell = null;
+        try {
+            cell = row.getCell(cellNum);
+            if (cell == null) return null;
+            return cell.getDateCellValue();
+        } catch (RuntimeException e) {
+            System.err.println(String.format("getDate failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
+            throw e;
+        }
     }
 }

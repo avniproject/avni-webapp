@@ -29,7 +29,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
     @Transactional
-    void save(@RequestBody ProgramEncounterRequest request) {
+    public void save(@RequestBody ProgramEncounterRequest request) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(request.getEncounterTypeUUID());
 
         ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());

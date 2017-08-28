@@ -20,6 +20,8 @@ public class ContentTypeSequence {
     ContentType getNextType(ContentType currentContentType, String text) {
         if (currentContentType == null)
             return contentTypes.get(currentPointer);
+        else if (currentContentType == ContentType.ProgramEncounter && isEmpty(text))
+            return ContentType.None;
         else if (currentContentType == ContentType.None && isEmpty(text))
             return currentContentType;
         else if (currentContentType == ContentType.None && !isEmpty(text))

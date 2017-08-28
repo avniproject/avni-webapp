@@ -37,8 +37,13 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
     @Transactional
-    void save(@RequestBody ProgramEnrolmentRequest request) {
-        Program program = programRepository.findByUuid(request.getProgramUUID());
+    public void save(@RequestBody ProgramEnrolmentRequest request) {
+        Program program;
+        if (request.getProgramUUID() == null) {
+            program = programRepository.findByName(request.getProgram());
+        } else {
+            program = programRepository.findByUuid(request.getProgramUUID());
+        }
         ProgramOutcome programOutcome = programOutcomeRepository.findByUuid(request.getProgramOutcomeUUID());
 
         ProgramEnrolment programEnrolment = newOrExistingEntity(programEnrolmentRepository, request, new ProgramEnrolment());

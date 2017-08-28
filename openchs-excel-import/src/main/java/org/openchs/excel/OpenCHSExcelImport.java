@@ -8,6 +8,6 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages={"org.openchs"})
 public class OpenCHSExcelImport {
     public static void main(String[] args) {
-        SpringApplication.run(OpenCHSExcelImport.class, args);
+        SpringApplication.run(OpenCHSExcelImport.class, args).close();
     }
 }
