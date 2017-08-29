@@ -69,8 +69,8 @@ build_server: ## Builds the jar file
 	mvn clean compile
 	mvn install -DskipTests
 
-test_server: rebuild_testdb ## Run tests
-	mvn clean install
+test_server: rebuild_testdb build_server ## Run tests
+	mvn install
 # <server>
 
 
