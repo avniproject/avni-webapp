@@ -125,8 +125,8 @@ INSERT INTO address_level (title, level, uuid, version, created_by_id, last_modi
 VALUES ('Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1, 1, 1, current_timestamp, current_timestamp);
 
 ALTER SEQUENCE individual_id_seq RESTART WITH 1;
-INSERT INTO individual (uuid, address_id, catchment_id, version, date_of_birth, date_of_birth_verified, name, gender_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, 1, current_timestamp, FALSE, 'Prabhu', 2, 1, 1, current_timestamp, current_timestamp);
+INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, name, gender_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 2, 1, 1, current_timestamp, current_timestamp);
 
 ALTER SEQUENCE program_enrolment_id_seq RESTART WITH 1;
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
@@ -153,8 +153,8 @@ VALUES (1, 1, '[
 INSERT INTO program (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Nutrition', 'ac8cfbcb-39d2-4fcb-b02f-4ef80335f553', 1, 1, 1, current_timestamp, current_timestamp);
 
-INSERT INTO individual (address_id, catchment_id, date_of_birth, date_of_birth_verified, name, gender_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (1, 1, '1950-09-17', FALSE, 'Ramesh Kumar', 2, '8d3d49af-f776-4cca-8413-ee571d9042fd', 1, 1, 1, current_timestamp, current_timestamp);
+INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, name, gender_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1, '1950-09-17', FALSE, 'Ramesh Kumar', 2, '8d3d49af-f776-4cca-8413-ee571d9042fd', 1, 1, 1, current_timestamp, current_timestamp);
 
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 1, current_timestamp, '0ae41288-78c5-4ed4-af60-68d4ad2af1d0', 1, 1, 1, current_timestamp, current_timestamp);
@@ -162,8 +162,8 @@ VALUES (2, 1, current_timestamp, '0ae41288-78c5-4ed4-af60-68d4ad2af1d0', 1, 1, 1
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (2, 2, current_timestamp, '529aa9ed-46bc-4530-9768-6ec941c0e2e0', 1, 1, 1, current_timestamp, current_timestamp);
 
-INSERT INTO individual (address_id, catchment_id, date_of_birth, date_of_birth_verified, name, gender_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (1, 1, '1955-01-05', FALSE, 'Ram Kumari', 1, 'c415ef96-8ff9-4cbb-8407-e7618c90a055', 1, 1, 1, current_timestamp, current_timestamp);
+INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, name, gender_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1, '1955-01-05', FALSE, 'Ram Kumari', 1, 'c415ef96-8ff9-4cbb-8407-e7618c90a055', 1, 1, 1, current_timestamp, current_timestamp);
 
 ALTER SEQUENCE form_id_seq RESTART WITH 1;
 INSERT INTO form (NAME, form_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)

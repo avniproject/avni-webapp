@@ -17,18 +17,36 @@ help:
 su:=$(shell id -un)
 
 
+# <postgres>
+_clean_db:
+	-psql -h localhost -U $(su) postgres -c 'drop database $(database)';
+
+_build_db:
+	-psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
+	-psql -h localhost -U $(su) postgres -c "create user $(database) with password 'password'";
+	-psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
+	-psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
+# </postgres>
+
 # <db>
 clean_db: ## Drops the database
-	-psql -h localhost -U $(su) postgres -c 'drop database openchs';
+	make _clean_db database=openchs
 
 build_db: ## Creates new empty database
-	-psql -h localhost -U $(su) postgres -c 'create database openchs with owner openchs';
-	-psql -h localhost -U $(su) postgres -c "create user openchs with password 'password'";
-	-psql -h localhost -U $(su) postgres -c 'create database openchs with owner openchs';
-	-psql -h localhost openchs -c 'create extension if not exists "uuid-ossp"';
+	make _build_db database=openchs
 
 rebuild_db: clean_db build_db ## clean + build db
 # </db>
+
+# <testdb>
+clean_testdb: ## Drops the test database
+	make _clean_db database=openchs_test
+
+build_testdb: ## Creates new empty database of test database
+	make _build_db database=openchs_test
+
+rebuild_testdb: clean_testdb build_testdb ## clean + build test db
+# </testdb>
 
 
 # <schema>
@@ -51,7 +69,7 @@ build_server: ## Builds the jar file
 	mvn clean compile
 	mvn install -DskipTests
 
-test_server: ## Run tests
+test_server: rebuild_testdb ## Run tests
 	mvn clean install
 # <server>
 
