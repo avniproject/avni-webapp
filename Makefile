@@ -17,7 +17,7 @@ help:
 su:=$(shell id -un)
 
 
-## <db>
+# <db>
 clean_db: ## Drops the database
 	-psql -h localhost -U $(su) postgres -c 'drop database openchs';
 
@@ -28,10 +28,10 @@ build_db: ## Creates new empty database
 	-psql -h localhost openchs -c 'create extension if not exists "uuid-ossp"';
 
 rebuild_db: clean_db build_db ## clean + build db
-## <db>
+# </db>
 
 
-## <schema>
+# <schema>
 clean_schema: ## drops the schema
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=openchs clean
 
@@ -39,10 +39,10 @@ deploy_schema: ## Runs all migrations to create the schema with all the objects
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=openchs -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ migrate
 
 redeploy_schema: clean_schema deploy_schema ## clean and deploy schema
-## </schema>
+# </schema>
 
 
-## <server>
+# <server>
 start_server: build_server ## Builds and starts the server
 	mvn spring-boot:run
 #	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
@@ -53,7 +53,7 @@ build_server: ## Builds the jar file
 
 test_server: ## Run tests
 	mvn clean install
-## <server>
+# <server>
 
 
 #build: stop

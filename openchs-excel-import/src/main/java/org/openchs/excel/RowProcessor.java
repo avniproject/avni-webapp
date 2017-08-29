@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class RowProcessor {
     private List<String> registrationHeader = new ArrayList<String>();
@@ -66,6 +67,8 @@ public class RowProcessor {
                 individualRequest.setGender(TextToType.toGender(ExcelUtil.getText(row, i)));
             } else if (cellHeader.equals("Registration Date")) {
                 individualRequest.setRegistrationDate(new LocalDate(ExcelUtil.getDate(row, i)));
+            } else if (cellHeader.equals("Address")) {
+                individualRequest.setAddressLevel(ExcelUtil.getText(row, i));
             } else {
                 individualRequest.addObservation(getObservationRequest(row, i, cellHeader));
             }
@@ -108,12 +111,13 @@ public class RowProcessor {
     }
 
     void processProgramEncounter(Row row) {
+        int numberOfStaticColumns = 1;
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<ObservationRequest>());
         programEncounterRequest.setProgramEnrolmentUUID(ExcelUtil.getText(row, 0));
-        programEncounterRequest.setUuid("Enrolment ID");
-        for (int i = 2; i < programEncounterHeader.size() + 2; i++) {
-            String cellHeader = programEncounterHeader.get(i - 2);
+        programEncounterRequest.setUuid(UUID.randomUUID().toString());
+        for (int i = numberOfStaticColumns; i < programEncounterHeader.size() + numberOfStaticColumns; i++) {
+            String cellHeader = programEncounterHeader.get(i - numberOfStaticColumns);
             if (cellHeader.equals("Visit Type")) {
                 programEncounterRequest.setEncounterType(ExcelUtil.getText(row, i));
             } else if (cellHeader.equals("Visit Name")) {

@@ -30,7 +30,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
     @Transactional
     public void save(@RequestBody ProgramEncounterRequest request) {
-        EncounterType encounterType = encounterTypeRepository.findByUuid(request.getEncounterTypeUUID());
+        EncounterType encounterType = (EncounterType) ReferenceDataRepositoryImpl.findReferenceEntity(encounterTypeRepository, request.getEncounterType(), request.getEncounterTypeUUID());
 
         ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());
         encounter.setEncounterDateTime(request.getEncounterDateTime());

@@ -24,17 +24,13 @@ public class IndividualController extends AbstractController<Individual> {
     private final IndividualRepository individualRepository;
     private final AddressLevelRepository addressLevelRepository;
     private final GenderRepository genderRepository;
-    private ProgramEncounterController programEncounterController;
-    private ProgramEnrolmentController programEnrolmentController;
     private ObservationService observationService;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, AddressLevelRepository addressLevelRepository, GenderRepository genderRepository, ProgramEncounterController programEncounterController, ProgramEnrolmentController programEnrolmentController, ObservationService observationService) {
+    public IndividualController(IndividualRepository individualRepository, AddressLevelRepository addressLevelRepository, GenderRepository genderRepository, ObservationService observationService) {
         this.individualRepository = individualRepository;
         this.addressLevelRepository = addressLevelRepository;
         this.genderRepository = genderRepository;
-        this.programEncounterController = programEncounterController;
-        this.programEnrolmentController = programEnrolmentController;
         this.observationService = observationService;
     }
 
@@ -47,8 +43,8 @@ public class IndividualController extends AbstractController<Individual> {
     }
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {
-        AddressLevel addressLevel = addressLevelRepository.findByUuid(individualRequest.getAddressLevelUUID());
-        Gender gender =  individualRequest.getGender() == null ? genderRepository.findByUuid(individualRequest.getGenderUUID()) : genderRepository.findByName(individualRequest.getGender());
+        AddressLevel addressLevel = individualRequest.getAddressLevelUUID() == null ? addressLevelRepository.findByTitle(individualRequest.getAddressLevel()) : addressLevelRepository.findByUuid(individualRequest.getAddressLevelUUID());
+        Gender gender = individualRequest.getGender() == null ? genderRepository.findByUuid(individualRequest.getGenderUUID()) : genderRepository.findByName(individualRequest.getGender());
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
         individual.setName(individualRequest.getName());
         individual.setDateOfBirth(individualRequest.getDateOfBirth());

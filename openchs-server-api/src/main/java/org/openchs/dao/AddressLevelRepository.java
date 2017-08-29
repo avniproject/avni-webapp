@@ -18,4 +18,5 @@ import javax.transaction.Transactional;
 public interface AddressLevelRepository extends PagingAndSortingRepository<AddressLevel, Long>, CHSRepository<AddressLevel> {
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
     Page<AddressLevel> findByCatchmentsIdAndLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("catchmentId") long catchmentId, @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    AddressLevel findByTitle(String title);
 }
