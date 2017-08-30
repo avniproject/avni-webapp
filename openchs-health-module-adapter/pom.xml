@@ -24,7 +24,6 @@
             <groupId>org.openchs</groupId>
             <artifactId>openchs-server-api</artifactId>
             <version>0.1-SNAPSHOT</version>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>
