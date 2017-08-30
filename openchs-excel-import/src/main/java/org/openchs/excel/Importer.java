@@ -3,6 +3,7 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
 import org.openchs.web.IndividualController;
 import org.openchs.web.ProgramEncounterController;
 import org.openchs.web.ProgramEnrolmentController;
@@ -28,7 +29,7 @@ public class Importer implements CommandLineRunner {
         this.programEncounterController = programEncounterController;
     }
 
-    public static void rowImport(Row row, ContentType contentType, RowProcessor rowProcessor, String programName) throws ParseException {
+    private static void rowImport(Row row, ContentType contentType, RowProcessor rowProcessor, String programName, HealthModuleInvokerFactory healthModuleInvokerFactory) throws ParseException {
         if (contentType == ContentType.RegistrationHeader) {
             rowProcessor.readRegistrationHeader(row);
         } else if (contentType == ContentType.Registration) {
@@ -36,7 +37,7 @@ public class Importer implements CommandLineRunner {
         } else if (contentType == ContentType.EnrolmentHeader) {
             rowProcessor.readEnrolmentHeader(row);
         } else if (contentType == ContentType.Enrolment) {
-            rowProcessor.processEnrolment(row, programName);
+            rowProcessor.processEnrolment(row, programName, healthModuleInvokerFactory.getProgramEnrolmentInvoker());
         } else if (contentType == ContentType.ProgramEncounterHeader) {
             rowProcessor.readProgramEncounterHeader(row);
         } else if (contentType == ContentType.ProgramEncounter) {
@@ -45,6 +46,7 @@ public class Importer implements CommandLineRunner {
     }
 
     public void run(String... strings) throws Exception {
+        HealthModuleInvokerFactory healthModuleInvokerFactory = new HealthModuleInvokerFactory(new File("../external/"));
         FileInputStream inputStream = new FileInputStream(new File("input/TransactionData.xlsx"));
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         try {
@@ -62,7 +64,7 @@ public class Importer implements CommandLineRunner {
                     Row row = iterator.next();
                     String firstCellTextInGroup = ExcelUtil.getText(row, 0);
                     contentType = contentTypeSequence.getNextType(contentType, firstCellTextInGroup);
-                    Importer.rowImport(row, contentType, rowProcessor, programName);
+                    Importer.rowImport(row, contentType, rowProcessor, programName, healthModuleInvokerFactory);
                 }
                 System.out.println("COMPLETED SHEET: " + sheet.getSheetName());
             }

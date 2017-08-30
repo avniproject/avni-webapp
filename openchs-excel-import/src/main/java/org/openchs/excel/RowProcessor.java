@@ -3,7 +3,8 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.openchs.domain.ProgramEnrolment;
+import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
+import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.web.IndividualController;
 import org.openchs.web.ProgramEncounterController;
 import org.openchs.web.ProgramEnrolmentController;
@@ -11,9 +12,6 @@ import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.ObservationRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -92,7 +90,7 @@ public class RowProcessor {
         readHeader(row, programEncounterHeader, 1);
     }
 
-    void processEnrolment(Row row, String programName) {
+    void processEnrolment(Row row, String programName, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
         programEnrolmentRequest.setProgram(programName);
         programEnrolmentRequest.setObservations(new ArrayList<ObservationRequest>());
