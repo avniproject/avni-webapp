@@ -25,7 +25,7 @@ public class ChecklistController extends AbstractController<Checklist> {
 
     @Transactional
     @RequestMapping(value = "/checklists", method = RequestMethod.POST)
-    void save(@RequestBody ChecklistRequest checklistRequest) {
+    public void save(@RequestBody ChecklistRequest checklistRequest) {
         Checklist checklist = newOrExistingEntity(checklistRepository, checklistRequest, new Checklist());
         checklist.setName(checklistRequest.getName());
         checklist.setProgramEnrolment(programEnrolmentRepository.findByUuid(checklistRequest.getProgramEnrolmentUUID()));

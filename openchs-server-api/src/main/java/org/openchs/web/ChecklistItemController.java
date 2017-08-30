@@ -32,7 +32,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> {
 
     @Transactional
     @RequestMapping(value = "/checklistItems", method = RequestMethod.POST)
-    void save(@RequestBody ChecklistItemRequest checklistItemRequest) {
+    public void save(@RequestBody ChecklistItemRequest checklistItemRequest) {
         ChecklistItem checklistItem = newOrExistingEntity(checklistItemRepository, checklistItemRequest, new ChecklistItem());
         checklistItem.setConcept(conceptRepository.findByUuid(checklistItemRequest.getConceptUUID()));
         checklistItem.setCompletionDate(checklistItemRequest.getCompletionDate());

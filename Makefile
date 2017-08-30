@@ -66,7 +66,7 @@ start_server: build_server ## Builds and starts the server
 #	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
-	mvn clean compile
+	mvn clean compile test-compile
 	mvn install -DskipTests
 
 test_server: rebuild_testdb build_server ## Run tests

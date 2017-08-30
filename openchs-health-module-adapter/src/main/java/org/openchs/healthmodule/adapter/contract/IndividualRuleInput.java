@@ -5,6 +5,10 @@ import java.util.Date;
 public class IndividualRuleInput {
     private Date dateOfBirth;
 
+    public IndividualRuleInput(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
     public Date getDateOfBirth() {
         return dateOfBirth;
     }

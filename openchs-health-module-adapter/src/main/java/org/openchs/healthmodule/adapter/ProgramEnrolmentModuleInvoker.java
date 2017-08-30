@@ -14,6 +14,9 @@ public class ProgramEnrolmentModuleInvoker extends HealthModuleInvoker {
 
     public ChecklistRuleResponse getChecklist(ProgramEnrolmentRuleInput programEnrolmentRuleInput) {
         ScriptObjectMirror checklists = (ScriptObjectMirror) this.invoke("getChecklists", programEnrolmentRuleInput);
-        return new ChecklistRuleResponse((ScriptObjectMirror) checklists.get("0"));
+        if (checklists.containsKey("0"))
+            return new ChecklistRuleResponse((ScriptObjectMirror) checklists.get("0"));
+        else
+            return null;
     }
 }

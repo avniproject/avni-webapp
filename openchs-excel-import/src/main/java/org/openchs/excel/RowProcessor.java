@@ -3,15 +3,21 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.openchs.dao.ChecklistRepository;
+import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.IndividualRepository;
+import org.openchs.domain.Checklist;
+import org.openchs.domain.ChecklistItem;
+import org.openchs.domain.Concept;
 import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
-import org.openchs.web.IndividualController;
-import org.openchs.web.ProgramEncounterController;
-import org.openchs.web.ProgramEnrolmentController;
-import org.openchs.web.request.IndividualRequest;
-import org.openchs.web.request.ObservationRequest;
-import org.openchs.web.request.ProgramEncounterRequest;
-import org.openchs.web.request.ProgramEnrolmentRequest;
+import org.openchs.healthmodule.adapter.contract.ChecklistItemRuleResponse;
+import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
+import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
+import org.openchs.service.ChecklistService;
+import org.openchs.web.*;
+import org.openchs.web.request.*;
+import org.openchs.web.request.application.ChecklistItemRequest;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -25,11 +31,21 @@ public class RowProcessor {
     private IndividualController individualController;
     private ProgramEnrolmentController programEnrolmentController;
     private ProgramEncounterController programEncounterController;
+    private IndividualRepository individualRepository;
+    private ChecklistController checklistController;
+    private ChecklistItemController checklistItemController;
+    private ChecklistService checklistService;
+    private ConceptRepository conceptRepository;
 
-    RowProcessor(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController) {
+    RowProcessor(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ChecklistService checklistService, ConceptRepository conceptRepository) {
         this.individualController = individualController;
         this.programEnrolmentController = programEnrolmentController;
         this.programEncounterController = programEncounterController;
+        this.individualRepository = individualRepository;
+        this.checklistController = checklistController;
+        this.checklistItemController = checklistItemController;
+        this.checklistService = checklistService;
+        this.conceptRepository = conceptRepository;
     }
 
     public void processRow(Row row) {
@@ -106,6 +122,31 @@ public class RowProcessor {
             }
         }
         programEnrolmentController.save(programEnrolmentRequest);
+
+        Checklist checklist = checklistService.findChecklist(programEnrolmentRequest.getUuid());
+        ChecklistRuleResponse checklistRuleResponse = programEnrolmentModuleInvoker.getChecklist(new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository));
+        if (checklistRuleResponse != null) {
+            ChecklistRequest checklistRequest = new ChecklistRequest();
+            if (checklist != null) checklistRequest.setUuid(checklist.getUuid());
+            checklistRequest.setBaseDate(checklistRuleResponse.getBaseDate());
+            checklistRequest.setName(checklistRuleResponse.getName());
+            checklistRequest.setProgramEnrolmentUUID(programEnrolmentRequest.getUuid());
+            checklistController.save(checklistRequest);
+
+            List<ChecklistItemRuleResponse> items = checklistRuleResponse.getItems();
+            for (ChecklistItemRuleResponse checklistItemRuleResponse : items) {
+                ChecklistItem checklistItem = checklistService.findChecklistItem(programEnrolmentRequest.getUuid(), checklistItemRuleResponse.getName());
+                ChecklistItemRequest checklistItemRequest = new ChecklistItemRequest();
+                if (checklistItem != null) checklistItem.setUuid(checklistItem.getUuid());
+                if (checklist != null) checklistItemRequest.setChecklistUUID(checklist.getUuid());
+                checklistItemRequest.setDueDate(new DateTime(checklistItemRuleResponse.getDueDate()));
+                checklistItemRequest.setMaxDate(new DateTime(checklistItemRuleResponse.getMaxDate()));
+                Concept concept = conceptRepository.findByName(checklistItemRuleResponse.getName());
+                if (concept == null) throw new RuntimeException(String.format("Couldn't find concept with name=%s in checklist being created from the rule", checklistItemRuleResponse.getName()));
+                checklistItemRequest.setConceptUUID(concept.getUuid());
+                checklistItemController.save(checklistItemRequest);
+            }
+        }
     }
 
     void processProgramEncounter(Row row) {

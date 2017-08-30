@@ -18,11 +18,10 @@ public class HealthModuleInvokerFactoryTest {
         File file = new File("../external");
 
         HealthModuleInvokerFactory healthModuleInvokerFactory = new HealthModuleInvokerFactory(file);
-        IndividualRuleInput individual = new IndividualRuleInput();
-        individual.setDateOfBirth(new LocalDate(2017, 3, 1).toDate());
+        IndividualRuleInput individual = new IndividualRuleInput(new LocalDate(2017, 3, 1).toDate());
         ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(individual, new ProgramRuleInput("Child"));
         ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker = healthModuleInvokerFactory.getProgramEnrolmentInvoker();
         ChecklistRuleResponse checklist = programEnrolmentModuleInvoker.getChecklist(programEnrolmentRuleInput);
-        assertEquals(25, checklist.getNumberOfItems());
+        assertEquals(25, checklist.getItems().size());
     }
 }
