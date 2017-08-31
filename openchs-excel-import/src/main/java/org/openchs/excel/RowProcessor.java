@@ -3,13 +3,11 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.openchs.dao.ChecklistRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.Concept;
-import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.ChecklistItemRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
@@ -28,6 +26,7 @@ public class RowProcessor {
     private List<String> registrationHeader = new ArrayList<String>();
     private List<String> enrolmentHeader = new ArrayList<String>();
     private List<String> programEncounterHeader = new ArrayList<String>();
+    private List<String> checklistHeader = new ArrayList<String>();
     private IndividualController individualController;
     private ProgramEnrolmentController programEnrolmentController;
     private ProgramEncounterController programEncounterController;
@@ -172,5 +171,29 @@ public class RowProcessor {
             }
         }
         programEncounterController.save(programEncounterRequest);
+    }
+
+    void readChecklistHeader(Row row) {
+        readHeader(row, checklistHeader,2);
+    }
+
+    void processChecklist(Row row) {
+        int numberOfStaticColumns = 2;
+        String programEnrolmentUUID = ExcelUtil.getText(row, 0);
+        String checklistName = ExcelUtil.getText(row, 1);
+
+        for (int i = numberOfStaticColumns; i < checklistHeader.size() + numberOfStaticColumns; i++) {
+            String checklistItemName = programEncounterHeader.get(i - numberOfStaticColumns);
+            ChecklistItem checklistItem = checklistService.findChecklistItem(programEnrolmentUUID, checklistItemName);
+            Double offsetFromDueDate = ExcelUtil.getNumber(row, i - numberOfStaticColumns);
+            if (offsetFromDueDate == null) continue;
+
+            DateTime dueDate = checklistItem.getDueDate();
+            DateTime completionDate = dueDate.plusDays(offsetFromDueDate.intValue());
+            if (completionDate.isAfterNow()) continue;
+
+            checklistItem.setCompletionDate(completionDate);
+            checklistService.saveItem(checklistItem);
+        }
     }
 }

@@ -22,5 +22,11 @@ public class ContentTypeSequenceTest {
         Assert.assertEquals(ContentType.NotProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounterHeader, ""));
         Assert.assertEquals(ContentType.ProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounter, "baz"));
         Assert.assertEquals(ContentType.NotProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounter, null));
+
+        Assert.assertEquals(ContentType.ChecklistHeader, contentTypeSequence.getNextType(ContentType.NotProgramEncounter, "foo"));
+        Assert.assertEquals(ContentType.Checklist, contentTypeSequence.getNextType(ContentType.Checklist, "foo"));
+        Assert.assertEquals(ContentType.Checklist, contentTypeSequence.getNextType(ContentType.Checklist, "foo"));
+        Assert.assertEquals(ContentType.NotChecklist, contentTypeSequence.getNextType(ContentType.Checklist, ""));
+        Assert.assertEquals(ContentType.NotChecklist, contentTypeSequence.getNextType(ContentType.ChecklistHeader, ""));
     }
 }

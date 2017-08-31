@@ -1,6 +1,5 @@
 package org.openchs.excel;
 
-import javax.servlet.Registration;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,18 +20,24 @@ public class ContentTypeSequence {
         contentTypes.add(ContentType.ProgramEncounterHeader);
         contentTypes.add(ContentType.ProgramEncounter);
         contentTypes.add(ContentType.NotProgramEncounter);
+        contentTypes.add(ContentType.ChecklistHeader);
+        contentTypes.add(ContentType.Checklist);
+        contentTypes.add(ContentType.NotChecklist);
 
         dataContentTypes.add(ContentType.Registration);
         dataContentTypes.add(ContentType.Enrolment);
         dataContentTypes.add(ContentType.ProgramEncounter);
+        dataContentTypes.add(ContentType.Checklist);
 
         headerTypes.add(ContentType.RegistrationHeader);
         headerTypes.add(ContentType.EnrolmentHeader);
         headerTypes.add(ContentType.ProgramEncounterHeader);
+        headerTypes.add(ContentType.ChecklistHeader);
 
         separatorTypes.add(ContentType.NotRegistration);
         separatorTypes.add(ContentType.NotEnrolment);
         separatorTypes.add(ContentType.NotProgramEncounter);
+        separatorTypes.add(ContentType.NotChecklist);
     }
 
     ContentType getNextType(ContentType currentContentType, String text) {

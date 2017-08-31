@@ -7,4 +7,4 @@ SELECT catchment.name, address_level.title from catchment, address_level, catchm
 
 SELECT * from program_enrolment;
 
-SELECT * from checklist_item;
+SELECT ci.checklist_id, c.name, ci.due_date from checklist_item ci, concept c WHERE ci.concept_id = c.id ORDER BY checklist_id, due_date ASC;
