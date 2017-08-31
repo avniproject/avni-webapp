@@ -28,4 +28,13 @@ public class ObservationRequest {
     public void setValue(Object value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "ObservationRequest{" +
+                "conceptUUID='" + conceptUUID + '\'' +
+                ", conceptName='" + conceptName + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }

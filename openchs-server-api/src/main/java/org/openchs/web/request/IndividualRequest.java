@@ -18,6 +18,7 @@ public class IndividualRequest extends org.openchs.web.request.common.CommonIndi
     }
 
     public void addObservation(ObservationRequest observationRequest) {
-        this.observations.add(observationRequest);
+        if (observationRequest != null)
+            this.observations.add(observationRequest);
     }
 }

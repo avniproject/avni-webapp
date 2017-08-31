@@ -90,9 +90,10 @@ public class RowProcessor {
     }
 
     private ObservationRequest getObservationRequest(Row row, int i, String cellHeader) {
+        String cell = ExcelUtil.getText(row, i);
+        if (cell.isEmpty()) return null;
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(cellHeader);
-        String cell = ExcelUtil.getText(row, i);
         observationRequest.setValue(cell);
         return observationRequest;
     }

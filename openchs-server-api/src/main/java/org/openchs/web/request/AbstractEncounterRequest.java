@@ -14,6 +14,7 @@ public class AbstractEncounterRequest extends org.openchs.web.request.common.Com
     }
 
     public void addObservation(ObservationRequest observationRequest) {
-        this.observations.add(observationRequest);
+        if (observationRequest != null)
+            this.observations.add(observationRequest);
     }
 }

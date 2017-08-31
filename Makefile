@@ -19,12 +19,12 @@ su:=$(shell id -un)
 
 # <postgres>
 _clean_db:
+	-psql -h localhost -U $(su) postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
 	-psql -h localhost -U $(su) postgres -c 'drop database $(database)';
 
 _build_db:
 	-psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
 	-psql -h localhost -U $(su) postgres -c "create user $(database) with password 'password'";
-	-psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
 	-psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
 # </postgres>
 
