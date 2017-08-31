@@ -4,7 +4,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import java.util.Date;
 
-public class ChecklistItemRuleResponse {
+public class ChecklistItemRuleResponse extends RuleResponse {
     private ScriptObjectMirror scriptObjectMirror;
 
     public ChecklistItemRuleResponse(ScriptObjectMirror scriptObjectMirror) {
@@ -16,10 +16,10 @@ public class ChecklistItemRuleResponse {
     }
 
     public Date getDueDate() {
-        return (Date) scriptObjectMirror.get("dueDate");
+        return getDate(scriptObjectMirror, "dueDate");
     }
 
     public Date getMaxDate() {
-        return (Date) scriptObjectMirror.get("maxDate");
+        return getDate(scriptObjectMirror, "maxDate");
     }
 }

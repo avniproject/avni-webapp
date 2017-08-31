@@ -7,4 +7,4 @@ SELECT catchment.name, address_level.title from catchment, address_level, catchm
 
 SELECT * from program_enrolment;
 
-SELECT * from checklist;
+SELECT * from checklist_item;

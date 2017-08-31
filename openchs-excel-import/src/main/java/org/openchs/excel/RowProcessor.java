@@ -127,7 +127,7 @@ public class RowProcessor {
         ChecklistRuleResponse checklistRuleResponse = programEnrolmentModuleInvoker.getChecklist(new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository));
         if (checklistRuleResponse != null) {
             ChecklistRequest checklistRequest = new ChecklistRequest();
-            if (checklist != null) checklistRequest.setUuid(checklist.getUuid());
+            checklistRequest.setUuid(checklist == null ? UUID.randomUUID().toString() : checklist.getUuid());
             checklistRequest.setBaseDate(checklistRuleResponse.getBaseDate());
             checklistRequest.setName(checklistRuleResponse.getName());
             checklistRequest.setProgramEnrolmentUUID(programEnrolmentRequest.getUuid());
@@ -137,8 +137,8 @@ public class RowProcessor {
             for (ChecklistItemRuleResponse checklistItemRuleResponse : items) {
                 ChecklistItem checklistItem = checklistService.findChecklistItem(programEnrolmentRequest.getUuid(), checklistItemRuleResponse.getName());
                 ChecklistItemRequest checklistItemRequest = new ChecklistItemRequest();
-                if (checklistItem != null) checklistItem.setUuid(checklistItem.getUuid());
-                if (checklist != null) checklistItemRequest.setChecklistUUID(checklist.getUuid());
+                checklistItemRequest.setUuid(checklistItem == null ? UUID.randomUUID().toString() : checklistItem.getUuid());
+                checklistItemRequest.setChecklistUUID(checklistRequest.getUuid());
                 checklistItemRequest.setDueDate(new DateTime(checklistItemRuleResponse.getDueDate()));
                 checklistItemRequest.setMaxDate(new DateTime(checklistItemRuleResponse.getMaxDate()));
                 Concept concept = conceptRepository.findByName(checklistItemRuleResponse.getName());

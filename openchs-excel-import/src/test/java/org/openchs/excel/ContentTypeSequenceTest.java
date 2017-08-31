@@ -10,16 +10,17 @@ public class ContentTypeSequenceTest {
         Assert.assertEquals(ContentType.RegistrationHeader, contentTypeSequence.getNextType(null, "foo"));
         Assert.assertEquals(ContentType.Registration, contentTypeSequence.getNextType(ContentType.RegistrationHeader, "foo"));
         Assert.assertEquals(ContentType.Registration, contentTypeSequence.getNextType(ContentType.Registration, "foo"));
-        Assert.assertEquals(ContentType.None, contentTypeSequence.getNextType(ContentType.Registration, ""));
-        Assert.assertEquals(ContentType.None, contentTypeSequence.getNextType(ContentType.None, ""));
-        Assert.assertEquals(ContentType.EnrolmentHeader, contentTypeSequence.getNextType(ContentType.None, "bar"));
+        Assert.assertEquals(ContentType.NotRegistration, contentTypeSequence.getNextType(ContentType.Registration, ""));
+
+        Assert.assertEquals(ContentType.EnrolmentHeader, contentTypeSequence.getNextType(ContentType.NotRegistration, "foo"));
         Assert.assertEquals(ContentType.Enrolment, contentTypeSequence.getNextType(ContentType.EnrolmentHeader, "bar"));
         Assert.assertEquals(ContentType.Enrolment, contentTypeSequence.getNextType(ContentType.Enrolment, "bar"));
-        Assert.assertEquals(ContentType.None, contentTypeSequence.getNextType(ContentType.Enrolment, ""));
-        Assert.assertEquals(ContentType.None, contentTypeSequence.getNextType(ContentType.None, ""));
-        Assert.assertEquals(ContentType.ProgramEncounterHeader, contentTypeSequence.getNextType(ContentType.None, "baz"));
+        Assert.assertEquals(ContentType.NotEnrolment, contentTypeSequence.getNextType(ContentType.Enrolment, ""));
+
+        Assert.assertEquals(ContentType.ProgramEncounterHeader, contentTypeSequence.getNextType(ContentType.NotEnrolment, "baz"));
         Assert.assertEquals(ContentType.ProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounterHeader, "baz"));
+        Assert.assertEquals(ContentType.NotProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounterHeader, ""));
         Assert.assertEquals(ContentType.ProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounter, "baz"));
-        Assert.assertEquals(ContentType.None, contentTypeSequence.getNextType(ContentType.ProgramEncounter, null));
+        Assert.assertEquals(ContentType.NotProgramEncounter, contentTypeSequence.getNextType(ContentType.ProgramEncounter, null));
     }
 }

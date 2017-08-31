@@ -9,6 +9,8 @@ import org.openchs.domain.ProgramEnrolment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 @Component
 public class ChecklistService {
     private ChecklistRepository checklistRepository;
@@ -30,6 +32,7 @@ public class ChecklistService {
         return checklistRepository.findByProgramEnrolmentId(programEnrolment.getId());
     }
 
+    @Transactional(Transactional.TxType.REQUIRED)
     public ChecklistItem findChecklistItem(String programEnrolmentUUID, String checklistItemName) {
         Checklist checklist = this.findChecklist(programEnrolmentUUID);
         if (checklist == null) return null;

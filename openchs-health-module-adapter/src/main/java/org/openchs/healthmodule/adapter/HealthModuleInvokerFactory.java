@@ -1,7 +1,10 @@
 package org.openchs.healthmodule.adapter;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.File;
 
 public class HealthModuleInvokerFactory {
@@ -14,5 +17,9 @@ public class HealthModuleInvokerFactory {
 
     public ProgramEnrolmentModuleInvoker getProgramEnrolmentInvoker() {
         return programEnrolmentInvoker;
+    }
+
+    public Object evalAndReturn(String script) throws ScriptException {
+        return engine.eval(script);
     }
 }
