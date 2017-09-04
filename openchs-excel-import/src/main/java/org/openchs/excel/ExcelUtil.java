@@ -1,6 +1,7 @@
 package org.openchs.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 
 import java.util.Date;
@@ -30,10 +31,11 @@ class ExcelUtil {
         try {
             cell = row.getCell(cellNum);
             if (cell == null) return null;
+            if (cell.toString().isEmpty()) return null;
             return cell.getNumericCellValue();
         } catch (RuntimeException e) {
             System.err.println(String.format("getNumber failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
-            throw e;
+            return null;
         }
     }
 }

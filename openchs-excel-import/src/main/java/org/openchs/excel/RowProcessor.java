@@ -184,14 +184,17 @@ public class RowProcessor {
         String checklistName = ExcelUtil.getText(row, 1);
 
         for (int i = numberOfStaticColumns; i < checklistHeader.size() + numberOfStaticColumns; i++) {
-            String checklistItemName = programEncounterHeader.get(i - numberOfStaticColumns);
+            String checklistItemName = checklistHeader.get(i - numberOfStaticColumns);
             ChecklistItem checklistItem = checklistService.findChecklistItem(programEnrolmentUUID, checklistItemName);
-            Double offsetFromDueDate = ExcelUtil.getNumber(row, i - numberOfStaticColumns);
-            if (offsetFromDueDate == null) continue;
+            if (checklistItem == null) throw new RuntimeException(String.format("Couldn't find checklist item with name=%s", checklistItemName));
+            Double offsetFromDueDate = ExcelUtil.getNumber(row, i);
 
-            DateTime dueDate = checklistItem.getDueDate();
-            DateTime completionDate = dueDate.plusDays(offsetFromDueDate.intValue());
-            if (completionDate.isAfterNow()) continue;
+            DateTime completionDate = null;
+            if (offsetFromDueDate != null) {
+                DateTime dueDate = checklistItem.getDueDate();
+                completionDate = dueDate.plusDays(offsetFromDueDate.intValue());
+                if (completionDate.isAfterNow()) completionDate = null;
+            }
 
             checklistItem.setCompletionDate(completionDate);
             checklistService.saveItem(checklistItem);

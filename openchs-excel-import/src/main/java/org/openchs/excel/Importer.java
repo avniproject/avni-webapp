@@ -53,6 +53,10 @@ public class Importer implements CommandLineRunner {
             rowProcessor.readProgramEncounterHeader(row);
         } else if (contentType == ContentType.ProgramEncounter) {
             rowProcessor.processProgramEncounter(row);
+        } else if (contentType == ContentType.ChecklistHeader) {
+            rowProcessor.readChecklistHeader(row);
+        } else if (contentType == ContentType.Checklist) {
+            rowProcessor.processChecklist(row);
         }
     }
 
