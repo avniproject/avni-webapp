@@ -13,7 +13,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.sql.SQLException;
 
@@ -34,7 +33,7 @@ public class ProgramEncounterRepositoryTest {
         ProgramEncounter programEncounter = programEncounterRepository.findOne(1L);
         ObservationCollection observationCollection = programEncounter.getObservations();
         Assert.assertEquals(1, observationCollection.size());
-        Assert.assertEquals("95c4b174-6ce6-4d9a-b223-1f9000b60006", observationCollection.get(0).getConceptUUID());
+        Assert.assertTrue(observationCollection.containsKey("95c4b174-6ce6-4d9a-b223-1f9000b60006"));
         ProgramEnrolment programEnrolment = programEncounter.getProgramEnrolment();
         Assert.assertNotNull(programEnrolment);
     }
