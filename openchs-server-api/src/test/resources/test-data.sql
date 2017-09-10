@@ -1,5 +1,6 @@
 DELETE FROM form_element;
 DELETE FROM form_element_group;
+DELETE FROM form_mapping;
 DELETE FROM form;
 DELETE FROM encounter;
 DELETE FROM program_encounter;
@@ -182,5 +183,6 @@ VALUES ('Temperature', 1, TRUE, 1, FALSE, FALSE, 1, '2b2e9964-d942-4f83-a296-109
 INSERT INTO form_element (name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Paracheck', 3, TRUE, 19, FALSE, FALSE, 1, 'b6edbb87-22d8-4265-9231-aad499475d0c', 1, 1, 1, current_timestamp, current_timestamp);
 
-
+INSERT INTO form_mapping (form_id, entity_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0, 1, 1, current_timestamp, current_timestamp);
 

@@ -19,4 +19,5 @@ public interface FormMappingRepository extends PagingAndSortingRepository<FormMa
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<FormMapping> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
     FormMapping findByFormUuid(String uuid);
+    Page<FormMapping> findByEntityId(Long entityId, Pageable pageable);
 }

@@ -9,18 +9,23 @@ import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.CHSRequest;
+import org.openchs.web.request.application.BasicFormDetails;
 import org.openchs.web.request.application.FormElementGroupContract;
 import org.openchs.web.request.application.FormElementContract;
 import org.openchs.web.request.application.FormContract;
 import org.openchs.web.validation.ValidationException;
 import org.openchs.web.validation.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
+import org.springframework.hateoas.Link;
 import org.springframework.web.bind.annotation.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import javax.transaction.Transactional;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,15 +36,19 @@ public class FormController {
     private FormMappingRepository formMappingRepository;
     private ConceptRepository conceptRepository;
     private FormElementGroupRepository formElementGroupRepository;
+    private RepositoryEntityLinks entityLinks;
+
 
     @Autowired
-    public FormController(FormRepository formRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, ConceptRepository conceptRepository, FormElementGroupRepository formElementGroupRepository) {
+    public FormController(FormRepository formRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, ConceptRepository conceptRepository, FormElementGroupRepository formElementGroupRepository,
+                          RepositoryEntityLinks entityLinks) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
         this.conceptRepository = conceptRepository;
         this.formElementGroupRepository = formElementGroupRepository;
+        this.entityLinks = entityLinks;
     }
 
     //update scenario
@@ -202,5 +211,36 @@ public class FormController {
         });
 
         return formContract;
+    }
+
+    /**
+     * Example of a request URL: http://localhost:8021/forms/program/1?page=3&size=1
+     * Links added are:
+     * <ol>
+     *     <li>self: http://localhost:8021/forms/program/1</li>
+     *     <li>form: http://localhost:8021/form/7</li>
+     *     <li>formElementGroups: http://localhost:8021/form/7/formElementGroups</li>
+     *     <li>createdBy: http://localhost:8021/user/1</li>
+     *     <li>lastModifiedBy: http://localhost:8021/user/1</li>
+     * </ol>
+     */
+    @RequestMapping(value = "/forms/program/{programId}", method = RequestMethod.GET)
+    public List<BasicFormDetails> getForms(@PathVariable("programId") Long programId, Pageable pageable) {
+        Program program = programRepository.findOne(programId);
+        if (program == null) {
+            throw new ValidationException(String.format("No program found for ID %s", programId));
+        }
+        Page<FormMapping> fmPage = formMappingRepository.findByEntityId(programId, pageable);
+        return fmPage.getContent().stream().map(fm -> {
+            Form form = fm.getForm();
+            BasicFormDetails formDetail = new BasicFormDetails(form, program.getName());
+            formDetail.add(linkTo(methodOn(FormController.class).getForms(programId, pageable)).withSelfRel());
+            Link formLink = entityLinks.linkToSingleResource(Form.class, form.getId());
+            formDetail.add(formLink);
+            formDetail.add(new Link(formLink.getHref() + "/formElementGroups", "formElementGroups"));
+            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getCreatedBy().getId()).withRel("createdBy"));
+            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getLastModifiedBy().getId()).withRel("lastModifiedBy"));
+            return formDetail;
+        }).collect(Collectors.toList());
     }
 }
