@@ -23,7 +23,7 @@ jobs:
           - v1-dependencies-{{ checksum "pom.xml" }}
           - v1-dependencies-
 
-      - run: apt-get install build-essentials
+      - run: sudo apt-get install build-essentials
       
       - run: make test_server
 
