@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openchs.domain.Observation;
 import org.openchs.domain.ObservationCollection;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.framework.hibernate.AbstractJsonbUserType;
@@ -24,9 +23,9 @@ public class JsonbUserTypeTest {
     public void serialiseObservationCollection() throws JsonProcessingException {
         ProgramEncounter programEncounter = new ProgramEncounter();
         ObservationCollection observations = new ObservationCollection();
-        observations.add(Observation.create("a8d3da51-33f8-4b0d-a867-678471603151", 10));
+        observations.put("a8d3da51-33f8-4b0d-a867-678471603151", 10);
         programEncounter.setObservations(observations);
         String string = AbstractJsonbUserType.mapper.writeValueAsString(programEncounter);
-        Assert.assertEquals(true, string.contains("\"observations\":[{"));
+        Assert.assertEquals(true, string.contains("\"observations\":{"));
     }
 }

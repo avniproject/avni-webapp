@@ -29,6 +29,26 @@
 
     </dependencies>
 
+
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-openchs-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/openchs/maven</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-openchs-maven</id>
+            <name>openchs-maven</name>
+            <url>https://api.bintray.com/maven/openchs/maven/openchs-server/;publish=1</url>
+        </repository>
+    </distributionManagement>
+    
     <build>
         <plugins>
             <plugin>
