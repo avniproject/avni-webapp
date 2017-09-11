@@ -71,7 +71,7 @@ build_server: ## Builds the jar file
 
 deploy: ## Deploys the jar
 	mvn clean compile test-compile
-	mvn deploy -DskipTests
+	mvn deploy -s .circleci.settings.xml -DskipTests
 
 
 test_server: rebuild_testdb build_server ## Run tests
