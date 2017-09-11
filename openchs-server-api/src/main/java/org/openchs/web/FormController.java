@@ -10,9 +10,9 @@ import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.BasicFormDetails;
-import org.openchs.web.request.application.FormElementGroupContract;
-import org.openchs.web.request.application.FormElementContract;
 import org.openchs.web.request.application.FormContract;
+import org.openchs.web.request.application.FormElementContract;
+import org.openchs.web.request.application.FormElementGroupContract;
 import org.openchs.web.validation.ValidationException;
 import org.openchs.web.validation.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.web.bind.annotation.*;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import javax.transaction.Transactional;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 public class FormController {
@@ -224,12 +225,18 @@ public class FormController {
      *     <li>lastModifiedBy: http://localhost:8021/user/1</li>
      * </ol>
      */
+    @CrossOrigin
     @RequestMapping(value = "/forms/program/{programId}", method = RequestMethod.GET)
     public List<BasicFormDetails> getForms(@PathVariable("programId") Long programId, Pageable pageable) {
         Program program = programRepository.findOne(programId);
         if (program == null) {
             throw new ValidationException(String.format("No program found for ID %s", programId));
         }
+        return getFormsByProgram(program, pageable);
+    }
+
+    private List<BasicFormDetails> getFormsByProgram(Program program, Pageable pageable) {
+        Long programId = program.getId();
         Page<FormMapping> fmPage = formMappingRepository.findByEntityId(programId, pageable);
         return fmPage.getContent().stream().map(fm -> {
             Form form = fm.getForm();
@@ -242,5 +249,42 @@ public class FormController {
             formDetail.add(entityLinks.linkToSingleResource(User.class, form.getLastModifiedBy().getId()).withRel("lastModifiedBy"));
             return formDetail;
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves all forms grouped by program
+     * Response looks like below
+     * [{
+     *     program: {
+     *
+     *     }
+     *     forms: [
+     *
+     *     ]
+     * },
+     * {...},
+     * {...}
+     * ]
+     * @param pageable
+     * @return list of program/forms
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/forms", method = RequestMethod.GET)
+    public List<Map<String, Object>> getForms(Pageable pageable) {
+        Iterable<Program> programItr = programRepository.findAll();
+        List<Map<String, Object>> response = new ArrayList<>();
+        programItr.forEach(program -> {
+            Map<String, Object> formsByProgram = new HashMap<>();
+            Map<String, Object> programDetails = new HashMap<>();
+            programDetails.put("name", program.getName());
+            programDetails.put("colour", program.getColour());
+            programDetails.put("uuid", program.getUuid());
+            programDetails.put("id", program.getId());
+
+            formsByProgram.put("program", programDetails);
+            formsByProgram.put("forms", getFormsByProgram(program, pageable));
+            response.add(formsByProgram);
+        });
+        return response;
     }
 }
