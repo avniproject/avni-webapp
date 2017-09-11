@@ -39,7 +39,7 @@ public class ProgramEnrolment extends CHSEntity {
     private DateTime programExitDateTime;
 
     @Column
-    @Type(type = "program_exit_observations")
+    @Type(type = "observations")
     private ObservationCollection programExitObservations;
 
     public Program getProgram() {
