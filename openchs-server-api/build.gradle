@@ -1,0 +1,56 @@
+buildscript {
+    ext { springBootVersion = '1.5.6.RELEASE' }
+    repositories { mavenCentral() }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+
+}
+
+plugins { id "io.spring.dependency-management" version "1.0.0.RELEASE" }
+
+ext { springBootVersion = '1.5.6.RELEASE' }
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories { mavenCentral() }
+
+jar {
+    baseName = "openchs-server"
+    version = "0.0.1-SNAPSHOT"
+}
+configurations {
+    dev
+    all*.exclude module: 'spring-boot-starter-logging'
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile "org.springframework.boot:spring-boot-starter-log4j2:${springBootVersion}"
+    compile "org.apache.logging.log4j:log4j-web:2.7"
+    compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+    testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-data-rest:${springBootVersion}"
+    compile "org.postgresql:postgresql:9.4-1200-jdbc41"
+    compile "joda-time:joda-time:2.9.4"
+    compile "org.jadira.usertype:usertype.core:5.0.0.GA"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.7.8"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-joda:2.8.9"
+    compile "org.flywaydb:flyway-core:4.0.3"
+    compile "org.flywaydb.flyway-test-extensions:flyway-spring-test:4.0"
+    compile "com.zaxxer:HikariCP:2.5.1"
+    dev "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
+}
+
+bootRun {
+    classpath = sourceSets.main.runtimeClasspath + configurations.dev
+}
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+}
