@@ -72,6 +72,9 @@ test_server: rebuild_testdb ## Run tests
 	./gradlew clean test
 # <server>
 
+ci-test:
+	-psql -h localhost openchs_test -c 'create extension if not exists "uuid-ossp"';
+	./gradlew clean test
 
 #build: stop
 #	@echo "Building all containers"
