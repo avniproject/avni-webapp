@@ -7,3 +7,4 @@ external/*.apk
 input/*.xlsx
 build
 .gradle
+out
