@@ -5,3 +5,5 @@ external/*.apk
 **/.DS_Store
 **/*.iml
 input/*.xlsx
+build
+.gradle
