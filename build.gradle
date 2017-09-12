@@ -3,10 +3,6 @@ allprojects {
 
     group = 'org.openchs'
     version = '0.0.1-SNAPSHOT'
-
-    configurations {
-        all*.exclude module : 'spring-boot-starter-logging'
-    }
 }
 
 subprojects {

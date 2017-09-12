@@ -1,0 +1,21 @@
+buildscript {
+    repositories { mavenCentral() }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories { mavenCentral() }
+
+jar {
+    baseName = "openchs-health-module-adapter"
+    version = "0.0.1-SNAPSHOT"
+}
+
+dependencies {
+    compile group: 'joda-time', name: 'joda-time', version: '2.9.4'
+    compile project(':openchs-server-api')
+}
