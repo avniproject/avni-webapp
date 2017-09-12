@@ -61,21 +61,15 @@ redeploy_schema: clean_schema deploy_schema ## clean and deploy schema
 
 
 # <server>
-start_server: build_server ## Builds and starts the server
-	mvn spring-boot:run
+start_server: ## Builds and starts the server
+	./gradlew clean bootRun
 #	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
-	mvn clean compile test-compile
-	mvn install -DskipTests
+	./gradlew clean build -x test
 
-deploy: ## Deploys the jar
-	mvn clean compile test-compile
-	mvn deploy -s .circleci.settings.xml -DskipTests
-
-
-test_server: rebuild_testdb build_server ## Run tests
-	mvn install
+test_server: rebuild_testdb ## Run tests
+	./gradlew clean test
 # <server>
 
 
