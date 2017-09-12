@@ -24,6 +24,12 @@ jar {
     baseName = "openchs-server"
     version = "0.0.1-SNAPSHOT"
 }
+
+bootRepackage {
+    mainClass = 'org.openchs.OpenCHS'
+    executable = true
+}
+
 configurations {
     dev
     all*.exclude module: 'spring-boot-starter-logging'
