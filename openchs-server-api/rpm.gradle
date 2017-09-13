@@ -1,0 +1,66 @@
+apply plugin: "nebula.ospackage"
+
+def gitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+
+ospackage {
+
+    packageName = 'openchs-server'
+    release = "${gitHash()}"
+    version = "${project.version.replace('-SNAPSHOT', '')}"
+    arch = NOARCH
+    os = LINUX
+    user = 'root'
+
+    preInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/preInstall.sh")
+    postInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/postInstall.sh")
+    preUninstall file("${project.rootProject.rootDir}/infra/rpm/scripts/preUninstall.sh")
+    postUninstall file("${project.rootProject.rootDir}/infra/rpm/scripts/postUninstall.sh")
+
+    into '/opt/openchs'
+
+    from(jar.outputs.files) {
+        rename { String fileName ->
+            fileName.replace("-${project.version}", "")
+        }
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'bin/'
+    }
+
+    from("${project.rootProject.rootDir}/infra/rpm/config/openchs.conf") {
+        createDirectoryEntry = true
+        into 'config'
+        include('openchs.conf')
+    }
+
+
+    from("${project.rootProject.rootDir}/infra/rpm/service/openchs.pid") {
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'run'
+    }
+
+    from("${project.rootProject.rootDir}/infra/rpm/service/openchs.pid") {
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'log'
+    }
+
+    from("${project.rootProject.rootDir}/infra/rpm/service/") {
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'scripts'
+    }
+}
+
+buildRpm {
+    dependsOn 'build'
+}

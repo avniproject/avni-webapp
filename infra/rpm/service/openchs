@@ -1,0 +1,93 @@
+#!/bin/bash
+#
+# openchs        start/stop/status/debug/restart/deploy_health_modules/deploy_impl script
+#
+# chkconfig: - 64 36
+# processname: openchs
+# config: /etc/default/openchs
+# pidfile: /var/run/openchs/openchs.pid
+
+export OPENCHS_SERVER_USER=openchs
+export OPENCHS_SERVER_RUN=/opt/openchs/scripts/start.sh
+export CUR_USER=`/usr/bin/whoami`
+
+. /etc/openchs/openchs.conf
+
+create_dirs() {
+    if [[ ! -e /var/run/openchs ]]; then
+        ln -s /opt/openchs/run /var/run/openchs
+    fi
+
+    if [[ ! -e /var/log/openchs ]]; then
+        ln -s /opt/openchs/log /var/log/openchs
+    fi
+}
+
+openchs_pid() {
+        echo `ps -fe | grep 'openchs.jar' | grep -v grep | tr -s " "|cut -d" " -f2`
+}
+
+start(){
+    pid=$(openchs_pid)
+    if [ -n "$pid" ]
+    then
+        echo -e "\e[00;31mService openchs is already running (pid: $pid)\e[00m"
+    else
+        # Start openchs
+        create_dirs
+        echo -e "\e[00;32mStarting openchs\e[00m"
+        if [ `user_exists $OPENCHS_SERVER_USER` = "1" ]  && [ "$CUR_USER" != "$OPENCHS_SERVER_USER" ] ;
+        then
+                su -s /bin/bash $OPENCHS_SERVER_USER $OPENCHS_SERVER_RUN
+        else
+                sh $OPENCHS_SERVER_RUN
+        fi
+  fi
+  exit 0
+}
+
+status(){
+    pid=$(openchs_pid)
+    if [ -n "$pid" ]; then echo -e "\e[00;32mService openchs is running with pid: $pid\e[00m"
+    else echo -e "\e[00;31mService openchs is not running\e[00m"
+    exit 3
+    fi
+}
+
+stop() {
+	echo -e "\e[00;31mTerminating openchs\e[00m"
+	kill -9 $(openchs_pid)
+	rm -f /var/run/openchs/openchs.pid
+    return
+}
+
+user_exists(){
+        if id -u $1 >/dev/null 2>&1; then
+        echo "1"
+        else
+                echo "0"
+        fi
+}
+
+case $1 in
+	start)
+	  start
+	;;
+	stop)
+	  stop
+	;;
+	restart)
+	  stop
+	  start
+	;;
+	status)
+		status
+	;;
+	kill)
+		stop
+	;;
+	*)
+
+	;;
+esac
+exit 0
