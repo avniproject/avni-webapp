@@ -74,3 +74,6 @@ test_server: rebuild_testdb ## Run tests
 
 ci-test:
 	./gradlew clean test
+
+build-rpm:
+	./gradlew clean openchs-server-api:buildRpm -x test
