@@ -36,12 +36,7 @@ start(){
         # Start openchs
         create_dirs
         echo -e "\e[00;32mStarting openchs\e[00m"
-        if [ `user_exists $OPENCHS_SERVER_USER` = "1" ]  && [ "$CUR_USER" != "$OPENCHS_SERVER_USER" ] ;
-        then
-                su -s /bin/bash $OPENCHS_SERVER_USER $OPENCHS_SERVER_RUN
-        else
-                sh $OPENCHS_SERVER_RUN
-        fi
+        sudo sh $OPENCHS_SERVER_RUN
   fi
   exit 0
 }
