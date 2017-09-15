@@ -79,6 +79,6 @@ build-rpm:
 	./gradlew clean openchs-server-api:buildRpm -x test --info --stacktrace
 
 upload-rpm:
-	openssl aes-256-cbc -d -in infra/rpm/keys/openchs.asc.encrypted -out infra/rpm/keys/openchs.asc -k ${ENCRYPTION_KEY}
-	./gradlew clean openchs-server-api:bintrayUpload -x test --info --stacktrace
+	@openssl aes-256-cbc -d -in infra/rpm/keys/openchs.asc.encrypted -out infra/rpm/keys/openchs.asc -k ${ENCRYPTION_KEY}
+	@./gradlew clean openchs-server-api:bintrayUpload -x test --info --stacktrace
 	rm -rf infra/rpm/keys/openchs.asc
