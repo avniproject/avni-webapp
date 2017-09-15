@@ -76,4 +76,4 @@ ci-test:
 	./gradlew clean test
 
 build-rpm:
-	./gradlew clean openchs-server-api:buildRpm -x test
+	./gradlew clean openchs-server-api:buildRpm -x test --info --stacktrace

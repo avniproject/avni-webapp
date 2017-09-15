@@ -8,3 +8,4 @@ input/*.xlsx
 build
 .gradle
 out
+**/openchs.asc
