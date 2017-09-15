@@ -52,7 +52,7 @@ jobs:
           - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
           - v1-dependencies-
 
-      - run: sudo apt-get install make
+      - run: sudo apt-get install make openssl
 
       - run: make upload-rpm
 

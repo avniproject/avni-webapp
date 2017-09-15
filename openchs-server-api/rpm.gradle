@@ -21,7 +21,7 @@ ospackage {
 
     signingKeyId("72845CB15D05862A")
     signingKeyPassphrase("$System.env.KEY_PASSWORD")
-//    signingKeyRingFile file("${project.rootProject.rootDir}/infra/rpm/keys/openchs.asc")
+    signingKeyRingFile file("${project.rootProject.rootDir}/infra/rpm/keys/openchs.asc")
     
 
     requires("java-1.8.0-openjdk")
