@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  test:
     docker:
       - image: circleci/openjdk:8-jdk
 
@@ -33,3 +33,41 @@ jobs:
             - ~/.gradle
             - ~/openchs-server/.gradle
           key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+
+
+  publish:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/openchs-server
+
+    environment:
+      MAVEN_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          - v1-dependencies-
+
+      - run: sudo apt-get install make
+
+      - run: make upload-rpm
+
+      - save_cache:
+          paths:
+            - ~/.m2
+            - ~/.gradle
+            - ~/openchs-server/.gradle
+          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+
+workflows:
+  version: 2
+  test_and_publish:
+    jobs:
+      - test
+      - publish:
+          requires:
+            - test
