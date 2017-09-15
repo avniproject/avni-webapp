@@ -2,20 +2,11 @@ import groovy.json.JsonSlurper
 
 apply plugin: "nebula.ospackage"
 
-def gitHash = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'rev-parse', '--short', 'HEAD'
-        standardOutput = stdout
-    }
-    return stdout.toString().trim()
-}
-
 
 ospackage {
 
     packageName = 'openchs-server'
-    release = "${gitHash()}"
+    release = ${System.currentTimeMillis()}
     version = "${project.version.replace('-SNAPSHOT', '')}"
     arch = NOARCH
     os = LINUX
