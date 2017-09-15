@@ -11,6 +11,7 @@ id ${USERID}
 if [ $? -eq 1 ]; then
     useradd -g openchs openchs
     usermod -aG wheel openchs
+    echo "openchs ALL = (ALL) NOPASSWD: ALL" | sudo EDITOR='tee -a' visudo
 fi
 
 mkdir -p /etc/openchs
