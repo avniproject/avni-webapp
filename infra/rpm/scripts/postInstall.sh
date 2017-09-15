@@ -10,6 +10,7 @@ fi
 id ${USERID}
 if [ $? -eq 1 ]; then
     useradd -g openchs openchs
+    usermod -aG wheel openchs
 fi
 
 mkdir -p /etc/openchs

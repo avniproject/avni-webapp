@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 apply plugin: "nebula.ospackage"
 
 def gitHash = { ->
@@ -77,10 +79,11 @@ buildRpm {
 }
 
 task uploadRpm {
+    dependsOn buildRpm
     def rpmName = buildRpm.assembleArchiveName()
     def rpmVersion = buildRpm.getRelease()
     def rpmFilePath = buildRpm.outputs.files.singleFile.getAbsolutePath()
-    def spec = ["curl", "-T", "$rpmFilePath", "-u$System.env.BINTRAY_USER:$System.env.BINTRAY_API_KEY", "https://api.bintray.com/content/openchs/rpm/OpenCHS/$rpmVersion/$rpmName?publish=1"].execute()
-    println spec.text
+    def response = ["curl", "-T", "$rpmFilePath", "-u$System.env.BINTRAY_USER:$System.env.BINTRAY_API_KEY", "https://api.bintray.com/content/openchs/rpm/OpenCHS/$rpmVersion/$rpmName?publish=1"].execute().text
+    def json = new JsonSlurper().parseText(response?.trim() ? response : "[1]")
+    return json.toString()
 }
-uploadRpm.dependsOn buildRpm
