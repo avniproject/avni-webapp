@@ -72,7 +72,7 @@ buildRpm {
 task uploadRpm {
     dependsOn buildRpm
     def rpmName = buildRpm.assembleArchiveName()
-    def rpmVersion = buildRpm.getRelease()
+    def rpmVersion = $System.env.CIRCLE_BUILD_NUM ?: 0
     def rpmFilePath = buildRpm.outputs.files.singleFile.getAbsolutePath()
     doLast {
         def response = ["curl", "-T", "$rpmFilePath", "-u$System.env.BINTRAY_USER:$System.env.BINTRAY_API_KEY", "https://api.bintray.com/content/openchs/rpm/OpenCHS/$rpmVersion/$rpmName?publish=1"].execute().text
