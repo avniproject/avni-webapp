@@ -21,7 +21,6 @@ ospackage {
 
     signingKeyId("72845CB15D05862A")
     signingKeyPassphrase("$System.env.KEY_PASSWORD")
-    signingKeyRingFile file("${project.rootProject.rootDir}/infra/rpm/keys/openchs.asc")
 
 
     requires("java-1.8.0-openjdk")
@@ -77,28 +76,11 @@ buildRpm {
     dependsOn 'build'
 }
 
-bintray {
-    user = "$System.env.BINTRAY_USER"
-    key = "$System.env.BINTRAY_API_KEY"
-    publish = true
-    override = true
-    filesSpec {
-        from buildRpm.outputs.files.singleFile.getAbsolutePath()
-        into '.'
-    }
-    pkg {
-        userOrg = 'openchs'
-        repo = 'rpm'
-        name = 'OpenCHS'
-        licenses = ['AGPLv3']
-        vcsUrl = 'https://github.com/openchs/openchs-server'
-        version {
-            name = "${buildRpm.getRelease()}"
-            desc = 'OpenCHS Server RPM'
-        }
-    }
+task uploadRpm {
+    def rpmName = buildRpm.assembleArchiveName()
+    def rpmVersion = buildRpm.getRelease()
+    def rpmFilePath = buildRpm.outputs.files.singleFile.getAbsolutePath()
+    def spec = ["curl", "-T", "$rpmFilePath", "-u$System.env.BINTRAY_USER:$System.env.BINTRAY_API_KEY", "https://api.bintray.com/content/openchs/rpm/OpenCHS/$rpmVersion/$rpmName?publish=1"].execute()
+    println spec.text
 }
-
-bintrayUpload {
-    dependsOn buildRpm
-}
+uploadRpm.dependsOn buildRpm
