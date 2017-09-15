@@ -12,7 +12,8 @@ if [ $? -eq 1 ]; then
     useradd -g openchs openchs
 fi
 
-ln -s /opt/openchs/config /etc/openchs
+mkdir -p /etc/openchs
+cp -n /opt/openchs/config/openchs.conf /etc/openchs/openchs.conf 2>>/dev/null
 ln -s /opt/openchs/scripts/openchs /etc/init.d/openchs
 ln -s /opt/openchs/run /var/run/openchs
 ln -s /opt/openchs/log /var/log/openchs

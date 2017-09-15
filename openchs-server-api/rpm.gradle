@@ -19,6 +19,7 @@ ospackage {
     os = LINUX
     user = 'root'
 
+    requires("java-1.8.0-openjdk")
     preInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/preInstall.sh")
     postInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/postInstall.sh")
     preUninstall file("${project.rootProject.rootDir}/infra/rpm/scripts/preUninstall.sh")
@@ -48,13 +49,19 @@ ospackage {
         into 'run'
     }
 
-    from("${project.rootProject.rootDir}/infra/rpm/service/openchs.pid") {
+    from("${project.rootProject.rootDir}/infra/rpm/service/openchs.log") {
         fileMode = 0644
         createDirectoryEntry = true
         into 'log'
     }
 
-    from("${project.rootProject.rootDir}/infra/rpm/service/") {
+    from("${project.rootProject.rootDir}/infra/rpm/service/openchs") {
+        fileMode = 0644
+        createDirectoryEntry = true
+        into 'scripts'
+    }
+
+    from("${project.rootProject.rootDir}/infra/rpm/service/openchs/start.sh") {
         fileMode = 0644
         createDirectoryEntry = true
         into 'scripts'
