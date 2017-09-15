@@ -57,7 +57,7 @@ status(){
 stop() {
 	echo -e "\e[00;31mTerminating openchs\e[00m"
 	kill -9 $(openchs_pid)
-	rm -f /var/run/openchs/openchs.pid 2>>/dev/null
+	-rm -f /var/run/openchs/openchs.pid 2>/dev/null
     return
 }
 

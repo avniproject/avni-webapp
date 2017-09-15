@@ -61,7 +61,7 @@ ospackage {
         into 'scripts'
     }
 
-    from("${project.rootProject.rootDir}/infra/rpm/service/openchs/start.sh") {
+    from("${project.rootProject.rootDir}/infra/rpm/service/start.sh") {
         fileMode = 0644
         createDirectoryEntry = true
         into 'scripts'
