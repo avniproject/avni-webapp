@@ -22,7 +22,7 @@ ospackage {
     signingKeyId("72845CB15D05862A")
     signingKeyPassphrase("$System.env.KEY_PASSWORD")
     signingKeyRingFile file("${project.rootProject.rootDir}/infra/rpm/keys/openchs.asc")
-    
+
 
     requires("java-1.8.0-openjdk")
     preInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/preInstall.sh")
@@ -93,7 +93,7 @@ bintray {
         licenses = ['AGPLv3']
         vcsUrl = 'https://github.com/openchs/openchs-server'
         version {
-            name = "${buildRpm.getVersion()}"
+            name = "${buildRpm.getRelease()}"
             desc = 'OpenCHS Server RPM'
         }
     }
