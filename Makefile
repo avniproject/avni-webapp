@@ -77,3 +77,6 @@ ci-test:
 
 build-rpm:
 	./gradlew clean openchs-server-api:buildRpm -x test --info --stacktrace
+
+upload-rpm:
+	./gradlew clean openchs-server-api:bintrayUpload -x test --info --stacktrace
