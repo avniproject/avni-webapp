@@ -83,7 +83,11 @@ task uploadRpm {
     def rpmName = buildRpm.assembleArchiveName()
     def rpmVersion = buildRpm.getRelease()
     def rpmFilePath = buildRpm.outputs.files.singleFile.getAbsolutePath()
-    def response = ["curl", "-T", "$rpmFilePath", "-u$System.env.BINTRAY_USER:$System.env.BINTRAY_API_KEY", "https://api.bintray.com/content/openchs/rpm/OpenCHS/$rpmVersion/$rpmName?publish=1"].execute().text
-    def json = new JsonSlurper().parseText(response?.trim() ? response : "[1]")
-    return json.toString()
+    doLast {
+        def response = ["curl", "-T", "$rpmFilePath", "-u$System.env.BINTRAY_USER:$System.env.BINTRAY_API_KEY", "https://api.bintray.com/content/openchs/rpm/OpenCHS/$rpmVersion/$rpmName?publish=1"].execute().text
+        def json = new JsonSlurper().parseText(response?.trim() ? response : "[1]")
+        println "\nUPLOAD RESULT\n"
+        println json
+        println "\nUPLOAD RESULT\n"
+    }
 }

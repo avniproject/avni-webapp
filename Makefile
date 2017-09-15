@@ -81,4 +81,4 @@ build-rpm:
 upload-rpm:
 	@openssl aes-256-cbc -a -md md5 -in infra/rpm/keys/openchs.asc.enc -d -out infra/rpm/keys/openchs.asc -k ${ENCRYPTION_KEY}
 	-rm -rf openchs-server-api/build
-	./gradlew clean openchs-server-api:uploadRpm -x test --info --stacktrace
+	./gradlew clean openchs-server-api:uploadRpm -x test --info --stacktrace --rerun-tasks
