@@ -43,8 +43,10 @@ public class ProgramEnrolmentModuleInvoker extends HealthModuleInvoker {
                     Concept concept = conceptRepository.findByName((String) o);
                     return concept.getUuid();
                 }).collect(Collectors.toList());
-                if (conceptUUIDs.size() != 0)
+                if (conceptUUIDs.size() != 0) {
                     observationRequest.setValue(conceptUUIDs.toArray(new String[conceptUUIDs.size()]));
+                    observationRequests.add(observationRequest);
+                }
             } else {
                 observationRequest.setValue(decisionRuleResponse.getValue());
                 observationRequests.add(observationRequest);

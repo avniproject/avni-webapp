@@ -1,7 +1,9 @@
 package org.openchs.healthmodule.adapter.contract;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.openchs.util.O;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,14 +15,22 @@ public class RuleResponse {
         this.scriptObjectMirror = scriptObjectMirror;
     }
 
+    protected String getDateAsString(ScriptObjectMirror mirror, String name) {
+        return O.getDateInDbFormat(this.getDate(mirror, name));
+    }
+
     protected Date getDate(ScriptObjectMirror mirror, String name) {
         ScriptObjectMirror field = (ScriptObjectMirror) mirror.get(name);
         double timestampLocalTime = (Double) field.callMember("getTime");
-        return new Date((long)timestampLocalTime);
+        return new Date((long) timestampLocalTime);
     }
 
     protected Date getDate(String name) {
-        return this.getDate(scriptObjectMirror, name);
+        return getDate(scriptObjectMirror, name);
+    }
+
+    protected String getDateAsString(String name) {
+        return this.getDateAsString(scriptObjectMirror, name);
     }
 
     protected boolean isDate(ScriptObjectMirror mirror, String name) {
@@ -33,7 +43,7 @@ public class RuleResponse {
     }
 
     protected Object getUnderlyingValue(ScriptObjectMirror mirror, String name, ObjectCreator objectCreator) {
-        if (isDate(name)) return getDate(name);
+        if (isDate(name)) return getDateAsString(name);
         if (isList(name)) {
             ArrayList list = new ArrayList();
             addToList((ScriptObjectMirror) mirror.get(name), list, objectCreator);

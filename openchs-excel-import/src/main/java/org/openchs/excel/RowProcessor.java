@@ -3,17 +3,21 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.Concept;
+import org.openchs.domain.ConceptDataType;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.ChecklistItemRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentDecisionRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
 import org.openchs.service.ChecklistService;
+import org.openchs.util.O;
 import org.openchs.web.*;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistItemRequest;
@@ -97,8 +101,14 @@ public class RowProcessor {
         observationRequest.setConceptName(cellHeader);
         Concept concept = conceptRepository.findByName(cellHeader);
         if (concept == null) throw new NullPointerException(String.format("Concept with name |%s| not found", cellHeader));
-        observationRequest.setValue(concept.getPrimitiveValue(cell));
+        observationRequest.setValue(getPrimitiveValue(concept, cell));
         return observationRequest;
+    }
+
+    public Object getPrimitiveValue(Concept concept, String visibleText) {
+        if (ConceptDataType.Numeric.toString().equals(concept.getDataType())) return Double.parseDouble(visibleText);
+        if (ConceptDataType.Date.toString().equals(concept.getDataType())) return O.getDateInDbFormat(visibleText);
+        return visibleText;
     }
 
     void readEnrolmentHeader(Row row) {
@@ -125,7 +135,7 @@ public class RowProcessor {
             }
         }
 
-        ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository);
+        ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository);
         List<ObservationRequest> observationRequests = programEnrolmentModuleInvoker.getDecisions(programEnrolmentRuleInput, conceptRepository);
         observationRequests.forEach(programEnrolmentRequest::addObservation);
         programEnrolmentController.save(programEnrolmentRequest);

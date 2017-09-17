@@ -73,7 +73,7 @@ FROM individual i
 
 SELECT name
 FROM concept
-WHERE name LIKE '%elivery%';
+WHERE uuid LIKE '9175b794-7a53-49ec-9b03-fbd58b11f1ec';
 
 SELECT
   individual.name,
@@ -86,5 +86,9 @@ FROM program_enrolment, individual, address_level
 WHERE program_enrolment.individual_id = individual.id AND individual.address_id = address_level.id AND individual.address_id = address_level.id;
 
 SELECT pg_typeof(last_modified_date_time) FROM program_enrolment;
-SELECT observations FROM program_enrolment;
+SELECT uuid, observations FROM program_enrolment;
 
+DELETE from checklist_item;
+DELETE from checklist;
+DELETE from program_enrolment;
+DELETE from individual;

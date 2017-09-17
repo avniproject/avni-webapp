@@ -13,8 +13,6 @@ import org.joda.time.LocalDate;
 @Entity
 @Table(name = "concept")
 public class Concept extends CHSEntity {
-    private static DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("dd-MMM-yyyy");
-
     @NotNull
     private String name;
 
@@ -118,9 +116,4 @@ public class Concept extends CHSEntity {
         this.unit = unit;
     }
 
-    public Object getPrimitiveValue(String visibleText) {
-        if (ConceptDataType.Numeric.toString().equals(this.getDataType())) return Double.parseDouble(visibleText);
-        if (ConceptDataType.Date.toString().equals(this.getDataType())) return LocalDate.parse(visibleText, dateTimeFormat);
-        return visibleText;
-    }
 }
