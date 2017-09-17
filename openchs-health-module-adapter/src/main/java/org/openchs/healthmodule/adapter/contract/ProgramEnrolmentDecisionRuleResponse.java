@@ -5,14 +5,16 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramEnrolmentDecisionRuleResponse {
+public class ProgramEnrolmentDecisionRuleResponse extends RuleResponse {
     private List<DecisionRuleResponse> decisionRuleResponses = new ArrayList<>();
 
     public ProgramEnrolmentDecisionRuleResponse(ScriptObjectMirror scriptObjectMirror) {
+        super(scriptObjectMirror);
         ScriptObjectMirror enrolmentDecisions = (ScriptObjectMirror) scriptObjectMirror.get("enrolmentDecisions");
-        int length = enrolmentDecisions.getOwnKeys(false).length;
-        for (int i = 0; i < length; i++) {
-            this.decisionRuleResponses.add(new DecisionRuleResponse((ScriptObjectMirror) enrolmentDecisions.get(Integer.toString(i))));
-        }
+        addToList(enrolmentDecisions, this.decisionRuleResponses, object -> new DecisionRuleResponse((ScriptObjectMirror) object));
+    }
+
+    public List<DecisionRuleResponse> getDecisionRuleResponses() {
+        return decisionRuleResponses;
     }
 }

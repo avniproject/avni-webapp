@@ -9,3 +9,4 @@ build
 .gradle
 out
 **/openchs.asc
+classes/*

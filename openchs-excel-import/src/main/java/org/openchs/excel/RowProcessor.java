@@ -126,7 +126,8 @@ public class RowProcessor {
         }
 
         ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository);
-        ProgramEnrolmentDecisionRuleResponse decisions = programEnrolmentModuleInvoker.getDecisions(programEnrolmentRuleInput);
+        List<ObservationRequest> observationRequests = programEnrolmentModuleInvoker.getDecisions(programEnrolmentRuleInput, conceptRepository);
+        observationRequests.forEach(programEnrolmentRequest::addObservation);
         programEnrolmentController.save(programEnrolmentRequest);
 
         Checklist checklist = checklistService.findChecklist(programEnrolmentRequest.getUuid());
@@ -154,6 +155,7 @@ public class RowProcessor {
                 checklistItemController.save(checklistItemRequest);
             }
         }
+        System.out.println(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
     void processProgramEncounter(Row row) {
