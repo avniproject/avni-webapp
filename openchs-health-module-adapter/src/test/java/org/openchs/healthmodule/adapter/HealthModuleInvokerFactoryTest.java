@@ -8,6 +8,7 @@ import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
 import org.openchs.healthmodule.adapter.contract.IndividualRuleInput;
 import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
 import org.openchs.healthmodule.adapter.contract.ProgramRuleInput;
+import org.openchs.web.request.ProgramEnrolmentRequest;
 
 import javax.script.ScriptException;
 import java.io.File;
@@ -25,7 +26,8 @@ public class HealthModuleInvokerFactoryTest {
     @Test @Ignore
     public void invoke() throws Exception {
         HealthModuleInvokerFactory healthModuleInvokerFactory = new HealthModuleInvokerFactory(directory);
-        IndividualRuleInput individual = new IndividualRuleInput(new LocalDate(2017, 3, 1).toDate());
+        ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
+        IndividualRuleInput individual = new IndividualRuleInput(new LocalDate(2017, 3, 1), programEnrolmentRequest.getEnrolmentDateTime());
         ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(individual, new ProgramRuleInput("Child"));
         ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker = healthModuleInvokerFactory.getProgramEnrolmentInvoker();
         ChecklistRuleResponse checklist = programEnrolmentModuleInvoker.getChecklist(programEnrolmentRuleInput);

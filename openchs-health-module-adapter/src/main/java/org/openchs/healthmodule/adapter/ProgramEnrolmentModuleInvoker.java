@@ -2,6 +2,7 @@ package org.openchs.healthmodule.adapter;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
+import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentDecisionRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
 
 import javax.script.ScriptEngine;
@@ -18,5 +19,10 @@ public class ProgramEnrolmentModuleInvoker extends HealthModuleInvoker {
             return new ChecklistRuleResponse((ScriptObjectMirror) checklists.get("0"));
         else
             return null;
+    }
+
+    public ProgramEnrolmentDecisionRuleResponse getDecisions(ProgramEnrolmentRuleInput programEnrolmentRuleInput) {
+        ScriptObjectMirror decision = (ScriptObjectMirror) this.invoke("getDecisions", programEnrolmentRuleInput);
+        return new ProgramEnrolmentDecisionRuleResponse(decision);
     }
 }

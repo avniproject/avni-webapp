@@ -1,7 +1,7 @@
 SELECT
-  f.name      Form,
+  f.name Form,
   feg.display FormGroup,
-  fe.name     FormElement,
+  fe.name FormElement,
   fe.display_order
 FROM form_element fe, form_element_group feg, form f
 WHERE feg.form_id = f.id AND fe.form_element_group_id = feg.id AND f.name = 'ANC'
@@ -36,4 +36,55 @@ ORDER BY pe.uuid, checklist_id, due_date ASC;
 SELECT *
 FROM individual
 WHERE id = 13;
+
+
+SELECT *
+FROM jsonb_to_record('{
+  "a": 1,
+  "b": "2",
+  "c": "bar"
+}') AS x(a INT, b TEXT, d TEXT);
+
+SELECT x."07b3e014-cbe4-4998-9055-290194481b20" AS foo
+FROM individual, jsonb_to_record(individual.observations) AS x("07b3e014-cbe4-4998-9055-290194481b20" TEXT);
+
+SELECT *
+FROM concept
+WHERE uuid = '07b3e014-cbe4-4998-9055-290194481b20';
+
+SELECT
+  i.name,
+  c.name
+FROM individual i
+  INNER JOIN concept c
+    ON i.observations ->> (SELECT uuid
+                           FROM concept
+                           WHERE name = 'Number of Members in House') = c.uuid;
+
+SELECT
+  i.name,
+  c.name
+FROM individual i
+  INNER JOIN concept c
+    ON i.observations ->> (SELECT uuid
+                           FROM concept
+                           WHERE name = 'Number of Members in House') = c.uuid;
+
+
+SELECT name
+FROM concept
+WHERE name LIKE '%elivery%';
+
+SELECT
+  individual.name,
+  program_enrolment.enrolment_date_time,
+  individual.date_of_birth,
+  address_level.title,
+  date_obs(program_enrolment, 'Last Menstrual Period') LMP,
+  date_obs(program_enrolment, 'Estimated Date of Delivery') EDD
+FROM program_enrolment, individual, address_level
+WHERE program_enrolment.individual_id = individual.id AND individual.address_id = address_level.id AND individual.address_id = address_level.id;
+
+SELECT pg_typeof(last_modified_date_time) FROM program_enrolment;
+SELECT observations FROM program_enrolment;
 

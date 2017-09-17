@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import org.openchs.dao.ConceptRepository;
+import org.openchs.domain.Concept;
 import org.openchs.domain.ObservationCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,17 +20,20 @@ public class ObservationService {
 
     public ObservationCollection createObservations(List<ObservationRequest> observationRequests) {
         List<ObservationRequest> completedObservationRequests = observationRequests
-                .parallelStream()
+                .stream()
                 .map(observationRequest -> {
                     if (observationRequest.getConceptUUID() == null && observationRequest.getConceptName() != null) {
-                        String conceptUUID = conceptRepository
-                                .findByName(observationRequest.getConceptName()).getUuid();
+                        Concept concept = conceptRepository.findByName(observationRequest.getConceptName());
+                        if (concept == null) {
+                            throw new NullPointerException(String.format("Concept with name=%s not found", observationRequest.getConceptName()));
+                        }
+                        String conceptUUID = concept.getUuid();
                         observationRequest.setConceptUUID(conceptUUID);
                     }
                     return observationRequest;
                 }).collect(Collectors.toList());
         return new ObservationCollection(completedObservationRequests
-                .parallelStream()
+                .stream()
                 .collect(Collectors.toConcurrentMap(ObservationRequest::getConceptUUID, ObservationRequest::getValue)));
     }
 }

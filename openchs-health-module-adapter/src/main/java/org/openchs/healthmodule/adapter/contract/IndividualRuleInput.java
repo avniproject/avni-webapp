@@ -1,19 +1,24 @@
 package org.openchs.healthmodule.adapter.contract;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
 import java.util.Date;
 
 public class IndividualRuleInput {
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
+    private DateTime today;
 
-    public IndividualRuleInput(Date dateOfBirth) {
+    public IndividualRuleInput(LocalDate dateOfBirth, DateTime today) {
         this.dateOfBirth = dateOfBirth;
+        this.today = today;
     }
 
     public Date getDateOfBirth() {
-        return dateOfBirth;
+        return dateOfBirth.toDate();
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public int getAgeInYears(Object o) {
+        return today.getYear() - dateOfBirth.getYear();
     }
 }

@@ -12,6 +12,7 @@ public abstract class HealthModuleInvoker {
     public HealthModuleInvoker(ScriptEngine scriptEngine, File file) {
         try {
             if (file.exists()) {
+                scriptEngine.eval("var console = {log: function(x){}};");
                 eval = (ScriptObjectMirror) scriptEngine.eval(new FileReader(file));
             }
         } catch (Exception e) {

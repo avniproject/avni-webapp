@@ -11,6 +11,7 @@ import org.openchs.domain.Concept;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.ChecklistItemRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
+import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentDecisionRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
 import org.openchs.service.ChecklistService;
 import org.openchs.web.*;
@@ -94,7 +95,9 @@ public class RowProcessor {
         if (cell.isEmpty()) return null;
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(cellHeader);
-        observationRequest.setValue(cell);
+        Concept concept = conceptRepository.findByName(cellHeader);
+        if (concept == null) throw new NullPointerException(String.format("Concept with name |%s| not found", cellHeader));
+        observationRequest.setValue(concept.getPrimitiveValue(cell));
         return observationRequest;
     }
 
@@ -121,10 +124,14 @@ public class RowProcessor {
                 programEnrolmentRequest.addObservation(getObservationRequest(row, i, cellHeader));
             }
         }
+
+        ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository);
+        ProgramEnrolmentDecisionRuleResponse decisions = programEnrolmentModuleInvoker.getDecisions(programEnrolmentRuleInput);
         programEnrolmentController.save(programEnrolmentRequest);
 
         Checklist checklist = checklistService.findChecklist(programEnrolmentRequest.getUuid());
-        ChecklistRuleResponse checklistRuleResponse = programEnrolmentModuleInvoker.getChecklist(new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository));
+
+        ChecklistRuleResponse checklistRuleResponse = programEnrolmentModuleInvoker.getChecklist(programEnrolmentRuleInput);
         if (checklistRuleResponse != null) {
             ChecklistRequest checklistRequest = new ChecklistRequest();
             checklistRequest.setUuid(checklist == null ? UUID.randomUUID().toString() : checklist.getUuid());

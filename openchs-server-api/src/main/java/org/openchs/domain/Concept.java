@@ -1,14 +1,20 @@
 package org.openchs.domain;
 
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.joda.time.LocalDate;
 
 @Entity
 @Table(name = "concept")
 public class Concept extends CHSEntity {
+    private static DateTimeFormatter dateTimeFormat = DateTimeFormat.forPattern("dd-MMM-yyyy");
+
     @NotNull
     private String name;
 
@@ -110,5 +116,11 @@ public class Concept extends CHSEntity {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public Object getPrimitiveValue(String visibleText) {
+        if (ConceptDataType.Numeric.toString().equals(this.getDataType())) return Double.parseDouble(visibleText);
+        if (ConceptDataType.Date.toString().equals(this.getDataType())) return LocalDate.parse(visibleText, dateTimeFormat);
+        return visibleText;
     }
 }

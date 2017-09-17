@@ -1,7 +1,7 @@
 .idea
 target
 fs/config/modules/*
-external/*.apk
+external/*.*
 **/.DS_Store
 **/*.iml
 input/*.xlsx
