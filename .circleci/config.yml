@@ -78,7 +78,7 @@ jobs:
 
   deploy:
     docker:
-      - image: hashicorp/terraform:latest
+      - image: circleci/openjdk:8-jdk
 
     working_directory: ~/
 
@@ -105,13 +105,9 @@ workflows:
       - publish:
           requires:
             - test
-      - hold:
-          type: approval
-          requires:
-            - publish
       - deploy:
           requires:
-            - hold
+            - publish
 
 notify:
   webhooks:
