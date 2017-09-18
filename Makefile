@@ -1,7 +1,6 @@
 # <makefile>
 # Objects: db, schema, server, package, env (code environment)
 # Actions: clean, build, deploy, test
-
 help:
 	@IFS=$$'\n' ; \
 	help_lines=(`fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//'`); \
