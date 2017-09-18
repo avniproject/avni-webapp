@@ -24,7 +24,7 @@ create_dirs() {
 }
 
 openchs_pid() {
-        echo `ps -fe | grep 'openchs.jar' | grep -v grep | tr -s " "|cut -d" " -f2`
+        echo `ps -fe | grep 'openchs-server.jar' | grep -v grep | tr -s " "|cut -d" " -f2`
 }
 
 start(){
