@@ -67,8 +67,10 @@ jobs:
       - run: cp minor_version ~/artifacts/minor_version;
       - run: cp major_version ~/artifacts/major_version;
       - persist_to_workspace:
-          path: minor_version
-          destination: minor_version
+          root: ~/artifacts
+          paths:
+           - minor_version
+           - major_version
 
 
   deploy:
