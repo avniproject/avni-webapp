@@ -88,6 +88,8 @@ jobs:
 
       - run: sudo apt-get install make openssl git
 
+      - run: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+
       - run: cd ~/; git clone -q git@github.com:OpenCHS/infra.git
 
       - run: cp -f ~/artifacts/major_version ~/infra/server/version/major_version
