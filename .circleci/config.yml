@@ -63,22 +63,50 @@ jobs:
             - ~/openchs-server/.gradle
           key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
 
-      - store_artifacts:
+      - run: mkdir -p ~/artifacts;
+      - run: cp minor_version ~/artifacts/minor_version;
+      - run: cp major_version ~/artifacts/major_version;
+      - persist_to_workspace:
           path: minor_version
           destination: minor_version
 
-      - store_artifacts:
-          path: major_version
-          destination: major_version
+
+  deploy:
+    docker:
+      - image: docker pull hashicorp/terraform
+
+    working_directory: ~/
+
+    steps:
+      - attach_workspace:
+          at: ~/artifacts
+
+      - run: sudo apt-get install make openssl git
+
+      - run: cd ~/; git clone git@github.com:OpenCHS/infra.git
+
+      - run: cp -f ~/artifacts/major_version ~/infra/server/version/major_version
+      
+      - run: cp -f ~/artifacts/minor_version ~/infra/server/version/minor_version
+
+      - run: cd ~/infra; make unencrypt; make staging-create;
+
 
 workflows:
   version: 2
-  test_and_publish:
+  test_and_publish_and_deploy:
     jobs:
       - test
       - publish:
           requires:
             - test
+      - hold:
+          type: approval
+          requires:
+            - publish
+      - deploy:
+          requires:
+            - hold
 
 notify:
   webhooks:
