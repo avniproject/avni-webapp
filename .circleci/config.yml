@@ -78,7 +78,7 @@ jobs:
 
   deploy:
     docker:
-      - image: hashicorp/terraform
+      - image: hashicorp/terraform:latest
 
     working_directory: ~/
 
