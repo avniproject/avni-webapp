@@ -64,8 +64,11 @@ jobs:
           key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
 
       - run: mkdir -p ~/artifacts;
+
       - run: cp minor_version ~/artifacts/minor_version;
+
       - run: cp major_version ~/artifacts/major_version;
+
       - persist_to_workspace:
           root: ~/artifacts
           paths:
@@ -75,7 +78,7 @@ jobs:
 
   deploy:
     docker:
-      - image: docker pull hashicorp/terraform
+      - image: hashicorp/terraform
 
     working_directory: ~/
 
@@ -91,7 +94,7 @@ jobs:
       
       - run: cp -f ~/artifacts/minor_version ~/infra/server/version/minor_version
 
-      - run: cd ~/infra; make unencrypt; make staging-create;
+      - run: cd ~/infra; make install; make staging-create;
 
 
 workflows:
