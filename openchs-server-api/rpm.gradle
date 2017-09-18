@@ -77,8 +77,11 @@ task uploadRpm {
     doLast {
         def response = ["curl", "-T", "$rpmFilePath", "-u$System.env.BINTRAY_USER:$System.env.BINTRAY_API_KEY", "https://api.bintray.com/content/openchs/rpm/OpenCHS/$rpmVersion/$rpmName?publish=1"].execute().text
         def json = new JsonSlurper().parseText(response?.trim() ? response : "[1]")
-        println "\nUPLOAD RESULT\n"
-        println json
-        println "\nUPLOAD RESULT\n"
+        def minorVersionFile = new File("$project.rootProject.rootDir/minor_version")
+        def majorVersionFile = new File("$project.rootProject.rootDir/major_version")
+        minorVersionFile.createNewFile()
+        majorVersionFile.createNewFile()
+        minorVersionFile.text = "$buildRpm.release"
+        majorVersionFile.text = "$buildRpm.version"
     }
 }

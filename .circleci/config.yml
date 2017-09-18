@@ -63,6 +63,14 @@ jobs:
             - ~/openchs-server/.gradle
           key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
 
+      - store_artifacts:
+          path: minor_version
+          destination: minor_version
+
+      - store_artifacts:
+          path: major_version
+          destination: major_version
+
 workflows:
   version: 2
   test_and_publish:

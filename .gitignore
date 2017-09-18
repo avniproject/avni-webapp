@@ -10,3 +10,5 @@ build
 out
 **/openchs.asc
 classes/*
+minor_version
+major_version
