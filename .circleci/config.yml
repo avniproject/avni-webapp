@@ -86,11 +86,11 @@ jobs:
       - attach_workspace:
           at: ~/artifacts
 
-      - run: sudo apt-get install make openssl git
+      - run: sudo apt-get install make openssl
 
-      - run: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
 
-      - run: cd ~/; git clone -q git@github.com:OpenCHS/infra.git
+      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
 
       - run: cp -f ~/artifacts/major_version ~/infra/server/version/major_version
       
