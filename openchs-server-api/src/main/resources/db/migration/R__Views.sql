@@ -2,7 +2,7 @@
 -- We want retain the ability to display an entity, by letting the user click on the entity - hence in some case id field left if there is no intuitive replacement for it, for example enrolment_id.
 -- The dates pose a problem, one cannot display the dates as 'DD-Mon-YYYY', which will be intuitive, because for that requires it to be converted to_char. But if we do that the user and dashboards will not be able to do date based filtering from metabase.
 
-DROP VIEW mother_program_enrolments;
+DROP VIEW IF EXISTS mother_program_enrolments;
 CREATE OR REPLACE VIEW mother_program_enrolments AS
   SELECT
     individual.id                                               individual,
@@ -22,7 +22,7 @@ CREATE OR REPLACE VIEW mother_program_enrolments AS
   GROUP BY program_enrolment.id, individual.id, address_level.id
   ORDER BY address, individual;
 
-DROP VIEW mother_program_encounters;
+DROP VIEW IF EXISTS mother_program_encounters;
 CREATE OR REPLACE VIEW mother_program_encounters AS
   SELECT
     individual.id                                               individual,

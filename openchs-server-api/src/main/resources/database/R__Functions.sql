@@ -1,7 +1,7 @@
-DROP FUNCTION IF EXISTS openchs.create_form( CHARACTER VARYING, CHARACTER VARYING, CHARACTER VARYING, BIGINT, CHARACTER VARYING, CHARACTER VARYING);
-DROP FUNCTION IF EXISTS openchs.create_form_element(CHARACTER VARYING, CHARACTER VARYING, SMALLINT, BOOLEAN, BIGINT, BIGINT, JSON);
-DROP FUNCTION IF EXISTS openchs.create_form_element_for_concept_with_answers(VARCHAR, VARCHAR, NUMERIC, BOOLEAN, BIGINT, JSON, VARCHAR, JSON);
-DROP FUNCTION IF EXISTS openchs.create_form_element_for_concept(VARCHAR, VARCHAR, NUMERIC, BOOLEAN, BIGINT, JSON, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS create_form( CHARACTER VARYING, CHARACTER VARYING, CHARACTER VARYING, BIGINT, CHARACTER VARYING, CHARACTER VARYING);
+DROP FUNCTION IF EXISTS create_form_element(CHARACTER VARYING, CHARACTER VARYING, SMALLINT, BOOLEAN, BIGINT, BIGINT, JSON);
+DROP FUNCTION IF EXISTS create_form_element_for_concept_with_answers(VARCHAR, VARCHAR, NUMERIC, BOOLEAN, BIGINT, JSON, VARCHAR, JSON);
+DROP FUNCTION IF EXISTS create_form_element_for_concept(VARCHAR, VARCHAR, NUMERIC, BOOLEAN, BIGINT, JSON, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION create_concept(name VARCHAR(70), data_type VARCHAR(20), uuid VARCHAR(70))
   RETURNS BIGINT AS $$
@@ -83,9 +83,9 @@ CREATE OR REPLACE FUNCTION create_form_element(formElementName VARCHAR(70), form
 DECLARE formElementId BIGINT;
 BEGIN
   IF conceptId = 0 THEN
-    SELECT id INTO conceptId from openchs.concept WHERE name = formElementName;
+    SELECT id INTO conceptId from concept WHERE name = formElementName;
   END IF;
-  INSERT INTO openchs.form_element (id, name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, key_values, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+  INSERT INTO form_element (id, name, display_order, is_mandatory, concept_id, is_used_in_summary, is_generated, form_element_group_id, key_values, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
   VALUES (DEFAULT, formElementName, displayOrder, isMandatory, conceptId, FALSE, FALSE, formElementGroupId, keyValues, formElementUUID, 1, 1, 1, current_timestamp, current_timestamp) RETURNING id INTO formElementId;
 
   raise notice 'Created form_element with id: %, name: %', formElementId, formElementName;

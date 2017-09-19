@@ -49,13 +49,8 @@ rebuild_testdb: clean_testdb build_testdb ## clean + build test db
 
 
 # <schema>
-clean_schema: ## drops the schema
-	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=openchs clean
-
 deploy_schema: ## Runs all migrations to create the schema with all the objects
-	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=openchs -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ migrate
-
-redeploy_schema: clean_schema deploy_schema ## clean and deploy schema
+	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ migrate
 # </schema>
 
 
