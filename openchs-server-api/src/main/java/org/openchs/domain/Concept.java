@@ -1,14 +1,10 @@
 package org.openchs.domain;
 
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import org.joda.time.LocalDate;
 
 @Entity
 @Table(name = "concept")
@@ -19,7 +15,7 @@ public class Concept extends CHSEntity {
     @NotNull
     private String dataType;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "concept")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "concept")
     private Set<ConceptAnswer> conceptAnswers;
 
     private Double lowAbsolute;
@@ -100,11 +96,11 @@ public class Concept extends CHSEntity {
     }
 
     public ConceptAnswer findConceptAnswer(String answerConceptName) {
-        return conceptAnswers.stream().filter(x -> x.getAnswerConcept().getName().equals(answerConceptName)).findAny().orElse(null);
+        return this.getConceptAnswers().stream().filter(x -> x.getAnswerConcept().getName().equals(answerConceptName)).findAny().orElse(null);
     }
 
     public void addAnswer(ConceptAnswer conceptAnswer) {
-        conceptAnswers.add(conceptAnswer);
+        this.getConceptAnswers().add(conceptAnswer);
         conceptAnswer.setConcept(this);
     }
 
@@ -116,4 +112,16 @@ public class Concept extends CHSEntity {
         this.unit = unit;
     }
 
+    public Concept findAnswerConcept(String answerConceptName) {
+        ConceptAnswer conceptAnswer = this.findConceptAnswer(answerConceptName);
+        return conceptAnswer == null ? null : conceptAnswer.getAnswerConcept();
+    }
+
+    @Override
+    public String toString() {
+        return "Concept{" +
+                "name='" + name + '\'' +
+                ", dataType='" + dataType + '\'' +
+                '}';
+    }
 }

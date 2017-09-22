@@ -3,18 +3,12 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.domain.Checklist;
-import org.openchs.domain.ChecklistItem;
-import org.openchs.domain.Concept;
-import org.openchs.domain.ConceptDataType;
+import org.openchs.domain.*;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.ChecklistItemRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
-import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentDecisionRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
 import org.openchs.service.ChecklistService;
 import org.openchs.util.O;
@@ -69,7 +63,7 @@ public class RowProcessor {
         }
     }
 
-    void processRegistration(Row row) throws ParseException {
+    void processIndividual(Row row) throws ParseException {
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setUuid(ExcelUtil.getText(row, 0));
         individualRequest.setObservations(new ArrayList<ObservationRequest>());
@@ -108,6 +102,11 @@ public class RowProcessor {
     public Object getPrimitiveValue(Concept concept, String visibleText) {
         if (ConceptDataType.Numeric.toString().equals(concept.getDataType())) return Double.parseDouble(visibleText);
         if (ConceptDataType.Date.toString().equals(concept.getDataType())) return O.getDateInDbFormat(visibleText);
+        if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
+            Concept answerConcept = concept.findAnswerConcept(visibleText);
+            if (answerConcept == null) throw new NullPointerException(String.format("Concept with name |%s| not found", visibleText));
+            return answerConcept.getUuid();
+        }
         return visibleText;
     }
 

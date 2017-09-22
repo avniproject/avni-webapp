@@ -7,12 +7,12 @@ import javax.validation.constraints.NotNull;
 @Table(name = "concept_answer")
 public class ConceptAnswer extends CHSEntity{
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "concept_id")
     private Concept concept;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "answer_concept_id")
     private Concept answerConcept;
 
@@ -42,5 +42,14 @@ public class ConceptAnswer extends CHSEntity{
 
     public void setOrder(short order) {
         this.order = order;
+    }
+
+    @Override
+    public String toString() {
+        return "ConceptAnswer{" +
+                "concept=" + concept.getName() +
+                ", answerConcept=" + answerConcept.getName() +
+                ", order=" + order +
+                '}';
     }
 }

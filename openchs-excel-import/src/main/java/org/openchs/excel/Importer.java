@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.ParseException;
@@ -40,11 +41,12 @@ public class Importer implements CommandLineRunner {
         this.checklistService = checklistService;
     }
 
-    private static void rowImport(Row row, ContentType contentType, RowProcessor rowProcessor, String programName, HealthModuleInvokerFactory healthModuleInvokerFactory) throws ParseException {
+    @Transactional(Transactional.TxType.REQUIRED)
+    public void rowImport(Row row, ContentType contentType, RowProcessor rowProcessor, String programName, HealthModuleInvokerFactory healthModuleInvokerFactory) throws ParseException {
         if (contentType == ContentType.RegistrationHeader) {
             rowProcessor.readRegistrationHeader(row);
         } else if (contentType == ContentType.Registration) {
-            rowProcessor.processRegistration(row);
+            rowProcessor.processIndividual(row);
         } else if (contentType == ContentType.EnrolmentHeader) {
             rowProcessor.readEnrolmentHeader(row);
         } else if (contentType == ContentType.Enrolment) {
@@ -79,7 +81,7 @@ public class Importer implements CommandLineRunner {
                     Row row = iterator.next();
                     String firstCellTextInGroup = ExcelUtil.getText(row, 0);
                     contentType = contentTypeSequence.getNextType(contentType, firstCellTextInGroup);
-                    Importer.rowImport(row, contentType, rowProcessor, programName, healthModuleInvokerFactory);
+                    this.rowImport(row, contentType, rowProcessor, programName, healthModuleInvokerFactory);
                 }
                 System.out.println("COMPLETED SHEET: " + sheet.getSheetName());
             }
