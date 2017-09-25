@@ -6,20 +6,22 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
+import org.openchs.importer.Importer;
 import org.openchs.service.ChecklistService;
 import org.openchs.web.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
-public class Importer implements CommandLineRunner {
+public class ExcelImporter implements Importer {
     private IndividualController individualController;
     private ProgramEnrolmentController programEnrolmentController;
     private ProgramEncounterController programEncounterController;
@@ -28,9 +30,10 @@ public class Importer implements CommandLineRunner {
     private ChecklistItemController checklistItemController;
     private ConceptRepository conceptRepository;
     private ChecklistService checklistService;
+    private final Logger logger;
 
     @Autowired
-    public Importer(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ConceptRepository conceptRepository, ChecklistService checklistService) {
+    public ExcelImporter(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ConceptRepository conceptRepository, ChecklistService checklistService) {
         this.individualController = individualController;
         this.programEnrolmentController = programEnrolmentController;
         this.programEncounterController = programEncounterController;
@@ -39,6 +42,7 @@ public class Importer implements CommandLineRunner {
         this.checklistItemController = checklistItemController;
         this.conceptRepository = conceptRepository;
         this.checklistService = checklistService;
+        logger = Logger.getLogger(this.getClass().getName());
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
@@ -62,9 +66,10 @@ public class Importer implements CommandLineRunner {
         }
     }
 
-    public void run(String... strings) throws Exception {
+    @Override
+    public Boolean importData(InputStream inputStream) throws Exception {
         HealthModuleInvokerFactory healthModuleInvokerFactory = new HealthModuleInvokerFactory(new File("external"));
-        FileInputStream inputStream = new FileInputStream(new File("input/TransactionData.xlsx"));
+        Boolean returnValue = true;
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         try {
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -85,9 +90,16 @@ public class Importer implements CommandLineRunner {
                 }
                 System.out.println("COMPLETED SHEET: " + sheet.getSheetName());
             }
+        } catch (Exception error) {
+            returnValue = false;
+            logger.log(Level.ALL, error.getMessage(), error.getStackTrace().toString());
+            System.out.println(error.getMessage());
+            System.out.println(error.getStackTrace().toString());
+            throw error;
         } finally {
             workbook.close();
             inputStream.close();
+            return returnValue;
         }
     }
 }
