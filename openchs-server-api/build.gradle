@@ -58,6 +58,9 @@ dependencies {
     compile "org.flywaydb:flyway-core:4.0.3"
     compile "org.flywaydb.flyway-test-extensions:flyway-spring-test:4.0"
     compile "com.zaxxer:HikariCP:2.5.1"
+    compile "org.apache.poi:poi:3.16-beta2"
+    compile "org.apache.poi:poi-ooxml:3.16-beta2"
+    compile project(':openchs-health-module-adapter')
     dev "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
 }
 

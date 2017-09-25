@@ -56,7 +56,7 @@ deploy_schema: ## Runs all migrations to create the schema with all the objects
 
 # <server>
 start_server: ## Builds and starts the server
-	./gradlew clean bootRun
+	./gradlew clean openchs-server-api:bootRun
 #	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file

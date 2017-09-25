@@ -1,7 +1,5 @@
 package org.openchs.healthmodule.adapter;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;

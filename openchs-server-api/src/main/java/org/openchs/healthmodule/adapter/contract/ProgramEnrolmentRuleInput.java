@@ -1,6 +1,5 @@
 package org.openchs.healthmodule.adapter.contract;
 
-import org.joda.time.LocalDate;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.ConceptDataType;

@@ -3,7 +3,6 @@ package org.openchs.healthmodule.adapter.contract;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.openchs.util.O;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
