@@ -9,6 +9,7 @@ import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
 import org.openchs.importer.Importer;
 import org.openchs.service.ChecklistService;
 import org.openchs.web.*;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +18,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Component
 public class ExcelImporter implements Importer {
@@ -30,7 +29,7 @@ public class ExcelImporter implements Importer {
     private ChecklistItemController checklistItemController;
     private ConceptRepository conceptRepository;
     private ChecklistService checklistService;
-    private final Logger logger;
+    private final org.slf4j.Logger logger;
 
     @Autowired
     public ExcelImporter(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ConceptRepository conceptRepository, ChecklistService checklistService) {
@@ -42,7 +41,7 @@ public class ExcelImporter implements Importer {
         this.checklistItemController = checklistItemController;
         this.conceptRepository = conceptRepository;
         this.checklistService = checklistService;
-        logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
@@ -76,8 +75,7 @@ public class ExcelImporter implements Importer {
                 XSSFSheet sheet = workbook.getSheetAt(i);
                 ContentTypeSequence contentTypeSequence = new ContentTypeSequence();
 
-                System.out.println("READING SHEET: " + sheet.getSheetName());
-
+                logger.info("READING SHEET: ", sheet.getSheetName());
                 RowProcessor rowProcessor = new RowProcessor(individualController, programEnrolmentController, programEncounterController, individualRepository, checklistController, checklistItemController, checklistService, conceptRepository);
                 Iterator<Row> iterator = sheet.iterator();
                 ContentType contentType = null;
@@ -88,13 +86,11 @@ public class ExcelImporter implements Importer {
                     contentType = contentTypeSequence.getNextType(contentType, firstCellTextInGroup);
                     this.rowImport(row, contentType, rowProcessor, programName, healthModuleInvokerFactory);
                 }
-                System.out.println("COMPLETED SHEET: " + sheet.getSheetName());
+                logger.info("COMPLETED SHEET: ", sheet.getSheetName());
             }
         } catch (Exception error) {
             returnValue = false;
-            logger.log(Level.ALL, error.getMessage(), error.getStackTrace().toString());
-            System.out.println(error.getMessage());
-            System.out.println(error.getStackTrace().toString());
+            logger.error(error.getMessage(), error);
             throw error;
         } finally {
             workbook.close();

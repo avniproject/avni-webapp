@@ -15,6 +15,8 @@ import org.openchs.web.request.application.FormElementContract;
 import org.openchs.web.request.application.FormElementGroupContract;
 import org.openchs.web.validation.ValidationException;
 import org.openchs.web.validation.ValidationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 public class FormController {
+    private final Logger logger;
     private FormRepository formRepository;
     private ProgramRepository programRepository;
     private EncounterTypeRepository encounterTypeRepository;
@@ -50,13 +53,14 @@ public class FormController {
         this.conceptRepository = conceptRepository;
         this.formElementGroupRepository = formElementGroupRepository;
         this.entityLinks = entityLinks;
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     //update scenario
     @RequestMapping(value = "/forms", method = RequestMethod.POST)
     @Transactional
     void save(@RequestBody FormContract formRequest) {
-        System.out.println(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
+        logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         String associatedEncounterTypeName;
 
         Form form = formRepository.findByUuid(formRequest.getUuid());

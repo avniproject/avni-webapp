@@ -18,6 +18,8 @@ import org.openchs.util.O;
 import org.openchs.web.*;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistItemRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class RowProcessor {
+    private final Logger logger;
     private List<String> registrationHeader = new ArrayList<String>();
     private List<String> enrolmentHeader = new ArrayList<String>();
     private List<String> programEncounterHeader = new ArrayList<String>();
@@ -47,6 +50,7 @@ public class RowProcessor {
         this.checklistItemController = checklistItemController;
         this.checklistService = checklistService;
         this.conceptRepository = conceptRepository;
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     public void processRow(Row row) {
@@ -167,7 +171,7 @@ public class RowProcessor {
                 checklistItemController.save(checklistItemRequest);
             }
         }
-        System.out.println(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
+        this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
     void processProgramEncounter(Row row) {

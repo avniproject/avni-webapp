@@ -5,6 +5,8 @@ import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.web.request.ConceptContract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,18 +19,20 @@ import java.util.List;
 
 @RestController
 public class ConceptController {
+    private final Logger logger;
     private ConceptRepository conceptRepository;
 
     @Autowired
     public ConceptController(ConceptRepository conceptRepository) {
         this.conceptRepository = conceptRepository;
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @RequestMapping(value = "/concepts", method = RequestMethod.POST)
     @Transactional
     void save(@RequestBody List<ConceptContract> conceptRequests) {
         conceptRequests.forEach(conceptRequest -> {
-            System.out.println(String.format("Creating concept: %s", conceptRequest.toString()));
+            logger.info(String.format("Creating concept: %s", conceptRequest.toString()));
             if (conceptExistsWithSameNameAndDifferentUUID(conceptRequest)) {
                 throw new RuntimeException(String.format("Concept %s exists with different uuid", conceptRequest.getName()));
             }

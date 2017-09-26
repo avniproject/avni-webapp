@@ -2,6 +2,7 @@ package org.openchs.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -20,7 +21,7 @@ class ExcelUtil {
             if (cell == null) return null;
             return cell.getDateCellValue();
         } catch (RuntimeException e) {
-            System.err.println(String.format("getDate failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
+            LoggerFactory.getLogger(ExcelUtil.class).error(String.format("getDate failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
             throw e;
         }
     }
@@ -33,7 +34,7 @@ class ExcelUtil {
             if (cell.toString().isEmpty()) return null;
             return cell.getNumericCellValue();
         } catch (RuntimeException e) {
-            System.err.println(String.format("getNumber failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
+            LoggerFactory.getLogger(ExcelUtil.class).error(String.format("getNumber failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
             return null;
         }
     }

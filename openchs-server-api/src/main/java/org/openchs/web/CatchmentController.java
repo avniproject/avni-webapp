@@ -6,6 +6,8 @@ import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Catchment;
 import org.openchs.web.request.AddressLevelContract;
 import org.openchs.web.request.CatchmentContract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 public class CatchmentController {
 
+    private final Logger logger;
     private CatchmentRepository catchmentRepository;
     private AddressLevelRepository addressLevelRepository;
 
@@ -28,13 +31,14 @@ public class CatchmentController {
     public CatchmentController(CatchmentRepository catchmentRepository, AddressLevelRepository addressLevelRepository) {
         this.catchmentRepository = catchmentRepository;
         this.addressLevelRepository = addressLevelRepository;
+        logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @RequestMapping(value = "/catchments", method = RequestMethod.POST)
     @Transactional
-    void save(@RequestBody List<CatchmentContract> catchmentRequests){
+    void save(@RequestBody List<CatchmentContract> catchmentRequests) {
         catchmentRequests.forEach(catchmentRequest -> {
-            System.out.println(String.format("Processing catchment request: %s", catchmentRequest.toString()));
+            logger.info(String.format("Processing catchment request: %s", catchmentRequest.toString()));
 
             if (conceptExistsWithSameNameAndDifferentUUID(catchmentRequest)) {
                 throw new RuntimeException(String.format("Catchment %s exists with different uuid", catchmentRequest.getName()));
@@ -42,12 +46,12 @@ public class CatchmentController {
 
             Catchment catchment = catchmentRepository.findByUuid(catchmentRequest.getUuid());
             if (catchment == null) {
-                System.out.println(String.format("Creating catchment"));
+                logger.info(String.format("Creating catchment"));
                 catchment = createCatchment(catchmentRequest);
             }
             catchment.setName(catchmentRequest.getName());
 
-            if(catchment.getAddressLevels() == null ) {
+            if (catchment.getAddressLevels() == null) {
                 catchment.setAddressLevels(new HashSet<>());
             }
             addOrUpdateAddressLevels(catchmentRequest, catchment);
@@ -59,7 +63,7 @@ public class CatchmentController {
     private void addOrUpdateAddressLevels(CatchmentContract catchmentRequest, Catchment catchment) {
         for (AddressLevelContract addressLevelRequest : catchmentRequest.getAddressLevels()) {
             AddressLevel addressLevel = catchment.findAddressLevel(addressLevelRequest.getUuid());
-            if(addressLevel == null){
+            if (addressLevel == null) {
                 addressLevel = addressLevelRepository.findByUuid(addressLevelRequest.getUuid());
                 if (addressLevel == null) {
                     addressLevel = createAddressLevel(addressLevelRequest);
@@ -75,9 +79,9 @@ public class CatchmentController {
     private void removeObsoleteAddressLevelsFromCatchment(Catchment catchment, CatchmentContract catchmentRequest) {
         Set<String> uuidsFromRequest = catchmentRequest.getAddressLevels().stream().map(AddressLevelContract::getUuid).collect(Collectors.toSet());
         Set<AddressLevel> addressLevels = new HashSet<>(catchment.getAddressLevels());
-        for (AddressLevel addressLevel: addressLevels) {
-            if (!uuidsFromRequest.contains(addressLevel.getUuid())){
-                System.out.println("Removing AddressLevel "+addressLevel.getTitle() + " from catchment "+ catchment.getName());
+        for (AddressLevel addressLevel : addressLevels) {
+            if (!uuidsFromRequest.contains(addressLevel.getUuid())) {
+                logger.info("Removing AddressLevel " + addressLevel.getTitle() + " from catchment " + catchment.getName());
                 catchment.remove(addressLevel);
             }
         }
@@ -85,7 +89,7 @@ public class CatchmentController {
 
     private AddressLevel createAddressLevel(AddressLevelContract addressLevelRequest) {
         AddressLevel addressLevel;
-        System.out.println(String.format("Creating addressLevel: %s", addressLevelRequest.getName()));
+        logger.info(String.format("Creating addressLevel: %s", addressLevelRequest.getName()));
         addressLevel = new AddressLevel();
         addressLevel.setUuid(addressLevelRequest.getUuid());
         return addressLevel;
