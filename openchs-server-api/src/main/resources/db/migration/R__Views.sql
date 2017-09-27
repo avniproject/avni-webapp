@@ -12,6 +12,7 @@ CREATE OR REPLACE VIEW mother_program_enrolments AS
     to_char(individual.date_of_birth, 'DD-Mon-YYYY')                                  date_of_birth,
     min(address_level.id)                                                             address,
     to_char(date_obs(program_enrolment, 'Last Menstrual Period'), 'DD-Mon-YYYY')      LMP,
+    date_obs(program_enrolment, 'Estimated Date of Delivery')                         internal_edd,
     to_char(date_obs(program_enrolment, 'Estimated Date of Delivery'), 'DD-Mon-YYYY') EDD,
     coded_obs_exists(program_enrolment, 'High Risk Conditions')                       is_high_risk,
     coded_obs(program_enrolment, 'High Risk Conditions')                              high_risk_conditions,
