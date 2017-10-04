@@ -10,14 +10,14 @@ import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
 import org.openchs.web.request.ObservationRequest;
 
 import javax.script.ScriptEngine;
-import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProgramEnrolmentModuleInvoker extends HealthModuleInvoker {
-    public ProgramEnrolmentModuleInvoker(ScriptEngine scriptEngine, File file) {
-        super(scriptEngine, file);
+    public ProgramEnrolmentModuleInvoker(ScriptEngine scriptEngine, InputStream inputStream) {
+        super(scriptEngine, inputStream);
     }
 
     public ChecklistRuleResponse getChecklist(ProgramEnrolmentRuleInput programEnrolmentRuleInput) {

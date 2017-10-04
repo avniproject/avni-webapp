@@ -3,18 +3,16 @@ package org.openchs.healthmodule.adapter;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import javax.script.ScriptEngine;
-import java.io.File;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public abstract class HealthModuleInvoker {
     protected ScriptObjectMirror eval;
 
-    public HealthModuleInvoker(ScriptEngine scriptEngine, File file) {
+    public HealthModuleInvoker(ScriptEngine scriptEngine, InputStream inputStream) {
         try {
-            if (file.exists()) {
-                scriptEngine.eval("var console = {log: function(x){}};");
-                eval = (ScriptObjectMirror) scriptEngine.eval(new FileReader(file));
-            }
+            scriptEngine.eval("var console = {log: function(x){}};");
+            eval = (ScriptObjectMirror) scriptEngine.eval(new InputStreamReader(inputStream));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
