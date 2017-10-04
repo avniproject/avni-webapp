@@ -90,4 +90,5 @@ task getRules {
     }
 }
 
-build.dependsOn(getRules)
+build.dependsOn getRules
+uploadRpm.dependsOn getRules
