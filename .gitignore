@@ -12,3 +12,4 @@ out
 classes/*
 minor_version
 major_version
+**/rules/*.js

@@ -67,7 +67,8 @@ public class ExcelImporter implements Importer {
 
     @Override
     public Boolean importData(InputStream inputStream) throws Exception {
-        HealthModuleInvokerFactory healthModuleInvokerFactory = new HealthModuleInvokerFactory(new File("external"));
+        HealthModuleInvokerFactory healthModuleInvokerFactory = new HealthModuleInvokerFactory(
+                new File(this.getClass().getResource("/rules").toURI()));
         Boolean returnValue = true;
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         try {

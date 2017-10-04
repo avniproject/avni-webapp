@@ -1,7 +1,4 @@
 rootProject.name = 'openchs-server'
 include ':openchs-server-api'
-include ':openchs-health-module-adapter'
-include ':openchs-excel-import'
-project(':openchs-server-api').projectDir = "$rootDir/openchs-server-api" as File
-project(':openchs-health-module-adapter').projectDir = "$rootDir/openchs-health-module-adapter" as File
-project(':openchs-excel-import').projectDir = "$rootDir/openchs-excel-import" as File
+project(':openchs-server-api').projectDir = "$rootDir/opench" +
+        "s-server-api" as File
