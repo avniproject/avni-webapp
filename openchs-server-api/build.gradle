@@ -72,23 +72,21 @@ dependencyManagement {
 }
 
 task getRules {
-    doLast {
-        def openchsRules = new File("$project.rootProject.rootDir/openchs_rules.tar.gz")
-        new URL("https://s3.ap-south-1.amazonaws.com/openchs/rules/openchs_rules.tar.gz").withInputStream { i ->
-            openchsRules.withOutputStream {
-                it << i
-            }
+    def openchsRules = new File("$project.rootProject.rootDir/openchs_rules.tar.gz")
+    new URL("https://s3.ap-south-1.amazonaws.com/openchs/rules/openchs_rules.tar.gz").withInputStream { i ->
+        openchsRules.withOutputStream {
+            it << i
         }
-        copy {
-            from tarTree(openchsRules.getAbsolutePath())
-            into "$projectDir/src/main/resources/rules"
-        }
-        delete("$rootProject.projectDir/openchs_rules.tar.gz")
     }
+    copy {
+        from tarTree(openchsRules.path)
+        into "$projectDir/src/main/resources/rules"
+    }
+    delete("$rootProject.projectDir/openchs_rules.tar.gz")
     outputs.upToDateWhen {
-        new File("$projectDir/src/main/resources/rules").listFiles().size() > 0
+        new File("$projectDir/src/main/resources/rules").listFiles().size() > 1
     }
 }
 
 build.dependsOn getRules
-uploadRpm.dependsOn getRules
+build.mustRunAfter getRules
