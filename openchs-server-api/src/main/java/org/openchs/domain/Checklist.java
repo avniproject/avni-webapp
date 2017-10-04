@@ -14,7 +14,7 @@ public class Checklist extends CHSEntity {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "checklist")
-    private List<ChecklistItem> items;
+    private List<ChecklistItem> items = new ArrayList<>();
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

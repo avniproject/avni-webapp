@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -32,7 +33,7 @@ public class Individual extends CHSEntity {
     private AddressLevel addressLevel;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
-    private Set<ProgramEnrolment> programEnrolments;
+    private Set<ProgramEnrolment> programEnrolments = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
     private Set<Encounter> encounters;
