@@ -72,6 +72,7 @@ public class CatchmentController {
             }
             addressLevel.setTitle(addressLevelRequest.getName());
             addressLevel.setLevel(addressLevelRequest.getLevel());
+            addressLevel.setAttributes(addressLevelRequest.getAttributes());
             addressLevelRepository.save(addressLevel);
         }
     }

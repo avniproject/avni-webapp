@@ -1,5 +1,8 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.Type;
+import org.openchs.application.KeyValues;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -16,12 +19,16 @@ public class AddressLevel extends CHSEntity {
     @NotNull
     private int level;
 
+    @Column(name = "attributes")
+    @Type(type = "keyValues")
+    private KeyValues attributes;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private AddressLevel parentAddressLevel;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "catchment_address_mapping", joinColumns = { @JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
+    @JoinTable(name = "catchment_address_mapping", joinColumns = {@JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
     private Set<Catchment> catchments = new HashSet<Catchment>();
 
     public String getTitle() {
@@ -63,5 +70,13 @@ public class AddressLevel extends CHSEntity {
 
     public void removeCatchment(Catchment catchment) {
         catchments.remove(catchment);
+    }
+
+    public KeyValues getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(KeyValues attributes) {
+        this.attributes = attributes;
     }
 }
