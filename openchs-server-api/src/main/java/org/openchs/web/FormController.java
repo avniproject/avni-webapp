@@ -8,6 +8,7 @@ import org.openchs.dao.application.FormElementGroupRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
+import org.openchs.domain.Concept;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.BasicFormDetails;
 import org.openchs.web.request.application.FormContract;
@@ -76,8 +77,9 @@ public class FormController {
 
         //hack because commit is getting called before end of the method
         int randomOffsetToAvoidClash = 100;
-        for (int formElementGroupIndex = 0; formElementGroupIndex < formRequest.getFormElementGroups().size(); formElementGroupIndex++) {
-            FormElementGroupContract formElementGroupRequest = formRequest.getFormElementGroups().get(formElementGroupIndex);
+        List<FormElementGroupContract> formElementGroupsFromCurrentRequest = formRequest.getFormElementGroups();
+        for (int formElementGroupIndex = 0; formElementGroupIndex < formElementGroupsFromCurrentRequest.size(); formElementGroupIndex++) {
+            FormElementGroupContract formElementGroupRequest = formElementGroupsFromCurrentRequest.get(formElementGroupIndex);
             FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
             if (formElementGroup != null) {
                 formElementGroup.setDisplayOrder((short) (getDisplayOrder(formElementGroupIndex, formElementGroupRequest) + randomOffsetToAvoidClash));
@@ -86,70 +88,15 @@ public class FormController {
         }
         //end hack
 
-        for (int formElementGroupIndex = 0; formElementGroupIndex < formRequest.getFormElementGroups().size(); formElementGroupIndex++) {
-            FormElementGroupContract formElementGroupRequest = formRequest.getFormElementGroups().get(formElementGroupIndex);
-            FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
-            if (formElementGroup == null) {
-                formElementGroup = form.addFormElementGroup(formElementGroupRequest.getUuid());
-            }
-            formElementGroup.setName(formElementGroupRequest.getName());
-            formElementGroup.setDisplay(formElementGroupRequest.getDisplay());
-            formElementGroup.setDisplayOrder(getDisplayOrder(formElementGroupIndex, formElementGroupRequest));
+        updateFormElementGroups(form, formElementGroupsFromCurrentRequest);
 
-            for (int formElementIndex = 0; formElementIndex < formElementGroupRequest.getFormElements().size(); formElementIndex++) {
-                FormElementContract formElementRequest = formElementGroupRequest.getFormElements().get(formElementIndex);
-                ValidationResult validationResult = formElementRequest.validate();
-                if (validationResult.isFailure()) {
-                    throw new ValidationException(validationResult.getMessage());
-                }
-                String conceptName = formElementRequest.getConceptName() == null ? formElementRequest.getName() : formElementRequest.getConceptName();
-                Concept concept = conceptRepository.findByName(conceptName);
-                if (concept == null) {
-                    concept = Concept.create(conceptName, formElementRequest.getDataType());
-                }
-                if (ConceptDataType.Coded.toString().equals(formElementRequest.getDataType())) {
-                    for (int answerIndex = 0; answerIndex < formElementRequest.getAnswers().size(); answerIndex++) {
-                        String answerConceptName = formElementRequest.getAnswers().get(answerIndex);
-                        ConceptAnswer conceptAnswer = concept.findConceptAnswer(answerConceptName);
-                        if (conceptAnswer == null) {
-                            conceptAnswer = new ConceptAnswer();
-                            conceptAnswer.setOrder((short) (answerIndex + 1));
-                            conceptAnswer.assignUUID();
+        FormMapping formMapping = createOrUpdateFormMapping(formRequest, associatedEncounterTypeName, form);
 
-                            Concept answer = conceptRepository.findByName(answerConceptName);
-                            if (answer == null) {
-                                answer = new Concept();
-                                answer.setName(answerConceptName);
-                                answer.assignUUID();
-                                answer.setDataType(ConceptDataType.NA.toString());
-                                conceptRepository.save(answer);
-                            }
-                            conceptAnswer.setAnswerConcept(answer);
-                        }
-                        concept.addAnswer(conceptAnswer);
-                    }
-                }
-                conceptRepository.save(concept);
+        formRepository.save(form);
+        formMappingRepository.save(formMapping);
+    }
 
-                FormElement formElement = formElementGroup.findFormElement(formElementRequest.getUuid());
-                if (formElement == null) {
-                    formElement = formElementGroup.addFormElement(formElementRequest.getUuid());
-                }
-                formElement.setName(formElementRequest.getName());
-                formElement.setDisplayOrder(formElementRequest.getDisplayOrder() == 0 ? (short) (formElementIndex + 1) : formElementRequest.getDisplayOrder());
-                formElement.setFormElementGroup(formElementGroup);
-                formElement.setMandatory(formElementRequest.isMandatory());
-                formElement.setKeyValues(formElementRequest.getKeyValues());
-                formElement.setConcept(concept);
-
-                List<String> formElementUUIDs = formElementGroupRequest.getFormElements().stream().map(CHSRequest::getUuid).collect(Collectors.toList());
-                formElementGroup.removeFormElements(formElementUUIDs);
-            }
-        }
-
-        List<String> formElementGroupUUIDs = formRequest.getFormElementGroups().stream().map(CHSRequest::getUuid).collect(Collectors.toList());
-        form.removeFormElementGroups(formElementGroupUUIDs);
-
+    private FormMapping createOrUpdateFormMapping(@RequestBody FormContract formRequest, String associatedEncounterTypeName, Form form) {
         FormMapping formMapping = formMappingRepository.findByFormUuid(form.getUuid());
         if (formMapping == null) {
             formMapping = new FormMapping();
@@ -172,9 +119,107 @@ public class FormController {
             encounterType = encounterTypeRepository.save(encounterType);
             formMapping.setObservationsTypeEntityId(encounterType.getId());
         }
+        return formMapping;
+    }
 
-        formRepository.save(form);
-        formMappingRepository.save(formMapping);
+    private void updateFormElementGroups(Form form, List<FormElementGroupContract> formElementGroupsFromCurrentRequest) {
+        for (int formElementGroupIndex = 0; formElementGroupIndex < formElementGroupsFromCurrentRequest.size(); formElementGroupIndex++) {
+            FormElementGroupContract formElementGroupRequest = formElementGroupsFromCurrentRequest.get(formElementGroupIndex);
+            FormElementGroup formElementGroup = createOrUpdateFormElementGroup(form, formElementGroupIndex, formElementGroupRequest);
+
+            updateFormElements(formElementGroup, formElementGroupRequest.getFormElements());
+        }
+
+        List<String> formElementGroupUUIDs = formElementGroupsFromCurrentRequest.stream().map(CHSRequest::getUuid).collect(Collectors.toList());
+        form.removeFormElementGroups(formElementGroupUUIDs);
+    }
+
+    private FormElementGroup createOrUpdateFormElementGroup(Form form, int formElementGroupIndex, FormElementGroupContract formElementGroupRequest) {
+        FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
+        if (formElementGroup == null) {
+            formElementGroup = form.addFormElementGroup(formElementGroupRequest.getUuid());
+        }
+        formElementGroup.setName(formElementGroupRequest.getName());
+        formElementGroup.setDisplay(formElementGroupRequest.getDisplay());
+        formElementGroup.setDisplayOrder(getDisplayOrder(formElementGroupIndex, formElementGroupRequest));
+        return formElementGroup;
+    }
+
+    private void updateFormElements(FormElementGroup formElementGroup, List<FormElementContract> formElementsFromCurrentRequest) {
+        for (int formElementIndex = 0; formElementIndex < formElementsFromCurrentRequest.size(); formElementIndex++) {
+            FormElementContract formElementRequest = formElementsFromCurrentRequest.get(formElementIndex);
+            ValidationResult validationResult = formElementRequest.validate();
+            if (validationResult.isFailure()) {
+                throw new ValidationException(validationResult.getMessage());
+            }
+            createOrUpdateFormElement(formElementGroup, formElementIndex, formElementRequest);
+
+            removeUnwantedFormElements(formElementGroup, formElementsFromCurrentRequest);
+        }
+    }
+
+    private void removeUnwantedFormElements(FormElementGroup formElementGroup, List<FormElementContract> formElementsFromCurrentRequest) {
+        List<String> formElementUUIDs = formElementsFromCurrentRequest.stream().map(CHSRequest::getUuid).collect(Collectors.toList());
+        formElementGroup.removeFormElements(formElementUUIDs);
+    }
+
+    private void createOrUpdateFormElement(FormElementGroup formElementGroup, int formElementIndex, FormElementContract formElementRequest) {
+        Concept concept = createOrUpdateConcept(formElementRequest);
+
+        FormElement formElement = formElementGroup.findFormElement(formElementRequest.getUuid());
+        if (formElement == null) {
+            formElement = formElementGroup.addFormElement(formElementRequest.getUuid());
+        }
+        formElement.setName(formElementRequest.getName());
+        formElement.setDisplayOrder(formElementRequest.getDisplayOrder() == 0 ? (short) (formElementIndex + 1) : formElementRequest.getDisplayOrder());
+        formElement.setFormElementGroup(formElementGroup);
+        formElement.setMandatory(formElementRequest.isMandatory());
+        formElement.setKeyValues(formElementRequest.getKeyValues());
+        formElement.setConcept(concept);
+    }
+
+    private Concept createOrUpdateConcept(FormElementContract formElementRequest) {
+        String conceptName = formElementRequest.getConceptName() == null ? formElementRequest.getName() : formElementRequest.getConceptName();
+        Concept concept = conceptRepository.findByName(conceptName);
+        if (concept == null) {
+            concept = Concept.create(conceptName, formElementRequest.getDataType());
+        }
+        if (ConceptDataType.Coded.toString().equals(formElementRequest.getDataType())) {
+            addAnswers(formElementRequest, concept);
+        }
+        conceptRepository.save(concept);
+        return concept;
+    }
+
+    private void addAnswers(FormElementContract formElementRequest, Concept concept) {
+        for (int answerIndex = 0; answerIndex < formElementRequest.getAnswers().size(); answerIndex++) {
+            String answerConceptName = formElementRequest.getAnswers().get(answerIndex);
+            concept.addAnswer(fetchOrCreateConceptAnswer(concept, answerConceptName, (short) (answerIndex + 1)));
+        }
+    }
+
+    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, String answerConceptName, short answerOrder) {
+        ConceptAnswer conceptAnswer = concept.findConceptAnswer(answerConceptName);
+        if (conceptAnswer == null) {
+            conceptAnswer = new ConceptAnswer();
+            conceptAnswer.setOrder(answerOrder);
+            conceptAnswer.assignUUID();
+
+            conceptAnswer.setAnswerConcept(fetchOrCreateAnswer(answerConceptName));
+        }
+        return conceptAnswer;
+    }
+
+    private Concept fetchOrCreateAnswer(String answerConceptName) {
+        Concept answer = conceptRepository.findByName(answerConceptName);
+        if (answer == null) {
+            answer = new Concept();
+            answer.setName(answerConceptName);
+            answer.assignUUID();
+            answer.setDataType(ConceptDataType.NA.toString());
+            conceptRepository.save(answer);
+        }
+        return answer;
     }
 
     private short getDisplayOrder(int formElementGroupIndex, FormElementGroupContract formElementGroupRequest) {
