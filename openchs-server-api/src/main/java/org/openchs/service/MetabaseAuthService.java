@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -24,14 +25,14 @@ public class MetabaseAuthService implements AuthService {
     }
 
     @Override
-    public ResponseEntity<String> login(String username, String password) {
+    public ResponseEntity login(String username, String password) {
         Map<String, String> credentials = new HashMap<>();
         Map<String, String> tokenMap = new HashMap<>();
         credentials.put("username", username);
         credentials.put("password", password);
         HttpEntity<Map<String, String>> httpEntity = new HttpEntity<>(credentials);
         ResponseEntity<? extends Map> response = rest.postForEntity(metabaseURL + metabaseLoginPath, httpEntity, tokenMap.getClass());
-        String token = (String) response.getBody().get("id");
-        return new ResponseEntity<>(token, response.getStatusCode());
+        String authToken = (String) response.getBody().get("id");
+        return new ResponseEntity(new HashMap<String, String>(){{put("authToken", authToken);}}, response.getStatusCode());
     }
 }
