@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,6 +38,9 @@ public class HttpClientConfiguration {
     @Bean
     public RestTemplate rest() {
         RestTemplate restTemplate = new RestTemplate(httpRequestFactory());
+        List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
+        messageConverters.add(new OctetStreamMessageConverter());
+        restTemplate.setMessageConverters(messageConverters);
         restTemplate.setErrorHandler(this.responseErrorHandler);
         return restTemplate;
     }

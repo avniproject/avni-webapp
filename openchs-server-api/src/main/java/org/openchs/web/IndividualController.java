@@ -9,9 +9,8 @@ import org.openchs.domain.Individual;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
 import org.openchs.web.request.ObservationService;
-import org.openchs.web.request.ProgramEnrolmentRequest;
-import org.openchs.web.request.keyvalue.KeyValueIndividualRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +35,7 @@ public class IndividualController extends AbstractController<Individual> {
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody IndividualRequest individualRequest) {
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));

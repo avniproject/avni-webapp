@@ -9,6 +9,7 @@ import org.openchs.web.request.CatchmentContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +36,7 @@ public class CatchmentController {
     }
 
     @RequestMapping(value = "/catchments", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
     @Transactional
     void save(@RequestBody List<CatchmentContract> catchmentRequests) {
         catchmentRequests.forEach(catchmentRequest -> {

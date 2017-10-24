@@ -15,13 +15,15 @@ public class AuthController {
 
     private final AuthService authService;
 
+    public static final String LOGIN_URL = "/login";
+
     @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<String> login(@RequestBody Map<String, String> credentials) {
+    @RequestMapping(value = AuthController.LOGIN_URL, method = RequestMethod.POST)
+    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials) {
         return this.authService.login(credentials.get("username"), credentials.get("password"));
     }
 }

@@ -6,6 +6,7 @@ import org.openchs.web.request.ProgramRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +27,8 @@ public class ProgramController {
 
     @RequestMapping(value = "/programs", method = RequestMethod.POST)
     @Transactional
-    void save(@RequestBody ProgramRequest programRequest) {
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public void save(@RequestBody ProgramRequest programRequest) {
         logger.info(String.format("Creating program: %s", programRequest.toString()));
         if (programExistsWithSameNameAndDifferentUUID(programRequest)) {
             throw new RuntimeException(String.format("Program %s exists with different uuid", programRequest.getName()));

@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +63,7 @@ public class FormController {
     //update scenario
     @RequestMapping(value = "/forms", method = RequestMethod.POST)
     @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
     void save(@RequestBody FormContract formRequest) {
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         String associatedEncounterTypeName;
@@ -247,6 +249,7 @@ public class FormController {
     }
 
     @RequestMapping(value = "/forms/export", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public FormContract export(@RequestParam String formUUID) {
         Form form = formRepository.findByUuid(formUUID);
         FormMapping formMapping = formMappingRepository.findByFormUuid(form.getUuid());
@@ -302,6 +305,7 @@ public class FormController {
      */
     @CrossOrigin
     @RequestMapping(value = "/forms/program/{programId}", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public List<BasicFormDetails> getForms(@PathVariable("programId") Long programId, Pageable pageable) {
         Program program = programRepository.findOne(programId);
         if (program == null) {
@@ -345,6 +349,7 @@ public class FormController {
      */
     @CrossOrigin
     @RequestMapping(value = "/forms", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public List<Map<String, Object>> getForms(Pageable pageable) {
         Iterable<Program> programItr = programRepository.findAll();
         List<Map<String, Object>> response = new ArrayList<>();

@@ -26,7 +26,8 @@ public class OpenCHS {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(OpenCHS.class, args);
+        SpringApplication app = new SpringApplication(OpenCHS.class);
+        app.run(args);
     }
 
     @Bean

@@ -8,6 +8,7 @@ import org.openchs.web.request.ConceptContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +31,7 @@ public class ConceptController {
 
     @RequestMapping(value = "/concepts", method = RequestMethod.POST)
     @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
     void save(@RequestBody List<ConceptContract> conceptRequests) {
         conceptRequests.forEach(conceptRequest -> {
             logger.info(String.format("Creating concept: %s", conceptRequest.toString()));
