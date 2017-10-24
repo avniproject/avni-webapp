@@ -30,8 +30,8 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String AUTH_TOKEN = "AUTH-TOKEN";
     private final AuthService authService;
-    private final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(USER_ROLE);
-    private final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(ADMIN_ROLE);
+    public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(USER_ROLE);
+    public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(ADMIN_ROLE);
 
     @Autowired
     public AuthenticationFilter(AuthenticationManager authenticationManager, AuthService authService) {
