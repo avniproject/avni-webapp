@@ -189,60 +189,12 @@ public class FormController {
             concept = Concept.create(conceptName, formElementRequest.getDataType());
         }
         if (ConceptDataType.Coded.toString().equals(formElementRequest.getDataType())) {
-            updateAnswers(formElementRequest, concept);
+            new Helper().updateAnswers(concept, formElementRequest.getAnswers(), conceptRepository);
         }
         conceptRepository.save(concept);
         return concept;
     }
 
-    private void updateAnswers(FormElementContract formElementRequest, Concept concept) {
-        addOrUpdateAnswers(formElementRequest, concept);
-        removeUnwantedAnswers(formElementRequest, concept);
-
-    }
-
-    private void removeUnwantedAnswers(FormElementContract formElementRequest, Concept concept) {
-        List<String> answerConceptUUIDs = formElementRequest.getAnswers().stream().map(conceptAnswer -> conceptAnswer.getUuid()).collect(Collectors.toList());
-        concept.removeOrphanedConceptAnswers(answerConceptUUIDs);
-    }
-
-    private void addOrUpdateAnswers(FormElementContract formElementRequest, Concept concept) {
-        for (int answerIndex = 0; answerIndex < formElementRequest.getAnswers().size(); answerIndex++) {
-            AnswerConceptContract answerConcept = formElementRequest.getAnswers().get(answerIndex);
-            concept.addAnswer(fetchOrCreateConceptAnswer(concept, answerConcept, (short) (answerIndex + 1)));
-        }
-    }
-
-    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, AnswerConceptContract answerConceptRequest, short answerOrder) {
-        if(StringUtils.isEmpty(answerConceptRequest.getUuid())){
-            throw new ValidationException("UUID missing for answer");
-        }
-        ConceptAnswer conceptAnswer = concept.findConceptAnswerByConceptUUID(answerConceptRequest.getUuid());
-        if (conceptAnswer == null) {
-            conceptAnswer = new ConceptAnswer();
-            conceptAnswer.assignUUID();
-        }
-        conceptAnswer.setOrder(answerOrder);
-        conceptAnswer.setAnswerConcept(fetchOrCreateAnswer(answerConceptRequest));
-        return conceptAnswer;
-    }
-
-    private Concept fetchOrCreateAnswer(AnswerConceptContract answerConceptRequest) {
-        Concept answer = conceptRepository.findByUuid(answerConceptRequest.getUuid());
-        if (answer == null) {
-            answer = new Concept();
-            answer.setUuid(answerConceptRequest.getUuid());
-            answer.setDataType(ConceptDataType.NA.toString());
-            if(StringUtils.isEmpty(answerConceptRequest.getName())){
-                throw new ValidationException("Name missing for a new answer concept");
-            }
-        }
-        if(!StringUtils.isEmpty(answerConceptRequest.getName())){
-            answer.setName(answerConceptRequest.getName());
-        }
-        conceptRepository.save(answer);
-        return answer;
-    }
 
     private short getDisplayOrder(int formElementGroupIndex, FormElementGroupContract formElementGroupRequest) {
         return formElementGroupRequest.getDisplayOrder() == 0 ? (short) (formElementGroupIndex + 1) : formElementGroupRequest.getDisplayOrder();

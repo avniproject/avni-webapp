@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ConceptContract extends ReferenceDataContract {
     private String dataType;
-    private List<String> answers;
+    private List<AnswerConceptContract> answers;
     private Double lowAbsolute;
     private Double highAbsolute;
     private Double lowNormal;
@@ -19,11 +19,11 @@ public class ConceptContract extends ReferenceDataContract {
         this.dataType = dataType;
     }
 
-    public List<String> getAnswers() {
+    public List<AnswerConceptContract> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<String> answers) {
+    public void setAnswers(List<AnswerConceptContract> answers) {
         this.answers = answers;
     }
 
