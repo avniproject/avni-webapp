@@ -2,6 +2,7 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.web.request.AnswerConceptContract;
 import org.openchs.application.KeyType;
 import org.openchs.application.KeyValues;
 import org.openchs.application.ValueType;
@@ -18,7 +19,7 @@ public class FormElementContract extends ReferenceDataContract {
     private KeyValues keyValues;
     private String conceptName;
     private String dataType;
-    private List<String> answers;
+    private List<AnswerConceptContract> answers;
     private short displayOrder;
 
     public FormElementContract() {
@@ -64,11 +65,11 @@ public class FormElementContract extends ReferenceDataContract {
         this.dataType = dataType;
     }
 
-    public List<String> getAnswers() {
+    public List<AnswerConceptContract> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<String> answers) {
+    public void setAnswers(List<AnswerConceptContract> answers) {
         this.answers = answers;
     }
 

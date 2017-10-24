@@ -1,10 +1,14 @@
 package org.openchs.domain;
 
+import org.openchs.application.FormElement;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "concept")
@@ -15,7 +19,7 @@ public class Concept extends CHSEntity {
     @NotNull
     private String dataType;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "concept")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "concept", orphanRemoval = true)
     private Set<ConceptAnswer> conceptAnswers;
 
     private Double lowAbsolute;
@@ -99,10 +103,21 @@ public class Concept extends CHSEntity {
         return this.getConceptAnswers().stream().filter(x -> x.getAnswerConcept().getName().equals(answerConceptName)).findAny().orElse(null);
     }
 
+    public ConceptAnswer findConceptAnswerByConceptUUID(String answerConceptUUID) {
+        return this.getConceptAnswers().stream().filter(x -> x.getAnswerConcept().getUuid().equals(answerConceptUUID)).findAny().orElse(null);
+    }
+
     public void addAnswer(ConceptAnswer conceptAnswer) {
         this.getConceptAnswers().add(conceptAnswer);
         conceptAnswer.setConcept(this);
     }
+
+    public void removeOrphanedConceptAnswers(List<String> answerConceptUUIDs) {
+        List<ConceptAnswer> orphanedConceptAnswers = this.getConceptAnswers().stream().filter(conceptAnswer -> !answerConceptUUIDs.contains(conceptAnswer.getAnswerConcept().getUuid()))
+                .collect(Collectors.toList());
+        this.getConceptAnswers().removeAll(orphanedConceptAnswers);
+    }
+
 
     public String getUnit() {
         return unit;

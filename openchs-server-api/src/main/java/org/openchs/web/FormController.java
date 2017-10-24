@@ -9,6 +9,7 @@ import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.domain.Concept;
+import org.openchs.web.request.AnswerConceptContract;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.BasicFormDetails;
 import org.openchs.web.request.application.FormContract;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -185,40 +187,58 @@ public class FormController {
             concept = Concept.create(conceptName, formElementRequest.getDataType());
         }
         if (ConceptDataType.Coded.toString().equals(formElementRequest.getDataType())) {
-            addAnswers(formElementRequest, concept);
+            updateAnswers(formElementRequest, concept);
         }
         conceptRepository.save(concept);
         return concept;
     }
 
-    private void addAnswers(FormElementContract formElementRequest, Concept concept) {
+    private void updateAnswers(FormElementContract formElementRequest, Concept concept) {
+        addOrUpdateAnswers(formElementRequest, concept);
+        removeUnwantedAnswers(formElementRequest, concept);
+
+    }
+
+    private void removeUnwantedAnswers(FormElementContract formElementRequest, Concept concept) {
+        List<String> answerConceptUUIDs = formElementRequest.getAnswers().stream().map(conceptAnswer -> conceptAnswer.getUuid()).collect(Collectors.toList());
+        concept.removeOrphanedConceptAnswers(answerConceptUUIDs);
+    }
+
+    private void addOrUpdateAnswers(FormElementContract formElementRequest, Concept concept) {
         for (int answerIndex = 0; answerIndex < formElementRequest.getAnswers().size(); answerIndex++) {
-            String answerConceptName = formElementRequest.getAnswers().get(answerIndex);
-            concept.addAnswer(fetchOrCreateConceptAnswer(concept, answerConceptName, (short) (answerIndex + 1)));
+            AnswerConceptContract answerConcept = formElementRequest.getAnswers().get(answerIndex);
+            concept.addAnswer(fetchOrCreateConceptAnswer(concept, answerConcept, (short) (answerIndex + 1)));
         }
     }
 
-    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, String answerConceptName, short answerOrder) {
-        ConceptAnswer conceptAnswer = concept.findConceptAnswer(answerConceptName);
+    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, AnswerConceptContract answerConceptRequest, short answerOrder) {
+        if(StringUtils.isEmpty(answerConceptRequest.getUuid())){
+            throw new ValidationException("UUID missing for answer");
+        }
+        ConceptAnswer conceptAnswer = concept.findConceptAnswerByConceptUUID(answerConceptRequest.getUuid());
         if (conceptAnswer == null) {
             conceptAnswer = new ConceptAnswer();
-            conceptAnswer.setOrder(answerOrder);
             conceptAnswer.assignUUID();
-
-            conceptAnswer.setAnswerConcept(fetchOrCreateAnswer(answerConceptName));
         }
+        conceptAnswer.setOrder(answerOrder);
+        conceptAnswer.setAnswerConcept(fetchOrCreateAnswer(answerConceptRequest));
         return conceptAnswer;
     }
 
-    private Concept fetchOrCreateAnswer(String answerConceptName) {
-        Concept answer = conceptRepository.findByName(answerConceptName);
+    private Concept fetchOrCreateAnswer(AnswerConceptContract answerConceptRequest) {
+        Concept answer = conceptRepository.findByUuid(answerConceptRequest.getUuid());
         if (answer == null) {
             answer = new Concept();
-            answer.setName(answerConceptName);
-            answer.assignUUID();
+            answer.setUuid(answerConceptRequest.getUuid());
             answer.setDataType(ConceptDataType.NA.toString());
-            conceptRepository.save(answer);
+            if(StringUtils.isEmpty(answerConceptRequest.getName())){
+                throw new ValidationException("Name missing for a new answer concept");
+            }
         }
+        if(!StringUtils.isEmpty(answerConceptRequest.getName())){
+            answer.setName(answerConceptRequest.getName());
+        }
+        conceptRepository.save(answer);
         return answer;
     }
 
@@ -240,6 +260,7 @@ public class FormController {
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingInt(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
+            formElementGroupContract.setDisplay(formElementGroup.getDisplay());
             formContract.addFormElementGroup(formElementGroupContract);
             formElementGroup.getFormElements().stream().sorted(Comparator.comparingInt(FormElement::getDisplayOrder)).forEach(formElement -> {
                 String conceptName = formElement.isFormElementNameSameAsConceptName() ? null : formElement.getConcept().getName();
@@ -253,7 +274,12 @@ public class FormController {
                 formElementContract.setDisplayOrder(formElement.getDisplayOrder());
 
                 if (ConceptDataType.Coded.toString().equals(formElement.getConcept().getDataType())) {
-                    List<String> answers = formElement.getConcept().getConceptAnswers().stream().sorted(Comparator.comparingInt(ConceptAnswer::getOrder)).map(conceptAnswer -> conceptAnswer.getAnswerConcept().getName()).collect(Collectors.toList());
+                    List<AnswerConceptContract> answers = formElement.getConcept().getConceptAnswers().stream().sorted(Comparator.comparingInt(ConceptAnswer::getOrder)).map(conceptAnswer -> {
+                        AnswerConceptContract answer = new AnswerConceptContract();
+                        answer.setUuid(conceptAnswer.getAnswerConcept().getUuid());
+                        answer.setName(conceptAnswer.getAnswerConcept().getName());
+                        return answer;
+                    }).collect(Collectors.toList());
                     formElementContract.setAnswers(answers);
                 }
                 formElementGroupContract.addFormElement(formElementContract);
