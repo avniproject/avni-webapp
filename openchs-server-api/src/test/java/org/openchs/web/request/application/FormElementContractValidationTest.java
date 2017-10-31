@@ -7,6 +7,7 @@ import org.openchs.application.KeyValue;
 import org.openchs.application.KeyValues;
 import org.openchs.application.ValueType;
 import org.openchs.domain.ConceptDataType;
+import org.openchs.web.request.ConceptContract;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,7 +20,8 @@ public class FormElementContractValidationTest {
     public void beforeTest() {
         formElementContract = new FormElementContract();
         formElementContract.setName("foo");
-        formElementContract.setDataType(ConceptDataType.Coded.toString());
+        formElementContract.setConcept(new ConceptContract());
+        formElementContract.getConcept().setDataType(ConceptDataType.Coded.toString());
         keyValues = new KeyValues();
         formElementContract.setKeyValues(keyValues);
     }
@@ -32,6 +34,13 @@ public class FormElementContractValidationTest {
 
     @Test
     public void validate_form_element_contract_without_select_specified() {
+        assertEquals(true, formElementContract.validate().isFailure());
+    }
+
+    @Test
+    public void validate_form_element_cannot_contain_concept_when_conceptUUID_present() {
+        keyValues.add(new KeyValue(KeyType.Select, ValueType.Multi.toString()));
+        formElementContract.setConceptUUID("someConceptUUID");
         assertEquals(true, formElementContract.validate().isFailure());
     }
 }
