@@ -1,10 +1,15 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "name", "uuid", "dataType", "answers", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit"})
 public class ConceptContract extends ReferenceDataContract {
     private String dataType;
-    private List<AnswerConceptContract> answers;
+    private List<ConceptContract> answers;
     private Double lowAbsolute;
     private Double highAbsolute;
     private Double lowNormal;
@@ -19,11 +24,11 @@ public class ConceptContract extends ReferenceDataContract {
         this.dataType = dataType;
     }
 
-    public List<AnswerConceptContract> getAnswers() {
+    public List<ConceptContract> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<AnswerConceptContract> answers) {
+    public void setAnswers(List<ConceptContract> answers) {
         this.answers = answers;
     }
 

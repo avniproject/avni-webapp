@@ -44,7 +44,7 @@ public class ConceptController {
             concept.setDataType(conceptRequest.getDataType());
 
             if (ConceptDataType.Numeric.toString().equals(conceptRequest.getDataType())) {
-                setNumericSpecificAttributes(conceptRequest, concept);
+                new Helper().setNumericSpecificAttributes(conceptRequest, concept);
             }
 
             if (ConceptDataType.Coded.toString().equals(conceptRequest.getDataType())) {
@@ -61,14 +61,6 @@ public class ConceptController {
             concept = createConcept(uuid);
         }
         return concept;
-    }
-
-    private void setNumericSpecificAttributes(ConceptContract conceptRequest, Concept concept) {
-        concept.setHighAbsolute(conceptRequest.getHighAbsolute());
-        concept.setLowAbsolute(conceptRequest.getLowAbsolute());
-        concept.setHighNormal(conceptRequest.getHighNormal());
-        concept.setLowNormal(conceptRequest.getLowNormal());
-        concept.setUnit(conceptRequest.getUnit());
     }
 
     private Concept createConcept(String uuid) {
