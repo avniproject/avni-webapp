@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "individual")
-public class Individual extends CHSEntity {
+public class Individual extends OrganisationAwareEntity {
     @NotNull
     private String name;
 

@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "concept_answer")
-public class ConceptAnswer extends CHSEntity{
+public class ConceptAnswer extends OrganisationAwareEntity{
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "concept_id")

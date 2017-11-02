@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "program_encounter")
-public class ProgramEncounter extends CHSEntity {
+public class ProgramEncounter extends OrganisationAwareEntity {
     @Column
     private String name;
 

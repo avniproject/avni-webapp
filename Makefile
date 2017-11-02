@@ -34,6 +34,9 @@ clean_db: ## Drops the database
 build_db: ## Creates new empty database
 	make _build_db database=openchs
 
+create_dummy_user: ## Creates dummy user
+	-psql -h localhost -U $(su) openchs -f make-scripts/create_dummy_organisation.sql
+
 rebuild_db: clean_db build_db ## clean + build db
 # </db>
 

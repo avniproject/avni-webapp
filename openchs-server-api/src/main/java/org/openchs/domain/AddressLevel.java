@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "address_level")
-public class AddressLevel extends CHSEntity {
+public class AddressLevel extends OrganisationAwareEntity {
     @Column
     @NotNull
     private String title;

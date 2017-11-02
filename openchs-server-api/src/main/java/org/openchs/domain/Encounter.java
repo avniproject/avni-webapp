@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "encounter")
-public class Encounter extends CHSEntity {
+public class Encounter extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "encounter_type_id")

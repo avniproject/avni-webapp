@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "catchment")
-public class Catchment extends CHSEntity {
+public class Catchment extends OrganisationAwareEntity {
 
     @Column
     @NotNull

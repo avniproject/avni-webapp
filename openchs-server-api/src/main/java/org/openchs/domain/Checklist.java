@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "checklist")
-public class Checklist extends CHSEntity {
+public class Checklist extends OrganisationAwareEntity {
     @NotNull
     private String name;
 

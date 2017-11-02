@@ -2,6 +2,8 @@ package org.openchs.application;
 
 import org.openchs.domain.CHSEntity;
 import org.openchs.domain.Individual;
+import org.openchs.domain.Organisation;
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "form_element_group")
-public class FormElementGroup extends CHSEntity {
+public class FormElementGroup extends OrganisationAwareEntity {
     @NotNull
     private String name;
 

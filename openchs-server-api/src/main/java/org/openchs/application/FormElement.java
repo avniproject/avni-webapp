@@ -3,13 +3,14 @@ package org.openchs.application;
 import org.hibernate.annotations.Type;
 import org.openchs.domain.CHSEntity;
 import org.openchs.domain.Concept;
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "form_element")
-public class FormElement extends CHSEntity {
+public class FormElement extends OrganisationAwareEntity {
     @NotNull
     private String name;
 

@@ -1,6 +1,7 @@
 package org.openchs.application;
 
 import org.openchs.domain.CHSEntity;
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "form")
-public class Form extends CHSEntity {
+public class Form extends OrganisationAwareEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private FormType formType;

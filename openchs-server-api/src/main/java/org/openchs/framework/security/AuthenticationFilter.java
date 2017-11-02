@@ -1,5 +1,6 @@
 package org.openchs.framework.security;
 
+import org.openchs.domain.UserContext;
 import org.openchs.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -17,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,18 +41,25 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        Authentication authentication = this.attemptAuthentication(request, response);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        chain.doFilter(request, response);
+        try {
+            Authentication authentication = this.attemptAuthentication(request, response);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            chain.doFilter(request, response);
+        } catch (Throwable throwable) {
+            UserContextHolder.clear();
+        }
     }
 
     private Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         String token = getAuthToken(request);
-        Map<String, Boolean> roles = this.authService.validate(token);
+        UserContext userContext = this.authService.validate(token);
         List<SimpleGrantedAuthority> authorities = Stream.of(USER_AUTHORITY, ADMIN_AUTHORITY)
-                .filter(authority -> roles.get(authority.getAuthority()))
+                .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))
                 .collect(Collectors.toList());
         if (authorities.isEmpty()) return null;
+
+        //Side effect
+        UserContextHolder.create(userContext);
         return new AnonymousAuthenticationToken(token, token, authorities);
     }
 

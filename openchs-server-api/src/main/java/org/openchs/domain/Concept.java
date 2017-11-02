@@ -1,7 +1,5 @@
 package org.openchs.domain;
 
-import org.openchs.application.FormElement;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -12,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "concept")
-public class Concept extends CHSEntity {
+public class Concept extends OrganisationAwareEntity {
     @NotNull
     private String name;
 

@@ -2,13 +2,14 @@ package org.openchs.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openchs.domain.CHSEntity;
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "form_mapping")
-public class FormMapping extends CHSEntity {
+public class FormMapping extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "form_id")

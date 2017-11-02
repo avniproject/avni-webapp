@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "program_enrolment")
-public class ProgramEnrolment extends CHSEntity {
+public class ProgramEnrolment extends OrganisationAwareEntity {
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="program_id")
