@@ -45,7 +45,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             Authentication authentication = this.attemptAuthentication(request, response);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
-        } catch (Throwable throwable) {
+        } finally {
             UserContextHolder.clear();
         }
     }
