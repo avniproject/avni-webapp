@@ -11,7 +11,7 @@ CREATE TABLE organisation (
 );
 
 INSERT INTO organisation (id, name, db_user, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-    VALUES (1, 'OpenCHS', 'openchs', uuid_generate_v4(), 1, 1, 1, now(), now());
+      VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884', 1, 1, 1, now(), now());
 
 SELECT nextval(pg_get_serial_sequence('organisation', 'id'));
 
