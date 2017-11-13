@@ -70,6 +70,7 @@ test_server: rebuild_testdb ## Run tests
 # <server>
 
 ci-test:
+	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
 	./gradlew clean test
 
 build-rpm:
