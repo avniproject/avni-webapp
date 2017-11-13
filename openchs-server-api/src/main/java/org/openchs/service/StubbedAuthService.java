@@ -31,7 +31,7 @@ public class StubbedAuthService implements AuthService {
 
     @Override
     public ResponseEntity<Map<String, String>> login(String username, String password) {
-        String uuid = username.equalsIgnoreCase("openchs")? OPENCHS_AUTH_TOKEN: DUMMY_AUTH_TOKEN;
+        String uuid = username.equalsIgnoreCase("dummy")? DUMMY_AUTH_TOKEN: OPENCHS_AUTH_TOKEN;
         return new ResponseEntity<>(new HashMap<String, String>() {{
             put("authToken", uuid);
         }}, HttpStatus.OK);
@@ -46,6 +46,6 @@ public class StubbedAuthService implements AuthService {
     }
 
     private Organisation findOrganisation(String token) {
-        return organisationRepository.findByName(token.equals(OPENCHS_AUTH_TOKEN)? "OpenCHS": "dummy");
+        return organisationRepository.findByName(token.equals(DUMMY_AUTH_TOKEN)? "dummy": "OpenCHS");
     }
 }
