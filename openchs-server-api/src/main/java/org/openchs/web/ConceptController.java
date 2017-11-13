@@ -32,7 +32,7 @@ public class ConceptController {
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     void save(@RequestBody List<ConceptContract> conceptRequests) {
-        conceptRequests.forEach(conceptRequest -> {
+        for (ConceptContract conceptRequest : conceptRequests) {
             logger.info(String.format("Creating concept: %s", conceptRequest.toString()));
             if (conceptExistsWithSameNameAndDifferentUUID(conceptRequest)) {
                 throw new RuntimeException(String.format("Concept %s exists with different uuid", conceptRequest.getName()));
@@ -52,7 +52,7 @@ public class ConceptController {
                 new Helper().updateAnswers(concept, conceptRequest.getAnswers(), conceptRepository);
             }
             conceptRepository.save(concept);
-        });
+        }
     }
 
     private Concept fetchOrCreateConcept(String uuid) {

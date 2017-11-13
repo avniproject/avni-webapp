@@ -39,7 +39,7 @@ public class CatchmentController {
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     @Transactional
     void save(@RequestBody List<CatchmentContract> catchmentRequests) {
-        catchmentRequests.forEach(catchmentRequest -> {
+        for (CatchmentContract catchmentRequest : catchmentRequests) {
             logger.info(String.format("Processing catchment request: %s", catchmentRequest.toString()));
 
             if (conceptExistsWithSameNameAndDifferentUUID(catchmentRequest)) {
@@ -59,7 +59,7 @@ public class CatchmentController {
             addOrUpdateAddressLevels(catchmentRequest, catchment);
             removeObsoleteAddressLevelsFromCatchment(catchment, catchmentRequest);
             catchmentRepository.save(catchment);
-        });
+        }
     }
 
     private void addOrUpdateAddressLevels(CatchmentContract catchmentRequest, Catchment catchment) {
