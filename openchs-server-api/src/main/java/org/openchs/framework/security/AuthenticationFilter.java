@@ -22,16 +22,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.openchs.service.MetabaseAuthService.ADMIN_ROLE;
-import static org.openchs.service.MetabaseAuthService.USER_ROLE;
-
 @Component
 public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String AUTH_TOKEN = "AUTH-TOKEN";
     private final AuthService authService;
-    public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(USER_ROLE);
-    public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(ADMIN_ROLE);
+    public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER);
+    public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ADMIN);
+    public final static SimpleGrantedAuthority USER_ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER_ADMIN);
 
     @Autowired
     public AuthenticationFilter(AuthenticationManager authenticationManager, AuthService authService) {
@@ -52,14 +50,16 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         String token = getAuthToken(request);
-        UserContext userContext = this.authService.validate(token);
-        List<SimpleGrantedAuthority> authorities = Stream.of(USER_AUTHORITY, ADMIN_AUTHORITY)
+        final UserContext userContext = this.authService.validate(token);
+
+        List<SimpleGrantedAuthority> authorities = Stream.of(USER_AUTHORITY, ADMIN_AUTHORITY, USER_ADMIN_AUTHORITY)
                 .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))
                 .collect(Collectors.toList());
-        if (authorities.isEmpty()) return null;
 
         //Side effect
         UserContextHolder.create(userContext);
+
+        if (authorities.isEmpty()) return null;
         return new AnonymousAuthenticationToken(token, token, authorities);
     }
 

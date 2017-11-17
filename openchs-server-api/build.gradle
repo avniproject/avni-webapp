@@ -62,6 +62,8 @@ dependencies {
     compile "org.apache.poi:poi:3.16-beta2"
     compile "org.apache.poi:poi-ooxml:3.16-beta2"
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
+    compile 'com.auth0:jwks-rsa:0.3.0'
+    compile 'com.auth0:java-jwt:3.3.0'
     dev "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
 }
 

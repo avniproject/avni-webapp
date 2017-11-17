@@ -12,6 +12,20 @@ DELETE FROM encounter_type;
 DELETE FROM program_outcome;
 DELETE FROM concept_answer;
 DELETE FROM concept;
+DELETE FROM gender;
+DELETE FROM users;
+DELETE FROM organisation;
+
+INSERT INTO organisation (id, name, db_user, uuid)
+VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
+INSERT INTO organisation (id, name, db_user, uuid)
+VALUES (2, 'dummy', 'dummy', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
+
+INSERT INTO users (id, name, uuid, created_date_time, last_modified_date_time, version, organisation_id) VALUES (1, 'openchs', '5fed2907-df3a-4867-aef5-c87f4c78a31a', current_timestamp, current_timestamp, 1, 1);
+
+INSERT INTO gender (id, name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version) VALUES (1, 'Female', 'ad7d1d14-54fd-45a2-86b7-ea329b744484', current_timestamp, current_timestamp, 1, 1, 1);
+INSERT INTO gender (id, name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version) VALUES (2, 'Male', '840de9fb-e565-4d7d-b751-90335ba20490', current_timestamp, current_timestamp, 1, 1, 1);
+INSERT INTO gender (id, name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version) VALUES (3, 'Other', '188ad77e-fe46-4328-b0e2-98f3a05c554c', current_timestamp, current_timestamp, 1, 1, 1);
 
 ALTER SEQUENCE concept_id_seq RESTART WITH 1;
 INSERT INTO concept (name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
@@ -185,4 +199,3 @@ VALUES ('Paracheck', 3, TRUE, 19, FALSE, FALSE, 1, 'b6edbb87-22d8-4265-9231-aad4
 
 INSERT INTO form_mapping (form_id, entity_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0, 1, 1, current_timestamp, current_timestamp);
-

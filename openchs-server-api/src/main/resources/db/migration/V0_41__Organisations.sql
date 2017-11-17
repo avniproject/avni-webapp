@@ -2,16 +2,11 @@ CREATE TABLE organisation (
   id                      SERIAL PRIMARY KEY,
   name                    CHARACTER VARYING(255) NOT NULL,
   db_user                 CHARACTER VARYING(255) NOT NULL,
-  uuid                    CHARACTER VARYING(255) NOT NULL,
-  version                 INTEGER                NOT NULL,
-  created_by_id           INTEGER                 NOT NULL,
-  last_modified_by_id     INTEGER                 NOT NULL,
-  created_date_time       TIMESTAMP              NOT NULL,
-  last_modified_date_time TIMESTAMP              NOT NULL
+  uuid                    CHARACTER VARYING(255) NOT NULL
 );
 
-INSERT INTO organisation (id, name, db_user, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-      VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884', 1, 1, 1, now(), now());
+INSERT INTO organisation (id, name, db_user, uuid)
+      VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
 
 SELECT nextval(pg_get_serial_sequence('organisation', 'id'));
 

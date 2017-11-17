@@ -27,15 +27,19 @@ _build_db:
 	-psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
 # </postgres>
 
+_create_dummy_user:
+	-psql -h localhost -U $(su) $(database) -f make-scripts/create_dummy_organisation.sql
+
 # <db>
 clean_db: ## Drops the database
 	make _clean_db database=openchs
 
 build_db: ## Creates new empty database
 	make _build_db database=openchs
+	make _create_dummy_user database=openchs
 
 create_dummy_user: ## Creates dummy user
-	-psql -h localhost -U $(su) openchs -f make-scripts/create_dummy_organisation.sql
+	_create_dummy_user database=openchs
 
 rebuild_db: clean_db build_db ## clean + build db
 # </db>
@@ -46,6 +50,7 @@ clean_testdb: ## Drops the test database
 
 build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
+	make _create_dummy_user database=openchs_test
 
 rebuild_testdb: clean_testdb build_testdb ## clean + build test db
 # </testdb>

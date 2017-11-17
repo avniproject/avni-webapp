@@ -15,12 +15,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-@Profile({"dev", "test", "default", "live"})
+@Profile({"dev", "test"})
 public class StubbedAuthService implements AuthService {
     public static final String USER = "user";
     public static final String ADMIN = "admin";
     public static final String OPENCHS_AUTH_TOKEN = "eef19d24-8ce3-4b4e-b848-0845a9b7822e";
-    public static final String DUMMY_AUTH_TOKEN = "8b752048-4ef9-4a28-85c2-695319f3f125";
 
     private OrganisationRepository organisationRepository;
 
@@ -30,22 +29,14 @@ public class StubbedAuthService implements AuthService {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> login(String username, String password) {
-        String uuid = username.equalsIgnoreCase("dummy")? DUMMY_AUTH_TOKEN: OPENCHS_AUTH_TOKEN;
-        return new ResponseEntity<>(new HashMap<String, String>() {{
-            put("authToken", uuid);
-        }}, HttpStatus.OK);
-    }
-
-    @Override
     public UserContext validate(String token) {
         UserContext userContext = new UserContext();
         userContext.setOrganisation(findOrganisation(token));
-        userContext.setRoles(Arrays.asList(ADMIN, USER));
+        userContext.addUserRole().addAdminRole().addUserAdminRole();
         return userContext;
     }
 
     private Organisation findOrganisation(String token) {
-        return organisationRepository.findByName(token.equals(DUMMY_AUTH_TOKEN)? "dummy": "OpenCHS");
+        return organisationRepository.findByName(OPENCHS_AUTH_TOKEN.equals(token)? "OpenCHS": "dummy");
     }
 }
