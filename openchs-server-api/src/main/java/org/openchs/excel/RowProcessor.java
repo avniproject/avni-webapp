@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -101,7 +102,8 @@ public class RowProcessor {
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(cellHeader);
         Concept concept = conceptRepository.findByName(cellHeader);
-        if (concept == null) throw new NullPointerException(String.format("Concept with name |%s| not found", cellHeader));
+        if (concept == null)
+            throw new NullPointerException(String.format("Concept with name |%s| not found", cellHeader));
         observationRequest.setValue(getPrimitiveValue(concept, cell));
         return observationRequest;
     }
@@ -111,8 +113,9 @@ public class RowProcessor {
         if (ConceptDataType.Date.toString().equals(concept.getDataType())) return O.getDateInDbFormat(visibleText);
         if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
             Concept answerConcept = concept.findAnswerConcept(visibleText);
-            if (answerConcept == null) throw new NullPointerException(String.format("Concept with name |%s| not found", visibleText));
-            return answerConcept.getUuid();
+            if (answerConcept == null)
+                throw new NullPointerException(String.format("Concept with name |%s| not found", visibleText));
+            return Arrays.asList(answerConcept.getUuid());
         }
         return visibleText;
     }
@@ -166,7 +169,8 @@ public class RowProcessor {
                 checklistItemRequest.setDueDate(new DateTime(checklistItemRuleResponse.getDueDate()));
                 checklistItemRequest.setMaxDate(new DateTime(checklistItemRuleResponse.getMaxDate()));
                 Concept concept = conceptRepository.findByName(checklistItemRuleResponse.getName());
-                if (concept == null) throw new RuntimeException(String.format("Couldn't find concept with name=%s in checklist being created from the rule", checklistItemRuleResponse.getName()));
+                if (concept == null)
+                    throw new RuntimeException(String.format("Couldn't find concept with name=%s in checklist being created from the rule", checklistItemRuleResponse.getName()));
                 checklistItemRequest.setConceptUUID(concept.getUuid());
                 checklistItemController.save(checklistItemRequest);
             }
@@ -200,7 +204,7 @@ public class RowProcessor {
     }
 
     void readChecklistHeader(Row row) {
-        readHeader(row, checklistHeader,2);
+        readHeader(row, checklistHeader, 2);
     }
 
     void processChecklist(Row row) {
@@ -211,7 +215,8 @@ public class RowProcessor {
         for (int i = numberOfStaticColumns; i < checklistHeader.size() + numberOfStaticColumns; i++) {
             String checklistItemName = checklistHeader.get(i - numberOfStaticColumns);
             ChecklistItem checklistItem = checklistService.findChecklistItem(programEnrolmentUUID, checklistItemName);
-            if (checklistItem == null) throw new RuntimeException(String.format("Couldn't find checklist item with name=%s", checklistItemName));
+            if (checklistItem == null)
+                throw new RuntimeException(String.format("Couldn't find checklist item with name=%s", checklistItemName));
             Double offsetFromDueDate = ExcelUtil.getNumber(row, i);
 
             DateTime completionDate = null;
