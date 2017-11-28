@@ -202,6 +202,10 @@ public class FormController {
         if (concept == null) {
             concept = Concept.create(conceptFromRequest.getName(), conceptFromRequest.getDataType(), conceptUUID);
         }
+        else{
+            concept.setName(conceptFromRequest.getName());
+            concept.setDataType(conceptFromRequest.getDataType());
+        }
         if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
             new Helper().updateAnswers(concept, conceptFromRequest.getAnswers(), conceptRepository);
         }
