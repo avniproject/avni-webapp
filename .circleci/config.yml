@@ -88,6 +88,15 @@ jobs:
 
       - run: sudo apt-get install make openssl
 
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install python3.4-dev
+            curl -O https://bootstrap.pypa.io/get-pip.py
+            sudo python3.4 get-pip.py
+            sudo pip install awscli --upgrade
+
       - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
 
       - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
