@@ -93,7 +93,7 @@ jobs:
           command: |
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install python3-pip
-            sudo pip install awscli --upgrade
+            sudo pip3 install awscli --upgrade
 
       - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
 
