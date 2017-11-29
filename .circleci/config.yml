@@ -107,14 +107,9 @@ workflows:
       - publish:
           requires:
             - test
-      - hold:
-          type: approval
-          requires: 
-            - test
-            - publish
       - deploy:
           requires:
-            - hold
+            - publish
 notify:
   webhooks:
     - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
