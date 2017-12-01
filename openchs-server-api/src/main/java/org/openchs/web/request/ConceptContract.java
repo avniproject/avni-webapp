@@ -16,6 +16,7 @@ public class ConceptContract extends ReferenceDataContract {
     private Double lowNormal;
     private Double highNormal;
     private String unit;
+    private boolean abnormal;
 
     public String getDataType() {
         return dataType == null ? null : dataType.trim();
@@ -80,5 +81,13 @@ public class ConceptContract extends ReferenceDataContract {
     @Override
     public String toString() {
         return String.format("UUID: %s, Name: %s, DataType: %s", this.getUuid(), this.getName(), this.getDataType());
+    }
+
+    public boolean isAbnormal() {
+        return abnormal;
+    }
+
+    public void setAbnormal(boolean abnormal) {
+        this.abnormal = abnormal;
     }
 }

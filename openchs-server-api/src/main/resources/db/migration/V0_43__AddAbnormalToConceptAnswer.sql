@@ -1,0 +1,1 @@
+ALTER TABLE concept_answer ADD COLUMN abnormal boolean NOT NULL DEFAULT false;

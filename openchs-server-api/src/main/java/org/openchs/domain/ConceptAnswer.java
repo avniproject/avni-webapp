@@ -20,6 +20,8 @@ public class ConceptAnswer extends OrganisationAwareEntity{
     @Column(name = "answer_order")
     private short order;
 
+    private boolean abnormal;
+
     public Concept getConcept() {
         return concept;
     }
@@ -51,5 +53,13 @@ public class ConceptAnswer extends OrganisationAwareEntity{
                 ", answerConcept=" + answerConcept.getName() +
                 ", order=" + order +
                 '}';
+    }
+
+    public boolean isAbnormal() {
+        return abnormal;
+    }
+
+    public void setAbnormal(boolean abnormal) {
+        this.abnormal = abnormal;
     }
 }

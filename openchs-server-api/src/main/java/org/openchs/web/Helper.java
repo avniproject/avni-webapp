@@ -42,6 +42,7 @@ public class Helper {
             conceptAnswer.assignUUID();
         }
         conceptAnswer.setOrder(answerOrder);
+        conceptAnswer.setAbnormal(answerConceptRequest.isAbnormal());
         conceptAnswer.setAnswerConcept(fetchOrCreateAnswer(answerConceptRequest, conceptRepository));
         return conceptAnswer;
     }
