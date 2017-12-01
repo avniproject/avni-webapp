@@ -43,4 +43,12 @@ public class FormElementContractValidationTest {
         formElementContract.setConceptUUID("someConceptUUID");
         assertEquals(true, formElementContract.validate().isFailure());
     }
+
+    @Test
+    public void validate_form_element_cannot_contain_empty_concept_and_conceptUUID() {
+        keyValues.add(new KeyValue(KeyType.Select, ValueType.Multi.toString()));
+        formElementContract.setConceptUUID(null);
+        formElementContract.setConcept(null);
+        assertEquals(true, formElementContract.validate().isFailure());
+    }
 }

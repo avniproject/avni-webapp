@@ -1,7 +1,6 @@
 package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.joda.time.DateTime;
 
 import java.util.List;
 

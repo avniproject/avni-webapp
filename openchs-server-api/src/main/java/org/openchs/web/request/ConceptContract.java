@@ -2,6 +2,7 @@ package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.domain.ConceptDataType;
 
 import java.util.List;
 
@@ -18,6 +19,10 @@ public class ConceptContract extends ReferenceDataContract {
 
     public String getDataType() {
         return dataType == null ? null : dataType.trim();
+    }
+
+    public boolean isCoded() {
+        return ConceptDataType.Coded.toString().equals(this.getDataType());
     }
 
     public void setDataType(String dataType) {

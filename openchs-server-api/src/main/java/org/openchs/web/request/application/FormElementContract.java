@@ -5,13 +5,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.KeyType;
 import org.openchs.application.KeyValues;
 import org.openchs.application.ValueType;
-import org.openchs.domain.ConceptDataType;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.validation.ValidationResult;
 import org.openchs.web.request.ReferenceDataContract;
 import org.springframework.util.StringUtils;
-
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "name", "uuid", "isMandatory", "keyValues", "conceptUUID", "concept", "displayOrder" })
@@ -66,14 +63,25 @@ public class FormElementContract extends ReferenceDataContract {
     }
 
     public ValidationResult validate() {
-        if (ConceptDataType.Coded.toString().equals(this.concept.getDataType())) {
-            if (keyValues == null || keyValues.isEmpty() || !keyValues.containsKey(KeyType.Select) || !keyValues.containsOneOfTheValues(KeyType.Select, ValueType.getSelectValueTypes()))
-                return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
+        if (!canIdentifyConceptUniquely()) {
+            return ValidationResult.Failure("One and only one of conceptUUID or concept can be provided");
         }
-        if(!StringUtils.isEmpty(conceptUUID) && concept!= null){
-            return ValidationResult.Failure(String.format("Both conceptUUID and concept cannot be provided"));
-        }
+
+        if (concept != null && concept.isCoded() && keyValuesAreInvalid())
+            return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
+
         return ValidationResult.Success;
+    }
+
+    private boolean keyValuesAreInvalid() {
+        return keyValues == null
+                || keyValues.isEmpty()
+                || !keyValues.containsKey(KeyType.Select)
+                || !keyValues.containsOneOfTheValues(KeyType.Select, ValueType.getSelectValueTypes());
+    }
+
+    private boolean canIdentifyConceptUniquely() {
+        return this.concept == null ^ StringUtils.isEmpty(conceptUUID);
     }
 
     public ConceptContract getConcept() {
