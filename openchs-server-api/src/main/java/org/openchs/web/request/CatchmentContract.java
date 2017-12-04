@@ -18,5 +18,4 @@ public class CatchmentContract extends ReferenceDataContract {
     public String toString() {
         return String.format("UUID: %s, Name: %s", this.getUuid(), this.getName());
     }
-
 }

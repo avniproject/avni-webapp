@@ -2,10 +2,13 @@ package org.openchs.web;
 
 import org.openchs.dao.AddressLevelRepository;
 import org.openchs.dao.CatchmentRepository;
+import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Catchment;
+import org.openchs.domain.Organisation;
 import org.openchs.web.request.AddressLevelContract;
 import org.openchs.web.request.CatchmentContract;
+import org.openchs.web.request.CatchmentsContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +26,25 @@ import java.util.stream.Collectors;
 
 @RestController
 public class CatchmentController {
-
     private final Logger logger;
     private CatchmentRepository catchmentRepository;
     private AddressLevelRepository addressLevelRepository;
+    private OrganisationRepository organisationRepository;
 
     @Autowired
-    public CatchmentController(CatchmentRepository catchmentRepository, AddressLevelRepository addressLevelRepository) {
+    public CatchmentController(CatchmentRepository catchmentRepository, AddressLevelRepository addressLevelRepository, OrganisationRepository organisationRepository) {
         this.catchmentRepository = catchmentRepository;
         this.addressLevelRepository = addressLevelRepository;
+        this.organisationRepository = organisationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @RequestMapping(value = "/catchments", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     @Transactional
-    void save(@RequestBody List<CatchmentContract> catchmentRequests) {
-        for (CatchmentContract catchmentRequest : catchmentRequests) {
+    void save(@RequestBody CatchmentsContract catchmentsContract) {
+        Organisation organisation = organisationRepository.findByName(catchmentsContract.getOrganisation());
+        for (CatchmentContract catchmentRequest : catchmentsContract.getCatchments()) {
             logger.info(String.format("Processing catchment request: %s", catchmentRequest.toString()));
 
             if (conceptExistsWithSameNameAndDifferentUUID(catchmentRequest)) {
@@ -58,6 +63,7 @@ public class CatchmentController {
             }
             addOrUpdateAddressLevels(catchmentRequest, catchment);
             removeObsoleteAddressLevelsFromCatchment(catchment, catchmentRequest);
+            catchment.setOrganisationId(organisation.getId());
             catchmentRepository.save(catchment);
         }
     }
