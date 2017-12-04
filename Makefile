@@ -22,9 +22,9 @@ _clean_db:
 	-psql -h localhost -U $(su) postgres -c 'drop database $(database)';
 
 _build_db:
-	-psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
+	psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
 	-psql -h localhost -U $(su) postgres -c "create user $(database) with password 'password'";
-	-psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
+	psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
 # </postgres>
 
 _create_dummy_organisation:
@@ -41,6 +41,8 @@ create_dummy_organisation: ## Creates dummy user
 	make _create_dummy_organisation database=openchs
 
 rebuild_db: clean_db build_db ## clean + build db
+
+rebuild_dev_db: rebuild_db create_dummy_organisation
 # </db>
 
 # <testdb>

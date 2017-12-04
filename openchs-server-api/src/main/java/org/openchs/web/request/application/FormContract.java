@@ -51,4 +51,13 @@ public class FormContract extends ReferenceDataContract {
     public void addFormElementGroup(FormElementGroupContract formElementGroupContract) {
         formElementGroups.add(formElementGroupContract);
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name=" + this.getName() + '\'' +
+                "formType='" + formType + '\'' +
+                ", programName='" + programName + '\'' +
+                '}';
+    }
 }

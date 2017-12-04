@@ -91,4 +91,13 @@ public class FormElementContract extends ReferenceDataContract {
     public void setConcept(ConceptContract concept) {
         this.concept = concept;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name=" + this.getName() + '\'' +
+                "isMandatory=" + isMandatory +
+                ", displayOrder=" + displayOrder +
+                '}';
+    }
 }
