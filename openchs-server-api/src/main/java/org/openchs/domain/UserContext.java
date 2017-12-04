@@ -2,12 +2,11 @@ package org.openchs.domain;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 public class UserContext {
     private String userName;
     public static final String USER = "user";
-    public static final String USER_ADMIN = "user_admin";
+    public static final String ORGANISATION_ADMIN = "organisation_admin";
     public static final String ADMIN = "admin";
 
     private Collection<String> roles = new HashSet<>();
@@ -26,17 +25,19 @@ public class UserContext {
     }
 
     public UserContext addUserRole() {
-        this.roles.add(USER);
-        return this;
+        return addRole(USER);
     }
 
-    public UserContext addUserAdminRole() {
-        this.roles.add(USER_ADMIN);
-        return this;
+    public UserContext addOrganisationAdminRole() {
+        return addRole(ORGANISATION_ADMIN);
     }
 
     public UserContext addAdminRole() {
-        this.roles.add(ADMIN);
+        return addRole(ADMIN);
+    }
+
+    public UserContext addRole(String role) {
+        this.roles.add(role);
         return this;
     }
 

@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.framework.security.AuthenticationFilter;
-import org.openchs.service.StubbedAuthService;
+import org.openchs.service.StubbedUserContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +36,7 @@ public abstract class AbstractControllerIntegrationTest {
         template.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add("AUTH-TOKEN", StubbedAuthService.OPENCHS_AUTH_TOKEN);
+                            .add("AUTH-TOKEN", StubbedUserContextService.OPENCHS_AUTH_TOKEN);
                     return execution.execute(request, body);
                 }));
 

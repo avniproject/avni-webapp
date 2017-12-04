@@ -5,6 +5,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
-public interface AuthService {
-    UserContext validate(String token);
+public interface UserContextService {
+    UserContext getUserContext(String token);
 }

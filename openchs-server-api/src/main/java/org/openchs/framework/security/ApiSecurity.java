@@ -1,6 +1,6 @@
 package org.openchs.framework.security;
 
-import org.openchs.service.AuthService;
+import org.openchs.service.UserContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,11 +14,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableWebSecurity(debug = false)
 public class ApiSecurity extends WebSecurityConfigurerAdapter {
 
-    private final AuthService authService;
+    private final UserContextService userContextService;
 
     @Autowired
-    public ApiSecurity(AuthService authService) {
-        this.authService = authService;
+    public ApiSecurity(UserContextService userContextService) {
+        this.userContextService = userContextService;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .authorizeRequests().anyRequest().permitAll()
                 .and()
-                .addFilter(new AuthenticationFilter(authenticationManager(), authService))
+                .addFilter(new AuthenticationFilter(authenticationManager(), userContextService))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 

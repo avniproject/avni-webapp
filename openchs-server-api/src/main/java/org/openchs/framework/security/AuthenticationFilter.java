@@ -1,7 +1,7 @@
 package org.openchs.framework.security;
 
 import org.openchs.domain.UserContext;
-import org.openchs.service.AuthService;
+import org.openchs.service.UserContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,15 +26,15 @@ import java.util.stream.Stream;
 public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String AUTH_TOKEN = "AUTH-TOKEN";
-    private final AuthService authService;
+    private final UserContextService userContextService;
     public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER);
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ADMIN);
-    public final static SimpleGrantedAuthority USER_ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER_ADMIN);
+    public final static SimpleGrantedAuthority ORGANISATION_ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ORGANISATION_ADMIN);
 
     @Autowired
-    public AuthenticationFilter(AuthenticationManager authenticationManager, AuthService authService) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, UserContextService userContextService) {
         super(authenticationManager);
-        this.authService = authService;
+        this.userContextService = userContextService;
     }
 
     @Override
@@ -49,10 +49,12 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     private Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        String token = getAuthToken(request);
-        final UserContext userContext = this.authService.validate(token);
+        String token = request.getHeader(AUTH_TOKEN);
+        if (token == null) token = UUID.randomUUID().toString();
 
-        List<SimpleGrantedAuthority> authorities = Stream.of(USER_AUTHORITY, ADMIN_AUTHORITY, USER_ADMIN_AUTHORITY)
+        final UserContext userContext = this.userContextService.getUserContext(token);
+
+        List<SimpleGrantedAuthority> authorities = Stream.of(USER_AUTHORITY, ADMIN_AUTHORITY, ORGANISATION_ADMIN_AUTHORITY)
                 .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))
                 .collect(Collectors.toList());
 
@@ -61,10 +63,5 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
         if (authorities.isEmpty()) return null;
         return new AnonymousAuthenticationToken(token, token, authorities);
-    }
-
-    private String getAuthToken(HttpServletRequest request) {
-        String token = request.getHeader(AUTH_TOKEN);
-        return token == null || token.isEmpty() ? UUID.randomUUID().toString() : token;
     }
 }

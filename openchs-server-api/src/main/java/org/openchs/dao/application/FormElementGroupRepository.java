@@ -17,7 +17,7 @@ import javax.transaction.Transactional;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formElementGroup", path = "formElementGroup")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+@PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
 public interface FormElementGroupRepository extends PagingAndSortingRepository<FormElementGroup, Long>, ReferenceDataRepository<FormElementGroup> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<FormElementGroup> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
