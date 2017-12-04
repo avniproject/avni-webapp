@@ -45,7 +45,9 @@ public class OperationalModulesController {
     @Transactional
     void save(@RequestBody OperationalModulesContract request) {
         Organisation organisation = organisationRepository.findByName(request.getOrganisationName());
-        request.getPrograms().forEach(s -> operationalProgramRepository.save(createOperationalProgram(s, organisation)));
+        request.getPrograms().forEach(programName -> {
+            operationalProgramRepository.save(createOperationalProgram(programName, organisation));
+        });
         request.getEncounterTypes().forEach(s -> operationalEncounterTypeRepository.save(createOperationalEncounterType(s, organisation)));
     }
 

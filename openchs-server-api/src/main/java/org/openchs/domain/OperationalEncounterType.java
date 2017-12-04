@@ -22,4 +22,8 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
     public String getName() {
         return encounterType.getName();
     }
+
+    public String getEncounterTypeUUID() {
+        return encounterType.getUuid();
+    }
 }

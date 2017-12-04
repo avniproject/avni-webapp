@@ -26,4 +26,8 @@ public class OperationalProgram extends OrganisationAwareEntity {
     public String getColour() {
         return program.getColour();
     }
+
+    public String getProgramUUID() {
+        return program.getUuid();
+    }
 }
