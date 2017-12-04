@@ -22,8 +22,8 @@ _clean_db:
 	-psql -h localhost -U $(su) postgres -c 'drop database $(database)';
 
 _build_db:
-	psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
 	-psql -h localhost -U $(su) postgres -c "create user $(database) with password 'password'";
+	psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
 	psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
 # </postgres>
 
