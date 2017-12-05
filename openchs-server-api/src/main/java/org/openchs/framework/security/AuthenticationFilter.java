@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
-    public static final String ORGANISATION_NAME_HEADER = "organisationName";
+    public static final String ORGANISATION_NAME_HEADER = "ORGANISATION_NAME";
     private final UserContextService userContextService;
     public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER);
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ADMIN);
