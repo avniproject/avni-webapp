@@ -42,7 +42,7 @@ create_demo_organisation: ## Creates dummy user
 
 rebuild_db: clean_db build_db ## clean + build db
 
-rebuild_dev_db: rebuild_db deploy_schema create_dummy_organisation
+rebuild_dev_db: rebuild_db deploy_schema create_demo_organisation
 # </db>
 
 # <testdb>
