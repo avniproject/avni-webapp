@@ -6,11 +6,11 @@ import org.openchs.domain.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @Profile({"test", "dev"})
 public class StubbedUserContextService implements UserContextService {
-    public static final String OPENCHS_AUTH_TOKEN = "eef19d24-8ce3-4b4e-b848-0845a9b7822e";
 
     private OrganisationRepository organisationRepository;
 
@@ -20,14 +20,15 @@ public class StubbedUserContextService implements UserContextService {
     }
 
     @Override
-    public UserContext getUserContext(String token) {
+    public UserContext getUserContext(String token, String becomeOrganisationName) {
         UserContext userContext = new UserContext();
-        userContext.setOrganisation(findOrganisation(token));
+        userContext.setOrganisation(findOrganisation(becomeOrganisationName));
         userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
         return userContext;
     }
 
-    private Organisation findOrganisation(String token) {
-        return organisationRepository.findByName(OPENCHS_AUTH_TOKEN.equals(token)? "OpenCHS": "dummy");
+    private Organisation findOrganisation(String becomeOrganisationName) {
+        String organisationName = StringUtils.isEmpty(becomeOrganisationName)? "dummy": becomeOrganisationName.trim();
+        return organisationRepository.findByName(organisationName);
     }
 }

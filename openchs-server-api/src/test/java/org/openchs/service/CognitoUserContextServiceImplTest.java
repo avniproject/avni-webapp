@@ -2,7 +2,6 @@ package org.openchs.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -20,7 +19,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class CognitoContextServiceImplTest {
+public class CognitoUserContextServiceImplTest {
 
     @Mock
     private OrganisationRepository organisationRepository;
@@ -37,14 +36,14 @@ public class CognitoContextServiceImplTest {
 
     @Test
     public void shouldReturnEmptyUserContextIfTokenCannotBeDecoded() {
-        UserContext userContext = userContextService.getUserContext("invalidToken");
+        UserContext userContext = userContextService.getUserContext("invalidToken", null);
         assertThat(userContext.getOrganisation(), is(equalTo(null)));
         assertThat(userContext.getRoles().size(), is(equalTo(0)) );
     }
 
     @Test
     public void shouldReturnEmptyContextIfNullTokenPassed() {
-        UserContext userContext = userContextService.getUserContext(null);
+        UserContext userContext = userContextService.getUserContext(null, null);
         assertThat(userContext.getOrganisation(), is(equalTo(null)));
         assertThat(userContext.getRoles().size(), is(equalTo(0)) );
     }
@@ -57,7 +56,7 @@ public class CognitoContextServiceImplTest {
         String token = JWT.create()
                 .withClaim("custom:organisationId", "1").sign(algorithm);
 
-        UserContext userContext = userContextService.getUserContext(token, false);
+        UserContext userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getOrganisation(), is(equalTo(organisation)));
     }
 
@@ -72,7 +71,7 @@ public class CognitoContextServiceImplTest {
                 .withClaim("custom:organisationId", "1")
                 .sign(algorithm);
 
-        UserContext userContext = userContextService.getUserContext(token, false);
+        UserContext userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getRoles(), contains(UserContext.USER));
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
 
@@ -82,8 +81,30 @@ public class CognitoContextServiceImplTest {
                 .withClaim("custom:organisationId", "1")
                 .sign(algorithm);
 
-        userContext = userContextService.getUserContext(token, false);
+        userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getRoles(), containsInAnyOrder(UserContext.USER, UserContext.ORGANISATION_ADMIN));
         assertThat(userContext.getRoles().size(), is(equalTo(2)));
     }
+
+    @Test
+    public void shouldBeAbleToSwitchOrganisationIfAdmin() throws UnsupportedEncodingException {
+        Organisation anOrg = new Organisation();
+        Organisation becomeOrg = new Organisation();
+        becomeOrg.setName("BecomeOrg");
+        when(organisationRepository.findOne(1L)).thenReturn(anOrg);
+        when(organisationRepository.findByName(becomeOrg.getName())).thenReturn(becomeOrg);
+        Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
+        String token = JWT.create()
+                .withClaim("custom:isAdmin", "true")
+                .withClaim("custom:organisationId", "1")
+                .sign(algorithm);
+
+        UserContext userContext = userContextService.getUserContext(token, false, becomeOrg.getName());
+        assertThat(userContext.getOrganisation(), is(equalTo(becomeOrg)));
+
+        userContext = userContextService.getUserContext(token, false, null);
+        assertThat(userContext.getOrganisation(), is(equalTo(anOrg)));
+
+    }
+
 }

@@ -8,7 +8,9 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.poi.util.StringUtil;
 import org.openchs.dao.OrganisationRepository;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,18 +53,18 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     }
 
     @Override
-    public UserContext getUserContext(String token) {
-        return getUserContext(token, true);
+    public UserContext getUserContext(String token, String becomeOrganisationName) {
+        return getUserContext(token, true, becomeOrganisationName);
     }
 
-    protected UserContext getUserContext(String token, boolean verify) {
+    protected UserContext getUserContext(String token, boolean verify, String becomeOrganisationName) {
         UserContext userContext = new UserContext();
         if (token == null) return userContext;
 
         DecodedJWT jwt = verifyAndDecodeToken(token, verify);
         if (jwt == null) return userContext;
 
-        addOrganisationToContext(userContext, jwt);
+        addOrganisationToContext(userContext, jwt, becomeOrganisationName);
         addRolesToContext(userContext, jwt);
 
         return userContext;
@@ -116,7 +119,13 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         return !claim.isNull() && claim.asString().equalsIgnoreCase("true");
     }
 
-    private void addOrganisationToContext(UserContext userContext, DecodedJWT jwt) {
+    private void addOrganisationToContext(UserContext userContext, DecodedJWT jwt, String becomeOrganisationName) {
+        Organisation becomeOrganisation = getOrganisation(becomeOrganisationName);
+        if (becomeOrganisation != null && hasRole(jwt, "custom:isAdmin")) {
+            userContext.setOrganisation(becomeOrganisation);
+            return;
+        }
+
         Claim claim = jwt.getClaim("custom:organisationId");
         if (claim.isNull()) {
             logger.error("Organisation claim not found for user " + jwt.getId());
@@ -127,5 +136,10 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         if (organisationId != null) {
             userContext.setOrganisation(organisationRepository.findOne(organisationId));
         }
+    }
+
+    private Organisation getOrganisation(String becomeOrganisationName) {
+        return !StringUtils.isEmpty(becomeOrganisationName) ?
+                organisationRepository.findByName(becomeOrganisationName) : null;
     }
 }

@@ -25,7 +25,8 @@ import java.util.stream.Stream;
 @Component
 public class AuthenticationFilter extends BasicAuthenticationFilter {
 
-    private static final String AUTH_TOKEN = "AUTH-TOKEN";
+    private static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
+    public static final String ORGANISATION_NAME_HEADER = "organisationName";
     private final UserContextService userContextService;
     public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER);
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ADMIN);
@@ -49,10 +50,11 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     private Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        String token = request.getHeader(AUTH_TOKEN);
+        String token = request.getHeader(AUTH_TOKEN_HEADER);
         if (token == null) token = UUID.randomUUID().toString();
+        String becomeOrganisationName = request.getHeader(ORGANISATION_NAME_HEADER);
 
-        final UserContext userContext = this.userContextService.getUserContext(token);
+        final UserContext userContext = this.userContextService.getUserContext(token, becomeOrganisationName);
 
         List<SimpleGrantedAuthority> authorities = Stream.of(USER_AUTHORITY, ADMIN_AUTHORITY, ORGANISATION_ADMIN_AUTHORITY)
                 .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))
