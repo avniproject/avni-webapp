@@ -42,7 +42,7 @@ create_demo_organisation: ## Creates dummy user
 
 rebuild_db: clean_db build_db ## clean + build db
 
-rebuild_dev_db: rebuild_db create_dummy_organisation
+rebuild_dev_db: rebuild_db deploy_schema create_dummy_organisation
 # </db>
 
 # <testdb>
@@ -53,7 +53,7 @@ build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
 	make _create_demo_organisation database=openchs_test
 
-rebuild_testdb: clean_testdb build_testdb ## clean + build test db
+rebuild_testdb: clean_testdb deploy_schema build_testdb ## clean + build test db
 # </testdb>
 
 
