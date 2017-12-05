@@ -28,7 +28,7 @@ public class StubbedUserContextService implements UserContextService {
     }
 
     private Organisation findOrganisation(String becomeOrganisationName) {
-        String organisationName = StringUtils.isEmpty(becomeOrganisationName)? "dummy": becomeOrganisationName.trim();
+        String organisationName = StringUtils.isEmpty(becomeOrganisationName)? "demo": becomeOrganisationName.trim();
         return organisationRepository.findByName(organisationName);
     }
 }
