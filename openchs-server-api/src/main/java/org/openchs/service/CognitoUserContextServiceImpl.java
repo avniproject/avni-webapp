@@ -31,6 +31,7 @@ import java.util.Arrays;
 @Profile({"default", "live", "dev", "test"})
 public class CognitoUserContextServiceImpl implements UserContextService {
 
+    private static final String COGNITO_URL = "https://cognito-idp.ap-south-1.amazonaws.com/";
     private final Logger logger;
     private boolean isDev;
 
@@ -130,7 +131,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     }
 
     private String getIssuer() {
-        return "https://cognito-idp.ap-south-1.amazonaws.com/" + this.poolId + "/.well-known/jwks.json";
+        return COGNITO_URL + this.poolId + "/.well-known/jwks.json";
     }
 
 
