@@ -34,8 +34,8 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     private final Logger logger;
     private boolean isDev;
 
-    @Value("${cognito.publickey}")
-    private String publicKey;
+    @Value("${cognito.poolid}")
+    private String poolId;
 
     @Value("${cognito.clientid}")
     private String clientId;
@@ -51,9 +51,9 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         this.isDev = isDev();
     }
 
-    public CognitoUserContextServiceImpl(OrganisationRepository organisationRepository, String publicKey, String clientId) {
+    public CognitoUserContextServiceImpl(OrganisationRepository organisationRepository, String poolId, String clientId) {
         this.organisationRepository = organisationRepository;
-        this.publicKey = publicKey;
+        this.poolId = poolId;
         this.clientId = clientId;
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -101,21 +101,21 @@ public class CognitoUserContextServiceImpl implements UserContextService {
             DecodedJWT unverifiedJwt = JWT.decode(token);
             if (!verify) return unverifiedJwt;
 
-            JwkProvider provider = new GuavaCachedJwkProvider(new UrlJwkProvider(new URL(getPublicKeyUrl())));
+            JwkProvider provider = new GuavaCachedJwkProvider(new UrlJwkProvider(new URL(getIssuer())));
             Jwk jwk = provider.get(unverifiedJwt.getKeyId());
             RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
             Algorithm algorithm = Algorithm.RSA256(publicKey, null);
             JWTVerifier verifier = JWT.require(algorithm)
-                    .withIssuer(this.publicKey)
+                    .withIssuer(getIssuer())
                     .withClaim("token_use", "id")
                     .withAudience(clientId)
                     .build();
 
-            logger.debug(String.format("Verifying token for issuer: %s, token_use: id and audience: %s", this.publicKey, clientId));
+            logger.debug(String.format("Verifying token for issuer: %s, token_use: id and audience: %s", this.getIssuer(), clientId));
             return verifier.verify(token);
 
         } catch (MalformedURLException | InvalidPublicKeyException e) {
-            logger.error("Check the settings for public key " + getPublicKeyUrl(), e);
+            logger.error("Check the settings for public key " + getIssuer(), e);
             throw new RuntimeException(e);
         } catch (JWTDecodeException decodeException) {
             logger.debug("Could not decode token " + token, decodeException);
@@ -129,9 +129,10 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         }
     }
 
-    private String getPublicKeyUrl() {
-        return this.publicKey + "/.well-known/jwks.json";
+    private String getIssuer() {
+        return "https://cognito-idp.ap-south-1.amazonaws.com/" + this.poolId + "/.well-known/jwks.json";
     }
+
 
     private boolean hasRole(DecodedJWT jwt, String role) {
         Claim claim = jwt.getClaim(role);
