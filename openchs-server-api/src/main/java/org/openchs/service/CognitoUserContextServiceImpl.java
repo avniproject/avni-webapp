@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -26,10 +28,11 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 
 @Service
-@Profile({"default", "live"})
+@Profile({"default", "live", "dev", "test"})
 public class CognitoUserContextServiceImpl implements UserContextService {
 
     private final Logger logger;
+    private boolean isDev;
 
     @Value("${cognito.publickey}")
     private String publicKey;
@@ -37,24 +40,40 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     @Value("${cognito.clientid}")
     private String clientId;
 
-    @Autowired
     private OrganisationRepository organisationRepository;
+    private Environment environment;
 
-    public CognitoUserContextServiceImpl() {
+    @Autowired
+    public CognitoUserContextServiceImpl(Environment environment, OrganisationRepository organisationRepository) {
+        this.environment = environment;
+        this.organisationRepository = organisationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
+        this.isDev = isDev();
     }
 
     public CognitoUserContextServiceImpl(OrganisationRepository organisationRepository, String publicKey, String clientId) {
         this.organisationRepository = organisationRepository;
         this.publicKey = publicKey;
         this.clientId = clientId;
-
         logger = LoggerFactory.getLogger(this.getClass());
+    }
+
+    private boolean isDev() {
+        String[] activeProfiles = environment.getActiveProfiles();
+        return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
     }
 
     @Override
     public UserContext getUserContext(String token, String becomeOrganisationName) {
-        return getUserContext(token, true, becomeOrganisationName);
+        if (isDev) {
+            UserContext userContext = new UserContext();
+            String organisationName = StringUtils.isEmpty(becomeOrganisationName)? "demo": becomeOrganisationName.trim();
+            userContext.setOrganisation(organisationRepository.findByName(organisationName));
+            userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
+            return userContext;
+        } else {
+            return getUserContext(token, true, becomeOrganisationName);
+        }
     }
 
     protected UserContext getUserContext(String token, boolean verify, String becomeOrganisationName) {

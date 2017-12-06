@@ -66,18 +66,23 @@ deploy_schema: ## Runs all migrations to create the schema with all the objects
 # <server>
 start_server: ## Builds and starts the server
 	./gradlew clean openchs-server-api:bootRun
-#	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
 	./gradlew clean build -x test
 
 test_server: rebuild_testdb ## Run tests
 	./gradlew clean test
+
+start_server_wo_gradle:
+	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar --cognito.publickey=$(key) --cognito.clientid=$(client) --cognito.poolid=$(pool)
 # <server>
 
 ci-test:
 	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
 	./gradlew clean test
+
+open_test_results:
+	open openchs-server-api/build/reports/tests/test/index.html
 
 build-rpm:
 	./gradlew clean openchs-server-api:buildRpm -x test --info --stacktrace
