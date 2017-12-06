@@ -74,7 +74,7 @@ test_server: rebuild_testdb ## Run tests
 	./gradlew clean test
 
 start_server_wo_gradle:
-	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar --cognito.publickey=$(key) --cognito.clientid=$(client) --cognito.poolid=$(pool)
+	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar --cognito.clientid=$(client) --cognito.poolid=$(pool)
 # <server>
 
 ci-test:
