@@ -8,7 +8,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.apache.poi.util.StringUtil;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.UserContext;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -68,7 +66,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     public UserContext getUserContext(String token, String becomeOrganisationName) {
         if (isDev) {
             UserContext userContext = new UserContext();
-            String organisationName = StringUtils.isEmpty(becomeOrganisationName)? "demo": becomeOrganisationName.trim();
+            String organisationName = StringUtils.isEmpty(becomeOrganisationName) ? "demo" : becomeOrganisationName.trim();
             userContext.setOrganisation(organisationRepository.findByName(organisationName));
             userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
             return userContext;
@@ -102,7 +100,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
             DecodedJWT unverifiedJwt = JWT.decode(token);
             if (!verify) return unverifiedJwt;
 
-            JwkProvider provider = new GuavaCachedJwkProvider(new UrlJwkProvider(new URL(getIssuer())));
+            JwkProvider provider = new GuavaCachedJwkProvider(new UrlJwkProvider(new URL(getJwkProviderUrl())));
             Jwk jwk = provider.get(unverifiedJwt.getKeyId());
             RSAPublicKey publicKey = (RSAPublicKey) jwk.getPublicKey();
             Algorithm algorithm = Algorithm.RSA256(publicKey, null);
@@ -130,8 +128,12 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         }
     }
 
+    private String getJwkProviderUrl() {
+        return this.getIssuer() + "/.well-known/jwks.json";
+    }
+
     private String getIssuer() {
-        return COGNITO_URL + this.poolId + "/.well-known/jwks.json";
+        return COGNITO_URL + this.poolId;
     }
 
 
