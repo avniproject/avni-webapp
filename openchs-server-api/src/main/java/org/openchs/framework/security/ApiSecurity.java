@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -41,7 +42,8 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
     }
 
     private HttpSecurity setSecure(HttpSecurity http) throws Exception {
-        if (!Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+        List<String> profiles = Arrays.asList(environment.getActiveProfiles());
+        if (!(profiles.contains("dev") || profiles.contains("test"))) {
             http.requiresChannel().anyRequest().requiresSecure();
         }
         return http;
