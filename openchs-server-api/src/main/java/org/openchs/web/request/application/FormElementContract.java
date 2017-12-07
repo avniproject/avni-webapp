@@ -11,23 +11,25 @@ import org.openchs.web.request.ReferenceDataContract;
 import org.springframework.util.StringUtils;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "name", "uuid", "isMandatory", "keyValues", "conceptUUID", "concept", "displayOrder" })
+@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "conceptUUID", "concept", "displayOrder"})
 public class FormElementContract extends ReferenceDataContract {
     private boolean isMandatory;
     private KeyValues keyValues;
     private String conceptUUID;
     private ConceptContract concept;
     private short displayOrder;
+    private String type;
 
     public FormElementContract() {
     }
 
-    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, String conceptName, ConceptContract concept) {
+    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, String conceptName, ConceptContract concept, String type) {
         super(uuid, userUUID, name);
         this.isMandatory = isMandatory;
         this.keyValues = keyValues;
         this.conceptUUID = conceptName;
         this.concept = concept;
+        this.type = type;
     }
 
     public boolean isMandatory() {
@@ -90,6 +92,14 @@ public class FormElementContract extends ReferenceDataContract {
 
     public void setConcept(ConceptContract concept) {
         this.concept = concept;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

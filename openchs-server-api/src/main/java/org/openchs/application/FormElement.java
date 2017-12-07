@@ -1,7 +1,6 @@
 package org.openchs.application;
 
 import org.hibernate.annotations.Type;
-import org.openchs.domain.CHSEntity;
 import org.openchs.domain.Concept;
 import org.openchs.domain.OrganisationAwareEntity;
 
@@ -39,6 +38,9 @@ public class FormElement extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_element_group_id")
     private FormElementGroup formElementGroup;
+
+    @Column(name = "type", nullable = true)
+    private String type;
 
     public String getName() {
         return name;
@@ -104,6 +106,13 @@ public class FormElement extends OrganisationAwareEntity {
         this.formElementGroup = formElementGroup;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public boolean isFormElementNameSameAsConceptName() {
         return getConcept().getName().equals(getName());

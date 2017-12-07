@@ -180,17 +180,17 @@ public class FormController {
         formElement.setMandatory(formElementRequest.isMandatory());
         formElement.setKeyValues(formElementRequest.getKeyValues());
         formElement.setConcept(concept);
+        formElement.setType(formElementRequest.getType());
     }
 
     private Concept getConcept(FormElementContract formElementRequest) {
         Concept concept;
         if (formElementRequest.getConceptUUID() != null) {
             concept = conceptRepository.findByUuid(formElementRequest.getConceptUUID());
-            if(concept == null){
+            if (concept == null) {
                 throw new ValidationException(String.format("A concept referred in form is not found %s", formElementRequest.getConceptUUID()));
             }
-        }
-        else {
+        } else {
             concept = createOrUpdateConcept(formElementRequest.getConcept());
         }
         return concept;
@@ -201,8 +201,7 @@ public class FormController {
         Concept concept = conceptRepository.findByUuid(conceptUUID);
         if (concept == null) {
             concept = Concept.create(conceptFromRequest.getName(), conceptFromRequest.getDataType(), conceptUUID);
-        }
-        else{
+        } else {
             concept.setName(conceptFromRequest.getName());
             concept.setDataType(conceptFromRequest.getDataType());
         }
@@ -260,7 +259,7 @@ public class FormController {
         if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
             conceptContract.setAnswers(new ArrayList<>());
         }
-        for (ConceptAnswer answer: concept.getConceptAnswers()) {
+        for (ConceptAnswer answer : concept.getConceptAnswers()) {
             ConceptContract answerConceptContract = new ConceptContract();
             answerConceptContract.setUuid(answer.getAnswerConcept().getUuid());
             answerConceptContract.setName(answer.getAnswerConcept().getName());
@@ -274,11 +273,11 @@ public class FormController {
      * Example of a request URL: http://localhost:8021/forms/program/1?page=3&size=1
      * Links added are:
      * <ol>
-     *     <li>self: http://localhost:8021/forms/program/1</li>
-     *     <li>form: http://localhost:8021/form/7</li>
-     *     <li>formElementGroups: http://localhost:8021/form/7/formElementGroups</li>
-     *     <li>createdBy: http://localhost:8021/user/1</li>
-     *     <li>lastModifiedBy: http://localhost:8021/user/1</li>
+     * <li>self: http://localhost:8021/forms/program/1</li>
+     * <li>form: http://localhost:8021/form/7</li>
+     * <li>formElementGroups: http://localhost:8021/form/7/formElementGroups</li>
+     * <li>createdBy: http://localhost:8021/user/1</li>
+     * <li>lastModifiedBy: http://localhost:8021/user/1</li>
      * </ol>
      */
     @CrossOrigin
@@ -312,16 +311,17 @@ public class FormController {
      * Retrieves all forms grouped by program
      * Response looks like below
      * [{
-     *     program: {
-     *
-     *     }
-     *     forms: [
-     *
-     *     ]
+     * program: {
+     * <p>
+     * }
+     * forms: [
+     * <p>
+     * ]
      * },
      * {...},
      * {...}
      * ]
+     *
      * @param pageable
      * @return list of program/forms
      */
