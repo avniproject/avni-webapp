@@ -1,6 +1,5 @@
 package org.openchs.application;
 
-import org.openchs.domain.CHSEntity;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
@@ -8,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
