@@ -2,12 +2,10 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.openchs.application.KeyType;
 import org.openchs.application.KeyValues;
-import org.openchs.application.ValueType;
 import org.openchs.web.request.ConceptContract;
-import org.openchs.web.validation.ValidationResult;
 import org.openchs.web.request.ReferenceDataContract;
+import org.openchs.web.validation.ValidationResult;
 import org.springframework.util.StringUtils;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -69,17 +67,14 @@ public class FormElementContract extends ReferenceDataContract {
             return ValidationResult.Failure("One and only one of conceptUUID or concept can be provided");
         }
 
-        if (concept != null && concept.isCoded() && keyValuesAreInvalid())
+        if (concept != null && concept.isCoded() && !typeSpecified())
             return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
 
         return ValidationResult.Success;
     }
 
-    private boolean keyValuesAreInvalid() {
-        return keyValues == null
-                || keyValues.isEmpty()
-                || !keyValues.containsKey(KeyType.Select)
-                || !keyValues.containsOneOfTheValues(KeyType.Select, ValueType.getSelectValueTypes());
+    private boolean typeSpecified() {
+        return type != null;
     }
 
     private boolean canIdentifyConceptUniquely() {
