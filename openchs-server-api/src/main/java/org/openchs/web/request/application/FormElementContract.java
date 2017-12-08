@@ -67,8 +67,8 @@ public class FormElementContract extends ReferenceDataContract {
             return ValidationResult.Failure("One and only one of conceptUUID or concept can be provided");
         }
 
-//        if (concept != null && concept.isCoded() )
-//            return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
+        if (concept != null && concept.isCoded() && !typeSpecified())
+            return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
 
         return ValidationResult.Success;
     }
