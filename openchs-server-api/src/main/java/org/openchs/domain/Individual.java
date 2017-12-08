@@ -12,7 +12,10 @@ import java.util.Set;
 @Table(name = "individual")
 public class Individual extends OrganisationAwareEntity {
     @NotNull
-    private String name;
+    private String firstName;
+
+    @NotNull
+    private String lastName;
 
     @NotNull
     private LocalDate dateOfBirth;
@@ -41,14 +44,6 @@ public class Individual extends OrganisationAwareEntity {
     @Column
     @Type(type = "observations")
     private ObservationCollection observations;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
@@ -114,9 +109,10 @@ public class Individual extends OrganisationAwareEntity {
         this.registrationDate = registrationDate;
     }
 
-    public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
+    public static Individual create(String firstName, String lastName, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
         Individual individual = new Individual();
-        individual.name = name;
+        individual.firstName = firstName;
+        individual.lastName = lastName;
         individual.dateOfBirth = dateOfBirth;
         individual.dateOfBirthVerified = dateOfBirthVerified;
         individual.gender = gender;
@@ -127,5 +123,21 @@ public class Individual extends OrganisationAwareEntity {
 
     public void addEnrolment(ProgramEnrolment programEnrolment) {
         this.programEnrolments.add(programEnrolment);
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

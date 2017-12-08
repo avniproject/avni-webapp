@@ -77,8 +77,10 @@ public class RowProcessor {
         individualRequest.setObservations(new ArrayList<ObservationRequest>());
         for (int i = 1; i < registrationHeader.size() + 1; i++) {
             String cellHeader = registrationHeader.get(i - 1);
-            if (cellHeader.equals("Name")) {
-                individualRequest.setName(ExcelUtil.getText(row, i));
+            if (cellHeader.equals("First Name")) {
+                individualRequest.setFirstName(ExcelUtil.getText(row, i));
+            } else if (cellHeader.equals("Last Name")) {
+                individualRequest.setLastName(ExcelUtil.getText(row, i));
             } else if (cellHeader.equals("Date of Birth")) {
                 individualRequest.setDateOfBirth(new LocalDate(ExcelUtil.getDate(row, i)));
             } else if (cellHeader.equals("Date of Birth Verified")) {
