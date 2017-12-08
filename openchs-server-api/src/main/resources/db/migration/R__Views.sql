@@ -19,7 +19,7 @@ CREATE OR REPLACE VIEW mother_program_enrolments AS
     count(program_encounter)                                                          number_of_visits,
     sum(is_overdue_visit(program_encounter))                                          number_of_overdue_visits
   FROM program_enrolment
-    INNER JOIN program p on program_enrolment.program_id = p.id and p.name='Mother'
+    INNER JOIN program p ON program_enrolment.program_id = p.id AND p.name = 'Mother'
     INNER JOIN individual ON program_enrolment.individual_id = individual.id
     INNER JOIN address_level ON address_level.id = individual.address_id
     INNER JOIN catchment_address_mapping ON catchment_address_mapping.addresslevel_id = address_level.id
@@ -40,8 +40,10 @@ CREATE OR REPLACE VIEW mother_program_encounters AS
     to_char(date_obs(program_enrolment, 'Last Menstrual Period'), 'DD-Mon-YYYY')      LMP,
     to_char(date_obs(program_enrolment, 'Estimated Date of Delivery'), 'DD-Mon-YYYY') EDD,
     program_encounter.id                                                              visit,
-    program_encounter.scheduled_date_time                                             internal_scheduled_visit_date,
-    to_char(program_encounter.scheduled_date_time, 'DD-Mon-YYYY')                     scheduled_visit_date,
+    program_encounter.earliest_visit_date_time                                        internal_earliest_visit_date,
+    to_char(program_encounter.earliest_visit_date_time, 'DD-Mon-YYYY')                earliest_visit_date,
+    program_encounter.max_visit_date_time                                             internal_max_visit_date,
+    to_char(program_encounter.max_visit_date_time, 'DD-Mon-YYYY')                     max_visit_date,
     encounter_type.id                                                                 visit_type,
     program_encounter.name                                                            visit_name,
     program_encounter.encounter_date_time                                             internal_visit_date,
@@ -51,7 +53,7 @@ CREATE OR REPLACE VIEW mother_program_encounters AS
     catchment.id                                                                      catchment
   FROM program_encounter
     INNER JOIN program_enrolment ON program_encounter.program_enrolment_id = program_enrolment.id
-    INNER JOIN program p on program_enrolment.program_id = p.id and p.name='Mother'
+    INNER JOIN program p ON program_enrolment.program_id = p.id AND p.name = 'Mother'
     INNER JOIN encounter_type ON program_encounter.encounter_type_id = encounter_type.id
     INNER JOIN individual ON program_enrolment.individual_id = individual.id
     INNER JOIN address_level ON address_level.id = individual.address_id

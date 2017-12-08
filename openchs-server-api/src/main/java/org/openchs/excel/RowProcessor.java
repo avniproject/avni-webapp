@@ -192,8 +192,8 @@ public class RowProcessor {
                 programEncounterRequest.setEncounterType(ExcelUtil.getText(row, i));
             } else if (cellHeader.equals("Visit Name")) {
                 programEncounterRequest.setName(ExcelUtil.getText(row, i));
-            } else if (cellHeader.equals("Scheduled Date")) {
-                programEncounterRequest.setScheduledDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+            } else if (cellHeader.equals("Earliest Date")) {
+                programEncounterRequest.setEarliestVisitDateTime(new DateTime(ExcelUtil.getDate(row, i)));
             } else if (cellHeader.equals("Actual Date")) {
                 programEncounterRequest.setEncounterDateTime(new DateTime(ExcelUtil.getDate(row, i)));
             } else if (cellHeader.equals("Max Date")) {

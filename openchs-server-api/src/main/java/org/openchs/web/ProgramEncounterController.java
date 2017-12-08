@@ -40,8 +40,8 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         encounter.setEncounterType(encounterType);
         encounter.setObservations(observationService.createObservations(request.getObservations()));
         encounter.setName(request.getName());
-        encounter.setScheduledDateTime(request.getScheduledDateTime());
-        encounter.setMaxDateTime(request.getMaxDateTime());
+        encounter.setEarliestVisitDateTime(request.getEarliestVisitDateTime());
+        encounter.setMaxVisitDateTime(request.getMaxDateTime());
 
         programEncounterRepository.save(encounter);
     }

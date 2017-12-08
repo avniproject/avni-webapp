@@ -21,10 +21,10 @@ public class ProgramEncounter extends OrganisationAwareEntity {
     private DateTime encounterDateTime;
 
     @Column
-    private DateTime scheduledDateTime;
+    private DateTime earliestVisitDateTime;
 
     @Column
-    private DateTime maxDateTime;
+    private DateTime maxVisitDateTime;
 
     @Column
     @Type(type = "observations")
@@ -51,14 +51,6 @@ public class ProgramEncounter extends OrganisationAwareEntity {
         this.encounterDateTime = encounterDateTime;
     }
 
-    public DateTime getScheduledDateTime() {
-        return scheduledDateTime;
-    }
-
-    public void setScheduledDateTime(DateTime scheduledDateTime) {
-        this.scheduledDateTime = scheduledDateTime;
-    }
-
     public ProgramEnrolment getProgramEnrolment() {
         return programEnrolment;
     }
@@ -83,11 +75,19 @@ public class ProgramEncounter extends OrganisationAwareEntity {
         this.name = name;
     }
 
-    public DateTime getMaxDateTime() {
-        return maxDateTime;
+    public DateTime getEarliestVisitDateTime() {
+        return earliestVisitDateTime;
     }
 
-    public void setMaxDateTime(DateTime maxDateTime) {
-        this.maxDateTime = maxDateTime;
+    public void setEarliestVisitDateTime(DateTime earliestVisitDateTime) {
+        this.earliestVisitDateTime = earliestVisitDateTime;
+    }
+
+    public DateTime getMaxVisitDateTime() {
+        return maxVisitDateTime;
+    }
+
+    public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
+        this.maxVisitDateTime = maxVisitDateTime;
     }
 }

@@ -66,9 +66,9 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION is_overdue_visit(program_encounter)
   RETURNS NUMERIC AS $$
 BEGIN
-  IF $1.scheduled_date_time IS NULL THEN
+  IF $1.earliest_visit_date_time IS NULL THEN
     RETURN 0;
-  ELSEIF $1.scheduled_date_time > current_timestamp AND $1.encounter_date_time IS NULL THEN
+  ELSEIF $1.earliest_visit_date_time > current_timestamp AND $1.encounter_date_time IS NULL THEN
     RETURN 1;
   ELSE
     RETURN 0;

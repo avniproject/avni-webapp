@@ -7,8 +7,9 @@ import org.joda.time.DateTime;
 public class ProgramEncounterRequest extends AbstractEncounterRequest {
     private String programEnrolmentUUID;
     private String name;
-    private DateTime scheduledDateTime;
     private DateTime maxDateTime;
+    private DateTime earliestVisitDateTime;
+    private DateTime maxVisitDateTime;
 
     public String getProgramEnrolmentUUID() {
         return programEnrolmentUUID;
@@ -26,19 +27,27 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
         this.name = name;
     }
 
-    public DateTime getScheduledDateTime() {
-        return scheduledDateTime;
-    }
-
-    public void setScheduledDateTime(DateTime scheduledDateTime) {
-        this.scheduledDateTime = scheduledDateTime;
-    }
-
     public DateTime getMaxDateTime() {
         return maxDateTime;
     }
 
     public void setMaxDateTime(DateTime maxDateTime) {
         this.maxDateTime = maxDateTime;
+    }
+
+    public DateTime getEarliestVisitDateTime() {
+        return earliestVisitDateTime;
+    }
+
+    public void setEarliestVisitDateTime(DateTime earliestVisitDateTime) {
+        this.earliestVisitDateTime = earliestVisitDateTime;
+    }
+
+    public DateTime getMaxVisitDateTime() {
+        return maxVisitDateTime;
+    }
+
+    public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
+        this.maxVisitDateTime = maxVisitDateTime;
     }
 }
