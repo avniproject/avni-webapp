@@ -1,6 +1,7 @@
 package org.openchs.excel;
 
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openchs.dao.ConceptRepository;
@@ -44,23 +45,37 @@ public class ExcelImporter implements Importer {
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public void rowImport(Row row, ContentType contentType, RowProcessor rowProcessor, String programName, HealthModuleInvokerFactory healthModuleInvokerFactory) throws ParseException {
-        if (contentType == ContentType.RegistrationHeader) {
-            rowProcessor.readRegistrationHeader(row);
-        } else if (contentType == ContentType.Registration) {
-            rowProcessor.processIndividual(row);
-        } else if (contentType == ContentType.EnrolmentHeader) {
-            rowProcessor.readEnrolmentHeader(row);
-        } else if (contentType == ContentType.Enrolment) {
-            rowProcessor.processEnrolment(row, programName, healthModuleInvokerFactory.getProgramEnrolmentInvoker());
-        } else if (contentType == ContentType.ProgramEncounterHeader) {
-            rowProcessor.readProgramEncounterHeader(row);
-        } else if (contentType == ContentType.ProgramEncounter) {
-            rowProcessor.processProgramEncounter(row);
-        } else if (contentType == ContentType.ChecklistHeader) {
-            rowProcessor.readChecklistHeader(row);
-        } else if (contentType == ContentType.Checklist) {
-            rowProcessor.processChecklist(row);
+    public void rowImport(Row row, SheetMetaData sheetMetaData, RowProcessor rowProcessor, HealthModuleInvokerFactory healthModuleInvokerFactory) throws ParseException {
+        switch (sheetMetaData.getImportedEntity()) {
+            case Individual:
+                rowProcessor.processIndividual(row);
+                break;
+            case Enrolment:
+                rowProcessor.processEnrolment(row, sheetMetaData, healthModuleInvokerFactory.getProgramEnrolmentInvoker());
+                break;
+            case Visit:
+                rowProcessor.processProgramEncounter(row, sheetMetaData);
+                break;
+            case Checklist:
+                rowProcessor.processChecklist(row, sheetMetaData);
+                break;
+        }
+    }
+
+    private void processHeader(SheetMetaData sheetMetaData, Row row, RowProcessor rowProcessor) {
+        switch (sheetMetaData.getImportedEntity()) {
+            case Individual:
+                rowProcessor.readRegistrationHeader(row);
+                break;
+            case Enrolment:
+                rowProcessor.readEnrolmentHeader(row, sheetMetaData);
+                break;
+            case Visit:
+                rowProcessor.readProgramEncounterHeader(row, sheetMetaData);
+                break;
+            case Checklist:
+                rowProcessor.readChecklistHeader(row, sheetMetaData);
+                break;
         }
     }
 
@@ -72,29 +87,32 @@ public class ExcelImporter implements Importer {
         try {
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 XSSFSheet sheet = workbook.getSheetAt(i);
-                ContentTypeSequence contentTypeSequence = new ContentTypeSequence();
-
-                logger.info("READING SHEET: ", sheet.getSheetName());
+                logger.info(String.format("READING SHEET: %s", sheet.getSheetName()));
                 RowProcessor rowProcessor = new RowProcessor(individualController, programEnrolmentController, programEncounterController, individualRepository, checklistController, checklistItemController, checklistService, conceptRepository);
+                XSSFRow firstRow = sheet.getRow(0);
+                SheetMetaData sheetMetaData = new SheetMetaData(firstRow);
                 Iterator<Row> iterator = sheet.iterator();
-                ContentType contentType = null;
-                String programName = sheet.getSheetName();
+                int k = 0;
                 while (iterator.hasNext()) {
+                    k++;
                     Row row = iterator.next();
-                    String firstCellTextInGroup = ExcelUtil.getText(row, 0);
-                    contentType = contentTypeSequence.getNextType(contentType, firstCellTextInGroup);
-                    this.rowImport(row, contentType, rowProcessor, programName, healthModuleInvokerFactory);
+                    if (k == 1) {
+                        continue;
+                    } if (k == 2) {
+                        processHeader(sheetMetaData, row, rowProcessor);
+                        continue;
+                    }
+                    this.rowImport(row, sheetMetaData, rowProcessor, healthModuleInvokerFactory);
                 }
                 logger.info("COMPLETED SHEET: ", sheet.getSheetName());
             }
         } catch (Exception error) {
-            returnValue = false;
             logger.error(error.getMessage(), error);
             throw error;
         } finally {
             workbook.close();
             inputStream.close();
-            return returnValue;
         }
+        return returnValue;
     }
 }

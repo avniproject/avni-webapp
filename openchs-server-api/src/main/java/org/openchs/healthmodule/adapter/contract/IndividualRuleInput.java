@@ -21,4 +21,6 @@ public class IndividualRuleInput {
     public int getAgeInYears(Object o) {
         return today.getYear() - dateOfBirth.getYear();
     }
+
+
 }
