@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.KeyValues;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ReferenceDataContract;
+import org.openchs.web.request.FormatContract;
 import org.openchs.web.validation.ValidationResult;
 import org.springframework.util.StringUtils;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "conceptUUID", "concept", "displayOrder"})
+@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "conceptUUID", "concept", "displayOrder", "type"})
 public class FormElementContract extends ReferenceDataContract {
     private boolean isMandatory;
     private KeyValues keyValues;
@@ -17,17 +18,19 @@ public class FormElementContract extends ReferenceDataContract {
     private ConceptContract concept;
     private short displayOrder;
     private String type;
+    private FormatContract validFormat;
 
     public FormElementContract() {
     }
 
-    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, String conceptName, ConceptContract concept, String type) {
+    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, String conceptName, ConceptContract concept, String type, FormatContract validFormat) {
         super(uuid, userUUID, name);
         this.isMandatory = isMandatory;
         this.keyValues = keyValues;
         this.conceptUUID = conceptName;
         this.concept = concept;
         this.type = type;
+        this.validFormat = validFormat;
     }
 
     public boolean isMandatory() {
@@ -104,5 +107,13 @@ public class FormElementContract extends ReferenceDataContract {
                 "isMandatory=" + isMandatory +
                 ", displayOrder=" + displayOrder +
                 '}';
+    }
+
+    public FormatContract getValidFormat() {
+        return validFormat;
+    }
+
+    public void setValidFormat(FormatContract validFormat) {
+        this.validFormat = validFormat;
     }
 }

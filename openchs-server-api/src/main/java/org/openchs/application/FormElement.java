@@ -42,6 +42,9 @@ public class FormElement extends OrganisationAwareEntity {
     @Column(name = "type", nullable = true)
     private String type;
 
+    @Embedded
+    private Format validFormat;
+
     public String getName() {
         return name;
     }
@@ -116,5 +119,13 @@ public class FormElement extends OrganisationAwareEntity {
 
     public boolean isFormElementNameSameAsConceptName() {
         return getConcept().getName().equals(getName());
+    }
+
+    public Format getValidFormat() {
+        return validFormat;
+    }
+
+    public void setValidFormat(Format validFormat) {
+        this.validFormat = validFormat;
     }
 }

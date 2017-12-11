@@ -10,6 +10,7 @@ import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ConceptContract;
+import org.openchs.web.request.FormatContract;
 import org.openchs.web.request.application.BasicFormDetails;
 import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.application.FormElementContract;
@@ -181,6 +182,11 @@ public class FormController {
         formElement.setKeyValues(formElementRequest.getKeyValues());
         formElement.setConcept(concept);
         formElement.setType(formElementRequest.getType());
+        if(formElementRequest.getValidFormat()!= null){
+            formElement.setValidFormat(new Format(formElementRequest.getValidFormat().getRegex(),
+                    formElementRequest.getValidFormat().getDescriptionKey()));
+        }
+
     }
 
     private Concept getConcept(FormElementContract formElementRequest) {
@@ -245,6 +251,12 @@ public class FormController {
                 formElementContract.setKeyValues(formElement.getKeyValues());
                 formElementContract.setConcept(getConceptContract(formElement.getConcept()));
                 formElementContract.setDisplayOrder(formElement.getDisplayOrder());
+                formElementContract.setType(formElement.getType());
+                if(formElement.getValidFormat()!=null){
+                    formElementContract.setValidFormat(new FormatContract(formElement.getValidFormat().getRegex(),
+                            formElement.getValidFormat().getDescriptionKey()));
+                }
+
 
                 formElementGroupContract.addFormElement(formElementContract);
             });
