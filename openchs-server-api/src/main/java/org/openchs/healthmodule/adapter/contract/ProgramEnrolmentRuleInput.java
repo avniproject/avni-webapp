@@ -21,7 +21,7 @@ public class ProgramEnrolmentRuleInput {
         this.programEnrolmentRequest = programEnrolmentRequest;
         this.conceptRepository = conceptRepository;
         Individual individual = individualRepository.findByUuid(programEnrolmentRequest.getIndividualUUID());
-        this.individual = new IndividualRuleInput(individual.getDateOfBirth(), programEnrolmentRequest.getEnrolmentDateTime());
+        this.individual = new IndividualRuleInput(individual, programEnrolmentRequest.getEnrolmentDateTime().toLocalDate());
         this.program = new ProgramRuleInput(programEnrolmentRequest.getProgram());
     }
 

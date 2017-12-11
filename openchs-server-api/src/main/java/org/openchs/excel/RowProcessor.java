@@ -5,13 +5,11 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.domain.Checklist;
-import org.openchs.domain.ChecklistItem;
-import org.openchs.domain.Concept;
-import org.openchs.domain.ConceptDataType;
+import org.openchs.domain.*;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.ChecklistItemRuleResponse;
 import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
+import org.openchs.healthmodule.adapter.contract.IndividualRuleInput;
 import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
 import org.openchs.service.ChecklistService;
 import org.openchs.util.O;
@@ -67,10 +65,9 @@ public class RowProcessor {
 
     void processIndividual(Row row) throws ParseException {
         IndividualRequest individualRequest = new IndividualRequest();
-        individualRequest.setUuid(ExcelUtil.getText(row, 0));
         individualRequest.setObservations(new ArrayList<>());
-        for (int i = 1; i < registrationHeader.size() + 1; i++) {
-            String cellHeader = registrationHeader.get(i - 1);
+        for (int i = 0; i < registrationHeader.size(); i++) {
+            String cellHeader = registrationHeader.get(i);
             if (cellHeader.equals("First Name")) {
                 individualRequest.setFirstName(ExcelUtil.getText(row, i));
             } else if (cellHeader.equals("Last Name")) {
@@ -85,6 +82,8 @@ public class RowProcessor {
                 individualRequest.setRegistrationDate(new LocalDate(ExcelUtil.getDate(row, i)));
             } else if (cellHeader.equals("Address")) {
                 individualRequest.setAddressLevel(ExcelUtil.getText(row, i));
+            } else if (cellHeader.equals("UUID")) {
+                individualRequest.setUuid(ExcelUtil.getText(row, i));
             } else {
                 individualRequest.addObservation(getObservationRequest(row, i, cellHeader));
             }
@@ -133,12 +132,14 @@ public class RowProcessor {
         programEnrolmentRequest.setProgram(sheetMetaData.getProgramName());
         programEnrolmentRequest.setObservations(new ArrayList<>());
         programEnrolmentRequest.setProgramExitObservations(new ArrayList<>());
-        programEnrolmentRequest.setIndividualUUID(ExcelUtil.getText(row, 0));
-        programEnrolmentRequest.setUuid(ExcelUtil.getText(row, 1));
+
         List<String> enrolmentHeader = enrolmentHeaders.get(sheetMetaData);
-        for (int i = 2; i < enrolmentHeader.size() + 2; i++) {
-            String cellHeader = enrolmentHeader.get(i - 2);
-            if (cellHeader.equals("Enrolment Date")) {
+        for (int i = 0; i < enrolmentHeader.size(); i++) {
+            String cellHeader = enrolmentHeader.get(i);
+            programEnrolmentRequest.setUuid(UUID.randomUUID().toString());
+            if (cellHeader.equals("IndividualUUID"))
+                programEnrolmentRequest.setIndividualUUID(ExcelUtil.getRawCellValue(row, i));
+            else if (cellHeader.equals("Enrolment Date")) {
                 programEnrolmentRequest.setEnrolmentDateTime(new DateTime(ExcelUtil.getDate(row, i)));
             } else {
                 programEnrolmentRequest.addObservation(getObservationRequest(row, i, cellHeader));

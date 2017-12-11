@@ -98,9 +98,15 @@ public class ExcelImporter implements Importer {
                     Row row = iterator.next();
                     if (k == 1) {
                         continue;
-                    } if (k == 2) {
+                    }
+                    if (k == 2) {
                         processHeader(sheetMetaData, row, rowProcessor);
                         continue;
+                    }
+                    String rawCellValue = ExcelUtil.getRawCellValue(row, 0);
+                    if (rawCellValue == null || rawCellValue.isEmpty()) {
+                        logger.info(String.format("Breaking at row number: %d", k));
+                        break;
                     }
                     this.rowImport(row, sheetMetaData, rowProcessor, healthModuleInvokerFactory);
                 }

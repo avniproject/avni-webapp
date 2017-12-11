@@ -2,6 +2,7 @@ package org.openchs.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
@@ -12,6 +13,11 @@ class ExcelUtil {
         if (cell == null) return "";
         String stringCellValue = cell.toString();
         return stringCellValue.trim().replaceAll(" +", " ");
+    }
+
+    static String getRawCellValue(Row row, int cellNum) {
+        Cell cell = row.getCell(cellNum);
+        return ((XSSFCell) cell).getRawValue();
     }
 
     static Date getDate(Row row, int cellNum) {

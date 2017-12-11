@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ProgramDataImportController {
-
     private final Importer importer;
 
     @Autowired
@@ -21,7 +20,7 @@ public class ProgramDataImportController {
         this.importer = importer;
     }
 
-    @RequestMapping(value = "/programData", method = RequestMethod.POST)
+    @RequestMapping(value = "/excelImport", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public ResponseEntity<?> uploadData(@RequestParam("file") MultipartFile uploadedFile) throws Exception {
         return new ResponseEntity<>(importer.importData(uploadedFile.getInputStream()), HttpStatus.CREATED);
