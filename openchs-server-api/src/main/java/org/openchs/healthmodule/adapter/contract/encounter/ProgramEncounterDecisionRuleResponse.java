@@ -1,16 +1,18 @@
-package org.openchs.healthmodule.adapter.contract;
+package org.openchs.healthmodule.adapter.contract.encounter;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.openchs.healthmodule.adapter.contract.DecisionRuleResponse;
+import org.openchs.healthmodule.adapter.contract.RuleResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramEnrolmentDecisionRuleResponse extends RuleResponse {
+public class ProgramEncounterDecisionRuleResponse extends RuleResponse {
     private List<DecisionRuleResponse> decisionRuleResponses = new ArrayList<>();
 
-    public ProgramEnrolmentDecisionRuleResponse(ScriptObjectMirror scriptObjectMirror) {
+    public ProgramEncounterDecisionRuleResponse(ScriptObjectMirror scriptObjectMirror) {
         super(scriptObjectMirror);
-        ScriptObjectMirror enrolmentDecisions = (ScriptObjectMirror) scriptObjectMirror.get("enrolmentDecisions");
+        ScriptObjectMirror enrolmentDecisions = (ScriptObjectMirror) scriptObjectMirror.get("encounterDecisions");
         addToList(enrolmentDecisions, this.decisionRuleResponses, object -> new DecisionRuleResponse((ScriptObjectMirror) object));
     }
 

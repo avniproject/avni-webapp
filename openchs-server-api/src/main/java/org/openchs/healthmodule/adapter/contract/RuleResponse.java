@@ -1,6 +1,7 @@
 package org.openchs.healthmodule.adapter.contract;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.joda.time.DateTime;
 import org.openchs.util.O;
 
 import java.util.ArrayList;
@@ -24,8 +25,12 @@ public class RuleResponse {
         return new Date((long) timestampLocalTime);
     }
 
-    protected Date getDate(String name) {
-        return getDate(scriptObjectMirror, name);
+    protected Date getDate(String propertyName) {
+        return getDate(scriptObjectMirror, propertyName);
+    }
+
+    protected DateTime getDateTime(String propertyName) {
+        return new DateTime(getDate(propertyName));
     }
 
     protected String getDateAsString(String name) {
@@ -74,7 +79,11 @@ public class RuleResponse {
         return this.isList(scriptObjectMirror, name);
     }
 
-    interface ObjectCreator {
+    protected String getString(String name) {
+        return (String) scriptObjectMirror.get(name);
+    }
+
+    public interface ObjectCreator {
         Object create(Object object);
     }
 }

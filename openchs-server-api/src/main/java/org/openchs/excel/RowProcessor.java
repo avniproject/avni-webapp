@@ -7,10 +7,9 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.*;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
-import org.openchs.healthmodule.adapter.contract.ChecklistItemRuleResponse;
-import org.openchs.healthmodule.adapter.contract.ChecklistRuleResponse;
-import org.openchs.healthmodule.adapter.contract.IndividualRuleInput;
-import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
+import org.openchs.healthmodule.adapter.contract.checklist.ChecklistItemRuleResponse;
+import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
+import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentRuleInput;
 import org.openchs.service.ChecklistService;
 import org.openchs.util.O;
 import org.openchs.web.*;
@@ -155,27 +154,16 @@ public class RowProcessor {
 
         ChecklistRuleResponse checklistRuleResponse = programEnrolmentModuleInvoker.getChecklist(programEnrolmentRuleInput);
         if (checklistRuleResponse != null) {
-            ChecklistRequest checklistRequest = new ChecklistRequest();
-            checklistRequest.setUuid(checklist == null ? UUID.randomUUID().toString() : checklist.getUuid());
-            checklistRequest.setBaseDate(checklistRuleResponse.getBaseDate());
-            checklistRequest.setName(checklistRuleResponse.getName());
+            ChecklistRequest checklistRequest = checklistRuleResponse.getChecklistRequest();
             checklistRequest.setProgramEnrolmentUUID(programEnrolmentRequest.getUuid());
+            checklistRequest.setUuid(checklist == null ? UUID.randomUUID().toString() : checklist.getUuid());
             checklistController.save(checklistRequest);
 
-            List<ChecklistItemRuleResponse> items = checklistRuleResponse.getItems();
-            for (ChecklistItemRuleResponse checklistItemRuleResponse : items) {
-                ChecklistItem checklistItem = checklistService.findChecklistItem(programEnrolmentRequest.getUuid(), checklistItemRuleResponse.getName());
-                ChecklistItemRequest checklistItemRequest = new ChecklistItemRequest();
-                checklistItemRequest.setUuid(checklistItem == null ? UUID.randomUUID().toString() : checklistItem.getUuid());
+            List<ChecklistItemRequest> items = checklistRuleResponse.getItems(checklistService, programEnrolmentRequest.getUuid(), conceptRepository);
+            items.forEach(checklistItemRequest -> {
                 checklistItemRequest.setChecklistUUID(checklistRequest.getUuid());
-                checklistItemRequest.setDueDate(new DateTime(checklistItemRuleResponse.getDueDate()));
-                checklistItemRequest.setMaxDate(new DateTime(checklistItemRuleResponse.getMaxDate()));
-                Concept concept = conceptRepository.findByName(checklistItemRuleResponse.getName());
-                if (concept == null)
-                    throw new RuntimeException(String.format("Couldn't find concept with name=%s in checklist being created from the rule", checklistItemRuleResponse.getName()));
-                checklistItemRequest.setConceptUUID(concept.getUuid());
                 checklistItemController.save(checklistItemRequest);
-            }
+            });
         }
         this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }

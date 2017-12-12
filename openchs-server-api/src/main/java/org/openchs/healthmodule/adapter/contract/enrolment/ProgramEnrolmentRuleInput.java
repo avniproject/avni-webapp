@@ -1,9 +1,11 @@
-package org.openchs.healthmodule.adapter.contract;
+package org.openchs.healthmodule.adapter.contract.enrolment;
 
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.Individual;
+import org.openchs.healthmodule.adapter.contract.IndividualRuleInput;
+import org.openchs.healthmodule.adapter.contract.ProgramRuleInput;
 import org.openchs.util.O;
 import org.openchs.web.request.ObservationRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
@@ -56,5 +58,9 @@ public class ProgramEnrolmentRuleInput {
 
     public Object getObservationValue(String conceptName) {
         return this.getObservationValueFromEntireEnrolment(conceptName, null);
+    }
+
+    public ProgramEnrolmentRequest getProgramEnrolmentRequest() {
+        return programEnrolmentRequest;
     }
 }

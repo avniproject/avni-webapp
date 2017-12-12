@@ -3,8 +3,8 @@ package org.openchs.healthmodule.adapter;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.healthmodule.adapter.contract.DecisionRuleResponse;
-import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentDecisionRuleResponse;
-import org.openchs.healthmodule.adapter.contract.ProgramEnrolmentRuleInput;
+import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentDecisionRuleResponse;
+import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentRuleInput;
 import org.openchs.web.request.ObservationRequest;
 
 import javax.script.ScriptEngine;
