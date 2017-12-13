@@ -12,11 +12,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 public class SetOrganisationJdbcInterceptor extends JdbcInterceptor {
 
     @Override
     public void reset(ConnectionPool connectionPool, PooledConnection pooledConnection) {
         UserContext userContext = UserContextHolder.getUserContext();
+        if (userContext == null) {
+            return;
+        }
         Organisation organisation = userContext.getOrganisation();
         if (organisation == null) return;
 
