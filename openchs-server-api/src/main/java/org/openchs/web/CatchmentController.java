@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,7 +52,7 @@ public class CatchmentController {
 
             Catchment catchment = catchmentRepository.findByUuid(catchmentRequest.getUuid());
             if (catchment == null) {
-                logger.info(String.format("Creating catchment"));
+                logger.info("Creating catchment");
                 catchment = createCatchment(catchmentRequest);
             }
             catchment.setName(catchmentRequest.getName());
@@ -81,7 +80,7 @@ public class CatchmentController {
             }
             addressLevel.setTitle(addressLevelRequest.getName());
             addressLevel.setLevel(addressLevelRequest.getLevel());
-            addressLevel.setAttributes(addressLevelRequest.getAttributes());
+            addressLevel.setType(addressLevelRequest.getType());
             addressLevelRepository.save(addressLevel);
         }
     }

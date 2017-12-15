@@ -1,10 +1,9 @@
 package org.openchs.web.request;
 
-import org.openchs.application.KeyValues;
 
 public class AddressLevelContract extends ReferenceDataContract {
     private Integer level;
-    private KeyValues attributes;
+    private String type;
 
     public Integer getLevel() {
         return level;
@@ -14,11 +13,11 @@ public class AddressLevelContract extends ReferenceDataContract {
         this.level = level;
     }
 
-    public KeyValues getAttributes() {
-        return attributes;
+    public String getType() {
+        return type;
     }
 
-    public void setAttributes(KeyValues attributes) {
-        this.attributes = attributes;
+    public void setType(String type) {
+        this.type = type;
     }
 }

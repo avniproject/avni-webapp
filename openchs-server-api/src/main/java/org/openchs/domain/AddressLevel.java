@@ -19,9 +19,8 @@ public class AddressLevel extends OrganisationAwareEntity {
     @NotNull
     private int level;
 
-    @Column(name = "attributes")
-    @Type(type = "keyValues")
-    private KeyValues attributes;
+    @Column(name = "type", nullable = true)
+    private String type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -63,6 +62,13 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.catchments = catchments;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public void addCatchment(Catchment catchment) {
         catchments.add(catchment);
@@ -70,13 +76,5 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     public void removeCatchment(Catchment catchment) {
         catchments.remove(catchment);
-    }
-
-    public KeyValues getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(KeyValues attributes) {
-        this.attributes = attributes;
     }
 }
