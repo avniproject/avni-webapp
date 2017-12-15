@@ -3,6 +3,7 @@ package org.openchs.web.request;
 import java.util.List;
 
 public class CatchmentContract extends ReferenceDataContract {
+    private String type;
 
     private List<AddressLevelContract> addressLevels;
 
@@ -12,6 +13,14 @@ public class CatchmentContract extends ReferenceDataContract {
 
     public void setAddressLevels(List<AddressLevelContract> addressLevels) {
         this.addressLevels = addressLevels;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

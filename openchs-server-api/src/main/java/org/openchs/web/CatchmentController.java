@@ -57,13 +57,14 @@ public class CatchmentController {
                 catchment = createCatchment(catchmentRequest);
             }
             catchment.setName(catchmentRequest.getName());
-
+            catchment.setType(catchmentRequest.getType());
             if (catchment.getAddressLevels() == null) {
                 catchment.setAddressLevels(new HashSet<>());
             }
             addOrUpdateAddressLevels(catchmentRequest, catchment);
             removeObsoleteAddressLevelsFromCatchment(catchment, catchmentRequest);
             catchment.setOrganisationId(organisation.getId());
+
             catchmentRepository.save(catchment);
         }
     }
