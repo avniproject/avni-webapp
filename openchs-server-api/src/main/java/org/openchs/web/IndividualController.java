@@ -8,7 +8,7 @@ import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
-import org.openchs.web.request.ObservationService;
+import org.openchs.service.ObservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;

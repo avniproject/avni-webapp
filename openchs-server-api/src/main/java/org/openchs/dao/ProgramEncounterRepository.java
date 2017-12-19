@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter")
@@ -25,4 +26,5 @@ public interface ProgramEncounterRepository extends PagingAndSortingRepository<P
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")
     Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelCatchmentsIdAndLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("catchmentId") long catchmentId, @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
+    List<ProgramEncounter> findByProgramEnrolmentUuid(String enrolmentUUID);
 }

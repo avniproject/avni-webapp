@@ -8,7 +8,7 @@ import org.openchs.domain.Individual;
 import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.domain.ProgramOutcome;
-import org.openchs.web.request.ObservationService;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

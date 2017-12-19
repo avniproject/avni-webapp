@@ -6,9 +6,11 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
 import org.openchs.importer.Importer;
 import org.openchs.service.ChecklistService;
+import org.openchs.service.ObservationService;
 import org.openchs.web.*;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,12 @@ public class ExcelImporter implements Importer {
     private ChecklistItemController checklistItemController;
     private ConceptRepository conceptRepository;
     private ChecklistService checklistService;
+    private ProgramEncounterRepository programEncounterRepository;
+    private ObservationService observationService;
     private final org.slf4j.Logger logger;
 
     @Autowired
-    public ExcelImporter(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ConceptRepository conceptRepository, ChecklistService checklistService) {
+    public ExcelImporter(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ConceptRepository conceptRepository, ChecklistService checklistService, ProgramEncounterRepository programEncounterRepository, ObservationService observationService) {
         this.individualController = individualController;
         this.programEnrolmentController = programEnrolmentController;
         this.programEncounterController = programEncounterController;
@@ -41,6 +45,8 @@ public class ExcelImporter implements Importer {
         this.checklistItemController = checklistItemController;
         this.conceptRepository = conceptRepository;
         this.checklistService = checklistService;
+        this.programEncounterRepository = programEncounterRepository;
+        this.observationService = observationService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -88,7 +94,7 @@ public class ExcelImporter implements Importer {
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 XSSFSheet sheet = workbook.getSheetAt(i);
                 logger.info(String.format("READING SHEET: %s", sheet.getSheetName()));
-                RowProcessor rowProcessor = new RowProcessor(individualController, programEnrolmentController, programEncounterController, individualRepository, checklistController, checklistItemController, checklistService, conceptRepository);
+                RowProcessor rowProcessor = new RowProcessor(individualController, programEnrolmentController, programEncounterController, individualRepository, checklistController, checklistItemController, checklistService, conceptRepository, programEncounterRepository, observationService);
                 XSSFRow firstRow = sheet.getRow(0);
                 SheetMetaData sheetMetaData = new SheetMetaData(firstRow);
                 Iterator<Row> iterator = sheet.iterator();

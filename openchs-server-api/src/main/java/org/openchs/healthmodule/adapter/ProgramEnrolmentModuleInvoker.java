@@ -28,8 +28,8 @@ public class ProgramEnrolmentModuleInvoker extends HealthModuleInvoker {
         return getObservationRequests(conceptRepository, decisionRuleResponses);
     }
 
-    private ScriptObjectMirror executeRule(ProgramEnrolmentRuleInput programEnrolmentRuleInput, String getDecisions) {
-        return (ScriptObjectMirror) this.invoke(getDecisions, programEnrolmentRuleInput, programEnrolmentRuleInput.getProgramEnrolmentRequest().getEnrolmentDateTime().toDate());
+    private ScriptObjectMirror executeRule(ProgramEnrolmentRuleInput programEnrolmentRuleInput, String functionName) {
+        return (ScriptObjectMirror) this.invoke(functionName, programEnrolmentRuleInput, programEnrolmentRuleInput.getProgramEnrolmentRequest().getEnrolmentDateTime().toDate());
     }
 
     public List<ProgramEncounterRequest> getNextScheduledVisits(ProgramEnrolmentRuleInput programEnrolmentRuleInput) {
@@ -46,5 +46,11 @@ public class ProgramEnrolmentModuleInvoker extends HealthModuleInvoker {
             return null;
     }
 
-//    public ValidationsRuleResponse
+    public ValidationsRuleResponse validate(ProgramEnrolmentRuleInput programEnrolmentRuleInput) {
+        ScriptObjectMirror validationResults = executeRule(programEnrolmentRuleInput, "validate");
+        if (validationResults.containsKey("0")) {
+            return new ValidationsRuleResponse((ScriptObjectMirror) validationResults.get("0"));
+        } else
+            return null;
+    }
 }

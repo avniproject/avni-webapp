@@ -2,7 +2,7 @@ package org.openchs.web;
 
 import org.openchs.dao.*;
 import org.openchs.domain.*;
-import org.openchs.web.request.ObservationService;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

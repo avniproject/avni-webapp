@@ -1,11 +1,10 @@
 package org.openchs.domain;
 
+import org.openchs.util.O;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -136,5 +135,17 @@ public class Concept extends OrganisationAwareEntity {
                 "name='" + name + '\'' +
                 ", dataType='" + dataType + '\'' +
                 '}';
+    }
+
+    public Object getPrimitiveValue(String visibleText) {
+        if (ConceptDataType.Numeric.toString().equals(this.getDataType())) return Double.parseDouble(visibleText);
+        if (ConceptDataType.Date.toString().equals(this.getDataType())) return O.getDateInDbFormat(visibleText);
+        if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
+            Concept answerConcept = this.findAnswerConcept(visibleText);
+            if (answerConcept == null)
+                throw new NullPointerException(String.format("Concept with name |%s| not found", visibleText));
+            return Arrays.asList(answerConcept.getUuid());
+        }
+        return visibleText;
     }
 }

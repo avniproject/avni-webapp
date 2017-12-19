@@ -1,5 +1,6 @@
 package org.openchs.healthmodule.adapter.contract;
 
+import jdk.nashorn.internal.objects.NativeDate;
 import org.joda.time.LocalDate;
 import org.openchs.domain.Individual;
 
@@ -18,7 +19,15 @@ public class IndividualRuleInput {
         return individual.getDateOfBirth().toDate();
     }
 
-    public int getAgeInYears(Object o) {
-        return today.getYear() - this.individual.getDateOfBirth().getYear();
+    public int getAgeInYears(NativeDate date) {
+        return this.getAgeInYears(new LocalDate((long)date.getTime(date)));
+    }
+
+    private int getAgeInYears(LocalDate localDate) {
+        return localDate.getYear() - this.individual.getDateOfBirth().getYear();
+    }
+
+    public int getAgeInYears() {
+        return this.getAgeInYears(this.today);
     }
 }

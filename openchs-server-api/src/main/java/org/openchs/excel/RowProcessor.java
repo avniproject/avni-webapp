@@ -5,12 +5,17 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.domain.*;
+import org.openchs.dao.ProgramEncounterRepository;
+import org.openchs.domain.Checklist;
+import org.openchs.domain.ChecklistItem;
+import org.openchs.domain.Concept;
+import org.openchs.domain.ConceptDataType;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
-import org.openchs.healthmodule.adapter.contract.checklist.ChecklistItemRuleResponse;
 import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
 import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentRuleInput;
+import org.openchs.healthmodule.adapter.contract.validation.ValidationsRuleResponse;
 import org.openchs.service.ChecklistService;
+import org.openchs.service.ObservationService;
 import org.openchs.util.O;
 import org.openchs.web.*;
 import org.openchs.web.request.*;
@@ -36,8 +41,10 @@ public class RowProcessor {
     private ChecklistItemController checklistItemController;
     private ChecklistService checklistService;
     private ConceptRepository conceptRepository;
+    private ProgramEncounterRepository programEncounterRepository;
+    private ObservationService observationService;
 
-    RowProcessor(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ChecklistService checklistService, ConceptRepository conceptRepository) {
+    RowProcessor(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ChecklistService checklistService, ConceptRepository conceptRepository, ProgramEncounterRepository programEncounterRepository, ObservationService observationService) {
         this.individualController = individualController;
         this.programEnrolmentController = programEnrolmentController;
         this.programEncounterController = programEncounterController;
@@ -46,6 +53,8 @@ public class RowProcessor {
         this.checklistItemController = checklistItemController;
         this.checklistService = checklistService;
         this.conceptRepository = conceptRepository;
+        this.programEncounterRepository = programEncounterRepository;
+        this.observationService = observationService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -98,20 +107,12 @@ public class RowProcessor {
         Concept concept = conceptRepository.findByName(cellHeader);
         if (concept == null)
             throw new NullPointerException(String.format("Concept with name |%s| not found", cellHeader));
-        observationRequest.setValue(getPrimitiveValue(concept, cell));
+        observationRequest.setValue(concept.getPrimitiveValue(cell));
         return observationRequest;
     }
 
     public Object getPrimitiveValue(Concept concept, String visibleText) {
-        if (ConceptDataType.Numeric.toString().equals(concept.getDataType())) return Double.parseDouble(visibleText);
-        if (ConceptDataType.Date.toString().equals(concept.getDataType())) return O.getDateInDbFormat(visibleText);
-        if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
-            Concept answerConcept = concept.findAnswerConcept(visibleText);
-            if (answerConcept == null)
-                throw new NullPointerException(String.format("Concept with name |%s| not found", visibleText));
-            return Arrays.asList(answerConcept.getUuid());
-        }
-        return visibleText;
+        return concept.getPrimitiveValue(visibleText);
     }
 
     void readEnrolmentHeader(Row row, SheetMetaData sheetMetaData) {
@@ -145,13 +146,19 @@ public class RowProcessor {
             }
         }
 
-        ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository);
+        ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository, programEncounterRepository, observationService);
+
+        ValidationsRuleResponse validationsRuleResponse = programEnrolmentModuleInvoker.validate(programEnrolmentRuleInput);
+        if (validationsRuleResponse != null && validationsRuleResponse.getValidationResults().size() > 0) {
+            logger.error(validationsRuleResponse.toString());
+            return;
+        }
+
         List<ObservationRequest> observationRequests = programEnrolmentModuleInvoker.getDecisions(programEnrolmentRuleInput, conceptRepository);
         observationRequests.forEach(programEnrolmentRequest::addObservation);
         programEnrolmentController.save(programEnrolmentRequest);
 
         Checklist checklist = checklistService.findChecklist(programEnrolmentRequest.getUuid());
-
         ChecklistRuleResponse checklistRuleResponse = programEnrolmentModuleInvoker.getChecklist(programEnrolmentRuleInput);
         if (checklistRuleResponse != null) {
             ChecklistRequest checklistRequest = checklistRuleResponse.getChecklistRequest();
@@ -165,6 +172,11 @@ public class RowProcessor {
                 checklistItemController.save(checklistItemRequest);
             });
         }
+
+        List<ProgramEncounterRequest> scheduledVisits = programEnrolmentModuleInvoker.getNextScheduledVisits(programEnrolmentRuleInput);
+        scheduledVisits.forEach(programEncounterRequest -> {
+            programEncounterController.save(programEncounterRequest);
+        });
         this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
