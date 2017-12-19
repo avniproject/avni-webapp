@@ -173,7 +173,7 @@ public class RowProcessor {
             });
         }
 
-        List<ProgramEncounterRequest> scheduledVisits = programEnrolmentModuleInvoker.getNextScheduledVisits(programEnrolmentRuleInput);
+        List<ProgramEncounterRequest> scheduledVisits = programEnrolmentModuleInvoker.getNextScheduledVisits(programEnrolmentRuleInput, programEnrolmentRequest.getUuid());
         scheduledVisits.forEach(programEncounterRequest -> {
             programEncounterController.save(programEncounterRequest);
         });

@@ -32,10 +32,10 @@ public class ProgramEnrolmentModuleInvoker extends HealthModuleInvoker {
         return (ScriptObjectMirror) this.invoke(functionName, programEnrolmentRuleInput, programEnrolmentRuleInput.getProgramEnrolmentRequest().getEnrolmentDateTime().toDate());
     }
 
-    public List<ProgramEncounterRequest> getNextScheduledVisits(ProgramEnrolmentRuleInput programEnrolmentRuleInput) {
+    public List<ProgramEncounterRequest> getNextScheduledVisits(ProgramEnrolmentRuleInput programEnrolmentRuleInput, String enrolmentUUID) {
         ScriptObjectMirror nextScheduledVisits = executeRule(programEnrolmentRuleInput, "getNextScheduledVisits");
         ProgramEnrolmentNextScheduledVisitsResponse programEnrolmentNextScheduledVisitsResponse = new ProgramEnrolmentNextScheduledVisitsResponse(nextScheduledVisits);
-        return programEnrolmentNextScheduledVisitsResponse.getProgramEncounterRequests();
+        return programEnrolmentNextScheduledVisitsResponse.getProgramEncounterRequests(enrolmentUUID);
     }
 
     public ChecklistRuleResponse getChecklist(ProgramEnrolmentRuleInput programEnrolmentRuleInput) {

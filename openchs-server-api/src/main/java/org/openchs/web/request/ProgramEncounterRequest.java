@@ -3,6 +3,9 @@ package org.openchs.web.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProgramEncounterRequest extends AbstractEncounterRequest {
     private String programEnrolmentUUID;
@@ -49,5 +52,12 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
 
     public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
         this.maxVisitDateTime = maxVisitDateTime;
+    }
+
+    public static ProgramEncounterRequest createSafeInstance() {
+        ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
+        programEncounterRequest.setUuid(UUID.randomUUID().toString());
+        programEncounterRequest.observations = new ArrayList<>();
+        return programEncounterRequest;
     }
 }

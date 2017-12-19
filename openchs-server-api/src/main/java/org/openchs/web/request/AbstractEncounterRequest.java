@@ -3,7 +3,7 @@ package org.openchs.web.request;
 import java.util.List;
 
 public class AbstractEncounterRequest extends org.openchs.web.request.common.CommonAbstractEncounterRequest {
-    private List<ObservationRequest> observations;
+    protected List<ObservationRequest> observations;
 
     public List<ObservationRequest> getObservations() {
         return observations;

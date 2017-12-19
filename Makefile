@@ -17,6 +17,12 @@ help:
 su:=$(shell id -un)
 
 # <postgres>
+clean_db_server:
+	make _clean_db database=openchs
+	make _clean_db database=openchs_test
+	-psql -h localhost -U $(su) postgres -c 'drop role openchs';
+	-psql -h localhost -U $(su) postgres -c 'drop role demo';
+
 _clean_db:
 	-psql -h localhost -U $(su) postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
 	-psql -h localhost -U $(su) postgres -c 'drop database $(database)';
@@ -25,6 +31,7 @@ _build_db:
 	-psql -h localhost -U $(su) postgres -c "create user $(database) with password 'password'";
 	psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
 	psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
+	-psql -h localhost $(database) -c 'grant demo to openchs';
 # </postgres>
 
 _create_demo_organisation:
@@ -53,7 +60,7 @@ build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
 	make _create_demo_organisation database=openchs_test
 
-rebuild_testdb: clean_testdb deploy_schema build_testdb ## clean + build test db
+rebuild_testdb: clean_testdb build_testdb deploy_schema ## clean + build test db
 # </testdb>
 
 

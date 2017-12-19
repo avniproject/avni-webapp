@@ -17,10 +17,10 @@ public class ProgramEnrolmentNextScheduledVisitsResponse extends RuleResponse {
         addToList(scriptObjectMirror, this.programEnrolmentScheduledVisitRuleResponseList, object -> new ProgramEnrolmentScheduledVisitRuleResponse((ScriptObjectMirror) object));
     }
 
-    public List<ProgramEncounterRequest> getProgramEncounterRequests() {
+    public List<ProgramEncounterRequest> getProgramEncounterRequests(String enrolmentUUID) {
         ArrayList<ProgramEncounterRequest> programEncounterRequests = new ArrayList<>();
         this.programEnrolmentScheduledVisitRuleResponseList.stream().forEach(programEnrolmentScheduledVisitRuleResponse -> {
-            programEncounterRequests.add(programEnrolmentScheduledVisitRuleResponse.getProgramEncounterRequest());
+            programEncounterRequests.add(programEnrolmentScheduledVisitRuleResponse.getProgramEncounterRequest(enrolmentUUID));
         });
         return programEncounterRequests;
     }
@@ -34,13 +34,14 @@ public class ProgramEnrolmentNextScheduledVisitsResponse extends RuleResponse {
         public ProgramEnrolmentScheduledVisitRuleResponse(ScriptObjectMirror scriptObjectMirror) {
             super(scriptObjectMirror);
             this.name = (String) scriptObjectMirror.get("name");
-            this.encounterType = (String) scriptObjectMirror.get("name");
+            this.encounterType = (String) scriptObjectMirror.get("encounterType");
             this.earliestDate = this.getDate("earliestDate");
             this.maxDate = this.getDate("maxDate");
         }
 
-        public ProgramEncounterRequest getProgramEncounterRequest() {
-            ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
+        public ProgramEncounterRequest getProgramEncounterRequest(String enrolmentUUID) {
+            ProgramEncounterRequest programEncounterRequest = ProgramEncounterRequest.createSafeInstance();
+            programEncounterRequest.setProgramEnrolmentUUID(enrolmentUUID);
             programEncounterRequest.setName(name);
             programEncounterRequest.setEncounterType(encounterType);
             programEncounterRequest.setEarliestVisitDateTime(new DateTime(earliestDate));

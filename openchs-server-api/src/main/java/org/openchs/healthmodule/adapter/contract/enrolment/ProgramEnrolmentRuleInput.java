@@ -55,8 +55,8 @@ public class ProgramEnrolmentRuleInput {
         this.program = program;
     }
 
-    // In data migration this will never be called in edit mode
-    public Object getObservationValueFromEntireEnrolment(String conceptName, Object programEncounter) {
+    // In data migration this will never be called in edit mode, so it can assume that there are no encounters
+    public Object getObservationReadableValueInEntireEnrolment(String conceptName, Object programEncounter) {
         return this.getObservationValue(conceptName);
     }
 
