@@ -14,6 +14,11 @@ help:
 # </makefile>
 
 
+define _deploy_schema
+	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ migrate
+endef
+
+
 su:=$(shell id -un)
 
 # <postgres>
@@ -60,13 +65,16 @@ build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
 	make _create_demo_organisation database=openchs_test
 
-rebuild_testdb: clean_testdb build_testdb deploy_schema ## clean + build test db
+rebuild_testdb: clean_testdb build_testdb deploy_test_schema ## clean + build test db
 # </testdb>
 
 
 # <schema>
 deploy_schema: ## Runs all migrations to create the schema with all the objects
-	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=public -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ migrate
+	$(call _deploy_schema,openchs)
+
+deploy_test_schema: ## Runs all migrations to create the schema with all the objects
+	$(call _deploy_schema,openchs_test)
 # </schema>
 
 
@@ -78,7 +86,7 @@ build_server: ## Builds the jar file
 	./gradlew clean build -x test
 
 test_server: rebuild_testdb ## Run tests
-	./gradlew clean test
+	GRADLE_OPTS="-Xmx256m" ./gradlew clean test
 
 start_server_wo_gradle:
 	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar --cognito.clientid=$(client) --cognito.poolid=$(pool)
