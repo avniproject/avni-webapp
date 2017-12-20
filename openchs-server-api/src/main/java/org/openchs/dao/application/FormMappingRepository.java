@@ -12,12 +12,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formMapping", path = "formMapping")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface FormMappingRepository extends PagingAndSortingRepository<FormMapping, Long> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<FormMapping> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
-    FormMapping findByFormUuid(String uuid);
+    List<FormMapping> findByFormUuid(String uuid);
+    FormMapping findByFormUuidAndObservationsTypeEntityId(String uuid, Long observationsTypeEntityId);
     Page<FormMapping> findByEntityId(Long entityId, Pageable pageable);
 }
