@@ -1,37 +1,36 @@
-package org.openchs.healthmodule.adapter.contract.enrolment;
+package org.openchs.healthmodule.adapter.contract;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.joda.time.DateTime;
-import org.openchs.healthmodule.adapter.contract.RuleResponse;
 import org.openchs.web.request.ProgramEncounterRequest;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ProgramEnrolmentNextScheduledVisitsResponse extends RuleResponse {
-    private List<ProgramEnrolmentScheduledVisitRuleResponse> programEnrolmentScheduledVisitRuleResponseList = new ArrayList<>();
+public class ProgramScheduledVisitsResponse extends RuleResponse {
+    private List<ProgramScheduledVisitRuleResponse> programScheduledVisitRuleResponseList = new ArrayList<>();
 
-    public ProgramEnrolmentNextScheduledVisitsResponse(ScriptObjectMirror scriptObjectMirror) {
+    public ProgramScheduledVisitsResponse(ScriptObjectMirror scriptObjectMirror) {
         super(scriptObjectMirror);
-        addToList(scriptObjectMirror, this.programEnrolmentScheduledVisitRuleResponseList, object -> new ProgramEnrolmentScheduledVisitRuleResponse((ScriptObjectMirror) object));
+        addToList(scriptObjectMirror, this.programScheduledVisitRuleResponseList, object -> new ProgramScheduledVisitRuleResponse((ScriptObjectMirror) object));
     }
 
     public List<ProgramEncounterRequest> getProgramEncounterRequests(String enrolmentUUID) {
         ArrayList<ProgramEncounterRequest> programEncounterRequests = new ArrayList<>();
-        this.programEnrolmentScheduledVisitRuleResponseList.stream().forEach(programEnrolmentScheduledVisitRuleResponse -> {
-            programEncounterRequests.add(programEnrolmentScheduledVisitRuleResponse.getProgramEncounterRequest(enrolmentUUID));
+        this.programScheduledVisitRuleResponseList.stream().forEach(programScheduledVisitRuleResponse -> {
+            programEncounterRequests.add(programScheduledVisitRuleResponse.getProgramEncounterRequest(enrolmentUUID));
         });
         return programEncounterRequests;
     }
 
-    public class ProgramEnrolmentScheduledVisitRuleResponse extends RuleResponse {
+    public class ProgramScheduledVisitRuleResponse extends RuleResponse {
         private final String name;
         private final String encounterType;
         private final Date earliestDate;
         private final Date maxDate;
 
-        public ProgramEnrolmentScheduledVisitRuleResponse(ScriptObjectMirror scriptObjectMirror) {
+        public ProgramScheduledVisitRuleResponse(ScriptObjectMirror scriptObjectMirror) {
             super(scriptObjectMirror);
             this.name = (String) scriptObjectMirror.get("name");
             this.encounterType = (String) scriptObjectMirror.get("encounterType");

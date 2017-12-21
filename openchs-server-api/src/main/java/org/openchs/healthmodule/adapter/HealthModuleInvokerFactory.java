@@ -1,6 +1,8 @@
 package org.openchs.healthmodule.adapter;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -8,23 +10,28 @@ import javax.script.ScriptException;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Component
+@Lazy
 public class HealthModuleInvokerFactory {
-    private static ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
     private final ProgramEnrolmentModuleInvoker programEnrolmentInvoker;
+    private final ProgramEncounterRuleInvoker programEncounterInvoker;
 
     private InputStream getInputStreamForRule(String fileName) throws IOException {
         return new ClassPathResource("rules/" + fileName).getInputStream();
     }
 
     public HealthModuleInvokerFactory() throws IOException {
-        this.programEnrolmentInvoker = new ProgramEnrolmentModuleInvoker(engine, getInputStreamForRule("programEnrolmentDecision.js"));
+        ScriptEngine programEnrolmentEngine = new ScriptEngineManager().getEngineByName("nashorn");
+        ScriptEngine programEncounterEngine = new ScriptEngineManager().getEngineByName("nashorn");
+        this.programEnrolmentInvoker = new ProgramEnrolmentModuleInvoker(programEnrolmentEngine, getInputStreamForRule("programEnrolmentDecision.js"));
+        this.programEncounterInvoker = new ProgramEncounterRuleInvoker(programEncounterEngine, getInputStreamForRule("programEncounterDecision.js"));
     }
 
     public ProgramEnrolmentModuleInvoker getProgramEnrolmentInvoker() {
         return programEnrolmentInvoker;
     }
 
-    public Object evalAndReturn(String script) throws ScriptException {
-        return engine.eval(script);
+    public ProgramEncounterRuleInvoker getProgramEncounterInvoker() {
+        return programEncounterInvoker;
     }
 }

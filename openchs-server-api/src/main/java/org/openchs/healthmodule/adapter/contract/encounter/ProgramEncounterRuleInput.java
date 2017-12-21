@@ -1,45 +1,41 @@
 package org.openchs.healthmodule.adapter.contract.encounter;
 
 import org.openchs.dao.ConceptRepository;
-import org.openchs.domain.Concept;
-import org.openchs.domain.ProgramEncounter;
-import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentRuleInput;
+import org.openchs.domain.*;
+import org.openchs.healthmodule.adapter.ObservationsHelper;
 import org.openchs.service.ObservationService;
+import org.openchs.web.request.ProgramEncounterRequest;
 
 import java.util.Date;
 
 public class ProgramEncounterRuleInput {
-    private ProgramEnrolmentRuleInput programEnrolmentRuleInput;
-    private ProgramEncounter programEncounter;
-    private ObservationService observationService;
+    private final ProgramEnrolmentForProgramEncounterRuleInput programEnrolment;
+    private final ConceptRepository conceptRepository;
+    private final ProgramEncounterRequest programEncounterRequest;
 
-    public ProgramEncounterRuleInput(ProgramEnrolmentRuleInput programEnrolmentRuleInput, ProgramEncounter programEncounter, ObservationService observationService) {
-        this.programEnrolmentRuleInput = programEnrolmentRuleInput;
-        this.programEncounter = programEncounter;
-        this.observationService = observationService;
+    public ProgramEncounterRuleInput(ProgramEnrolment programEnrolment, ConceptRepository conceptRepository, ProgramEncounterRequest programEncounterRequest, ObservationService observationService) {
+        this.programEnrolment = new ProgramEnrolmentForProgramEncounterRuleInput(programEnrolment, conceptRepository, observationService);
+        this.conceptRepository = conceptRepository;
+        this.programEncounterRequest = programEncounterRequest;
     }
 
-    public EncounterTypeRuleInput getEncounterType() {
-        return new EncounterTypeRuleInput(programEncounter.getEncounterType());
+    public EncounterType getEncounterType() {
+        return EncounterType.create(programEncounterRequest.getEncounterType());
     }
 
     public String getName() {
-        return programEncounter.getName();
+        return programEncounterRequest.getName();
     }
 
     public Date getEncounterDateTime() {
-        return programEncounter.getEncounterDateTime().toDate();
+        return programEncounterRequest.getEncounterDateTime().toDate();
     }
 
-    public ProgramEnrolmentRuleInput getProgramEnrolment() {
-        return programEnrolmentRuleInput;
+    public ProgramEnrolmentForProgramEncounterRuleInput getProgramEnrolment() {
+        return programEnrolment;
     }
 
     public Object getObservationValue(String conceptName) {
-        return observationService.getObservationValue(conceptName, programEncounter);
-    }
-
-    public ProgramEncounter getUnderlyingEncounter() {
-        return programEncounter;
+        return ObservationsHelper.getObservationValue(conceptName, programEncounterRequest.getObservations(), conceptRepository);
     }
 }

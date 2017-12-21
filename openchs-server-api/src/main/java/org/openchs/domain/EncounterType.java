@@ -29,4 +29,10 @@ public class EncounterType extends OrganisationAwareEntity {
     public void setConcept(Concept concept) {
         this.concept = concept;
     }
+
+    public static EncounterType create(String name) {
+        EncounterType encounterType = new EncounterType();
+        encounterType.setName(name);
+        return encounterType;
+    }
 }

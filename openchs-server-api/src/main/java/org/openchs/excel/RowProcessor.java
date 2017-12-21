@@ -6,26 +6,31 @@ import org.joda.time.LocalDate;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEncounterRepository;
+import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.Concept;
-import org.openchs.domain.ConceptDataType;
+import org.openchs.domain.ProgramEnrolment;
+import org.openchs.healthmodule.adapter.ProgramEncounterRuleInvoker;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
+import org.openchs.healthmodule.adapter.contract.encounter.ProgramEncounterRuleInput;
 import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentRuleInput;
 import org.openchs.healthmodule.adapter.contract.validation.ValidationsRuleResponse;
 import org.openchs.service.ChecklistService;
 import org.openchs.service.ObservationService;
-import org.openchs.util.O;
 import org.openchs.web.*;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistItemRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.*;
 
+@Component
 public class RowProcessor {
     private final Logger logger;
     private List<String> registrationHeader = new ArrayList<>();
@@ -33,28 +38,28 @@ public class RowProcessor {
     private Map<SheetMetaData, List<String>> programEncounterHeaders = new HashMap<>();
     private Map<SheetMetaData, List<String>> checklistHeaders = new HashMap<>();
 
+    @Autowired
     private IndividualController individualController;
+    @Autowired
     private ProgramEnrolmentController programEnrolmentController;
+    @Autowired
     private ProgramEncounterController programEncounterController;
+    @Autowired
     private IndividualRepository individualRepository;
+    @Autowired
     private ChecklistController checklistController;
+    @Autowired
     private ChecklistItemController checklistItemController;
+    @Autowired
     private ChecklistService checklistService;
+    @Autowired
     private ConceptRepository conceptRepository;
-    private ProgramEncounterRepository programEncounterRepository;
+    @Autowired
+    private ProgramEnrolmentRepository programEnrolmentRepository;
+    @Autowired
     private ObservationService observationService;
 
-    RowProcessor(IndividualController individualController, ProgramEnrolmentController programEnrolmentController, ProgramEncounterController programEncounterController, IndividualRepository individualRepository, ChecklistController checklistController, ChecklistItemController checklistItemController, ChecklistService checklistService, ConceptRepository conceptRepository, ProgramEncounterRepository programEncounterRepository, ObservationService observationService) {
-        this.individualController = individualController;
-        this.programEnrolmentController = programEnrolmentController;
-        this.programEncounterController = programEncounterController;
-        this.individualRepository = individualRepository;
-        this.checklistController = checklistController;
-        this.checklistItemController = checklistItemController;
-        this.checklistService = checklistService;
-        this.conceptRepository = conceptRepository;
-        this.programEncounterRepository = programEncounterRepository;
-        this.observationService = observationService;
+    public RowProcessor() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -136,8 +141,9 @@ public class RowProcessor {
         List<String> enrolmentHeader = enrolmentHeaders.get(sheetMetaData);
         for (int i = 0; i < enrolmentHeader.size(); i++) {
             String cellHeader = enrolmentHeader.get(i);
-            programEnrolmentRequest.setUuid(UUID.randomUUID().toString());
-            if (cellHeader.equals("IndividualUUID"))
+            if (cellHeader.equals("UUID")) {
+                programEnrolmentRequest.setUuid(ExcelUtil.getText(row, i));
+            } else if (cellHeader.equals("Individual UUID"))
                 programEnrolmentRequest.setIndividualUUID(ExcelUtil.getRawCellValue(row, i));
             else if (cellHeader.equals("Enrolment Date")) {
                 programEnrolmentRequest.setEnrolmentDateTime(new DateTime(ExcelUtil.getDate(row, i)));
@@ -146,7 +152,7 @@ public class RowProcessor {
             }
         }
 
-        ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository, programEncounterRepository, observationService);
+        ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository);
 
         ValidationsRuleResponse validationsRuleResponse = programEnrolmentModuleInvoker.validate(programEnrolmentRuleInput);
         if (validationsRuleResponse != null && validationsRuleResponse.getValidationResults().size() > 0) {
@@ -180,16 +186,17 @@ public class RowProcessor {
         this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
-    void processProgramEncounter(Row row, SheetMetaData sheetMetaData) {
-        int numberOfStaticColumns = 1;
+    void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker) {
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<>());
-        programEncounterRequest.setProgramEnrolmentUUID(ExcelUtil.getText(row, 0));
-        programEncounterRequest.setUuid(UUID.randomUUID().toString());
         List<String> programEncounterHeader = programEncounterHeaders.get(sheetMetaData);
-        for (int i = numberOfStaticColumns; i < programEncounterHeader.size() + numberOfStaticColumns; i++) {
-            String cellHeader = programEncounterHeader.get(i - numberOfStaticColumns);
-            if (cellHeader.equals("Visit Type")) {
+        for (int i = 0; i < programEncounterHeader.size(); i++) {
+            String cellHeader = programEncounterHeader.get(i);
+            if (cellHeader.equals("Enrolment UUID")) {
+                programEncounterRequest.setProgramEnrolmentUUID(ExcelUtil.getRawCellValue(row, i));
+            } else if (cellHeader.equals("UUID")) {
+                programEncounterRequest.setUuid(ExcelUtil.getText(row, i));
+            } else if (cellHeader.equals("Visit Type")) {
                 programEncounterRequest.setEncounterType(ExcelUtil.getText(row, i));
             } else if (cellHeader.equals("Visit Name")) {
                 programEncounterRequest.setName(ExcelUtil.getText(row, i));
@@ -203,7 +210,15 @@ public class RowProcessor {
                 programEncounterRequest.addObservation(getObservationRequest(row, i, cellHeader));
             }
         }
+        ProgramEncounterRuleInput programEncounterRuleInput = new ProgramEncounterRuleInput(programEnrolmentRepository.findByUuid(programEncounterRequest.getProgramEnrolmentUUID()), conceptRepository, programEncounterRequest, observationService);
+        List<ObservationRequest> observationRequests = ruleInvoker.getDecisions(programEncounterRuleInput, conceptRepository);
+        observationRequests.forEach(programEncounterRequest::addObservation);
         programEncounterController.save(programEncounterRequest);
+
+        List<ProgramEncounterRequest> scheduledVisits = ruleInvoker.getNextScheduledVisits(programEncounterRuleInput, programEncounterRequest.getProgramEnrolmentUUID());
+        scheduledVisits.forEach(scheduledProgramEncounterRequest -> {
+            programEncounterController.save(scheduledProgramEncounterRequest);
+        });
     }
 
     void readChecklistHeader(Row row, SheetMetaData sheetMetaData) {

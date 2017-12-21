@@ -5,7 +5,6 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.healthmodule.adapter.contract.*;
 import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
 import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentDecisionRuleResponse;
-import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentNextScheduledVisitsResponse;
 import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentRuleInput;
 import org.openchs.healthmodule.adapter.contract.validation.ValidationsRuleResponse;
 import org.openchs.web.request.ObservationRequest;
@@ -34,7 +33,7 @@ public class ProgramEnrolmentModuleInvoker extends HealthModuleInvoker {
 
     public List<ProgramEncounterRequest> getNextScheduledVisits(ProgramEnrolmentRuleInput programEnrolmentRuleInput, String enrolmentUUID) {
         ScriptObjectMirror nextScheduledVisits = executeRule(programEnrolmentRuleInput, "getNextScheduledVisits");
-        ProgramEnrolmentNextScheduledVisitsResponse programEnrolmentNextScheduledVisitsResponse = new ProgramEnrolmentNextScheduledVisitsResponse(nextScheduledVisits);
+        ProgramScheduledVisitsResponse programEnrolmentNextScheduledVisitsResponse = new ProgramScheduledVisitsResponse(nextScheduledVisits);
         return programEnrolmentNextScheduledVisitsResponse.getProgramEncounterRequests(enrolmentUUID);
     }
 
