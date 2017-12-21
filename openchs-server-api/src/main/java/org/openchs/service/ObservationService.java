@@ -1,5 +1,6 @@
 package org.openchs.service;
 
+import jdk.nashorn.internal.objects.NativeArray;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.ObservationRequest;
@@ -58,10 +59,11 @@ public class ObservationService {
         if (storedValue == null) return null;
         if (concept.getDataType().equals(ConceptDataType.Coded.toString())) {
             String[] array = (String[]) storedValue;
-            Arrays.stream(array).map(s -> {
+            Object[] objects = Arrays.stream(array).map(s -> {
                 Concept answerConcept = conceptRepository.findByUuid(s);
                 return answerConcept.getName();
-            });
+            }).toArray();
+            return Arrays.asList(Arrays.copyOf(objects, objects.length, String[].class));
         }
         return storedValue;
     }

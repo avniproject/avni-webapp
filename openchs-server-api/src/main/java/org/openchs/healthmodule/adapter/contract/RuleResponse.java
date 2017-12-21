@@ -38,6 +38,7 @@ public class RuleResponse {
     }
 
     protected boolean isDate(ScriptObjectMirror mirror, String name) {
+        if (!(mirror.get(name) instanceof ScriptObjectMirror)) return false;
         ScriptObjectMirror field = (ScriptObjectMirror) mirror.get(name);
         return field.hasMember("getTime");
     }
@@ -71,6 +72,7 @@ public class RuleResponse {
     }
 
     protected boolean isList(ScriptObjectMirror mirror, String name) {
+        if (!(mirror.get(name) instanceof ScriptObjectMirror)) return false;
         ScriptObjectMirror field = (ScriptObjectMirror) mirror.get(name);
         return field.get("0") != null;
     }

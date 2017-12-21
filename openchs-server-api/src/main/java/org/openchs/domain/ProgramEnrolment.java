@@ -105,4 +105,8 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
     public void setProgramExitObservations(ObservationCollection programExitObservations) {
         this.programExitObservations = programExitObservations;
     }
+
+    public ProgramEncounter findEncounter(String encounterTypeName, String encounterName) {
+        return this.programEncounters.stream().filter(programEncounter -> programEncounter.matches(encounterTypeName, encounterName)).findAny().orElse(null);
+    }
 }

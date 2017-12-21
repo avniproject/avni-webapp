@@ -5,12 +5,10 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.Concept;
-import org.openchs.domain.ProgramEnrolment;
 import org.openchs.healthmodule.adapter.ProgramEncounterRuleInvoker;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
@@ -28,15 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class RowProcessor {
     private final Logger logger;
-    private List<String> registrationHeader = new ArrayList<>();
-    private Map<SheetMetaData, List<String>> enrolmentHeaders = new HashMap<>();
-    private Map<SheetMetaData, List<String>> programEncounterHeaders = new HashMap<>();
-    private Map<SheetMetaData, List<String>> checklistHeaders = new HashMap<>();
 
     @Autowired
     private IndividualController individualController;
@@ -63,8 +59,8 @@ public class RowProcessor {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    void readRegistrationHeader(Row row) {
-        readHeader(row, registrationHeader);
+    void readRegistrationHeader(Row row, ExcelFileHeaders excelFileHeaders) {
+        readHeader(row, excelFileHeaders.getRegistrationHeader());
     }
 
     private void readHeader(Row row, List<String> headerList) {
@@ -76,9 +72,10 @@ public class RowProcessor {
         }
     }
 
-    void processIndividual(Row row) throws ParseException {
+    void processIndividual(Row row, ExcelFileHeaders excelFileHeaders) throws ParseException {
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setObservations(new ArrayList<>());
+        List<String> registrationHeader = excelFileHeaders.getRegistrationHeader();
         for (int i = 0; i < registrationHeader.size(); i++) {
             String cellHeader = registrationHeader.get(i);
             if (cellHeader.equals("First Name")) {
@@ -120,25 +117,25 @@ public class RowProcessor {
         return concept.getPrimitiveValue(visibleText);
     }
 
-    void readEnrolmentHeader(Row row, SheetMetaData sheetMetaData) {
+    void readEnrolmentHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
         ArrayList<String> enrolmentHeader = new ArrayList<>();
-        enrolmentHeaders.put(sheetMetaData, enrolmentHeader);
+        excelFileHeaders.getEnrolmentHeaders().put(sheetMetaData, enrolmentHeader);
         readHeader(row, enrolmentHeader);
     }
 
-    void readProgramEncounterHeader(Row row, SheetMetaData sheetMetaData) {
+    void readProgramEncounterHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
         ArrayList<String> programEncounterHeader = new ArrayList<>();
-        programEncounterHeaders.put(sheetMetaData, programEncounterHeader);
+        excelFileHeaders.getProgramEncounterHeaders().put(sheetMetaData, programEncounterHeader);
         readHeader(row, programEncounterHeader);
     }
 
-    void processEnrolment(Row row, SheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker) {
+    void processEnrolment(Row row, SheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker, ExcelFileHeaders excelFileHeaders) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
         programEnrolmentRequest.setProgram(sheetMetaData.getProgramName());
         programEnrolmentRequest.setObservations(new ArrayList<>());
         programEnrolmentRequest.setProgramExitObservations(new ArrayList<>());
 
-        List<String> enrolmentHeader = enrolmentHeaders.get(sheetMetaData);
+        List<String> enrolmentHeader = excelFileHeaders.getEnrolmentHeaders().get(sheetMetaData);
         for (int i = 0; i < enrolmentHeader.size(); i++) {
             String cellHeader = enrolmentHeader.get(i);
             if (cellHeader.equals("UUID")) {
@@ -186,10 +183,10 @@ public class RowProcessor {
         this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
-    void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker) {
+    void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker, ExcelFileHeaders excelFileHeaders) {
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<>());
-        List<String> programEncounterHeader = programEncounterHeaders.get(sheetMetaData);
+        List<String> programEncounterHeader = excelFileHeaders.getProgramEncounterHeaders().get(sheetMetaData);
         for (int i = 0; i < programEncounterHeader.size(); i++) {
             String cellHeader = programEncounterHeader.get(i);
             if (cellHeader.equals("Enrolment UUID")) {
@@ -221,17 +218,17 @@ public class RowProcessor {
         });
     }
 
-    void readChecklistHeader(Row row, SheetMetaData sheetMetaData) {
+    void readChecklistHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
         ArrayList<String> checklistHeader = new ArrayList<>();
-        programEncounterHeaders.put(sheetMetaData, checklistHeader);
+        excelFileHeaders.getProgramEncounterHeaders().put(sheetMetaData, checklistHeader);
         readHeader(row, checklistHeader);
     }
 
-    void processChecklist(Row row, SheetMetaData sheetMetaData) {
+    void processChecklist(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
         int numberOfStaticColumns = 2;
         String programEnrolmentUUID = ExcelUtil.getText(row, 0);
         String checklistName = ExcelUtil.getText(row, 1);
-        List<String> checklistHeader = checklistHeaders.get(sheetMetaData);
+        List<String> checklistHeader = excelFileHeaders.getChecklistHeaders().get(sheetMetaData);
 
         for (int i = numberOfStaticColumns; i < checklistHeader.size() + numberOfStaticColumns; i++) {
             String checklistItemName = checklistHeader.get(i - numberOfStaticColumns);

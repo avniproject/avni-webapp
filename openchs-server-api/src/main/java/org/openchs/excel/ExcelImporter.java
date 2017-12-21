@@ -29,42 +29,43 @@ public class ExcelImporter implements Importer {
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public void rowImport(Row row, SheetMetaData sheetMetaData, RowProcessor rowProcessor, HealthModuleInvokerFactory healthModuleInvokerFactory) throws ParseException {
+    public void rowImport(Row row, SheetMetaData sheetMetaData, RowProcessor rowProcessor, HealthModuleInvokerFactory healthModuleInvokerFactory, ExcelFileHeaders excelFileHeaders) throws ParseException {
         switch (sheetMetaData.getImportedEntity()) {
             case Individual:
-                rowProcessor.processIndividual(row);
+                rowProcessor.processIndividual(row, excelFileHeaders);
                 break;
             case Enrolment:
-                rowProcessor.processEnrolment(row, sheetMetaData, healthModuleInvokerFactory.getProgramEnrolmentInvoker());
+                rowProcessor.processEnrolment(row, sheetMetaData, healthModuleInvokerFactory.getProgramEnrolmentInvoker(), excelFileHeaders);
                 break;
             case Visit:
-                rowProcessor.processProgramEncounter(row, sheetMetaData, healthModuleInvokerFactory.getProgramEncounterInvoker());
+                rowProcessor.processProgramEncounter(row, sheetMetaData, healthModuleInvokerFactory.getProgramEncounterInvoker(), excelFileHeaders);
                 break;
             case Checklist:
-                rowProcessor.processChecklist(row, sheetMetaData);
+                rowProcessor.processChecklist(row, sheetMetaData, excelFileHeaders);
                 break;
         }
     }
 
-    private void processHeader(SheetMetaData sheetMetaData, Row row, RowProcessor rowProcessor) {
+    private void processHeader(SheetMetaData sheetMetaData, Row row, RowProcessor rowProcessor, ExcelFileHeaders excelFileHeaders) {
         switch (sheetMetaData.getImportedEntity()) {
             case Individual:
-                rowProcessor.readRegistrationHeader(row);
+                rowProcessor.readRegistrationHeader(row, excelFileHeaders);
                 break;
             case Enrolment:
-                rowProcessor.readEnrolmentHeader(row, sheetMetaData);
+                rowProcessor.readEnrolmentHeader(row, sheetMetaData, excelFileHeaders);
                 break;
             case Visit:
-                rowProcessor.readProgramEncounterHeader(row, sheetMetaData);
+                rowProcessor.readProgramEncounterHeader(row, sheetMetaData, excelFileHeaders);
                 break;
             case Checklist:
-                rowProcessor.readChecklistHeader(row, sheetMetaData);
+                rowProcessor.readChecklistHeader(row, sheetMetaData, excelFileHeaders);
                 break;
         }
     }
 
     @Override
     public Boolean importData(InputStream inputStream) throws Exception {
+        ExcelFileHeaders excelFileHeaders = new ExcelFileHeaders();
         Boolean returnValue = true;
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         try {
@@ -82,7 +83,7 @@ public class ExcelImporter implements Importer {
                         continue;
                     }
                     if (k == 2) {
-                        processHeader(sheetMetaData, row, rowProcessor);
+                        processHeader(sheetMetaData, row, rowProcessor, excelFileHeaders);
                         continue;
                     }
                     String rawCellValue = ExcelUtil.getRawCellValue(row, 0);
@@ -90,7 +91,7 @@ public class ExcelImporter implements Importer {
                         logger.info(String.format("Breaking at row number: %d", k));
                         break;
                     }
-                    this.rowImport(row, sheetMetaData, rowProcessor, healthModuleInvokerFactory);
+                    this.rowImport(row, sheetMetaData, rowProcessor, healthModuleInvokerFactory, excelFileHeaders);
                 }
                 logger.info("COMPLETED SHEET: ", sheet.getSheetName());
             }

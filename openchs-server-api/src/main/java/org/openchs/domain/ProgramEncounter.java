@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "program_encounter")
@@ -89,5 +90,9 @@ public class ProgramEncounter extends OrganisationAwareEntity {
 
     public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
         this.maxVisitDateTime = maxVisitDateTime;
+    }
+
+    public boolean matches(String encounterTypeName, String encounterName) {
+        return Objects.equals(this.encounterType.getName(), encounterTypeName) && Objects.equals(this.name, encounterName);
     }
 }

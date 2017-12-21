@@ -2,10 +2,7 @@ package org.openchs.healthmodule.adapter.contract.encounter;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
-import org.openchs.domain.Individual;
-import org.openchs.domain.Program;
-import org.openchs.domain.ProgramEnrolment;
-import org.openchs.domain.ProgramOutcome;
+import org.openchs.domain.*;
 import org.openchs.healthmodule.adapter.ObservationsHelper;
 import org.openchs.service.ObservationService;
 
@@ -47,5 +44,13 @@ public class ProgramEnrolmentForProgramEncounterRuleInput {
     //Doesn't support edit encounter, hence we can in the entire enrolment loaded from database
     public Object getObservationReadableValueInEntireEnrolment(String conceptName, Object programEncounter) {
         return observationService.getObservationValue(conceptName, this.programEnrolment);
+    }
+
+    public ProgramEncounter findEncounter(String encounterTypeName, String encounterName) {
+        return this.programEnrolment.findEncounter(encounterTypeName, encounterName);
+    }
+
+    public boolean hasEncounter(String encounterTypeName, String encounterName) {
+        return this.findEncounter(encounterTypeName, encounterName) != null;
     }
 }
