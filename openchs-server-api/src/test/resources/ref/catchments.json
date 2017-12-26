@@ -1,0 +1,209 @@
+{
+  "organisation": "demo",
+  "catchments": [
+    {
+      "name": "Ghotpadi",
+      "uuid": "b9103c96-7ed7-4798-a866-89419103d361",
+      "type": "Intervention Area",
+      "addressLevels": [
+        {
+          "uuid": "293203b7-b0f8-4ff3-84bb-0757344924fc",
+          "level": 1,
+          "name": "Ghotpadi Boarding School",
+          "type": "Boarding"
+        },
+        {
+          "uuid": "9fbe6eea-9f8b-4277-834d-658174213937",
+          "level": 1,
+          "name": "Bhatpar School",
+          "type": "School"
+        },
+        {
+          "uuid": "2379b506-47e1-414a-aa92-d5daae1c52c8",
+          "level": 1,
+          "name": "Bodange Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "710f177b-1050-4540-bc8a-ad34775df5ee",
+          "level": 1,
+          "name": "Juwi Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "4b734c4e-a95f-4770-ab84-e1f76dac9ce4",
+          "level": 1,
+          "name": "Darbha Village",
+          "type": "Village"
+        }
+      ]
+    },
+    {
+      "name": "Gopnar",
+      "uuid": "c5219099-aa23-4b56-b2b0-a70d4d41e73e",
+      "type": "Intervention Area",
+      "addressLevels": [
+        {
+          "uuid": "b3221785-7821-4582-96a8-3c624a95085c",
+          "level": 1,
+          "name": "Gopnar Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "c565cb1a-1936-40ae-ac88-e615ba26913e",
+          "level": 1,
+          "name": "Hodri Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "329b1990-a363-4b5e-987d-63ff4fc79955",
+          "level": 1,
+          "name": "Lashkar Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "9b4e6e5b-8335-4913-b398-097bd496a1ad",
+          "level": 1,
+          "name": "Aldandi Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "b430d145-746e-4916-9d21-fa1720b996aa",
+          "level": 1,
+          "name": "Morodpar Village",
+          "type": "Village"
+        }
+      ]
+    },
+    {
+      "name": "Jinjgaon",
+      "uuid": "6baffece-beea-4882-91b3-cf0866423ce8",
+      "type": "Intervention Area",
+      "addressLevels": [
+        {
+          "uuid": "fb8da154-410f-4d99-9ab9-49e61d938c9b",
+          "level": 1,
+          "name": "Jinjgaon Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "9c6dc329-846b-4460-819a-7f3e9cb29e27",
+          "level": 1,
+          "name": "Gurnoor Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "1a895b6c-eac0-473f-b043-cfa5ba048062",
+          "level": 1,
+          "name": "Marampalli Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "21166aba-604a-417b-9163-aaf29e65fa03",
+          "level": 1,
+          "name": "Rela Village",
+          "type": "Village"
+        }
+      ]
+    },
+    {
+      "name": "Midapalli",
+      "uuid": "5f3ca616-955f-4e01-8521-6e7122327d08",
+      "type": "Intervention Area",
+      "addressLevels": [
+        {
+          "uuid": "85addb4c-b835-43d6-b92e-450d00f6ce76",
+          "level": 1,
+          "name": "Midapalli Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "60eedcd9-d312-4e9e-a5d5-b2618be328ca",
+          "level": 1,
+          "name": "Kawande Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "6fb7529e-33ea-4170-bbe9-f8549d7ff1a2",
+          "level": 1,
+          "name": "Nelgunda Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "f0f01ec3-8416-4422-9722-9598d7aed352",
+          "level": 1,
+          "name": "Morometta Village",
+          "type": "Village"
+        }
+      ]
+    },
+    {
+      "name": "Mirgudwancha",
+      "uuid": "d23c6262-6ed6-4b18-9868-48eeff7200a7",
+      "type": "Intervention Area",
+      "addressLevels": [
+        {
+          "uuid": "bd2d019f-e501-4a4c-b48e-787e6dcca47d",
+          "level": 1,
+          "name": "Mirgudwancha Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "addf7962-0ddf-4060-a69c-ae521776b538",
+          "level": 1,
+          "name": "Dobhur Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "fa89030b-2268-4f11-aa0c-76fde4738203",
+          "level": 1,
+          "name": "Puyarkothi Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "e388c702-9a4c-495a-8082-d273e05e1b1f",
+          "level": 1,
+          "name": "Gundurvahi Village",
+          "type": "Village"
+        }
+      ]
+    },
+    {
+      "name": "Pengunda",
+      "uuid": "fc56fe8d-2fdf-4502-bd2d-2d2907d5a996",
+      "type": "Intervention Area",
+      "addressLevels": [
+        {
+          "uuid": "f8e8ff01-b496-4f32-b809-4e2a40e97aa5",
+          "level": 1,
+          "name": "Pengunda Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "c7bec14e-f372-4362-93e3-aebf8ec22600",
+          "level": 1,
+          "name": "Parainar Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "84981b04-5199-45fe-8789-d05f23fdcc24",
+          "level": 1,
+          "name": "Kucher Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "8e4db31b-34f6-4057-9b36-1fd1d01b1aa9",
+          "level": 1,
+          "name": "Mahakapadi Village",
+          "type": "Village"
+        },
+        {
+          "uuid": "6af620cd-0414-4553-83f1-5de418707d04",
+          "level": 1,
+          "name": "Gongwada Village",
+          "type": "Village"
+        }
+      ]
+    }
+  ]
+}

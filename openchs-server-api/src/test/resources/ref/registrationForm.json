@@ -1,0 +1,99 @@
+{
+  "name": "registration_form",
+  "uuid": "7ed9d6b6-39b2-4887-9f76-d09ed4df91f0",
+  "formType": "IndividualProfile",
+  "userUUID": "5fed2907-df3a-4867-aef5-c87f4c78a31a",
+  "formElementGroups": [
+    {
+      "uuid": "9298d2b8-6989-4804-9bbe-61c9690133be",
+      "name": "Individual Registration Family Details",
+      "displayOrder": 1,
+      "display": "Family Details",
+      "formElements": [
+        {
+          "name": "Guardian Name",
+          "uuid": "8ebacad2-d26f-49fe-b371-054f15e1ec38",
+          "keyValues": [],
+          "concept": {
+            "name": "Guardian Name",
+            "uuid": "0f530654-1721-4909-be52-907c4196855b",
+            "dataType": "Text"
+          },
+          "displayOrder": 1,
+          "mandatory": false
+        },
+        {
+          "name": "Number of House Members",
+          "uuid": "fc741ce9-ee4b-48ed-bb7c-8ebc942385cc",
+          "keyValues": [],
+          "concept": {
+            "name": "Number of House Members",
+            "uuid": "5190dbda-3ae4-49a1-90b3-c34834a973bc",
+            "dataType": "Numeric"
+          },
+          "displayOrder": 2,
+          "mandatory": false
+        },
+        {
+          "name": "AADHAAR No",
+          "uuid": "f75cd6e1-c8a0-4cd9-8ed0-761552f42f9c",
+          "keyValues": [],
+          "concept": {
+            "name": "AADHAAR No",
+            "uuid": "2ce5b32f-3871-44be-a5c9-1c496893cfea",
+            "dataType": "Numeric"
+          },
+          "displayOrder": 3,
+          "mandatory": false
+        }
+      ]
+    },
+    {
+      "uuid": "b260c7ff-5459-4c34-ad1b-ff48f2ccab77",
+      "name": "Socio-Economic Details",
+      "displayOrder": 2,
+      "display": "Socio-Economic Details",
+      "formElements": [
+        {
+          "name": "Education Level",
+          "uuid": "9035da14-ec2f-489f-89c8-a776c986d968",
+          "keyValues": [],
+          "type": "SingleSelect",
+          "concept": {
+            "name": "Education Level",
+            "uuid": "ffd6b888-b2b5-4fcb-82fc-1f81c4c5e620",
+            "dataType": "Coded",
+            "answers": [
+              {
+                "name": "Literate",
+                "uuid": "13ca5a58-9aa3-4c84-a0f5-1cae268fa4bd"
+              },
+              {
+                "name": "Secondary",
+                "uuid": "e117bee2-f823-4e46-803f-1667c4c3e7cf"
+              },
+              {
+                "name": "Graduate",
+                "uuid": "ca03f17e-07bb-440b-a9e3-f8fdfe0b9389"
+              },
+              {
+                "name": "Post Graduate",
+                "uuid": "b54ddb89-e686-4576-a5e2-5ac2999cd2c7"
+              },
+              {
+                "name": "Uneducated",
+                "uuid": "516640f1-df7f-4746-b71a-0698e8ac29e3"
+              },
+              {
+                "name": "Primary",
+                "uuid": "8fd06d73-aba5-40fe-a92d-32b6bba2e1bd"
+              }
+            ]
+          },
+          "displayOrder": 1,
+          "mandatory": false
+        }
+      ]
+    }
+  ]
+}
