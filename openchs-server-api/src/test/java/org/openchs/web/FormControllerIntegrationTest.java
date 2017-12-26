@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -98,5 +99,35 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
                 assertEquals("Yes Started", answer.getName());
             }
         }
+    }
+
+    public void deleteExistingAnswerInFormElement() throws IOException {
+        ResponseEntity<FormContract> formResponse = template
+                .getForEntity(String.format("/forms/export?formUUID=%s", "0c444bf3-54c3-41e4-8ca9-f0deb8760831"),
+                        FormContract.class);
+        assertEquals(HttpStatus.OK, formResponse.getStatusCode());
+        FormContract form = formResponse.getBody();
+        List<ConceptContract> answers = form.getFormElementGroups().get(0).getFormElements().get(0).getConcept().getAnswers();
+        List<String> answerUUIDs = new ArrayList<>();
+        for (ConceptContract answer : answers) {
+            answerUUIDs.add(answer.getUuid());
+        }
+        assertEquals(3, answers.size());
+        assertTrue(answerUUIDs.contains("28e76608-dddd-4914-bd44-3689eccfa5ca"));
+        template.postForEntity("/forms", getJson("/ref/formWithDeletedAnswer.json"), Void.class);
+
+        formResponse = template
+                .getForEntity(String.format("/forms/export?formUUID=%s", "0c444bf3-54c3-41e4-8ca9-f0deb8760831"),
+                        FormContract.class);
+
+        assertEquals(HttpStatus.OK, formResponse.getStatusCode());
+        form = formResponse.getBody();
+        answers = form.getFormElementGroups().get(0).getFormElements().get(0).getConcept().getAnswers();
+        answerUUIDs = new ArrayList<>();
+        for (ConceptContract answer : answers) {
+            answerUUIDs.add(answer.getUuid());
+        }
+        assertEquals(2, answers.size());
+        assertFalse(answerUUIDs.contains("28e76608-dddd-4914-bd44-3689eccfa5ca"));
     }
 }
