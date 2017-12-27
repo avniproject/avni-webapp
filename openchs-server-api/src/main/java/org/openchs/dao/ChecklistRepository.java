@@ -23,4 +23,5 @@ public interface ChecklistRepository extends PagingAndSortingRepository<Checklis
     Page<Checklist> findByProgramEnrolmentIndividualAddressLevelCatchmentsIdAndLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("catchmentId") long catchmentId, @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
     Checklist findByProgramEnrolmentId(long programEnrolmentId);
+    Checklist findByProgramEnrolmentUuidAndName(String enrolmentUUID, String name);
 }

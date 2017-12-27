@@ -6,6 +6,7 @@ import org.joda.time.LocalDate;
 import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormType;
+import org.openchs.dao.ChecklistRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
@@ -21,6 +22,7 @@ import org.openchs.healthmodule.adapter.contract.validation.ValidationsRuleRespo
 import org.openchs.service.ChecklistService;
 import org.openchs.service.FormService;
 import org.openchs.service.ObservationService;
+import org.openchs.util.ExceptionUtil;
 import org.openchs.web.*;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistItemRequest;
@@ -52,6 +54,8 @@ public class RowProcessor {
     private ChecklistItemController checklistItemController;
     @Autowired
     private ChecklistService checklistService;
+    @Autowired
+    private ChecklistRepository checklistRepository;
     @Autowired
     private ConceptRepository conceptRepository;
     @Autowired
@@ -257,32 +261,48 @@ public class RowProcessor {
 
     void readChecklistHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
         ArrayList<String> checklistHeader = new ArrayList<>();
-        excelFileHeaders.getProgramEncounterHeaders().put(sheetMetaData, checklistHeader);
+        excelFileHeaders.getChecklistHeaders().put(sheetMetaData, checklistHeader);
         readHeader(row, checklistHeader);
     }
 
     void processChecklist(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
-        int numberOfStaticColumns = 2;
-        String programEnrolmentUUID = ExcelUtil.getText(row, 0);
-        String checklistName = ExcelUtil.getText(row, 1);
         List<String> checklistHeader = excelFileHeaders.getChecklistHeaders().get(sheetMetaData);
+        String enrolmentUUID = null;
+        String checklist = null;
+        String checklistUUID = null;
+        for (int i = 0; i < checklistHeader.size(); i++) {
+            String header = checklistHeader.get(i);
+            switch (header) {
+                case "Enrolment UUID":
+                    enrolmentUUID = ExcelUtil.getRawCellValue(row, i);
+                    break;
+                case "Checklist":
+                    checklist = ExcelUtil.getText(row, i);
+                    break;
+                default:
+                    Double offset = ExcelUtil.getNumber(row, i);
+                    if (offset == null) break;
 
-        for (int i = numberOfStaticColumns; i < checklistHeader.size() + numberOfStaticColumns; i++) {
-            String checklistItemName = checklistHeader.get(i - numberOfStaticColumns);
-            ChecklistItem checklistItem = checklistService.findChecklistItem(programEnrolmentUUID, checklistItemName);
-            if (checklistItem == null)
-                throw new RuntimeException(String.format("Couldn't find checklist item with name=%s", checklistItemName));
-            Double offsetFromDueDate = ExcelUtil.getNumber(row, i);
+                    ChecklistItem checklistItem = checklistService.findChecklistItem(enrolmentUUID, header);
+                    if (checklistItem != null) {
+                        if (checklistUUID == null) //performance optimisation
+                            checklistUUID = checklistRepository.findByProgramEnrolmentUuidAndName(enrolmentUUID, checklist).getUuid();
+                        DateTime completionDate = checklistItem.getDueDate().plusDays(offset.intValue());
+                        if (completionDate.isAfterNow())
+                            break;
 
-            DateTime completionDate = null;
-            if (offsetFromDueDate != null) {
-                DateTime dueDate = checklistItem.getDueDate();
-                completionDate = dueDate.plusDays(offsetFromDueDate.intValue());
-                if (completionDate.isAfterNow()) completionDate = null;
+                        ChecklistItemRequest checklistItemRequest = new ChecklistItemRequest();
+                        checklistItemRequest.setChecklistUUID(checklistUUID);
+                        //we are not changing due and max dates in the import because these are created through the rules logic earlier
+                        checklistItemRequest.setDueDate(checklistItem.getDueDate());
+                        checklistItemRequest.setMaxDate(checklistItem.getMaxDate());
+                        checklistItemRequest.setUuid(checklistItem.getUuid());
+                        checklistItemRequest.setConceptUUID(checklistItem.getConcept().getUuid());
+                        checklistItemRequest.setCompletionDate(completionDate);
+                        checklistItemController.save(checklistItemRequest);
+                    }
+                    break;
             }
-
-            checklistItem.setCompletionDate(completionDate);
-            checklistService.saveItem(checklistItem);
         }
     }
 }

@@ -20,7 +20,10 @@ public class RuleResponse {
     }
 
     protected Date getDate(ScriptObjectMirror mirror, String name) {
-        ScriptObjectMirror field = (ScriptObjectMirror) mirror.get(name);
+        Object o = mirror.get(name);
+        if (o instanceof Date) return (Date) o;
+
+        ScriptObjectMirror field = (ScriptObjectMirror) o;
         double timestampLocalTime = (Double) field.callMember("getTime");
         return new Date((long) timestampLocalTime);
     }

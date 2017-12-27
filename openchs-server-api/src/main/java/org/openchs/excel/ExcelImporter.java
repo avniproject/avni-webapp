@@ -1,5 +1,6 @@
 package org.openchs.excel;
 
+import org.apache.logging.log4j.util.Strings;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 @Component
 public class ExcelImporter implements Importer {
@@ -30,7 +33,7 @@ public class ExcelImporter implements Importer {
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public boolean rowImport(Row row, SheetMetaData sheetMetaData, RowProcessor rowProcessor, HealthModuleInvokerFactory healthModuleInvokerFactory, ExcelFileHeaders excelFileHeaders) {
+    public boolean rowImport(Row row, SheetMetaData sheetMetaData, RowProcessor rowProcessor, HealthModuleInvokerFactory healthModuleInvokerFactory, ExcelFileHeaders excelFileHeaders, Set<Integer> errors) {
         try {
             switch (sheetMetaData.getImportedEntity()) {
                 case Individual:
@@ -48,7 +51,7 @@ public class ExcelImporter implements Importer {
             }
             return true;
         } catch (Exception e) {
-            ExceptionUtil.getExceptionHash(e);
+            errors.add(ExceptionUtil.getExceptionHash(e));
             this.logger.error("Row import failed", e);
             return false;
         }
@@ -76,7 +79,8 @@ public class ExcelImporter implements Importer {
         ExcelFileHeaders excelFileHeaders = new ExcelFileHeaders();
         Boolean returnValue = true;
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-        int uniqueErrorCount = 0;
+        int errorCount = 0;
+        HashSet<Integer> uniqueErrorHashes = new HashSet<>();
         try {
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 XSSFSheet sheet = workbook.getSheetAt(i);
@@ -96,15 +100,15 @@ public class ExcelImporter implements Importer {
                         continue;
                     }
                     String rawCellValue = ExcelUtil.getRawCellValue(row, 0);
-                    if (rawCellValue == null || rawCellValue.isEmpty()) {
+                    if (Strings.isBlank(rawCellValue)) {
                         logger.info(String.format("Breaking at row number: %d", k));
                         break;
                     }
-                    if (!this.rowImport(row, sheetMetaData, rowProcessor, healthModuleInvokerFactory, excelFileHeaders)) uniqueErrorCount++;
+                    if (!this.rowImport(row, sheetMetaData, rowProcessor, healthModuleInvokerFactory, excelFileHeaders, uniqueErrorHashes)) errorCount++;
                 }
-                logger.info("COMPLETED SHEET: ", sheet.getSheetName());
+                logger.info(String.format("COMPLETED SHEET: %s", sheet.getSheetName()));
             }
-            logger.info(String.format("NUMBER OF UNIQUE ERRORS: %d", uniqueErrorCount));
+            logger.info(String.format("FAILED ROWS: %d; UNIQUE ERRORS: %d", errorCount, uniqueErrorHashes.size()));
         } catch (Exception error) {
             logger.error(error.getMessage(), error);
             throw error;

@@ -17,6 +17,7 @@ class ExcelUtil {
 
     static String getRawCellValue(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
+        if (cell == null) return null;
         return ((XSSFCell) cell).getRawValue();
     }
 
