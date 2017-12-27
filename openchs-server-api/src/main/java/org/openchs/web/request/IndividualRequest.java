@@ -2,6 +2,7 @@ package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.LocalDate;
+import org.openchs.application.Form;
 
 import java.util.List;
 

@@ -3,6 +3,9 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.openchs.application.Form;
+import org.openchs.application.FormElement;
+import org.openchs.application.FormType;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
@@ -16,6 +19,7 @@ import org.openchs.healthmodule.adapter.contract.encounter.ProgramEncounterRuleI
 import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentRuleInput;
 import org.openchs.healthmodule.adapter.contract.validation.ValidationsRuleResponse;
 import org.openchs.service.ChecklistService;
+import org.openchs.service.FormService;
 import org.openchs.service.ObservationService;
 import org.openchs.web.*;
 import org.openchs.web.request.*;
@@ -25,8 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +58,8 @@ public class RowProcessor {
     private ProgramEnrolmentRepository programEnrolmentRepository;
     @Autowired
     private ObservationService observationService;
+    @Autowired
+    private FormService formService;
 
     public RowProcessor() {
         logger = LoggerFactory.getLogger(this.getClass());
@@ -72,38 +78,57 @@ public class RowProcessor {
         }
     }
 
-    void processIndividual(Row row, ExcelFileHeaders excelFileHeaders) throws ParseException {
+    void processIndividual(Row row, ExcelFileHeaders excelFileHeaders) {
+        Form form = formService.findForm(FormType.IndividualProfile, null, null);
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setObservations(new ArrayList<>());
         List<String> registrationHeader = excelFileHeaders.getRegistrationHeader();
         for (int i = 0; i < registrationHeader.size(); i++) {
             String cellHeader = registrationHeader.get(i);
-            if (cellHeader.equals("First Name")) {
-                individualRequest.setFirstName(ExcelUtil.getText(row, i));
-            } else if (cellHeader.equals("Last Name")) {
-                individualRequest.setLastName(ExcelUtil.getText(row, i));
-            } else if (cellHeader.equals("Date of Birth")) {
-                individualRequest.setDateOfBirth(new LocalDate(ExcelUtil.getDate(row, i)));
-            } else if (cellHeader.equals("Date of Birth Verified")) {
-                individualRequest.setDateOfBirthVerified(TextToType.toBoolean(ExcelUtil.getText(row, i)));
-            } else if (cellHeader.equals("Gender")) {
-                individualRequest.setGender(TextToType.toGender(ExcelUtil.getText(row, i)));
-            } else if (cellHeader.equals("Registration Date")) {
-                individualRequest.setRegistrationDate(new LocalDate(ExcelUtil.getDate(row, i)));
-            } else if (cellHeader.equals("Address")) {
-                individualRequest.setAddressLevel(ExcelUtil.getText(row, i));
-            } else if (cellHeader.equals("UUID")) {
-                individualRequest.setUuid(ExcelUtil.getText(row, i));
-            } else {
-                individualRequest.addObservation(getObservationRequest(row, i, cellHeader));
+            switch (cellHeader) {
+                case "First Name":
+                    individualRequest.setFirstName(ExcelUtil.getText(row, i));
+                    break;
+                case "Last Name":
+                    individualRequest.setLastName(ExcelUtil.getText(row, i));
+                    break;
+                case "Date of Birth":
+                    individualRequest.setDateOfBirth(new LocalDate(ExcelUtil.getDate(row, i)));
+                    break;
+                case "Date of Birth Verified":
+                    individualRequest.setDateOfBirthVerified(TextToType.toBoolean(ExcelUtil.getText(row, i)));
+                    break;
+                case "Gender":
+                    individualRequest.setGender(TextToType.toGender(ExcelUtil.getText(row, i)));
+                    break;
+                case "Registration Date":
+                    individualRequest.setRegistrationDate(new LocalDate(ExcelUtil.getDate(row, i)));
+                    break;
+                case "Address":
+                    individualRequest.setAddressLevel(ExcelUtil.getText(row, i));
+                    break;
+                case "UUID":
+                    individualRequest.setUuid(ExcelUtil.getText(row, i));
+                    break;
+                default:
+                    individualRequest.addObservation(createObservationRequest(row, i, cellHeader, form));
+                    break;
             }
+        }
+        List<FormElement> unfilledMandatoryFormElements = formService.getUnfilledMandatoryFormElements(form, RequestUtil.fromObservationRequests(individualRequest.getObservations()));
+        if (unfilledMandatoryFormElements.size() != 0) {
+            throw new RuntimeException(String.format("Mandatory form-elements not present: %s", Arrays.toString(unfilledMandatoryFormElements.toArray())));
         }
         individualController.save(individualRequest);
     }
 
-    private ObservationRequest getObservationRequest(Row row, int i, String cellHeader) {
+    private ObservationRequest createObservationRequest(Row row, int i, String cellHeader, Form form) {
         String cell = ExcelUtil.getText(row, i);
-        if (cell.isEmpty()) return null;
+        if (cell.isEmpty()) {
+            FormElement formElement = form.findFormElement(cellHeader);
+            if (formElement.isMandatory()) throw new RuntimeException(String.format("Invalid data in row=%d, cell=%s", row.getRowNum(), cellHeader));
+            return null;
+        }
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(cellHeader);
         Concept concept = conceptRepository.findByName(cellHeader);
@@ -111,10 +136,6 @@ public class RowProcessor {
             throw new NullPointerException(String.format("Concept with name |%s| not found", cellHeader));
         observationRequest.setValue(concept.getPrimitiveValue(cell));
         return observationRequest;
-    }
-
-    public Object getPrimitiveValue(Concept concept, String visibleText) {
-        return concept.getPrimitiveValue(visibleText);
     }
 
     void readEnrolmentHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
@@ -135,17 +156,23 @@ public class RowProcessor {
         programEnrolmentRequest.setObservations(new ArrayList<>());
         programEnrolmentRequest.setProgramExitObservations(new ArrayList<>());
 
+        Form form = formService.findForm(FormType.ProgramEnrolment, null, sheetMetaData.getProgramName());
         List<String> enrolmentHeader = excelFileHeaders.getEnrolmentHeaders().get(sheetMetaData);
         for (int i = 0; i < enrolmentHeader.size(); i++) {
             String cellHeader = enrolmentHeader.get(i);
-            if (cellHeader.equals("UUID")) {
-                programEnrolmentRequest.setUuid(ExcelUtil.getText(row, i));
-            } else if (cellHeader.equals("Individual UUID"))
-                programEnrolmentRequest.setIndividualUUID(ExcelUtil.getRawCellValue(row, i));
-            else if (cellHeader.equals("Enrolment Date")) {
-                programEnrolmentRequest.setEnrolmentDateTime(new DateTime(ExcelUtil.getDate(row, i)));
-            } else {
-                programEnrolmentRequest.addObservation(getObservationRequest(row, i, cellHeader));
+            switch (cellHeader) {
+                case "UUID":
+                    programEnrolmentRequest.setUuid(ExcelUtil.getText(row, i));
+                    break;
+                case "Individual UUID":
+                    programEnrolmentRequest.setIndividualUUID(ExcelUtil.getRawCellValue(row, i));
+                    break;
+                case "Enrolment Date":
+                    programEnrolmentRequest.setEnrolmentDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+                    break;
+                default:
+                    programEnrolmentRequest.addObservation(createObservationRequest(row, i, cellHeader, form));
+                    break;
             }
         }
 
@@ -184,27 +211,37 @@ public class RowProcessor {
     }
 
     void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker, ExcelFileHeaders excelFileHeaders) {
+        Form form = formService.findForm(FormType.ProgramEncounter, sheetMetaData.getVisitType(), sheetMetaData.getProgramName());
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<>());
         List<String> programEncounterHeader = excelFileHeaders.getProgramEncounterHeaders().get(sheetMetaData);
         for (int i = 0; i < programEncounterHeader.size(); i++) {
             String cellHeader = programEncounterHeader.get(i);
-            if (cellHeader.equals("Enrolment UUID")) {
-                programEncounterRequest.setProgramEnrolmentUUID(ExcelUtil.getRawCellValue(row, i));
-            } else if (cellHeader.equals("UUID")) {
-                programEncounterRequest.setUuid(ExcelUtil.getText(row, i));
-            } else if (cellHeader.equals("Visit Type")) {
-                programEncounterRequest.setEncounterType(ExcelUtil.getText(row, i));
-            } else if (cellHeader.equals("Visit Name")) {
-                programEncounterRequest.setName(ExcelUtil.getText(row, i));
-            } else if (cellHeader.equals("Earliest Date")) {
-                programEncounterRequest.setEarliestVisitDateTime(new DateTime(ExcelUtil.getDate(row, i)));
-            } else if (cellHeader.equals("Actual Date")) {
-                programEncounterRequest.setEncounterDateTime(new DateTime(ExcelUtil.getDate(row, i)));
-            } else if (cellHeader.equals("Max Date")) {
-                programEncounterRequest.setMaxDateTime(new DateTime(ExcelUtil.getDate(row, i)));
-            } else {
-                programEncounterRequest.addObservation(getObservationRequest(row, i, cellHeader));
+            switch (cellHeader) {
+                case "Enrolment UUID":
+                    programEncounterRequest.setProgramEnrolmentUUID(ExcelUtil.getRawCellValue(row, i));
+                    break;
+                case "UUID":
+                    programEncounterRequest.setUuid(ExcelUtil.getText(row, i));
+                    break;
+                case "Visit Type":
+                    programEncounterRequest.setEncounterType(ExcelUtil.getText(row, i));
+                    break;
+                case "Visit Name":
+                    programEncounterRequest.setName(ExcelUtil.getText(row, i));
+                    break;
+                case "Earliest Date":
+                    programEncounterRequest.setEarliestVisitDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+                    break;
+                case "Actual Date":
+                    programEncounterRequest.setEncounterDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+                    break;
+                case "Max Date":
+                    programEncounterRequest.setMaxDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+                    break;
+                default:
+                    programEncounterRequest.addObservation(createObservationRequest(row, i, cellHeader, form));
+                    break;
             }
         }
         ProgramEncounterRuleInput programEncounterRuleInput = new ProgramEncounterRuleInput(programEnrolmentRepository.findByUuid(programEncounterRequest.getProgramEnrolmentUUID()), conceptRepository, programEncounterRequest, observationService);

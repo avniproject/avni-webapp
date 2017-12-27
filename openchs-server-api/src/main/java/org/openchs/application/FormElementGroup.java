@@ -99,4 +99,8 @@ public class FormElementGroup extends OrganisationAwareEntity {
     public void setDisplay(String display) {
         this.display = display;
     }
+
+    public FormElement findFormElementByConcept(String conceptName) {
+        return formElements.stream().filter(x -> x.getConcept().getName().equals(conceptName)).findAny().orElse(null);
+    }
 }

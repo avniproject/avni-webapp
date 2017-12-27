@@ -8,6 +8,7 @@ import org.openchs.dao.application.FormElementGroupRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
+import org.openchs.service.FormService;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormatContract;
@@ -45,11 +46,11 @@ public class FormController {
     private ConceptRepository conceptRepository;
     private FormElementGroupRepository formElementGroupRepository;
     private RepositoryEntityLinks entityLinks;
-
+    private FormService formService;
 
     @Autowired
     public FormController(FormRepository formRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, ConceptRepository conceptRepository, FormElementGroupRepository formElementGroupRepository,
-                          RepositoryEntityLinks entityLinks) {
+                          RepositoryEntityLinks entityLinks, FormService formService) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.encounterTypeRepository = encounterTypeRepository;
@@ -57,6 +58,7 @@ public class FormController {
         this.conceptRepository = conceptRepository;
         this.formElementGroupRepository = formElementGroupRepository;
         this.entityLinks = entityLinks;
+        this.formService = formService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -119,7 +121,7 @@ public class FormController {
             encounterType.setName(encounterTypeName);
             encounterType = encounterTypeRepository.save(encounterType);
         }
-        Long observationsTypeEntityId = encounterType == null? null: encounterType.getId();
+        Long observationsTypeEntityId = encounterType == null ? null : encounterType.getId();
 
         FormMapping formMapping = formMappingRepository.findByFormUuidAndObservationsTypeEntityId(formRequest.getUuid(), observationsTypeEntityId);
         if (formMapping == null) {
@@ -254,7 +256,7 @@ public class FormController {
             programName = programRepository.findOne(formMappings.get(0).getEntityId()).getName();
         }
 
-        FormContract formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString(),programName, encounterTypeNames);
+        FormContract formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString(), programName, encounterTypeNames);
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingInt(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());

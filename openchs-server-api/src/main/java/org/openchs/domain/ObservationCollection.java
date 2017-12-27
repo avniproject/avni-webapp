@@ -12,4 +12,8 @@ public class ObservationCollection extends HashMap<String, Object> implements Se
     public ObservationCollection(Map<String, Object> observations) {
         this.putAll(observations);
     }
+
+    public boolean containsObservationFor(Concept concept) {
+        return this.entrySet().stream().anyMatch(stringObjectEntry -> stringObjectEntry.getKey().equals(concept.getUuid()));
+    }
 }

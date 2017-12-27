@@ -2,6 +2,7 @@ package org.openchs.dao.application;
 
 import org.joda.time.DateTime;
 import org.openchs.application.FormMapping;
+import org.openchs.application.FormType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -23,4 +24,5 @@ public interface FormMappingRepository extends PagingAndSortingRepository<FormMa
     List<FormMapping> findByFormUuid(String uuid);
     FormMapping findByFormUuidAndObservationsTypeEntityId(String uuid, Long observationsTypeEntityId);
     Page<FormMapping> findByEntityId(Long entityId, Pageable pageable);
+    FormMapping findByEntityIdAndObservationsTypeEntityIdAndFormFormType(Long entityId, Long observationsTypeEntityId, FormType formType);
 }

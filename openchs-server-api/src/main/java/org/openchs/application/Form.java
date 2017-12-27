@@ -4,6 +4,7 @@ import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,5 +79,19 @@ public class Form extends OrganisationAwareEntity {
     public void removeFormElementGroups(List<String> formElementGroupUUIDs) {
         List<FormElementGroup> orphanedFormElementGroups = getFormElementGroups().stream().filter(formElementGroup -> !formElementGroupUUIDs.contains(formElementGroup.getUuid())).collect(Collectors.toList());
         formElementGroups.removeAll(orphanedFormElementGroups);
+    }
+
+    public FormElement findFormElement(String conceptName) {
+        for (FormElementGroup formElementGroup : formElementGroups) {
+            FormElement formElement = formElementGroup.findFormElementByConcept(conceptName);
+            if (formElement != null) return formElement;
+        }
+        return null;
+    }
+
+    public List<FormElement> getAllFormElements() {
+        ArrayList<FormElement> formElements = new ArrayList<>();
+        formElementGroups.forEach(formElementGroup -> formElements.addAll(formElementGroup.getFormElements()));
+        return formElements;
     }
 }
