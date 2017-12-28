@@ -1,0 +1,1 @@
+ALTER TABLE individual ALTER COLUMN address_id SET NOT NULL;
