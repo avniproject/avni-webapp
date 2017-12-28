@@ -124,6 +124,7 @@ public class RowProcessor {
             throw new RuntimeException(String.format("Mandatory form-elements not present: %s", Arrays.toString(unfilledMandatoryFormElements.toArray())));
         }
         individualController.save(individualRequest);
+        this.logger.info(String.format("Imported Individual: %s", individualRequest.getUuid()));
     }
 
     private ObservationRequest createObservationRequest(Row row, int i, String cellHeader, Form form) {
@@ -257,6 +258,7 @@ public class RowProcessor {
         scheduledVisits.forEach(scheduledProgramEncounterRequest -> {
             programEncounterController.save(scheduledProgramEncounterRequest);
         });
+        this.logger.info(String.format("Imported ProgramEncounter for Enrolment: %s", programEncounterRequest.getProgramEnrolmentUUID()));
     }
 
     void readChecklistHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
@@ -304,5 +306,6 @@ public class RowProcessor {
                     break;
             }
         }
+        this.logger.info(String.format("Imported Checklist for Enrolment: %s", enrolmentUUID));
     }
 }

@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -59,6 +60,9 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
     }
 
     public Set<ProgramEncounter> getProgramEncounters() {
+        if (programEncounters == null) {
+            programEncounters = new HashSet<>();
+        }
         return programEncounters;
     }
 
@@ -107,6 +111,6 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
     }
 
     public ProgramEncounter findEncounter(String encounterTypeName, String encounterName) {
-        return this.programEncounters.stream().filter(programEncounter -> programEncounter.matches(encounterTypeName, encounterName)).findAny().orElse(null);
+        return this.getProgramEncounters().stream().filter(programEncounter -> programEncounter.matches(encounterTypeName, encounterName)).findAny().orElse(null);
     }
 }
