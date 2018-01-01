@@ -25,12 +25,12 @@
             "dataType": "Coded",
             "answers": [
               {
-                "name": "Yes, started",
-                "uuid": "28e76608-dddd-4914-bd44-3689eccfa5ca"
-              },
-              {
                 "name": "Yes, but could not attend",
                 "uuid": "9715936e-03f2-44da-900f-33588fe95250"
+              },
+              {
+                "name": "Yes, started",
+                "uuid": "28e76608-dddd-4914-bd44-3689eccfa5ca"
               },
               {
                 "name": "No",
