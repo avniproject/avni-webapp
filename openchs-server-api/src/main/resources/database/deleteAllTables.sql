@@ -32,6 +32,6 @@ DROP TABLE IF EXISTS gender;
 DROP TABLE IF EXISTS concept_answer;
 DROP TABLE IF EXISTS concept;
 DROP TABLE IF EXISTS health_metadata_version;
-DROP TABLE IF EXISTS organisation;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS organisation;
 DROP TABLE IF EXISTS schema_version;
