@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -13,6 +14,8 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
     private DateTime maxDateTime;
     private DateTime earliestVisitDateTime;
     private DateTime maxVisitDateTime;
+    private DateTime cancelDateTime;
+    private List<ObservationRequest> cancelObservations;
 
     public String getProgramEnrolmentUUID() {
         return programEnrolmentUUID;
@@ -46,6 +49,22 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
         this.earliestVisitDateTime = earliestVisitDateTime;
     }
 
+    public DateTime getCancelDateTime() {
+        return cancelDateTime;
+    }
+
+    public void setCancelDateTime(DateTime cancelDateTime) {
+        this.cancelDateTime = cancelDateTime;
+    }
+
+    public List<ObservationRequest> getCancelObservations() {
+        return cancelObservations;
+    }
+
+    public void setCancelObservations(List<ObservationRequest> cancelObservations) {
+        this.cancelObservations = cancelObservations;
+    }
+
     public DateTime getMaxVisitDateTime() {
         return maxVisitDateTime;
     }
@@ -58,6 +77,7 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setUuid(UUID.randomUUID().toString());
         programEncounterRequest.observations = new ArrayList<>();
+        programEncounterRequest.cancelObservations = new ArrayList<>();
         return programEncounterRequest;
     }
 }

@@ -31,6 +31,13 @@ public class ProgramEncounter extends OrganisationAwareEntity {
     @Type(type = "observations")
     private ObservationCollection observations;
 
+    @Column
+    private DateTime cancelDateTime;
+
+    @Column
+    @Type(type = "observations")
+    private ObservationCollection cancelObservations;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_enrolment_id")
@@ -90,6 +97,22 @@ public class ProgramEncounter extends OrganisationAwareEntity {
 
     public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
         this.maxVisitDateTime = maxVisitDateTime;
+    }
+
+    public DateTime getCancelDateTime() {
+        return cancelDateTime;
+    }
+
+    public void setCancelDateTime(DateTime cancelDateTime) {
+        this.cancelDateTime = cancelDateTime;
+    }
+
+    public ObservationCollection getCancelObservations() {
+        return cancelObservations;
+    }
+
+    public void setCancelObservations(ObservationCollection cancelObservations) {
+        this.cancelObservations = cancelObservations;
     }
 
     public boolean matches(String encounterTypeName, String encounterName) {
