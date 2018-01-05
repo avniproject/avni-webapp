@@ -19,7 +19,7 @@ DELETE FROM organisation;
 INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
 INSERT INTO organisation (id, name, db_user, uuid)
-VALUES (2, 'demo', 'demo', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
+VALUES (2, 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
 
 INSERT INTO users (id, name, uuid, created_date_time, last_modified_date_time, version, organisation_id) VALUES (1, 'openchs', '5fed2907-df3a-4867-aef5-c87f4c78a31a', current_timestamp, current_timestamp, 1, 1);
 
