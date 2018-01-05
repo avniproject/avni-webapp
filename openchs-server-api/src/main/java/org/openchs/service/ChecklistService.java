@@ -37,7 +37,11 @@ public class ChecklistService {
         Checklist checklist = this.findChecklist(programEnrolmentUUID);
         if (checklist == null) return null;
 
-        return checklist.getItems().stream().filter(x -> x.getConcept().getName().equals(checklistItemName)).findFirst().orElse(null);
+        return checklist.getItems()
+                .stream()
+                .filter(x -> x.getConcept().getName().equals(checklistItemName))
+                .findFirst()
+                .orElse(null);
     }
 
     @Transactional(Transactional.TxType.REQUIRED)

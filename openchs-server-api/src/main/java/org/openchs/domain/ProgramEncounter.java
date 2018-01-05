@@ -5,10 +5,11 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "program_encounter")
-public class ProgramEncounter extends CHSEntity {
+public class ProgramEncounter extends OrganisationAwareEntity {
     @Column
     private String name;
 
@@ -21,10 +22,10 @@ public class ProgramEncounter extends CHSEntity {
     private DateTime encounterDateTime;
 
     @Column
-    private DateTime scheduledDateTime;
+    private DateTime earliestVisitDateTime;
 
     @Column
-    private DateTime maxDateTime;
+    private DateTime maxVisitDateTime;
 
     @Column
     @Type(type = "observations")
@@ -51,14 +52,6 @@ public class ProgramEncounter extends CHSEntity {
         this.encounterDateTime = encounterDateTime;
     }
 
-    public DateTime getScheduledDateTime() {
-        return scheduledDateTime;
-    }
-
-    public void setScheduledDateTime(DateTime scheduledDateTime) {
-        this.scheduledDateTime = scheduledDateTime;
-    }
-
     public ProgramEnrolment getProgramEnrolment() {
         return programEnrolment;
     }
@@ -83,11 +76,23 @@ public class ProgramEncounter extends CHSEntity {
         this.name = name;
     }
 
-    public DateTime getMaxDateTime() {
-        return maxDateTime;
+    public DateTime getEarliestVisitDateTime() {
+        return earliestVisitDateTime;
     }
 
-    public void setMaxDateTime(DateTime maxDateTime) {
-        this.maxDateTime = maxDateTime;
+    public void setEarliestVisitDateTime(DateTime earliestVisitDateTime) {
+        this.earliestVisitDateTime = earliestVisitDateTime;
+    }
+
+    public DateTime getMaxVisitDateTime() {
+        return maxVisitDateTime;
+    }
+
+    public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
+        this.maxVisitDateTime = maxVisitDateTime;
+    }
+
+    public boolean matches(String encounterTypeName, String encounterName) {
+        return Objects.equals(this.encounterType.getName(), encounterTypeName) && Objects.equals(this.name, encounterName);
     }
 }

@@ -5,6 +5,7 @@ import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.web.request.ChecklistRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +26,7 @@ public class ChecklistController extends AbstractController<Checklist> {
 
     @Transactional
     @RequestMapping(value = "/checklists", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ChecklistRequest checklistRequest) {
         Checklist checklist = newOrExistingEntity(checklistRepository, checklistRequest, new Checklist());
         checklist.setName(checklistRequest.getName());

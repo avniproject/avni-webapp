@@ -5,11 +5,12 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "program_enrolment")
-public class ProgramEnrolment extends CHSEntity {
+public class ProgramEnrolment extends OrganisationAwareEntity {
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="program_id")
@@ -59,6 +60,9 @@ public class ProgramEnrolment extends CHSEntity {
     }
 
     public Set<ProgramEncounter> getProgramEncounters() {
+        if (programEncounters == null) {
+            programEncounters = new HashSet<>();
+        }
         return programEncounters;
     }
 
@@ -104,5 +108,9 @@ public class ProgramEnrolment extends CHSEntity {
 
     public void setProgramExitObservations(ObservationCollection programExitObservations) {
         this.programExitObservations = programExitObservations;
+    }
+
+    public ProgramEncounter findEncounter(String encounterTypeName, String encounterName) {
+        return this.getProgramEncounters().stream().filter(programEncounter -> programEncounter.matches(encounterTypeName, encounterName)).findAny().orElse(null);
     }
 }

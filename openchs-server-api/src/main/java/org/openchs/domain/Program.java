@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "program")
-public class Program extends CHSEntity {
+public class Program extends OrganisationAwareEntity {
     @NotNull
     @Column
     private String name;

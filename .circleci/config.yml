@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  test:
     docker:
       - image: circleci/openjdk:8-jdk
 
@@ -20,16 +20,103 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
+          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
           - v1-dependencies-
 
-      - run: sudo apt-get install make
-      
-      - run: make test_server
+      - run: sudo apt-get install make postgresql-client
 
-      - run: make deploy
+      - run: make ci-test
 
       - save_cache:
           paths:
             - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
+            - ~/.gradle
+            - ~/openchs-server/.gradle
+          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+
+
+  publish:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/openchs-server
+
+    environment:
+      MAVEN_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          - v1-dependencies-
+
+      - run: sudo apt-get install make openssl
+
+      - run: make upload-rpm
+
+      - save_cache:
+          paths:
+            - ~/.m2
+            - ~/.gradle
+            - ~/openchs-server/.gradle
+          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+
+      - run: mkdir -p ~/artifacts;
+
+      - run: cp minor_version ~/artifacts/minor_version;
+
+      - run: cp major_version ~/artifacts/major_version;
+
+      - persist_to_workspace:
+          root: ~/artifacts
+          paths:
+           - minor_version
+           - major_version
+
+
+  deploy:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    working_directory: ~/
+
+    steps:
+      - attach_workspace:
+          at: ~/artifacts
+
+      - run: sudo apt-get install make openssl
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install python3-pip
+            sudo pip3 install awscli --upgrade
+
+      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
+
+      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
+
+      - run: cp -f ~/artifacts/major_version ~/infra/server/version/major_version
+      
+      - run: cp -f ~/artifacts/minor_version ~/infra/server/version/minor_version
+
+      - run: cd ~/infra; make install; make staging-create;
+
+
+workflows:
+  version: 2
+  test_and_publish_and_deploy:
+    jobs:
+      - test
+      - publish:
+          requires:
+            - test
+      - deploy:
+          requires:
+            - publish
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0

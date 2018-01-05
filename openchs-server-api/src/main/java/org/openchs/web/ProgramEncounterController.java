@@ -2,9 +2,10 @@ package org.openchs.web;
 
 import org.openchs.dao.*;
 import org.openchs.domain.*;
-import org.openchs.web.request.ObservationService;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,6 +30,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
     @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ProgramEncounterRequest request) {
         EncounterType encounterType = (EncounterType) ReferenceDataRepositoryImpl.findReferenceEntity(encounterTypeRepository, request.getEncounterType(), request.getEncounterTypeUUID());
 
@@ -38,8 +40,8 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         encounter.setEncounterType(encounterType);
         encounter.setObservations(observationService.createObservations(request.getObservations()));
         encounter.setName(request.getName());
-        encounter.setScheduledDateTime(request.getScheduledDateTime());
-        encounter.setMaxDateTime(request.getMaxDateTime());
+        encounter.setEarliestVisitDateTime(request.getEarliestVisitDateTime());
+        encounter.setMaxVisitDateTime(request.getMaxDateTime());
 
         programEncounterRepository.save(encounter);
     }

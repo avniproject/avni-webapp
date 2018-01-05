@@ -1,5 +1,8 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.Type;
+import org.openchs.application.KeyValues;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -7,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "address_level")
-public class AddressLevel extends CHSEntity {
+public class AddressLevel extends OrganisationAwareEntity {
     @Column
     @NotNull
     private String title;
@@ -16,12 +19,15 @@ public class AddressLevel extends CHSEntity {
     @NotNull
     private int level;
 
+    @Column(name = "type", nullable = true)
+    private String type;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private AddressLevel parentAddressLevel;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "catchment_address_mapping", joinColumns = { @JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
+    @JoinTable(name = "catchment_address_mapping", joinColumns = {@JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
     private Set<Catchment> catchments = new HashSet<Catchment>();
 
     public String getTitle() {
@@ -56,6 +62,13 @@ public class AddressLevel extends CHSEntity {
         this.catchments = catchments;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public void addCatchment(Catchment catchment) {
         catchments.add(catchment);

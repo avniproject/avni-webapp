@@ -14,19 +14,33 @@ help:
 # </makefile>
 
 
+define _deploy_schema
+	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ migrate
+endef
+
+
 su:=$(shell id -un)
 
-
 # <postgres>
+clean_db_server:
+	make _clean_db database=openchs
+	make _clean_db database=openchs_test
+	-psql -h localhost -U $(su) postgres -c 'drop role openchs';
+	-psql -h localhost -U $(su) postgres -c 'drop role demo';
+
 _clean_db:
 	-psql -h localhost -U $(su) postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
 	-psql -h localhost -U $(su) postgres -c 'drop database $(database)';
 
 _build_db:
-	-psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
 	-psql -h localhost -U $(su) postgres -c "create user $(database) with password 'password'";
-	-psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
+	psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
+	psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
+	-psql -h localhost $(database) -c 'grant demo to openchs';
 # </postgres>
+
+_create_demo_organisation:
+	-psql -h localhost -U $(su) $(database) -f make-scripts/create_demo_organisation.sql
 
 # <db>
 clean_db: ## Drops the database
@@ -35,7 +49,12 @@ clean_db: ## Drops the database
 build_db: ## Creates new empty database
 	make _build_db database=openchs
 
+create_demo_organisation: ## Creates dummy user
+	make _create_demo_organisation database=openchs
+
 rebuild_db: clean_db build_db ## clean + build db
+
+rebuild_dev_db: rebuild_db deploy_schema create_demo_organisation
 # </db>
 
 # <testdb>
@@ -44,54 +63,46 @@ clean_testdb: ## Drops the test database
 
 build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
+	make _create_demo_organisation database=openchs_test
 
-rebuild_testdb: clean_testdb build_testdb ## clean + build test db
+rebuild_testdb: clean_testdb build_testdb deploy_test_schema ## clean + build test db
 # </testdb>
 
 
 # <schema>
-clean_schema: ## drops the schema
-	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=openchs clean
-
 deploy_schema: ## Runs all migrations to create the schema with all the objects
-	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/openchs -schemas=openchs -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ migrate
+	$(call _deploy_schema,openchs)
 
-redeploy_schema: clean_schema deploy_schema ## clean and deploy schema
+deploy_test_schema: ## Runs all migrations to create the schema with all the objects
+	$(call _deploy_schema,openchs_test)
 # </schema>
 
 
 # <server>
-start_server: build_server ## Builds and starts the server
-	mvn spring-boot:run
-#	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar
+start_server: ## Builds and starts the server
+	./gradlew clean openchs-server-api:bootRun
 
 build_server: ## Builds the jar file
-	mvn clean compile test-compile
-	mvn install -DskipTests
+	./gradlew clean build -x test
 
-deploy: ## Deploys the jar
-	mvn clean compile test-compile
-	mvn deploy -s .circleci.settings.xml -DskipTests
+test_server: rebuild_testdb ## Run tests
+	GRADLE_OPTS="-Xmx256m" ./gradlew clean test
 
-
-test_server: rebuild_testdb build_server ## Run tests
-	mvn install
+start_server_wo_gradle:
+	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar --cognito.clientid=$(client) --cognito.poolid=$(pool)
 # <server>
 
+ci-test:
+	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
+	./gradlew clean test
 
-#build: stop
-#	@echo "Building all containers"
-#	docker-compose rm -f
-#	@echo "Building all containers"
-#	docker-compose build
-#release:
-#	@echo "Building all containers"
-#	docker-compose push httpd
-#stop:
-#	@echo "Stopping all services"
-#	docker-compose stop
-#	docker-compose kill
-#start:
-#	@echo "Starting all services"
-#	docker-compose up
-#restart: stop start
+open_test_results:
+	open openchs-server-api/build/reports/tests/test/index.html
+
+build-rpm:
+	./gradlew clean openchs-server-api:buildRpm -x test --info --stacktrace
+
+upload-rpm:
+	@openssl aes-256-cbc -a -md md5 -in infra/rpm/keys/openchs.asc.enc -d -out infra/rpm/keys/openchs.asc -k ${ENCRYPTION_KEY}
+	-rm -rf openchs-server-api/build
+	./gradlew clean openchs-server-api:uploadRpm -x test --info --stacktrace --rerun-tasks

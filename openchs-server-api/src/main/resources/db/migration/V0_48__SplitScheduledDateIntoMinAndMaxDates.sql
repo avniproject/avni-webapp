@@ -1,0 +1,2 @@
+ALTER TABLE program_encounter RENAME COLUMN scheduled_date_time TO earliest_visit_date_time;
+ALTER TABLE program_encounter RENAME COLUMN max_date_time TO max_visit_date_time;

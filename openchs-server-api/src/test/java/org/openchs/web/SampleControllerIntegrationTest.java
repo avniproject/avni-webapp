@@ -10,8 +10,15 @@ import static org.junit.Assert.assertThat;
 public class SampleControllerIntegrationTest extends AbstractControllerIntegrationTest {
     @Test
     public void getHello() throws Exception {
-        ResponseEntity<String> response = template.getForEntity(base.toString(),
+        ResponseEntity<String> response = template.getForEntity(base.toString() + "/hello",
                 String.class);
-        assertThat(response.getBody(), equalTo("Hello World!"));
+        assertThat(response.getBody(), equalTo("world"));
+    }
+
+    @Test
+    public void getPing() throws Exception {
+        ResponseEntity<String> response = template.getForEntity(base.toString() + "/ping",
+                String.class);
+        assertThat(response.getBody(), equalTo("pong"));
     }
 }

@@ -4,16 +4,17 @@ import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "checklist")
-public class Checklist extends CHSEntity {
+public class Checklist extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "checklist")
-    private List<ChecklistItem> items;
+    private List<ChecklistItem> items = new ArrayList<>();
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,7 +34,7 @@ public class Checklist extends CHSEntity {
     }
 
     public List<ChecklistItem> getItems() {
-        return items;
+        return items == null ? new ArrayList<>() : items;
     }
 
     public void setItems(List<ChecklistItem> items) {

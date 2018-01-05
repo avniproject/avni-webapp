@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "encounter_type")
-public class EncounterType extends CHSEntity {
+public class EncounterType extends OrganisationAwareEntity {
     @NotNull
     @Column
     private String name;
@@ -28,5 +28,11 @@ public class EncounterType extends CHSEntity {
 
     public void setConcept(Concept concept) {
         this.concept = concept;
+    }
+
+    public static EncounterType create(String name) {
+        EncounterType encounterType = new EncounterType();
+        encounterType.setName(name);
+        return encounterType;
     }
 }

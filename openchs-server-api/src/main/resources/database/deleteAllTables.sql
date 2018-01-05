@@ -1,0 +1,37 @@
+DROP VIEW IF EXISTS mother_program_encounters;
+DROP VIEW IF EXISTS mother_program_enrolments;
+DROP VIEW IF EXISTS checklist_items;
+
+DROP FUNCTION IF EXISTS coded_obs( ANYELEMENT, TEXT );
+DROP FUNCTION IF EXISTS coded_obs_exists( ANYELEMENT, TEXT );
+DROP FUNCTION IF EXISTS concept_uuid( TEXT );
+DROP FUNCTION IF EXISTS date_obs( ANYELEMENT, TEXT );
+DROP FUNCTION IF EXISTS is_overdue_visit( PROGRAM_ENCOUNTER );
+DROP FUNCTION IF EXISTS numeric_obs( ANYELEMENT, TEXT );
+DROP FUNCTION IF EXISTS text_obs( ANYELEMENT, TEXT );
+
+DROP TABLE IF EXISTS program_encounter;
+DROP TABLE IF EXISTS encounter;
+DROP TABLE IF EXISTS checklist_item;
+DROP TABLE IF EXISTS checklist;
+DROP TABLE IF EXISTS program_enrolment;
+DROP TABLE IF EXISTS individual;
+DROP TABLE IF EXISTS program_outcome;
+DROP TABLE IF EXISTS operational_program;
+DROP TABLE IF EXISTS program;
+DROP TABLE IF EXISTS form_mapping;
+DROP TABLE IF EXISTS operational_encounter_type;
+DROP TABLE IF EXISTS encounter_type;
+DROP TABLE IF EXISTS form_element;
+DROP TABLE IF EXISTS form_element_group;
+DROP TABLE IF EXISTS form;
+DROP TABLE IF EXISTS catchment_address_mapping;
+DROP TABLE IF EXISTS address_level;
+DROP TABLE IF EXISTS catchment;
+DROP TABLE IF EXISTS gender;
+DROP TABLE IF EXISTS concept_answer;
+DROP TABLE IF EXISTS concept;
+DROP TABLE IF EXISTS health_metadata_version;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS organisation;
+DROP TABLE IF EXISTS schema_version;

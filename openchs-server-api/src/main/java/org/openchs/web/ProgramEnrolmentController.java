@@ -8,9 +8,10 @@ import org.openchs.domain.Individual;
 import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.domain.ProgramOutcome;
-import org.openchs.web.request.ObservationService;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +37,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
         Program program;

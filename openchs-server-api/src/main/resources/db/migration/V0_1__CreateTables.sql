@@ -96,8 +96,8 @@ CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   uuid          CHARACTER VARYING(255) NOT NULL,
   version       INTEGER NOT NULL,
-  created_by_id     BIGINT                 NOT NULL,
-  last_modified_by_id     BIGINT                 NOT NULL,
+  created_by_id     BIGINT,
+  last_modified_by_id     BIGINT,
   created_date_time  TIMESTAMP                   NOT NULL,
   last_modified_date_time  TIMESTAMP                   NOT NULL
 );

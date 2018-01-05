@@ -1,0 +1,4 @@
+rootProject.name = 'openchs-server'
+include ':openchs-server-api'
+project(':openchs-server-api').projectDir = "$rootDir/opench" +
+        "s-server-api" as File

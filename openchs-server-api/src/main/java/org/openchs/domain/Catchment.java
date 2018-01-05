@@ -7,11 +7,15 @@ import java.util.Set;
 
 @Entity
 @Table(name = "catchment")
-public class Catchment extends CHSEntity {
+public class Catchment extends OrganisationAwareEntity {
 
     @Column
     @NotNull
     private String name;
+
+    @Column(name = "type")
+    @NotNull
+    private String type;
 
     @ManyToMany(mappedBy = "catchments")
     private Set<AddressLevel> addressLevels = new HashSet<>();
@@ -35,6 +39,14 @@ public class Catchment extends CHSEntity {
 
     public AddressLevel findAddressLevel(String addressLevelUUID) {
         return addressLevels.stream().filter(x -> x.getUuid().equals(addressLevelUUID)).findAny().orElse(null);
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void addAddressLevel(AddressLevel addressLevel) {

@@ -1,17 +1,21 @@
 package org.openchs.application;
 
 import org.openchs.domain.CHSEntity;
+import org.openchs.domain.Individual;
+import org.openchs.domain.Organisation;
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "form_element_group")
-public class FormElementGroup extends CHSEntity {
+public class FormElementGroup extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
@@ -80,9 +84,6 @@ public class FormElementGroup extends CHSEntity {
         formElement.setUuid(formElementUUID);
         formElements.add(formElement);
         formElement.setFormElementGroup(this);
-        if (formElementUUID == null) {
-            formElement.assignUUID();
-        }
         return formElement;
     }
 
@@ -97,5 +98,9 @@ public class FormElementGroup extends CHSEntity {
 
     public void setDisplay(String display) {
         this.display = display;
+    }
+
+    public FormElement findFormElementByConcept(String conceptName) {
+        return formElements.stream().filter(x -> x.getConcept().getName().equals(conceptName)).findAny().orElse(null);
     }
 }

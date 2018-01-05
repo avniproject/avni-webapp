@@ -1,15 +1,15 @@
 package org.openchs.application;
 
 import org.hibernate.annotations.Type;
-import org.openchs.domain.CHSEntity;
 import org.openchs.domain.Concept;
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "form_element")
-public class FormElement extends CHSEntity {
+public class FormElement extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
@@ -38,6 +38,12 @@ public class FormElement extends CHSEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_element_group_id")
     private FormElementGroup formElementGroup;
+
+    @Column(name = "type", nullable = true)
+    private String type;
+
+    @Embedded
+    private Format validFormat;
 
     public String getName() {
         return name;
@@ -103,8 +109,23 @@ public class FormElement extends CHSEntity {
         this.formElementGroup = formElementGroup;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public boolean isFormElementNameSameAsConceptName() {
         return getConcept().getName().equals(getName());
+    }
+
+    public Format getValidFormat() {
+        return validFormat;
+    }
+
+    public void setValidFormat(Format validFormat) {
+        this.validFormat = validFormat;
     }
 }

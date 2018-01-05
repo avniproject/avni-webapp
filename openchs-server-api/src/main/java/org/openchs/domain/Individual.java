@@ -5,13 +5,17 @@ import org.joda.time.LocalDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "individual")
-public class Individual extends CHSEntity {
+public class Individual extends OrganisationAwareEntity {
     @NotNull
-    private String name;
+    private String firstName;
+
+    @NotNull
+    private String lastName;
 
     @NotNull
     private LocalDate dateOfBirth;
@@ -32,7 +36,7 @@ public class Individual extends CHSEntity {
     private AddressLevel addressLevel;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
-    private Set<ProgramEnrolment> programEnrolments;
+    private Set<ProgramEnrolment> programEnrolments = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
     private Set<Encounter> encounters;
@@ -40,14 +44,6 @@ public class Individual extends CHSEntity {
     @Column
     @Type(type = "observations")
     private ObservationCollection observations;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
@@ -113,9 +109,10 @@ public class Individual extends CHSEntity {
         this.registrationDate = registrationDate;
     }
 
-    public static Individual create(String name, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
+    public static Individual create(String firstName, String lastName, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
         Individual individual = new Individual();
-        individual.name = name;
+        individual.firstName = firstName;
+        individual.lastName = lastName;
         individual.dateOfBirth = dateOfBirth;
         individual.dateOfBirthVerified = dateOfBirthVerified;
         individual.gender = gender;
@@ -126,5 +123,21 @@ public class Individual extends CHSEntity {
 
     public void addEnrolment(ProgramEnrolment programEnrolment) {
         this.programEnrolments.add(programEnrolment);
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

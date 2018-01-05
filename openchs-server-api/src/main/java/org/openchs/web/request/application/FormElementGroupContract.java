@@ -48,4 +48,13 @@ public class FormElementGroupContract extends ReferenceDataContract {
     public void setDisplay(String display) {
         this.display = display;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name=" + this.getName() + '\'' +
+                "displayOrder=" + displayOrder +
+                ", display='" + display + '\'' +
+                '}';
+    }
 }

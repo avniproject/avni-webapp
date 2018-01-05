@@ -2,34 +2,35 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.openchs.application.KeyType;
 import org.openchs.application.KeyValues;
-import org.openchs.application.ValueType;
-import org.openchs.domain.ConceptDataType;
-import org.openchs.web.validation.ValidationResult;
+import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ReferenceDataContract;
-
-import java.util.List;
+import org.openchs.web.request.FormatContract;
+import org.openchs.web.validation.ValidationResult;
+import org.springframework.util.StringUtils;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "name", "uuid", "isMandatory", "keyValues", "conceptName", "dataType", "displayOrder", "answers" })
+@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "conceptUUID", "concept", "displayOrder", "type"})
 public class FormElementContract extends ReferenceDataContract {
     private boolean isMandatory;
     private KeyValues keyValues;
-    private String conceptName;
-    private String dataType;
-    private List<String> answers;
+    private String conceptUUID;
+    private ConceptContract concept;
     private short displayOrder;
+    private String type;
+    private FormatContract validFormat;
 
     public FormElementContract() {
     }
 
-    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, String conceptName, String dataType) {
+    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, String conceptName, ConceptContract concept, String type, FormatContract validFormat) {
         super(uuid, userUUID, name);
         this.isMandatory = isMandatory;
         this.keyValues = keyValues;
-        this.conceptName = conceptName;
-        this.dataType = dataType;
+        this.conceptUUID = conceptName;
+        this.concept = concept;
+        this.type = type;
+        this.validFormat = validFormat;
     }
 
     public boolean isMandatory() {
@@ -48,28 +49,12 @@ public class FormElementContract extends ReferenceDataContract {
         this.keyValues = keyValues;
     }
 
-    public String getConceptName() {
-        return conceptName;
+    public String getConceptUUID() {
+        return conceptUUID;
     }
 
-    public void setConceptName(String conceptName) {
-        this.conceptName = conceptName;
-    }
-
-    public String getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    public List<String> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(List<String> answers) {
-        this.answers = answers;
+    public void setConceptUUID(String conceptUUID) {
+        this.conceptUUID = conceptUUID;
     }
 
     public short getDisplayOrder() {
@@ -81,10 +66,54 @@ public class FormElementContract extends ReferenceDataContract {
     }
 
     public ValidationResult validate() {
-        if (ConceptDataType.Coded.toString().equals(this.dataType)) {
-            if (keyValues == null || keyValues.isEmpty() || !keyValues.containsKey(KeyType.Select) || !keyValues.containsOneOfTheValues(KeyType.Select, ValueType.getSelectValueTypes()))
-                return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
+        if (!canIdentifyConceptUniquely()) {
+            return ValidationResult.Failure("One and only one of conceptUUID or concept can be provided");
         }
+
+        if (concept != null && concept.isCoded() && !typeSpecified())
+            return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
+
         return ValidationResult.Success;
+    }
+
+    private boolean typeSpecified() {
+        return type != null;
+    }
+
+    private boolean canIdentifyConceptUniquely() {
+        return this.concept == null ^ StringUtils.isEmpty(conceptUUID);
+    }
+
+    public ConceptContract getConcept() {
+        return concept;
+    }
+
+    public void setConcept(ConceptContract concept) {
+        this.concept = concept;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name=" + this.getName() + '\'' +
+                "isMandatory=" + isMandatory +
+                ", displayOrder=" + displayOrder +
+                '}';
+    }
+
+    public FormatContract getValidFormat() {
+        return validFormat;
+    }
+
+    public void setValidFormat(FormatContract validFormat) {
+        this.validFormat = validFormat;
     }
 }

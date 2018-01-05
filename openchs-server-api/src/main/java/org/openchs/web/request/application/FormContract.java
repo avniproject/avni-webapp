@@ -14,13 +14,16 @@ public class FormContract extends ReferenceDataContract {
     private String programName;
     private List<FormElementGroupContract> formElementGroups;
 
+    private List<String> encounterTypes = new ArrayList<>();
+
     public FormContract() {
     }
 
-    public FormContract(String uuid, String userUUID, String name, String formType, String programName) {
+    public FormContract(String uuid, String userUUID, String name, String formType, String programName, List<String> encounterTypes) {
         super(uuid, userUUID, name);
         this.programName = programName;
         this.formType = formType;
+        this.encounterTypes = encounterTypes;
         formElementGroups = new ArrayList<>();
     }
 
@@ -50,5 +53,22 @@ public class FormContract extends ReferenceDataContract {
 
     public void addFormElementGroup(FormElementGroupContract formElementGroupContract) {
         formElementGroups.add(formElementGroupContract);
+    }
+
+    public List<String> getEncounterTypes() {
+        return encounterTypes;
+    }
+
+    public void setEncounterTypes(List<String> encounterTypes) {
+        this.encounterTypes = encounterTypes;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "name=" + this.getName() + '\'' +
+                "formType='" + formType + '\'' +
+                ", programName='" + programName + '\'' +
+                '}';
     }
 }

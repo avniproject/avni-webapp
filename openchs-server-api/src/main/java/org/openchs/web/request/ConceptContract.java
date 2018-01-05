@@ -1,29 +1,40 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.domain.ConceptDataType;
+
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({ "name", "uuid", "dataType", "answers", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit"})
 public class ConceptContract extends ReferenceDataContract {
     private String dataType;
-    private List<String> answers;
+    private List<ConceptContract> answers;
     private Double lowAbsolute;
     private Double highAbsolute;
     private Double lowNormal;
     private Double highNormal;
     private String unit;
+    private boolean abnormal;
 
     public String getDataType() {
         return dataType == null ? null : dataType.trim();
+    }
+
+    public boolean isCoded() {
+        return ConceptDataType.Coded.toString().equals(this.getDataType());
     }
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
 
-    public List<String> getAnswers() {
+    public List<ConceptContract> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<String> answers) {
+    public void setAnswers(List<ConceptContract> answers) {
         this.answers = answers;
     }
 
@@ -70,5 +81,13 @@ public class ConceptContract extends ReferenceDataContract {
     @Override
     public String toString() {
         return String.format("UUID: %s, Name: %s, DataType: %s", this.getUuid(), this.getName(), this.getDataType());
+    }
+
+    public boolean isAbnormal() {
+        return abnormal;
+    }
+
+    public void setAbnormal(boolean abnormal) {
+        this.abnormal = abnormal;
     }
 }

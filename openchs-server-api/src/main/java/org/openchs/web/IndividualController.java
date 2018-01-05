@@ -8,10 +8,9 @@ import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
-import org.openchs.web.request.ObservationService;
-import org.openchs.web.request.ProgramEnrolmentRequest;
-import org.openchs.web.request.keyvalue.KeyValueIndividualRequest;
+import org.openchs.service.ObservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +35,7 @@ public class IndividualController extends AbstractController<Individual> {
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody IndividualRequest individualRequest) {
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
@@ -46,7 +46,8 @@ public class IndividualController extends AbstractController<Individual> {
         AddressLevel addressLevel = individualRequest.getAddressLevelUUID() == null ? addressLevelRepository.findByTitle(individualRequest.getAddressLevel()) : addressLevelRepository.findByUuid(individualRequest.getAddressLevelUUID());
         Gender gender = individualRequest.getGender() == null ? genderRepository.findByUuid(individualRequest.getGenderUUID()) : genderRepository.findByName(individualRequest.getGender());
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
-        individual.setName(individualRequest.getName());
+        individual.setFirstName(individualRequest.getFirstName());
+        individual.setLastName(individualRequest.getLastName());
         individual.setDateOfBirth(individualRequest.getDateOfBirth());
         individual.setAddressLevel(addressLevel);
         individual.setGender(gender);
