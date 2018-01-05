@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -69,6 +68,9 @@ public class Form extends CHSEntity {
         this.formElementGroups.add(formElementGroup);
         formElementGroup.setForm(this);
         formElementGroup.setUuid(formElementGroupUUID);
+        if (formElementGroupUUID == null) {
+            formElementGroup.assignUUID();
+        }
         return formElementGroup;
     }
 

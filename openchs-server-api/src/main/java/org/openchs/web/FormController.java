@@ -62,7 +62,9 @@ public class FormController {
         Form form = formRepository.findByUuid(formRequest.getUuid());
         if (form == null) {
             form = Form.create();
-            form.setUuid(formRequest.getUuid());
+            if (formRequest.getUuid() == null) {
+                form.assignUUID();
+            }
             associatedEncounterTypeName = formRequest.getName();
         } else {
             associatedEncounterTypeName = form.getName();
