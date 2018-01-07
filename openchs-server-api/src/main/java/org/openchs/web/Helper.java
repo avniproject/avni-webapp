@@ -4,7 +4,6 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
-import org.openchs.web.request.AnswerConceptContract;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.validation.ValidationException;
 import org.springframework.util.StringUtils;
@@ -51,7 +50,11 @@ public class Helper {
         Concept answer = conceptRepository.findByUuid(answerConceptRequest.getUuid());
         if (answer == null) {
             answer = new Concept();
-            answer.setUuid(answerConceptRequest.getUuid());
+            if (answerConceptRequest.getUuid() == null) {
+                answer.assignUUID();
+            } else {
+                answer.setUuid(answerConceptRequest.getUuid());
+            }
             answer.setDataType(ConceptDataType.NA.toString());
             if(StringUtils.isEmpty(answerConceptRequest.getName())){
                 throw new ValidationException("Name missing for a new answer concept");

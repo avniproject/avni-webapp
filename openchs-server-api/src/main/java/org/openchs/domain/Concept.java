@@ -92,7 +92,11 @@ public class Concept extends OrganisationAwareEntity {
         if (ConceptDataType.Coded.toString().equals(dataType)) {
             concept.conceptAnswers = new HashSet<>();
         }
-        concept.setUuid(uuid);
+        if (uuid == null) {
+            concept.assignUUID();
+        } else {
+            concept.setUuid(uuid);
+        }
         return concept;
     }
 

@@ -105,7 +105,11 @@ public class FormController {
     }
 
     private void updateFormAttributes(@RequestBody FormContract formRequest, Form form) {
-        form.setUuid(formRequest.getUuid());
+        if (formRequest.getUuid() == null) {
+            form.assignUUID();
+        } else {
+            form.setUuid(formRequest.getUuid());
+        }
         form.setName(formRequest.getName());
         form.setFormType(FormType.valueOf(formRequest.getFormType()));
     }
@@ -248,7 +252,9 @@ public class FormController {
 
         List<String> encounterTypeNames = new ArrayList<>();
         for (FormMapping formMapping : formMappings) {
-            encounterTypeNames.add(encounterTypeRepository.findOne(formMapping.getObservationsTypeEntityId()).getName());
+            if (formMapping.getObservationsTypeEntityId() != null) {
+                encounterTypeNames.add(encounterTypeRepository.findOne(formMapping.getObservationsTypeEntityId()).getName());
+            }
         }
 
         String programName = null;

@@ -1,8 +1,5 @@
 package org.openchs.application;
 
-import org.openchs.domain.CHSEntity;
-import org.openchs.domain.Individual;
-import org.openchs.domain.Organisation;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
@@ -10,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -81,7 +77,11 @@ public class FormElementGroup extends OrganisationAwareEntity {
 
     public FormElement addFormElement(String formElementUUID) {
         FormElement formElement = new FormElement();
-        formElement.setUuid(formElementUUID);
+        if (formElementUUID == null) {
+            formElement.assignUUID();
+        } else {
+            formElement.setUuid(formElementUUID);
+        }
         formElements.add(formElement);
         formElement.setFormElementGroup(this);
         return formElement;
