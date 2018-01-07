@@ -317,7 +317,6 @@ public class FormController {
      * <li>lastModifiedBy: http://localhost:8021/user/1</li>
      * </ol>
      */
-    @CrossOrigin
     @RequestMapping(value = "/forms/program/{programId}", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public List<BasicFormDetails> getForms(@PathVariable("programId") Long programId, Pageable pageable) {
@@ -362,7 +361,6 @@ public class FormController {
      * @param pageable
      * @return list of program/forms
      */
-    @CrossOrigin
     @RequestMapping(value = "/forms", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public List<Map<String, Object>> getForms(Pageable pageable) {
