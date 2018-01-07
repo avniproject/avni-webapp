@@ -95,4 +95,8 @@ public class ProgramEncounter extends OrganisationAwareEntity {
     public boolean matches(String encounterTypeName, String encounterName) {
         return Objects.equals(this.encounterType.getName(), encounterTypeName) && Objects.equals(this.name, encounterName);
     }
+
+    public boolean dateFallsWithIn(DateTime encounterDateTime) {
+        return encounterDateTime.isAfter(this.earliestVisitDateTime) && encounterDateTime.isBefore(this.maxVisitDateTime);
+    }
 }

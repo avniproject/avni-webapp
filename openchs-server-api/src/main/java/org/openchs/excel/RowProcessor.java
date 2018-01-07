@@ -97,7 +97,7 @@ public class RowProcessor {
                     individualRequest.setLastName(ExcelUtil.getText(row, i));
                     break;
                 case "Date of Birth":
-                    individualRequest.setDateOfBirth(new LocalDate(ExcelUtil.getDate(row, i)));
+                    individualRequest.setDateOfBirth(new LocalDate(ExcelUtil.getDateFromString(row, i)));
                     break;
                 case "Date of Birth Verified":
                     individualRequest.setDateOfBirthVerified(TextToType.toBoolean(ExcelUtil.getText(row, i)));
@@ -249,6 +249,9 @@ public class RowProcessor {
                     break;
             }
         }
+
+        matchAndUseExistingProgramEncounter(programEncounterRequest);
+
         ProgramEncounterRuleInput programEncounterRuleInput = new ProgramEncounterRuleInput(programEnrolmentRepository.findByUuid(programEncounterRequest.getProgramEnrolmentUUID()), conceptRepository, programEncounterRequest, observationService);
         List<ObservationRequest> observationRequests = ruleInvoker.getDecisions(programEncounterRuleInput, conceptRepository);
         observationRequests.forEach(programEncounterRequest::addObservation);
@@ -259,6 +262,10 @@ public class RowProcessor {
             programEncounterController.save(scheduledProgramEncounterRequest);
         });
         this.logger.info(String.format("Imported ProgramEncounter for Enrolment: %s", programEncounterRequest.getProgramEnrolmentUUID()));
+    }
+
+    private ProgramEncounterRequest matchAndUseExistingProgramEncounter(ProgramEncounterRequest programEncounterRequest) {
+        return null;
     }
 
     void readChecklistHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
