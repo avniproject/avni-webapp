@@ -13,6 +13,7 @@ import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.Concept;
+import org.openchs.domain.ProgramEncounter;
 import org.openchs.healthmodule.adapter.ProgramEncounterRuleInvoker;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
@@ -22,6 +23,7 @@ import org.openchs.healthmodule.adapter.contract.validation.ValidationsRuleRespo
 import org.openchs.service.ChecklistService;
 import org.openchs.service.FormService;
 import org.openchs.service.ObservationService;
+import org.openchs.service.ProgramEnrolmentService;
 import org.openchs.web.*;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistItemRequest;
@@ -59,6 +61,8 @@ public class RowProcessor {
     private ConceptRepository conceptRepository;
     @Autowired
     private ProgramEnrolmentRepository programEnrolmentRepository;
+    @Autowired
+    private ProgramEnrolmentService programEnrolmentService;
     @Autowired
     private ObservationService observationService;
     @Autowired
@@ -112,7 +116,7 @@ public class RowProcessor {
                 case "Address":
                     individualRequest.setAddressLevel(ExcelUtil.getText(row, i));
                     break;
-                case "UUID":
+                case "Individual UUID":
                     individualRequest.setUuid(ExcelUtil.getText(row, i));
                     break;
                 default:
@@ -120,9 +124,7 @@ public class RowProcessor {
                     break;
             }
         }
-        if (individualRequest.getUuid() == null || individualRequest.getUuid().isEmpty()) {
-            individualRequest.setUuid(UUID.randomUUID().toString());
-        }
+        individualRequest.setupUuidIfNeeded();
         List<FormElement> unfilledMandatoryFormElements = formService.getUnfilledMandatoryFormElements(form, RequestUtil.fromObservationRequests(individualRequest.getObservations()));
         if (unfilledMandatoryFormElements.size() != 0) {
             throw new RuntimeException(String.format("Mandatory form-elements not present: %s", Arrays.toString(unfilledMandatoryFormElements.toArray())));
@@ -172,7 +174,7 @@ public class RowProcessor {
             String mappedField = metaDataMapping.getMappedField(FormType.ProgramEnrolment, cellHeader, sheetMetaData.getFileName());
             if (mappedField == null || mappedField.isEmpty()) continue;
             switch (mappedField) {
-                case "UUID":
+                case "Enrolment UUID":
                     programEnrolmentRequest.setUuid(ExcelUtil.getText(row, i));
                     break;
                 case "Individual UUID":
@@ -186,6 +188,7 @@ public class RowProcessor {
                     break;
             }
         }
+        programEnrolmentRequest.setupUuidIfNeeded();
 
         ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository);
 
@@ -257,8 +260,11 @@ public class RowProcessor {
                     break;
             }
         }
-
-        matchAndUseExistingProgramEncounter(programEncounterRequest);
+        ProgramEncounter programEncounter = matchAndUseExistingProgramEncounter(programEncounterRequest);
+        if (programEncounter == null)
+            programEncounterRequest.setupUuidIfNeeded();
+        else
+            programEncounterRequest.setUuid(programEncounter.getUuid());
 
         ProgramEncounterRuleInput programEncounterRuleInput = new ProgramEncounterRuleInput(programEnrolmentRepository.findByUuid(programEncounterRequest.getProgramEnrolmentUUID()), conceptRepository, programEncounterRequest, observationService);
         List<ObservationRequest> observationRequests = ruleInvoker.getDecisions(programEncounterRuleInput, conceptRepository);
@@ -272,8 +278,8 @@ public class RowProcessor {
         this.logger.info(String.format("Imported ProgramEncounter for Enrolment: %s", programEncounterRequest.getProgramEnrolmentUUID()));
     }
 
-    private ProgramEncounterRequest matchAndUseExistingProgramEncounter(ProgramEncounterRequest programEncounterRequest) {
-        return null;
+    private ProgramEncounter matchAndUseExistingProgramEncounter(ProgramEncounterRequest programEncounterRequest) {
+        return programEnrolmentService.matchingEncounter(programEncounterRequest.getProgramEnrolmentUUID(), programEncounterRequest.getEncounterType(), programEncounterRequest.getEncounterDateTime());
     }
 
     void readChecklistHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {

@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import java.util.UUID;
+
 public class CHSRequest {
     private String uuid;
     private String userUUID;
@@ -26,5 +28,11 @@ public class CHSRequest {
 
     public void setUserUUID(String userUUID) {
         this.userUUID = userUUID;
+    }
+
+    public void setupUuidIfNeeded() {
+        if (uuid == null || uuid.isEmpty()) {
+            setUuid(UUID.randomUUID().toString());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package org.openchs.excel;
 
 import org.apache.logging.log4j.util.Strings;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -25,7 +26,8 @@ public class ExcelImporter implements Importer {
     private final org.slf4j.Logger logger;
     @Autowired
     private RowProcessor rowProcessor;
-    @Autowired @Lazy
+    @Autowired
+    @Lazy
     private HealthModuleInvokerFactory healthModuleInvokerFactory;
 
     public ExcelImporter() {
@@ -35,19 +37,21 @@ public class ExcelImporter implements Importer {
     @Transactional(Transactional.TxType.REQUIRED)
     public boolean rowImport(Row row, SheetMetaData sheetMetaData, RowProcessor rowProcessor, HealthModuleInvokerFactory healthModuleInvokerFactory, ExcelFileHeaders excelFileHeaders, Set<Integer> errors, MetaDataMapping metaDataMapping) {
         try {
-            switch (sheetMetaData.getImportedEntity()) {
-                case Individual:
-                    rowProcessor.processIndividual(row, excelFileHeaders, metaDataMapping, sheetMetaData);
-                    break;
-                case Enrolment:
-                    rowProcessor.processEnrolment(row, sheetMetaData, healthModuleInvokerFactory.getProgramEnrolmentInvoker(), excelFileHeaders, metaDataMapping);
-                    break;
-                case Visit:
-                    rowProcessor.processProgramEncounter(row, sheetMetaData, healthModuleInvokerFactory.getProgramEncounterInvoker(), excelFileHeaders, metaDataMapping);
-                    break;
-                case Checklist:
-                    rowProcessor.processChecklist(row, sheetMetaData, excelFileHeaders);
-                    break;
+            for (ImportedEntity importedEntity : sheetMetaData.getImportedEntities()) {
+                switch (importedEntity) {
+                    case Individual:
+                        rowProcessor.processIndividual(row, excelFileHeaders, metaDataMapping, sheetMetaData);
+                        break;
+                    case Enrolment:
+                        rowProcessor.processEnrolment(row, sheetMetaData, healthModuleInvokerFactory.getProgramEnrolmentInvoker(), excelFileHeaders, metaDataMapping);
+                        break;
+                    case Visit:
+                        rowProcessor.processProgramEncounter(row, sheetMetaData, healthModuleInvokerFactory.getProgramEncounterInvoker(), excelFileHeaders, metaDataMapping);
+                        break;
+                    case Checklist:
+                        rowProcessor.processChecklist(row, sheetMetaData, excelFileHeaders);
+                        break;
+                }
             }
             return true;
         } catch (Exception e) {
@@ -58,19 +62,21 @@ public class ExcelImporter implements Importer {
     }
 
     private void processHeader(SheetMetaData sheetMetaData, Row row, RowProcessor rowProcessor, ExcelFileHeaders excelFileHeaders) {
-        switch (sheetMetaData.getImportedEntity()) {
-            case Individual:
-                rowProcessor.readRegistrationHeader(row, excelFileHeaders);
-                break;
-            case Enrolment:
-                rowProcessor.readEnrolmentHeader(row, sheetMetaData, excelFileHeaders);
-                break;
-            case Visit:
-                rowProcessor.readProgramEncounterHeader(row, sheetMetaData, excelFileHeaders);
-                break;
-            case Checklist:
-                rowProcessor.readChecklistHeader(row, sheetMetaData, excelFileHeaders);
-                break;
+        for (ImportedEntity importedEntity : sheetMetaData.getImportedEntities()) {
+            switch (importedEntity) {
+                case Individual:
+                    rowProcessor.readRegistrationHeader(row, excelFileHeaders);
+                    break;
+                case Enrolment:
+                    rowProcessor.readEnrolmentHeader(row, sheetMetaData, excelFileHeaders);
+                    break;
+                case Visit:
+                    rowProcessor.readProgramEncounterHeader(row, sheetMetaData, excelFileHeaders);
+                    break;
+                case Checklist:
+                    rowProcessor.readChecklistHeader(row, sheetMetaData, excelFileHeaders);
+                    break;
+            }
         }
     }
 
