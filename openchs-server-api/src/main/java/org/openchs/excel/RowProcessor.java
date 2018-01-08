@@ -22,7 +22,6 @@ import org.openchs.healthmodule.adapter.contract.validation.ValidationsRuleRespo
 import org.openchs.service.ChecklistService;
 import org.openchs.service.FormService;
 import org.openchs.service.ObservationService;
-import org.openchs.util.ExceptionUtil;
 import org.openchs.web.*;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistItemRequest;
@@ -82,14 +81,16 @@ public class RowProcessor {
         }
     }
 
-    void processIndividual(Row row, ExcelFileHeaders excelFileHeaders) {
+    void processIndividual(Row row, ExcelFileHeaders excelFileHeaders, MetaDataMapping metaDataMapping, SheetMetaData sheetMetaData) {
         Form form = formService.findForm(FormType.IndividualProfile, null, null);
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setObservations(new ArrayList<>());
         List<String> registrationHeader = excelFileHeaders.getRegistrationHeader();
         for (int i = 0; i < registrationHeader.size(); i++) {
             String cellHeader = registrationHeader.get(i);
-            switch (cellHeader) {
+            String mappedField = metaDataMapping.getMappedField(FormType.IndividualProfile, cellHeader, sheetMetaData.getFileName());
+            if (mappedField == null || mappedField.isEmpty()) continue;
+            switch (mappedField) {
                 case "First Name":
                     individualRequest.setFirstName(ExcelUtil.getText(row, i));
                     break;
@@ -115,9 +116,12 @@ public class RowProcessor {
                     individualRequest.setUuid(ExcelUtil.getText(row, i));
                     break;
                 default:
-                    individualRequest.addObservation(createObservationRequest(row, i, cellHeader, form));
+                    individualRequest.addObservation(createObservationRequest(row, i, mappedField, form));
                     break;
             }
+        }
+        if (individualRequest.getUuid() == null || individualRequest.getUuid().isEmpty()) {
+            individualRequest.setUuid(UUID.randomUUID().toString());
         }
         List<FormElement> unfilledMandatoryFormElements = formService.getUnfilledMandatoryFormElements(form, RequestUtil.fromObservationRequests(individualRequest.getObservations()));
         if (unfilledMandatoryFormElements.size() != 0) {
@@ -155,7 +159,7 @@ public class RowProcessor {
         readHeader(row, programEncounterHeader);
     }
 
-    void processEnrolment(Row row, SheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker, ExcelFileHeaders excelFileHeaders) {
+    void processEnrolment(Row row, SheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker, ExcelFileHeaders excelFileHeaders, MetaDataMapping metaDataMapping) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
         programEnrolmentRequest.setProgram(sheetMetaData.getProgramName());
         programEnrolmentRequest.setObservations(new ArrayList<>());
@@ -165,7 +169,9 @@ public class RowProcessor {
         List<String> enrolmentHeader = excelFileHeaders.getEnrolmentHeaders().get(sheetMetaData);
         for (int i = 0; i < enrolmentHeader.size(); i++) {
             String cellHeader = enrolmentHeader.get(i);
-            switch (cellHeader) {
+            String mappedField = metaDataMapping.getMappedField(FormType.ProgramEnrolment, cellHeader, sheetMetaData.getFileName());
+            if (mappedField == null || mappedField.isEmpty()) continue;
+            switch (mappedField) {
                 case "UUID":
                     programEnrolmentRequest.setUuid(ExcelUtil.getText(row, i));
                     break;
@@ -176,7 +182,7 @@ public class RowProcessor {
                     programEnrolmentRequest.setEnrolmentDateTime(new DateTime(ExcelUtil.getDate(row, i)));
                     break;
                 default:
-                    programEnrolmentRequest.addObservation(createObservationRequest(row, i, cellHeader, form));
+                    programEnrolmentRequest.addObservation(createObservationRequest(row, i, mappedField, form));
                     break;
             }
         }
@@ -215,14 +221,16 @@ public class RowProcessor {
         this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
-    void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker, ExcelFileHeaders excelFileHeaders) {
+    void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker, ExcelFileHeaders excelFileHeaders, MetaDataMapping metaDataMapping) {
         Form form = formService.findForm(FormType.ProgramEncounter, sheetMetaData.getVisitType(), sheetMetaData.getProgramName());
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<>());
         List<String> programEncounterHeader = excelFileHeaders.getProgramEncounterHeaders().get(sheetMetaData);
         for (int i = 0; i < programEncounterHeader.size(); i++) {
             String cellHeader = programEncounterHeader.get(i);
-            switch (cellHeader) {
+            String mappedField = metaDataMapping.getMappedField(FormType.ProgramEncounter, cellHeader, sheetMetaData.getFileName());
+            if (mappedField == null || mappedField.isEmpty()) continue;
+            switch (mappedField) {
                 case "Enrolment UUID":
                     programEncounterRequest.setProgramEnrolmentUUID(ExcelUtil.getRawCellValue(row, i));
                     break;
@@ -245,7 +253,7 @@ public class RowProcessor {
                     programEncounterRequest.setMaxDateTime(new DateTime(ExcelUtil.getDate(row, i)));
                     break;
                 default:
-                    programEncounterRequest.addObservation(createObservationRequest(row, i, cellHeader, form));
+                    programEncounterRequest.addObservation(createObservationRequest(row, i, mappedField, form));
                     break;
             }
         }
@@ -314,5 +322,21 @@ public class RowProcessor {
             }
         }
         this.logger.info(String.format("Imported Checklist for Enrolment: %s", enrolmentUUID));
+    }
+
+    public void readMetaDataHeader(Row row, List<String> header) {
+        this.readHeader(row, header);
+    }
+
+    public void readMetaData(Row row, MetaDataMapping metaDataMapping) {
+        ExcelFieldMetaData excelFieldMetaData = new ExcelFieldMetaData();
+        excelFieldMetaData.setForm(ExcelUtil.getText(row, 0));
+        excelFieldMetaData.setType(FormType.valueOf(ExcelUtil.getText(row, 1)));
+        excelFieldMetaData.setCore(ExcelUtil.getBoolean(row, 2));
+        excelFieldMetaData.setSystemField(ExcelUtil.getText(row, 3));
+        for (int i = 4; i < metaDataMapping.getMappingHeader().size(); i++) {
+            excelFieldMetaData.addMappingFor(metaDataMapping.getMappingHeader().get(i), ExcelUtil.getText(row, i));
+        }
+        metaDataMapping.addField(excelFieldMetaData);
     }
 }

@@ -62,4 +62,17 @@ class ExcelUtil {
             return null;
         }
     }
+
+    static Boolean getBoolean(Row row, int cellNum) {
+        Cell cell = null;
+        try {
+            cell = row.getCell(cellNum);
+            if (cell == null) return null;
+            if (cell.toString().isEmpty()) return null;
+            return cell.getBooleanCellValue();
+        } catch (RuntimeException e) {
+            LoggerFactory.getLogger(ExcelUtil.class).error(String.format("getBoolean failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
+            return null;
+        }
+    }
 }

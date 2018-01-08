@@ -6,18 +6,21 @@ public class SheetMetaData {
     private ImportedEntity importedEntity;
     private String programName;
     private String visitType;
+    private String fileName;
 
     public SheetMetaData(XSSFRow row) {
-        this.importedEntity = ImportedEntity.valueOf(ExcelUtil.getText(row, 0));
+        String fileName = ExcelUtil.getText(row, 0);
+        this.fileName = fileName;
+        this.importedEntity = ImportedEntity.valueOf(ExcelUtil.getText(row, 1));
         switch (importedEntity) {
             case Individual:
                 break;
             case Enrolment:
-                this.programName = ExcelUtil.getText(row, 1);
+                this.programName = ExcelUtil.getText(row, 2);
                 break;
             case Visit:
-                this.visitType = ExcelUtil.getText(row, 1);
-                this.programName = ExcelUtil.getText(row, 2);
+                this.visitType = ExcelUtil.getText(row, 2);
+                this.programName = ExcelUtil.getText(row, 3);
                 break;
             case Checklist:
                 break;
@@ -66,5 +69,9 @@ public class SheetMetaData {
         result = 31 * result + (programName != null ? programName.hashCode() : 0);
         result = 31 * result + (visitType != null ? visitType.hashCode() : 0);
         return result;
+    }
+
+    public String getFileName() {
+        return null;
     }
 }
