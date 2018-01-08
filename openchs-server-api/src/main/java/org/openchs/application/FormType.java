@@ -3,9 +3,9 @@ package org.openchs.application;
 import java.util.Arrays;
 
 public enum FormType {
-    IndividualProfile, Encounter, ProgramEncounter, ProgramEnrolment, ProgramExit;
+    IndividualProfile, Encounter, ProgramEncounter, ProgramEnrolment, ProgramExit, ProgramEncounterCancellation;
 
-    static FormType[] formTypesWithEncounterTypes = {FormType.Encounter, FormType.ProgramEncounter};
+    static FormType[] formTypesWithEncounterTypes = {FormType.Encounter, FormType.ProgramEncounter, FormType.ProgramEncounterCancellation};
     static FormType[] formTypesLinkedToProgram = {FormType.ProgramEncounter, FormType.ProgramExit, FormType.ProgramEnrolment};
 
     public boolean hasEncounterType() {
