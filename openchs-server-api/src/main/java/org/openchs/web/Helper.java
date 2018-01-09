@@ -57,7 +57,7 @@ public class Helper {
             }
             answer.setDataType(ConceptDataType.NA.toString());
             if(StringUtils.isEmpty(answerConceptRequest.getName())){
-                throw new ValidationException("Name missing for a new answer concept");
+                throw new ValidationException("Name missing for a new answer concept  " +  answerConceptRequest.getUuid());
             }
         }
         if(!StringUtils.isEmpty(answerConceptRequest.getName())){
