@@ -3,6 +3,7 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -12,6 +13,7 @@ import java.util.Iterator;
 
 public class SampleExcelDataImportTest {
     @Test
+    @Ignore
     public void importFile() throws Exception {
         InputStream inputStream = new FileInputStream("/Users/vsingh/Downloads/sample.xlsx");
         try {
