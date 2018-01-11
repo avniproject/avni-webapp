@@ -1,10 +1,10 @@
 package org.openchs.importer;
 
-import org.openchs.excel.MetaDataMapping;
+import org.openchs.excel.metadata.ImportMetaData;
 
 import java.io.InputStream;
 
 public interface Importer {
-    public Boolean importData(InputStream inputStream, MetaDataMapping metaDataMapping) throws Exception;
-    public MetaDataMapping importMetaData(InputStream inputStream) throws Exception;
+    Boolean importData(InputStream inputStream, ImportMetaData importMetaData) throws Exception;
+    ImportMetaData importImportMetaData(InputStream inputStream) throws Exception;
 }

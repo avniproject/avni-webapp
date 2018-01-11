@@ -14,6 +14,8 @@ import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ProgramEncounter;
+import org.openchs.excel.metadata.ImportField;
+import org.openchs.excel.metadata.ImportMetaData;
 import org.openchs.healthmodule.adapter.ProgramEncounterRuleInvoker;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
@@ -85,14 +87,14 @@ public class RowProcessor {
         }
     }
 
-    void processIndividual(Row row, ExcelFileHeaders excelFileHeaders, MetaDataMapping metaDataMapping, SheetMetaData sheetMetaData) {
+    void processIndividual(Row row, ExcelFileHeaders excelFileHeaders, ImportMetaData importMetaData, SheetMetaData sheetMetaData) {
         Form form = formService.findForm(FormType.IndividualProfile, null, null);
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setObservations(new ArrayList<>());
         List<String> registrationHeader = excelFileHeaders.getRegistrationHeader();
         for (int i = 0; i < registrationHeader.size(); i++) {
             String cellHeader = registrationHeader.get(i);
-            String mappedField = metaDataMapping.getMappedField(FormType.IndividualProfile, cellHeader, sheetMetaData.getFileName());
+            String mappedField = importMetaData.getSystemField(FormType.IndividualProfile, cellHeader, sheetMetaData.getFileName());
             if (mappedField == null || mappedField.isEmpty()) continue;
             switch (mappedField) {
                 case "First Name":
@@ -161,7 +163,7 @@ public class RowProcessor {
         readHeader(row, programEncounterHeader);
     }
 
-    void processEnrolment(Row row, SheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker, ExcelFileHeaders excelFileHeaders, MetaDataMapping metaDataMapping) {
+    void processEnrolment(Row row, SheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker, ExcelFileHeaders excelFileHeaders, ImportMetaData importMetaData) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
         programEnrolmentRequest.setProgram(sheetMetaData.getProgramName());
         programEnrolmentRequest.setObservations(new ArrayList<>());
@@ -171,7 +173,7 @@ public class RowProcessor {
         List<String> enrolmentHeader = excelFileHeaders.getEnrolmentHeaders().get(sheetMetaData);
         for (int i = 0; i < enrolmentHeader.size(); i++) {
             String cellHeader = enrolmentHeader.get(i);
-            String mappedField = metaDataMapping.getMappedField(FormType.ProgramEnrolment, cellHeader, sheetMetaData.getFileName());
+            String mappedField = importMetaData.getSystemField(FormType.ProgramEnrolment, cellHeader, sheetMetaData.getFileName());
             if (mappedField == null || mappedField.isEmpty()) continue;
             switch (mappedField) {
                 case "Enrolment UUID":
@@ -224,14 +226,14 @@ public class RowProcessor {
         this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
-    void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker, ExcelFileHeaders excelFileHeaders, MetaDataMapping metaDataMapping) {
+    void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker, ExcelFileHeaders excelFileHeaders, ImportMetaData importMetaData) {
         Form form = formService.findForm(FormType.ProgramEncounter, sheetMetaData.getVisitType(), sheetMetaData.getProgramName());
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<>());
         List<String> programEncounterHeader = excelFileHeaders.getProgramEncounterHeaders().get(sheetMetaData);
         for (int i = 0; i < programEncounterHeader.size(); i++) {
             String cellHeader = programEncounterHeader.get(i);
-            String mappedField = metaDataMapping.getMappedField(FormType.ProgramEncounter, cellHeader, sheetMetaData.getFileName());
+            String mappedField = importMetaData.getSystemField(FormType.ProgramEncounter, cellHeader, sheetMetaData.getFileName());
             if (mappedField == null || mappedField.isEmpty()) continue;
             switch (mappedField) {
                 case "Enrolment UUID":
@@ -328,21 +330,5 @@ public class RowProcessor {
             }
         }
         this.logger.info(String.format("Imported Checklist for Enrolment: %s", enrolmentUUID));
-    }
-
-    public void readMetaDataHeader(Row row, List<String> header) {
-        this.readHeader(row, header);
-    }
-
-    public void readMetaData(Row row, MetaDataMapping metaDataMapping) {
-        ExcelFieldMetaData excelFieldMetaData = new ExcelFieldMetaData();
-        excelFieldMetaData.setForm(ExcelUtil.getText(row, 0));
-        excelFieldMetaData.setType(FormType.valueOf(ExcelUtil.getText(row, 1)));
-        excelFieldMetaData.setCore(ExcelUtil.getBoolean(row, 2));
-        excelFieldMetaData.setSystemField(ExcelUtil.getText(row, 3));
-        for (int i = 4; i < metaDataMapping.getMappingHeader().size(); i++) {
-            excelFieldMetaData.addMappingFor(metaDataMapping.getMappingHeader().get(i), ExcelUtil.getText(row, i));
-        }
-        metaDataMapping.addField(excelFieldMetaData);
     }
 }

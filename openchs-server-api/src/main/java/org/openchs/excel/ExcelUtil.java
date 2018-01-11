@@ -10,23 +10,23 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
-class ExcelUtil {
+public class ExcelUtil {
     private static DateTimeFormatter[] possibleFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy")};
 
-    static String getText(Row row, int cellNum) {
+    public static String getText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return "";
         String stringCellValue = cell.toString();
         return stringCellValue.trim().replaceAll(" +", " ");
     }
 
-    static String getRawCellValue(Row row, int cellNum) {
+    public static String getRawCellValue(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return null;
         return ((XSSFCell) cell).getRawValue();
     }
 
-    static Date getDate(Row row, int cellNum) {
+    public static Date getDate(Row row, int cellNum) {
         Cell cell = null;
         try {
             cell = row.getCell(cellNum);
@@ -38,7 +38,7 @@ class ExcelUtil {
         }
     }
 
-    static Date getDateFromString(Row row, int cellNum) {
+    public static Date getDateFromString(Row row, int cellNum) {
         String text = ExcelUtil.getText(row, cellNum);
         for (DateTimeFormatter possibleFormatter : possibleFormatters) {
             try {
@@ -50,7 +50,7 @@ class ExcelUtil {
         throw new IllegalArgumentException(String.format("Could not format:%s in any date format", text));
     }
 
-    static Double getNumber(Row row, int cellNum) {
+    public static Double getNumber(Row row, int cellNum) {
         Cell cell = null;
         try {
             cell = row.getCell(cellNum);
@@ -63,7 +63,7 @@ class ExcelUtil {
         }
     }
 
-    static Boolean getBoolean(Row row, int cellNum) {
+    public static Boolean getBoolean(Row row, int cellNum) {
         Cell cell = null;
         try {
             cell = row.getCell(cellNum);
