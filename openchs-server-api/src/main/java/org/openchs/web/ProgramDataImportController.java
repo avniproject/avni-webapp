@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.openchs.excel.metadata.ImportMetaData;
+import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.importer.Importer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,13 +27,8 @@ public class ProgramDataImportController {
 
     @RequestMapping(value = "/excelImport", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
-    public ResponseEntity<?> uploadData(@RequestParam("file") MultipartFile uploadedFile) throws Exception {
-        FileInputStream fileInputStream = new FileInputStream(new File("external", "Data Dictionary.xlsx"));
-        try {
-            ImportMetaData importMetaData = importer.importImportMetaData(fileInputStream);
-            return new ResponseEntity<>(importer.importData(uploadedFile.getInputStream(), importMetaData), HttpStatus.CREATED);
-        } finally {
-            fileInputStream.close();
-        }
+    public ResponseEntity<?> uploadData(@RequestParam("file") MultipartFile importMetaDataFile, @RequestParam("file") MultipartFile uploadedFile) throws Exception {
+        ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(importMetaDataFile.getInputStream());
+        return new ResponseEntity<>(importer.importData(uploadedFile.getInputStream(), importMetaData), HttpStatus.CREATED);
     }
 }

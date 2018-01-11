@@ -6,5 +6,4 @@ import java.io.InputStream;
 
 public interface Importer {
     Boolean importData(InputStream inputStream, ImportMetaData importMetaData) throws Exception;
-    ImportMetaData importImportMetaData(InputStream inputStream) throws Exception;
 }

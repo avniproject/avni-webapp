@@ -81,16 +81,6 @@ public class ExcelImporter implements Importer {
         }
     }
 
-    public ImportMetaData importImportMetaData(InputStream inputStream) throws IOException {
-        ImportMetaData importMetaData = new ImportMetaData();
-        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-        ImportMetaDataExcelReader importMetaDataExcelReader = new ImportMetaDataExcelReader();
-        importMetaData.setImportFields(importMetaDataExcelReader.readFields(workbook));
-        importMetaData.setImportCalculatedFields(importMetaDataExcelReader.readCalculatedFields(workbook));
-        importMetaData.setImportSheets(importMetaDataExcelReader.readSheets(workbook));
-        return importMetaData;
-    }
-
     @Override
     public Boolean importData(InputStream inputStream, ImportMetaData importMetaData) throws Exception {
         ExcelFileHeaders excelFileHeaders = new ExcelFileHeaders();

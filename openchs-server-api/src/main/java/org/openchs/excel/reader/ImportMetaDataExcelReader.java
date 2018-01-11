@@ -6,10 +6,26 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openchs.application.FormType;
 import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.metadata.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 
 public class ImportMetaDataExcelReader {
+    private static Logger logger = LoggerFactory.getLogger(ImportMetaDataExcelReader.class);
+
+    public static ImportMetaData readMetaData(InputStream inputStream) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+        ImportMetaData importMetaData = new ImportMetaData();
+        ImportMetaDataExcelReader importMetaDataExcelReader = new ImportMetaDataExcelReader();
+        importMetaData.setImportFields(importMetaDataExcelReader.readFields(workbook));
+        importMetaData.setImportCalculatedFields(importMetaDataExcelReader.readCalculatedFields(workbook));
+        importMetaData.setImportSheets(importMetaDataExcelReader.readSheets(workbook));
+        return importMetaData;
+    }
+
     public ImportSheets readSheets(XSSFWorkbook workbook) {
         ImportSheets importSheets = new ImportSheets();
         XSSFSheet sheet = workbook.getSheet("Sheets");
@@ -23,6 +39,7 @@ public class ImportMetaDataExcelReader {
                     if (systemFieldName.isEmpty()) break;
                     importSheets.addSystemField(i - 4, systemFieldName);
                 }
+                logger.info("Read header of Sheets");
             } else {
                 ImportSheet importSheet = new ImportSheet();
                 importSheet.setFileName(ExcelUtil.getText(row, 0));
@@ -37,6 +54,7 @@ public class ImportMetaDataExcelReader {
                     importSheet.addDefaultValue(i - 5, defaultValue);
                 }
                 importSheets.add(importSheet);
+                logger.info(String.format("Read row number %d of Sheets", k));
             }
             k++;
         }
@@ -58,6 +76,7 @@ public class ImportMetaDataExcelReader {
                 importCalculatedField.setRegex(ExcelUtil.getText(row, 3));
                 importCalculatedFields.add(importCalculatedField);
             }
+            logger.info(String.format("Read row number %d of Calculated Fields", k));
             k++;
         }
         return importCalculatedFields;
@@ -76,9 +95,13 @@ public class ImportMetaDataExcelReader {
                     if (userFileType.isEmpty()) break;
                     importFields.addFileType(i - 4, userFileType);
                 }
+                logger.info("Read header of Fields");
             } else {
+                String formName = ExcelUtil.getText(row, 0);
+                if (formName.isEmpty()) break;
+
                 ImportField importField = new ImportField();
-                importField.setFormName(ExcelUtil.getText(row, 0));
+                importField.setFormName(formName);
                 importField.setFormType(FormType.valueOf(ExcelUtil.getText(row, 1)));
                 importField.setCore(ExcelUtil.getBoolean(row, 2));
                 importField.setSystemField(ExcelUtil.getText(row, 3));
@@ -88,6 +111,7 @@ public class ImportMetaDataExcelReader {
                     importFields.addFileType(i - 4, mappedFieldName);
                 }
                 importFields.add(importField);
+                logger.info(String.format("Read row number %d of Fields", k));
             }
             k++;
         }
