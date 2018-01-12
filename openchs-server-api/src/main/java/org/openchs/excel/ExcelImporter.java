@@ -5,8 +5,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openchs.domain.Individual;
+import org.openchs.domain.ProgramEncounter;
+import org.openchs.domain.ProgramEnrolment;
+import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportMetaData;
-import org.openchs.excel.reader.ImportMetaDataExcelReader;
+import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
 import org.openchs.importer.Importer;
 import org.openchs.util.ExceptionUtil;
@@ -16,11 +20,9 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 @Component
 public class ExcelImporter implements Importer {
@@ -36,74 +38,38 @@ public class ExcelImporter implements Importer {
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public boolean rowImport(Row row, SheetMetaData sheetMetaData, RowProcessor rowProcessor, HealthModuleInvokerFactory healthModuleInvokerFactory, ExcelFileHeaders excelFileHeaders, Set<Integer> errors, ImportMetaData importMetaData) {
-        try {
-            for (ImportedEntity importedEntity : sheetMetaData.getImportedEntities()) {
-                switch (importedEntity) {
-                    case Individual:
-                        rowProcessor.processIndividual(row, excelFileHeaders, importMetaData, sheetMetaData);
-                        break;
-                    case Enrolment:
-                        rowProcessor.processEnrolment(row, sheetMetaData, healthModuleInvokerFactory.getProgramEnrolmentInvoker(), excelFileHeaders, importMetaData);
-                        break;
-                    case Visit:
-                        rowProcessor.processProgramEncounter(row, sheetMetaData, healthModuleInvokerFactory.getProgramEncounterInvoker(), excelFileHeaders, importMetaData);
-                        break;
-                    case Checklist:
-                        rowProcessor.processChecklist(row, sheetMetaData, excelFileHeaders);
-                        break;
-                }
-            }
-            return true;
-        } catch (Exception e) {
-            errors.add(ExceptionUtil.getExceptionHash(e));
-            this.logger.error("Row import failed", e);
-            return false;
-        }
+    public void rowImport(Row row, ImportSheetHeader importSheetHeader, HashSet<Integer> uniqueErrorHashes, ImportMetaData importMetaData, ImportSheetMetaData sheetMetaData, List<ImportField> importFields) {
+        if (isSheetOfType(sheetMetaData, Individual.class))
+            rowProcessor.processIndividual(row, importSheetHeader, importFields, sheetMetaData);
+        else if (isSheetOfType(sheetMetaData, ProgramEnrolment.class))
+            rowProcessor.processEnrolment(row, importSheetHeader, importFields, sheetMetaData, healthModuleInvokerFactory.getProgramEnrolmentInvoker());
+        else if (isSheetOfType(sheetMetaData, ProgramEncounter.class))
+            rowProcessor.processProgramEncounter(row, importSheetHeader, importFields, sheetMetaData, healthModuleInvokerFactory.getProgramEncounterInvoker());
     }
 
-    private void processHeader(SheetMetaData sheetMetaData, Row row, RowProcessor rowProcessor, ExcelFileHeaders excelFileHeaders) {
-        for (ImportedEntity importedEntity : sheetMetaData.getImportedEntities()) {
-            switch (importedEntity) {
-                case Individual:
-                    rowProcessor.readRegistrationHeader(row, excelFileHeaders);
-                    break;
-                case Enrolment:
-                    rowProcessor.readEnrolmentHeader(row, sheetMetaData, excelFileHeaders);
-                    break;
-                case Visit:
-                    rowProcessor.readProgramEncounterHeader(row, sheetMetaData, excelFileHeaders);
-                    break;
-                case Checklist:
-                    rowProcessor.readChecklistHeader(row, sheetMetaData, excelFileHeaders);
-                    break;
-            }
-        }
+    private boolean isSheetOfType(ImportSheetMetaData importSheetMetaData, Class aClass) {
+        return importSheetMetaData.getEntityType().equals(aClass);
     }
 
     @Override
-    public Boolean importData(InputStream inputStream, ImportMetaData importMetaData) throws Exception {
-        ExcelFileHeaders excelFileHeaders = new ExcelFileHeaders();
-        Boolean returnValue = true;
-        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+    public Boolean importSheet(XSSFWorkbook workbook, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData) throws Exception {
         int errorCount = 0;
         HashSet<Integer> uniqueErrorHashes = new HashSet<>();
         try {
+            workbook.getSheetAt(1);
+            XSSFSheet sheet = workbook.getSheet(importSheetMetaData.getSheetName());
+            List<ImportField> allFields = importMetaData.getAllFields(importSheetMetaData);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-                XSSFSheet sheet = workbook.getSheetAt(i);
-                logger.info(String.format("READING SHEET: %s", sheet.getSheetName()));
+                logger.info(String.format("READING SHEET: %s", importSheetMetaData.getSheetName()));
                 XSSFRow firstRow = sheet.getRow(0);
-                SheetMetaData sheetMetaData = new SheetMetaData(firstRow);
                 Iterator<Row> iterator = sheet.iterator();
                 int k = 0;
+                ImportSheetHeader importSheetHeader = null;
                 while (iterator.hasNext()) {
                     k++;
                     Row row = iterator.next();
                     if (k == 1) {
-                        continue;
-                    }
-                    if (k == 2) {
-                        processHeader(sheetMetaData, row, rowProcessor, excelFileHeaders);
+                        importSheetHeader = new ImportSheetHeader(firstRow);
                         continue;
                     }
                     String rawCellValue = ExcelUtil.getRawCellValue(row, 0);
@@ -111,18 +77,20 @@ public class ExcelImporter implements Importer {
                         logger.info(String.format("Breaking at row number: %d", k));
                         break;
                     }
-                    if (!this.rowImport(row, sheetMetaData, rowProcessor, healthModuleInvokerFactory, excelFileHeaders, uniqueErrorHashes, importMetaData)) errorCount++;
+                    this.rowImport(row, importSheetHeader, uniqueErrorHashes, importMetaData, importSheetMetaData, allFields);
                 }
                 logger.info(String.format("COMPLETED SHEET: %s", sheet.getSheetName()));
             }
-            logger.info(String.format("FAILED ROWS: %d; UNIQUE ERRORS: %d", errorCount, uniqueErrorHashes.size()));
         } catch (Exception error) {
+            int exceptionHash = ExceptionUtil.getExceptionHash(error);
+            uniqueErrorHashes.add(exceptionHash);
+            errorCount++;
             logger.error(error.getMessage(), error);
             throw error;
         } finally {
+            logger.info(String.format("FAILED ROWS: %d; UNIQUE ERRORS: %d", errorCount, uniqueErrorHashes.size()));
             workbook.close();
-            inputStream.close();
         }
-        return returnValue;
+        return true;
     }
 }

@@ -41,6 +41,10 @@ public class ExcelUtil {
 
     public static Date getDateFromString(Row row, int cellNum) {
         String text = ExcelUtil.getText(row, cellNum);
+        return getDateFromString(text);
+    }
+
+    public static Date getDateFromString(String text) {
         for (DateTimeFormatter possibleFormatter : possibleFormatters) {
             try {
                 DateTime dateTime = possibleFormatter.parseDateTime(text);

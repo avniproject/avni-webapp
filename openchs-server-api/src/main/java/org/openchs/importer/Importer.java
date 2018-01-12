@@ -1,9 +1,9 @@
 package org.openchs.importer;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openchs.excel.metadata.ImportMetaData;
-
-import java.io.InputStream;
+import org.openchs.excel.metadata.ImportSheetMetaData;
 
 public interface Importer {
-    Boolean importData(InputStream inputStream, ImportMetaData importMetaData) throws Exception;
+    Boolean importSheet(XSSFWorkbook workbook, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData) throws Exception;
 }

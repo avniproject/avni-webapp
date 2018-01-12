@@ -20,14 +20,14 @@ public class ImportMetaDataExcelReader {
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         ImportMetaData importMetaData = new ImportMetaData();
         ImportMetaDataExcelReader importMetaDataExcelReader = new ImportMetaDataExcelReader();
-        importMetaData.setImportFields(importMetaDataExcelReader.readFields(workbook));
-        importMetaData.setImportCalculatedFields(importMetaDataExcelReader.readCalculatedFields(workbook));
+        importMetaData.setNonCalculatedFields(importMetaDataExcelReader.readFields(workbook));
+        importMetaData.setCalculatedFields(importMetaDataExcelReader.readCalculatedFields(workbook));
         importMetaData.setImportSheets(importMetaDataExcelReader.readSheets(workbook));
         return importMetaData;
     }
 
-    public ImportSheets readSheets(XSSFWorkbook workbook) {
-        ImportSheets importSheets = new ImportSheets();
+    public ImportSheetMetaDataList readSheets(XSSFWorkbook workbook) {
+        ImportSheetMetaDataList importSheets = new ImportSheetMetaDataList();
         XSSFSheet sheet = workbook.getSheet("Sheets");
         Iterator<Row> iterator = sheet.iterator();
         int k = 0;
@@ -41,19 +41,19 @@ public class ImportMetaDataExcelReader {
                 }
                 logger.info("Read header of Sheets");
             } else {
-                ImportSheet importSheet = new ImportSheet();
-                importSheet.setFileName(ExcelUtil.getText(row, 0));
-                importSheet.setUserFileType(ExcelUtil.getText(row, 1));
-                importSheet.setSheetName(ExcelUtil.getText(row, 2));
-                importSheet.setEntityType(ExcelUtil.getText(row, 3));
-                importSheet.setProgramName(ExcelUtil.getText(row, 4));
-                importSheet.setEncounterType(ExcelUtil.getText(row, 5));
-                for (int i = 5; i < row.getLastCellNum(); i++) {
-                    String defaultValue = ExcelUtil.getText(row, i);
-                    if (defaultValue.isEmpty()) break;
-                    importSheet.addDefaultValue(i - 5, defaultValue);
+                ImportSheetMetaData importSheetMetaData = new ImportSheetMetaData();
+                importSheetMetaData.setFileName(ExcelUtil.getText(row, 0));
+                importSheetMetaData.setUserFileType(ExcelUtil.getText(row, 1));
+                importSheetMetaData.setSheetName(ExcelUtil.getText(row, 2));
+                importSheetMetaData.setEntityType(ExcelUtil.getText(row, 3));
+                importSheetMetaData.setProgramName(ExcelUtil.getText(row, 4));
+                importSheetMetaData.setEncounterType(ExcelUtil.getText(row, 5));
+                for (int i = 0; i < importSheets.getNumberOfSystemFields(); i++) {
+                    String defaultValue = ExcelUtil.getText(row, i + 5);
+                    if (defaultValue.isEmpty()) continue;
+                    importSheets.addDefaultValue(i, defaultValue, importSheetMetaData);
                 }
-                importSheets.add(importSheet);
+                importSheets.add(importSheetMetaData);
                 logger.info(String.format("Read row number %d of Sheets", k));
             }
             k++;
@@ -62,28 +62,29 @@ public class ImportMetaDataExcelReader {
     }
 
     public ImportCalculatedFields readCalculatedFields(XSSFWorkbook workbook) {
-        ImportCalculatedFields importCalculatedFields = new ImportCalculatedFields();
+        ImportCalculatedFields calculatedFields = new ImportCalculatedFields();
         XSSFSheet sheet = workbook.getSheet("Calculated Fields");
         Iterator<Row> iterator = sheet.iterator();
         int k = 0;
         while (iterator.hasNext()) {
             Row row = iterator.next();
             if (k != 0) {
-                ImportCalculatedField importCalculatedField = new ImportCalculatedField();
-                importCalculatedField.setUniqueKey(ExcelUtil.getText(row, 0));
-                importCalculatedField.setFormName(ExcelUtil.getText(row, 1));
-                importCalculatedField.setSystemField(ExcelUtil.getText(row, 2));
-                importCalculatedField.setRegex(ExcelUtil.getText(row, 3));
-                importCalculatedFields.add(importCalculatedField);
+                ImportCalculatedField calculatedField = new ImportCalculatedField();
+                calculatedField.setUserFileType(ExcelUtil.getText(row, 0));
+                calculatedField.setEntityType(ExcelUtil.getText(row, 1));
+                calculatedField.setSystemField(ExcelUtil.getText(row, 2));
+                calculatedField.setSourceUserField(ExcelUtil.getText(row, 3));
+                calculatedField.setRegex(ExcelUtil.getText(row, 4));
+                calculatedFields.add(calculatedField);
             }
             logger.info(String.format("Read row number %d of Calculated Fields", k));
             k++;
         }
-        return importCalculatedFields;
+        return calculatedFields;
     }
 
-    public ImportFields readFields(XSSFWorkbook workbook) {
-        ImportFields importFields = new ImportFields();
+    public ImportNonCalculatedFields readFields(XSSFWorkbook workbook) {
+        ImportNonCalculatedFields nonCalculatedFields = new ImportNonCalculatedFields();
         XSSFSheet sheet = workbook.getSheet("Fields");
         Iterator<Row> iterator = sheet.iterator();
         int k = 0;
@@ -93,28 +94,28 @@ public class ImportMetaDataExcelReader {
                 for (int i = 4; i < row.getLastCellNum(); i++) {
                     String userFileType = ExcelUtil.getText(row, i);
                     if (userFileType.isEmpty()) break;
-                    importFields.addFileType(i - 4, userFileType);
+                    nonCalculatedFields.addFileType(i - 4, userFileType);
                 }
                 logger.info("Read header of Fields");
             } else {
                 String formName = ExcelUtil.getText(row, 0);
                 if (formName.isEmpty()) break;
 
-                ImportField importField = new ImportField();
-                importField.setFormName(formName);
-                importField.setFormType(FormType.valueOf(ExcelUtil.getText(row, 1)));
-                importField.setCore(ExcelUtil.getBoolean(row, 2));
-                importField.setSystemField(ExcelUtil.getText(row, 3));
-                for (int i = 4; i < row.getLastCellNum(); i++) {
-                    String mappedFieldName = ExcelUtil.getText(row, i);
-                    if (mappedFieldName.isEmpty()) break;
-                    importFields.addFileType(i - 4, mappedFieldName);
+                ImportNonCalculatedField nonCalculatedField = new ImportNonCalculatedField();
+                nonCalculatedField.setFormName(formName);
+                nonCalculatedField.setFormType(FormType.valueOf(ExcelUtil.getText(row, 1)));
+                nonCalculatedField.setCore(ExcelUtil.getBoolean(row, 2));
+                nonCalculatedField.setSystemFieldName(ExcelUtil.getText(row, 3));
+                for (int i = 0; i < nonCalculatedFields.getNumberOfFileTypes(); i++) {
+                    String userFieldName = ExcelUtil.getText(row, i + 4);
+                    if (userFieldName.isEmpty()) continue;
+                    nonCalculatedFields.addUserField(i, userFieldName, nonCalculatedField);
                 }
-                importFields.add(importField);
+                nonCalculatedFields.add(nonCalculatedField);
                 logger.info(String.format("Read row number %d of Fields", k));
             }
             k++;
         }
-        return importFields;
+        return nonCalculatedFields;
     }
 }

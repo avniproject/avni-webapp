@@ -1,14 +1,12 @@
 package org.openchs.excel.metadata;
 
-import org.openchs.domain.Encounter;
-import org.openchs.domain.Individual;
-import org.openchs.domain.ProgramEncounter;
-import org.openchs.domain.ProgramEnrolment;
+import org.openchs.application.FormType;
+import org.openchs.util.Mappings;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ImportSheet {
+public class ImportSheetMetaData {
     private String fileName;
     private String userFileType;
     private String sheetName;
@@ -16,16 +14,7 @@ public class ImportSheet {
     private String programName;
     private String encounterType;
 
-    private static Map<String, Class> entityTypes = new HashMap<>();
-
-    static {
-        entityTypes.put(Individual.class.getName(), Individual.class);
-        entityTypes.put(Encounter.class.getName(), Encounter.class);
-        entityTypes.put(ProgramEnrolment.class.getName(), ProgramEnrolment.class);
-        entityTypes.put(ProgramEncounter.class.getName(), ProgramEncounter.class);
-    }
-
-    private Map<String, Object> sheetDefaults;
+    private List<ImportDefaultField> sheetDefaults = new ArrayList<>();
 
     public String getFileName() {
         return fileName;
@@ -56,7 +45,7 @@ public class ImportSheet {
     }
 
     public void setEntityType(String entityType) {
-        this.entityType = entityTypes.get(entityType);
+        this.entityType = Mappings.ENTITY_TYPES.get(entityType);
     }
 
     public String getProgramName() {
@@ -75,7 +64,18 @@ public class ImportSheet {
         this.encounterType = encounterType;
     }
 
-    public void addDefaultValue(int position, String defaultValue) {
+    public void addDefaultValue(String systemFieldName, String defaultValue) {
+        ImportDefaultField defaultField = new ImportDefaultField(systemFieldName, defaultValue);
+        sheetDefaults.add(defaultField);
+    }
 
+    public FormType getFormType() {
+        return Mappings.ENTITY_TYPE_FORM_TYPE_MAP.get(this.getEntityType());
+    }
+
+    public List<ImportField> getDefaultFields() {
+        ArrayList<ImportField> list = new ArrayList<>();
+        list.addAll(sheetDefaults);
+        return list;
     }
 }

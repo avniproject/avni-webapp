@@ -22,11 +22,11 @@ public class TextToType {
         genderMap.put("other", "Other");
     }
 
-    static boolean toBoolean(String str) {
+    public static boolean toBoolean(String str) {
         return booleanMap.get(str.toLowerCase());
     }
 
-    static String toGender(String str) {
+    public static String toGender(String str) {
         return genderMap.get(str.toLowerCase());
     }
 }

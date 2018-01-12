@@ -15,7 +15,7 @@ import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.excel.metadata.ImportField;
-import org.openchs.excel.metadata.ImportMetaData;
+import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.healthmodule.adapter.ProgramEncounterRuleInvoker;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
 import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
@@ -74,58 +74,42 @@ public class RowProcessor {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    void readRegistrationHeader(Row row, ExcelFileHeaders excelFileHeaders) {
-        readHeader(row, excelFileHeaders.getRegistrationHeader());
-    }
-
-    private void readHeader(Row row, List<String> headerList) {
-        for (int i = 0; i < row.getPhysicalNumberOfCells(); i++) {
-            String text = ExcelUtil.getText(row, i);
-            if (text == null || text.equals("")) break;
-
-            headerList.add(text);
-        }
-    }
-
-    void processIndividual(Row row, ExcelFileHeaders excelFileHeaders, ImportMetaData importMetaData, SheetMetaData sheetMetaData) {
+    void processIndividual(Row row, ImportSheetHeader importSheetHeader, List<ImportField> importFields, ImportSheetMetaData importSheetMetaData) {
         Form form = formService.findForm(FormType.IndividualProfile, null, null);
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setObservations(new ArrayList<>());
-        List<String> registrationHeader = excelFileHeaders.getRegistrationHeader();
-        for (int i = 0; i < registrationHeader.size(); i++) {
-            String cellHeader = registrationHeader.get(i);
-            String mappedField = importMetaData.getSystemField(FormType.IndividualProfile, cellHeader, sheetMetaData.getFileName());
-            if (mappedField == null || mappedField.isEmpty()) continue;
-            switch (mappedField) {
+        importFields.forEach(importField -> {
+            String systemFieldName = importField.getSystemFieldName();
+            switch (systemFieldName) {
                 case "First Name":
-                    individualRequest.setFirstName(ExcelUtil.getText(row, i));
+                    individualRequest.setFirstName(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 case "Last Name":
-                    individualRequest.setLastName(ExcelUtil.getText(row, i));
+                    individualRequest.setLastName(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 case "Date of Birth":
-                    individualRequest.setDateOfBirth(new LocalDate(ExcelUtil.getDateFromString(row, i)));
+                    individualRequest.setDateOfBirth(new LocalDate(importField.getDateValue(row, importSheetHeader, importSheetMetaData)));
                     break;
                 case "Date of Birth Verified":
-                    individualRequest.setDateOfBirthVerified(TextToType.toBoolean(ExcelUtil.getText(row, i)));
+                    individualRequest.setDateOfBirthVerified(importField.getBooleanValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 case "Gender":
-                    individualRequest.setGender(TextToType.toGender(ExcelUtil.getText(row, i)));
+                    individualRequest.setGender(TextToType.toGender(importField.getTextValue(row, importSheetHeader, importSheetMetaData)));
                     break;
                 case "Registration Date":
-                    individualRequest.setRegistrationDate(new LocalDate(ExcelUtil.getDate(row, i)));
+                    individualRequest.setRegistrationDate(new LocalDate(importField.getDateValue(row, importSheetHeader, importSheetMetaData)));
                     break;
                 case "Address":
-                    individualRequest.setAddressLevel(ExcelUtil.getText(row, i));
+                    individualRequest.setAddressLevel(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 case "Individual UUID":
-                    individualRequest.setUuid(ExcelUtil.getText(row, i));
+                    individualRequest.setUuid(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 default:
-                    individualRequest.addObservation(createObservationRequest(row, i, mappedField, form));
+                    individualRequest.addObservation(createObservationRequest(row, importSheetHeader, importSheetMetaData, form, importField, systemFieldName));
                     break;
             }
-        }
+        });
         individualRequest.setupUuidIfNeeded();
         List<FormElement> unfilledMandatoryFormElements = formService.getUnfilledMandatoryFormElements(form, RequestUtil.fromObservationRequests(individualRequest.getObservations()));
         if (unfilledMandatoryFormElements.size() != 0) {
@@ -135,61 +119,46 @@ public class RowProcessor {
         this.logger.info(String.format("Imported Individual: %s", individualRequest.getUuid()));
     }
 
-    private ObservationRequest createObservationRequest(Row row, int i, String cellHeader, Form form) {
-        String cell = ExcelUtil.getText(row, i);
+    private ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, Form form, ImportField importField, String systemFieldName) {
+        String cell = importField.getTextValue(row, sheetHeader, sheetMetaData);
         if (cell.isEmpty()) {
-            FormElement formElement = form.findFormElement(cellHeader);
-            if (formElement.isMandatory()) throw new RuntimeException(String.format("Invalid data in row=%d, cell=%s", row.getRowNum(), cellHeader));
+            FormElement formElement = form.findFormElement(systemFieldName);
+            if (formElement.isMandatory()) throw new RuntimeException(String.format("Invalid data in row=%d, cell=%s", row.getRowNum(), systemFieldName));
             return null;
         }
         ObservationRequest observationRequest = new ObservationRequest();
-        observationRequest.setConceptName(cellHeader);
-        Concept concept = conceptRepository.findByName(cellHeader);
+        observationRequest.setConceptName(systemFieldName);
+        Concept concept = conceptRepository.findByName(systemFieldName);
         if (concept == null)
-            throw new NullPointerException(String.format("Concept with name |%s| not found", cellHeader));
+            throw new NullPointerException(String.format("Concept with name |%s| not found", systemFieldName));
         observationRequest.setValue(concept.getPrimitiveValue(cell));
         return observationRequest;
     }
 
-    void readEnrolmentHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
-        ArrayList<String> enrolmentHeader = new ArrayList<>();
-        excelFileHeaders.getEnrolmentHeaders().put(sheetMetaData, enrolmentHeader);
-        readHeader(row, enrolmentHeader);
-    }
-
-    void readProgramEncounterHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
-        ArrayList<String> programEncounterHeader = new ArrayList<>();
-        excelFileHeaders.getProgramEncounterHeaders().put(sheetMetaData, programEncounterHeader);
-        readHeader(row, programEncounterHeader);
-    }
-
-    void processEnrolment(Row row, SheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker, ExcelFileHeaders excelFileHeaders, ImportMetaData importMetaData) {
+    void processEnrolment(Row row, ImportSheetHeader importSheetHeader, List<ImportField> importFields, ImportSheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
         programEnrolmentRequest.setProgram(sheetMetaData.getProgramName());
         programEnrolmentRequest.setObservations(new ArrayList<>());
         programEnrolmentRequest.setProgramExitObservations(new ArrayList<>());
 
         Form form = formService.findForm(FormType.ProgramEnrolment, null, sheetMetaData.getProgramName());
-        List<String> enrolmentHeader = excelFileHeaders.getEnrolmentHeaders().get(sheetMetaData);
-        for (int i = 0; i < enrolmentHeader.size(); i++) {
-            String cellHeader = enrolmentHeader.get(i);
-            String mappedField = importMetaData.getSystemField(FormType.ProgramEnrolment, cellHeader, sheetMetaData.getFileName());
-            if (mappedField == null || mappedField.isEmpty()) continue;
-            switch (mappedField) {
+        importFields.forEach(importField -> {
+            String systemFieldName = importField.getSystemFieldName();
+            switch (systemFieldName) {
                 case "Enrolment UUID":
-                    programEnrolmentRequest.setUuid(ExcelUtil.getText(row, i));
+                    programEnrolmentRequest.setUuid(importField.getTextValue(row, importSheetHeader, sheetMetaData));
                     break;
                 case "Individual UUID":
-                    programEnrolmentRequest.setIndividualUUID(ExcelUtil.getRawCellValue(row, i));
+                    programEnrolmentRequest.setIndividualUUID(importField.getTextValue(row, importSheetHeader, sheetMetaData));
                     break;
                 case "Enrolment Date":
-                    programEnrolmentRequest.setEnrolmentDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+                    programEnrolmentRequest.setEnrolmentDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
                     break;
                 default:
-                    programEnrolmentRequest.addObservation(createObservationRequest(row, i, mappedField, form));
+                    programEnrolmentRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, form, importField, systemFieldName));
                     break;
             }
-        }
+        });
         programEnrolmentRequest.setupUuidIfNeeded();
 
         ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository);
@@ -220,48 +189,45 @@ public class RowProcessor {
         }
 
         List<ProgramEncounterRequest> scheduledVisits = programEnrolmentModuleInvoker.getNextScheduledVisits(programEnrolmentRuleInput, programEnrolmentRequest.getUuid());
-        scheduledVisits.forEach(programEncounterRequest -> {
-            programEncounterController.save(programEncounterRequest);
-        });
+        scheduledVisits.forEach(programEncounterRequest -> programEncounterController.save(programEncounterRequest));
         this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
-    void processProgramEncounter(Row row, SheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker, ExcelFileHeaders excelFileHeaders, ImportMetaData importMetaData) {
-        Form form = formService.findForm(FormType.ProgramEncounter, sheetMetaData.getVisitType(), sheetMetaData.getProgramName());
+    void processProgramEncounter(Row row, ImportSheetHeader importSheetHeader, List<ImportField> importFields, ImportSheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker) {
+        Form form = formService.findForm(FormType.ProgramEncounter, sheetMetaData.getEncounterType(), sheetMetaData.getProgramName());
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<>());
-        List<String> programEncounterHeader = excelFileHeaders.getProgramEncounterHeaders().get(sheetMetaData);
-        for (int i = 0; i < programEncounterHeader.size(); i++) {
-            String cellHeader = programEncounterHeader.get(i);
-            String mappedField = importMetaData.getSystemField(FormType.ProgramEncounter, cellHeader, sheetMetaData.getFileName());
-            if (mappedField == null || mappedField.isEmpty()) continue;
-            switch (mappedField) {
+
+        importFields.forEach(importField -> {
+            String systemFieldName = importField.getSystemFieldName();
+            switch (systemFieldName) {
                 case "Enrolment UUID":
-                    programEncounterRequest.setProgramEnrolmentUUID(ExcelUtil.getRawCellValue(row, i));
+                    programEncounterRequest.setProgramEnrolmentUUID(importField.getTextValue(row, importSheetHeader, sheetMetaData));
                     break;
                 case "UUID":
-                    programEncounterRequest.setUuid(ExcelUtil.getText(row, i));
+                    programEncounterRequest.setUuid(importField.getTextValue(row, importSheetHeader, sheetMetaData));
                     break;
                 case "Visit Type":
-                    programEncounterRequest.setEncounterType(ExcelUtil.getText(row, i));
+                    programEncounterRequest.setEncounterType(importField.getTextValue(row, importSheetHeader, sheetMetaData));
                     break;
                 case "Visit Name":
-                    programEncounterRequest.setName(ExcelUtil.getText(row, i));
+                    programEncounterRequest.setName(importField.getTextValue(row, importSheetHeader, sheetMetaData));
                     break;
                 case "Earliest Date":
-                    programEncounterRequest.setEarliestVisitDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+                    programEncounterRequest.setEarliestVisitDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
                     break;
                 case "Actual Date":
-                    programEncounterRequest.setEncounterDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+                    programEncounterRequest.setEncounterDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
                     break;
                 case "Max Date":
-                    programEncounterRequest.setMaxDateTime(new DateTime(ExcelUtil.getDate(row, i)));
+                    programEncounterRequest.setMaxDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
                     break;
                 default:
-                    programEncounterRequest.addObservation(createObservationRequest(row, i, mappedField, form));
+                    programEncounterRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, form, importField, systemFieldName));
                     break;
             }
-        }
+        });
+
         ProgramEncounter programEncounter = matchAndUseExistingProgramEncounter(programEncounterRequest);
         if (programEncounter == null)
             programEncounterRequest.setupUuidIfNeeded();
@@ -274,9 +240,7 @@ public class RowProcessor {
         programEncounterController.save(programEncounterRequest);
 
         List<ProgramEncounterRequest> scheduledVisits = ruleInvoker.getNextScheduledVisits(programEncounterRuleInput, programEncounterRequest.getProgramEnrolmentUUID());
-        scheduledVisits.forEach(scheduledProgramEncounterRequest -> {
-            programEncounterController.save(scheduledProgramEncounterRequest);
-        });
+        scheduledVisits.forEach(scheduledProgramEncounterRequest -> programEncounterController.save(scheduledProgramEncounterRequest));
         this.logger.info(String.format("Imported ProgramEncounter for Enrolment: %s", programEncounterRequest.getProgramEnrolmentUUID()));
     }
 
@@ -284,14 +248,9 @@ public class RowProcessor {
         return programEnrolmentService.matchingEncounter(programEncounterRequest.getProgramEnrolmentUUID(), programEncounterRequest.getEncounterType(), programEncounterRequest.getEncounterDateTime());
     }
 
-    void readChecklistHeader(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
-        ArrayList<String> checklistHeader = new ArrayList<>();
-        excelFileHeaders.getChecklistHeaders().put(sheetMetaData, checklistHeader);
-        readHeader(row, checklistHeader);
-    }
-
-    void processChecklist(Row row, SheetMetaData sheetMetaData, ExcelFileHeaders excelFileHeaders) {
-        List<String> checklistHeader = excelFileHeaders.getChecklistHeaders().get(sheetMetaData);
+    void processChecklist(Row row) {
+//        List<String> checklistHeader = excelFileHeaders.getChecklistHeaders().get(sheetMetaData);
+        List<String> checklistHeader = new ArrayList<>();
         String enrolmentUUID = null;
         String checklist = null;
         String checklistUUID = null;

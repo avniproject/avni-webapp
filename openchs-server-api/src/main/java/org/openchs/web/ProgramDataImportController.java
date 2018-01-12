@@ -1,6 +1,8 @@
 package org.openchs.web;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openchs.excel.metadata.ImportMetaData;
+import org.openchs.excel.metadata.ImportSheetMetaDataList;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.importer.Importer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 @RestController
 public class ProgramDataImportController {
@@ -29,6 +28,16 @@ public class ProgramDataImportController {
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public ResponseEntity<?> uploadData(@RequestParam("file") MultipartFile importMetaDataFile, @RequestParam("file") MultipartFile uploadedFile) throws Exception {
         ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(importMetaDataFile.getInputStream());
-        return new ResponseEntity<>(importer.importData(uploadedFile.getInputStream(), importMetaData), HttpStatus.CREATED);
+        ImportSheetMetaDataList importSheets = importMetaData.getImportSheets();
+        XSSFWorkbook workbook = new XSSFWorkbook(uploadedFile.getInputStream());
+        importSheets.forEach(importSheet -> {
+            try {
+                Boolean status = importer.importSheet(workbook, importMetaData, importSheet);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 }

@@ -1,37 +1,42 @@
 package org.openchs.excel.metadata;
 
-import org.openchs.application.FormType;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImportMetaData {
-    private ImportFields importFields;
-    private ImportCalculatedFields importCalculatedFields;
-    private ImportSheets importSheets;
+    private ImportNonCalculatedFields nonCalculatedFields;
+    private ImportCalculatedFields calculatedFields;
+    private ImportSheetMetaDataList importSheets;
 
-    public ImportFields getImportFields() {
-        return importFields;
+    public ImportNonCalculatedFields getNonCalculatedFields() {
+        return nonCalculatedFields;
     }
 
-    public void setImportFields(ImportFields importFields) {
-        this.importFields = importFields;
+    public void setNonCalculatedFields(ImportNonCalculatedFields nonCalculatedFields) {
+        this.nonCalculatedFields = nonCalculatedFields;
     }
 
-    public ImportCalculatedFields getImportCalculatedFields() {
-        return importCalculatedFields;
+    public ImportCalculatedFields getCalculatedFields() {
+        return calculatedFields;
     }
 
-    public void setImportCalculatedFields(ImportCalculatedFields importCalculatedFields) {
-        this.importCalculatedFields = importCalculatedFields;
+    public void setCalculatedFields(ImportCalculatedFields calculatedFields) {
+        this.calculatedFields = calculatedFields;
     }
 
-    public ImportSheets getImportSheets() {
+    public ImportSheetMetaDataList getImportSheets() {
         return importSheets;
     }
 
-    public void setImportSheets(ImportSheets importSheets) {
+    public void setImportSheets(ImportSheetMetaDataList importSheets) {
         this.importSheets = importSheets;
     }
 
-    public String getSystemField(FormType formType, String userField, String fileName) {
-        return null;
+    public List<ImportField> getAllFields(ImportSheetMetaData importSheetMetaData) {
+        ArrayList<ImportField> importFields = new ArrayList<>();
+        importFields.addAll(nonCalculatedFields.getFieldsFor(importSheetMetaData));
+        importFields.addAll(calculatedFields.getFieldsFor(importSheetMetaData));
+        importFields.addAll(importSheetMetaData.getDefaultFields());
+        return importFields;
     }
 }
