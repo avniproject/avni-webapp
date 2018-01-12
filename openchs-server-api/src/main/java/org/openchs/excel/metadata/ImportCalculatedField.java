@@ -1,11 +1,9 @@
 package org.openchs.excel.metadata;
 
 import org.apache.poi.ss.usermodel.Row;
-import org.joda.time.LocalDate;
 import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.util.Mappings;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -78,11 +76,11 @@ public class ImportCalculatedField implements ImportField {
 
     @Override
     public Date getDateValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Boolean getBooleanValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }

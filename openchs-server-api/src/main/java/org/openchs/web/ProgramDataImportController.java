@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.metadata.ImportMetaData;
 import org.openchs.excel.metadata.ImportSheetMetaDataList;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
@@ -28,13 +29,15 @@ public class ProgramDataImportController {
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public ResponseEntity<?> uploadData(@RequestParam("file") MultipartFile importMetaDataFile, @RequestParam("file") MultipartFile uploadedFile) throws Exception {
         ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(importMetaDataFile.getInputStream());
-        ImportSheetMetaDataList importSheets = importMetaData.getImportSheets();
-        XSSFWorkbook workbook = new XSSFWorkbook(uploadedFile.getInputStream());
-        importSheets.forEach(importSheet -> {
+        ImportSheetMetaDataList importSheetMetaDataList = importMetaData.getImportSheets();
+        ImportFile importFile = new ImportFile(uploadedFile.getInputStream());
+        importSheetMetaDataList.forEach(importSheetMetaData -> {
             try {
-                Boolean status = importer.importSheet(workbook, importMetaData, importSheet);
+                Boolean status = importer.importSheet(importFile, importMetaData, importSheetMetaData);
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                importFile.close();
             }
         });
 

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ImportMetaDataTest {
     @Test
-    public void importSample() throws IOException {
+    public void readMetaData() throws IOException {
         ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(new ClassPathResource("Import MetaData.xlsx").getInputStream());
         ImportSheetMetaDataList importSheets = importMetaData.getImportSheets();
         ImportSheetMetaData importSheetMetaData = importSheets.get(0);
@@ -21,6 +21,11 @@ public class ImportMetaDataTest {
         assertEquals(3, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
         assertEquals(2, importSheetMetaData.getDefaultFields().size());
         assertEquals(14, importMetaData.getAllFields(importSheetMetaData).size());
+    }
+
+    @Test
+    public void getRequestFromImportSheet() throws IOException {
+        ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(new ClassPathResource("Import MetaData.xlsx").getInputStream());
     }
 
     @Test

@@ -142,6 +142,8 @@ public class Concept extends OrganisationAwareEntity {
     }
 
     public Object getPrimitiveValue(String visibleText) {
+        if (visibleText == null || visibleText.isEmpty()) return null;
+
         if (ConceptDataType.Numeric.toString().equals(this.getDataType())) return Double.parseDouble(visibleText);
         if (ConceptDataType.Date.toString().equals(this.getDataType())) return O.getDateInDbFormat(visibleText);
         if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
