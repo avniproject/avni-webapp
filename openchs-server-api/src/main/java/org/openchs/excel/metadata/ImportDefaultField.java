@@ -17,6 +17,10 @@ public class ImportDefaultField implements ImportField {
         this.defaultValue = defaultValue;
     }
 
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
     public String getSystemFieldName() {
         return systemFieldName;
     }

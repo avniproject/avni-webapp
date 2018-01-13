@@ -2,7 +2,6 @@ package org.openchs.excel;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormType;
@@ -10,8 +9,9 @@ import org.openchs.dao.ChecklistRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
-import org.openchs.domain.*;
-import org.openchs.excel.metadata.ImportField;
+import org.openchs.domain.Checklist;
+import org.openchs.domain.ChecklistItem;
+import org.openchs.domain.ProgramEncounter;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.healthmodule.adapter.ProgramEncounterRuleInvoker;
 import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
@@ -38,7 +38,7 @@ import java.util.UUID;
 
 @Component
 public class RowProcessor {
-    private final Logger logger;
+    private static Logger logger = LoggerFactory.getLogger(RowProcessor.class);
 
     @Autowired
     private IndividualController individualController;
@@ -67,10 +67,6 @@ public class RowProcessor {
     @Autowired
     private FormService formService;
 
-    public RowProcessor() {
-        logger = LoggerFactory.getLogger(this.getClass());
-    }
-
     void processIndividual(IndividualRequest individualRequest) {
         Form form = formService.findForm(FormType.IndividualProfile, null, null);
         List<FormElement> unfilledMandatoryFormElements = formService.getUnfilledMandatoryFormElements(form, RequestUtil.fromObservationRequests(individualRequest.getObservations()));
@@ -79,7 +75,7 @@ public class RowProcessor {
         }
         validateObservations(individualRequest.getObservations(), form);
         individualController.save(individualRequest);
-        this.logger.info(String.format("Imported Individual: %s", individualRequest.getUuid()));
+        logger.info(String.format("Imported Individual: %s", individualRequest.getUuid()));
     }
 
     private void validateObservations(List<ObservationRequest> observationRequests, Form form) {
@@ -121,7 +117,7 @@ public class RowProcessor {
 
         List<ProgramEncounterRequest> scheduledVisits = programEnrolmentModuleInvoker.getNextScheduledVisits(programEnrolmentRuleInput, programEnrolmentRequest.getUuid());
         scheduledVisits.forEach(programEncounterRequest -> programEncounterController.save(programEncounterRequest));
-        this.logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
+        logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
     void processProgramEncounter(ProgramEncounterRequest programEncounterRequest, ImportSheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker) {
@@ -140,7 +136,7 @@ public class RowProcessor {
 
         List<ProgramEncounterRequest> scheduledVisits = ruleInvoker.getNextScheduledVisits(programEncounterRuleInput, programEncounterRequest.getProgramEnrolmentUUID());
         scheduledVisits.forEach(scheduledProgramEncounterRequest -> programEncounterController.save(scheduledProgramEncounterRequest));
-        this.logger.info(String.format("Imported ProgramEncounter for Enrolment: %s", programEncounterRequest.getProgramEnrolmentUUID()));
+        logger.info(String.format("Imported ProgramEncounter for Enrolment: %s", programEncounterRequest.getProgramEnrolmentUUID()));
     }
 
     private ProgramEncounter matchAndUseExistingProgramEncounter(ProgramEncounterRequest programEncounterRequest) {

@@ -18,6 +18,7 @@ public class ImportSheetHeader {
     }
 
     public int getPosition(String userFieldName) {
-        return map.get(userFieldName);
+        Integer integer = map.get(userFieldName);
+        return integer == null ? -1 : integer;
     }
 }

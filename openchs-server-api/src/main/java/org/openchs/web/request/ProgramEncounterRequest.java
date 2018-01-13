@@ -80,4 +80,12 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
         programEncounterRequest.cancelObservations = new ArrayList<>();
         return programEncounterRequest;
     }
+
+    public ObservationRequest findObservation(String conceptName) {
+        return observations.stream().filter(observationRequest -> observationRequest.getConceptName().equals(conceptName)).findAny().orElse(null);
+    }
+
+    public Object getObservationValue(String conceptName) {
+        return findObservation(conceptName).getValue();
+    }
 }

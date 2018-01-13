@@ -1,6 +1,7 @@
 package org.openchs.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.joda.time.DateTime;
@@ -13,7 +14,7 @@ import java.util.Date;
 
 public class ExcelUtil {
     private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
-    private static DateTimeFormatter[] possibleFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy")};
+    private static DateTimeFormatter[] possibleFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy")};
 
     public static String getText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
@@ -32,6 +33,7 @@ public class ExcelUtil {
         Cell cell = row.getCell(cellNum);
         try {
             if (cell == null) return null;
+            if (cell.getCellTypeEnum() == CellType.STRING) return getDateFromString(row, cellNum);
             return cell.getDateCellValue();
         } catch (RuntimeException e) {
             logger.error(String.format("getDate failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));

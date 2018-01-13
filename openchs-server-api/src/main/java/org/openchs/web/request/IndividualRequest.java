@@ -22,4 +22,12 @@ public class IndividualRequest extends org.openchs.web.request.common.CommonIndi
         if (observationRequest != null)
             this.observations.add(observationRequest);
     }
+
+    public ObservationRequest findObservation(String conceptName) {
+        return observations.stream().filter(observationRequest -> observationRequest.getConceptName().equals(conceptName)).findAny().orElse(null);
+    }
+
+    public Object getObservationValue(String conceptName) {
+        return findObservation(conceptName).getValue();
+    }
 }

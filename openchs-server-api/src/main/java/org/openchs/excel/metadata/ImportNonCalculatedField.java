@@ -1,7 +1,6 @@
 package org.openchs.excel.metadata;
 
 import org.apache.poi.ss.usermodel.Row;
-import org.joda.time.LocalDate;
 import org.openchs.application.FormType;
 import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.ImportSheetHeader;
@@ -71,7 +70,7 @@ public class ImportNonCalculatedField implements ImportField {
     @Override
     public String getTextValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         int position = getPosition(importSheetHeader, importSheetMetaData);
-        return ExcelUtil.getText(row, position);
+        return position == -1 ? null : ExcelUtil.getText(row, position);
     }
 
     private int getPosition(ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
@@ -82,12 +81,17 @@ public class ImportNonCalculatedField implements ImportField {
     @Override
     public Date getDateValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         int position = getPosition(importSheetHeader, importSheetMetaData);
-        return ExcelUtil.getDate(row, position);
+        return position == -1 ? null : ExcelUtil.getDate(row, position);
     }
 
     @Override
     public Boolean getBooleanValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         int position = getPosition(importSheetHeader, importSheetMetaData);
-        return ExcelUtil.getBoolean(row, position);
+        if (position == -1) {
+            return false;
+        }
+        Boolean aBoolean = ExcelUtil.getBoolean(row, position);
+        if (aBoolean == null) return false;
+        return aBoolean;
     }
 }

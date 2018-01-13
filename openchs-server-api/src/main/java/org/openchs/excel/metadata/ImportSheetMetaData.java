@@ -5,6 +5,7 @@ import org.openchs.util.Mappings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ImportSheetMetaData {
     private String fileName;
@@ -13,6 +14,15 @@ public class ImportSheetMetaData {
     private Class entityType;
     private String programName;
     private String encounterType;
+
+    public ImportSheetMetaData() {
+    }
+
+    public ImportSheetMetaData(String fileName, String sheetName, Class entityType) {
+        this.fileName = fileName;
+        this.sheetName = sheetName;
+        this.entityType = entityType;
+    }
 
     private List<ImportDefaultField> sheetDefaults = new ArrayList<>();
 
@@ -77,5 +87,21 @@ public class ImportSheetMetaData {
         ArrayList<ImportField> list = new ArrayList<>();
         list.addAll(sheetDefaults);
         return list;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImportSheetMetaData that = (ImportSheetMetaData) o;
+        return Objects.equals(fileName, that.fileName) &&
+                Objects.equals(sheetName, that.sheetName) &&
+                Objects.equals(entityType, that.entityType);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(fileName, sheetName, entityType);
     }
 }

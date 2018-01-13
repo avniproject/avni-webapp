@@ -37,7 +37,7 @@ public class ImportMetaDataExcelReader {
                 for (int i = 5; i < row.getLastCellNum(); i++) {
                     String systemFieldName = ExcelUtil.getText(row, i);
                     if (systemFieldName.isEmpty()) break;
-                    importSheets.addSystemField(i - 4, systemFieldName);
+                    importSheets.addSystemField(i - 5, systemFieldName);
                 }
                 logger.info("Read header of Sheets");
             } else {

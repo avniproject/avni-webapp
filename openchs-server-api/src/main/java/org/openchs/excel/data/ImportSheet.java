@@ -29,8 +29,6 @@ public class ImportSheet {
         this.xssfSheet = xssfSheet;
         XSSFRow row = xssfSheet.getRow(0);
         importSheetHeader = new ImportSheetHeader(row);
-
-
     }
 
     public int getNumberOfDataRows() {

@@ -70,6 +70,7 @@ public class ImportCalculatedField implements ImportField {
     @Override
     public String getTextValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         int position = importSheetHeader.getPosition(sourceUserField);
+        if (position == -1) return null;
         String text = ExcelUtil.getText(row, position);
         return find(text);
     }
