@@ -1,6 +1,5 @@
 package org.openchs.web;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.metadata.ImportMetaData;
 import org.openchs.excel.metadata.ImportSheetMetaDataList;

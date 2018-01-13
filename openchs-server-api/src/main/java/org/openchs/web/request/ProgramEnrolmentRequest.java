@@ -35,6 +35,8 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
     }
 
     public Object getObservationValue(String conceptName) {
-        return findObservation(conceptName).getValue();
+        ObservationRequest observation = findObservation(conceptName);
+        if (observation == null) return null;
+        return observation.getValue();
     }
 }

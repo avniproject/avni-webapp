@@ -5,25 +5,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openchs.dao.ConceptRepository;
-import org.openchs.dao.OrganisationRepository;
-import org.openchs.domain.Concept;
-import org.openchs.domain.Individual;
-import org.openchs.domain.ProgramEncounter;
-import org.openchs.domain.ProgramEnrolment;
+import org.openchs.domain.*;
 import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.data.ImportSheet;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.IndividualRequest;
-import org.openchs.web.request.ObservationRequest;
+import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,6 +55,11 @@ public class ImportMetaDataTest {
 
     @Test
     public void getRequestFromImportSheet() throws IOException {
+        HashMap<String, UUID> answers = new HashMap<>();
+        answers.put("Yes", UUID.randomUUID());
+        answers.put("Dropped out", UUID.randomUUID());
+        when(conceptRepository.findByName("School going")).thenReturn(TestEntityFactory.createCodedConcept("School going", answers));
+
         ImportFile importFile = new ImportFile(new ClassPathResource("Test Import.xlsx").getInputStream());
         Map<ImportSheetMetaData, List<CHSRequest>> requestMap = new HashMap<>();
 
@@ -70,7 +68,7 @@ public class ImportMetaDataTest {
             ImportSheet importSheet = importFile.getSheet(sheetMetaData.getSheetName());
             int numberOfDataRows = importSheet.getNumberOfDataRows();
             for (int i = 0; i < numberOfDataRows; i++) {
-                CHSRequest request = importSheet.getRequest(allFields, sheetMetaData, i, conceptRepository);
+                CHSRequest request = importSheet.getRequest(allFields, sheetMetaData, i, conceptRepository, importMetaData.getAnswerMetaDataList());
                 List<CHSRequest> chsRequests = requestMap.computeIfAbsent(sheetMetaData, k -> new ArrayList<>());
                 chsRequests.add(request);
             }
@@ -103,7 +101,12 @@ public class ImportMetaDataTest {
         List<CHSRequest> enrolmentsAmalzarMadhyamik = requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEnrolment.class));
         ProgramEnrolmentRequest enrolmentAmalzarMadhyamik = (ProgramEnrolmentRequest) enrolmentsAmalzarMadhyamik.get(1);
         assertEquals(enrolmentAmalzarMadhyamik.getEnrolmentDateTime().toLocalDate(), new LocalDate(2017, 7, 24));
-        assertEquals(enrolmentAmalzarMadhyamik.getObservationValue("School going"), "Continued");
+        List schoolGoing = (List) enrolmentAmalzarMadhyamik.getObservationValue("School going");
+        assertEquals(schoolGoing.get(0), answers.get("Yes").toString());
+
+        List<CHSRequest> encountersAmalzarMadhyamik = requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEncounter.class));
+        ProgramEncounterRequest encounterAmalzarMadhyamik = (ProgramEncounterRequest) encountersAmalzarMadhyamik.get(0);
+        //Father's occupation when none
     }
 
     @Test

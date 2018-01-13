@@ -6,7 +6,8 @@ import java.util.List;
 public class ImportMetaData {
     private ImportNonCalculatedFields nonCalculatedFields;
     private ImportCalculatedFields calculatedFields;
-    private ImportSheetMetaDataList importSheets;
+    private ImportSheetMetaDataList sheets;
+    private ImportAnswerMetaDataList answerMetaDataList;
 
     public ImportNonCalculatedFields getNonCalculatedFields() {
         return nonCalculatedFields;
@@ -25,11 +26,27 @@ public class ImportMetaData {
     }
 
     public ImportSheetMetaDataList getImportSheets() {
-        return importSheets;
+        return sheets;
     }
 
     public void setImportSheets(ImportSheetMetaDataList importSheets) {
-        this.importSheets = importSheets;
+        this.sheets = importSheets;
+    }
+
+    public ImportSheetMetaDataList getSheets() {
+        return sheets;
+    }
+
+    public void setSheets(ImportSheetMetaDataList sheets) {
+        this.sheets = sheets;
+    }
+
+    public ImportAnswerMetaDataList getAnswerMetaDataList() {
+        return answerMetaDataList;
+    }
+
+    public void setAnswerMetaDataList(ImportAnswerMetaDataList answerMetaDataList) {
+        this.answerMetaDataList = answerMetaDataList;
     }
 
     public List<ImportField> getAllFields(ImportSheetMetaData importSheetMetaData) {

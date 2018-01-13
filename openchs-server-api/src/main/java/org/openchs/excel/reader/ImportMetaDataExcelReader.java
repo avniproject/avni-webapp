@@ -23,10 +23,29 @@ public class ImportMetaDataExcelReader {
         importMetaData.setNonCalculatedFields(importMetaDataExcelReader.readFields(workbook));
         importMetaData.setCalculatedFields(importMetaDataExcelReader.readCalculatedFields(workbook));
         importMetaData.setImportSheets(importMetaDataExcelReader.readSheets(workbook));
+        importMetaData.setAnswerMetaDataList(importMetaDataExcelReader.readAnswerMetaDataList(workbook));
         return importMetaData;
     }
 
-    public ImportSheetMetaDataList readSheets(XSSFWorkbook workbook) {
+    private ImportAnswerMetaDataList readAnswerMetaDataList(XSSFWorkbook workbook) {
+        ImportAnswerMetaDataList list = new ImportAnswerMetaDataList();
+        XSSFSheet sheet = workbook.getSheet("Answer Fields");
+        Iterator<Row> iterator = sheet.iterator();
+        int k = 0;
+        while (iterator.hasNext()) {
+            Row row = iterator.next();
+            if (k != 0) {
+                ImportAnswerMetaData importAnswerMetaData = new ImportAnswerMetaData();
+                importAnswerMetaData.setSystemAnswer(ExcelUtil.getText(row, 0));
+                importAnswerMetaData.setUserAnswer(ExcelUtil.getText(row, 1));
+                list.add(importAnswerMetaData);
+            }
+            k++;
+        }
+        return list;
+    }
+
+    private ImportSheetMetaDataList readSheets(XSSFWorkbook workbook) {
         ImportSheetMetaDataList importSheets = new ImportSheetMetaDataList();
         XSSFSheet sheet = workbook.getSheet("Sheets");
         Iterator<Row> iterator = sheet.iterator();
@@ -61,7 +80,7 @@ public class ImportMetaDataExcelReader {
         return importSheets;
     }
 
-    public ImportCalculatedFields readCalculatedFields(XSSFWorkbook workbook) {
+    private ImportCalculatedFields readCalculatedFields(XSSFWorkbook workbook) {
         ImportCalculatedFields calculatedFields = new ImportCalculatedFields();
         XSSFSheet sheet = workbook.getSheet("Calculated Fields");
         Iterator<Row> iterator = sheet.iterator();
@@ -83,7 +102,7 @@ public class ImportMetaDataExcelReader {
         return calculatedFields;
     }
 
-    public ImportNonCalculatedFields readFields(XSSFWorkbook workbook) {
+    private ImportNonCalculatedFields readFields(XSSFWorkbook workbook) {
         ImportNonCalculatedFields nonCalculatedFields = new ImportNonCalculatedFields();
         XSSFSheet sheet = workbook.getSheet("Fields");
         Iterator<Row> iterator = sheet.iterator();

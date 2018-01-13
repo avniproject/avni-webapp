@@ -7,13 +7,11 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.openchs.dao.ConceptRepository;
-import org.openchs.domain.Concept;
-import org.openchs.domain.Individual;
-import org.openchs.domain.ProgramEncounter;
-import org.openchs.domain.ProgramEnrolment;
+import org.openchs.domain.*;
 import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.TextToType;
+import org.openchs.excel.metadata.ImportAnswerMetaDataList;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.web.request.*;
@@ -41,18 +39,22 @@ public class ImportSheet {
         return Strings.isBlank(rawCellValue) ? null : row;
     }
 
-    private ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ConceptRepository conceptRepository) {
-        String cell = importField.getTextValue(row, sheetHeader, sheetMetaData);
+    private ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
+        String cellText = importField.getTextValue(row, sheetHeader, sheetMetaData);
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(systemFieldName);
         Concept concept = conceptRepository.findByName(systemFieldName);
         if (concept == null)
             throw new NullPointerException(String.format("Concept with name |%s| not found", systemFieldName));
-        observationRequest.setValue(concept.getPrimitiveValue(cell));
+        if (ConceptDataType.Coded.toString().equals(concept.getDataType()))
+            cellText = answerMetaDataList.getSystemAnswer(cellText);
+
+        Object primitiveValue = concept.getPrimitiveValue(cellText);
+        observationRequest.setValue(primitiveValue);
         return observationRequest;
     }
 
-    public IndividualRequest getIndividualRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData importSheetMetaData, ConceptRepository conceptRepository) {
+    private IndividualRequest getIndividualRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData importSheetMetaData, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setObservations(new ArrayList<>());
         importFields.forEach(importField -> {
@@ -83,7 +85,7 @@ public class ImportSheet {
                     individualRequest.setUuid(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 default:
-                    individualRequest.addObservation(createObservationRequest(row, importSheetHeader, importSheetMetaData, importField, systemFieldName, conceptRepository));
+                    individualRequest.addObservation(createObservationRequest(row, importSheetHeader, importSheetMetaData, importField, systemFieldName, conceptRepository, answerMetaDataList));
                     break;
             }
         });
@@ -91,7 +93,7 @@ public class ImportSheet {
         return individualRequest;
     }
 
-    public ProgramEnrolmentRequest getEnrolmentRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository) {
+    private ProgramEnrolmentRequest getEnrolmentRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
         programEnrolmentRequest.setProgram(sheetMetaData.getProgramName());
         programEnrolmentRequest.setObservations(new ArrayList<>());
@@ -109,7 +111,7 @@ public class ImportSheet {
                     programEnrolmentRequest.setEnrolmentDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
                     break;
                 default:
-                    programEnrolmentRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository));
+                    programEnrolmentRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, answerMetaDataList));
                     break;
             }
         });
@@ -117,7 +119,7 @@ public class ImportSheet {
         return programEnrolmentRequest;
     }
 
-    public ProgramEncounterRequest getProgramEncounterRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository) {
+    private ProgramEncounterRequest getProgramEncounterRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<>());
         importFields.forEach(importField -> {
@@ -145,7 +147,7 @@ public class ImportSheet {
                     programEncounterRequest.setMaxDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
                     break;
                 default:
-                    programEncounterRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository));
+                    programEncounterRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, answerMetaDataList));
                     break;
             }
         });
@@ -156,16 +158,16 @@ public class ImportSheet {
         return importSheetMetaData.getEntityType().equals(aClass);
     }
 
-    public CHSRequest getRequest(List<ImportField> importFields, ImportSheetMetaData sheetMetaData, int dataRowNumber, ConceptRepository conceptRepository) {
+    public CHSRequest getRequest(List<ImportField> importFields, ImportSheetMetaData sheetMetaData, int dataRowNumber, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
         XSSFRow row = getDataRow(dataRowNumber);
         if (row == null) return null;
 
         if (isSheetOfType(sheetMetaData, Individual.class))
-            return getIndividualRequest(importFields, row, sheetMetaData, conceptRepository);
+            return getIndividualRequest(importFields, row, sheetMetaData, conceptRepository, answerMetaDataList);
         else if (isSheetOfType(sheetMetaData, ProgramEnrolment.class))
-            return getEnrolmentRequest(importFields, row, sheetMetaData, conceptRepository);
+            return getEnrolmentRequest(importFields, row, sheetMetaData, conceptRepository, answerMetaDataList);
         else if (isSheetOfType(sheetMetaData, ProgramEncounter.class))
-            return getProgramEncounterRequest(importFields, row, sheetMetaData, conceptRepository);
+            return getProgramEncounterRequest(importFields, row, sheetMetaData, conceptRepository, answerMetaDataList);
 
         throw new RuntimeException("Unknown data type in the sheet");
     }

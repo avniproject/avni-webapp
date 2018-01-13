@@ -56,7 +56,7 @@ public class ExcelImporter implements Importer {
         int numberOfDataRows = importSheet.getNumberOfDataRows();
         for (int i = 0; i < numberOfDataRows; i++) {
             try {
-                CHSRequest request = importSheet.getRequest(allFields, importSheetMetaData, i, conceptRepository);
+                CHSRequest request = importSheet.getRequest(allFields, importSheetMetaData, i, conceptRepository, importMetaData.getAnswerMetaDataList());
                 if (request == null) {
                     logger.info(String.format("Breaking at data row number: %d and physical rows number (1 based)", i + 2));
                     break;
