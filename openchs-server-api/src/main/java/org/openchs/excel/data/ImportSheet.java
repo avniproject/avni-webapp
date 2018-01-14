@@ -50,6 +50,7 @@ public class ImportSheet {
             cellText = answerMetaDataList.getSystemAnswer(cellText);
 
         Object primitiveValue = concept.getPrimitiveValue(cellText);
+        if (primitiveValue == null) return null;
         observationRequest.setValue(primitiveValue);
         return observationRequest;
     }

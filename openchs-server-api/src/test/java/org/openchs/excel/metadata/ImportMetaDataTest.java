@@ -42,11 +42,11 @@ public class ImportMetaDataTest {
         ImportSheetMetaDataList importSheets = importMetaData.getImportSheets();
         ImportSheetMetaData importSheetMetaData = importSheets.get(0);
 
-        assertEquals(9, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
+        assertEquals(8, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
         assertEquals(3, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
         List<ImportField> defaultFields = importSheetMetaData.getDefaultFields();
         assertEquals(2, defaultFields.size());
-        assertEquals(14, importMetaData.getAllFields(importSheetMetaData).size());
+        assertEquals(13, importMetaData.getAllFields(importSheetMetaData).size());
 
         ImportDefaultField importField = (ImportDefaultField) defaultFields.get(0);
         assertEquals(importField.getSystemFieldName(), "Registration Date");

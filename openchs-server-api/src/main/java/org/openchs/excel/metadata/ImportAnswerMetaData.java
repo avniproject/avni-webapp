@@ -4,8 +4,10 @@ public class ImportAnswerMetaData {
     private String systemAnswer;
     private String userAnswer;
 
+    private static String NULL = "NULL";
+
     public String getSystemAnswer() {
-        return systemAnswer;
+        return NULL.equals(systemAnswer) ? null : systemAnswer;
     }
 
     public void setSystemAnswer(String systemAnswer) {
