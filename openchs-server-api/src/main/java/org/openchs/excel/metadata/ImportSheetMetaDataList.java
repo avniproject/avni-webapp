@@ -15,7 +15,7 @@ public class ImportSheetMetaDataList extends ArrayList<ImportSheetMetaData> {
         return systemFields.size();
     }
 
-    public void addDefaultValue(int position, String defaultValue, ImportSheetMetaData importSheetMetaData) {
+    public void addDefaultValue(int position, Object defaultValue, ImportSheetMetaData importSheetMetaData) {
         String systemFieldName = systemFields.get(position);
         importSheetMetaData.addDefaultValue(systemFieldName, defaultValue);
     }

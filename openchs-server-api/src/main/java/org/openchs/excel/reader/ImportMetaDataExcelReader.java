@@ -8,6 +8,7 @@ import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.metadata.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +57,7 @@ public class ImportMetaDataExcelReader {
             if (k == 0) {
                 for (int i = 5; i < row.getLastCellNum(); i++) {
                     String systemFieldName = ExcelUtil.getText(row, i);
-                    if (systemFieldName.isEmpty()) break;
+                    if (StringUtils.isEmpty(systemFieldName)) break;
                     importSheets.addSystemField(i - 5, systemFieldName);
                 }
                 logger.info("Read header of Sheets");
@@ -69,8 +70,8 @@ public class ImportMetaDataExcelReader {
                 importSheetMetaData.setProgramName(ExcelUtil.getText(row, 4));
                 importSheetMetaData.setEncounterType(ExcelUtil.getText(row, 5));
                 for (int i = 0; i < importSheets.getNumberOfSystemFields(); i++) {
-                    String defaultValue = ExcelUtil.getText(row, i + 5);
-                    if (defaultValue.isEmpty()) continue;
+                    Object defaultValue = ExcelUtil.getValueOfBestType(row, i + 5);
+                    if (defaultValue == null) continue;
                     importSheets.addDefaultValue(i, defaultValue, importSheetMetaData);
                 }
                 importSheets.add(importSheetMetaData);
@@ -113,13 +114,13 @@ public class ImportMetaDataExcelReader {
             if (k == 0) {
                 for (int i = 4; i < row.getLastCellNum(); i++) {
                     String userFileType = ExcelUtil.getText(row, i);
-                    if (userFileType.isEmpty()) break;
+                    if (StringUtils.isEmpty(userFileType)) break;
                     nonCalculatedFields.addFileType(i - 4, userFileType);
                 }
                 logger.info("Read header of Fields");
             } else {
                 String formName = ExcelUtil.getText(row, 0);
-                if (formName.isEmpty()) break;
+                if (StringUtils.isEmpty(formName)) break;
 
                 ImportNonCalculatedField nonCalculatedField = new ImportNonCalculatedField();
                 nonCalculatedField.setFormName(formName);
@@ -128,7 +129,7 @@ public class ImportMetaDataExcelReader {
                 nonCalculatedField.setSystemFieldName(ExcelUtil.getText(row, 3));
                 for (int i = 0; i < nonCalculatedFields.getNumberOfFileTypes(); i++) {
                     String userFieldName = ExcelUtil.getText(row, i + 4);
-                    if (userFieldName.isEmpty()) continue;
+                    if (StringUtils.isEmpty(userFieldName)) continue;
                     nonCalculatedFields.addUserField(i, userFieldName, nonCalculatedField);
                 }
                 nonCalculatedFields.add(nonCalculatedField);

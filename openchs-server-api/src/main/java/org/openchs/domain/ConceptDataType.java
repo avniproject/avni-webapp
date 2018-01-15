@@ -1,5 +1,8 @@
 package org.openchs.domain;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum ConceptDataType {
     Numeric,
     @Deprecated
@@ -8,5 +11,11 @@ public enum ConceptDataType {
     Coded,
     NA,
     Date,
-    Duration
+    Duration;
+
+    private static List<ConceptDataType> stringTypes = Arrays.asList(Text, Coded);
+
+    public static boolean stringType(String string) {
+        return stringTypes.contains(ConceptDataType.valueOf(string));
+    }
 }

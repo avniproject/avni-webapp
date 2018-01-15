@@ -141,17 +141,15 @@ public class Concept extends OrganisationAwareEntity {
                 '}';
     }
 
-    public Object getPrimitiveValue(String visibleText) {
-        if (visibleText == null || visibleText.isEmpty()) return null;
+    public Object getDbValue(Object value) {
+        if (value == null) return null;
 
-        if (ConceptDataType.Numeric.toString().equals(this.getDataType())) return Double.parseDouble(visibleText);
-        if (ConceptDataType.Date.toString().equals(this.getDataType())) return O.getDateInDbFormat(visibleText);
         if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
-            Concept answerConcept = this.findAnswerConcept(visibleText);
+            Concept answerConcept = this.findAnswerConcept((String) value);
             if (answerConcept == null)
-                throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", visibleText, this.name));
+                throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", value, this.name));
             return Arrays.asList(answerConcept.getUuid());
         }
-        return visibleText;
+        return value;
     }
 }

@@ -20,14 +20,6 @@ public class O {
         return new SimpleDateFormat(dbFormat).format(date);
     }
 
-    public static String getDateInDbFormat(LocalDate localDate) {
-        return getDateInDbFormat(localDate.toDate());
-    }
-
-    public static String getDateInDbFormat(String userFormat) {
-        return getDateInDbFormat(LocalDate.parse(userFormat, O.userFormat));
-    }
-
     public static Date getDateFromDbFormat(String dbFormat) {
         return LocalDate.parse(dbFormat, dbFormatter).toDate();
     }

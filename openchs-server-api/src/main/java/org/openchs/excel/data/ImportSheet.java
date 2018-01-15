@@ -40,18 +40,28 @@ public class ImportSheet {
     }
 
     private ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
-        String cellText = importField.getTextValue(row, sheetHeader, sheetMetaData);
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(systemFieldName);
         Concept concept = conceptRepository.findByName(systemFieldName);
         if (concept == null)
             throw new NullPointerException(String.format("Concept with name |%s| not found", systemFieldName));
-        if (ConceptDataType.Coded.toString().equals(concept.getDataType()))
-            cellText = answerMetaDataList.getSystemAnswer(cellText, concept.getName());
 
-        Object primitiveValue = concept.getPrimitiveValue(cellText);
-        if (primitiveValue == null) return null;
-        observationRequest.setValue(primitiveValue);
+        Object cellValue;
+        if (ConceptDataType.stringType(concept.getDataType())) {
+            cellValue = importField.getTextValue(row, sheetHeader, sheetMetaData);
+        } else if (ConceptDataType.Date.toString().equals(concept.getDataType())) {
+            cellValue = importField.getDateValue(row, sheetHeader, sheetMetaData);
+        } else {
+            cellValue = importField.getBooleanValue(row, sheetHeader, sheetMetaData);
+        }
+        if (cellValue == null) return null;
+
+        if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
+            cellValue = concept.getDbValue(answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName()));
+        }
+
+        if (cellValue == null) return null;
+        observationRequest.setValue(cellValue);
         return observationRequest;
     }
 

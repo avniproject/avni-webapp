@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import org.springframework.util.StringUtils;
+
 import java.util.UUID;
 
 public class CHSRequest {
@@ -31,7 +33,7 @@ public class CHSRequest {
     }
 
     public void setupUuidIfNeeded() {
-        if (uuid == null || uuid.isEmpty()) {
+        if (StringUtils.isEmpty(uuid)) {
             setUuid(UUID.randomUUID().toString());
         }
     }

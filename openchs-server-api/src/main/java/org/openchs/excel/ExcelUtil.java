@@ -2,6 +2,7 @@ package org.openchs.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.joda.time.DateTime;
@@ -9,6 +10,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
@@ -20,7 +22,8 @@ public class ExcelUtil {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return "";
         String stringCellValue = cell.toString();
-        return stringCellValue.trim().replaceAll(" +", " ");
+        String s = stringCellValue.trim().replaceAll(" +", " ");
+        return StringUtils.isEmpty(s) ? null : s;
     }
 
     public static String getRawCellValue(Row row, int cellNum) {
@@ -61,7 +64,7 @@ public class ExcelUtil {
         Cell cell = row.getCell(cellNum);
         try {
             if (cell == null) return null;
-            if (cell.toString().isEmpty()) return null;
+            if (StringUtils.isEmpty(cell.toString())) return null;
             return cell.getNumericCellValue();
         } catch (RuntimeException e) {
             logger.error(String.format("getNumber failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
@@ -73,11 +76,28 @@ public class ExcelUtil {
         Cell cell = row.getCell(cellNum);
         try {
             if (cell == null) return null;
-            if (cell.toString().isEmpty()) return null;
+            if (StringUtils.isEmpty(cell.toString())) return null;
             return cell.getBooleanCellValue();
         } catch (RuntimeException e) {
             logger.error(String.format("getBoolean failed for row_number=%d, cell_number=%d, it contains:%s", row.getRowNum(), cellNum, cell.toString()));
             return null;
+        }
+    }
+
+    public static Object getValueOfBestType(Row row, int cellNum) {
+        Cell cell = row.getCell(cellNum);
+        if (cell == null) return null;
+
+        switch (cell.getCellTypeEnum().toString()) {
+            case "NUMERIC":
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue();
+                }
+                return ExcelUtil.getNumber(row, cellNum);
+            case "BOOLEAN":
+                return ExcelUtil.getBoolean(row, cellNum);
+            default:
+                return ExcelUtil.getText(row, cellNum);
         }
     }
 }

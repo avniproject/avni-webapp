@@ -33,7 +33,9 @@ public class ImportMetaDataTest {
     @Before
     public void setup() throws IOException {
         initMocks(this);
-        when(conceptRepository.findByName(anyString())).thenReturn(new Concept());
+        Concept placeHolderConcept = new Concept();
+        placeHolderConcept.setDataType(ConceptDataType.Text.toString());
+        when(conceptRepository.findByName(anyString())).thenReturn(placeHolderConcept);
         importMetaData = ImportMetaDataExcelReader.readMetaData(new ClassPathResource("Import MetaData.xlsx").getInputStream());
     }
 
@@ -45,16 +47,20 @@ public class ImportMetaDataTest {
         assertEquals(8, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
         assertEquals(3, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
         List<ImportField> defaultFields = importSheetMetaData.getDefaultFields();
-        assertEquals(2, defaultFields.size());
-        assertEquals(13, importMetaData.getAllFields(importSheetMetaData).size());
+        assertEquals(3, defaultFields.size());
+        assertEquals(14, importMetaData.getAllFields(importSheetMetaData).size());
 
         ImportDefaultField importField = (ImportDefaultField) defaultFields.get(0);
         assertEquals(importField.getSystemFieldName(), "Registration Date");
-        assertEquals(importField.getDefaultValue(), "24-Jul-2017");
+        assertEquals(importField.getDefaultValue(), new LocalDate(2017, 7, 24).toDate());
 
         importSheetMetaData = importSheets.get(1);
         assertEquals(1, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
         assertEquals(0, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
+
+        importSheetMetaData = importSheets.get(9);
+        assertEquals(1, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
+        assertEquals(2, importSheetMetaData.getDefaultFields().size());
 
         ImportAnswerMetaDataList answerMetaDataList = importMetaData.getAnswerMetaDataList();
         assertEquals("Yes", answerMetaDataList.getSystemAnswer("Continued", "School going"));

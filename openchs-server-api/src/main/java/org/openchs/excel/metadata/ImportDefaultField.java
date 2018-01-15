@@ -10,14 +10,14 @@ import java.util.Date;
 
 public class ImportDefaultField implements ImportField {
     private String systemFieldName;
-    private String defaultValue;
+    private Object defaultValue;
 
-    public ImportDefaultField(String systemFieldName, String defaultValue) {
+    public ImportDefaultField(String systemFieldName, Object defaultValue) {
         this.systemFieldName = systemFieldName;
         this.defaultValue = defaultValue;
     }
 
-    public String getDefaultValue() {
+    public Object getDefaultValue() {
         return defaultValue;
     }
 
@@ -27,16 +27,18 @@ public class ImportDefaultField implements ImportField {
 
     @Override
     public String getTextValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        return defaultValue;
+        return (String) defaultValue;
     }
 
     @Override
     public Date getDateValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        return ExcelUtil.getDateFromString(defaultValue);
+        return (Date) defaultValue;
     }
 
     @Override
     public Boolean getBooleanValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        return TextToType.toBoolean(defaultValue);
+        if (defaultValue instanceof Boolean) return (Boolean) defaultValue;
+        else if (defaultValue instanceof String) return TextToType.toBoolean((String) defaultValue);
+        throw new RuntimeException(String.format("%s cannot be converted into boolean", defaultValue));
     }
 }

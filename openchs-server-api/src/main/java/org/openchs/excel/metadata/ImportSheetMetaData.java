@@ -74,7 +74,7 @@ public class ImportSheetMetaData {
         this.encounterType = encounterType;
     }
 
-    public void addDefaultValue(String systemFieldName, String defaultValue) {
+    public void addDefaultValue(String systemFieldName, Object defaultValue) {
         ImportDefaultField defaultField = new ImportDefaultField(systemFieldName, defaultValue);
         sheetDefaults.add(defaultField);
     }

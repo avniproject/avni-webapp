@@ -69,11 +69,11 @@ public class RowProcessor {
 
     void processIndividual(IndividualRequest individualRequest) {
         Form form = formService.findForm(FormType.IndividualProfile, null, null);
-        List<FormElement> unfilledMandatoryFormElements = formService.getUnfilledMandatoryFormElements(form, RequestUtil.fromObservationRequests(individualRequest.getObservations()));
-        if (unfilledMandatoryFormElements.size() != 0) {
-            throw new RuntimeException(String.format("Mandatory form-elements not present: %s", Arrays.toString(unfilledMandatoryFormElements.toArray())));
-        }
-        validateObservations(individualRequest.getObservations(), form);
+//        List<FormElement> unfilledMandatoryFormElements = formService.getUnfilledMandatoryFormElements(form, RequestUtil.fromObservationRequests(individualRequest.getObservations()));
+//        if (unfilledMandatoryFormElements.size() != 0) {
+//            throw new RuntimeException(String.format("Mandatory form-elements not present: %s", Arrays.toString(unfilledMandatoryFormElements.toArray())));
+//        }
+//        validateObservations(individualRequest.getObservations(), form);
         individualController.save(individualRequest);
         logger.info(String.format("Imported Individual: %s", individualRequest.getUuid()));
     }
@@ -87,7 +87,7 @@ public class RowProcessor {
 
     void processEnrolment(ProgramEnrolmentRequest programEnrolmentRequest, ImportSheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker) {
         Form form = formService.findForm(FormType.ProgramEnrolment, null, sheetMetaData.getProgramName());
-        validateObservations(programEnrolmentRequest.getObservations(), form);
+//        validateObservations(programEnrolmentRequest.getObservations(), form);
         ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository);
 
         ValidationsRuleResponse validationsRuleResponse = programEnrolmentModuleInvoker.validate(programEnrolmentRuleInput);
@@ -122,7 +122,7 @@ public class RowProcessor {
 
     void processProgramEncounter(ProgramEncounterRequest programEncounterRequest, ImportSheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker) {
         Form form = formService.findForm(FormType.ProgramEncounter, sheetMetaData.getEncounterType(), sheetMetaData.getProgramName());
-        validateObservations(programEncounterRequest.getObservations(), form);
+//        validateObservations(programEncounterRequest.getObservations(), form);
         ProgramEncounter programEncounter = matchAndUseExistingProgramEncounter(programEncounterRequest);
         if (programEncounter == null)
             programEncounterRequest.setupUuidIfNeeded();
