@@ -1,7 +1,5 @@
 package org.openchs.excel;
 
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Individual;
 import org.openchs.domain.ProgramEncounter;
@@ -13,7 +11,6 @@ import org.openchs.excel.metadata.ImportMetaData;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
 import org.openchs.importer.Importer;
-import org.openchs.util.ExceptionUtil;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
@@ -24,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
-import java.util.HashSet;
 import java.util.List;
 
 @Component
@@ -46,10 +41,7 @@ public class ExcelImporter implements Importer {
     }
 
     @Override
-    public Boolean importSheet(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData) {
-        int errorCount = 0;
-        HashSet<Integer> uniqueErrorHashes = new HashSet<>();
-
+    public Boolean importSheet(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult) {
         List<ImportField> allFields = importMetaData.getAllFields(importSheetMetaData);
         logger.info(String.format("READING SHEET: %s", importSheetMetaData.getSheetName()));
         ImportSheet importSheet = importFile.getSheet(importSheetMetaData.getSheetName());
@@ -69,13 +61,10 @@ public class ExcelImporter implements Importer {
                     rowProcessor.processProgramEncounter((ProgramEncounterRequest) request, importSheetMetaData, healthModuleInvokerFactory.getProgramEncounterInvoker());
                 logger.info(String.format("COMPLETED SHEET: %s", importSheetMetaData.getSheetName()));
             } catch (Exception error) {
-                int exceptionHash = ExceptionUtil.getExceptionHash(error);
-                uniqueErrorHashes.add(exceptionHash);
-                errorCount++;
+                dataImportResult.exceptionHappened(error);
                 logger.error(error.getMessage(), error);
             }
         }
-        logger.info(String.format("FAILED ROWS: %d; UNIQUE ERRORS: %d", errorCount, uniqueErrorHashes.size()));
         return true;
     }
 }

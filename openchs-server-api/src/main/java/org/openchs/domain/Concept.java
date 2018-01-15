@@ -149,7 +149,7 @@ public class Concept extends OrganisationAwareEntity {
         if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
             Concept answerConcept = this.findAnswerConcept(visibleText);
             if (answerConcept == null)
-                throw new NullPointerException(String.format("Concept with name |%s| not found", visibleText));
+                throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", visibleText, this.name));
             return Arrays.asList(answerConcept.getUuid());
         }
         return visibleText;

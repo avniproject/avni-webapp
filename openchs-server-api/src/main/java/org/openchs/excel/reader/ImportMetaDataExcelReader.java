@@ -38,6 +38,7 @@ public class ImportMetaDataExcelReader {
                 ImportAnswerMetaData importAnswerMetaData = new ImportAnswerMetaData();
                 importAnswerMetaData.setSystemAnswer(ExcelUtil.getText(row, 0));
                 importAnswerMetaData.setUserAnswer(ExcelUtil.getText(row, 1));
+                importAnswerMetaData.setConceptName(ExcelUtil.getText(row, 2));
                 list.add(importAnswerMetaData);
             }
             k++;

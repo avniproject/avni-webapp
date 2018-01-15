@@ -1,8 +1,11 @@
 package org.openchs.excel.metadata;
 
+import org.springframework.util.StringUtils;
+
 public class ImportAnswerMetaData {
     private String systemAnswer;
     private String userAnswer;
+    private String conceptName;
 
     private static String NULL = "NULL";
 
@@ -20,5 +23,17 @@ public class ImportAnswerMetaData {
 
     public void setUserAnswer(String userAnswer) {
         this.userAnswer = userAnswer;
+    }
+
+    public String getConceptName() {
+        return conceptName;
+    }
+
+    public void setConceptName(String conceptName) {
+        this.conceptName = conceptName;
+    }
+
+    public boolean matches(String userAnswer, String conceptName) {
+        return this.getUserAnswer().equals(userAnswer) && (StringUtils.isEmpty(this.conceptName) || this.conceptName.equals(conceptName));
     }
 }

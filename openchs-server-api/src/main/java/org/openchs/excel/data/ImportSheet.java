@@ -47,7 +47,7 @@ public class ImportSheet {
         if (concept == null)
             throw new NullPointerException(String.format("Concept with name |%s| not found", systemFieldName));
         if (ConceptDataType.Coded.toString().equals(concept.getDataType()))
-            cellText = answerMetaDataList.getSystemAnswer(cellText);
+            cellText = answerMetaDataList.getSystemAnswer(cellText, concept.getName());
 
         Object primitiveValue = concept.getPrimitiveValue(cellText);
         if (primitiveValue == null) return null;

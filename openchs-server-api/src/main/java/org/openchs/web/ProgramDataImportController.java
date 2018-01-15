@@ -1,10 +1,6 @@
 package org.openchs.web;
 
-import org.openchs.excel.data.ImportFile;
-import org.openchs.excel.metadata.ImportMetaData;
-import org.openchs.excel.metadata.ImportSheetMetaDataList;
-import org.openchs.excel.reader.ImportMetaDataExcelReader;
-import org.openchs.importer.Importer;
+import org.openchs.service.DataImportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,29 +13,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ProgramDataImportController {
-    private final Importer importer;
+    private final DataImportService dataImportService;
 
     @Autowired
-    public ProgramDataImportController(Importer importer) {
-        this.importer = importer;
+    public ProgramDataImportController(DataImportService dataImportService) {
+        this.dataImportService = dataImportService;
     }
 
     @RequestMapping(value = "/excelImport", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
-    public ResponseEntity<?> uploadData(@RequestParam("file") MultipartFile importMetaDataFile, @RequestParam("file") MultipartFile uploadedFile) throws Exception {
-        ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(importMetaDataFile.getInputStream());
-        ImportSheetMetaDataList importSheetMetaDataList = importMetaData.getImportSheets();
-        ImportFile importFile = new ImportFile(uploadedFile.getInputStream());
-        importSheetMetaDataList.forEach(importSheetMetaData -> {
-            try {
-                Boolean status = importer.importSheet(importFile, importMetaData, importSheetMetaData);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                importFile.close();
-            }
-        });
-
+    public ResponseEntity<?> uploadData(@RequestParam("metaDataFile") MultipartFile metaDataFile, @RequestParam("dataFile") MultipartFile dataFile) throws Exception {
+        dataImportService.importExcel(metaDataFile.getInputStream(), dataFile.getInputStream());
         return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 }

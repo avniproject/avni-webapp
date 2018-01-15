@@ -51,6 +51,14 @@ public class ImportMetaDataTest {
         ImportDefaultField importField = (ImportDefaultField) defaultFields.get(0);
         assertEquals(importField.getSystemFieldName(), "Registration Date");
         assertEquals(importField.getDefaultValue(), "24-Jul-2017");
+
+        importSheetMetaData = importSheets.get(1);
+        assertEquals(1, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
+        assertEquals(0, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
+
+        ImportAnswerMetaDataList answerMetaDataList = importMetaData.getAnswerMetaDataList();
+        assertEquals("Yes", answerMetaDataList.getSystemAnswer("Continued", "School going"));
+        assertEquals("Yes", answerMetaDataList.getSystemAnswer("Continued", "Something else"));
     }
 
     @Test
@@ -107,26 +115,5 @@ public class ImportMetaDataTest {
         List<CHSRequest> encountersAmalzarMadhyamik = requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEncounter.class));
         ProgramEncounterRequest encounterAmalzarMadhyamik = (ProgramEncounterRequest) encountersAmalzarMadhyamik.get(0);
         //Father's occupation when none
-    }
-
-    @Test
-    public void regex() {
-        System.out.println(find("Twinkalben Vikrambhai vsava  - 7", "[a-zA-Z]+\\s+[a-zA-Z]+"));
-        System.out.println(find("Twinkalben Vikrambhai vsava  - 7", "[a-zA-Z]+\\s+[a-zA-Z]+\\s+([a-zA-Z]+).*"));
-        System.out.println(find("Twinkalben Vikrambhai vsava  - 7", "[a-zA-Z]+\\s+([a-zA-Z]+).*"));
-        System.out.println(find("Twinkalben Vikrambhai vsava  - 7", ".*(\\d).*"));
-        System.out.println(find("Twinkalben Vikrambhai vsava  -7", ".*(\\d).*"));
-        System.out.println(find("Twinkalben Vikrambhai vsava", ".*(\\d).*"));
-    }
-
-    private String find(String string, String regex) {
-        try {
-            Pattern fullNamePattern = Pattern.compile(regex);
-            Matcher matcher = fullNamePattern.matcher(string);
-            matcher.find();
-            return matcher.group(matcher.groupCount());
-        } catch (Exception e) {
-            return null;
-        }
     }
 }
