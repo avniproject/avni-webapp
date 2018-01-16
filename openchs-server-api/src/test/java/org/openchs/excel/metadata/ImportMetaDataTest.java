@@ -47,10 +47,10 @@ public class ImportMetaDataTest {
         assertEquals(8, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
         assertEquals(3, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
         List<ImportField> defaultFields = importSheetMetaData.getDefaultFields();
-        assertEquals(3, defaultFields.size());
-        assertEquals(14, importMetaData.getAllFields(importSheetMetaData).size());
+        assertEquals(4, defaultFields.size());
+        assertEquals(15, importMetaData.getAllFields(importSheetMetaData).size());
 
-        ImportDefaultField importField = (ImportDefaultField) defaultFields.get(0);
+        ImportDefaultField importField = (ImportDefaultField) defaultFields.get(1);
         assertEquals(importField.getSystemFieldName(), "Registration Date");
         assertEquals(importField.getDefaultValue(), new LocalDate(2017, 7, 24).toDate());
 
@@ -60,7 +60,7 @@ public class ImportMetaDataTest {
 
         importSheetMetaData = importSheets.get(9);
         assertEquals(1, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
-        assertEquals(2, importSheetMetaData.getDefaultFields().size());
+        assertEquals(1, importSheetMetaData.getDefaultFields().size());
 
         ImportAnswerMetaDataList answerMetaDataList = importMetaData.getAnswerMetaDataList();
         assertEquals("Yes", answerMetaDataList.getSystemAnswer("Continued", "School going"));
