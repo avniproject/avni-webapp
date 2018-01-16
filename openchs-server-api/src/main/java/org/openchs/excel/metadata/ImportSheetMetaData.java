@@ -14,6 +14,7 @@ public class ImportSheetMetaData {
     private Class entityType;
     private String programName;
     private String encounterType;
+    private String addressLevel;
 
     public ImportSheetMetaData() {
     }
@@ -72,6 +73,14 @@ public class ImportSheetMetaData {
 
     public void setEncounterType(String encounterType) {
         this.encounterType = encounterType;
+    }
+
+    public String getAddressLevel() {
+        return addressLevel;
+    }
+
+    public void setAddressLevel(String addressLevel) {
+        this.addressLevel = addressLevel;
     }
 
     public void addDefaultValue(String systemFieldName, Object defaultValue) {

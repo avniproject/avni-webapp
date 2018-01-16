@@ -100,6 +100,7 @@ public class ImportSheet {
                     break;
             }
         });
+        individualRequest.setAddressLevel(importSheetMetaData.getAddressLevel());
         individualRequest.setupUuidIfNeeded();
         return individualRequest;
     }
@@ -120,6 +121,8 @@ public class ImportSheet {
                     break;
                 case "Enrolment Date":
                     programEnrolmentRequest.setEnrolmentDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
+                    break;
+                case "Address":
                     break;
                 default:
                     programEnrolmentRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, answerMetaDataList));
@@ -156,6 +159,8 @@ public class ImportSheet {
                     break;
                 case "Max Date":
                     programEncounterRequest.setMaxDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
+                    break;
+                case "Address":
                     break;
                 default:
                     programEncounterRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, answerMetaDataList));
