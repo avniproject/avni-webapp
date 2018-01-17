@@ -28,9 +28,6 @@ public class ExcelImporter implements Importer {
     @Autowired
     private RowProcessor rowProcessor;
     @Autowired
-    @Lazy
-    private HealthModuleInvokerFactory healthModuleInvokerFactory;
-    @Autowired
     private ConceptRepository conceptRepository;
 
     private static Logger logger = LoggerFactory.getLogger(ExcelImporter.class);
@@ -56,9 +53,9 @@ public class ExcelImporter implements Importer {
                 if (isSheetOfType(importSheetMetaData, Individual.class))
                     rowProcessor.processIndividual((IndividualRequest) request);
                 else if (isSheetOfType(importSheetMetaData, ProgramEnrolment.class))
-                    rowProcessor.processEnrolment((ProgramEnrolmentRequest) request, importSheetMetaData, healthModuleInvokerFactory.getProgramEnrolmentInvoker());
+                    rowProcessor.processEnrolment((ProgramEnrolmentRequest) request, importSheetMetaData);
                 else if (isSheetOfType(importSheetMetaData, ProgramEncounter.class))
-                    rowProcessor.processProgramEncounter((ProgramEncounterRequest) request, importSheetMetaData, healthModuleInvokerFactory.getProgramEncounterInvoker());
+                    rowProcessor.processProgramEncounter((ProgramEncounterRequest) request, importSheetMetaData);
                 logger.info(String.format("COMPLETED SHEET: %s", importSheetMetaData.getSheetName()));
             } catch (Exception error) {
                 dataImportResult.exceptionHappened(error);

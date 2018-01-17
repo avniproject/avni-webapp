@@ -12,13 +12,13 @@ import java.util.Set;
 @Table(name = "program_enrolment")
 public class ProgramEnrolment extends OrganisationAwareEntity {
     @NotNull
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="program_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "program_id")
     private Program program;
 
     @NotNull
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="individual_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "individual_id")
     private Individual individual;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "programEnrolment")
@@ -32,7 +32,7 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
     @Type(type = "observations")
     private ObservationCollection observations;
 
-    @ManyToOne(fetch= FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_outcome_id")
     private ProgramOutcome programOutcome;
 

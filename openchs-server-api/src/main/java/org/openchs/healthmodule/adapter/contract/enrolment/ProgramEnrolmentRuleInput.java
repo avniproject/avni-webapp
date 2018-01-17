@@ -2,14 +2,13 @@ package org.openchs.healthmodule.adapter.contract.enrolment;
 
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.Individual;
 import org.openchs.healthmodule.adapter.ObservationsHelper;
 import org.openchs.healthmodule.adapter.contract.IndividualRuleInput;
 import org.openchs.healthmodule.adapter.contract.ProgramRuleInput;
-import org.openchs.util.O;
-import org.openchs.web.request.ObservationRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
+
+import java.util.Date;
 
 public class ProgramEnrolmentRuleInput {
     private ProgramEnrolmentRequest programEnrolmentRequest;
@@ -46,6 +45,10 @@ public class ProgramEnrolmentRuleInput {
         return this.getObservationValue(conceptName);
     }
 
+    public Date getEnrolmentDateTime() {
+        return this.programEnrolmentRequest.getEnrolmentDateTime().toDate();
+    }
+
     public Object findEncounter(String encounterTypeName, String encounterName) {
         return null;
     }
@@ -54,13 +57,17 @@ public class ProgramEnrolmentRuleInput {
         return false;
     }
 
-    public Object[] getEncounters() {
+    public Object[] getEncounters(Object... objects) {
         return new Object[]{};
     }
     // end
 
     public Object getObservationValue(String conceptName) {
         return ObservationsHelper.getObservationValue(conceptName, programEnrolmentRequest.getObservations(), conceptRepository);
+    }
+
+    public Object findObservation(String conceptName) {
+        return ObservationsHelper.getObservation(conceptName, programEnrolmentRequest.getObservations(), conceptRepository);
     }
 
     public ProgramEnrolmentRequest getProgramEnrolmentRequest() {

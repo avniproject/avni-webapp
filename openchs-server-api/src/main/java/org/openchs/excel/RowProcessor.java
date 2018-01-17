@@ -68,33 +68,12 @@ public class RowProcessor {
     private FormService formService;
 
     void processIndividual(IndividualRequest individualRequest) {
-        Form form = formService.findForm(FormType.IndividualProfile, null, null);
-//        List<FormElement> unfilledMandatoryFormElements = formService.getUnfilledMandatoryFormElements(form, RequestUtil.fromObservationRequests(individualRequest.getObservations()));
-//        if (unfilledMandatoryFormElements.size() != 0) {
-//            throw new RuntimeException(String.format("Mandatory form-elements not present: %s", Arrays.toString(unfilledMandatoryFormElements.toArray())));
-//        }
-//        validateObservations(individualRequest.getObservations(), form);
         individualController.save(individualRequest);
         logger.info(String.format("Imported Individual: %s", individualRequest.getUuid()));
     }
 
-    private void validateObservations(List<ObservationRequest> observationRequests, Form form) {
-        observationRequests.forEach(observationRequest -> {
-            FormElement formElement = form.findFormElement(observationRequest.getConceptName());
-            if (formElement.isMandatory()) throw new RuntimeException(String.format("%s is mandatory but was empty", observationRequest.getConceptName()));
-        });
-    }
-
     void processEnrolment(ProgramEnrolmentRequest programEnrolmentRequest, ImportSheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker) {
-        Form form = formService.findForm(FormType.ProgramEnrolment, null, sheetMetaData.getProgramName());
-//        validateObservations(programEnrolmentRequest.getObservations(), form);
         ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository);
-
-        ValidationsRuleResponse validationsRuleResponse = programEnrolmentModuleInvoker.validate(programEnrolmentRuleInput);
-        if (validationsRuleResponse != null && validationsRuleResponse.getValidationResults().size() > 0) {
-            logger.error(validationsRuleResponse.toString());
-            return;
-        }
 
         List<ObservationRequest> observationRequests = programEnrolmentModuleInvoker.getDecisions(programEnrolmentRuleInput, conceptRepository);
         observationRequests.forEach(programEnrolmentRequest::addObservation);
@@ -115,12 +94,10 @@ public class RowProcessor {
             });
         }
 
-        List<ProgramEncounterRequest> scheduledVisits = programEnrolmentModuleInvoker.getNextScheduledVisits(programEnrolmentRuleInput, programEnrolmentRequest.getUuid());
-        scheduledVisits.forEach(programEncounterRequest -> programEncounterController.save(programEncounterRequest));
         logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
-    void processProgramEncounter(ProgramEncounterRequest programEncounterRequest, ImportSheetMetaData sheetMetaData, ProgramEncounterRuleInvoker ruleInvoker) {
+    void processProgramEncounter(ProgramEncounterRequest programEncounterRequest, ImportSheetMetaData sheetMetaData) {
         Form form = formService.findForm(FormType.ProgramEncounter, sheetMetaData.getEncounterType(), sheetMetaData.getProgramName());
 //        validateObservations(programEncounterRequest.getObservations(), form);
         ProgramEncounter programEncounter = matchAndUseExistingProgramEncounter(programEncounterRequest);
