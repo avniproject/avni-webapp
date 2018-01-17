@@ -2,29 +2,21 @@ package org.openchs.excel;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
-import org.openchs.application.Form;
-import org.openchs.application.FormElement;
-import org.openchs.application.FormType;
 import org.openchs.dao.ChecklistRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
-import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.excel.metadata.ImportSheetMetaData;
-import org.openchs.healthmodule.adapter.ProgramEncounterRuleInvoker;
-import org.openchs.healthmodule.adapter.ProgramEnrolmentModuleInvoker;
-import org.openchs.healthmodule.adapter.contract.checklist.ChecklistRuleResponse;
-import org.openchs.healthmodule.adapter.contract.encounter.ProgramEncounterRuleInput;
-import org.openchs.healthmodule.adapter.contract.enrolment.ProgramEnrolmentRuleInput;
-import org.openchs.healthmodule.adapter.contract.validation.ValidationsRuleResponse;
 import org.openchs.service.ChecklistService;
 import org.openchs.service.FormService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.ProgramEnrolmentService;
 import org.openchs.web.*;
-import org.openchs.web.request.*;
+import org.openchs.web.request.IndividualRequest;
+import org.openchs.web.request.ProgramEncounterRequest;
+import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.openchs.web.request.application.ChecklistItemRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class RowProcessor {
@@ -72,47 +62,20 @@ public class RowProcessor {
         logger.info(String.format("Imported Individual: %s", individualRequest.getUuid()));
     }
 
-    void processEnrolment(ProgramEnrolmentRequest programEnrolmentRequest, ImportSheetMetaData sheetMetaData, ProgramEnrolmentModuleInvoker programEnrolmentModuleInvoker) {
-        ProgramEnrolmentRuleInput programEnrolmentRuleInput = new ProgramEnrolmentRuleInput(programEnrolmentRequest, individualRepository, conceptRepository);
-
-        List<ObservationRequest> observationRequests = programEnrolmentModuleInvoker.getDecisions(programEnrolmentRuleInput, conceptRepository);
-        observationRequests.forEach(programEnrolmentRequest::addObservation);
+    void processEnrolment(ProgramEnrolmentRequest programEnrolmentRequest, ImportSheetMetaData sheetMetaData) {
         programEnrolmentController.save(programEnrolmentRequest);
-
-        Checklist checklist = checklistService.findChecklist(programEnrolmentRequest.getUuid());
-        ChecklistRuleResponse checklistRuleResponse = programEnrolmentModuleInvoker.getChecklist(programEnrolmentRuleInput);
-        if (checklistRuleResponse != null) {
-            ChecklistRequest checklistRequest = checklistRuleResponse.getChecklistRequest();
-            checklistRequest.setProgramEnrolmentUUID(programEnrolmentRequest.getUuid());
-            checklistRequest.setUuid(checklist == null ? UUID.randomUUID().toString() : checklist.getUuid());
-            checklistController.save(checklistRequest);
-
-            List<ChecklistItemRequest> items = checklistRuleResponse.getItems(checklistService, programEnrolmentRequest.getUuid(), conceptRepository);
-            items.forEach(checklistItemRequest -> {
-                checklistItemRequest.setChecklistUUID(checklistRequest.getUuid());
-                checklistItemController.save(checklistItemRequest);
-            });
-        }
 
         logger.info(String.format("Imported Enrolment for Program: %s, Enrolment: %s", programEnrolmentRequest.getProgram(), programEnrolmentRequest.getUuid()));
     }
 
     void processProgramEncounter(ProgramEncounterRequest programEncounterRequest, ImportSheetMetaData sheetMetaData) {
-        Form form = formService.findForm(FormType.ProgramEncounter, sheetMetaData.getEncounterType(), sheetMetaData.getProgramName());
-//        validateObservations(programEncounterRequest.getObservations(), form);
         ProgramEncounter programEncounter = matchAndUseExistingProgramEncounter(programEncounterRequest);
         if (programEncounter == null)
             programEncounterRequest.setupUuidIfNeeded();
         else
             programEncounterRequest.setUuid(programEncounter.getUuid());
 
-        ProgramEncounterRuleInput programEncounterRuleInput = new ProgramEncounterRuleInput(programEnrolmentRepository.findByUuid(programEncounterRequest.getProgramEnrolmentUUID()), conceptRepository, programEncounterRequest, observationService);
-        List<ObservationRequest> observationRequests = ruleInvoker.getDecisions(programEncounterRuleInput, conceptRepository);
-        observationRequests.forEach(programEncounterRequest::addObservation);
         programEncounterController.save(programEncounterRequest);
-
-        List<ProgramEncounterRequest> scheduledVisits = ruleInvoker.getNextScheduledVisits(programEncounterRuleInput, programEncounterRequest.getProgramEnrolmentUUID());
-        scheduledVisits.forEach(scheduledProgramEncounterRequest -> programEncounterController.save(scheduledProgramEncounterRequest));
         logger.info(String.format("Imported ProgramEncounter for Enrolment: %s", programEncounterRequest.getProgramEnrolmentUUID()));
     }
 

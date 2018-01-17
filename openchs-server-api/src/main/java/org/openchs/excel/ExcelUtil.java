@@ -21,7 +21,12 @@ public class ExcelUtil {
     public static String getText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return "";
-        String stringCellValue = cell.toString();
+        String stringCellValue = "";
+        try {
+            stringCellValue = cell.getStringCellValue();
+        } catch (IllegalStateException e) {
+            stringCellValue = stringCellValue.toString();
+        }
         String s = stringCellValue.trim().replaceAll(" +", " ");
         return StringUtils.isEmpty(s) ? null : s;
     }

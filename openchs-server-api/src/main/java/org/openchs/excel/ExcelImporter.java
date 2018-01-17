@@ -56,10 +56,11 @@ public class ExcelImporter implements Importer {
                     rowProcessor.processEnrolment((ProgramEnrolmentRequest) request, importSheetMetaData);
                 else if (isSheetOfType(importSheetMetaData, ProgramEncounter.class))
                     rowProcessor.processProgramEncounter((ProgramEncounterRequest) request, importSheetMetaData);
-                logger.info(String.format("COMPLETED SHEET: %s", importSheetMetaData.getSheetName()));
             } catch (Exception error) {
                 dataImportResult.exceptionHappened(error);
                 logger.error(error.getMessage(), error);
+            } finally {
+                logger.info(String.format("COMPLETED SHEET: %s", importSheetMetaData.getSheetName()));
             }
         }
         return true;

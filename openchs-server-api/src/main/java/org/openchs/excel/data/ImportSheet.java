@@ -167,6 +167,7 @@ public class ImportSheet {
                     break;
             }
         });
+        programEncounterRequest.setEncounterType(sheetMetaData.getEncounterType());
         return programEncounterRequest;
     }
 

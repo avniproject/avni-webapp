@@ -61,7 +61,7 @@ public class ImportMetaDataExcelReader {
                     importSheets.addSystemField(i - 6, systemFieldName);
                 }
                 logger.info("Read header of Sheets");
-            } else {
+            } else if (!ExcelUtil.getText(row, 0).trim().isEmpty()) {
                 ImportSheetMetaData importSheetMetaData = new ImportSheetMetaData();
                 importSheetMetaData.setFileName(ExcelUtil.getText(row, 0));
                 importSheetMetaData.setUserFileType(ExcelUtil.getText(row, 1));
