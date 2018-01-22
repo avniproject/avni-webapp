@@ -1,3 +1,4 @@
+-- <RCH>
 DROP VIEW IF EXISTS mother_program_enrolments;
 CREATE OR REPLACE VIEW mother_program_enrolments AS
   SELECT
@@ -59,6 +60,21 @@ CREATE OR REPLACE VIEW mother_program_encounters AS
     INNER JOIN address_level ON address_level.id = individual.address_id
     INNER JOIN catchment_address_mapping ON catchment_address_mapping.addresslevel_id = address_level.id
     INNER JOIN catchment ON catchment_address_mapping.catchment_id = catchment.id;
+-- </RCH>
+
+-- <Adolescent>
+DROP VIEW IF EXISTS adolescents;
+CREATE OR REPLACE VIEW adolescents AS
+  SELECT
+    individual.id  individual,
+    gender.name    gender,
+    catchment.type catchment_type
+  FROM individual
+    INNER JOIN gender ON individual.gender_id = gender.id
+    INNER JOIN address_level ON individual.address_id = address_level.id
+    INNER JOIN catchment_address_mapping ON address_level.id = catchment_address_mapping.addresslevel_id
+    INNER JOIN catchment ON catchment.id = catchment_address_mapping.catchment_id;
+-- </Adolescent>
 
 -- <Common>
 DROP VIEW IF EXISTS checklist_items;

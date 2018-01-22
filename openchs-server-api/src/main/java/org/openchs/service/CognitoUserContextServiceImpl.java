@@ -39,6 +39,9 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     @Value("${cognito.clientid}")
     private String clientId;
 
+    @Value("${openchs.defaultOrgName}")
+    private String defaultOrganisation;
+
     private OrganisationRepository organisationRepository;
     private Environment environment;
 
@@ -66,7 +69,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     public UserContext getUserContext(String token, String becomeOrganisationName) {
         if (isDev) {
             UserContext userContext = new UserContext();
-            String organisationName = StringUtils.isEmpty(becomeOrganisationName) ? "demo" : becomeOrganisationName.trim();
+            String organisationName = StringUtils.isEmpty(becomeOrganisationName) ? defaultOrganisation : becomeOrganisationName.trim();
             userContext.setOrganisation(organisationRepository.findByName(organisationName));
             userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
             return userContext;
