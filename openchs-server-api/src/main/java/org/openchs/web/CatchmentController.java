@@ -19,8 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,6 +42,7 @@ public class CatchmentController {
     @Transactional
     void save(@RequestBody CatchmentsContract catchmentsContract) {
         Organisation organisation = organisationRepository.findByName(catchmentsContract.getOrganisation());
+        List<Catchment> catchments = new ArrayList<>();
         for (CatchmentContract catchmentRequest : catchmentsContract.getCatchments()) {
             logger.info(String.format("Processing catchment request: %s", catchmentRequest.toString()));
 
@@ -64,7 +64,29 @@ public class CatchmentController {
             removeObsoleteAddressLevelsFromCatchment(catchment, catchmentRequest);
             catchment.setOrganisationId(organisation.getId());
 
-            catchmentRepository.save(catchment);
+            Catchment savedCatchment = catchmentRepository.save(catchment);
+            catchments.add(savedCatchment);
+        }
+        createMasterCatchment(catchments, organisation);
+    }
+
+    private void createMasterCatchment(List<Catchment> catchments, Organisation organisation) {
+        Catchment masterCatchment = new Catchment();
+        List<AddressLevel> allAddressLevels = catchments.stream()
+                .map(Catchment::getAddressLevels)
+                .flatMap(x -> x.stream())
+                .collect(Collectors.toList());
+        allAddressLevels.forEach(addressLevel -> masterCatchment.addAddressLevel(addressLevel));
+        String masterCatchmentName = String.format("%s Master Catchment", organisation.getName());
+        masterCatchment.setName(masterCatchmentName);
+        masterCatchment.setType(catchments.get(0).getType());
+        Catchment existingMasterCatchment = catchmentRepository.findByName(masterCatchmentName);
+        if (existingMasterCatchment != null) {
+            existingMasterCatchment.setAddressLevels(masterCatchment.getAddressLevels());
+            catchmentRepository.save(existingMasterCatchment);
+        } else {
+            masterCatchment.setUuid(UUID.randomUUID().toString());
+            catchmentRepository.save(masterCatchment);
         }
     }
 
