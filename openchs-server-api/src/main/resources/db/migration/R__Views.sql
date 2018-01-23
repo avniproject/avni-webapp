@@ -1,5 +1,11 @@
--- <RCH>
 DROP VIEW IF EXISTS mother_program_enrolments;
+DROP VIEW IF EXISTS mother_program_encounters;
+DROP VIEW IF EXISTS adolescent_visit_summary;
+DROP VIEW IF EXISTS adolescents;
+DROP VIEW IF EXISTS adolescent_visit;
+DROP VIEW IF EXISTS checklist_items;
+
+-- <RCH>
 CREATE OR REPLACE VIEW mother_program_enrolments AS
   SELECT
     individual.id                                                                     individual,
@@ -28,7 +34,6 @@ CREATE OR REPLACE VIEW mother_program_enrolments AS
     LEFT OUTER JOIN program_encounter ON program_enrolment.id = program_encounter.program_enrolment_id
   GROUP BY individual.id, program_enrolment.id;
 
-DROP VIEW IF EXISTS mother_program_encounters;
 CREATE OR REPLACE VIEW mother_program_encounters AS
   SELECT
     individual.id                                                                     individual,
@@ -63,21 +68,66 @@ CREATE OR REPLACE VIEW mother_program_encounters AS
 -- </RCH>
 
 -- <Adolescent>
-DROP VIEW IF EXISTS adolescents;
 CREATE OR REPLACE VIEW adolescents AS
   SELECT
-    individual.id  individual,
-    gender.name    gender,
-    catchment.type catchment_type
+    individual.id                                                 individual,
+    gender.name                                                   gender,
+    catchment.type                                                catchment_type,
+    address_level.id                                              address_level,
+    address_level.type                                            address_level_type,
+    program_enrolment.id                                          enrolment_id,
+    program_enrolment.enrolment_date_time                         internal_enrolment_date,
+    to_char(program_enrolment.enrolment_date_time, 'DD-Mon-YYYY') enrolment_date
   FROM individual
     INNER JOIN gender ON individual.gender_id = gender.id
     INNER JOIN address_level ON individual.address_id = address_level.id
     INNER JOIN catchment_address_mapping ON address_level.id = catchment_address_mapping.addresslevel_id
-    INNER JOIN catchment ON catchment.id = catchment_address_mapping.catchment_id;
+    INNER JOIN catchment ON catchment.id = catchment_address_mapping.catchment_id
+    LEFT OUTER JOIN program_enrolment ON individual.id = program_enrolment.individual_id
+    LEFT OUTER JOIN program ON program_enrolment.program_id = program.id
+  WHERE program.name = 'Adolescent';
+
+
+CREATE OR REPLACE VIEW adolescent_visit AS
+  SELECT
+    individual.id                                                 individual,
+    gender.name                                                   gender,
+    catchment.type                                                catchment_type,
+    program_enrolment.id                                          enrolment_id,
+    program_enrolment.enrolment_date_time                         internal_enrolment_date,
+    to_char(program_enrolment.enrolment_date_time, 'DD-Mon-YYYY') enrolment_date,
+    program_encounter.id                                          program_encounter,
+    program_encounter.encounter_date_time                         visit_date
+  FROM individual
+    INNER JOIN gender ON individual.gender_id = gender.id
+    INNER JOIN address_level ON individual.address_id = address_level.id
+    INNER JOIN catchment_address_mapping ON address_level.id = catchment_address_mapping.addresslevel_id
+    INNER JOIN catchment ON catchment.id = catchment_address_mapping.catchment_id
+    LEFT OUTER JOIN program_enrolment ON individual.id = program_enrolment.individual_id
+    LEFT OUTER JOIN program_encounter ON program_enrolment.id = program_encounter.program_enrolment_id
+    LEFT OUTER JOIN program ON program_enrolment.program_id = program.id
+WHERE program.name = 'Adolescent';
+
+-- will be less performant hence separated out so that only the views that need this information can join with it
+
+CREATE OR REPLACE VIEW adolescent_visit_summary AS
+  SELECT
+    program_encounter.id program_encounter_id,
+    one_of_coded_obs_exists(program_encounter, ARRAY['Is there any physical defect?', 'Is there a swelling at lower back?', 'Is there Cleft lip/Cleft palate?', 'Is there large gap between toe and finger?', 'Is her nails/tongue pale?', 'Is she/he severely malnourished?', 'Is there any problem in leg bone?', 'Is there a swelling over throat?', 'Does she have difficulty in breathing while playing?', 'Are there dental carries?', 'Is there a white patch in her eyes?', 'Does she have impaired vision?', 'Is there pus coming from ear?', 'Does she have impaired hearing?', 'Has she ever suffered from convulsions?', 'Is her behavior different from others?', 'Is she slower than others in learning and understanding new things?', 'Is there any developmental delay or disability seen?', 'Menstrual disorder', 'Do you suffer from burning micturition?', 'Do you suffer from Ulcer over genitalia?', 'Do you suffer from Yellowish discharge from Vagina / penis?']) AS has_problem,
+    coded_obs_exists(program_encounter, 'Refer to hospital for') referred,
+    one_of_coded_obs_contains(program_encounter, ARRAY['Counselling for Road Traffic Accident Done', 'Counselling for Early Pregnancy & RTI Done'], 'Yes') counselled,
+    in_one_entity_coded_obs_contains(program_enrolment, program_encounter, 'School going', 'Dropped Out') dropped_out,
+    encounter_type.name = 'Dropout Home Visit' AS home_visit_done
+  FROM program_encounter
+INNER JOIN program_enrolment ON program_encounter.program_enrolment_id = program_enrolment.id
+INNER JOIN encounter_type ON program_encounter.encounter_type_id = encounter_type.id
+INNER JOIN program ON program_enrolment.program_id = program.id
+WHERE program.name = 'Adolescent';
 -- </Adolescent>
 
+
 -- <Common>
-DROP VIEW IF EXISTS checklist_items;
+
 CREATE OR REPLACE VIEW checklist_items AS
   SELECT
     individual.id                                                    individual,
