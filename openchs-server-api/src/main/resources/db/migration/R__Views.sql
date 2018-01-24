@@ -108,26 +108,8 @@ CREATE OR REPLACE VIEW adolescent_visit AS
     LEFT OUTER JOIN program ON program_enrolment.program_id = program.id
 WHERE program.name = 'Adolescent';
 
--- will be less performant hence separated out so that only the views that need this information can join with it
-
-CREATE OR REPLACE VIEW adolescent_visit_summary AS
-  SELECT
-    program_encounter.id program_encounter_id,
-    one_of_coded_obs_exists(program_encounter, ARRAY['Is there any physical defect?', 'Is there a swelling at lower back?', 'Is there Cleft lip/Cleft palate?', 'Is there large gap between toe and finger?', 'Is her nails/tongue pale?', 'Is she/he severely malnourished?', 'Is there any problem in leg bone?', 'Is there a swelling over throat?', 'Does she have difficulty in breathing while playing?', 'Are there dental carries?', 'Is there a white patch in her eyes?', 'Does she have impaired vision?', 'Is there pus coming from ear?', 'Does she have impaired hearing?', 'Has she ever suffered from convulsions?', 'Is her behavior different from others?', 'Is she slower than others in learning and understanding new things?', 'Is there any developmental delay or disability seen?', 'Menstrual disorder', 'Do you suffer from burning micturition?', 'Do you suffer from Ulcer over genitalia?', 'Do you suffer from Yellowish discharge from Vagina / penis?']) AS has_problem,
-    coded_obs_exists(program_encounter, 'Refer to hospital for') referred,
-    one_of_coded_obs_contains(program_encounter, ARRAY['Counselling for Road Traffic Accident Done', 'Counselling for Early Pregnancy & RTI Done'], 'Yes') counselled,
-    in_one_entity_coded_obs_contains(program_enrolment, program_encounter, 'School going', 'Dropped Out') dropped_out,
-    encounter_type.name = 'Dropout Home Visit' AS home_visit_done
-  FROM program_encounter
-INNER JOIN program_enrolment ON program_encounter.program_enrolment_id = program_enrolment.id
-INNER JOIN encounter_type ON program_encounter.encounter_type_id = encounter_type.id
-INNER JOIN program ON program_enrolment.program_id = program.id
-WHERE program.name = 'Adolescent';
--- </Adolescent>
-
 
 -- <Common>
-
 CREATE OR REPLACE VIEW checklist_items AS
   SELECT
     individual.id                                                    individual,
