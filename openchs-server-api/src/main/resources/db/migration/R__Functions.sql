@@ -9,18 +9,49 @@ RETURNS NULL ON NULL INPUT;
 
 
 ------------------------------------------------------------ GET OBSERVATION DATA ---------------------------------------------------------------
-CREATE OR REPLACE FUNCTION text_obs(ANYELEMENT, TEXT)
+CREATE OR REPLACE FUNCTION text_obs(JSONB, TEXT)
   RETURNS TEXT
-AS 'SELECT $1.observations ->> concept_uuid($2);'
+AS 'SELECT $1 ->> concept_uuid($2);'
 LANGUAGE SQL
 IMMUTABLE
 RETURNS NULL ON NULL INPUT;
+
+CREATE OR REPLACE FUNCTION text_obs(ANYELEMENT, TEXT)
+  RETURNS TEXT
+AS 'SELECT text_obs($1.observations::JSON, $2);'
+LANGUAGE SQL
+IMMUTABLE
+RETURNS NULL ON NULL INPUT;
+
+
+
+CREATE OR REPLACE FUNCTION numeric_obs(JSONB, TEXT)
+  RETURNS NUMERIC AS $$
+DECLARE obs NUMERIC;
+BEGIN
+  SELECT $1 ->> concept_uuid($2)
+  INTO obs;
+  RETURN obs;
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION numeric_obs(ANYELEMENT, TEXT)
   RETURNS NUMERIC AS $$
 DECLARE obs NUMERIC;
 BEGIN
   SELECT $1.observations ->> concept_uuid($2)
+  INTO obs;
+  RETURN obs;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION date_obs(JSONB, TEXT)
+  RETURNS TIMESTAMP AS $$
+DECLARE obs TIMESTAMP;
+BEGIN
+  SELECT $1 ->> concept_uuid($2)
   INTO obs;
   RETURN obs;
 END;
@@ -36,14 +67,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+
 -- Returns comma separated concept names chosen as answer for the observation
-CREATE OR REPLACE FUNCTION coded_obs(ANYELEMENT, TEXT)
+CREATE OR REPLACE FUNCTION coded_obs(JSONB, TEXT)
   RETURNS TEXT AS $$
 DECLARE uuids TEXT[];
   DECLARE concept_names TEXT;
   DECLARE x TEXT;
 BEGIN
-  SELECT translate($1.observations ->> concept_uuid($2), '[]', '{}') INTO uuids;
+  SELECT translate($1 ->> concept_uuid($2), '[]', '{}') INTO uuids;
   IF uuids IS NOT NULL THEN
     FOREACH x IN ARRAY uuids
     LOOP
@@ -58,25 +91,46 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION coded_obs(ANYELEMENT, TEXT)
+  RETURNS TEXT AS $$
+  DECLARE observations TEXT;
+BEGIN
+  SELECT coded_obs($1.observations::JSON) INTO observations;
+  RETURN observations;
+END;
+$$ LANGUAGE plpgsql;
+
+
 ------------------------------------------------------------- QUERY OBSERVATIONS ---------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION coded_obs_exists(ANYELEMENT, TEXT)
+
+CREATE OR REPLACE FUNCTION coded_obs_exists(JSONB, TEXT)
   RETURNS BOOLEAN AS $$
 DECLARE uuids TEXT[];
 BEGIN
-  SELECT translate($1.observations ->> concept_uuid($2), '[]', '{}') INTO uuids;
+  SELECT translate($1 ->> concept_uuid($2), '[]', '{}') INTO uuids;
   RETURN uuids IS NOT NULL;
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION coded_obs_exists(ANYELEMENT, TEXT)
+  RETURNS BOOLEAN AS $$
+DECLARE returnValue BOOLEAN;
+BEGIN
+  SELECT coded_obs_exists($1.observations) INTO returnValue;
+  RETURN returnValue;
+END;
+$$ LANGUAGE plpgsql;
+
+
 -- Returns whether any of the observation (for concept in second argument), in the entity (first argument) contains the passed answer (third arg)
-CREATE OR REPLACE FUNCTION coded_obs_contains(ANYELEMENT, TEXT, TEXT)
+CREATE OR REPLACE FUNCTION coded_obs_contains(JSONB, TEXT, TEXT)
   RETURNS BOOLEAN AS $$
 DECLARE
   uuids         TEXT[];
   x             TEXT;
   exists BOOLEAN := FALSE;
 BEGIN
-  SELECT translate($1.observations ->> concept_uuid($2), '[]', '{}') INTO uuids;
+  SELECT translate($1 ->> concept_uuid($2), '[]', '{}') INTO uuids;
   IF uuids IS NOT NULL THEN
     FOREACH x IN ARRAY uuids
     LOOP
@@ -91,8 +145,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION coded_obs_contains(ANYELEMENT, TEXT, TEXT)
+  RETURNS BOOLEAN AS $$
+DECLARE
+  returnValue BOOLEAN;
+BEGIN
+  SELECT coded_obs_contains($1.observations::JSON, $2, $3) INTO returnValue;
+  RETURN returnValue;
+END;
+$$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION one_of_coded_obs_contains(ANYELEMENT, TEXT[], TEXT)
+
+
+CREATE OR REPLACE FUNCTION one_of_coded_obs_contains(JSONB, TEXT[], TEXT)
   RETURNS BOOLEAN AS $$
 DECLARE
   exists BOOLEAN := FALSE;
@@ -111,9 +176,20 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION one_of_coded_obs_contains(ANYELEMENT, TEXT[], TEXT)
+  RETURNS BOOLEAN AS $$
+DECLARE
+  returnValue BOOLEAN;
+BEGIN
+  SELECT one_of_coded_obs_contains($1.observations::JSON, $2, $3) INTO returnValue;
+  RETURN returnValue;
+END;
+$$ LANGUAGE plpgsql;
+
+
 
 -- Returns whether any the observation (for concept in second argument), in the entities (first argument) contains the passed answer (third arg)
-CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(program_enrolment, program_encounter, TEXT, TEXT)
+CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(JSONB, JSONB, TEXT, TEXT)
   RETURNS BOOLEAN AS $$
   DECLARE
     exists BOOLEAN := FALSE;
@@ -132,8 +208,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(program_enrolment, program_encounter, TEXT, TEXT)
+  RETURNS BOOLEAN AS $$
+DECLARE
+  returnValue BOOLEAN;
+BEGIN
+  SELECT in_one_entity_coded_obs_contains($1.observations::JSON, $2.observations::JSON, $3, $4) INTO returnValue;
+  RETURN returnValue;
+END;
+$$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION one_of_coded_obs_exists(ANYELEMENT, TEXT[])
+
+
+CREATE OR REPLACE FUNCTION one_of_coded_obs_exists(JSONB, TEXT[])
   RETURNS BOOLEAN AS $$
 DECLARE
   exists BOOLEAN := FALSE;
@@ -149,6 +236,16 @@ BEGIN
     i := i + 1;
   END LOOP;
   RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION one_of_coded_obs_exists(ANYELEMENT, TEXT[])
+  RETURNS BOOLEAN AS $$
+DECLARE
+  returnValue BOOLEAN;
+BEGIN
+  SELECT one_of_coded_obs_exists($1.observations::JSON, $2) INTO returnValue;
+  RETURN returnValue;
 END;
 $$ LANGUAGE plpgsql;
 

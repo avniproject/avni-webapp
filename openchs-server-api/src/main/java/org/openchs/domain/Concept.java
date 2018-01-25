@@ -1,7 +1,5 @@
 package org.openchs.domain;
 
-import org.openchs.util.O;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
