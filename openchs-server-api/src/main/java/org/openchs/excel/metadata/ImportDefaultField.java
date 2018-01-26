@@ -27,6 +27,9 @@ public class ImportDefaultField implements ImportField {
 
     @Override
     public String getTextValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
+        if (defaultValue instanceof Double) {
+            return String.valueOf(((Double) defaultValue).intValue());
+        }
         return (String) defaultValue;
     }
 
