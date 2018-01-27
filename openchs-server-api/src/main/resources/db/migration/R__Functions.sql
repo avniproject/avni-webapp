@@ -116,7 +116,7 @@ CREATE OR REPLACE FUNCTION coded_obs_exists(ANYELEMENT, TEXT)
   RETURNS BOOLEAN AS $$
 DECLARE returnValue BOOLEAN;
 BEGIN
-  SELECT coded_obs_exists($1.observations) INTO returnValue;
+  SELECT coded_obs_exists($1.observations, $2) INTO returnValue;
   RETURN returnValue;
 END;
 $$ LANGUAGE plpgsql;
