@@ -123,29 +123,35 @@ $$ LANGUAGE plpgsql;
 
 
 -- Returns whether any of the observation (for concept in second argument), in the entity (first argument) contains the passed answer (third arg)
-CREATE OR REPLACE FUNCTION coded_obs_contains(JSONB, TEXT, TEXT)
+CREATE OR REPLACE FUNCTION coded_obs_contains(JSONB, TEXT, TEXT[])
   RETURNS BOOLEAN AS $$
 DECLARE
   answerConceptUUIDs         TEXT[];
   answerConceptUUID             TEXT;
   exists BOOLEAN := FALSE;
+  answerConceptName TEXT;
 BEGIN
-  SELECT translate($1 ->> concept_uuid($2), '[]', '{}') INTO answerConceptUUIDs;
-  IF answerConceptUUIDs IS NOT NULL THEN
+  SELECT translate($1 ->> concept_uuid($2), '[]', '{}')
+  INTO answerConceptUUIDs;
+  IF answerConceptUUIDs IS NOT NULL
+  THEN
     FOREACH answerConceptUUID IN ARRAY answerConceptUUIDs
     LOOP
-      SELECT name = $3 FROM concept WHERE uuid = answerConceptUUID INTO exists;
-      IF exists
-      THEN
-        RETURN TRUE;
-      END IF;
+      FOREACH answerConceptName IN ARRAY $3
+      LOOP
+        SELECT name = answerConceptName FROM concept WHERE uuid = answerConceptUUID INTO exists;
+        IF exists
+        THEN
+          RETURN TRUE;
+        END IF;
+      END LOOP;
     END LOOP;
   END IF;
   RETURN FALSE;
-END;
+  END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION coded_obs_contains(ANYELEMENT, TEXT, TEXT)
+CREATE OR REPLACE FUNCTION coded_obs_contains(ANYELEMENT, TEXT, TEXT[])
   RETURNS BOOLEAN AS $$
 DECLARE
   returnValue BOOLEAN;
@@ -157,7 +163,7 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE OR REPLACE FUNCTION one_of_coded_obs_contains(JSONB, TEXT[], TEXT)
+CREATE OR REPLACE FUNCTION one_of_coded_obs_contains(JSONB, TEXT[], TEXT[])
   RETURNS BOOLEAN AS $$
 DECLARE
   exists BOOLEAN := FALSE;
@@ -176,7 +182,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION one_of_coded_obs_contains(ANYELEMENT, TEXT[], TEXT)
+CREATE OR REPLACE FUNCTION one_of_coded_obs_contains(ANYELEMENT, TEXT[], TEXT[])
   RETURNS BOOLEAN AS $$
 DECLARE
   returnValue BOOLEAN;
@@ -189,7 +195,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- Returns whether any the observation (for concept in second argument), in the entities (first argument) contains the passed answer (third arg)
-CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(JSONB, JSONB, TEXT, TEXT)
+CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(JSONB, JSONB, TEXT, TEXT[])
   RETURNS BOOLEAN AS $$
   DECLARE
     exists BOOLEAN := FALSE;
@@ -199,7 +205,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(program_enrolment, program_encounter, TEXT, TEXT)
+CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(program_enrolment, program_encounter, TEXT, TEXT[])
   RETURNS BOOLEAN AS $$
 DECLARE
   returnValue BOOLEAN;
