@@ -164,7 +164,7 @@ DECLARE
   i      INTEGER := 1;
 BEGIN
   LOOP
-    EXIT WHEN i = $2.count;
+    EXIT WHEN i > $2.count;
     SELECT coded_obs_contains($1, $2[i], $3) INTO exists;
     IF (exists)
     THEN
@@ -196,7 +196,7 @@ CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(JSONB, JSONB, TEXT, 
     i      INTEGER := 1;
 BEGIN
     LOOP
-      EXIT WHEN i = $1.count;
+      EXIT WHEN i > $1.count;
       SELECT coded_obs_contains($1, $3, $4) OR coded_obs_contains($2, $3, $4)  INTO exists;
       IF (exists)
       THEN
@@ -227,9 +227,9 @@ DECLARE
   i      INTEGER := 1;
 BEGIN
   LOOP
-    EXIT WHEN i = $2.count;
+    EXIT WHEN i > $2.count;
     SELECT coded_obs_exists($1, $2[i]) INTO exists;
-    IF (exists)
+    IF exists
     THEN
       RETURN TRUE;
     END IF;
