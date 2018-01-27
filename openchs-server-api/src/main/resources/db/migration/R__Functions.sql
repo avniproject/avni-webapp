@@ -126,16 +126,16 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION coded_obs_contains(JSONB, TEXT, TEXT)
   RETURNS BOOLEAN AS $$
 DECLARE
-  uuids         TEXT[];
-  x             TEXT;
+  answerConceptUUIDs         TEXT[];
+  answerConceptUUID             TEXT;
   exists BOOLEAN := FALSE;
 BEGIN
-  SELECT translate($1 ->> concept_uuid($2), '[]', '{}') INTO uuids;
-  IF uuids IS NOT NULL THEN
-    FOREACH x IN ARRAY uuids
+  SELECT translate($1 ->> concept_uuid($2), '[]', '{}') INTO answerConceptUUIDs;
+  IF answerConceptUUIDs IS NOT NULL THEN
+    FOREACH answerConceptUUID IN ARRAY answerConceptUUIDs
     LOOP
-      SELECT name = $3 FROM concept WHERE uuid = x INTO exists;
-      IF (exists)
+      SELECT name = $3 FROM concept WHERE uuid = answerConceptUUID INTO exists;
+      IF exists
       THEN
         RETURN TRUE;
       END IF;
@@ -164,9 +164,9 @@ DECLARE
   i      INTEGER := 1;
 BEGIN
   LOOP
-    EXIT WHEN i > $2.count;
+    EXIT WHEN i > array_length($2, 1);
     SELECT coded_obs_contains($1, $2[i], $3) INTO exists;
-    IF (exists)
+    IF exists
     THEN
       RETURN TRUE;
     END IF;
@@ -193,18 +193,9 @@ CREATE OR REPLACE FUNCTION in_one_entity_coded_obs_contains(JSONB, JSONB, TEXT, 
   RETURNS BOOLEAN AS $$
   DECLARE
     exists BOOLEAN := FALSE;
-    i      INTEGER := 1;
 BEGIN
-    LOOP
-      EXIT WHEN i > $1.count;
-      SELECT coded_obs_contains($1, $3, $4) OR coded_obs_contains($2, $3, $4)  INTO exists;
-      IF (exists)
-      THEN
-        RETURN TRUE;
-      END IF;
-      i := i + 1;
-    END LOOP;
-    RETURN FALSE;
+    SELECT coded_obs_contains($1, $3, $4) OR coded_obs_contains($2, $3, $4)  INTO exists;
+    RETURN exists;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -227,7 +218,7 @@ DECLARE
   i      INTEGER := 1;
 BEGIN
   LOOP
-    EXIT WHEN i > $2.count;
+    EXIT WHEN i > array_length($2, 1);
     SELECT coded_obs_exists($1, $2[i]) INTO exists;
     IF exists
     THEN
