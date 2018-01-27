@@ -162,6 +162,35 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION coded_obs_contains_any_except(JSONB, TEXT, TEXT[])
+  RETURNS BOOLEAN AS $$
+DECLARE
+  answerConceptUUIDs         TEXT[];
+  answerConceptUUID             TEXT;
+  exists BOOLEAN := FALSE;
+  answerConceptName TEXT;
+BEGIN
+  SELECT translate($1 ->> concept_uuid($2), '[]', '{}') INTO answerConceptUUIDs;
+  IF answerConceptUUIDs IS NOT NULL
+  THEN
+    FOREACH answerConceptUUID IN ARRAY answerConceptUUIDs
+    LOOP
+      FOREACH answerConceptName IN ARRAY $3
+      LOOP
+        SELECT name = answerConceptName FROM concept WHERE uuid = answerConceptUUID INTO exists;
+        IF exists
+        THEN
+          RETURN FALSE;
+        END IF;
+      END LOOP;
+    END LOOP;
+    RETURN TRUE;
+  END IF;
+  RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+
+
 
 CREATE OR REPLACE FUNCTION one_of_coded_obs_contains(JSONB, TEXT[], TEXT[])
   RETURNS BOOLEAN AS $$
