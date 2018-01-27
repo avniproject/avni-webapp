@@ -15,7 +15,7 @@ CREATE OR REPLACE FUNCTION is_counselled(JSONB)
 DECLARE
   exists BOOLEAN := FALSE;
 BEGIN
-  SELECT one_of_coded_obs_contains($1, ARRAY['Counselling for Road Traffic Accident Done', 'Counselling for Early Pregnancy & RTI Done'], 'Yes') INTO exists;
+  SELECT one_of_coded_obs_contains($1, ARRAY['Counselling for Road Traffic Accident Done', 'Counselling for Early Pregnancy & RTI Done', 'Counselling for Menstrual Disorder Done', 'Counselling for No Parents / Single Parent Done', 'Counselling for Addiction Done', 'Counselling for Sickle Cell Anemia Done', 'Counselling for Malnutrition Done', 'Counselling for Severe Anemia Done'], 'Yes') INTO exists;
   RETURN exists;
 END;
 $$ LANGUAGE plpgsql;
