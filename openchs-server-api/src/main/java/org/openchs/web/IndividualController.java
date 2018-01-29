@@ -6,9 +6,11 @@ import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
+import org.openchs.excel.ExcelImporter;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
 import org.openchs.service.ObservationService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import java.util.logging.Logger;
 
 @RestController
 public class IndividualController extends AbstractController<Individual> {
@@ -24,6 +27,8 @@ public class IndividualController extends AbstractController<Individual> {
     private final AddressLevelRepository addressLevelRepository;
     private final GenderRepository genderRepository;
     private ObservationService observationService;
+
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository, AddressLevelRepository addressLevelRepository, GenderRepository genderRepository, ObservationService observationService) {
@@ -39,6 +44,7 @@ public class IndividualController extends AbstractController<Individual> {
     public void save(@RequestBody IndividualRequest individualRequest) {
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
+        logger.info(String.format("Import Individual with UUID %s and with organisation id %s", individual.getUuid(), String.valueOf(individual.getOrganisationId())));
         individualRepository.save(individual);
     }
 

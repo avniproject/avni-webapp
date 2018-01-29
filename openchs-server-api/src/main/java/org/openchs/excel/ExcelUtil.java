@@ -21,11 +21,15 @@ public class ExcelUtil {
     public static String getText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return "";
-        String stringCellValue = "";
+        String stringCellValue;
         try {
             stringCellValue = cell.getStringCellValue();
         } catch (IllegalStateException e) {
-            stringCellValue = stringCellValue.toString();
+            if (cell.getCellTypeEnum().equals(CellType.NUMERIC)) {
+                stringCellValue = String.valueOf(Double.valueOf(cell.getNumericCellValue()).intValue());
+            } else {
+                stringCellValue = cell.toString();
+            }
         }
         String s = stringCellValue.trim().replaceAll(" +", " ");
         return StringUtils.isEmpty(s) ? null : s;
