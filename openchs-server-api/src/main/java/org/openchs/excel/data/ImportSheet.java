@@ -50,6 +50,8 @@ public class ImportSheet {
         Object cellValue;
         if (ConceptDataType.stringType(concept.getDataType())) {
             cellValue = importField.getTextValue(row, sheetHeader, sheetMetaData);
+        } else if (ConceptDataType.Numeric.toString().equals(concept.getDataType())) {
+            cellValue = importField.getDoubleValue(row, sheetHeader, sheetMetaData);
         } else if (ConceptDataType.Date.toString().equals(concept.getDataType())) {
             cellValue = importField.getDateValue(row, sheetHeader, sheetMetaData);
         } else {

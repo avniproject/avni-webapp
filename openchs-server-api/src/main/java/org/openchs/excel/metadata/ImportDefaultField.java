@@ -39,6 +39,11 @@ public class ImportDefaultField implements ImportField {
     }
 
     @Override
+    public Double getDoubleValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
+        return (Double) defaultValue;
+    }
+
+    @Override
     public Boolean getBooleanValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         if (defaultValue instanceof Boolean) return (Boolean) defaultValue;
         else if (defaultValue instanceof String) return TextToType.toBoolean((String) defaultValue);

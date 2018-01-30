@@ -73,6 +73,12 @@ public class ImportNonCalculatedField implements ImportField {
         return position == -1 ? null : ExcelUtil.getText(row, position);
     }
 
+    @Override
+    public Double getDoubleValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
+        int position = getPosition(importSheetHeader, importSheetMetaData);
+        return position == -1 ? null : ExcelUtil.getNumber(row, position);
+    }
+
     private int getPosition(ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         String userFieldName = userFileTypeFieldNameMap.get(importSheetMetaData.getUserFileType());
         return importSheetHeader.getPosition(userFieldName);

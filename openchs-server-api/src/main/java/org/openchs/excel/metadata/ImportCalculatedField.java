@@ -76,6 +76,13 @@ public class ImportCalculatedField implements ImportField {
     }
 
     @Override
+    public Double getDoubleValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
+        int position = importSheetHeader.getPosition(sourceUserField);
+        if (position == -1) return null;
+        return ExcelUtil.getNumber(row, position);
+    }
+
+    @Override
     public Date getDateValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         throw new UnsupportedOperationException();
     }
