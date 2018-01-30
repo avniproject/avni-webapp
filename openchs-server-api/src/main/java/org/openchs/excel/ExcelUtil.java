@@ -20,7 +20,7 @@ public class ExcelUtil {
 
     public static String getText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
-        if (cell == null) return "";
+        if (cell == null) return null;
         String stringCellValue;
         try {
             stringCellValue = cell.getStringCellValue();
