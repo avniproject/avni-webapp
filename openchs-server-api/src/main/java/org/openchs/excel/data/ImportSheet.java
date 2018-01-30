@@ -7,6 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.*;
 import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.ImportSheetHeader;
@@ -39,7 +40,7 @@ public class ImportSheet {
         return Strings.isBlank(rawCellValue) ? null : row;
     }
 
-    private ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
+    private ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ConceptRepository conceptRepository, FormElementRepository formElementRepository, ImportAnswerMetaDataList answerMetaDataList) {
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(systemFieldName);
         Concept concept = conceptRepository.findByName(systemFieldName);
@@ -57,7 +58,13 @@ public class ImportSheet {
         if (cellValue == null) return null;
 
         if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
-            cellValue = concept.getDbValue(answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName()));
+            /*
+            Horrible hack. We are trying to guess the form the concept belongs to, and thus find out if
+            it should be single select or not. This will fail if the same question is asked as both single and
+            multi select in two different forms.
+            */
+            Boolean isSingleSelect = formElementRepository.findFirstByConcept(concept).isSingleSelect();
+            cellValue = concept.getDbValue(answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName()), isSingleSelect);
         }
 
         if (cellValue == null) return null;
@@ -65,7 +72,7 @@ public class ImportSheet {
         return observationRequest;
     }
 
-    private IndividualRequest getIndividualRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData importSheetMetaData, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
+    private IndividualRequest getIndividualRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData importSheetMetaData, ConceptRepository conceptRepository, FormElementRepository formElementRepository, ImportAnswerMetaDataList answerMetaDataList) {
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setObservations(new ArrayList<>());
         importFields.forEach(importField -> {
@@ -96,7 +103,7 @@ public class ImportSheet {
                     individualRequest.setUuid(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 default:
-                    individualRequest.addObservation(createObservationRequest(row, importSheetHeader, importSheetMetaData, importField, systemFieldName, conceptRepository, answerMetaDataList));
+                    individualRequest.addObservation(createObservationRequest(row, importSheetHeader, importSheetMetaData, importField, systemFieldName, conceptRepository, formElementRepository, answerMetaDataList));
                     break;
             }
         });
@@ -105,7 +112,7 @@ public class ImportSheet {
         return individualRequest;
     }
 
-    private ProgramEnrolmentRequest getEnrolmentRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
+    private ProgramEnrolmentRequest getEnrolmentRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository, FormElementRepository formElementRepository, ImportAnswerMetaDataList answerMetaDataList) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
         programEnrolmentRequest.setProgram(sheetMetaData.getProgramName());
         programEnrolmentRequest.setObservations(new ArrayList<>());
@@ -125,7 +132,7 @@ public class ImportSheet {
                 case "Address":
                     break;
                 default:
-                    programEnrolmentRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, answerMetaDataList));
+                    programEnrolmentRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, formElementRepository, answerMetaDataList));
                     break;
             }
         });
@@ -133,7 +140,7 @@ public class ImportSheet {
         return programEnrolmentRequest;
     }
 
-    private ProgramEncounterRequest getProgramEncounterRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
+    private ProgramEncounterRequest getProgramEncounterRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository, FormElementRepository formElementRepository, ImportAnswerMetaDataList answerMetaDataList) {
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setObservations(new ArrayList<>());
         importFields.forEach(importField -> {
@@ -163,7 +170,7 @@ public class ImportSheet {
                 case "Address":
                     break;
                 default:
-                    programEncounterRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, answerMetaDataList));
+                    programEncounterRequest.addObservation(createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, formElementRepository, answerMetaDataList));
                     break;
             }
         });
@@ -175,16 +182,16 @@ public class ImportSheet {
         return importSheetMetaData.getEntityType().equals(aClass);
     }
 
-    public CHSRequest getRequest(List<ImportField> importFields, ImportSheetMetaData sheetMetaData, int dataRowNumber, ConceptRepository conceptRepository, ImportAnswerMetaDataList answerMetaDataList) {
+    public CHSRequest getRequest(List<ImportField> importFields, ImportSheetMetaData sheetMetaData, int dataRowNumber, ConceptRepository conceptRepository, FormElementRepository formElementRepository, ImportAnswerMetaDataList answerMetaDataList) {
         XSSFRow row = getDataRow(dataRowNumber);
         if (row == null) return null;
 
         if (isSheetOfType(sheetMetaData, Individual.class))
-            return getIndividualRequest(importFields, row, sheetMetaData, conceptRepository, answerMetaDataList);
+            return getIndividualRequest(importFields, row, sheetMetaData, conceptRepository, formElementRepository, answerMetaDataList);
         else if (isSheetOfType(sheetMetaData, ProgramEnrolment.class))
-            return getEnrolmentRequest(importFields, row, sheetMetaData, conceptRepository, answerMetaDataList);
+            return getEnrolmentRequest(importFields, row, sheetMetaData, conceptRepository, formElementRepository, answerMetaDataList);
         else if (isSheetOfType(sheetMetaData, ProgramEncounter.class))
-            return getProgramEncounterRequest(importFields, row, sheetMetaData, conceptRepository, answerMetaDataList);
+            return getProgramEncounterRequest(importFields, row, sheetMetaData, conceptRepository, formElementRepository, answerMetaDataList);
 
         throw new RuntimeException("Unknown data type in the sheet");
     }

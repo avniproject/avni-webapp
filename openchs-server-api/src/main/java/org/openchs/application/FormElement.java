@@ -128,4 +128,8 @@ public class FormElement extends OrganisationAwareEntity {
     public void setValidFormat(Format validFormat) {
         this.validFormat = validFormat;
     }
+
+    public boolean isSingleSelect() {
+        return "SingleSelect".equals(this.type);
+    }
 }

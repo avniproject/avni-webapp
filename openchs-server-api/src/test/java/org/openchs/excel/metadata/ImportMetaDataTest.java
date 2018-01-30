@@ -17,8 +17,6 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
@@ -82,7 +80,7 @@ public class ImportMetaDataTest {
             ImportSheet importSheet = importFile.getSheet(sheetMetaData.getSheetName());
             int numberOfDataRows = importSheet.getNumberOfDataRows();
             for (int i = 0; i < numberOfDataRows; i++) {
-                CHSRequest request = importSheet.getRequest(allFields, sheetMetaData, i, conceptRepository, importMetaData.getAnswerMetaDataList());
+                CHSRequest request = importSheet.getRequest(allFields, sheetMetaData, i, conceptRepository, formElementRepository, importMetaData.getAnswerMetaDataList());
                 List<CHSRequest> chsRequests = requestMap.computeIfAbsent(sheetMetaData, k -> new ArrayList<>());
                 chsRequests.add(request);
             }

@@ -139,14 +139,14 @@ public class Concept extends OrganisationAwareEntity {
                 '}';
     }
 
-    public Object getDbValue(Object value) {
+    public Object getDbValue(Object value, Boolean isSingleSelect) {
         if (value == null) return null;
 
         if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
             Concept answerConcept = this.findAnswerConcept((String) value);
             if (answerConcept == null)
                 throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", value, this.name));
-            return Arrays.asList(answerConcept.getUuid());
+            return isSingleSelect? answerConcept.getUuid(): Arrays.asList(answerConcept.getUuid());
         }
         return value;
     }

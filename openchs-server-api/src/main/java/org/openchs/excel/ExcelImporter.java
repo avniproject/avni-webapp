@@ -1,6 +1,8 @@
 package org.openchs.excel;
 
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.application.FormElementRepository;
+import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.Individual;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.domain.ProgramEnrolment;
@@ -30,6 +32,9 @@ public class ExcelImporter implements Importer {
     @Autowired
     private ConceptRepository conceptRepository;
 
+    @Autowired
+    private FormElementRepository formElementRepository;
+
     private static Logger logger = LoggerFactory.getLogger(ExcelImporter.class);
 
 
@@ -45,7 +50,7 @@ public class ExcelImporter implements Importer {
         int numberOfDataRows = importSheet.getNumberOfDataRows();
         for (int i = 0; i < numberOfDataRows; i++) {
             try {
-                CHSRequest request = importSheet.getRequest(allFields, importSheetMetaData, i, conceptRepository, importMetaData.getAnswerMetaDataList());
+                CHSRequest request = importSheet.getRequest(allFields, importSheetMetaData, i, conceptRepository, formElementRepository, importMetaData.getAnswerMetaDataList());
                 if (request == null) {
                     logger.info(String.format("Breaking at data row number: %d and physical rows number (1 based)", i + 2));
                     break;
