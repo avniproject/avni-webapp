@@ -7,10 +7,7 @@ import org.openchs.web.request.ObservationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,9 +20,9 @@ public class ObservationService {
     }
 
     public ObservationCollection createObservations(List<ObservationRequest> observationRequests) {
-        List<ObservationRequest> completedObservationRequests = observationRequests
+        Map<String, Object> completedObservationRequests = observationRequests
                 .stream()
-                .map(observationRequest -> {
+                .peek(observationRequest -> {
                     if (observationRequest.getConceptUUID() == null && observationRequest.getConceptName() != null) {
                         Concept concept = conceptRepository.findByName(observationRequest.getConceptName());
                         if (concept == null) {
@@ -34,11 +31,10 @@ public class ObservationService {
                         String conceptUUID = concept.getUuid();
                         observationRequest.setConceptUUID(conceptUUID);
                     }
-                    return observationRequest;
-                }).collect(Collectors.toList());
-        return new ObservationCollection(completedObservationRequests
-                .stream()
-                .collect(Collectors.toConcurrentMap(ObservationRequest::getConceptUUID, ObservationRequest::getValue)));
+                })
+                .collect(Collectors
+                        .toConcurrentMap(ObservationRequest::getConceptUUID, ObservationRequest::getValue, (oldVal, newVal) -> newVal));
+        return new ObservationCollection(completedObservationRequests);
     }
 
     public Object getObservationValue(String conceptName, ProgramEncounter programEncounter) {
