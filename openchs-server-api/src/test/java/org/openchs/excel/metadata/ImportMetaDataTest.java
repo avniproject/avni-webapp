@@ -4,7 +4,9 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.openchs.application.FormElement;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.*;
 import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.data.ImportSheet;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -26,14 +29,21 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class ImportMetaDataTest {
     @Mock
     private ConceptRepository conceptRepository;
+
+    @Mock
+    private FormElementRepository formElementRepository;
+
     private ImportMetaData importMetaData;
 
     @Before
     public void setup() throws IOException {
         initMocks(this);
         Concept placeHolderConcept = new Concept();
+        FormElement placeHolderFormElement = new FormElement();
+        placeHolderFormElement.setConcept(placeHolderConcept);
         placeHolderConcept.setDataType(ConceptDataType.Text.toString());
         when(conceptRepository.findByName(anyString())).thenReturn(placeHolderConcept);
+        when(formElementRepository.findFirstByConcept(any(Concept.class))).thenReturn(placeHolderFormElement);
         importMetaData = ImportMetaDataExcelReader.readMetaData(new ClassPathResource("Import MetaData.xlsx").getInputStream());
     }
 
