@@ -1,4 +1,4 @@
-CREATE ROLE demo NOINHERIT NOLOGIN;
+CREATE ROLE demo NOINHERIT PASSWORD 'password';
 
 GRANT demo TO openchs;
 
