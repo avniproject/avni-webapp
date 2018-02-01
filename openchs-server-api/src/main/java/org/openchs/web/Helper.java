@@ -74,7 +74,4 @@ public class Helper {
         concept.setLowNormal(conceptRequest.getLowNormal());
         concept.setUnit(conceptRequest.getUnit());
     }
-
-
-
 }
