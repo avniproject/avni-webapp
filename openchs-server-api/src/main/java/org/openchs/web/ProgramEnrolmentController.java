@@ -39,14 +39,14 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-    @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
         synchronized (LockProvider.getLockObject(this)) {
             saveInternal(request);
         }
     }
 
-    private void saveInternal(ProgramEnrolmentRequest request) {
+    @Transactional
+    void saveInternal(ProgramEnrolmentRequest request) {
         Program program;
         if (request.getProgramUUID() == null) {
             program = programRepository.findByName(request.getProgram());

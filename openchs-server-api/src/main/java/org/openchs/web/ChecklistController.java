@@ -25,7 +25,6 @@ public class ChecklistController extends AbstractController<Checklist> {
         this.programEnrolmentRepository = programEnrolmentRepository;
     }
 
-    @Transactional
     @RequestMapping(value = "/checklists", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ChecklistRequest checklistRequest) {
@@ -34,7 +33,8 @@ public class ChecklistController extends AbstractController<Checklist> {
         }
     }
 
-    private void saveInternal(ChecklistRequest checklistRequest) {
+    @Transactional
+    void saveInternal(ChecklistRequest checklistRequest) {
         Checklist checklist = newOrExistingEntity(checklistRepository, checklistRequest, new Checklist());
         checklist.setName(checklistRequest.getName());
         checklist.setProgramEnrolment(programEnrolmentRepository.findByUuid(checklistRequest.getProgramEnrolmentUUID()));

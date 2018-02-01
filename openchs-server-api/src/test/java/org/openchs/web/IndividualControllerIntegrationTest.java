@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+@Sql({"/test-data.sql"})
 public class IndividualControllerIntegrationTest extends AbstractControllerIntegrationTest {
     @Test
     public void testGetAll() throws Exception {

@@ -30,7 +30,6 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     }
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
-    @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ProgramEncounterRequest request) {
         synchronized (LockProvider.getLockObject(this)) {
@@ -38,7 +37,8 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         }
     }
 
-    private void saveInternal(@RequestBody ProgramEncounterRequest request) {
+    @Transactional
+    void saveInternal(@RequestBody ProgramEncounterRequest request) {
         EncounterType encounterType = (EncounterType) ReferenceDataRepositoryImpl.findReferenceEntity(encounterTypeRepository, request.getEncounterType(), request.getEncounterTypeUUID());
 
         ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());

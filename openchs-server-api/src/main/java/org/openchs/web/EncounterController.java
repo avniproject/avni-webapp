@@ -34,7 +34,6 @@ public class EncounterController extends AbstractController<Encounter> {
     }
 
     @RequestMapping(value = "/encounters", method = RequestMethod.POST)
-    @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     void save(@RequestBody EncounterRequest encounterRequest) {
         synchronized (LockProvider.getLockObject(this)) {
@@ -42,7 +41,8 @@ public class EncounterController extends AbstractController<Encounter> {
         }
     }
 
-    private void saveInternal(@RequestBody EncounterRequest encounterRequest) {
+    @Transactional
+    void saveInternal(@RequestBody EncounterRequest encounterRequest) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterRequest.getEncounterTypeUUID());
         Individual individual = individualRepository.findByUuid(encounterRequest.getIndividualUUID());
 
