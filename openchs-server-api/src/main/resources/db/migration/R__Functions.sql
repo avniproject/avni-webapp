@@ -8,6 +8,22 @@ IMMUTABLE
 RETURNS NULL ON NULL INPUT;
 
 
+CREATE OR REPLACE FUNCTION coded_obs_answer_uuids(JSONB, TEXT)
+  RETURNS TEXT[] AS $$
+DECLARE
+  answerConceptUUIDs TEXT;
+BEGIN
+  SELECT translate($1 ->> concept_uuid($2), '[]', '{}')
+  INTO answerConceptUUIDs;
+  IF answerConceptUUIDs IS NULL THEN
+    RETURN '{}';
+  ELSIF POSITION('{' in answerConceptUUIDs) = 0 THEN
+    RETURN '{' || answerConceptUUIDs || '}';
+  END IF;
+  RETURN answerConceptUUIDs;
+END;
+$$ LANGUAGE plpgsql;
+
 ------------------------------------------------------------ GET OBSERVATION DATA ---------------------------------------------------------------
 CREATE OR REPLACE FUNCTION text_obs(JSONB, TEXT)
   RETURNS TEXT
@@ -126,27 +142,21 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION coded_obs_contains(JSONB, TEXT, TEXT[])
   RETURNS BOOLEAN AS $$
 DECLARE
-  answerConceptUUIDs         TEXT[];
   answerConceptUUID             TEXT;
   exists BOOLEAN := FALSE;
   answerConceptName TEXT;
 BEGIN
-  SELECT translate($1 ->> concept_uuid($2), '[]', '{}')
-  INTO answerConceptUUIDs;
-  IF answerConceptUUIDs IS NOT NULL
-  THEN
-    FOREACH answerConceptUUID IN ARRAY answerConceptUUIDs
+  FOREACH answerConceptUUID IN ARRAY coded_obs_answer_uuids($1, $2)
+  LOOP
+    FOREACH answerConceptName IN ARRAY $3
     LOOP
-      FOREACH answerConceptName IN ARRAY $3
-      LOOP
-        SELECT name = answerConceptName FROM concept WHERE uuid = answerConceptUUID INTO exists;
-        IF exists
-        THEN
-          RETURN TRUE;
-        END IF;
-      END LOOP;
+      SELECT name = answerConceptName FROM concept WHERE uuid = answerConceptUUID INTO exists;
+      IF exists
+      THEN
+        RETURN TRUE;
+      END IF;
     END LOOP;
-  END IF;
+  END LOOP;
   RETURN FALSE;
   END;
 $$ LANGUAGE plpgsql;
@@ -170,8 +180,8 @@ DECLARE
   exists BOOLEAN := FALSE;
   answerConceptName TEXT;
 BEGIN
-  SELECT translate($1 ->> concept_uuid($2), '[]', '{}') INTO answerConceptUUIDs;
-  IF answerConceptUUIDs IS NOT NULL
+  SELECT coded_obs_answer_uuids($1, $2) INTO answerConceptUUIDs;
+  IF array_length(answerConceptUUIDs, 1) > 0
   THEN
     FOREACH answerConceptUUID IN ARRAY answerConceptUUIDs
     LOOP
