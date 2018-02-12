@@ -13,3 +13,9 @@ classes/*
 minor_version
 major_version
 **/rules/*.js
+
+# VSCode
+.project
+.settings
+.classpath
+bin/
