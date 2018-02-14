@@ -22,6 +22,7 @@ public class Concept extends OrganisationAwareEntity {
     private Double lowNormal;
     private Double highNormal;
     private String unit;
+    private boolean isVoided = false;
 
     public String getName() {
         return name;
@@ -79,6 +80,15 @@ public class Concept extends OrganisationAwareEntity {
         this.conceptAnswers = conceptAnswers;
     }
 
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        isVoided = voided;
+    }
+
     public static Concept create(String name, String dataType) {
         return create(name, dataType, UUID.randomUUID().toString());
     }
@@ -98,8 +108,12 @@ public class Concept extends OrganisationAwareEntity {
         return concept;
     }
 
-    public ConceptAnswer findConceptAnswer(String answerConceptName) {
+    public ConceptAnswer findConceptAnswerByName(String answerConceptName) {
         return this.getConceptAnswers().stream().filter(x -> x.getAnswerConcept().getName().equals(answerConceptName)).findAny().orElse(null);
+    }
+    
+    public ConceptAnswer findConceptAnswerByAnswerUuid(String conceptAnswerUuid) {
+        return this.getConceptAnswers().stream().filter(x -> x.getAnswerConcept().getUuid().equals(conceptAnswerUuid)).findAny().orElse(null);
     }
 
     public ConceptAnswer findConceptAnswerByConceptUUID(String answerConceptUUID) {
@@ -111,12 +125,9 @@ public class Concept extends OrganisationAwareEntity {
         conceptAnswer.setConcept(this);
     }
 
-    public void removeOrphanedConceptAnswers(List<String> answerConceptUUIDs) {
-        List<ConceptAnswer> orphanedConceptAnswers = this.getConceptAnswers().stream().filter(conceptAnswer -> !answerConceptUUIDs.contains(conceptAnswer.getAnswerConcept().getUuid()))
-                .collect(Collectors.toList());
-        this.getConceptAnswers().removeAll(orphanedConceptAnswers);
+    public void voidOrphanedConceptAnswers(List<String> answerConceptUUIDs) {
+        this.getConceptAnswers().forEach(conceptAnswer -> conceptAnswer.setVoided(!answerConceptUUIDs.contains(conceptAnswer.getAnswerConcept().getUuid())));
     }
-
 
     public String getUnit() {
         return unit;
@@ -127,7 +138,7 @@ public class Concept extends OrganisationAwareEntity {
     }
 
     public Concept findAnswerConcept(String answerConceptName) {
-        ConceptAnswer conceptAnswer = this.findConceptAnswer(answerConceptName);
+        ConceptAnswer conceptAnswer = this.findConceptAnswerByName(answerConceptName);
         return conceptAnswer == null ? null : conceptAnswer.getAnswerConcept();
     }
 

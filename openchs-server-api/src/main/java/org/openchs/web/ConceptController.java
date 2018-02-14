@@ -42,6 +42,7 @@ public class ConceptController {
 
             concept.setName(conceptRequest.getName());
             concept.setDataType(conceptRequest.getDataType());
+            concept.setVoided(conceptRequest.isVoided());
 
             if (ConceptDataType.Numeric.toString().equals(conceptRequest.getDataType())) {
                 new Helper().setNumericSpecificAttributes(conceptRequest, concept);

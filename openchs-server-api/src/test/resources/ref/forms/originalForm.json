@@ -1,0 +1,75 @@
+{
+  "name": "Adolescent School Dropout Followup",
+  "uuid": "0c444bf3-54c3-41e4-8ca9-f0deb8760831",
+  "formType": "ProgramEncounter",
+  "programName": "Adolescent",
+  "userUUID": "5fed2907-df3a-4867-aef5-c87f4c78a31a",
+  "encounterTypes": [
+    "Dropout Followup Visit"
+  ],
+  "formElementGroups": [
+    {
+      "uuid": "dd37cacf-c628-457e-b474-01c4966a473c",
+      "name": "School Going Details",
+      "displayOrder": 1,
+      "display": "School Going Details",
+      "formElements": [
+        {
+          "name": "Have you started going to school once again",
+          "uuid": "6e200310-4948-47dc-a573-411aaafd199d",
+          "keyValues": [],
+          "type": "SingleSelect",
+          "concept": {
+            "uuid": "dcfc771a-0785-43be-bcb1-0d2755793e0e",
+            "name": "Have you started going to school once again",
+            "dataType": "Coded",
+            "answers": [
+              {
+                "name": "Yes, started",
+                "uuid": "28e76608-dddd-4914-bd44-3689eccfa5ca"
+              },
+              {
+                "name": "Yes, but could not attend",
+                "uuid": "9715936e-03f2-44da-900f-33588fe95250"
+              },
+              {
+                "name": "No",
+                "uuid": "e7b50c78-3d90-484d-a224-9887887780dc"
+              }
+            ]
+          },
+          "displayOrder": 1,
+          "mandatory": true
+        },
+        {
+          "name": "Random Numeric Question",
+          "uuid": "45a1595c-c324-4e76-b8cd-0873e465b5ae",
+          "concept": {
+            "name": "Random Numeric Question concept",
+            "uuid": "b97039c7-542b-4703-9d4f-2023fb6a45c4",
+            "dataType": "Numeric"
+          },
+          "displayOrder": 2
+        }
+      ]
+    },
+    {
+      "uuid": "e47c7604-6cb6-45bb-a36a-05a03f958cdf",
+      "name": "A form element group",
+      "displayOrder": 2,
+      "display": "A form element group",
+      "formElements": [
+        {
+          "name": "Another random numeric question",
+          "uuid": "6965816f-b3bb-4162-ac8e-08136739b459",
+          "concept": {
+            "name": "Another random numeric questionconcept",
+            "uuid": "9a1a74ff-bf38-4bb2-97b6-3fee8a61fdbd",
+            "dataType": "Numeric"
+          },
+          "displayOrder": 2
+        }
+      ]
+    }
+  ]
+}

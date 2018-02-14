@@ -4,6 +4,7 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
+import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.validation.ValidationException;
 import org.springframework.util.StringUtils;
@@ -20,8 +21,8 @@ public class Helper {
     }
 
     private void removeUnwantedAnswers(Concept concept, List<ConceptContract> answersFromRequest) {
-        List<String> answerConceptUUIDs = answersFromRequest.stream().map(conceptAnswer -> conceptAnswer.getUuid()).collect(Collectors.toList());
-        concept.removeOrphanedConceptAnswers(answerConceptUUIDs);
+        List<String> answerConceptUUIDs = answersFromRequest.stream().map(CHSRequest::getUuid).collect(Collectors.toList());
+        concept.voidOrphanedConceptAnswers(answerConceptUUIDs);
     }
 
     private void addOrUpdateAnswers(Concept concept, List<ConceptContract> answersFromRequest, ConceptRepository conceptRepository) {
@@ -40,6 +41,7 @@ public class Helper {
             conceptAnswer = new ConceptAnswer();
             conceptAnswer.assignUUID();
         }
+        conceptAnswer.setVoided(answerConceptRequest.isVoided());
         conceptAnswer.setOrder(answerOrder);
         conceptAnswer.setAbnormal(answerConceptRequest.isAbnormal());
         conceptAnswer.setAnswerConcept(fetchOrCreateAnswer(answerConceptRequest, conceptRepository));

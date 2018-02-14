@@ -22,6 +22,8 @@ public class ConceptAnswer extends OrganisationAwareEntity{
 
     private boolean abnormal;
 
+    private boolean isVoided = false;
+
     public Concept getConcept() {
         return concept;
     }
@@ -61,5 +63,13 @@ public class ConceptAnswer extends OrganisationAwareEntity{
 
     public void setAbnormal(boolean abnormal) {
         this.abnormal = abnormal;
+    }
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        isVoided = voided;
     }
 }

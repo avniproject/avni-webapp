@@ -1,0 +1,38 @@
+[
+  {
+    "name": "NA concept",
+    "uuid": "b82d4ed8-6e9f-4c67-bfdc-b1a04861bc20",
+    "dataType": "N/A"
+  },
+  {
+    "name": "Coded concept",
+    "uuid": "c4e3facf-7594-434b-80d9-01b694758afc",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "name": "An answer",
+        "uuid": "90e44d61-97c3-471d-964d-44b2488d0204",
+        "dataType": "N/A"
+      },
+      {
+        "name": "NA concept",
+        "uuid": "b82d4ed8-6e9f-4c67-bfdc-b1a04861bc20"
+      }
+    ]
+  },
+  {
+    "name": "Weight for height z-score",
+    "uuid": "7d4c79a6-2ad7-452d-839f-6c7cbd6ec5c8",
+    "dataType": "Numeric",
+    "lowNormal": -2,
+    "highNormal": 2
+  },
+  {
+    "name": "Voided concept",
+    "uuid": "31f1d3e9-d1e0-4645-947f-8b9fcaa17e01",
+    "isVoided": true,
+    "dataType": "Numeric",
+    "lowNormal": -2,
+    "highNormal": 2
+  }
+]

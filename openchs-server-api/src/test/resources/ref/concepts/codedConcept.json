@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Coded Question",
+    "uuid": "8d1bc80a-9b20-4dbb-b2f6-5d9cc06350e3",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "name": "Coded Answer 1",
+        "uuid": "060e474f-4c64-4075-817f-b18564946e96",
+        "dataType": "N/A"
+      },
+      {
+        "name": "Coded Answer 2",
+        "uuid": "fede2cf9-4576-48ba-9faa-d00c63b84c59"
+      },
+      {
+        "name": "Coded Answer 3",
+        "uuid": "88a4779b-859f-4035-8e4d-dd3c347484d0"
+      }
+    ]
+  }
+]

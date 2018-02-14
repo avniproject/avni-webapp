@@ -1,29 +1,17 @@
 package org.openchs.web;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.matchers.Contains;
-import org.mockito.internal.matchers.StartsWith;
-import org.openchs.application.Form;
-import org.openchs.application.FormElement;
 import org.openchs.application.FormMapping;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.dao.ConceptRepository;
-import org.openchs.dao.ProgramRepository;
 import org.openchs.dao.application.FormElementGroupRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.application.FormMappingRepository;
-import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
-import org.openchs.domain.Program;
 import org.openchs.web.request.ConceptContract;
-import org.openchs.web.request.application.BasicFormDetails;
 import org.openchs.web.request.application.FormContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,11 +21,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 @Sql({"/test-data.sql"})
 public class FormControllerIntegrationTest extends AbstractControllerIntegrationTest {
@@ -45,10 +33,13 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     private FormMappingRepository formMappingRepository;
 
     @Autowired
-    private ProgramRepository programRepository;
+    private ConceptRepository conceptRepository;
 
     @Autowired
-    private ConceptRepository conceptRepository;
+    private FormElementRepository formElementRepository;
+    
+    @Autowired
+    private FormElementGroupRepository formElementGroupRepository;
 
     private Object getJson(String path) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -61,7 +52,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         super.setUp();
         template.postForEntity("/programs", getJson("/ref/program.json"), Void.class);
         template.postForEntity("/concepts", getJson("/ref/concepts.json"), Void.class);
-        template.postForEntity("/forms", getJson("/ref/originalForm.json"), Void.class);
+        template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
     }
 
     @Test
@@ -73,14 +64,13 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     @Test
     public void getForms() {
         ResponseEntity<String> response = template.getForEntity("/forms/program/1", String.class);
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-        assertThat("Invalid JSON", response.getBody(),
-                new StartsWith("[{\"name\":\"encounter_form\",\"uuid\":\"2c32a184-6d27-4c51-841d-551ca94594a5\",\"formType\":\"Encounter\",\"programName\":\"Diabetes\""));
-        assertThat(response.getBody(), new Contains("\"links\":[{\"rel\":\"self\""));
-        assertThat(response.getBody(), new Contains("{\"rel\":\"form\""));
-        assertThat(response.getBody(), new Contains("{\"rel\":\"formElementGroups\""));
-        assertThat(response.getBody(), new Contains("{\"rel\":\"createdBy\""));
-        assertThat(response.getBody(), new Contains("{\"rel\":\"lastModifiedBy\""));
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).startsWith("[{\"name\":\"encounter_form\",\"uuid\":\"2c32a184-6d27-4c51-841d-551ca94594a5\",\"formType\":\"Encounter\",\"programName\":\"Diabetes\"");
+        assertThat(response.getBody()).contains("\"links\":[{\"rel\":\"self\"");
+        assertThat(response.getBody()).contains("{\"rel\":\"form\"");
+        assertThat(response.getBody()).contains("{\"rel\":\"formElementGroups\"");
+        assertThat(response.getBody()).contains("{\"rel\":\"createdBy\"");
+        assertThat(response.getBody()).contains("{\"rel\":\"lastModifiedBy\"");
     }
 
     @Test
@@ -96,7 +86,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
                 assertEquals("Yes, started", answer.getName());
             }
         }
-        template.postForEntity("/forms", getJson("/ref/formWithRenamedAnswer.json"), Void.class);
+        template.postForEntity("/forms", getJson("/ref/forms/formWithRenamedAnswer.json"), Void.class);
         formResponse = template
                 .getForEntity(String.format("/forms/export?formUUID=%s", "0c444bf3-54c3-41e4-8ca9-f0deb8760831"),
                         FormContract.class);
@@ -112,33 +102,44 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
     @Test
     public void deleteExistingAnswerInFormElement() throws IOException {
-        ResponseEntity<FormContract> formResponse = template
-                .getForEntity(String.format("/forms/export?formUUID=%s", "0c444bf3-54c3-41e4-8ca9-f0deb8760831"),
-                        FormContract.class);
-        assertEquals(HttpStatus.OK, formResponse.getStatusCode());
-        FormContract form = formResponse.getBody();
-        List<ConceptContract> answers = form.getFormElementGroups().get(0).getFormElements().get(0).getConcept().getAnswers();
-        List<String> answerUUIDs = new ArrayList<>();
-        for (ConceptContract answer : answers) {
-            answerUUIDs.add(answer.getUuid());
-        }
-        assertEquals(3, answers.size());
-        assertTrue(answerUUIDs.contains("28e76608-dddd-4914-bd44-3689eccfa5ca"));
-        template.postForEntity("/forms", getJson("/ref/formWithDeletedAnswer.json"), Void.class);
+        template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
 
-        formResponse = template
-                .getForEntity(String.format("/forms/export?formUUID=%s", "0c444bf3-54c3-41e4-8ca9-f0deb8760831"),
-                        FormContract.class);
+        Concept conceptWithAnswerToBeDeleted = conceptRepository.findByName("Have you started going to school once again");
+        assertThat(conceptWithAnswerToBeDeleted.getConceptAnswers().size()).isEqualTo(3);
+        ConceptAnswer answerToBeDeleted = conceptWithAnswerToBeDeleted.findConceptAnswerByName("Yes, started");
+        assertThat(answerToBeDeleted).isNotNull();
+        assertThat(answerToBeDeleted.isVoided()).isFalse();
 
-        assertEquals(HttpStatus.OK, formResponse.getStatusCode());
-        form = formResponse.getBody();
-        answers = form.getFormElementGroups().get(0).getFormElements().get(0).getConcept().getAnswers();
-        answerUUIDs = new ArrayList<>();
-        for (ConceptContract answer : answers) {
-            answerUUIDs.add(answer.getUuid());
-        }
-        assertEquals(2, answers.size());
-        assertFalse(answerUUIDs.contains("28e76608-dddd-4914-bd44-3689eccfa5ca"));
+
+        template.postForEntity("/forms", getJson("/ref/forms/formWithDeletedAnswer.json"), Void.class);
+
+        Concept conceptWithDeletedAnswer = conceptRepository.findByName("Have you started going to school once again");
+        assertThat(conceptWithDeletedAnswer.getConceptAnswers().size()).isEqualTo(3);
+        ConceptAnswer answerDeleted = conceptWithDeletedAnswer.findConceptAnswerByName("Yes, started");
+        assertThat(answerDeleted).isNotNull();
+        assertThat(answerDeleted.isVoided()).isTrue();
+    }
+
+    @Test
+    public void deleteFormElement() throws IOException {
+        template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
+
+        assertThat(formElementRepository.findByUuid("45a1595c-c324-4e76-b8cd-0873e465b5ae")).isNotNull();
+
+        template.postForEntity("/forms", getJson("/ref/forms/formWithDeletedFormElement.json"), Void.class);
+
+        assertThat(formElementRepository.findByUuid("45a1595c-c324-4e76-b8cd-0873e465b5ae")).isNull();
+    }
+
+
+    @Test
+    public void deleteFormElementGroup() throws IOException {
+        template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
+        assertThat(formElementGroupRepository.findByUuid("e47c7604-6cb6-45bb-a36a-05a03f958cdf")).isNotNull();
+
+
+        template.postForEntity("/forms", getJson("/ref/forms/formWithDeletedFormElementGroup.json"), Void.class);
+        assertThat(formElementGroupRepository.findByUuid("e47c7604-6cb6-45bb-a36a-05a03f958cdf")).isNull();
     }
 
     @Test
@@ -159,7 +160,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
             }
 
         });
-        template.postForEntity("/forms", getJson("/ref/formWithChangedAnswerOrder.json"), Void.class);
+        template.postForEntity("/forms", getJson("/ref/forms/formWithChangedAnswerOrder.json"), Void.class);
         codedConcept = conceptRepository.findByUuid("dcfc771a-0785-43be-bcb1-0d2755793e0e");
         conceptAnswers = codedConcept.getConceptAnswers();
         conceptAnswers.forEach(conceptAnswer -> {
