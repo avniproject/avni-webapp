@@ -18,8 +18,8 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
                              HttpServletResponse response, Object object) throws Exception {
         if (request.getMethod().equals(RequestMethod.GET.name())) {
             DateTime now = new DateTime();
-            DateTime nowMinus10 = now.minusSeconds(10);
-            ((MutableRequestWrapper) request).addParameter("now", nowMinus10.toString(ISODateTimeFormat.dateTime()));
+            DateTime nowMinus10Seconds = now.minusSeconds(10);
+            ((MutableRequestWrapper) request).addParameter("now", nowMinus10Seconds.toString(ISODateTimeFormat.dateTime()));
         }
         return true;
     }
