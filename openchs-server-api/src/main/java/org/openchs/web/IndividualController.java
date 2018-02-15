@@ -38,6 +38,7 @@ public class IndividualController extends AbstractController<Individual> {
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
+    @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody IndividualRequest individualRequest) {
         synchronized (LockProvider.getLockObject(this)) {
@@ -45,8 +46,7 @@ public class IndividualController extends AbstractController<Individual> {
         }
     }
 
-    @Transactional
-    public void saveInternal(IndividualRequest individualRequest) {
+    private void saveInternal(IndividualRequest individualRequest) {
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
         logger.info(String.format("Import Individual with UUID %s and with organisation id %s", individual.getUuid(), String.valueOf(individual.getOrganisationId())));

@@ -29,6 +29,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> {
         this.conceptRepository = conceptRepository;
     }
 
+    @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @RequestMapping(value = "/checklistItems", method = RequestMethod.POST)
     public void save(@RequestBody ChecklistItemRequest checklistItemRequest) {
@@ -37,8 +38,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> {
         }
     }
 
-    @Transactional
-    void saveInternal(ChecklistItemRequest checklistItemRequest) {
+    private void saveInternal(ChecklistItemRequest checklistItemRequest) {
         ChecklistItem checklistItem = newOrExistingEntity(checklistItemRepository, checklistItemRequest, new ChecklistItem());
         checklistItem.setConcept(conceptRepository.findByUuid(checklistItemRequest.getConceptUUID()));
         checklistItem.setCompletionDate(checklistItemRequest.getCompletionDate());
