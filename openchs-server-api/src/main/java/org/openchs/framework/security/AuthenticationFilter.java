@@ -3,6 +3,8 @@ package org.openchs.framework.security;
 import org.openchs.domain.UserContext;
 import org.openchs.service.UserContextService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
