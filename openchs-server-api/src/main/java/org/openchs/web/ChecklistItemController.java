@@ -5,7 +5,6 @@ import org.openchs.dao.ChecklistRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
-import org.openchs.util.LockProvider;
 import org.openchs.web.request.application.ChecklistItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,12 +32,6 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> {
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @RequestMapping(value = "/checklistItems", method = RequestMethod.POST)
     public void save(@RequestBody ChecklistItemRequest checklistItemRequest) {
-        synchronized (LockProvider.getLockObject(this)) {
-            saveInternal(checklistItemRequest);
-        }
-    }
-
-    private void saveInternal(ChecklistItemRequest checklistItemRequest) {
         ChecklistItem checklistItem = newOrExistingEntity(checklistItemRepository, checklistItemRequest, new ChecklistItem());
         checklistItem.setConcept(conceptRepository.findByUuid(checklistItemRequest.getConceptUUID()));
         checklistItem.setCompletionDate(checklistItemRequest.getCompletionDate());

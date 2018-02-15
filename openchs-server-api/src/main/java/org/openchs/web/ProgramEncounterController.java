@@ -3,7 +3,6 @@ package org.openchs.web;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.service.ObservationService;
-import org.openchs.util.LockProvider;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,12 +32,6 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ProgramEncounterRequest request) {
-        synchronized (LockProvider.getLockObject(this)) {
-            saveInternal(request);
-        }
-    }
-
-    private void saveInternal(@RequestBody ProgramEncounterRequest request) {
         EncounterType encounterType = (EncounterType) ReferenceDataRepositoryImpl.findReferenceEntity(encounterTypeRepository, request.getEncounterType(), request.getEncounterTypeUUID());
 
         ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());

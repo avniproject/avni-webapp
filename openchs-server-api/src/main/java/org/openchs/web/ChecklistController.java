@@ -3,7 +3,6 @@ package org.openchs.web;
 import org.openchs.dao.ChecklistRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.Checklist;
-import org.openchs.util.LockProvider;
 import org.openchs.web.request.ChecklistRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,12 +28,6 @@ public class ChecklistController extends AbstractController<Checklist> {
     @RequestMapping(value = "/checklists", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ChecklistRequest checklistRequest) {
-        synchronized (LockProvider.getLockObject(this)) {
-            saveInternal(checklistRequest);
-        }
-    }
-
-    private void saveInternal(ChecklistRequest checklistRequest) {
         Checklist checklist = newOrExistingEntity(checklistRepository, checklistRequest, new Checklist());
         checklist.setName(checklistRequest.getName());
         checklist.setProgramEnrolment(programEnrolmentRepository.findByUuid(checklistRequest.getProgramEnrolmentUUID()));

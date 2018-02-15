@@ -6,7 +6,7 @@ import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
-import org.openchs.util.LockProvider;
+import org.openchs.excel.ExcelImporter;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
 import org.openchs.service.ObservationService;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import java.util.logging.Logger;
 
 @RestController
 public class IndividualController extends AbstractController<Individual> {
@@ -41,12 +42,6 @@ public class IndividualController extends AbstractController<Individual> {
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody IndividualRequest individualRequest) {
-        synchronized (LockProvider.getLockObject(this)) {
-            saveInternal(individualRequest);
-        }
-    }
-
-    private void saveInternal(IndividualRequest individualRequest) {
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
         logger.info(String.format("Import Individual with UUID %s and with organisation id %s", individual.getUuid(), String.valueOf(individual.getOrganisationId())));

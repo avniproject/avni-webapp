@@ -6,7 +6,6 @@ import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
-import org.openchs.util.LockProvider;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +36,6 @@ public class EncounterController extends AbstractController<Encounter> {
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     void save(@RequestBody EncounterRequest encounterRequest) {
-        synchronized (LockProvider.getLockObject(this)) {
-            saveInternal(encounterRequest);
-        }
-    }
-
-    private void saveInternal(@RequestBody EncounterRequest encounterRequest) {
         EncounterType encounterType = encounterTypeRepository.findByUuid(encounterRequest.getEncounterTypeUUID());
         Individual individual = individualRepository.findByUuid(encounterRequest.getIndividualUUID());
 

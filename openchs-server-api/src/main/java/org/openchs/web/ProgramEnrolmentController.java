@@ -9,7 +9,6 @@ import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.domain.ProgramOutcome;
 import org.openchs.service.ObservationService;
-import org.openchs.util.LockProvider;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,12 +40,6 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
-        synchronized (LockProvider.getLockObject(this)) {
-            saveInternal(request);
-        }
-    }
-
-    private void saveInternal(ProgramEnrolmentRequest request) {
         Program program;
         if (request.getProgramUUID() == null) {
             program = programRepository.findByName(request.getProgram());
