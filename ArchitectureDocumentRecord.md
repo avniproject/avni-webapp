@@ -10,3 +10,20 @@ Performance wise there are following concerns
 3. The device shouldn't timeout too much when loading the data
 
 The page size designed keeping all the three concerns above. Too small page size will cause 2 and too large page size could cause 1 & 3.
+
+
+### Concurrent sync issues and their resolution
+
+#### Issue
+When multiple users belonging to the same organisation, and responsible for the same 
+set of address levels sync, at that time there can be a discrepancy between the 
+data pulled by one device from a given last_modified_date_time, the actual data 
+which belongs in that bracket, because of delay of flush of certain entities with applicable timestamp
+being pushed into the database by the other device. This will cause those entities to 
+remain unsynced for ever on the other device forever.
+
+
+#### Resolution
+The pull of data is bounded from the parameterised last_modified_date_time passed
+and the current time minus 10 seconds. The practical assumption here is that any flush 
+will be completed in a period of 10 seconds.  
