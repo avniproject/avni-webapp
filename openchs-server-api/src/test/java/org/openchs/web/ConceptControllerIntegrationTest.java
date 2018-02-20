@@ -33,13 +33,6 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
             Concept naConcept = conceptRepository.findByUuid("b82d4ed8-6e9f-4c67-bfdc-b1a04861bc20");
             assertThat(naConcept).isNotNull();
             assertThat(naConcept.getName()).isEqualTo("NA concept");
-
-
-            assertThat(conceptRepository.findByUuid("c4e3facf-7594-434b-80d9-01b694758afc")).isNotNull();
-            Concept voidedConcept = conceptRepository.findByUuid("31f1d3e9-d1e0-4645-947f-8b9fcaa17e01");
-            assertThat(voidedConcept).isNotNull();
-            assertThat(voidedConcept.isVoided()).isTrue();
-
         } catch (IOException e) {
             Assert.fail();
         }
