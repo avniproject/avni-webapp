@@ -1,0 +1,85 @@
+package org.openchs.web;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openchs.common.AbstractControllerIntegrationTest;
+import org.openchs.dao.EncounterRepository;
+import org.openchs.domain.Encounter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
+
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@Sql(value = {"/test-data.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = {"/tear-down.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+public class EncounterControllerIntegrationTest extends AbstractControllerIntegrationTest {
+
+    @Autowired
+    private EncounterRepository encounterRepository;
+
+    private String ENCOUNTER_UUID = "fbfd4ce8-b03b-45b9-b919-1ef8a0d9651e";
+
+    @Test
+    public void createNewEncounter() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/newEncounter.json"), Object.class);
+            template.postForEntity("/encounters", json, Void.class);
+
+            Encounter newEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
+            assertThat(newEncounter).isNotNull();
+
+        } catch (IOException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void voidExistingEncounter() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/newEncounter.json"), Object.class);
+            template.postForEntity("/encounters", json, Void.class);
+
+            Encounter newEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
+            assertThat(newEncounter).isNotNull();
+            assertThat(newEncounter.isVoided()).isFalse();
+
+            json = mapper.readValue(this.getClass().getResource("/ref/encounters/voidedEncounter.json"), Object.class);
+            template.postForEntity("/encounters", json, Void.class);
+
+            Encounter voidedEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
+            assertThat(voidedEncounter).isNotNull();
+            assertThat(voidedEncounter.isVoided()).isTrue();
+
+        } catch (IOException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void unvoidVoidedEncounter() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/voidedEncounter.json"), Object.class);
+            template.postForEntity("/encounters", json, Void.class);
+
+            Encounter voidedEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
+            assertThat(voidedEncounter).isNotNull();
+            assertThat(voidedEncounter.isVoided()).isTrue();
+
+            json = mapper.readValue(this.getClass().getResource("/ref/encounters/newEncounter.json"), Object.class);
+            template.postForEntity("/encounters", json, Void.class);
+
+            Encounter newEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
+            assertThat(newEncounter).isNotNull();
+            assertThat(newEncounter.isVoided()).isFalse();
+
+        } catch (IOException e) {
+            Assert.fail();
+        }
+    }
+}

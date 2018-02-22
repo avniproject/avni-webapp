@@ -44,6 +44,7 @@ public class EncounterController extends AbstractController<Encounter> {
         encounter.setIndividual(individual);
         encounter.setEncounterType(encounterType);
         encounter.setObservations(observationService.createObservations(encounterRequest.getObservations()));
+        encounter.setVoided(encounterRequest.isVoided());
         encounterRepository.save(encounter);
     }
 }

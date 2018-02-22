@@ -26,6 +26,9 @@ public class Encounter extends OrganisationAwareEntity {
     @JoinColumn(name = "individual_id")
     private Individual individual;
 
+    @Column(nullable = false)
+    private boolean isVoided = false;
+
     public EncounterType getEncounterType() {
         return encounterType;
     }
@@ -56,5 +59,13 @@ public class Encounter extends OrganisationAwareEntity {
 
     public void setObservations(ObservationCollection observations) {
         this.observations = observations;
+    }
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        this.isVoided = voided;
     }
 }

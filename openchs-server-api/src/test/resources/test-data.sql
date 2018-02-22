@@ -6,13 +6,15 @@ DELETE FROM encounter;
 DELETE FROM program_encounter;
 DELETE FROM program_enrolment;
 DELETE FROM individual;
-DELETE FROM address_level;
 DELETE FROM program;
 DELETE FROM encounter_type;
 DELETE FROM program_outcome;
 DELETE FROM concept_answer;
 DELETE FROM concept;
 DELETE FROM gender;
+DELETE FROM catchment_address_mapping;
+DELETE FROM address_level;
+DELETE FROM catchment;
 DELETE FROM users;
 DELETE FROM organisation;
 
@@ -22,6 +24,9 @@ INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (2, 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
 
 INSERT INTO users (id, name, uuid, created_date_time, last_modified_date_time, version, organisation_id) VALUES (1, 'openchs', '5fed2907-df3a-4867-aef5-c87f4c78a31a', current_timestamp, current_timestamp, 1, 1);
+
+INSERT INTO catchment(id, name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, organisation_id, type)
+VALUES(1, 'CatchmentX', '1722e2d4-3ef3-4ea0-a4c8-72090504ec7f', 0, 1, 1, current_timestamp, current_timestamp, 1, 'TypeX');
 
 INSERT INTO gender (id, name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version) VALUES (1, 'Female', 'ad7d1d14-54fd-45a2-86b7-ea329b744484', current_timestamp, current_timestamp, 1, 1, 1);
 INSERT INTO gender (id, name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version) VALUES (2, 'Male', '840de9fb-e565-4d7d-b751-90335ba20490', current_timestamp, current_timestamp, 1, 1, 1);
@@ -139,6 +144,9 @@ VALUES ('Nijhma', 1, 'ae35fe6d-910e-47bd-a0c7-0c10182a4085', 1, 1, 1, current_ti
 INSERT INTO address_level (title, level, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1, 1, 1, current_timestamp, current_timestamp);
 
+INSERT INTO catchment_address_mapping(catchment_id, addresslevel_id, organisation_id)
+VALUES(1,1,1);
+
 ALTER SEQUENCE individual_id_seq RESTART WITH 1;
 INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2, 1, 1, current_timestamp, current_timestamp);
@@ -158,12 +166,12 @@ VALUES (1, 1, '[
 
 ALTER SEQUENCE encounter_id_seq RESTART WITH 1;
 INSERT INTO encounter (individual_id, encounter_type_id, observations, encounter_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-VALUES (1, 1, '[
+VALUES (1, 1, '
   {
     "conceptUUID": "95c4b174-6ce6-4d9a-b223-1f9000b60006",
     "valuePrimitive": 98.9
   }
-]' :: JSONB, current_timestamp, '63a7d615-b965-4830-9dd2-e8f533d9a4e9', 1, 1, 1, current_timestamp, current_timestamp);
+' :: JSONB, current_timestamp, '63a7d615-b965-4830-9dd2-e8f533d9a4e9', 1, 1, 1, current_timestamp, current_timestamp);
 
 INSERT INTO program (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Nutrition', 'ac8cfbcb-39d2-4fcb-b02f-4ef80335f553', 1, 1, 1, current_timestamp, current_timestamp);

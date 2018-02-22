@@ -1,0 +1,14 @@
+{
+  "uuid": "fbfd4ce8-b03b-45b9-b919-1ef8a0d9651e",
+  "encounterTypeUUID": "3a1535d0-81fd-48fc-85b5-dc9da81064a3",
+  "individualUUID": "4378dce3-247e-4393-8dd5-032c6eb0a655",
+  "encounterDateTime": "2018-02-21T17:10:30.000Z",
+  "observations": [
+    {
+      "conceptUUID": "95c4b174-6ce6-4d9a-b223-1f9000b60006",
+      "conceptName": "Temperature",
+      "value": 99.1
+    }
+  ],
+  "voided": true
+}
