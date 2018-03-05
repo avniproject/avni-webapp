@@ -114,7 +114,9 @@ workflows:
       - publish:
           requires:
             - test
-      - deploy
+      - deploy:
+          requires:
+            - publish
 notify:
   webhooks:
     - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
