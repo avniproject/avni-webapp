@@ -378,7 +378,9 @@ BEGIN
     gender       VARCHAR,
     address_type VARCHAR
   ) ON COMMIT DROP', separator);
+
   -- Store filtered query into a temporary variable
+
 
   EXECUTE FORMAT('INSERT INTO query_output_%s (uuid, gender_name, address_type, address_name) %s', separator,
                  frequency_query);
@@ -421,11 +423,35 @@ BEGIN
                                                  WHERE (ag2.address_type = ag1.address_type AND ag2.gender != ''Total'')))
                                    * 100), 2), 100)', separator, separator);
 
+  EXECUTE FORMAT('INSERT INTO aggregates_%s (total, percentage, address_type, gender)
+                        SELECT 0, 0, atname, gname from (
+                            SELECT DISTINCT type atname,
+                            name gname
+                          FROM address_level, gender
+                          WHERE name != ''Other''
+                          UNION ALL
+                          SELECT
+                            ''All'' atname,
+                            name gname
+                          FROM gender
+                          WHERE name != ''Other''
+                          UNION ALL
+                          SELECT DISTINCT
+                            type atname,
+                            ''Total'' gname
+                          FROM address_level
+                          UNION ALL
+                          SELECT
+                            ''All'' atname,
+                            ''Total'' gname) as agt where (atname, gname) not in (select address_type, gender from aggregates_%s)',
+                 separator, separator);
+
   RETURN QUERY EXECUTE format('SELECT *
                FROM aggregates_%s order by address_type, gender', separator);
 END
 $$
 LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION frequency_and_percentage(frequency_query TEXT, denominator_query TEXT)
   RETURNS TABLE(total BIGINT, percentage FLOAT, gender VARCHAR, address_type VARCHAR) AS $$
@@ -538,6 +564,29 @@ BEGIN
                         ON ag2.address_type = dag1.address_type AND ag2.gender = dag1.gender
                     WHERE ag2.address_type = ag1.address_type AND ag2.gender = ag1.gender
                     LIMIT 1)', separator, separator, separator);
+
+  EXECUTE FORMAT('INSERT INTO aggregates_%s (total, percentage, address_type, gender)
+                        SELECT 0, 0, atname, gname from (
+                            SELECT DISTINCT type atname,
+                            name gname
+                          FROM address_level, gender
+                          WHERE name != ''Other''
+                          UNION ALL
+                          SELECT
+                            ''All'' atname,
+                            name gname
+                          FROM gender
+                          WHERE name != ''Other''
+                          UNION ALL
+                          SELECT DISTINCT
+                            type atname,
+                            ''Total'' gname
+                          FROM address_level
+                          UNION ALL
+                          SELECT
+                            ''All'' atname,
+                            ''Total'' gname) as agt where (atname, gname) not in (select address_type, gender from aggregates_%s)',
+                 separator, separator);
 
   RETURN QUERY EXECUTE format('SELECT *
                FROM aggregates_%s order by address_type, gender', separator);
