@@ -1,0 +1,12 @@
+{
+  "uuid": "0a1bf764-4576-4d71-b8ec-25895a113e81",
+  "firstName": "Ramesh",
+  "lastName": "Gond",
+  "dateOfBirth": "1997-08-21",
+  "dateOfBirthVerified": false,
+  "gender": "Male",
+  "addressLevelUUID": "ae35fe6d-910e-47bd-a0c7-0c10182a4085",
+  "registrationDate": "2018-03-06",
+  "observations": [],
+  "voided": true
+}

@@ -45,6 +45,9 @@ public class Individual extends OrganisationAwareEntity {
     @Type(type = "observations")
     private ObservationCollection observations;
 
+    @Column(nullable = false)
+    private boolean isVoided = false;
+
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
@@ -139,5 +142,13 @@ public class Individual extends OrganisationAwareEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        this.isVoided = voided;
     }
 }

@@ -58,6 +58,7 @@ public class IndividualController extends AbstractController<Individual> {
         individual.setAddressLevel(addressLevel);
         individual.setGender(gender);
         individual.setRegistrationDate(individualRequest.getRegistrationDate());
+        individual.setVoided(individualRequest.isVoided());
         return individual;
     }
 
