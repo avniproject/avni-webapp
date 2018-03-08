@@ -71,23 +71,29 @@ public class CatchmentController {
     }
 
     private void createMasterCatchment(List<Catchment> catchments, Organisation organisation) {
-        Catchment masterCatchment = new Catchment();
+        Catchment masterCatchment = saveOrUpdateMasterCatchment(catchments, organisation);
+
+        updateAddressLevelsOfMasterCatchment(catchments, masterCatchment);
+    }
+
+    private void updateAddressLevelsOfMasterCatchment(List<Catchment> catchments, Catchment masterCatchment) {
         List<AddressLevel> allAddressLevels = catchments.stream()
                 .map(Catchment::getAddressLevels)
                 .flatMap(x -> x.stream())
                 .collect(Collectors.toList());
         allAddressLevels.forEach(addressLevel -> masterCatchment.addAddressLevel(addressLevel));
+        addressLevelRepository.save(allAddressLevels);
+    }
+
+    private Catchment saveOrUpdateMasterCatchment(List<Catchment> catchments, Organisation organisation) {
         String masterCatchmentName = String.format("%s Master Catchment", organisation.getName());
+        Catchment existingMasterCatchment = catchmentRepository.findByName(masterCatchmentName);
+        Catchment masterCatchment = existingMasterCatchment == null? new Catchment(): existingMasterCatchment;
         masterCatchment.setName(masterCatchmentName);
         masterCatchment.setType(catchments.get(0).getType());
-        Catchment existingMasterCatchment = catchmentRepository.findByName(masterCatchmentName);
-        if (existingMasterCatchment != null) {
-            existingMasterCatchment.setAddressLevels(masterCatchment.getAddressLevels());
-            catchmentRepository.save(existingMasterCatchment);
-        } else {
-            masterCatchment.setUuid(UUID.randomUUID().toString());
-            catchmentRepository.save(masterCatchment);
-        }
+        masterCatchment.assignUUIDIfRequired();
+        catchmentRepository.save(masterCatchment);
+        return masterCatchment;
     }
 
     private void addOrUpdateAddressLevels(CatchmentContract catchmentRequest, Catchment catchment) {

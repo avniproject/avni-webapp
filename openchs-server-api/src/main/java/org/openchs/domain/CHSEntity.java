@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.persistence.Id;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
+import java.util.Random;
 import java.util.UUID;
 
 @MappedSuperclass
@@ -91,6 +92,10 @@ public class CHSEntity {
 
     public void assignUUID() {
         this.uuid = UUID.randomUUID().toString();
+    }
+
+    public void assignUUIDIfRequired() {
+        if (this.uuid == null) this.assignUUID();
     }
 
     public int getVersion() {

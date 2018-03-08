@@ -7,15 +7,9 @@
       "type": "Intervention Area",
       "addressLevels": [
         {
-          "uuid": "293203b7-b0f8-4ff3-84bb-0757344924fc",
-          "level": 1,
-          "name": "Ghotpadi Boarding School",
-          "type": "Boarding"
-        },
-        {
           "uuid": "9fbe6eea-9f8b-4277-834d-658174213937",
           "level": 1,
-          "name": "Bhatpar School",
+          "name": "Bhatpar School Updated",
           "type": "School"
         },
         {
