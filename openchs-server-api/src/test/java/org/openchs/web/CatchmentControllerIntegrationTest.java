@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.bytecode.stackmap.BasicBlock;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 
@@ -40,6 +40,12 @@ public class CatchmentControllerIntegrationTest extends AbstractControllerIntegr
 
             List<AddressLevel> addressLevels = addressLevelRepository.findByCatchments(ghotpadi);
             assertThat(addressLevels.size()).isEqualTo(5);
+
+            Catchment masterCatchment = catchmentRepository.findByName("demo Master Catchment");
+            assertThat(masterCatchment).isNotNull();
+
+            List<AddressLevel> allAddressLevels = addressLevelRepository.findByCatchments(masterCatchment);
+            assertThat(allAddressLevels.size()).isEqualTo(27);
         } catch (IOException e) {
             Assert.fail();
         }
