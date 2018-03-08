@@ -46,7 +46,7 @@ public class CatchmentController {
         for (CatchmentContract catchmentRequest : catchmentsContract.getCatchments()) {
             logger.info(String.format("Processing catchment request: %s", catchmentRequest.toString()));
 
-            if (conceptExistsWithSameNameAndDifferentUUID(catchmentRequest)) {
+            if (catchmentExistsWithSameNameAndDifferentUUID(catchmentRequest)) {
                 throw new RuntimeException(String.format("Catchment %s exists with different uuid", catchmentRequest.getName()));
             }
 
@@ -132,7 +132,7 @@ public class CatchmentController {
         return catchment;
     }
 
-    private boolean conceptExistsWithSameNameAndDifferentUUID(CatchmentContract catchmentRequest) {
+    private boolean catchmentExistsWithSameNameAndDifferentUUID(CatchmentContract catchmentRequest) {
         Catchment catchment = catchmentRepository.findByName(catchmentRequest.getName());
         return catchment != null && !catchment.getUuid().equals(catchmentRequest.getUuid());
     }
