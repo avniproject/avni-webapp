@@ -3,6 +3,7 @@ package org.openchs.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javassist.bytecode.stackmap.BasicBlock;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.dao.AddressLevelRepository;
@@ -19,6 +20,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql({"/test-data.sql"})
+@Ignore
 public class CatchmentControllerIntegrationTest extends AbstractControllerIntegrationTest {
 
     @Autowired
