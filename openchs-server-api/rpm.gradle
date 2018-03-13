@@ -16,6 +16,7 @@ ospackage {
     signingKeyPassphrase("$System.env.KEY_PASSWORD")
 
 
+    conflicts("java-1.7.0-openjdk")
     requires("java-1.8.0-openjdk")
     preInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/preInstall.sh")
     postInstall file("${project.rootProject.rootDir}/infra/rpm/scripts/postInstall.sh")
