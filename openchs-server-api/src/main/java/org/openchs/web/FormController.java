@@ -9,6 +9,7 @@ import org.openchs.dao.application.FormElementGroupRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.ConceptService;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ConceptContract;
@@ -86,6 +87,18 @@ public class FormController {
                 .withType(formRequest.getFormType())
                 .withUUID(formRequest.getUuid())
                 .addFormElementGroups(formRequest.getFormElementGroups())
+                .build();
+        formRepository.save(form);
+    }
+
+    @RequestMapping(value = "/forms", method = RequestMethod.DELETE)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    public void remove(@RequestBody FormContract formRequest) {
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        Form existingForm = formRepository.findByUuid(formRequest.getUuid());
+        FormBuilder formBuilder = new FormBuilder(existingForm);
+        Form form = formBuilder.withoutFormElements(organisation, formRequest.getFormElementGroups())
                 .build();
         formRepository.save(form);
     }

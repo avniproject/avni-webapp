@@ -3,6 +3,8 @@ package org.openchs.builder;
 import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
+import org.openchs.domain.Organisation;
+import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.FormElementContract;
 
 import java.util.List;
@@ -63,6 +65,18 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
     public FormElementGroupBuilder addFormElements(List<FormElementContract> formElementContracts) {
         Set<FormElement> formElements = makeFormElements(formElementContracts);
         this.get().addFormElements(formElements);
+        return this;
+    }
+
+    public FormElementGroupBuilder withoutFormElements(Organisation organisation, List<FormElementContract> formElementContracts) {
+        List<String> formElementUUIDs = formElementContracts.stream().map(CHSRequest::getUuid).collect(Collectors.toList());
+        Set<FormElement> formElements = this.get().getFormElements().stream().map((formElement -> {
+            if (formElementUUIDs.contains(formElement.getUuid())) {
+                formElement.addNonApplicableOrganisations(organisation);
+            }
+            return formElement;
+        })).collect(Collectors.toSet());
+        this.get().setFormElements(formElements);
         return this;
     }
 }

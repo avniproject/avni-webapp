@@ -2,10 +2,13 @@ package org.openchs.application;
 
 import org.hibernate.annotations.Type;
 import org.openchs.domain.Concept;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "form_element")
@@ -35,6 +38,12 @@ public class FormElement extends OrganisationAwareEntity {
 
     @Column(name = "type", nullable = true)
     private String type;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "non_applicable_form_element",
+            joinColumns = @JoinColumn(name = "form_element_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "organisation_id", referencedColumnName = "id"))
+    private Set<Organisation> nonApplicableOrganisations = null;
 
     @Embedded
     private Format validFormat;
@@ -109,5 +118,20 @@ public class FormElement extends OrganisationAwareEntity {
 
     public boolean isSingleSelect() {
         return "SingleSelect".equals(this.type);
+    }
+
+    public void setNonApplicableOrganisations(Set<Organisation> nonApplicableOrganisations) {
+        if (nonApplicableOrganisations == null) {
+            nonApplicableOrganisations = new HashSet<>();
+        }
+        this.nonApplicableOrganisations.clear();
+        this.nonApplicableOrganisations.addAll(nonApplicableOrganisations);
+    }
+
+    public void addNonApplicableOrganisations(Organisation organisation) {
+        if (nonApplicableOrganisations == null) {
+            nonApplicableOrganisations = new HashSet<>();
+        }
+        this.nonApplicableOrganisations.add(organisation);
     }
 }
