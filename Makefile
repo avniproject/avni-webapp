@@ -15,7 +15,7 @@ help:
 
 
 define _deploy_schema
-	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ migrate
+	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ -table=schema_version migrate
 endef
 
 
