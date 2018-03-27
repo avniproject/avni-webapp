@@ -5,8 +5,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "concept_answer")
-public class ConceptAnswer extends OrganisationAwareEntity{
-    @NotNull
+public class ConceptAnswer extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "concept_id")
     private Concept concept;
@@ -48,6 +47,10 @@ public class ConceptAnswer extends OrganisationAwareEntity{
         this.order = order;
     }
 
+    public void setOrder(Short order) {
+        this.order = order.shortValue();
+    }
+
     @Override
     public String toString() {
         return "ConceptAnswer{" +
@@ -65,11 +68,19 @@ public class ConceptAnswer extends OrganisationAwareEntity{
         this.abnormal = abnormal;
     }
 
+    public void setAbnormal(Boolean abnormal) {
+        this.abnormal = abnormal.booleanValue();
+    }
+
     public boolean isVoided() {
         return isVoided;
     }
 
     public void setVoided(boolean voided) {
         isVoided = voided;
+    }
+
+    public void setVoided(Boolean voided) {
+        isVoided = voided.booleanValue();
     }
 }

@@ -2,7 +2,12 @@
   {
     "name": "NA concept",
     "uuid": "b82d4ed8-6e9f-4c67-bfdc-b1a04861bc20",
-    "dataType": "N/A"
+    "dataType": "NA"
+  },
+  {
+    "name": "An answer",
+    "uuid": "90e44d61-97c3-471d-964d-44b2488d0204",
+    "dataType": "NA"
   },
   {
     "name": "Coded concept",
@@ -12,7 +17,7 @@
       {
         "name": "An answer",
         "uuid": "90e44d61-97c3-471d-964d-44b2488d0204",
-        "dataType": "N/A"
+        "dataType": "NA"
       },
       {
         "name": "NA concept",

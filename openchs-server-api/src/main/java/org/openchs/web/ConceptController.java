@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
+import org.openchs.service.ConceptService;
 import org.openchs.web.request.ConceptContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +22,12 @@ import java.util.List;
 public class ConceptController {
     private final Logger logger;
     private ConceptRepository conceptRepository;
+    private ConceptService conceptService;
 
     @Autowired
-    public ConceptController(ConceptRepository conceptRepository) {
+    public ConceptController(ConceptRepository conceptRepository, ConceptService conceptService) {
         this.conceptRepository = conceptRepository;
+        this.conceptService = conceptService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -32,46 +35,6 @@ public class ConceptController {
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     void save(@RequestBody List<ConceptContract> conceptRequests) {
-        for (ConceptContract conceptRequest : conceptRequests) {
-            logger.info(String.format("Creating concept: %s", conceptRequest.toString()));
-            if (conceptExistsWithSameNameAndDifferentUUID(conceptRequest)) {
-                throw new RuntimeException(String.format("Concept %s exists with different uuid", conceptRequest.getName()));
-            }
-
-            Concept concept = fetchOrCreateConcept(conceptRequest.getUuid());
-
-            concept.setName(conceptRequest.getName());
-            concept.setDataType(conceptRequest.getDataType());
-            concept.setVoided(conceptRequest.isVoided());
-
-            if (ConceptDataType.Numeric.toString().equals(conceptRequest.getDataType())) {
-                new Helper().setNumericSpecificAttributes(conceptRequest, concept);
-            }
-
-            if (ConceptDataType.Coded.toString().equals(conceptRequest.getDataType())) {
-                if (concept.getConceptAnswers() == null) concept.setConceptAnswers(new HashSet<>());
-                new Helper().updateAnswers(concept, conceptRequest.getAnswers(), conceptRepository);
-            }
-            conceptRepository.save(concept);
-        }
-    }
-
-    private Concept fetchOrCreateConcept(String uuid) {
-        Concept concept = conceptRepository.findByUuid(uuid);
-        if (concept == null) {
-            concept = createConcept(uuid);
-        }
-        return concept;
-    }
-
-    private Concept createConcept(String uuid) {
-        Concept concept = new Concept();
-        concept.setUuid(uuid);
-        return concept;
-    }
-
-    private boolean conceptExistsWithSameNameAndDifferentUUID(ConceptContract conceptRequest) {
-        Concept concept = conceptRepository.findByName(conceptRequest.getName());
-        return concept != null && !concept.getUuid().equals(conceptRequest.getUuid());
+        conceptRequests.forEach(conceptService::saveOrUpdate);
     }
 }

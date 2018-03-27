@@ -8,24 +8,24 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FormElementGroupContract extends ReferenceDataContract {
-    private short displayOrder;
+    private Double displayOrder;
     private String display;
     private List<FormElementContract> formElements;
 
     public FormElementGroupContract() {
     }
 
-    public FormElementGroupContract(String uuid, String userUUID, String name, short displayOrder) {
+    public FormElementGroupContract(String uuid, String userUUID, String name, Double displayOrder) {
         super(uuid, userUUID, name);
         this.displayOrder = displayOrder;
         formElements = new ArrayList<>();
     }
 
-    public short getDisplayOrder() {
+    public Double getDisplayOrder() {
         return displayOrder;
     }
 
-    public void setDisplayOrder(short displayOrder) {
+    public void setDisplayOrder(Double displayOrder) {
         this.displayOrder = displayOrder;
     }
 

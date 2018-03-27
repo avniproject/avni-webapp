@@ -1,37 +1,35 @@
-package org.openchs.builder;
+package org.openchs.common.builder;
 
 import org.openchs.web.request.ConceptContract;
-import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.application.FormElementContract;
-import org.openchs.web.request.application.FormElementGroupContract;
 
-public class FormElementBuilder {
+public class TestFormElementBuilder {
     private final FormElementContract formElement;
 
-    public FormElementBuilder() {
+    public TestFormElementBuilder() {
         formElement = new FormElementContract();
         formElement.setMandatory(false);
         formElement.setType("SingleSelect");
-        formElement.setDisplayOrder((short) 1);
+        formElement.setDisplayOrder(1.1);
         formElement.setValidFormat(null);
     }
 
-    public FormElementBuilder withName(String name) {
+    public TestFormElementBuilder withName(String name) {
         formElement.setName(name);
         return this;
     }
 
-    public FormElementBuilder withUUID(String uuid) {
+    public TestFormElementBuilder withUUID(String uuid) {
         formElement.setUuid(uuid);
         return this;
     }
 
-    public FormElementBuilder withConcept(ConceptContract conceptContract) {
+    public TestFormElementBuilder withConcept(ConceptContract conceptContract) {
         formElement.setConcept(conceptContract);
         return this;
     }
 
-    public FormElementBuilder isMandatory() {
+    public TestFormElementBuilder isMandatory() {
         formElement.setMandatory(true);
         return this;
     }

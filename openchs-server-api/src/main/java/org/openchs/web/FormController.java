@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.openchs.application.*;
+import org.openchs.builder.FormBuilder;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramRepository;
@@ -8,6 +9,7 @@ import org.openchs.dao.application.FormElementGroupRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
+import org.openchs.service.ConceptService;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormatContract;
@@ -42,54 +44,50 @@ public class FormController {
     private ProgramRepository programRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private final FormMappingRepository formMappingRepository;
-    private ConceptRepository conceptRepository;
-    private FormElementGroupRepository formElementGroupRepository;
     private RepositoryEntityLinks entityLinks;
 
     @Autowired
-    public FormController(FormRepository formRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository, ConceptRepository conceptRepository, FormElementGroupRepository formElementGroupRepository,
+    public FormController(FormRepository formRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository,
                           RepositoryEntityLinks entityLinks) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
-        this.conceptRepository = conceptRepository;
-        this.formElementGroupRepository = formElementGroupRepository;
         this.entityLinks = entityLinks;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    //update scenario
     @RequestMapping(value = "/forms", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     void save(@RequestBody FormContract formRequest) {
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
+        Form existingForm = formRepository.findByUuid(formRequest.getUuid());
+        FormBuilder formBuilder = new FormBuilder(existingForm);
+        Form form = formBuilder.withName(formRequest.getName())
+                .withType(formRequest.getFormType())
+                .withUUID(formRequest.getUuid())
+                .withFormElementGroups(formRequest.getFormElementGroups())
+                .build();
 
-        Form formFromRepository = formRepository.findByUuid(formRequest.getUuid());
-        final Form form = formFromRepository == null ? Form.create() : formFromRepository;
-        updateFormAttributes(formRequest, form);
-
-        //hack because commit is getting called before end of the method
-        int randomOffsetToAvoidClash = 100;
-        List<FormElementGroupContract> formElementGroupsFromCurrentRequest = formRequest.getFormElementGroups();
-        for (int formElementGroupIndex = 0; formElementGroupIndex < formElementGroupsFromCurrentRequest.size(); formElementGroupIndex++) {
-            FormElementGroupContract formElementGroupRequest = formElementGroupsFromCurrentRequest.get(formElementGroupIndex);
-            FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
-            if (formElementGroup != null) {
-                formElementGroup.setDisplayOrder((short) (getDisplayOrder(formElementGroupIndex, formElementGroupRequest) + randomOffsetToAvoidClash));
-                formElementGroupRepository.save(formElementGroup);
-            }
-        }
-        //end hack
-
-        updateFormElementGroups(form, formElementGroupsFromCurrentRequest);
-
-        formRepository.save(form);
-
+        Form savedForm = formRepository.save(form);
         for (String encounterType : associatedEncounterTypes(formRequest)) {
-            formMappingRepository.save(createOrUpdateFormMapping(formRequest, encounterType, form));
+            formMappingRepository.save(createOrUpdateFormMapping(formRequest, encounterType, savedForm));
         }
+    }
+
+    @RequestMapping(value = "/forms", method = RequestMethod.PATCH)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    public void patch(@RequestBody FormContract formRequest) {
+        Form existingForm = formRepository.findByUuid(formRequest.getUuid());
+        FormBuilder formBuilder = new FormBuilder(existingForm);
+        Form form = formBuilder.withName(formRequest.getName())
+                .withType(formRequest.getFormType())
+                .withUUID(formRequest.getUuid())
+                .addFormElementGroups(formRequest.getFormElementGroups())
+                .build();
+        formRepository.save(form);
     }
 
     private List<String> associatedEncounterTypes(@RequestBody FormContract formRequest) {
@@ -99,16 +97,6 @@ public class FormController {
             associatedEncounterTypeNames.add(formRequest.getName());
         }
         return associatedEncounterTypeNames;
-    }
-
-    private void updateFormAttributes(@RequestBody FormContract formRequest, Form form) {
-        if (formRequest.getUuid() == null) {
-            form.assignUUID();
-        } else {
-            form.setUuid(formRequest.getUuid());
-        }
-        form.setName(formRequest.getName());
-        form.setFormType(FormType.valueOf(formRequest.getFormType()));
     }
 
     private FormMapping createOrUpdateFormMapping(@RequestBody FormContract formRequest, String encounterTypeName, Form form) {
@@ -141,105 +129,6 @@ public class FormController {
         return formMapping;
     }
 
-    private void updateFormElementGroups(Form form, List<FormElementGroupContract> formElementGroupsFromCurrentRequest) {
-        for (int formElementGroupIndex = 0; formElementGroupIndex < formElementGroupsFromCurrentRequest.size(); formElementGroupIndex++) {
-            FormElementGroupContract formElementGroupRequest = formElementGroupsFromCurrentRequest.get(formElementGroupIndex);
-            FormElementGroup formElementGroup = createOrUpdateFormElementGroup(form, formElementGroupIndex, formElementGroupRequest);
-
-            updateFormElements(formElementGroup, formElementGroupRequest.getFormElements());
-        }
-
-        List<String> formElementGroupUUIDs = formElementGroupsFromCurrentRequest.stream().map(CHSRequest::getUuid).collect(Collectors.toList());
-        form.removeFormElementGroups(formElementGroupUUIDs);
-    }
-
-    private FormElementGroup createOrUpdateFormElementGroup(Form form, int formElementGroupIndex, FormElementGroupContract formElementGroupRequest) {
-        FormElementGroup formElementGroup = form.findFormElementGroup(formElementGroupRequest.getUuid());
-        if (formElementGroup == null) {
-            formElementGroup = form.addFormElementGroup(formElementGroupRequest.getUuid());
-        }
-        formElementGroup.setName(formElementGroupRequest.getName());
-        formElementGroup.setDisplay(formElementGroupRequest.getDisplay());
-        formElementGroup.setDisplayOrder(getDisplayOrder(formElementGroupIndex, formElementGroupRequest));
-        return formElementGroup;
-    }
-
-    private void updateFormElements(FormElementGroup formElementGroup, List<FormElementContract> formElementsFromCurrentRequest) {
-        for (int formElementIndex = 0; formElementIndex < formElementsFromCurrentRequest.size(); formElementIndex++) {
-            FormElementContract formElementRequest = formElementsFromCurrentRequest.get(formElementIndex);
-            ValidationResult validationResult = formElementRequest.validate();
-            if (validationResult.isFailure()) {
-                throw new ValidationException(validationResult.getMessage());
-            }
-            createOrUpdateFormElement(formElementGroup, formElementIndex, formElementRequest);
-
-            removeUnwantedFormElements(formElementGroup, formElementsFromCurrentRequest);
-        }
-    }
-
-    private void removeUnwantedFormElements(FormElementGroup formElementGroup, List<FormElementContract> formElementsFromCurrentRequest) {
-        List<String> formElementUUIDs = formElementsFromCurrentRequest.stream().map(CHSRequest::getUuid).collect(Collectors.toList());
-        formElementGroup.removeFormElements(formElementUUIDs);
-    }
-
-    private void createOrUpdateFormElement(FormElementGroup formElementGroup, int formElementIndex, FormElementContract formElementRequest) {
-
-        Concept concept = getConcept(formElementRequest);
-
-        FormElement formElement = formElementGroup.findFormElement(formElementRequest.getUuid());
-        if (formElement == null) {
-            formElement = formElementGroup.addFormElement(formElementRequest.getUuid());
-        }
-        formElement.setName(formElementRequest.getName());
-        formElement.setDisplayOrder(formElementRequest.getDisplayOrder() == 0 ? (short) (formElementIndex + 1) : formElementRequest.getDisplayOrder());
-        formElement.setFormElementGroup(formElementGroup);
-        formElement.setMandatory(formElementRequest.isMandatory());
-        formElement.setKeyValues(formElementRequest.getKeyValues());
-        formElement.setConcept(concept);
-        formElement.setType(formElementRequest.getType());
-        if (formElementRequest.getValidFormat() != null) {
-            formElement.setValidFormat(new Format(formElementRequest.getValidFormat().getRegex(),
-                    formElementRequest.getValidFormat().getDescriptionKey()));
-        }
-
-    }
-
-    private Concept getConcept(FormElementContract formElementRequest) {
-        Concept concept;
-        if (formElementRequest.getConceptUUID() != null) {
-            concept = conceptRepository.findByUuid(formElementRequest.getConceptUUID());
-            if (concept == null) {
-                throw new ValidationException(String.format("A concept referred in form is not found %s", formElementRequest.getConceptUUID()));
-            }
-        } else {
-            concept = createOrUpdateConcept(formElementRequest.getConcept());
-        }
-        return concept;
-    }
-
-    private Concept createOrUpdateConcept(ConceptContract conceptFromRequest) {
-        String conceptUUID = conceptFromRequest.getUuid();
-        Concept concept = conceptRepository.findByUuid(conceptUUID);
-        if (concept == null) {
-            concept = Concept.create(conceptFromRequest.getName(), conceptFromRequest.getDataType(), conceptUUID);
-        } else {
-            concept.setName(conceptFromRequest.getName());
-            concept.setDataType(conceptFromRequest.getDataType());
-        }
-        if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
-            new Helper().updateAnswers(concept, conceptFromRequest.getAnswers(), conceptRepository);
-        }
-        if (ConceptDataType.Numeric.toString().equals(concept.getDataType())) {
-            new Helper().setNumericSpecificAttributes(conceptFromRequest, concept);
-        }
-        conceptRepository.save(concept);
-        return concept;
-    }
-
-
-    private short getDisplayOrder(int formElementGroupIndex, FormElementGroupContract formElementGroupRequest) {
-        return formElementGroupRequest.getDisplayOrder() == 0 ? (short) (formElementGroupIndex + 1) : formElementGroupRequest.getDisplayOrder();
-    }
 
     @RequestMapping(value = "/forms/export", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
@@ -261,11 +150,11 @@ public class FormController {
 
         FormContract formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString(), programName, encounterTypeNames);
 
-        form.getFormElementGroups().stream().sorted(Comparator.comparingInt(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
+        form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
             formElementGroupContract.setDisplay(formElementGroup.getDisplay());
             formContract.addFormElementGroup(formElementGroupContract);
-            formElementGroup.getFormElements().stream().sorted(Comparator.comparingInt(FormElement::getDisplayOrder)).forEach(formElement -> {
+            formElementGroup.getFormElements().stream().sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
                 FormElementContract formElementContract = new FormElementContract();
                 formElementContract.setUuid(formElement.getUuid());
                 formElementContract.setName(formElement.getName());
@@ -304,14 +193,14 @@ public class FormController {
     }
 
     /**
-     * Example of a request URL: http://localhost:8021/forms/program/1?page=3&size=1
+     * Example of a request URL: /forms/program/1?page=3&size=1
      * Links added are:
      * <ol>
-     * <li>self: http://localhost:8021/forms/program/1</li>
-     * <li>form: http://localhost:8021/form/7</li>
-     * <li>formElementGroups: http://localhost:8021/form/7/formElementGroups</li>
-     * <li>createdBy: http://localhost:8021/user/1</li>
-     * <li>lastModifiedBy: http://localhost:8021/user/1</li>
+     * <li>self: /forms/program/1</li>
+     * <li>form: /form/7</li>
+     * <li>formElementGroups: /form/7/formElementGroups</li>
+     * <li>createdBy: /user/1</li>
+     * <li>lastModifiedBy: /user/1</li>
      * </ol>
      */
     @RequestMapping(value = "/forms/program/{programId}", method = RequestMethod.GET)

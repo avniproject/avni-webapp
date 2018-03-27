@@ -7,7 +7,7 @@ import org.openchs.domain.ConceptDataType;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "name", "uuid", "dataType", "answers", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit"})
+@JsonPropertyOrder({"name", "uuid", "dataType", "answers", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit"})
 public class ConceptContract extends ReferenceDataContract {
     private String dataType;
     private List<ConceptContract> answers;
@@ -21,6 +21,10 @@ public class ConceptContract extends ReferenceDataContract {
 
     public String getDataType() {
         return dataType == null ? null : dataType.trim();
+    }
+
+    public String getDefaultDataType() {
+        return dataType == null ? ConceptDataType.NA.name() : dataType.trim();
     }
 
     public boolean isCoded() {

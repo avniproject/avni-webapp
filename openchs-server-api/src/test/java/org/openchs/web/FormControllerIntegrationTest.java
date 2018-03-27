@@ -1,31 +1,51 @@
 package org.openchs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.map.LinkedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
+import org.hibernate.Hibernate;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.openchs.application.Form;
+import org.openchs.application.FormElement;
+import org.openchs.application.FormElementGroup;
 import org.openchs.application.FormMapping;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementGroupRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.application.FormMappingRepository;
+import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
+import org.openchs.framework.security.AuthenticationFilter;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.application.FormContract;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @Sql({"/test-data.sql"})
 public class FormControllerIntegrationTest extends AbstractControllerIntegrationTest {
@@ -37,7 +57,10 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
     @Autowired
     private FormElementRepository formElementRepository;
-    
+
+    @Autowired
+    private FormRepository formRepository;
+
     @Autowired
     private FormElementGroupRepository formElementGroupRepository;
 
@@ -53,6 +76,16 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         template.postForEntity("/programs", getJson("/ref/program.json"), Void.class);
         template.postForEntity("/concepts", getJson("/ref/concepts.json"), Void.class);
         template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        template.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "OpenCHS");
+                    return execution.execute(request, body);
+                }));
     }
 
     @Test
@@ -74,7 +107,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     }
 
     @Test
-    public void renameExistingAnswerInFormElement() throws IOException {
+    public void renameOfAnswersViaFormElements() throws IOException {
         ResponseEntity<FormContract> formResponse = template
                 .getForEntity(String.format("/forms/export?formUUID=%s", "0c444bf3-54c3-41e4-8ca9-f0deb8760831"),
                         FormContract.class);
@@ -177,6 +210,98 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
             }
 
         });
+    }
 
+    @Test
+    public void abilityToAddFormElementsForOnlyAnOrganisationToAnExistingFormElementGroup() throws IOException {
+        template.postForEntity("/forms", getJson("/ref/demo/originalForm.json"), Void.class);
+        FormElementGroup formElementGroup = formElementGroupRepository.findByUuid("dd37cacf-c628-457e-b474-01c4966a473c");
+        Hibernate.initialize(formElementGroup.getFormElements());
+        assertEquals(2, formElementGroup.getFormElements().size());
+        template.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "demo");
+                    return execution.execute(request, body);
+                }));
+        template.patchForObject("/forms", getJson("/ref/demo/originalFormChanges.json"), Void.class, new Object());
+        formElementGroup = formElementGroupRepository.findByUuid("dd37cacf-c628-457e-b474-01c4966a473c");
+        assertEquals(3, formElementGroup.getFormElements().size());
+        List<FormElement> formElements = new ArrayList<>(formElementGroup.getFormElements());
+        formElements.sort(Comparator.comparingDouble(FormElement::getDisplayOrder));
+        FormElement addedFormElement = formElements.get(1);
+        assertEquals("Additional Form Element", addedFormElement.getName());
+        assertEquals("836ceda5-3d09-49f6-aa0b-28512bc2028a", addedFormElement.getUuid());
+        assertEquals(1.1, addedFormElement.getDisplayOrder().doubleValue(), 0);
+        assertEquals("43124c33-898d-42fa-a53d-b4c6fa36c581", addedFormElement.getConcept().getUuid());
+        assertEquals(2, addedFormElement.getOrganisationId().intValue());
+    }
+
+    @Test
+    public void abilityToAddFormElementGroupForOnlyAnOrganisationToAnExistingFormElementGroup() throws IOException {
+        template.postForEntity("/forms", getJson("/ref/demo/originalForm.json"), Void.class);
+        Form form = formRepository.findByUuid("0c444bf3-54c3-41e4-8ca9-f0deb8760831");
+        Hibernate.initialize(form.getFormElementGroups());
+        assertEquals(2, form.getFormElementGroups().size());
+        template.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "demo");
+                    return execution.execute(request, body);
+                }));
+        template.patchForObject("/forms", getJson("/ref/demo/originalNewFormElementGroup.json"), Void.class, new Object());
+        form = formRepository.findByUuid("0c444bf3-54c3-41e4-8ca9-f0deb8760831");
+        assertEquals(3, form.getFormElementGroups().size());
+        ArrayList<FormElementGroup> formElementGroups = new ArrayList<>(form.getFormElementGroups());
+        formElementGroups.sort(Comparator.comparingDouble(FormElementGroup::getDisplayOrder));
+        FormElementGroup formElementGroup = formElementGroups.get(1);
+        assertEquals("Additional Form Element Group", formElementGroup.getName());
+        assertEquals("118a1605-c7df-4942-9666-4c17af585d24", formElementGroup.getUuid());
+        assertEquals(1.1, formElementGroup.getDisplayOrder().doubleValue(), 0);
+        assertEquals(2, formElementGroup.getOrganisationId().intValue());
+    }
+
+    @Test
+    @Ignore
+    public void getAllApplicableFormElementGroupsAndFormElementsForAnOrganisation() throws IOException {
+        template.postForEntity("/forms", getJson("/ref/demo/originalForm.json"), Void.class);
+        Form form = formRepository.findByUuid("0c444bf3-54c3-41e4-8ca9-f0deb8760831");
+        Hibernate.initialize(form.getFormElementGroups());
+        assertEquals(2, form.getFormElementGroups().size());
+        template.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "demo");
+                    return execution.execute(request, body);
+                }));
+        template.patchForObject("/forms", getJson("/ref/demo/originalNewFormElementGroup.json"), Void.class, new Object());
+        form = formRepository.findByUuid("0c444bf3-54c3-41e4-8ca9-f0deb8760831");
+        assertEquals(3, form.getFormElementGroups().size());
+        ArrayList<FormElementGroup> formElementGroups = new ArrayList<>(form.getFormElementGroups());
+        formElementGroups.sort(Comparator.comparingDouble(FormElementGroup::getDisplayOrder));
+        FormElementGroup formElementGroup = formElementGroups.get(1);
+        assertEquals("Additional Form Element Group", formElementGroup.getName());
+        assertEquals("118a1605-c7df-4942-9666-4c17af585d24", formElementGroup.getUuid());
+        assertEquals(1.1, formElementGroup.getDisplayOrder().doubleValue(), 0);
+        assertEquals(2, formElementGroup.getOrganisationId().intValue());
+        MultiValueMap<String, String> uriParams = new LinkedMultiValueMap<>();
+        uriParams.put("catchmentId", Arrays.asList("1"));
+        uriParams.put("lastModifiedDateTime", Arrays.asList("1900-01-01T00:00:00.001Z"));
+        uriParams.put("size", Arrays.asList("100"));
+        uriParams.put("page", Arrays.asList("0"));
+        String path = UriComponentsBuilder.fromPath("/form/search/lastModified").queryParams(uriParams).toUriString();
+        ResponseEntity<LinkedHashMap> formResponse = template.getForEntity(path, LinkedHashMap.class, uriParams);
+        assertEquals(HttpStatus.OK, formResponse.getStatusCode());
+        LinkedHashMap<String, LinkedHashMap<String, List<LinkedHashMap<String, List>>>> formBody = formResponse.getBody();
+        assertEquals(4, formBody.get("_embedded").get("form").get(0).get("allFormElements").size());
+        template.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "a-demo");
+                    return execution.execute(request, body);
+                }));
+        formResponse = template.getForEntity(path, LinkedHashMap.class, uriParams);
+        assertEquals(HttpStatus.OK, formResponse.getStatusCode());
+        assertEquals(3, formBody.get("_embedded").get("form").get(0).get("allFormElements").size());
     }
 }

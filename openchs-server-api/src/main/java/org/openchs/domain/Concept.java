@@ -14,8 +14,8 @@ public class Concept extends OrganisationAwareEntity {
     @NotNull
     private String dataType;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "concept", orphanRemoval = true)
-    private Set<ConceptAnswer> conceptAnswers;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "concept")
+    private Set<ConceptAnswer> conceptAnswers = new HashSet<>();
 
     private Double lowAbsolute;
     private Double highAbsolute;
@@ -89,6 +89,10 @@ public class Concept extends OrganisationAwareEntity {
         isVoided = voided;
     }
 
+    public void setVoided(Boolean voided) {
+        isVoided = voided.booleanValue();
+    }
+
     public static Concept create(String name, String dataType) {
         return create(name, dataType, UUID.randomUUID().toString());
     }
@@ -117,12 +121,26 @@ public class Concept extends OrganisationAwareEntity {
     }
 
     public ConceptAnswer findConceptAnswerByConceptUUID(String answerConceptUUID) {
-        return this.getConceptAnswers().stream().filter(x -> x.getAnswerConcept().getUuid().equals(answerConceptUUID)).findAny().orElse(null);
+        return this.getConceptAnswers().stream()
+                .filter(x -> x.getAnswerConcept().getUuid().equals(answerConceptUUID))
+                .findAny()
+                .orElse(null);
     }
 
     public void addAnswer(ConceptAnswer conceptAnswer) {
-        this.getConceptAnswers().add(conceptAnswer);
         conceptAnswer.setConcept(this);
+        this.getConceptAnswers().add(conceptAnswer);
+    }
+
+    public void addAll(List<ConceptAnswer> conceptAnswers) {
+        conceptAnswers.forEach(conceptAnswer -> conceptAnswer.setConcept(this));
+        List<ConceptAnswer> voidedCAs = this.getConceptAnswers().stream()
+                .filter(cA -> !conceptAnswers.contains(cA))
+                .peek(cA -> cA.setVoided(true))
+                .collect(Collectors.toList());
+        this.getConceptAnswers().clear();
+        this.getConceptAnswers().addAll(conceptAnswers);
+        this.getConceptAnswers().addAll(voidedCAs);
     }
 
     public void voidOrphanedConceptAnswers(List<String> answerConceptUUIDs) {
@@ -157,7 +175,7 @@ public class Concept extends OrganisationAwareEntity {
             Concept answerConcept = this.findAnswerConcept((String) value);
             if (answerConcept == null)
                 throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", value, this.name));
-            return isSingleSelect? answerConcept.getUuid(): Arrays.asList(answerConcept.getUuid());
+            return isSingleSelect ? answerConcept.getUuid() : Arrays.asList(answerConcept.getUuid());
         }
         return value;
     }

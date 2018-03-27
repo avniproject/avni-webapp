@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "name": "Yes, started",
+    "uuid": "28e76608-dddd-4914-bd44-3689eccfa5ca",
+    "dataType": "NA"
+  },
+  {
+    "name": "Yes, but could not attend",
+    "uuid": "9715936e-03f2-44da-900f-33588fe95250",
+    "dataType": "NA"
+  },
+  {
+    "name": "No",
+    "uuid": "e7b50c78-3d90-484d-a224-9887887780dc",
+    "dataType": "NA"
+  }
+]

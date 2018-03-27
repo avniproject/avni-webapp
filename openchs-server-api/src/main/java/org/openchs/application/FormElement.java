@@ -14,7 +14,7 @@ public class FormElement extends OrganisationAwareEntity {
     private String name;
 
     @NotNull
-    private short displayOrder;
+    private Double displayOrder;
 
     @NotNull
     private boolean isMandatory;
@@ -23,16 +23,10 @@ public class FormElement extends OrganisationAwareEntity {
     @Type(type = "keyValues")
     private KeyValues keyValues;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @NotNull
     @JoinColumn(name = "concept_id")
     private Concept concept;
-
-    @NotNull
-    private boolean isUsedInSummary;
-
-    @NotNull
-    private boolean isGenerated;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -53,11 +47,11 @@ public class FormElement extends OrganisationAwareEntity {
         this.name = name;
     }
 
-    public short getDisplayOrder() {
+    public Double getDisplayOrder() {
         return displayOrder;
     }
 
-    public void setDisplayOrder(short displayOrder) {
+    public void setDisplayOrder(Double displayOrder) {
         this.displayOrder = displayOrder;
     }
 
@@ -85,20 +79,8 @@ public class FormElement extends OrganisationAwareEntity {
         isMandatory = mandatory;
     }
 
-    public boolean isUsedInSummary() {
-        return isUsedInSummary;
-    }
-
-    public void setUsedInSummary(boolean usedInSummary) {
-        this.isUsedInSummary = usedInSummary;
-    }
-
-    public boolean isGenerated() {
-        return isGenerated;
-    }
-
-    public void setGenerated(boolean generated) {
-        isGenerated = generated;
+    public void setMandatory(Boolean mandatory) {
+        isMandatory = mandatory.booleanValue();
     }
 
     public FormElementGroup getFormElementGroup() {
@@ -115,10 +97,6 @@ public class FormElement extends OrganisationAwareEntity {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public boolean isFormElementNameSameAsConceptName() {
-        return getConcept().getName().equals(getName());
     }
 
     public Format getValidFormat() {

@@ -9,25 +9,25 @@ import org.openchs.web.request.FormatContract;
 import org.openchs.web.validation.ValidationResult;
 import org.springframework.util.StringUtils;
 
+import javax.validation.Valid;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "conceptUUID", "concept", "displayOrder", "type"})
+@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type"})
 public class FormElementContract extends ReferenceDataContract {
     private boolean isMandatory;
     private KeyValues keyValues;
-    private String conceptUUID;
     private ConceptContract concept;
-    private short displayOrder;
+    private Double displayOrder;
     private String type;
     private FormatContract validFormat;
 
     public FormElementContract() {
     }
 
-    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, String conceptName, ConceptContract concept, String type, FormatContract validFormat) {
+    public FormElementContract(String uuid, String userUUID, String name, boolean isMandatory, KeyValues keyValues, ConceptContract concept, String type, FormatContract validFormat) {
         super(uuid, userUUID, name);
         this.isMandatory = isMandatory;
         this.keyValues = keyValues;
-        this.conceptUUID = conceptName;
         this.concept = concept;
         this.type = type;
         this.validFormat = validFormat;
@@ -49,27 +49,18 @@ public class FormElementContract extends ReferenceDataContract {
         this.keyValues = keyValues;
     }
 
-    public String getConceptUUID() {
-        return conceptUUID;
-    }
-
-    public void setConceptUUID(String conceptUUID) {
-        this.conceptUUID = conceptUUID;
-    }
-
-    public short getDisplayOrder() {
+    public Double getDisplayOrder() {
         return displayOrder;
     }
 
-    public void setDisplayOrder(short displayOrder) {
+    public void setDisplayOrder(Double displayOrder) {
         this.displayOrder = displayOrder;
     }
 
     public ValidationResult validate() {
-        if (!canIdentifyConceptUniquely()) {
-            return ValidationResult.Failure("One and only one of conceptUUID or concept can be provided");
+        if (concept == null || concept.getUuid() == null) {
+            return ValidationResult.Failure("Concept UUID Not Provided");
         }
-
         if (concept != null && concept.isCoded() && !typeSpecified())
             return ValidationResult.Failure(String.format("Doesn't specify whether the FormElement=\"%s\" is single or multi select", this.getName()));
 
@@ -78,10 +69,6 @@ public class FormElementContract extends ReferenceDataContract {
 
     private boolean typeSpecified() {
         return type != null;
-    }
-
-    private boolean canIdentifyConceptUniquely() {
-        return this.concept == null ^ StringUtils.isEmpty(conceptUUID);
     }
 
     public ConceptContract getConcept() {
@@ -116,4 +103,6 @@ public class FormElementContract extends ReferenceDataContract {
     public void setValidFormat(FormatContract validFormat) {
         this.validFormat = validFormat;
     }
+
+
 }

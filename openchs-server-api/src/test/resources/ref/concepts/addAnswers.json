@@ -1,5 +1,9 @@
 [
   {
+    "name": "Coded Answer 4",
+    "uuid": "a4e22195-4c2e-4ce0-b3eb-5c095fcb2465"
+  },
+  {
     "name": "Coded Question",
     "uuid": "8d1bc80a-9b20-4dbb-b2f6-5d9cc06350e3",
     "dataType": "Coded",
@@ -7,7 +11,7 @@
       {
         "name": "Coded Answer 1",
         "uuid": "060e474f-4c64-4075-817f-b18564946e96",
-        "dataType": "N/A"
+        "dataType": "NA"
       },
       {
         "name": "Coded Answer 2",

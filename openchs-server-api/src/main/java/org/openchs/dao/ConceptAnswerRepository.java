@@ -1,6 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +19,6 @@ import org.springframework.stereotype.Repository;
 public interface ConceptAnswerRepository extends PagingAndSortingRepository<ConceptAnswer, Long> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<ConceptAnswer> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+
+    ConceptAnswer findByConceptAndAnswerConcept(Concept concept, Concept answerConcept);
 }

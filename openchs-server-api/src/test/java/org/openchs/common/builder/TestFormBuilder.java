@@ -1,32 +1,32 @@
-package org.openchs.builder;
+package org.openchs.common.builder;
 
 import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.application.FormElementGroupContract;
 
-public class FormBuilder {
+public class TestFormBuilder {
 
     private final FormContract form;
 
-    public FormBuilder() {
+    public TestFormBuilder() {
         form = new FormContract();
     }
 
-    public FormBuilder withName(String name) {
+    public TestFormBuilder withName(String name) {
         form.setName(name);
         return this;
     }
 
-    public FormBuilder withUUID(String uuid) {
+    public TestFormBuilder withUUID(String uuid) {
         form.setUuid(uuid);
         return this;
     }
 
-    public FormBuilder ofFormType(String formType) {
+    public TestFormBuilder ofFormType(String formType) {
         form.setFormType(formType);
         return this;
     }
 
-    public FormBuilder addFormElementGroup(FormElementGroupContract formElementGroup) {
+    public TestFormBuilder addFormElementGroup(FormElementGroupContract formElementGroup) {
         form.addFormElementGroup(formElementGroup);
         return this;
     }

@@ -17,7 +17,9 @@ public class FormElementContractValidationTest {
     public void beforeTest() {
         formElementContract = new FormElementContract();
         formElementContract.setName("foo");
-        formElementContract.setConcept(new ConceptContract());
+        ConceptContract concept = new ConceptContract();
+        concept.setUuid("someUuid");
+        formElementContract.setConcept(concept);
         formElementContract.getConcept().setDataType(ConceptDataType.Coded.toString());
         keyValues = new KeyValues();
         formElementContract.setKeyValues(keyValues);
@@ -30,13 +32,17 @@ public class FormElementContractValidationTest {
 
     @Test
     public void validate_form_element_cannot_contain_concept_when_conceptUUID_present() {
-        formElementContract.setConceptUUID("someConceptUUID");
+        ConceptContract concept = new ConceptContract();
+        concept.setUnit("someConceptUUID");
+        formElementContract.setConcept(concept);
         assertEquals(true, formElementContract.validate().isFailure());
     }
 
     @Test
     public void validate_form_element_cannot_contain_empty_concept_and_conceptUUID() {
-        formElementContract.setConceptUUID(null);
+        ConceptContract concept = new ConceptContract();
+        concept.setUnit("someConceptUUID");
+        formElementContract.setConcept(concept);
         formElementContract.setConcept(null);
         assertEquals(true, formElementContract.validate().isFailure());
     }

@@ -1,25 +1,29 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.NaturalId;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.*;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.persistence.Id;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class})
 public class CHSEntity {
-    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
+    @Id
     private Long id;
 
+    @JoinColumn(name = "created_by_id")
     @CreatedBy
     @ManyToOne(targetEntity = User.class)
     private User createdBy;
@@ -27,6 +31,7 @@ public class CHSEntity {
     @CreatedDate
     private DateTime createdDateTime;
 
+    @JoinColumn(name = "last_modified_by_id")
     @LastModifiedBy
     @ManyToOne(targetEntity = User.class)
     private User lastModifiedBy;
@@ -126,7 +131,7 @@ public class CHSEntity {
 
     @JsonIgnore
     public boolean isNew() {
-        Long id = getId();
+        Long id = this.getId();
         return (id == null || id == 0);
     }
 }

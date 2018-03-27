@@ -21,7 +21,10 @@ public class Form extends OrganisationAwareEntity {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "form")
-    private Set<FormElementGroup> formElementGroups;
+    private Set<FormElementGroup> formElementGroups = new HashSet<>();
+
+    public Form() {
+    }
 
     public String getName() {
         return name;
@@ -33,10 +36,6 @@ public class Form extends OrganisationAwareEntity {
 
     public Set<FormElementGroup> getFormElementGroups() {
         return formElementGroups;
-    }
-
-    public void setFormElementGroups(Set<FormElementGroup> formElementGroups) {
-        this.formElementGroups = formElementGroups;
     }
 
     public FormType getFormType() {
@@ -96,5 +95,14 @@ public class Form extends OrganisationAwareEntity {
         ArrayList<FormElement> formElements = new ArrayList<>();
         formElementGroups.forEach(formElementGroup -> formElements.addAll(formElementGroup.getFormElements()));
         return formElements;
+    }
+
+    public void setFormElementGroups(Set<FormElementGroup> formElementGroups) {
+        this.formElementGroups.clear();
+        this.formElementGroups.addAll(formElementGroups);
+    }
+
+    public void addFormElementGroups(Set<FormElementGroup> formElementGroups) {
+        this.formElementGroups.addAll(formElementGroups);
     }
 }

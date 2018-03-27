@@ -1,0 +1,36 @@
+{
+  "uuid": "0c444bf3-54c3-41e4-8ca9-f0deb8760831",
+  "userUUID": "5fed2907-df3a-4867-aef5-c87f4c78a31a",
+  "formElementGroups": [
+    {
+      "uuid": "118a1605-c7df-4942-9666-4c17af585d24",
+      "name": "Additional Form Element Group",
+      "displayOrder": 1.1,
+      "display": "Additional Form Element Group",
+      "formElements": [
+        {
+          "name": "Additional Form Element",
+          "uuid": "836ceda5-3d09-49f6-aa0b-28512bc2028a",
+          "keyValues": [],
+          "type": "SingleSelect",
+          "concept": {
+            "uuid": "43124c33-898d-42fa-a53d-b4c6fa36c581",
+            "name": "Additional Form Element",
+            "dataType": "Coded",
+            "answers": [
+              {
+                "uuid": "28e76608-dddd-4914-bd44-3689eccfa5ca"
+              },
+              {
+                "name": "No",
+                "uuid": "e7b50c78-3d90-484d-a224-9887887780dc"
+              }
+            ]
+          },
+          "displayOrder": 1.1,
+          "mandatory": true
+        }
+      ]
+    }
+  ]
+}

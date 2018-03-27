@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class OrganisationAwareEntity extends CHSEntity{
+public class OrganisationAwareEntity extends CHSEntity {
 
     @Column
     private Long organisationId;
