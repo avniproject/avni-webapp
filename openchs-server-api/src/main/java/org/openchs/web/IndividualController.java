@@ -1,15 +1,17 @@
 package org.openchs.web;
 
+import org.joda.time.LocalDate;
 import org.openchs.dao.AddressLevelRepository;
 import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
-import org.openchs.excel.ExcelImporter;
+import org.openchs.web.request.PeriodRequest;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
 import org.openchs.service.ObservationService;
+import org.openchs.web.validation.ValidationException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
-import java.util.logging.Logger;
 
 @RestController
 public class IndividualController extends AbstractController<Individual> {
@@ -54,12 +55,30 @@ public class IndividualController extends AbstractController<Individual> {
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
         individual.setFirstName(individualRequest.getFirstName());
         individual.setLastName(individualRequest.getLastName());
-        individual.setDateOfBirth(individualRequest.getDateOfBirth());
+        if (individualRequest.getDateOfBirth() != null) {
+            individual.setDateOfBirth(individualRequest.getDateOfBirth());
+        } else if (individualRequest.getAge() != null) {
+            individual.setDateOfBirth(
+                    calculateDobFromAgeAndRegDate(individualRequest.getAge(), individualRequest.getRegistrationDate())
+            );
+        }
         individual.setAddressLevel(addressLevel);
         individual.setGender(gender);
         individual.setRegistrationDate(individualRequest.getRegistrationDate());
         individual.setVoided(individualRequest.isVoided());
         return individual;
+    }
+
+    private LocalDate calculateDobFromAgeAndRegDate(PeriodRequest age, LocalDate registrationDate) {
+        switch (age.getUnit()) {
+            case YEARS:
+                return registrationDate.minusYears(age.getValue());
+            case MONTHS:
+                return registrationDate.minusMonths(age.getValue());
+            default:
+                throw new ValidationException();
+
+        }
     }
 
     @RequestMapping(value = "/individualAndHistory", method = RequestMethod.POST)

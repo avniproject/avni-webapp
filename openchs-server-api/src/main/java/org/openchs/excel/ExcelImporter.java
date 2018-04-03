@@ -4,6 +4,7 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.Individual;
+import org.openchs.domain.Encounter;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.excel.data.ImportFile;
@@ -15,6 +16,7 @@ import org.openchs.healthmodule.adapter.HealthModuleInvokerFactory;
 import org.openchs.importer.Importer;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.IndividualRequest;
+import org.openchs.web.request.EncounterRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.slf4j.Logger;
@@ -61,6 +63,8 @@ public class ExcelImporter implements Importer {
                     rowProcessor.processEnrolment((ProgramEnrolmentRequest) request, importSheetMetaData);
                 else if (isSheetOfType(importSheetMetaData, ProgramEncounter.class))
                     rowProcessor.processProgramEncounter((ProgramEncounterRequest) request, importSheetMetaData);
+                else if (isSheetOfType(importSheetMetaData, Encounter.class))
+                    rowProcessor.processEncounter((EncounterRequest) request, importSheetMetaData);
             } catch (Exception error) {
                 dataImportResult.exceptionHappened(error);
                 logger.error(error.getMessage(), error);

@@ -33,7 +33,7 @@ public class ImportCalculatedField implements ImportField {
     }
 
     public void setRegex(String regex) {
-        pattern = Pattern.compile(regex);
+        pattern = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS);
     }
 
     public String getUserFileType() {
@@ -57,7 +57,7 @@ public class ImportCalculatedField implements ImportField {
         return systemField;
     }
 
-    private String find(String string) {
+    String find(String string) {
         try {
             Matcher matcher = pattern.matcher(string);
             matcher.find();
@@ -90,5 +90,16 @@ public class ImportCalculatedField implements ImportField {
     @Override
     public Boolean getBooleanValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "userFileType='" + userFileType + '\'' +
+                ", systemField='" + systemField + '\'' +
+                ", sourceUserField='" + sourceUserField + '\'' +
+                ", entityType=" + entityType +
+                ", pattern=" + pattern +
+                '}';
     }
 }

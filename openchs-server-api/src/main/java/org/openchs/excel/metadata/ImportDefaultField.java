@@ -49,4 +49,12 @@ public class ImportDefaultField implements ImportField {
         else if (defaultValue instanceof String) return TextToType.toBoolean((String) defaultValue);
         throw new RuntimeException(String.format("%s cannot be converted into boolean", defaultValue));
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "systemFieldName='" + systemFieldName + '\'' +
+                ", defaultValue=" + defaultValue +
+                '}';
+    }
 }

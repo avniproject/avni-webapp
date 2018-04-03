@@ -31,11 +31,14 @@ public class ImportMetaDataExcelReader {
     private ImportAnswerMetaDataList readAnswerMetaDataList(XSSFWorkbook workbook) {
         ImportAnswerMetaDataList list = new ImportAnswerMetaDataList();
         XSSFSheet sheet = workbook.getSheet("Answer Fields");
+        if (sheet == null) return list;
+        //if (sheet.getRow(1).getCell(0).getRawValue() == null)
+        //    return list;
         Iterator<Row> iterator = sheet.iterator();
         int k = 0;
         while (iterator.hasNext()) {
             Row row = iterator.next();
-            if (k != 0) {
+            if (k != 0 && !row.getCell(0).getStringCellValue().trim().isEmpty()) {
                 ImportAnswerMetaData importAnswerMetaData = new ImportAnswerMetaData();
                 importAnswerMetaData.setSystemAnswer(ExcelUtil.getText(row, 0));
                 importAnswerMetaData.setUserAnswer(ExcelUtil.getText(row, 1));
@@ -61,7 +64,7 @@ public class ImportMetaDataExcelReader {
                     importSheets.addSystemField(i - 6, systemFieldName);
                 }
                 logger.info("Read header of Sheets");
-            } else if (!ExcelUtil.getText(row, 0).trim().isEmpty()) {
+            } else if (!row.getCell(0).getStringCellValue().trim().isEmpty()) {
                 ImportSheetMetaData importSheetMetaData = new ImportSheetMetaData();
                 importSheetMetaData.setFileName(ExcelUtil.getText(row, 0));
                 importSheetMetaData.setUserFileType(ExcelUtil.getText(row, 1));
@@ -90,7 +93,7 @@ public class ImportMetaDataExcelReader {
         int k = 0;
         while (iterator.hasNext()) {
             Row row = iterator.next();
-            if (k != 0) {
+            if (k != 0 && !row.getCell(0).getStringCellValue().trim().isEmpty()) {
                 ImportCalculatedField calculatedField = new ImportCalculatedField();
                 calculatedField.setUserFileType(ExcelUtil.getText(row, 0));
                 calculatedField.setEntityType(ExcelUtil.getText(row, 1));

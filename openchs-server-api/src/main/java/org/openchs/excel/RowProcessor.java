@@ -14,6 +14,7 @@ import org.openchs.service.FormService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.ProgramEnrolmentService;
 import org.openchs.web.*;
+import org.openchs.web.request.EncounterRequest;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
@@ -32,6 +33,8 @@ public class RowProcessor {
 
     @Autowired
     private IndividualController individualController;
+    @Autowired
+    private EncounterController encounterController;
     @Autowired
     private ProgramEnrolmentController programEnrolmentController;
     @Autowired
@@ -60,6 +63,13 @@ public class RowProcessor {
     void processIndividual(IndividualRequest individualRequest) {
         individualController.save(individualRequest);
         logger.info(String.format("Imported Individual: %s", individualRequest.getUuid()));
+    }
+
+    void processEncounter(EncounterRequest encounterRequest, ImportSheetMetaData sheetMetaData) {
+        if (encounterRequest.getUuid() == null)
+            encounterRequest.setupUuidIfNeeded();
+        encounterController.save(encounterRequest);
+        logger.info(String.format("Imported Encounter: %s", encounterRequest.getUuid()));
     }
 
     void processEnrolment(ProgramEnrolmentRequest programEnrolmentRequest, ImportSheetMetaData sheetMetaData) {

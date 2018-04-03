@@ -100,4 +100,15 @@ public class ImportNonCalculatedField implements ImportField {
         if (aBoolean == null) return false;
         return aBoolean;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "formName='" + formName + '\'' +
+                ", formType=" + formType +
+                ", isCore=" + isCore +
+                ", systemFieldName='" + systemFieldName + '\'' +
+                ", importUserFileType='" + importUserFileType + '\'' +
+                '}';
+    }
 }

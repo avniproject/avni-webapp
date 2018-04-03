@@ -6,6 +6,7 @@ import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
+import org.openchs.domain.Program;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,13 @@ public class EncounterController extends AbstractController<Encounter> {
     @RequestMapping(value = "/encounters", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-    void save(@RequestBody EncounterRequest encounterRequest) {
-        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterRequest.getEncounterTypeUUID());
+    public void save(@RequestBody EncounterRequest encounterRequest) {
+        EncounterType encounterType;
+        if (encounterRequest.getEncounterTypeUUID() == null) {
+            encounterType = encounterTypeRepository.findByName(encounterRequest.getEncounterType());
+        } else {
+            encounterType = encounterTypeRepository.findByUuid(encounterRequest.getEncounterTypeUUID());
+        }
         Individual individual = individualRepository.findByUuid(encounterRequest.getIndividualUUID());
 
         Encounter encounter = newOrExistingEntity(encounterRepository, encounterRequest, new Encounter());

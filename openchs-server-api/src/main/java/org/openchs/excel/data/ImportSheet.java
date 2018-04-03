@@ -16,16 +16,23 @@ import org.openchs.excel.metadata.ImportAnswerMetaDataList;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.web.request.*;
+import org.openchs.web.validation.ValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ImportSheet {
+    private final Logger logger;
     private final ImportSheetHeader importSheetHeader;
     private XSSFSheet xssfSheet;
 
     public ImportSheet(XSSFSheet xssfSheet) {
         this.xssfSheet = xssfSheet;
+        logger = LoggerFactory.getLogger(this.getClass());
         XSSFRow row = xssfSheet.getRow(0);
         importSheetHeader = new ImportSheetHeader(row);
     }
@@ -36,6 +43,7 @@ public class ImportSheet {
 
     private XSSFRow getDataRow(int rowIndex) {
         XSSFRow row = xssfSheet.getRow(rowIndex + 1);
+        if (row == null) return null;
         String rawCellValue = ExcelUtil.getRawCellValue(row, 0);
         return Strings.isBlank(rawCellValue) ? null : row;
     }
@@ -65,8 +73,21 @@ public class ImportSheet {
             it should be single select or not. This will fail if the same question is asked as both single and
             multi select in two different forms.
             */
+
             Boolean isSingleSelect = formElementRepository.findFirstByConcept(concept).isSingleSelect();
-            cellValue = concept.getDbValue(answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName()), isSingleSelect);
+            String systemAnswer = answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName());
+            if (isSingleSelect) {
+                //Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
+                cellValue = conceptRepository.findByName(systemAnswer.trim()).getUuid();
+            } else {
+                List<String> concepts = Arrays.asList(systemAnswer.split(",")).stream().map(
+                        (answer) -> {
+                            Concept answerConcept = conceptRepository.findByName(answer.trim());
+                            if (answerConcept == null) throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", answer, systemFieldName));
+                            return answerConcept.getUuid();
+                        }).collect(Collectors.toList());
+                cellValue = concepts;
+            }
         }
 
         if (cellValue == null) return null;
@@ -86,6 +107,15 @@ public class ImportSheet {
                 case "Last Name":
                     individualRequest.setLastName(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
+                case "Age":
+                    String ageInYearsOrMonths = importField.getTextValue(row, importSheetHeader, importSheetMetaData);
+                    try {
+                        individualRequest.setAge(PeriodRequest.fromString(ageInYearsOrMonths));
+                    } catch (ValidationException ve) {
+                        logger.error(ve.getMessage());
+                    } finally {
+                        break;
+                    }
                 case "Date of Birth":
                     individualRequest.setDateOfBirth(new LocalDate(importField.getDateValue(row, importSheetHeader, importSheetMetaData)));
                     break;
@@ -109,7 +139,6 @@ public class ImportSheet {
                     break;
             }
         });
-        individualRequest.setAddressLevel(importSheetMetaData.getAddressLevel());
         individualRequest.setupUuidIfNeeded();
         return individualRequest;
     }
@@ -180,6 +209,40 @@ public class ImportSheet {
         return programEncounterRequest;
     }
 
+    private EncounterRequest getEncounterRequest(List<ImportField> importFields, XSSFRow row, ImportSheetMetaData sheetMetaData, ConceptRepository conceptRepository, FormElementRepository formElementRepository, ImportAnswerMetaDataList answerMetaDataList) {
+        EncounterRequest encounterRequest = new EncounterRequest();
+        encounterRequest.setObservations(new ArrayList<>());
+        importFields.forEach(importField -> {
+            String systemFieldName = importField.getSystemFieldName();
+            switch (systemFieldName) {
+                case "Individual UUID":
+                    encounterRequest.setIndividualUUID(importField.getTextValue(row, importSheetHeader, sheetMetaData));
+                    break;
+                case "Visit Type":
+                    encounterRequest.setEncounterType(importField.getTextValue(row, importSheetHeader, sheetMetaData));
+                    break;
+                case "Encounter DateTime":
+                    encounterRequest.setEncounterDateTime(new DateTime(importField.getDateValue(row, importSheetHeader, sheetMetaData)));
+                    break;
+                default:
+                    ObservationRequest observationRequest = createObservationRequest(row, importSheetHeader, sheetMetaData, importField, systemFieldName, conceptRepository, formElementRepository, answerMetaDataList);
+                    if (observationRequest == null) break;
+                    List<ObservationRequest> observations = encounterRequest.getObservations();
+                    this.mergeObservations(observations, observationRequest);
+                    encounterRequest.setObservations(observations);
+                    break;
+            }
+        });
+        encounterRequest.setEncounterType(sheetMetaData.getEncounterType());
+        return encounterRequest;
+    }
+
+    private void mergeObservations(List<ObservationRequest> observationRequests, ObservationRequest observationRequest) {
+        ObservationRequest existingObservationRequest = observationRequests.stream().filter(x -> x.getConceptName().equals(observationRequest.getConceptName())).findAny().orElse(null);
+        if (existingObservationRequest == null) observationRequests.add(observationRequest);
+        else existingObservationRequest.setValue(String.format("%s\n\n%s", existingObservationRequest.getValue(), observationRequest.getValue()));
+    }
+
     private boolean isSheetOfType(ImportSheetMetaData importSheetMetaData, Class aClass) {
         return importSheetMetaData.getEntityType().equals(aClass);
     }
@@ -194,7 +257,9 @@ public class ImportSheet {
             return getEnrolmentRequest(importFields, row, sheetMetaData, conceptRepository, formElementRepository, answerMetaDataList);
         else if (isSheetOfType(sheetMetaData, ProgramEncounter.class))
             return getProgramEncounterRequest(importFields, row, sheetMetaData, conceptRepository, formElementRepository, answerMetaDataList);
+        else if (isSheetOfType(sheetMetaData, Encounter.class))
+            return getEncounterRequest(importFields, row, sheetMetaData, conceptRepository, formElementRepository, answerMetaDataList);
 
-        throw new RuntimeException("Unknown data type in the sheet");
+        throw new RuntimeException(String.format("Unknown data type in the sheet: \"%s\"", sheetMetaData.getEntityType().getName()));
     }
 }

@@ -2,11 +2,14 @@ package org.openchs.web.request.common;
 
 import org.joda.time.LocalDate;
 import org.openchs.web.request.CHSRequest;
+import org.openchs.web.request.PeriodRequest;
 
 public class CommonIndividualRequest extends CHSRequest {
     private String firstName;
 
     private String lastName;
+
+    private PeriodRequest age;
 
     private LocalDate dateOfBirth;
     private boolean dateOfBirthVerified;
@@ -39,6 +42,14 @@ public class CommonIndividualRequest extends CHSRequest {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public PeriodRequest getAge() {
+        return age;
+    }
+
+    public void setAge(PeriodRequest age) {
+        this.age = age;
     }
 
     public boolean isDateOfBirthVerified() {
