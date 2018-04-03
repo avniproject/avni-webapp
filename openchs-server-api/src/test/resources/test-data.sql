@@ -229,3 +229,5 @@ VALUES
 
 INSERT INTO form_mapping (form_id, entity_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0, 1, 1, current_timestamp, current_timestamp);
+
+SELECT setval('catchment_id_seq', COALESCE((SELECT MAX(id)+1 FROM catchment), 1), false);
