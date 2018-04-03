@@ -18,6 +18,26 @@ DELETE FROM catchment;
 DELETE FROM users;
 DELETE FROM organisation;
 
+ALTER SEQUENCE form_element_id_seq RESTART WITH 1;
+ALTER SEQUENCE form_element_group_id_seq RESTART WITH 1;
+ALTER SEQUENCE form_mapping_id_seq RESTART WITH 1;
+ALTER SEQUENCE form_id_seq RESTART WITH 1;
+ALTER SEQUENCE encounter_id_seq RESTART WITH 1;
+ALTER SEQUENCE program_encounter_id_seq RESTART WITH 1;
+ALTER SEQUENCE program_enrolment_id_seq RESTART WITH 1;
+ALTER SEQUENCE individual_id_seq RESTART WITH 1;
+ALTER SEQUENCE program_id_seq RESTART WITH 1;
+ALTER SEQUENCE encounter_type_id_seq RESTART WITH 1;
+ALTER SEQUENCE program_outcome_id_seq RESTART WITH 1;
+ALTER SEQUENCE concept_answer_id_seq RESTART WITH 1;
+ALTER SEQUENCE concept_id_seq RESTART WITH 1;
+ALTER SEQUENCE gender_id_seq RESTART WITH 1;
+ALTER SEQUENCE catchment_address_mapping_id_seq RESTART WITH 1;
+ALTER SEQUENCE address_level_id_seq RESTART WITH 1;
+ALTER SEQUENCE catchment_id_seq RESTART WITH 1;
+ALTER SEQUENCE users_id_seq RESTART WITH 1;
+ALTER SEQUENCE organisation_id_seq RESTART WITH 1;
+
 INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
 INSERT INTO organisation (id, name, db_user, uuid)
@@ -39,7 +59,6 @@ VALUES (2, 'Male', '840de9fb-e565-4d7d-b751-90335ba20490', current_timestamp, cu
 INSERT INTO gender (id, name, uuid, created_date_time, last_modified_date_time, created_by_id, last_modified_by_id, version)
 VALUES (3, 'Other', '188ad77e-fe46-4328-b0e2-98f3a05c554c', current_timestamp, current_timestamp, 1, 1, 1);
 
-ALTER SEQUENCE concept_id_seq RESTART WITH 1;
 INSERT INTO concept (name, data_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES
   ('Temperature', 'numeric', '95c4b174-6ce6-4d9a-b223-1f9000b60006', 1, 1, 1, current_timestamp, current_timestamp);
@@ -141,18 +160,12 @@ INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, v
 VALUES (19, 23, 4, '7dc1c6db-419b-483d-8b47-0d2b89d9919b', 1, 1, 1, current_timestamp, current_timestamp);
 
 
-ALTER SEQUENCE program_outcome_id_seq RESTART WITH 1;
--- insert
-
-ALTER SEQUENCE encounter_type_id_seq RESTART WITH 1;
 INSERT INTO encounter_type (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Sample Encounter Type', '3a1535d0-81fd-48fc-85b5-dc9da81064a3', 1, 1, 1, current_timestamp, current_timestamp);
 
-ALTER SEQUENCE program_id_seq RESTART WITH 1;
 INSERT INTO program (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Diabetes', 'db62a322-0ec2-4bb0-ac24-296dc7216c9a', 1, 1, 1, current_timestamp, current_timestamp);
 
-ALTER SEQUENCE address_level_id_seq RESTART WITH 1;
 INSERT INTO address_level (title, level, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('Nijhma', 1, 'ae35fe6d-910e-47bd-a0c7-0c10182a4085', 1, 1, 1, current_timestamp, current_timestamp);
 INSERT INTO address_level (title, level, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
@@ -161,16 +174,13 @@ VALUES ('Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1, 1, 1, current
 INSERT INTO catchment_address_mapping (catchment_id, addresslevel_id, organisation_id)
 VALUES (1, 1, 1);
 
-ALTER SEQUENCE individual_id_seq RESTART WITH 1;
 INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2, 1, 1,
                                                 current_timestamp, current_timestamp);
 
-ALTER SEQUENCE program_enrolment_id_seq RESTART WITH 1;
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1, 1, current_timestamp, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1, 1, 1, current_timestamp, current_timestamp);
 
-ALTER SEQUENCE program_encounter_id_seq RESTART WITH 1;
 INSERT INTO program_encounter (program_enrolment_id, encounter_type_id, observations, encounter_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1, 1, '[
   {
@@ -179,7 +189,6 @@ VALUES (1, 1, '[
   }
 ]' :: JSONB, current_timestamp, 'f5c3d56c-3d69-41bd-9e6a-52963adb6e76', 1, 1, 1, current_timestamp, current_timestamp);
 
-ALTER SEQUENCE encounter_id_seq RESTART WITH 1;
 INSERT INTO encounter (individual_id, encounter_type_id, observations, encounter_date_time, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1, 1, '
 {
@@ -206,12 +215,10 @@ INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, first
 VALUES (1, '1955-01-05', FALSE, 'Ram', 'Kumari', 1, 'c415ef96-8ff9-4cbb-8407-e7618c90a055', 1, 1, 1, current_timestamp,
         current_timestamp);
 
-ALTER SEQUENCE form_id_seq RESTART WITH 1;
 INSERT INTO form (NAME, form_type, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('encounter_form', 'Encounter', '2c32a184-6d27-4c51-841d-551ca94594a5', 1, 1, 1, current_timestamp,
         current_timestamp);
 
-ALTER SEQUENCE form_element_group_id_seq RESTART WITH 1;
 INSERT INTO form_element_group (NAME, form_id, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES ('default_group', 1, '4b317705-4372-4405-a628-6c8bb8da8671', 1, 1, 1, current_timestamp, current_timestamp);
 
@@ -231,3 +238,22 @@ INSERT INTO form_mapping (form_id, entity_id, uuid, version, created_by_id, last
 VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0, 1, 1, current_timestamp, current_timestamp);
 
 SELECT setval('catchment_id_seq', COALESCE((SELECT MAX(id)+1 FROM catchment), 1), false);
+SELECT setval('organisation_id_seq', COALESCE((SELECT MAX(id)+1 FROM organisation), 1), false);
+SELECT setval('form_element_id_seq', COALESCE((SELECT MAX(id)+1 FROM form_element), 1), false);
+SELECT setval('form_element_group_id_seq', COALESCE((SELECT MAX(id)+1 FROM form_element_group), 1), false);
+SELECT setval('form_mapping_id_seq', COALESCE((SELECT MAX(id)+1 FROM form_mapping), 1), false);
+SELECT setval('form_id_seq', COALESCE((SELECT MAX(id)+1 FROM form), 1), false);
+SELECT setval('encounter_id_seq', COALESCE((SELECT MAX(id)+1 FROM encounter), 1), false);
+SELECT setval('program_encounter_id_seq', COALESCE((SELECT MAX(id)+1 FROM program_encounter), 1), false);
+SELECT setval('program_enrolment_id_seq', COALESCE((SELECT MAX(id)+1 FROM program_enrolment), 1), false);
+SELECT setval('individual_id_seq', COALESCE((SELECT MAX(id)+1 FROM individual), 1), false);
+SELECT setval('program_id_seq', COALESCE((SELECT MAX(id)+1 FROM program), 1), false);
+SELECT setval('encounter_type_id_seq', COALESCE((SELECT MAX(id)+1 FROM encounter_type), 1), false);
+SELECT setval('program_outcome_id_seq', COALESCE((SELECT MAX(id)+1 FROM program_outcome), 1), false);
+SELECT setval('concept_answer_id_seq', COALESCE((SELECT MAX(id)+1 FROM concept_answer), 1), false);
+SELECT setval('concept_id_seq', COALESCE((SELECT MAX(id)+1 FROM concept), 1), false);
+SELECT setval('gender_id_seq', COALESCE((SELECT MAX(id)+1 FROM gender), 1), false);
+SELECT setval('catchment_address_mapping_id_seq', COALESCE((SELECT MAX(id)+1 FROM catchment_address_mapping), 1), false);
+SELECT setval('address_level_id_seq', COALESCE((SELECT MAX(id)+1 FROM address_level), 1), false);
+SELECT setval('catchment_id_seq', COALESCE((SELECT MAX(id)+1 FROM catchment), 1), false);
+SELECT setval('users_id_seq', COALESCE((SELECT MAX(id)+1 FROM users), 1), false);
