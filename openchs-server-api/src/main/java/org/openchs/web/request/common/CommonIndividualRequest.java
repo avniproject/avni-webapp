@@ -15,8 +15,10 @@ public class CommonIndividualRequest extends CHSRequest {
     private boolean dateOfBirthVerified;
     private String genderUUID;
     private String gender;
+    // Specify address uuid or specify catchment uuid along with address name
     private String addressLevelUUID;
     private String addressLevel;
+    private String catchmentUUID;
     private LocalDate registrationDate;
     private boolean isVoided = false;
 
@@ -106,5 +108,13 @@ public class CommonIndividualRequest extends CHSRequest {
 
     public void setVoided(boolean voided) {
         this.isVoided = voided;
+    }
+
+    public String getCatchmentUUID() {
+        return catchmentUUID;
+    }
+
+    public void setCatchmentUUID(String catchmentUUID) {
+        this.catchmentUUID = catchmentUUID;
     }
 }

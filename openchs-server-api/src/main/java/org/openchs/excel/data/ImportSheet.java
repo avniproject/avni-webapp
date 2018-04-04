@@ -113,9 +113,8 @@ public class ImportSheet {
                         individualRequest.setAge(PeriodRequest.fromString(ageInYearsOrMonths));
                     } catch (ValidationException ve) {
                         logger.error(ve.getMessage());
-                    } finally {
-                        break;
                     }
+                    break;
                 case "Date of Birth":
                     individualRequest.setDateOfBirth(new LocalDate(importField.getDateValue(row, importSheetHeader, importSheetMetaData)));
                     break;
@@ -133,6 +132,9 @@ public class ImportSheet {
                     break;
                 case "Individual UUID":
                     individualRequest.setUuid(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
+                    break;
+                case "Catchment UUID":
+                    individualRequest.setCatchmentUUID(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 default:
                     individualRequest.addObservation(createObservationRequest(row, importSheetHeader, importSheetMetaData, importField, systemFieldName, conceptRepository, formElementRepository, answerMetaDataList));
