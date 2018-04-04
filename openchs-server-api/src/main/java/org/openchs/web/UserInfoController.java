@@ -4,6 +4,7 @@ import org.openchs.dao.CatchmentRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Catchment;
 import org.openchs.domain.Organisation;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class UserInfoController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public ResponseEntity<UserInfo> getUserInfo(@RequestParam(value = "catchmentId", required = true) Integer catchmentId) {
         Catchment catchment = this.catchmentRepository.findOne(Long.valueOf(catchmentId));
-        Organisation organisation = this.organisationRepository.findOne(catchment.getOrganisationId());
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         return new ResponseEntity<>(new UserInfo(catchment.getType(), organisation.getName()), HttpStatus.OK);
     }
 }
