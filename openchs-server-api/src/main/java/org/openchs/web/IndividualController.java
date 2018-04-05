@@ -55,30 +55,12 @@ public class IndividualController extends AbstractController<Individual> {
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
         individual.setFirstName(individualRequest.getFirstName());
         individual.setLastName(individualRequest.getLastName());
-        if (individualRequest.getDateOfBirth() != null) {
-            individual.setDateOfBirth(individualRequest.getDateOfBirth());
-        } else if (individualRequest.getAge() != null) {
-            individual.setDateOfBirth(
-                    calculateDobFromAgeAndRegDate(individualRequest.getAge(), individualRequest.getRegistrationDate())
-            );
-        }
+        individual.setDateOfBirth(individualRequest.getDateOfBirth());
         individual.setAddressLevel(addressLevel);
         individual.setGender(gender);
         individual.setRegistrationDate(individualRequest.getRegistrationDate());
         individual.setVoided(individualRequest.isVoided());
         return individual;
-    }
-
-    private LocalDate calculateDobFromAgeAndRegDate(PeriodRequest age, LocalDate registrationDate) {
-        switch (age.getUnit()) {
-            case YEARS:
-                return registrationDate.minusYears(age.getValue());
-            case MONTHS:
-                return registrationDate.minusMonths(age.getValue());
-            default:
-                throw new ValidationException();
-
-        }
     }
 
     @RequestMapping(value = "/individualAndHistory", method = RequestMethod.POST)
