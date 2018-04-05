@@ -35,6 +35,14 @@ public class ExcelUtil {
         return StringUtils.isEmpty(s) ? null : s;
     }
 
+    public static Boolean isFirstCellEmpty(Row row) {
+        try {
+            return row.getCell(0).getStringCellValue().trim().isEmpty();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static String getRawCellValue(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return null;

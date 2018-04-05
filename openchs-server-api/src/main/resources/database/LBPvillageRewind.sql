@@ -1,0 +1,9 @@
+update address_level set title='Bodonge' where title='Bodange';
+update address_level set title='Kavande' where title='Kawande';
+update address_level set title='Nilgunda' where title='Nelgunda';
+update address_level set title='Parenar' where title='Parainar';
+update address_level set title='Jinjagaon' where title='Jinjgaon';
+update address_level set title='Aaldandi' where title='Aldandi';
+update address_level set title='Moradpur' where title='Morodpar';
+update address_level set title='Gurnur' where title='Gurnoor';
+update address_level set title='Maraampalli' where title='Marampalli';

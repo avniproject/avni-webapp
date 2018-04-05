@@ -75,18 +75,18 @@ public class ImportSheet {
             */
 
             Boolean isSingleSelect = formElementRepository.findFirstByConcept(concept).isSingleSelect();
-            String systemAnswer = answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName());
             if (isSingleSelect) {
-                //Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
+                String systemAnswer = answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName());
                 cellValue = conceptRepository.findByName(systemAnswer.trim()).getUuid();
             } else {
-                List<String> concepts = Arrays.asList(systemAnswer.split(",")).stream().map(
-                        (answer) -> {
-                            Concept answerConcept = conceptRepository.findByName(answer.trim());
-                            if (answerConcept == null) throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", answer, systemFieldName));
+                List<String> userAnswers = Arrays.asList(((String)cellValue).split(",")).stream().map(
+                        (userAnswer) -> {
+                            String systemAnswer = answerMetaDataList.getSystemAnswer(userAnswer, concept.getName());
+                            Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
+                            if (answerConcept == null) throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", userAnswer, systemFieldName));
                             return answerConcept.getUuid();
                         }).collect(Collectors.toList());
-                cellValue = concepts;
+                cellValue = userAnswers;
             }
         }
 
@@ -105,7 +105,8 @@ public class ImportSheet {
                     individualRequest.setFirstName(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
                     break;
                 case "Last Name":
-                    individualRequest.setLastName(importField.getTextValue(row, importSheetHeader, importSheetMetaData));
+                    String lastName = importField.getTextValue(row, importSheetHeader, importSheetMetaData);
+                    individualRequest.setLastName(Strings.isBlank(lastName) ? "." : lastName);
                     break;
                 case "Age":
                     String ageInYearsOrMonths = importField.getTextValue(row, importSheetHeader, importSheetMetaData);
