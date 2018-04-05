@@ -40,6 +40,7 @@ public class ImportMetaDataTest {
         initMocks(this);
         Concept placeHolderConcept = new Concept();
         FormElement placeHolderFormElement = new FormElement();
+        placeHolderFormElement.setType("SingleSelect");
         placeHolderFormElement.setConcept(placeHolderConcept);
         placeHolderConcept.setDataType(ConceptDataType.Text.toString());
         when(conceptRepository.findByName(anyString())).thenReturn(placeHolderConcept);
@@ -77,10 +78,12 @@ public class ImportMetaDataTest {
 
     @Test
     public void getRequestFromImportSheet() throws IOException {
-        HashMap<String, UUID> answers = new HashMap<>();
-        answers.put("Yes", UUID.randomUUID());
+        Map<String, UUID> answers = new HashMap<>();
+        UUID yes = UUID.randomUUID();
+        answers.put("Yes", yes);
         answers.put("Dropped out", UUID.randomUUID());
         when(conceptRepository.findByName("School going")).thenReturn(TestEntityFactory.createCodedConcept("School going", answers));
+        when(conceptRepository.findByName("Yes")).thenReturn(TestEntityFactory.createConceptOfNotType(yes.toString(), "Yes"));
 
         ImportFile importFile = new ImportFile(new ClassPathResource("Test Import.xlsx").getInputStream());
         Map<ImportSheetMetaData, List<CHSRequest>> requestMap = new HashMap<>();
@@ -123,8 +126,8 @@ public class ImportMetaDataTest {
         List<CHSRequest> enrolmentsAmalzarMadhyamik = requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEnrolment.class));
         ProgramEnrolmentRequest enrolmentAmalzarMadhyamik = (ProgramEnrolmentRequest) enrolmentsAmalzarMadhyamik.get(1);
         assertEquals(enrolmentAmalzarMadhyamik.getEnrolmentDateTime().toLocalDate(), new LocalDate(2017, 7, 24));
-        List schoolGoing = (List) enrolmentAmalzarMadhyamik.getObservationValue("School going");
-        assertEquals(schoolGoing.get(0), answers.get("Yes").toString());
+        String schoolGoing = (String) enrolmentAmalzarMadhyamik.getObservationValue("School going");
+        assertEquals(schoolGoing, answers.get("Yes").toString());
 
         List<CHSRequest> encountersAmalzarMadhyamik = requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEncounter.class));
         ProgramEncounterRequest encounterAmalzarMadhyamik = (ProgramEncounterRequest) encountersAmalzarMadhyamik.get(0);

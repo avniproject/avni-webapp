@@ -15,16 +15,16 @@ public class TestEntityFactory {
             ConceptAnswer conceptAnswer = new ConceptAnswer();
             conceptAnswer.setUuid(UUID.randomUUID().toString());
             conceptAnswer.setConcept(concept);
-            conceptAnswer.setAnswerConcept(createConceptOfNotType(v, k));
+            conceptAnswer.setAnswerConcept(createConceptOfNotType(v.toString(), k));
             conceptAnswers.add(conceptAnswer);
         });
         concept.setConceptAnswers(conceptAnswers);
         return concept;
     }
 
-    public static Concept createConceptOfNotType(UUID uuid, String name) {
+    public static Concept createConceptOfNotType(String uuid, String name) {
         Concept concept = new Concept();
-        concept.setUuid(uuid.toString());
+        concept.setUuid(uuid);
         concept.setDataType(ConceptDataType.NA.toString());
         concept.setName(name);
         return concept;
