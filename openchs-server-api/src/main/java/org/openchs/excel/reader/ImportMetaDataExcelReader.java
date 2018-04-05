@@ -32,7 +32,6 @@ public class ImportMetaDataExcelReader {
         ImportAnswerMetaDataList list = new ImportAnswerMetaDataList();
         XSSFSheet sheet = workbook.getSheet("Answer Fields");
         if (sheet == null) return list;
-
         Iterator<Row> iterator = sheet.iterator();
         int k = 0;
         while (iterator.hasNext()) {
