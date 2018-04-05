@@ -11,8 +11,8 @@ public class PeriodRequest {
     private int value;
     private IntervalUnit unit;
 
-    private static Pattern yearPattern = Pattern.compile("([Yy](ears|ear|rs|r))");
-    private static Pattern monthPattern = Pattern.compile("([Mm](onths|onth|ons|on|nths|nth|ths|th))");
+    private static Pattern yearPattern = Pattern.compile("([Yy](ear|r))");
+    private static Pattern monthPattern = Pattern.compile("([Mm](on|nth|th))");
 
     public PeriodRequest(int value, IntervalUnit unit) {
         this.value = value;
@@ -63,7 +63,7 @@ public class PeriodRequest {
 
         if (value < 1) throw new ValidationException("Bad input. Received: " + str);
         if (yearPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.YEARS);
-        if (monthPattern.matcher(parts[1]).find() && value <= 12) return new PeriodRequest(value, IntervalUnit.MONTHS);
+        if (monthPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.MONTHS);
 
         throw new ValidationException("Bad input. Received: " + str);
     }
