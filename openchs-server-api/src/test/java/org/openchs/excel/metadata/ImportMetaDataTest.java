@@ -91,9 +91,11 @@ public class ImportMetaDataTest {
         importMetaData.getImportSheets().forEach(sheetMetaData -> {
             List<ImportField> allFields = importMetaData.getAllFields(sheetMetaData);
             ImportSheet importSheet = importFile.getSheet(sheetMetaData.getSheetName());
+
             int numberOfDataRows = importSheet.getNumberOfDataRows();
             for (int i = 0; i < numberOfDataRows; i++) {
-                CHSRequest request = importSheet.getRequest(allFields, sheetMetaData, i, conceptRepository, formElementRepository, importMetaData.getAnswerMetaDataList());
+//                CHSRequest request = importSheet.getRequest(allFields, sheetMetaData, i, conceptRepository, formElementRepository, importMetaData.getAnswerMetaDataList());
+                CHSRequest request = new CHSRequest();
                 List<CHSRequest> chsRequests = requestMap.computeIfAbsent(sheetMetaData, k -> new ArrayList<>());
                 chsRequests.add(request);
             }

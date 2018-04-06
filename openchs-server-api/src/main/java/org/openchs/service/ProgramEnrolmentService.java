@@ -6,6 +6,8 @@ import org.openchs.domain.ProgramEncounter;
 import org.openchs.domain.ProgramEnrolment;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 public class ProgramEnrolmentService {
     private ProgramEnrolmentRepository programEnrolmentRepository;
@@ -14,6 +16,7 @@ public class ProgramEnrolmentService {
         this.programEnrolmentRepository = programEnrolmentRepository;
     }
 
+    @Transactional
     public ProgramEncounter matchingEncounter(String programEnrolmentUUID, String encounterTypeName, DateTime encounterDateTime) {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
         return programEnrolment.getProgramEncounters().stream().filter(programEncounter -> programEncounter.getEncounterType().getName().equals(encounterTypeName) && programEncounter.dateFallsWithIn(encounterDateTime)).findAny().orElse(null);

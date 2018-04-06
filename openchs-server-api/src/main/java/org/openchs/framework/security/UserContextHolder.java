@@ -8,7 +8,7 @@ public class UserContextHolder {
     private UserContextHolder() {
     }
 
-    static void create(UserContext context) {
+    public static void create(UserContext context) {
         userContext.set(context);
     }
 

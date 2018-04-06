@@ -58,3 +58,4 @@ DROP TABLE IF EXISTS non_applicable_form_element CASCADE ;
 DROP TABLE IF EXISTS users CASCADE ;
 DROP TABLE IF EXISTS organisation CASCADE ;
 DROP TABLE IF EXISTS schema_version CASCADE ;
+DROP TABLE IF EXISTS flyway_schema_history CASCADE ;

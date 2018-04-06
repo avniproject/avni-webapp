@@ -3,9 +3,7 @@ package org.openchs.excel.metadata;
 import org.openchs.application.FormType;
 import org.openchs.util.Mappings;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ImportSheetMetaData {
     private String fileName;
@@ -110,7 +108,19 @@ public class ImportSheetMetaData {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(fileName, sheetName, entityType);
+    }
+
+    public Map<String, String> asMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("Sheet Name", this.getSheetName());
+        map.put("User File Type", this.getUserFileType());
+        map.put("Entity Type", this.getEntityType().getCanonicalName());
+        map.put("User Type", this.getEntityType().getSimpleName());
+        map.put("File Name", this.getFileName());
+        map.put("Program Name", this.getProgramName());
+        map.put("Encounter Type", this.getEncounterType());
+        map.put("Address Level", this.getAddressLevel());
+        return map;
     }
 }
