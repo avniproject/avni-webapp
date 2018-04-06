@@ -23,10 +23,11 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
     private boolean updateOrganisationId(Object entity, Object[] currentState, String[] propertyNames) {
         if (entity instanceof OrganisationAwareEntity) {
             int organisationIdIndex = findOrganisationIdIndex(propertyNames);
-            currentState[organisationIdIndex] = UserContextHolder.getUserContext().getOrganisation().getId();
-            return true;
+            if (currentState[organisationIdIndex] != null) {
+                currentState[organisationIdIndex] = UserContextHolder.getUserContext().getOrganisation().getId();
+                return true;
+            }
         }
-
         return false;
     }
 
