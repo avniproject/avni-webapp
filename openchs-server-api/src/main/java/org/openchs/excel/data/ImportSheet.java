@@ -27,4 +27,7 @@ public class ImportSheet {
         return Strings.isBlank(rawCellValue) ? null : row;
     }
 
+    public ImportSheetHeader getHeader() {
+        return importSheetHeader;
+    }
 }

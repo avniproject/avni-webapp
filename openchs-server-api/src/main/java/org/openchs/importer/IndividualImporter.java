@@ -1,5 +1,6 @@
 package org.openchs.importer;
 
+import org.apache.logging.log4j.util.Strings;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.LocalDate;
 import org.openchs.excel.ImportSheetHeader;
@@ -40,7 +41,8 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     individualRequest.setFirstName(importField.getTextValue(row, header, importSheetMetaData));
                     break;
                 case "Last Name":
-                    individualRequest.setLastName(importField.getTextValue(row, header, importSheetMetaData));
+                    String lastName = importField.getTextValue(row, header, importSheetMetaData);
+                    individualRequest.setLastName(Strings.isBlank(lastName) ? "." : lastName);
                     break;
                 case "Age":
                     String ageInYearsOrMonths = importField.getTextValue(row, header, importSheetMetaData);
