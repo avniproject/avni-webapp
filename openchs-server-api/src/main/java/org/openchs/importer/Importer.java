@@ -62,20 +62,24 @@ public abstract class Importer<T extends CHSRequest> {
 
         if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
             Boolean isSingleSelect = formElementRepository.findFirstByConcept(concept).isSingleSelect();
-            String systemAnswer = answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName());
-            if (systemAnswer == null) {
-                cellValue = null;
-            } else if (isSingleSelect) {
-                cellValue = conceptRepository.findByName(systemAnswer.trim()).getUuid();
-            } else if (!isSingleSelect) {
-                List<String> concepts = Arrays.asList(systemAnswer.split(",")).stream().map(
-                        (answer) -> {
-                            Concept answerConcept = conceptRepository.findByName(answer.trim());
+            if (isSingleSelect) {
+                String systemAnswer = answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName());
+                if (systemAnswer == null) cellValue = null;
+                else {
+                    cellValue = conceptRepository.findByName(systemAnswer.trim()).getUuid();
+                }
+            } else {
+                List<String> userAnswers = Arrays.asList(((String) cellValue).split(","))
+                        .stream()
+                        .map((userAnswer) -> {
+                            String systemAnswer = answerMetaDataList.getSystemAnswer(userAnswer, concept.getName());
+                            Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
                             if (answerConcept == null)
-                                throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", answer, systemFieldName));
+                                throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", userAnswer, systemFieldName));
                             return answerConcept.getUuid();
-                        }).collect(Collectors.toList());
-                cellValue = concepts;
+                        })
+                        .collect(Collectors.toList());
+                cellValue = userAnswers;
             }
         }
 
