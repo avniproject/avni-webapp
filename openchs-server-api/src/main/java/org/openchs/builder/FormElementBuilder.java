@@ -34,7 +34,7 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
     }
 
     public FormElementBuilder withKeyValues(KeyValues keyValues) {
-        this.set("KeyValues", keyValues, KeyValues.class);
+        this.get().setKeyValues(keyValues);
         return this;
     }
 
