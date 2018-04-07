@@ -81,7 +81,9 @@ jobs:
       - image: circleci/openjdk:8-jdk
 
     working_directory: ~/
-
+    branches:
+      only:
+        - master
     steps:
       - attach_workspace:
           at: ~/artifacts
