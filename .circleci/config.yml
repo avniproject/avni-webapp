@@ -81,9 +81,7 @@ jobs:
       - image: circleci/openjdk:8-jdk
 
     working_directory: ~/
-    branches:
-      only:
-        - master
+
     steps:
       - attach_workspace:
           at: ~/artifacts
@@ -121,6 +119,9 @@ workflows:
           requires:
             - publish
       - deploy:
+          filters:
+            branches:
+              only: master
           requires:
             - hold
 notify:
