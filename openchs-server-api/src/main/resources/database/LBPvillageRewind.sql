@@ -7,3 +7,5 @@ update address_level set title='Aaldandi' where title='Aldandi';
 update address_level set title='Moradpur' where title='Morodpar';
 update address_level set title='Gurnur' where title='Gurnoor';
 update address_level set title='Maraampalli' where title='Marampalli';
+update address_level set title='Poyarkothi' where title='Puyarkothi';
+update address_level set title='Gundurwahi' where title='Gundurvahi';
