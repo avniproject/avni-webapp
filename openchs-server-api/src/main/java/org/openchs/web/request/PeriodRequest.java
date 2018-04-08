@@ -57,13 +57,13 @@ public class PeriodRequest {
 
         try {
             value = Integer.parseInt(parts[0]);
-        } catch (NumberFormatException e) {
+            if (value >= 1) {
+                if (yearPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.YEARS);
+                if (monthPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.MONTHS);
+            }
+        } catch (Exception e) {
             throw new ValidationException("Bad input. Received: " + str);
         }
-
-        if (value < 1) throw new ValidationException("Bad input. Received: " + str);
-        if (yearPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.YEARS);
-        if (monthPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.MONTHS);
 
         throw new ValidationException("Bad input. Received: " + str);
     }
