@@ -1,7 +1,6 @@
 package org.openchs.web;
 
 import org.openchs.dao.CatchmentRepository;
-import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Catchment;
 import org.openchs.domain.Organisation;
 import org.openchs.framework.security.UserContextHolder;
@@ -19,12 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserInfoController {
 
     private final CatchmentRepository catchmentRepository;
-    private final OrganisationRepository organisationRepository;
 
     @Autowired
-    public UserInfoController(CatchmentRepository catchmentRepository, OrganisationRepository organisationRepository) {
+    public UserInfoController(CatchmentRepository catchmentRepository) {
         this.catchmentRepository = catchmentRepository;
-        this.organisationRepository = organisationRepository;
     }
 
     @RequestMapping(value = "/userInfo", method = RequestMethod.GET)
