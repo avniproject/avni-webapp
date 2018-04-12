@@ -35,8 +35,8 @@ _clean_db:
 _build_db:
 	-psql -h localhost -U $(su) postgres -c "create user $(database) with password 'password'";
 	psql -h localhost -U $(su) postgres -c 'create database $(database) with owner openchs';
-	psql -h localhost $(database) -c 'create extension if not exists "uuid-ossp"';
-	-psql -h localhost $(database) -c 'grant demo to openchs';
+	psql -h localhost -U $(su) $(database) -c 'create extension if not exists "uuid-ossp"';
+	-psql -h localhost -U $(su) $(database) -c 'grant demo to openchs';
 # </postgres>
 
 _create_demo_organisation:
