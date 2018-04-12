@@ -67,11 +67,13 @@ public class CatchmentController {
             Catchment savedCatchment = catchmentRepository.save(catchment);
             catchments.add(savedCatchment);
         }
-        createMasterCatchment(catchments, organisation);
+        if (!catchments.isEmpty()){
+            createMasterCatchment(catchments, organisation);
+        }
     }
 
     private void createMasterCatchment(List<Catchment> catchments, Organisation organisation) {
-        Catchment masterCatchment = saveOrUpdateMasterCatchment(catchments, organisation);
+        Catchment masterCatchment = saveOrUpdateMasterCatchment(catchments.get(0).getType(), organisation);
 
         updateAddressLevelsOfMasterCatchment(catchments, masterCatchment);
     }
@@ -85,12 +87,12 @@ public class CatchmentController {
         addressLevelRepository.save(allAddressLevels);
     }
 
-    private Catchment saveOrUpdateMasterCatchment(List<Catchment> catchments, Organisation organisation) {
+    private Catchment saveOrUpdateMasterCatchment(String masterCatchmentType, Organisation organisation) {
         String masterCatchmentName = String.format("%s Master Catchment", organisation.getName());
         Catchment existingMasterCatchment = catchmentRepository.findByName(masterCatchmentName);
         Catchment masterCatchment = existingMasterCatchment == null? new Catchment(): existingMasterCatchment;
         masterCatchment.setName(masterCatchmentName);
-        masterCatchment.setType(catchments.get(0).getType());
+        masterCatchment.setType(masterCatchmentType);
         masterCatchment.assignUUIDIfRequired();
         catchmentRepository.save(masterCatchment);
         return masterCatchment;
