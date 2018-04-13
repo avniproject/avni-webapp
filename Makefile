@@ -83,6 +83,12 @@ deploy_test_schema: ## Runs all migrations to create the schema with all the obj
 start_server: ## Builds and starts the server
 	./gradlew clean openchs-server-api:bootRun
 
+debug_server:
+	JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" ./gradlew clean openchs-server-api:bootRun
+
+debug_server_jar: build_server
+	JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+
 build_server: ## Builds the jar file
 	./gradlew clean build -x test
 
