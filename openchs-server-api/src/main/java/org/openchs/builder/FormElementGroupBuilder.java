@@ -52,6 +52,7 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
                     .withType(formElementContract.getType())
                     .withUUID(formElementContract.getUuid())
                     .withMandatory(formElementContract.isMandatory())
+                    .withValidFormat(formElementContract.getValidFormat())
                     .build();
         }).collect(Collectors.toSet());
     }
