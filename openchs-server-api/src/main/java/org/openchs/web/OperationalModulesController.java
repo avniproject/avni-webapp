@@ -55,6 +55,9 @@ public class OperationalModulesController {
         Program program = programRepository.findByName(programName);
         OperationalProgram operationalProgram = operationalProgramRepository.findByProgramAndOrganisationId(program, organisation.getId());
         if (operationalProgram != null) return operationalProgram;
+        if (program == null){
+            logger.info(String.format("Program not found for name: %s", programName));
+        }
 
         operationalProgram = new OperationalProgram();
         operationalProgram.setProgram(program);
