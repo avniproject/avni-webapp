@@ -2,11 +2,13 @@ package org.openchs.builder;
 
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
+import org.openchs.application.Format;
 import org.openchs.application.KeyValues;
 import org.openchs.domain.Concept;
 import org.openchs.framework.ApplicationContextProvider;
 import org.openchs.service.ConceptService;
 import org.openchs.web.request.ConceptContract;
+import org.openchs.web.request.FormatContract;
 
 public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuilder> {
 
@@ -61,6 +63,13 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
 
     public FormElementBuilder withType(String type) {
         this.set("Type", type, String.class);
+        return this;
+    }
+
+    public FormElementBuilder withValidFormat(FormatContract formatContract) {
+        if (formatContract != null) {
+            this.set("ValidFormat", new Format(formatContract.getRegex(), formatContract.getDescriptionKey()), Format.class);
+        }
         return this;
     }
 
