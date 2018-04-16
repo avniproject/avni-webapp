@@ -66,10 +66,8 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
         return this;
     }
 
-    public FormElementBuilder withValidFormat(FormatContract formatContract) {
-        if (formatContract != null) {
-            this.set("ValidFormat", new Format(formatContract.getRegex(), formatContract.getDescriptionKey()), Format.class);
-        }
+    public FormElementBuilder withValidFormat(Format format) {
+        this.get().setValidFormat(format);
         return this;
     }
 
