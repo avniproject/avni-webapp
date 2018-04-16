@@ -2,6 +2,7 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.application.Format;
 import org.openchs.application.KeyValues;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ReferenceDataContract;
@@ -96,8 +97,8 @@ public class FormElementContract extends ReferenceDataContract {
                 '}';
     }
 
-    public FormatContract getValidFormat() {
-        return validFormat;
+    public Format getValidFormat() {
+        return validFormat == null ? null : validFormat.toFormat();
     }
 
     public void setValidFormat(FormatContract validFormat) {

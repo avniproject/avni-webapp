@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import org.openchs.application.Format;
+
 public class FormatContract extends ReferenceDataContract {
 
     private String regex;
@@ -27,5 +29,9 @@ public class FormatContract extends ReferenceDataContract {
 
     public void setDescriptionKey(String descriptionKey) {
         this.descriptionKey = descriptionKey;
+    }
+
+    public Format toFormat() {
+        return new Format(this.regex, this.descriptionKey);
     }
 }
