@@ -29,10 +29,6 @@ public class MutableRequestWrapper extends HttpServletRequestWrapper {
         parameterMap.put(name, list.toArray(new String[0]));
     }
 
-    public void overrideParameter(String name, String value) {
-        parameterMap.put(name, new String[]{value});
-    }
-
     @Override
     public String getParameter(String name) {
         if (parameterMap == null) {
