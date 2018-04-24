@@ -6,8 +6,6 @@ import java.util.List;
 
 public enum ConceptDataType {
     Numeric,
-    @Deprecated
-    Boolean,
     Text,
     Coded,
     NA,
