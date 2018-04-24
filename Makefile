@@ -19,18 +19,18 @@ define _deploy_schema
 endef
 
 
-su:=$(shell id -un)
+su:=postgres
 
 # <postgres>
 clean_db_server:
 	make _clean_db database=openchs
 	make _clean_db database=openchs_test
-	-psql -h localhost -U $(su) postgres -c 'drop role openchs';
-	-psql -h localhost -U $(su) postgres -c 'drop role demo';
+	-psql -h localhost -U $(su) -d postgres -c 'drop role openchs';
+	-psql -h localhost -U $(su) -d postgres -c 'drop role demo';
 
 _clean_db:
-	-psql -h localhost -U $(su) postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
-	-psql -h localhost -U $(su) postgres -c 'drop database $(database)';
+	-psql -h localhost -U $(su) -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
+	-psql -h localhost -U $(su) -d postgres -c 'drop database $(database)';
 
 _build_db:
 	-psql -h localhost -U $(su) -d postgres -c "create user $(database) with password 'password'";
@@ -41,7 +41,7 @@ _build_db:
 # </postgres>
 
 _create_demo_organisation:
-	-psql -h localhost -U $(su) $(database) -f make-scripts/create_demo_organisation.sql
+	-psql -h localhost -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
 
 # <db>
 clean_db: ## Drops the database
