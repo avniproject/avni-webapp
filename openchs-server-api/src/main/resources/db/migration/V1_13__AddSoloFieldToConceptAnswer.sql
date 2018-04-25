@@ -1,0 +1,1 @@
+ALTER TABLE concept_answer ADD COLUMN uniq boolean NOT NULL DEFAULT false;

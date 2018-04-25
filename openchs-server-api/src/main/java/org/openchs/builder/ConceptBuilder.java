@@ -68,7 +68,8 @@ public class ConceptBuilder extends BaseBuilder<Concept, ConceptBuilder> {
             conceptAnswerBuilder
                     .withAnswerConcept(answerConcept)
                     .withOrder((short) atomicInteger.incrementAndGet())
-                    .withAbnormal(answer.isAbnormal());
+                    .withAbnormal(answer.isAbnormal())
+                    .withUnique(answer.isUnique());
             return conceptAnswerBuilder.build();
         }).collect(Collectors.toList());
         this.get().addAll(conceptAnswers);
