@@ -89,6 +89,7 @@ public class ConceptService {
         conceptAnswer.setVoided(answerConceptRequest.isVoided());
         conceptAnswer.setOrder(answerOrder);
         conceptAnswer.setAbnormal(answerConceptRequest.isAbnormal());
+        conceptAnswer.setUnique(answerConceptRequest.isUnique());
         return conceptAnswer;
     }
 

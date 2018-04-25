@@ -23,6 +23,9 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     private boolean isVoided = false;
 
+    @Column(name = "uniq")
+    private boolean unique = false;
+
     public Concept getConcept() {
         return concept;
     }
@@ -82,5 +85,17 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     public void setVoided(Boolean voided) {
         isVoided = voided.booleanValue();
+    }
+
+    public boolean isUnique() {
+        return unique;
+    }
+
+    public void setUnique(Boolean unique) {
+        this.unique = unique;
+    }
+
+    public void setUnique(boolean unique) {
+        this.unique = unique;
     }
 }

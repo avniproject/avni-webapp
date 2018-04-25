@@ -26,4 +26,9 @@ public class ConceptAnswerBuilder extends BaseBuilder<ConceptAnswer, ConceptAnsw
         this.set("Abnormal", abnormal, Boolean.class);
         return this;
     }
+
+    public ConceptAnswerBuilder withUnique(Boolean unique) {
+        this.set("Unique", unique, Boolean.class);
+        return this;
+    }
 }
