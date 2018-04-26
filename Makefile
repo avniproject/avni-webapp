@@ -19,7 +19,7 @@ define _deploy_schema
 endef
 
 
-su:=postgres
+su:=$(shell id -un)
 
 # <postgres>
 clean_db_server:
