@@ -107,6 +107,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     }
 
     @Test
+    @Ignore("Not Applicable as coded-concepts are created/updated by concept API")
     public void renameOfAnswersViaFormElements() throws IOException {
         ResponseEntity<FormContract> formResponse = template
                 .getForEntity(String.format("/forms/export?formUUID=%s", "0c444bf3-54c3-41e4-8ca9-f0deb8760831"),
@@ -134,6 +135,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     }
 
     @Test
+    @Ignore("Not Applicable as coded-concepts are created/updated by concept API")
     public void deleteExistingAnswerInFormElement() throws IOException {
         template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
 
@@ -176,6 +178,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     }
 
     @Test
+    @Ignore("Not Applicable as coded-concepts are created/updated by concept API")
     public void changingOrderOfAllAnswers() throws IOException {
         Concept codedConcept = conceptRepository.findByUuid("dcfc771a-0785-43be-bcb1-0d2755793e0e");
         Set<ConceptAnswer> conceptAnswers = codedConcept.getConceptAnswers();
