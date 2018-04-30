@@ -1,0 +1,3 @@
+DROP POLICY catchment_address_mapping_orgs ON catchment_address_mapping;
+ALTER TABLE catchment_address_mapping DROP COLUMN organisation_id;
+ALTER TABLE catchment_address_mapping DISABLE ROW LEVEL SECURITY;
