@@ -59,12 +59,8 @@ public class ConceptBuilder extends BaseBuilder<Concept, ConceptBuilder> {
         List<ConceptAnswer> conceptAnswers = answers.stream().map(answer -> {
             ConceptAnswer existingConceptAnswer = getExistingConceptAnswer(answer.getUuid());
             ConceptAnswerBuilder conceptAnswerBuilder = new ConceptAnswerBuilder(this.get(), existingConceptAnswer);
-            Concept answerConcept = new ConceptBuilder(existingConceptAnswer == null ? conceptService.get(answer.getUuid())
-                    : existingConceptAnswer.getAnswerConcept())
-                    .withDataType(ConceptDataType.NA.name())
-                    .withUUID(answer.getUuid())
-                    .withName(answer.getName())
-                    .build();
+            Concept answerConcept = existingConceptAnswer == null ? conceptService.get(answer.getUuid())
+                    : existingConceptAnswer.getAnswerConcept();
             conceptAnswerBuilder
                     .withAnswerConcept(answerConcept)
                     .withOrder((short) atomicInteger.incrementAndGet())

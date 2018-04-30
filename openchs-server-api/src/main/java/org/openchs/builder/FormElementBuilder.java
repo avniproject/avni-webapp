@@ -47,17 +47,21 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
 
     public FormElementBuilder withConcept(ConceptContract conceptContract) {
         Concept existingConcept = getExistingConcept(conceptContract.getUuid());
-        ConceptBuilder conceptBuilder = new ConceptBuilder(existingConcept);
-        Concept concept = conceptBuilder
-                .withUUID(conceptContract.getUuid())
-                .withName(conceptContract.getName())
-                .withDataType(conceptContract.getDataType())
-                .withNumericParams(conceptContract.getHighAbsolute(), conceptContract.getHighNormal(),
-                        conceptContract.getLowAbsolute(), conceptContract.getLowNormal(), conceptContract.getUnit())
-                .withVoided(conceptContract.isVoided())
-                .withConceptAnswers(conceptContract.getAnswers())
-                .build();
-        this.get().setConcept(concept);
+        if (existingConcept != null) {
+            this.get().setConcept(existingConcept);
+        } else {
+            ConceptBuilder conceptBuilder = new ConceptBuilder(existingConcept);
+            Concept concept = conceptBuilder
+                    .withUUID(conceptContract.getUuid())
+                    .withName(conceptContract.getName())
+                    .withDataType(conceptContract.getDataType())
+                    .withNumericParams(conceptContract.getHighAbsolute(), conceptContract.getHighNormal(),
+                            conceptContract.getLowAbsolute(), conceptContract.getLowNormal(), conceptContract.getUnit())
+                    .withVoided(conceptContract.isVoided())
+                    .withConceptAnswers(conceptContract.getAnswers())
+                    .build();
+            this.get().setConcept(concept);
+        }
         return this;
     }
 
