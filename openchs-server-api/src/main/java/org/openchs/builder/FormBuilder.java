@@ -7,6 +7,7 @@ import org.openchs.domain.Organisation;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.FormElementGroupContract;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

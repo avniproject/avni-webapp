@@ -1,16 +1,16 @@
 package org.openchs.domain.programConfig;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class VisitScheduleConfig extends HashMap<String, List<Object>> implements Serializable {
+public class VisitScheduleConfig extends ArrayList<Object> implements Serializable {
     public VisitScheduleConfig() {
     }
 
-    public VisitScheduleConfig(Map<String, List<Object>> schedules) {
-        this.putAll(schedules);
+    public VisitScheduleConfig(List<Object> schedules) {
+        this.clear();
+        this.addAll(schedules);
     }
 
 }
