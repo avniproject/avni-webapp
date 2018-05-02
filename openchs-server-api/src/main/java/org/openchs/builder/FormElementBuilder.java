@@ -47,11 +47,9 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
 
     public FormElementBuilder withConcept(ConceptContract conceptContract) {
         Concept existingConcept = getExistingConcept(conceptContract.getUuid());
-        if (existingConcept != null) {
-            this.get().setConcept(existingConcept);
-        } else {
-            ConceptBuilder conceptBuilder = new ConceptBuilder(existingConcept);
-            Concept concept = conceptBuilder
+        if (existingConcept == null) {
+            ConceptBuilder conceptBuilder = new ConceptBuilder(null);
+            existingConcept = conceptBuilder
                     .withUUID(conceptContract.getUuid())
                     .withName(conceptContract.getName())
                     .withDataType(conceptContract.getDataType())
@@ -60,8 +58,8 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
                     .withVoided(conceptContract.isVoided())
                     .withConceptAnswers(conceptContract.getAnswers())
                     .build();
-            this.get().setConcept(concept);
         }
+        this.get().setConcept(existingConcept);
         return this;
     }
 
