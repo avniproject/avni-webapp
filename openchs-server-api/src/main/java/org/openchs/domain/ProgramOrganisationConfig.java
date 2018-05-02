@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity(name = "program_organisation_config")
 public class ProgramOrganisationConfig extends OrganisationAwareEntity {
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "program_id")
     private Program program;
 

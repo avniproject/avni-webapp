@@ -123,6 +123,19 @@ public class OpenCHS {
     }
 
     @Bean
+    public ResourceProcessor<Resource<ProgramOrganisationConfig>> programOrganisationConfig() {
+        return new ResourceProcessor<Resource<ProgramOrganisationConfig>>() {
+            @Override
+            public Resource<ProgramOrganisationConfig> process(Resource<ProgramOrganisationConfig> resource) {
+                ProgramOrganisationConfig content = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(content.getProgram().getUuid(), "programUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
     public ResourceProcessor<Resource<ConceptAnswer>> conceptAnswerProcessor() {
         return new ResourceProcessor<Resource<ConceptAnswer>>() {
             @Override
