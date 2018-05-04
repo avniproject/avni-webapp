@@ -16,28 +16,26 @@ import java.util.Random;
 import java.util.UUID;
 
 @MappedSuperclass
-@EntityListeners({AuditingEntityListener.class})
 public class CHSEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     @Id
     private Long id;
 
-    @JoinColumn(name = "created_by_id")
-    @CreatedBy
-    @ManyToOne(targetEntity = User.class)
-    private User createdBy;
+    public Audit getAudit() {
+        if (audit == null) {
+            audit = new Audit();
+        }
+        return audit;
+    }
 
-    @CreatedDate
-    private DateTime createdDateTime;
+    public void setAudit(Audit audit) {
+        this.audit = audit;
+    }
 
-    @JoinColumn(name = "last_modified_by_id")
-    @LastModifiedBy
-    @ManyToOne(targetEntity = User.class)
-    private User lastModifiedBy;
-
-    @LastModifiedDate
-    private DateTime lastModifiedDateTime;
+    @JoinColumn(name = "audit_id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Audit audit = new Audit();
 
     @Version
     @Column(name = "version")
@@ -46,38 +44,6 @@ public class CHSEntity {
     @Column
     @NotNull
     private String uuid;
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public DateTime getCreatedDateTime() {
-        return createdDateTime;
-    }
-
-    public void setCreatedDateTime(DateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
-    }
-
-    public User getLastModifiedBy() {
-        return lastModifiedBy;
-    }
-
-    public void setLastModifiedBy(User lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public DateTime getLastModifiedDateTime() {
-        return lastModifiedDateTime;
-    }
-
-    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
-        this.lastModifiedDateTime = lastModifiedDateTime;
-    }
 
     public Long getId() {
         return id;
@@ -109,6 +75,38 @@ public class CHSEntity {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public User getCreatedBy() {
+        return this.getAudit().getCreatedBy();
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.getAudit().setCreatedBy(createdBy);
+    }
+
+    public DateTime getCreatedDateTime() {
+        return audit.getCreatedDateTime();
+    }
+
+    public void setCreatedDateTime(DateTime createdDateTime) {
+        this.getAudit().setCreatedDateTime(createdDateTime);
+    }
+
+    public User getLastModifiedBy() {
+        return this.getAudit().getLastModifiedBy();
+    }
+
+    public void setLastModifiedBy(User lastModifiedBy) {
+        this.getAudit().setLastModifiedBy(lastModifiedBy);
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return this.getAudit().getLastModifiedDateTime();
+    }
+
+    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
+        this.getAudit().setLastModifiedDateTime(lastModifiedDateTime);
     }
 
     @Override

@@ -1,0 +1,1 @@
+ALTER TABLE catchment_address_mapping DISABLE ROW LEVEL SECURITY;

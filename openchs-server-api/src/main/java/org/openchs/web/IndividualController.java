@@ -1,17 +1,14 @@
 package org.openchs.web;
 
-import org.joda.time.LocalDate;
 import org.openchs.dao.AddressLevelRepository;
 import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
-import org.openchs.web.request.PeriodRequest;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
-import org.openchs.service.ObservationService;
-import org.openchs.web.validation.ValidationException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
