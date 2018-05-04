@@ -213,6 +213,12 @@ VALUES (1, '1955-01-05', FALSE, 'Ram', 'Kumari', 1, 'c415ef96-8ff9-4cbb-8407-e76
 INSERT INTO form (NAME, form_type, uuid, version)
 VALUES ('encounter_form', 'Encounter', '2c32a184-6d27-4c51-841d-551ca94594a5', 1);
 
+
+INSERT INTO audit(created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1, 1, now(), now());
+
+UPDATE form SET audit_id = (SELECT currval('audit_id_seq'));
+
 INSERT INTO form_element_group (NAME, form_id, uuid, version)
 VALUES ('default_group', 1, '4b317705-4372-4405-a628-6c8bb8da8671', 1);
 
