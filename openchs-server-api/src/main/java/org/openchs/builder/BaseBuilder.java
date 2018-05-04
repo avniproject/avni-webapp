@@ -2,12 +2,12 @@ package org.openchs.builder;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.OrganisationAwareEntity;
+import org.openchs.framework.security.UserContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Collections;
 
 public abstract class BaseBuilder<T extends OrganisationAwareEntity, K> {
     private final Logger logger;
