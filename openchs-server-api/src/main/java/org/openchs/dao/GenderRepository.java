@@ -19,5 +19,5 @@ import javax.transaction.Transactional;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface GenderRepository extends PagingAndSortingRepository<Gender, Long>, ReferenceDataRepository<Gender> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<Gender> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<Gender> findByAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

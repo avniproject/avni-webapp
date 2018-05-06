@@ -19,5 +19,5 @@ import javax.transaction.Transactional;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface EncounterTypeRepository extends PagingAndSortingRepository<EncounterType, Long>, ReferenceDataRepository<EncounterType> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<EncounterType> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<EncounterType> findByAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }

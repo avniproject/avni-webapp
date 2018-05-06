@@ -4,11 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.joda.time.DateTime;
 import org.openchs.application.Form;
-import org.openchs.web.request.ReferenceDataContract;
 import org.springframework.hateoas.ResourceSupport;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "name", "uuid", "formType", "programName", "createdDateTime",
@@ -30,12 +26,12 @@ public class BasicFormDetails extends ResourceSupport {
         this.uuid = form.getUuid();
         this.formType = form.getFormType().name();
         this.programName = programName;
-        this.createDateTime = form.getCreatedDateTime();
-        this.lastModifiedDateTime = form.getLastModifiedDateTime();
-        this.createdBy = form.getCreatedBy().getName();
-        this.createdByUUID = form.getCreatedBy().getUuid();
-        this.lastModifiedBy = form.getLastModifiedBy().getName();
-        this.lastModifiedByUUID = form.getLastModifiedBy().getUuid();
+        this.createDateTime = form.getAudit().getCreatedDateTime();
+        this.lastModifiedDateTime = form.getAudit().getLastModifiedDateTime();
+        this.createdBy = form.getAudit().getCreatedBy().getName();
+        this.createdByUUID = form.getAudit().getCreatedBy().getUuid();
+        this.lastModifiedBy = form.getAudit().getLastModifiedBy().getName();
+        this.lastModifiedByUUID = form.getAudit().getLastModifiedBy().getUuid();
     }
 
     public String getName() {

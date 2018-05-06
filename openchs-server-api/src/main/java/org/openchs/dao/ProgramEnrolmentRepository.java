@@ -20,10 +20,10 @@ import javax.transaction.Transactional;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface ProgramEnrolmentRepository extends PagingAndSortingRepository<ProgramEnrolment, Long>, CHSRepository<ProgramEnrolment> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<ProgramEnrolment> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<ProgramEnrolment> findByAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")
-    Page<ProgramEnrolment> findByIndividualAddressLevelCatchmentsIdAndLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByIndividualAddressLevelCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("catchmentId") long catchmentId,
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

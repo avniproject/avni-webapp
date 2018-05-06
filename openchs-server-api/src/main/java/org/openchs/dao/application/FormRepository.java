@@ -18,5 +18,5 @@ import org.springframework.stereotype.Repository;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface FormRepository extends PagingAndSortingRepository<Form, Long>, ReferenceDataRepository<Form> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<Form> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<Form> findByAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 }
