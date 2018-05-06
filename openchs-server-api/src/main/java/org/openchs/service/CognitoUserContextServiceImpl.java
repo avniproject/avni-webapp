@@ -60,6 +60,14 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
+    public void logConfiguration() {
+        logger.debug("Cognito configuration");
+        logger.debug(String.format("Pool Id: %s", poolId));
+        logger.debug(String.format("Client Id: %s", clientId));
+        logger.debug(String.format("Default organisation: %s", defaultOrganisation));
+        logger.debug(String.format("Dev mode: %s", isDev));
+    }
+
     private boolean isDev() {
         String[] activeProfiles = environment.getActiveProfiles();
         return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
@@ -67,6 +75,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
 
     @Override
     public UserContext getUserContext(String token, String becomeOrganisationName) {
+        logConfiguration();
         if (isDev) {
             UserContext userContext = new UserContext();
             String organisationName = StringUtils.isEmpty(becomeOrganisationName) ? defaultOrganisation : becomeOrganisationName.trim();
