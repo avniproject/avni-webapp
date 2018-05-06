@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.persistence.Id;
@@ -68,6 +69,10 @@ public class CHSEntity {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return audit.getLastModifiedDateTime();
     }
 
     @Override
