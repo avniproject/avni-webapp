@@ -1,9 +1,7 @@
 package org.openchs.framework.sync;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;

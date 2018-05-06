@@ -1,13 +1,15 @@
 package org.openchs.service;
 
-import jdk.nashorn.internal.objects.NativeArray;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.ObservationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

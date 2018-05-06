@@ -17,14 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface IndividualRepository extends PagingAndSortingRepository<Individual, Long>, CHSRepository<Individual> {
-//    @RestResource(path = "lastModified", rel = "lastModified")
-//    Page<Individual> findByLastModifiedDateTimeGreaterThanAndIsVoidedFalseOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
-
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<Individual> findByAudit_LastModifiedDateTimeGreaterThanAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<Individual> findByAuditLastModifiedDateTimeGreaterThanAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
-    Page<Individual> findByAddressLevelCatchmentsIdAndAudit_LastModifiedDateTime_IsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Individual> findByAddressLevelCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("catchmentId") long catchmentId,
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

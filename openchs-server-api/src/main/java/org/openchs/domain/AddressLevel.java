@@ -1,8 +1,5 @@
 package org.openchs.domain;
 
-import org.hibernate.annotations.Type;
-import org.openchs.application.KeyValues;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;

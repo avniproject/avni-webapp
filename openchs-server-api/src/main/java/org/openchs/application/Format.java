@@ -1,10 +1,7 @@
 package org.openchs.application;
 
-import org.openchs.web.request.FormatContract;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
 
 @Embeddable
 public class Format {
