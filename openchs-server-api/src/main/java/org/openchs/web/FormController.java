@@ -156,7 +156,7 @@ public class FormController {
             programName = programRepository.findOne(formMappings.get(0).getEntityId()).getName();
         }
 
-        FormContract formContract = new FormContract(formUUID, form.getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString(), programName, encounterTypeNames);
+        FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString(), programName, encounterTypeNames);
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
@@ -231,8 +231,8 @@ public class FormController {
             Link formLink = entityLinks.linkToSingleResource(Form.class, form.getId());
             formDetail.add(formLink);
             formDetail.add(new Link(formLink.getHref() + "/formElementGroups", "formElementGroups"));
-            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getCreatedBy().getId()).withRel("createdBy"));
-            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getLastModifiedBy().getId()).withRel("lastModifiedBy"));
+            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getAudit().getCreatedBy().getId()).withRel("createdBy"));
+            formDetail.add(entityLinks.linkToSingleResource(User.class, form.getAudit().getLastModifiedBy().getId()).withRel("lastModifiedBy"));
             return formDetail;
         }).collect(Collectors.toList());
     }

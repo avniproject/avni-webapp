@@ -18,6 +18,6 @@ import org.springframework.stereotype.Repository;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface OperationalProgramRepository extends PagingAndSortingRepository<OperationalProgram, Long>, CHSRepository<OperationalProgram> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<OperationalProgram> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<OperationalProgram> findByAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
     OperationalProgram findByProgramAndOrganisationId(Program program, long organisationId);
 }

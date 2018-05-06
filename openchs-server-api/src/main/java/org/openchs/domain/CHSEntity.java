@@ -1,18 +1,11 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.NaturalId;
-import org.joda.time.DateTime;
-import org.springframework.data.annotation.*;
-import org.springframework.data.domain.Persistable;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.persistence.Id;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
-import java.util.Random;
 import java.util.UUID;
 
 @MappedSuperclass
@@ -21,17 +14,6 @@ public class CHSEntity {
     @Column(name = "id", updatable = false, nullable = false)
     @Id
     private Long id;
-
-    public Audit getAudit() {
-        if (audit == null) {
-            audit = new Audit();
-        }
-        return audit;
-    }
-
-    public void setAudit(Audit audit) {
-        this.audit = audit;
-    }
 
     @JoinColumn(name = "audit_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -51,6 +33,17 @@ public class CHSEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Audit getAudit() {
+        if (audit == null) {
+            audit = new Audit();
+        }
+        return audit;
+    }
+
+    public void setAudit(Audit audit) {
+        this.audit = audit;
     }
 
     public String getUuid() {
@@ -75,38 +68,6 @@ public class CHSEntity {
 
     public void setVersion(int version) {
         this.version = version;
-    }
-
-    public User getCreatedBy() {
-        return this.getAudit().getCreatedBy();
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.getAudit().setCreatedBy(createdBy);
-    }
-
-    public DateTime getCreatedDateTime() {
-        return audit.getCreatedDateTime();
-    }
-
-    public void setCreatedDateTime(DateTime createdDateTime) {
-        this.getAudit().setCreatedDateTime(createdDateTime);
-    }
-
-    public User getLastModifiedBy() {
-        return this.getAudit().getLastModifiedBy();
-    }
-
-    public void setLastModifiedBy(User lastModifiedBy) {
-        this.getAudit().setLastModifiedBy(lastModifiedBy);
-    }
-
-    public DateTime getLastModifiedDateTime() {
-        return this.getAudit().getLastModifiedDateTime();
-    }
-
-    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
-        this.getAudit().setLastModifiedDateTime(lastModifiedDateTime);
     }
 
     @Override

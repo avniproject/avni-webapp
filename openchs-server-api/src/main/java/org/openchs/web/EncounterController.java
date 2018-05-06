@@ -6,7 +6,6 @@ import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
-import org.openchs.domain.Program;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
 import org.springframework.beans.factory.annotation.Autowired;

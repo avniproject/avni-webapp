@@ -2,7 +2,6 @@ package org.openchs.builder;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.OrganisationAwareEntity;
-import org.openchs.framework.security.UserContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +18,7 @@ public abstract class BaseBuilder<T extends OrganisationAwareEntity, K> {
         this.entity = newEntity;
         this.existingEntity = existingEntity;
         logger = LoggerFactory.getLogger(this.getClass());
-        this.get().setLastModifiedDateTime(new DateTime());
+        this.get().getAudit().setLastModifiedDateTime(new DateTime());
     }
 
     public K withUUID(String uuid) {

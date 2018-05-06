@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface ConceptAnswerRepository extends PagingAndSortingRepository<ConceptAnswer, Long> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<ConceptAnswer> findByLastModifiedDateTimeGreaterThanOrderByLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<ConceptAnswer> findByAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
     ConceptAnswer findByConceptAndAnswerConcept(Concept concept, Concept answerConcept);
 }
