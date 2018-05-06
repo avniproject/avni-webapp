@@ -1,10 +1,7 @@
 package org.openchs.web.request.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.LocalDate;
-import org.openchs.util.O;
 import org.openchs.web.request.CHSRequest;
-import org.openchs.web.request.IntervalUnit;
 import org.openchs.web.request.PeriodRequest;
 
 public class CommonIndividualRequest extends CHSRequest {
