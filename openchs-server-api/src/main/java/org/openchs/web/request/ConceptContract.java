@@ -17,7 +17,7 @@ public class ConceptContract extends ReferenceDataContract {
     private Double highNormal;
     private String unit;
     private boolean abnormal;
-    private boolean unique;
+    private boolean unique = false;
     private boolean isVoided = false;
 
     public String getDataType() {
