@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
-import javax.persistence.Id;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
