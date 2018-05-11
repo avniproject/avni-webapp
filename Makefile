@@ -53,6 +53,9 @@ build_db: ## Creates new empty database
 create_demo_organisation: ## Creates dummy user
 	make _create_demo_organisation database=openchs
 
+delete_org_meta_data:
+	psql -h localhost -U $(su) openchs -f openchs-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
+
 rebuild_db: clean_db build_db ## clean + build db
 
 rebuild_dev_db: rebuild_db deploy_schema create_demo_organisation
@@ -80,11 +83,10 @@ deploy_test_schema: ## Runs all migrations to create the schema with all the obj
 
 
 # <server>
-start_server: debug_server_jar
+start_server: build_server
+	java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
-debug_server: debug_server_jar
-
-debug_server_jar: build_server
+debug_server: build_server
 	JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
