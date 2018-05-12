@@ -1,0 +1,17 @@
+[
+  {
+    "name": "New child in separate file",
+    "uuid": "18dfc9b0-4e17-4b61-a7c6-bc1d6283ccca",
+    "dataType": "NA"
+  },
+  {
+    "name": "Parent",
+    "uuid": "d76927d0-a0b9-4cb0-be29-12508275036e",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "uuid": "18dfc9b0-4e17-4b61-a7c6-bc1d6283ccca"
+      }
+    ]
+  }
+]

@@ -24,7 +24,7 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
 
     @Test
     public void shouldCreateConcepts() throws IOException {
-        Object json = mapper.readValue(this.getClass().getResource("/ref/concepts/concepts.json"), Object.class);
+        Object json = getJSON("/ref/concepts/concepts.json");
         post(json);
 
         Concept naConcept = conceptRepository.findByUuid("b82d4ed8-6e9f-4c67-bfdc-b1a04861bc20");
@@ -34,14 +34,14 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
 
     @Test
     public void shouldVoidAConcept() throws IOException {
-        Object json = mapper.readValue(this.getClass().getResource("/ref/concepts/voidableConcept.json"), Object.class);
+        Object json = getJSON("/ref/concepts/voidableConcept.json");
         post(json);
 
         Concept voidableConcept = conceptRepository.findByName("Voidable concept");
         assertThat(voidableConcept).isNotNull();
         assertThat(voidableConcept.isVoided()).isFalse();
 
-        json = mapper.readValue(this.getClass().getResource("/ref/concepts/voidedConcept.json"), Object.class);
+        json = getJSON("/ref/concepts/voidedConcept.json");
         post(json);
         Concept voidedConcept = conceptRepository.findByName("Voidable concept");
         assertThat(voidedConcept).isNotNull();
@@ -50,21 +50,21 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
 
     @Test
     public void shouldAddAndRemoveAnswers() throws IOException {
-        Object json = mapper.readValue(this.getClass().getResource("/ref/concepts/codedConcept.json"), Object.class);
+        Object json = getJSON("/ref/concepts/codedConcept.json");
         post(json);
 
         Concept codedConcept = conceptRepository.findByName("Coded Question");
         assertThat(codedConcept).isNotNull();
         assertThat(codedConcept.getConceptAnswers().size()).isEqualTo(3);
 
-        json = mapper.readValue(this.getClass().getResource("/ref/concepts/addAnswers.json"), Object.class);
+        json = getJSON("/ref/concepts/addAnswers.json");
         post(json);
 
         Concept withAnswer4 = conceptRepository.findByName("Coded Question");
         assertThat(withAnswer4).isNotNull();
         assertThat(withAnswer4.getConceptAnswers().size()).isEqualTo(4);
 
-        json = mapper.readValue(this.getClass().getResource("/ref/concepts/removeAnswers.json"), Object.class);
+        json = getJSON("/ref/concepts/removeAnswers.json");
         post(json);
 
         Concept withoutAnswer3 = conceptRepository.findByName("Coded Question");
@@ -77,12 +77,27 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
 
     @Test
     public void donotChangeTheDataTypeOfConceptUsedAsAnswerIfAlreadyPresent() throws IOException {
-        Object json = mapper.readValue(this.getClass().getResource("/ref/concepts/conceptUsedAsCodedButAlsoAsAnswer.json"), Object.class);
+        Object json = getJSON("/ref/concepts/conceptUsedAsCodedButAlsoAsAnswer.json");
         post(json);
         assertThat(conceptRepository.findByUuid("d78edcbb-2034-4220-ace2-20b445a1e0ad").getDataType()).isEqualTo(ConceptDataType.Coded.toString());
         assertThat(conceptRepository.findByUuid("60f284a6-0240-4de8-a6a1-8839bc9cc219").getDataType()).isEqualTo(ConceptDataType.Numeric.toString());
         post(json);
         assertThat(conceptRepository.findByUuid("d78edcbb-2034-4220-ace2-20b445a1e0ad").getDataType()).isEqualTo(ConceptDataType.Coded.toString());
         assertThat(conceptRepository.findByUuid("60f284a6-0240-4de8-a6a1-8839bc9cc219").getDataType()).isEqualTo(ConceptDataType.Numeric.toString());
+    }
+
+    @Test
+    public void addConceptAnswerViaRedefiningTheConcept() throws IOException {
+        Object json = getJSON("/ref/concepts/conceptsAnswersAddedBySpecifyingNewOnesOnly.json");
+        post(json);
+        assertThat(conceptRepository.findByUuid("d76927d0-a0b9-4cb0-be29-12508275036e").getConceptAnswers().size()).isEqualTo(3);
+
+        json = getJSON("/ref/concepts/conceptAnswerAdditionViaSeparateFile.json");
+        post(json);
+        assertThat(conceptRepository.findByUuid("d76927d0-a0b9-4cb0-be29-12508275036e").getConceptAnswers().size()).isEqualTo(4);
+    }
+
+    private Object getJSON(String jsonFile) throws IOException {
+        return mapper.readValue(this.getClass().getResource(jsonFile), Object.class);
     }
 }
