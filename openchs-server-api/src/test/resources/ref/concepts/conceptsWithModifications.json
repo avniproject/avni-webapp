@@ -5,7 +5,8 @@
     "dataType": "NA"
   },
   {
-    "name": "An answer",
+    "comment": "MODIFIED",
+    "name": "AN ANSWER",
     "uuid": "90e44d61-97c3-471d-964d-44b2488d0204",
     "dataType": "NA"
   },
@@ -23,15 +24,13 @@
     ]
   },
   {
+    "comment": "MODIFIED",
     "name": "Coded concept2",
     "uuid": "92a10cdf-283e-4273-a376-95a36194381c",
     "dataType": "Coded",
     "answers": [
       {
         "uuid": "90e44d61-97c3-471d-964d-44b2488d0204"
-      },
-      {
-        "uuid": "b82d4ed8-6e9f-4c67-bfdc-b1a04861bc20"
       }
     ]
   },
@@ -43,11 +42,12 @@
     "highNormal": 2
   },
   {
+    "comment": "MODIFIED",
     "name": "Height for age z-score",
     "uuid": "1f7c6df7-5260-439a-8221-28319e8fb98b",
     "dataType": "Numeric",
     "lowNormal": -2,
-    "highNormal": 2
+    "highNormal": 6
   },
   {
     "name": "Voided concept",

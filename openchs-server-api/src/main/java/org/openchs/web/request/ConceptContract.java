@@ -24,10 +24,6 @@ public class ConceptContract extends ReferenceDataContract {
         return dataType == null ? null : dataType.trim();
     }
 
-    public String getDefaultDataType() {
-        return dataType == null ? ConceptDataType.NA.name() : dataType.trim();
-    }
-
     public boolean isCoded() {
         return ConceptDataType.Coded.toString().equals(this.getDataType());
     }

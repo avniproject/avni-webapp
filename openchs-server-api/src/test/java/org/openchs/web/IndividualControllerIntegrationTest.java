@@ -1,6 +1,5 @@
 package org.openchs.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
@@ -31,10 +30,9 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
 
     @Test
     public void createNewIndividual() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             Object json = mapper.readValue(this.getClass().getResource("/ref/individual/newIndividual.json"), Object.class);
-            template.postForEntity("/individuals", json, Void.class);
+            post("/individuals", json);
 
             Individual newIndividual = individualRepository.findByUuid(INDIVIDUAL_UUID);
             assertThat(newIndividual).isNotNull();
@@ -46,17 +44,16 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
 
     @Test
     public void voidExistingIndividual() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             Object json = mapper.readValue(this.getClass().getResource("/ref/individual/newIndividual.json"), Object.class);
-            template.postForEntity("/individuals", json, Void.class);
+            post("/individuals", json);
 
             Individual newIndividual = individualRepository.findByUuid(INDIVIDUAL_UUID);
             assertThat(newIndividual).isNotNull();
             assertThat(newIndividual.isVoided()).isFalse();
 
             json = mapper.readValue(this.getClass().getResource("/ref/individual/voidedIndividual.json"), Object.class);
-            template.postForEntity("/individuals", json, Void.class);
+            post("/individuals", json);
 
             Individual voidedIndividual = individualRepository.findByUuid(INDIVIDUAL_UUID);
             assertThat(voidedIndividual).isNotNull();
@@ -69,17 +66,16 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
 
     @Test
     public void unvoidVoidedIndividual() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             Object json = mapper.readValue(this.getClass().getResource("/ref/individual/voidedIndividual.json"), Object.class);
-            template.postForEntity("/individuals", json, Void.class);
+            post("/individuals", json);
 
             Individual voidedIndividual = individualRepository.findByUuid(INDIVIDUAL_UUID);
             assertThat(voidedIndividual).isNotNull();
             assertThat(voidedIndividual.isVoided()).isTrue();
 
             json = mapper.readValue(this.getClass().getResource("/ref/individual/newIndividual.json"), Object.class);
-            template.postForEntity("/individuals", json, Void.class);
+            post("/individuals", json);
 
             Individual newIndividual = individualRepository.findByUuid(INDIVIDUAL_UUID);
             assertThat(newIndividual).isNotNull();

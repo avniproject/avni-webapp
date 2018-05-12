@@ -1,6 +1,5 @@
 package org.openchs.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
@@ -24,10 +23,9 @@ public class EncounterControllerIntegrationTest extends AbstractControllerIntegr
 
     @Test
     public void createNewEncounter() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/newEncounter.json"), Object.class);
-            template.postForEntity("/encounters", json, Void.class);
+            post("/encounters", json);
 
             Encounter newEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
             assertThat(newEncounter).isNotNull();
@@ -39,17 +37,16 @@ public class EncounterControllerIntegrationTest extends AbstractControllerIntegr
 
     @Test
     public void voidExistingEncounter() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/newEncounter.json"), Object.class);
-            template.postForEntity("/encounters", json, Void.class);
+            post("/encounters", json);
 
             Encounter newEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
             assertThat(newEncounter).isNotNull();
             assertThat(newEncounter.isVoided()).isFalse();
 
             json = mapper.readValue(this.getClass().getResource("/ref/encounters/voidedEncounter.json"), Object.class);
-            template.postForEntity("/encounters", json, Void.class);
+            post("/encounters", json);
 
             Encounter voidedEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
             assertThat(voidedEncounter).isNotNull();
@@ -62,17 +59,16 @@ public class EncounterControllerIntegrationTest extends AbstractControllerIntegr
 
     @Test
     public void unvoidVoidedEncounter() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/voidedEncounter.json"), Object.class);
-            template.postForEntity("/encounters", json, Void.class);
+            post("/encounters", json);
 
             Encounter voidedEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
             assertThat(voidedEncounter).isNotNull();
             assertThat(voidedEncounter.isVoided()).isTrue();
 
             json = mapper.readValue(this.getClass().getResource("/ref/encounters/newEncounter.json"), Object.class);
-            template.postForEntity("/encounters", json, Void.class);
+            post("/encounters", json);
 
             Encounter newEncounter = encounterRepository.findByUuid(ENCOUNTER_UUID);
             assertThat(newEncounter).isNotNull();
