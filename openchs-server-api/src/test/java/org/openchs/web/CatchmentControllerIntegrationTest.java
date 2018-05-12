@@ -1,7 +1,5 @@
 package org.openchs.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import javassist.bytecode.stackmap.BasicBlock;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,7 +9,6 @@ import org.openchs.dao.CatchmentRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Catchment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
@@ -22,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Sql({"/test-data.sql"})
 @Ignore
 public class CatchmentControllerIntegrationTest extends AbstractControllerIntegrationTest {
-
     @Autowired
     public CatchmentRepository catchmentRepository;
 
@@ -31,11 +27,10 @@ public class CatchmentControllerIntegrationTest extends AbstractControllerIntegr
 
     @Test
     public void shouldUploadCatchments() {
-        ObjectMapper mapper = new ObjectMapper();
+
         try {
             Object json = mapper.readValue(this.getClass().getResource("/ref/catchments/catchments.json"), Object.class);
-            ResponseEntity<Void> catchmentResponse = template.postForEntity("/catchments", json, Void.class);
-            assertThat(catchmentResponse.getStatusCode().is2xxSuccessful());
+            post("/catchments", json);
 
             Catchment ghotpadi = catchmentRepository.findByName("Ghotpadi");
             assertThat(ghotpadi).isNotNull();
@@ -55,15 +50,12 @@ public class CatchmentControllerIntegrationTest extends AbstractControllerIntegr
 
     @Test
     public void shouldUpdateCatchments() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             Object baseCatchments = mapper.readValue(this.getClass().getResource("/ref/catchments/catchments.json"), Object.class);
-            ResponseEntity<Void> catchmentResponse = template.postForEntity("/catchments", baseCatchments, Void.class);
-            assertThat(catchmentResponse.getStatusCode().is2xxSuccessful());
+            post("/catchments", baseCatchments);
 
             Object updatedNames = mapper.readValue(this.getClass().getResource("/ref/catchments/updatedCatchments.json"), Object.class);
-            ResponseEntity<Void> updateResponse = template.postForEntity("/catchments", updatedNames, Void.class);
-            assertThat(updateResponse.getStatusCode().is2xxSuccessful());
+            post("/catchments", updatedNames);
 
             Catchment ghotpadi = catchmentRepository.findByName("Ghotpadi");
             assertThat(ghotpadi).isNotNull();

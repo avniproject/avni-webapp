@@ -2,7 +2,6 @@ package org.openchs.builder;
 
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
-import org.openchs.domain.ConceptDataType;
 import org.openchs.framework.ApplicationContextProvider;
 import org.openchs.service.ConceptService;
 import org.openchs.util.O;
@@ -49,7 +48,7 @@ public class ConceptBuilder extends BaseBuilder<Concept, ConceptBuilder> {
         return this.get().getConceptAnswers().stream()
                 .filter(answer -> answer.getAnswerConcept().getUuid().equals(conceptAnswerUUID))
                 .findFirst()
-                .orElse(conceptService.getAnswer(this.get().getUuid(), conceptAnswerUUID));
+                .orElse(conceptService.getAnswer(this.get().getUuid()));
     }
 
     public ConceptBuilder withConceptAnswers(List<ConceptContract> answers) {

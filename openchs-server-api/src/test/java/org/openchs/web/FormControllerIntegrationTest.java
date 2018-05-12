@@ -1,9 +1,5 @@
 package org.openchs.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.hibernate.Hibernate;
 import org.junit.After;
 import org.junit.Before;
@@ -25,22 +21,16 @@ import org.openchs.framework.security.AuthenticationFilter;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.application.FormContract;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +55,6 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     private FormElementGroupRepository formElementGroupRepository;
 
     private Object getJson(String path) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(this.getClass().getResource(path), Object.class);
     }
 
@@ -73,9 +62,9 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        template.postForEntity("/programs", getJson("/ref/program.json"), Void.class);
-        template.postForEntity("/concepts", getJson("/ref/concepts.json"), Void.class);
-        template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
+        post("/programs", getJson("/ref/program.json"));
+        post("/concepts", getJson("/ref/concepts.json"));
+        post("/forms", getJson("/ref/forms/originalForm.json"));
     }
 
     @After
@@ -120,7 +109,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
                 assertEquals("Yes, started", answer.getName());
             }
         }
-        template.postForEntity("/forms", getJson("/ref/forms/formWithRenamedAnswer.json"), Void.class);
+        post("/forms", getJson("/ref/forms/formWithRenamedAnswer.json"));
         formResponse = template
                 .getForEntity(String.format("/forms/export?formUUID=%s", "0c444bf3-54c3-41e4-8ca9-f0deb8760831"),
                         FormContract.class);
@@ -137,7 +126,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     @Test
     @Ignore("Not Applicable as coded-concepts are created/updated by concept API")
     public void deleteExistingAnswerInFormElement() throws IOException {
-        template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
+        post("/forms", getJson("/ref/forms/originalForm.json"));
 
         Concept conceptWithAnswerToBeDeleted = conceptRepository.findByName("Have you started going to school once again");
         assertThat(conceptWithAnswerToBeDeleted.getConceptAnswers().size()).isEqualTo(3);
@@ -146,7 +135,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         assertThat(answerToBeDeleted.isVoided()).isFalse();
 
 
-        template.postForEntity("/forms", getJson("/ref/forms/formWithDeletedAnswer.json"), Void.class);
+        post("/forms", getJson("/ref/forms/formWithDeletedAnswer.json"));
 
         Concept conceptWithDeletedAnswer = conceptRepository.findByName("Have you started going to school once again");
         assertThat(conceptWithDeletedAnswer.getConceptAnswers().size()).isEqualTo(3);
@@ -157,11 +146,11 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
     @Test
     public void deleteFormElement() throws IOException {
-        template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
+        post("/forms", getJson("/ref/forms/originalForm.json"));
 
         assertThat(formElementRepository.findByUuid("45a1595c-c324-4e76-b8cd-0873e465b5ae")).isNotNull();
 
-        template.postForEntity("/forms", getJson("/ref/forms/formWithDeletedFormElement.json"), Void.class);
+        post("/forms", getJson("/ref/forms/formWithDeletedFormElement.json"));
 
         assertThat(formElementRepository.findByUuid("45a1595c-c324-4e76-b8cd-0873e465b5ae").isVoided()).isTrue();
     }
@@ -169,11 +158,11 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
     @Test
     public void deleteFormElementGroup() throws IOException {
-        template.postForEntity("/forms", getJson("/ref/forms/originalForm.json"), Void.class);
+        post("/forms", getJson("/ref/forms/originalForm.json"));
         assertThat(formElementGroupRepository.findByUuid("e47c7604-6cb6-45bb-a36a-05a03f958cdf")).isNotNull();
 
 
-        template.postForEntity("/forms", getJson("/ref/forms/formWithDeletedFormElementGroup.json"), Void.class);
+        post("/forms", getJson("/ref/forms/formWithDeletedFormElementGroup.json"));
         assertThat(formElementGroupRepository.findByUuid("e47c7604-6cb6-45bb-a36a-05a03f958cdf").isVoided()).isTrue();
     }
 
@@ -196,7 +185,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
             }
 
         });
-        template.postForEntity("/forms", getJson("/ref/forms/formWithChangedAnswerOrder.json"), Void.class);
+        post("/forms", getJson("/ref/forms/formWithChangedAnswerOrder.json"));
         codedConcept = conceptRepository.findByUuid("dcfc771a-0785-43be-bcb1-0d2755793e0e");
         conceptAnswers = codedConcept.getConceptAnswers();
         conceptAnswers.forEach(conceptAnswer -> {
@@ -217,7 +206,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
     @Test
     public void abilityToAddFormElementsForOnlyAnOrganisationToAnExistingFormElementGroup() throws IOException {
-        template.postForEntity("/forms", getJson("/ref/demo/originalForm.json"), Void.class);
+        post("/forms", getJson("/ref/demo/originalForm.json"));
         FormElementGroup formElementGroup = formElementGroupRepository.findByUuid("dd37cacf-c628-457e-b474-01c4966a473c");
         Hibernate.initialize(formElementGroup.getFormElements());
         assertEquals(2, formElementGroup.getFormElements().size());
@@ -242,7 +231,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
     @Test
     public void abilityToAddFormElementGroupForOnlyAnOrganisationToAnExistingFormElementGroup() throws IOException {
-        template.postForEntity("/forms", getJson("/ref/demo/originalForm.json"), Void.class);
+        post("/forms", getJson("/ref/demo/originalForm.json"));
         Form form = formRepository.findByUuid("0c444bf3-54c3-41e4-8ca9-f0deb8760831");
         Hibernate.initialize(form.getFormElementGroups());
         assertEquals(2, form.getFormElementGroups().size());
@@ -267,7 +256,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     @Test
     @Ignore
     public void getAllApplicableFormElementGroupsAndFormElementsForAnOrganisation() throws IOException {
-        template.postForEntity("/forms", getJson("/ref/demo/originalForm.json"), Void.class);
+        post("/forms", getJson("/ref/demo/originalForm.json"));
         Form form = formRepository.findByUuid("0c444bf3-54c3-41e4-8ca9-f0deb8760831");
         Hibernate.initialize(form.getFormElementGroups());
         assertEquals(2, form.getFormElementGroups().size());

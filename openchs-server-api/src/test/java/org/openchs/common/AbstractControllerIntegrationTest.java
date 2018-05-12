@@ -1,5 +1,6 @@
 package org.openchs.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.openchs.dao.OrganisationRepository;
@@ -17,6 +18,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
 public abstract class AbstractControllerIntegrationTest {
@@ -29,6 +32,8 @@ public abstract class AbstractControllerIntegrationTest {
 
     @Autowired
     public OrganisationRepository organisationRepository;
+
+    protected static ObjectMapper mapper = new ObjectMapper();
 
     @Before
     public void setUp() throws Exception {
@@ -44,5 +49,9 @@ public abstract class AbstractControllerIntegrationTest {
         AnonymousAuthenticationToken auth = new AnonymousAuthenticationToken(token, token, Arrays.asList(AuthenticationFilter.ADMIN_AUTHORITY, AuthenticationFilter.USER_AUTHORITY));
         auth.setAuthenticated(true);
         SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    protected void post(String path, Object json) {
+        assertThat(template.postForEntity(path, json, Void.class).getStatusCode().is2xxSuccessful()).isTrue();
     }
 }

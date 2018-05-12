@@ -1,10 +1,7 @@
 package org.openchs.service;
 
-import org.joda.time.DateTime;
-import org.openchs.dao.CHSRepository;
 import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
-import org.openchs.domain.CHSEntity;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
@@ -56,27 +53,6 @@ public class ConceptService {
         return concept != null && !concept.getUuid().equals(conceptRequest.getUuid());
     }
 
-//    private Concept fetchOrCreateAnswer(ConceptContract answerConceptRequest) {
-//        Concept answer = conceptRepository.findByUuid(answerConceptRequest.getUuid());
-//        if (answer == null) {
-//            answer = new Concept();
-//            if (answerConceptRequest.getUuid() == null) {
-//                answer.assignUUID();
-//            } else {
-//                answer.setUuid(answerConceptRequest.getUuid());
-//            }
-//            answer.setDataType(ConceptDataType.NA.toString());
-//            if (StringUtils.isEmpty(answerConceptRequest.getName())) {
-//                throw new ValidationException("Name missing for a new answer concept  " + answerConceptRequest.getUuid());
-//            }
-//        }
-//        if (!StringUtils.isEmpty(answerConceptRequest.getName())) {
-//            answer.setName(answerConceptRequest.getName());
-//        }
-//        conceptRepository.save(answer);
-//        return answer;
-//    }
-
     private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, ConceptContract answerConceptRequest, short answerOrder) {
         if (StringUtils.isEmpty(answerConceptRequest.getUuid())) {
             throw new ValidationException("UUID missing for answer");
@@ -86,7 +62,8 @@ public class ConceptService {
             conceptAnswer = new ConceptAnswer();
             conceptAnswer.assignUUID();
         }
-        conceptAnswer.setAnswerConcept(map(answerConceptRequest));
+        conceptAnswer.setAnswerConcept(conceptRepository.findByUuid(answerConceptRequest.getUuid()));
+//        conceptAnswer.setAnswerConcept(map(answerConceptRequest));
         conceptAnswer.setVoided(answerConceptRequest.isVoided());
         conceptAnswer.setOrder(answerOrder);
         conceptAnswer.setAbnormal(answerConceptRequest.isAbnormal());
@@ -113,14 +90,22 @@ public class ConceptService {
         return concept;
     }
 
+    private String getImpliedDataType(ConceptContract conceptContract, Concept concept) {
+        if (conceptContract.getDataType() == null) {
+            return concept.isNew() ? ConceptDataType.NA.toString() : concept.getDataType();
+        }
+        return conceptContract.getDataType();
+    }
+
     private Concept map(@NotNull ConceptContract conceptRequest) {
         Concept concept = fetchOrCreateConcept(conceptRequest.getUuid());
 
         concept.setName(conceptRequest.getName() != null ? conceptRequest.getName() : concept.getName());
-        concept.setDataType(conceptRequest.getDefaultDataType());
+        String impliedDataType = getImpliedDataType(conceptRequest, concept);
+        concept.setDataType(impliedDataType);
         concept.setVoided(conceptRequest.isVoided());
 
-        switch (ConceptDataType.valueOf(conceptRequest.getDefaultDataType())) {
+        switch (ConceptDataType.valueOf(impliedDataType)) {
             case Coded:
                 concept = createCodedConcept(concept, conceptRequest);
                 break;
@@ -146,7 +131,7 @@ public class ConceptService {
         return conceptRepository.findByUuid(uuid);
     }
 
-    public ConceptAnswer getAnswer(String conceptUUID, String answerConceptUUID) {
+    public ConceptAnswer getAnswer(String conceptUUID) {
         Concept concept = this.get(conceptUUID);
         Concept answerConcept = this.get(conceptUUID);
         return conceptAnswerRepository.findByConceptAndAnswerConcept(concept, answerConcept);
