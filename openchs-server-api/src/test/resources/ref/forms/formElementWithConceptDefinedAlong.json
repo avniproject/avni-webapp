@@ -1,0 +1,33 @@
+{
+  "name": "Sample form",
+  "uuid": "3ff2f279-a893-411a-954f-53d5d845880d",
+  "formType": "ProgramEncounter",
+  "programName": "Adolescent",
+  "userUUID": "5fed2907-df3a-4867-aef5-c87f4c78a31a",
+  "encounterTypes": [
+    "Dropout Followup Visit"
+  ],
+  "formElementGroups": [
+    {
+      "uuid": "1deafd09-2ec8-425c-a7d0-bd5885bdbd08",
+      "name": "A form element group",
+      "display": "A form element group",
+      "displayOrder": 1,
+      "formElements": [
+        {
+          "name": "A form element",
+          "uuid": "57e73438-34b3-4d32-97df-58f674986863",
+          "keyValues": [],
+          "concept": {
+            "name": "A form element concept",
+            "uuid": "79604c31-4fa5-4300-a460-9328d8b6217e",
+            "dataType": "Numeric",
+            "unit": "mg/ml"
+          },
+          "displayOrder": 1,
+          "mandatory": false
+        }
+      ]
+    }
+  ]
+}
