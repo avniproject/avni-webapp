@@ -3,13 +3,14 @@ package org.openchs.framework.hibernate;
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
+import org.joda.time.DateTime;
+import org.openchs.domain.Audit;
 import org.openchs.domain.OrganisationAwareEntity;
 import org.openchs.framework.security.UserContextHolder;
 
 import java.io.Serializable;
 
 public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
-
     @Override
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
         return updateOrganisationId(entity, state, propertyNames);
@@ -17,26 +18,32 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
 
     @Override
     public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
-        return updateOrganisationId(entity, currentState, propertyNames);
+        boolean somethingChanged = false;
+        int indexOf = getIndexOf(propertyNames, "audit");
+        if (indexOf != -1 && currentState[indexOf] != null) {
+            Audit audit = (Audit) currentState[indexOf];
+            audit.setLastModifiedDateTime(new DateTime());
+            somethingChanged = true;
+        }
+        return updateOrganisationId(entity, currentState, propertyNames) || somethingChanged;
+    }
+
+    private int getIndexOf(String[] propertyNames, String propertyName) {
+        for (int i = 0; i < propertyNames.length; i++ ) {
+            if (propertyNames[i].equals(propertyName)) return i;
+        }
+        return -1;
     }
 
     private boolean updateOrganisationId(Object entity, Object[] currentState, String[] propertyNames) {
         if (entity instanceof OrganisationAwareEntity) {
-            int organisationIdIndex = findOrganisationIdIndex(propertyNames);
+            int organisationIdIndex = getIndexOf(propertyNames, "organisationId");
             Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
-            String organisationName = UserContextHolder.getUserContext().getOrganisation().getName();
-            if (currentState[organisationIdIndex] == null || "OpenCHS".equals(organisationName)) {
+            if (currentState[organisationIdIndex] == null) {
                 currentState[organisationIdIndex] = organisationId;
                 return true;
             }
         }
         return false;
-    }
-
-    private int findOrganisationIdIndex(String[] propertyNames) {
-        for (int i = 0; i < propertyNames.length; i++) {
-            if ("organisationId".equalsIgnoreCase(propertyNames[i])) return i;
-        }
-        return -1;
     }
 }

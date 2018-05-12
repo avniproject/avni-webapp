@@ -161,12 +161,14 @@ public class FormController {
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
             formElementGroupContract.setDisplay(formElementGroup.getDisplay());
+            formElementGroupContract.setVoided(formElementGroup.isVoided());
             formContract.addFormElementGroup(formElementGroupContract);
             formElementGroup.getFormElements().stream().sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
                 FormElementContract formElementContract = new FormElementContract();
                 formElementContract.setUuid(formElement.getUuid());
                 formElementContract.setName(formElement.getName());
                 formElementContract.setMandatory(formElement.isMandatory());
+                formElementContract.setVoided(formElement.isVoided());
                 formElementContract.setKeyValues(formElement.getKeyValues());
                 formElementContract.setConcept(getConceptContract(formElement.getConcept()));
                 formElementContract.setDisplayOrder(formElement.getDisplayOrder());

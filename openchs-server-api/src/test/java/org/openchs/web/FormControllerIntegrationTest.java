@@ -163,7 +163,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
         template.postForEntity("/forms", getJson("/ref/forms/formWithDeletedFormElement.json"), Void.class);
 
-        assertThat(formElementRepository.findByUuid("45a1595c-c324-4e76-b8cd-0873e465b5ae")).isNull();
+        assertThat(formElementRepository.findByUuid("45a1595c-c324-4e76-b8cd-0873e465b5ae").isVoided()).isTrue();
     }
 
 
@@ -174,7 +174,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
 
         template.postForEntity("/forms", getJson("/ref/forms/formWithDeletedFormElementGroup.json"), Void.class);
-        assertThat(formElementGroupRepository.findByUuid("e47c7604-6cb6-45bb-a36a-05a03f958cdf")).isNull();
+        assertThat(formElementGroupRepository.findByUuid("e47c7604-6cb6-45bb-a36a-05a03f958cdf").isVoided()).isTrue();
     }
 
     @Test

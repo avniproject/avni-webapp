@@ -40,6 +40,17 @@
           },
           "displayOrder": 1,
           "mandatory": true
+        },
+        {
+          "name": "Random Numeric Question",
+          "uuid": "45a1595c-c324-4e76-b8cd-0873e465b5ae",
+          "voided": true,
+          "concept": {
+            "name": "Random Numeric Question concept",
+            "uuid": "b97039c7-542b-4703-9d4f-2023fb6a45c4",
+            "dataType": "Numeric"
+          },
+          "displayOrder": 2
         }
       ]
     }

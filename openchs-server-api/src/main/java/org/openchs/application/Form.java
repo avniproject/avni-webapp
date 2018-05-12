@@ -63,12 +63,9 @@ public class Form extends OrganisationAwareEntity {
         formElementGroups.clear();
     }
 
-    public FormElementGroup addFormElementGroup(String formElementGroupUUID) {
-        FormElementGroup formElementGroup = FormElementGroup.create();
+    public FormElementGroup addFormElementGroup(FormElementGroup formElementGroup) {
         this.formElementGroups.add(formElementGroup);
-        formElementGroup.setForm(this);
-        formElementGroup.setUuid(formElementGroupUUID);
-        if (formElementGroupUUID == null) {
+        if (formElementGroup.getUuid() == null) {
             formElementGroup.assignUUID();
         }
         return formElementGroup;
@@ -95,14 +92,5 @@ public class Form extends OrganisationAwareEntity {
         ArrayList<FormElement> formElements = new ArrayList<>();
         formElementGroups.forEach(formElementGroup -> formElements.addAll(formElementGroup.getFormElements()));
         return formElements;
-    }
-
-    public void setFormElementGroups(Set<FormElementGroup> formElementGroups) {
-        this.formElementGroups.clear();
-        this.formElementGroups.addAll(formElementGroups);
-    }
-
-    public void addFormElementGroups(Set<FormElementGroup> formElementGroups) {
-        this.formElementGroups.addAll(formElementGroups);
     }
 }

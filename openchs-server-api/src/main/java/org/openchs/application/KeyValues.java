@@ -1,9 +1,11 @@
 package org.openchs.application;
 
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+@Embeddable
 public class KeyValues extends ArrayList<KeyValue> implements Serializable {
     public KeyValue get(KeyType keyType) {
         return this.stream().filter(keyValue -> keyValue.getKey().equals(keyType.toString())).findFirst().orElse(null);

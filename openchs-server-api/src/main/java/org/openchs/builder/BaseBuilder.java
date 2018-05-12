@@ -1,6 +1,5 @@
 package org.openchs.builder;
 
-import org.joda.time.DateTime;
 import org.openchs.domain.OrganisationAwareEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,15 +9,14 @@ import java.util.Collection;
 
 public abstract class BaseBuilder<T extends OrganisationAwareEntity, K> {
     private final Logger logger;
-    protected T entity;
+    protected T newEntity;
     protected T existingEntity;
 
 
     public BaseBuilder(T existingEntity, T newEntity) {
-        this.entity = newEntity;
+        this.newEntity = newEntity;
         this.existingEntity = existingEntity;
         logger = LoggerFactory.getLogger(this.getClass());
-        this.get().getAudit().setLastModifiedDateTime(new DateTime());
     }
 
     public K withUUID(String uuid) {
@@ -44,6 +42,6 @@ public abstract class BaseBuilder<T extends OrganisationAwareEntity, K> {
     }
 
     public T build() {
-        return this.existingEntity == null ? entity : existingEntity;
+        return this.existingEntity == null ? newEntity : existingEntity;
     }
 }

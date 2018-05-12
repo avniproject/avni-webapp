@@ -11,6 +11,7 @@ public class FormElementGroupContract extends ReferenceDataContract {
     private Double displayOrder;
     private String display;
     private List<FormElementContract> formElements;
+    private boolean isVoided;
 
     public FormElementGroupContract() {
     }
@@ -56,5 +57,13 @@ public class FormElementGroupContract extends ReferenceDataContract {
                 "displayOrder=" + displayOrder +
                 ", display='" + display + '\'' +
                 '}';
+    }
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        isVoided = voided;
     }
 }
