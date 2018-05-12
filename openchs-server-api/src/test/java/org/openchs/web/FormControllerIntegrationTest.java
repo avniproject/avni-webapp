@@ -296,4 +296,11 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         assertEquals(HttpStatus.OK, formResponse.getStatusCode());
         assertEquals(3, formBody.get("_embedded").get("form").get(0).get("allFormElements").size());
     }
+
+    @Test
+    public void addConceptAsPartOfFormElement() throws IOException {
+        Object json = getJson("/ref/forms/formElementWithConceptDefinedAlong.json");
+        post("/forms", json);
+        assertThat(conceptRepository.findByUuid("79604c31-4fa5-4300-a460-9328d8b6217e").getUnit()).isEqualTo("mg/ml");
+    }
 }

@@ -80,7 +80,7 @@ public class FormController {
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public void patch(@RequestBody FormContract formRequest) {
         logger.info(String.format("Patching form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
-        save(formRequest);
+        saveForm(formRequest);
     }
 
     @RequestMapping(value = "/forms", method = RequestMethod.DELETE)
