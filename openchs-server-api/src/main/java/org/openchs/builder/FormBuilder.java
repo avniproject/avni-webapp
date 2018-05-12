@@ -7,7 +7,6 @@ import org.openchs.domain.Organisation;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.FormElementGroupContract;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,35 +27,31 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
     }
 
     private FormElementGroup getExistingFormElementGroup(String uuid) {
-        return this.get().getFormElementGroups().stream()
-                .filter((formElementGroup -> formElementGroup.getUuid().equals(uuid)))
-                .findFirst()
-                .orElse(null);
+        return this.get().findFormElementGroup(uuid);
     }
 
     public FormBuilder withFormElementGroups(List<FormElementGroupContract> formElementGroupsContract) {
-        Set<FormElementGroup> formElementGroups = formElementGroupsContract.stream()
-                .map(formElementGroupContract -> new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()))
+        formElementGroupsContract
+                .forEach(formElementGroupContract -> new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
                         .withName(formElementGroupContract.getName())
                         .withUUID(formElementGroupContract.getUuid())
                         .withDisplay(formElementGroupContract.getDisplay())
                         .withDisplayOrder(formElementGroupContract.getDisplayOrder())
-                        .withFormElements(formElementGroupContract.getFormElements())
-                        .build()).collect(Collectors.toSet());
-        this.get().setFormElementGroups(formElementGroups);
+                        .withIsVoided(formElementGroupContract.isVoided())
+                        .makeFormElements(formElementGroupContract.getFormElements())
+                        .build());
         return this;
     }
 
     public FormBuilder addFormElementGroups(List<FormElementGroupContract> formElementGroupsContract) {
-        Set<FormElementGroup> formElementGroups = formElementGroupsContract.stream()
-                .map(formElementGroupContract -> new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()))
+        formElementGroupsContract
+                .forEach(formElementGroupContract -> new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
                         .withName(formElementGroupContract.getName())
                         .withUUID(formElementGroupContract.getUuid())
                         .withDisplay(formElementGroupContract.getDisplay())
                         .withDisplayOrder(formElementGroupContract.getDisplayOrder())
-                        .addFormElements(formElementGroupContract.getFormElements())
-                        .build()).collect(Collectors.toSet());
-        this.get().addFormElementGroups(formElementGroups);
+                        .makeFormElements(formElementGroupContract.getFormElements())
+                        .build());
         return this;
     }
 
@@ -64,13 +59,12 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         List<String> formElementGroupUUIDs = formElementGroupContracts.stream()
                 .map(CHSRequest::getUuid).collect(Collectors.toList());
         Set<FormElementGroup> formElementGroups = formElementGroupContracts.stream().map(formElementGroupContract ->
-                new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()))
+                new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
                         .withoutFormElements(organisation, formElementGroupContract.getFormElements())
                         .build()).collect(Collectors.toSet());
         Set<FormElementGroup> allFormElementGroups = this.get().getFormElementGroups().stream()
                 .filter(feg -> !formElementGroupUUIDs.contains(feg.getUuid())).collect(Collectors.toSet());
         allFormElementGroups.addAll(formElementGroups);
-        this.get().setFormElementGroups(allFormElementGroups);
         return this;
     }
 }

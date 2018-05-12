@@ -5,19 +5,14 @@ import org.openchs.application.FormElementGroup;
 import org.openchs.application.Format;
 import org.openchs.application.KeyValues;
 import org.openchs.domain.Concept;
-import org.openchs.framework.ApplicationContextProvider;
-import org.openchs.service.ConceptService;
 import org.openchs.web.request.ConceptContract;
-import org.openchs.web.request.FormatContract;
 
 public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuilder> {
+    private final FormElementGroup formElementGroup;
 
-    private final ConceptService conceptService;
-
-    public FormElementBuilder(FormElementGroup formElementGroup, FormElement existingFormElement) {
-        super(existingFormElement, new FormElement());
-        this.get().setFormElementGroup(formElementGroup);
-        conceptService = ApplicationContextProvider.getContext().getBean(ConceptService.class);
+    public FormElementBuilder(FormElementGroup formElementGroup, FormElement existingFormElement, FormElement newFormElement) {
+        super(existingFormElement, newFormElement);
+        this.formElementGroup = formElementGroup;
     }
 
     public FormElementBuilder withName(String name) {
@@ -27,6 +22,11 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
 
     public FormElementBuilder withDisplayOrder(Double displayOrder) {
         this.set("DisplayOrder", displayOrder, Double.class);
+        return this;
+    }
+
+    public FormElementBuilder withIsVoided(boolean isVoided) {
+        this.set("Voided", isVoided, Boolean.class);
         return this;
     }
 
@@ -40,17 +40,11 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
         return this;
     }
 
-    private Concept getExistingConcept(String uuid) {
-        return this.get().getConcept() != null && this.get().getConcept().getUuid().equals(uuid) ?
-                this.get().getConcept() : conceptService.get(uuid);
-    }
-
-    public FormElementBuilder withConcept(ConceptContract conceptContract) {
-        Concept existingConcept = getExistingConcept(conceptContract.getUuid());
+    public FormElementBuilder withConcept(Concept existingConcept, ConceptContract conceptContract) {
         if (existingConcept != null) {
             this.get().setConcept(existingConcept);
         } else {
-            ConceptBuilder conceptBuilder = new ConceptBuilder(existingConcept);
+            ConceptBuilder conceptBuilder = new ConceptBuilder(null);
             Concept concept = conceptBuilder
                     .withUUID(conceptContract.getUuid())
                     .withName(conceptContract.getName())
@@ -75,4 +69,10 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
         return this;
     }
 
+    //This is done separately instead of regular builder because during the building if any db query has to be fired it tries to flush out existing state which is incomplete and gives validation error
+    public void linkWithFormElementGroup() {
+        this.get().setFormElementGroup(formElementGroup);
+        if (existingEntity == null)
+            formElementGroup.addFormElement(newEntity);
+    }
 }

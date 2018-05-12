@@ -48,6 +48,9 @@ public class FormElement extends OrganisationAwareEntity {
     @Embedded
     private Format validFormat;
 
+    @Column(nullable = false)
+    private boolean isVoided = false;
+
     public String getName() {
         return name;
     }
@@ -76,8 +79,8 @@ public class FormElement extends OrganisationAwareEntity {
         return keyValues;
     }
 
-    public void setKeyValues(KeyValues keyValues) {
-        this.keyValues = keyValues;
+    public void setKeyValues(KeyValues newKeyValues) {
+        this.keyValues = newKeyValues;
     }
 
     public boolean isMandatory() {
@@ -133,5 +136,13 @@ public class FormElement extends OrganisationAwareEntity {
             nonApplicableOrganisations = new HashSet<>();
         }
         this.nonApplicableOrganisations.add(organisation);
+    }
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(Boolean voided) {
+        isVoided = voided;
     }
 }

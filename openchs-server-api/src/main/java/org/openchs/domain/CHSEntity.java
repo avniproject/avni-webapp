@@ -70,7 +70,7 @@ public class CHSEntity {
     }
 
     public DateTime getLastModifiedDateTime() {
-        return audit.getLastModifiedDateTime();
+        return getAudit().getLastModifiedDateTime();
     }
 
     @Override

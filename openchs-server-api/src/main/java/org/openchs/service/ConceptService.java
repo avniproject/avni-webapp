@@ -91,7 +91,6 @@ public class ConceptService {
         conceptAnswer.setOrder(answerOrder);
         conceptAnswer.setAbnormal(answerConceptRequest.isAbnormal());
         conceptAnswer.setUnique(answerConceptRequest.isUnique());
-        conceptAnswer.getAudit().setLastModifiedDateTime(new DateTime());
         return conceptAnswer;
     }
 
@@ -140,7 +139,6 @@ public class ConceptService {
         logger.info(String.format("Creating concept: %s", conceptRequest.toString()));
 
         Concept concept = map(conceptRequest);
-        concept.getAudit().setLastModifiedDateTime(new DateTime());
         return conceptRepository.save(concept);
     }
 
