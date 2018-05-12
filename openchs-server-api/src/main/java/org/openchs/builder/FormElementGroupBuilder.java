@@ -68,7 +68,7 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
                     .withUUID(formElementContract.getUuid())
                     .withMandatory(formElementContract.isMandatory())
                     .withValidFormat(formElementContract.getValidFormat())
-                    .withConcept(existingConcept, formElementContract.getConcept())
+                    .withConcept(existingConcept, formElementContract.getConcept()) //Concept should be in the end otherwise it may cause a flush on incomplete object causing JPA errors
                     .build();
             formElementBuilder.linkWithFormElementGroup();
         });

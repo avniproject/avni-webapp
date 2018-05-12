@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Child 1",
+    "uuid": "48e320d2-ded5-449c-a99a-63b7641aff6b",
+    "dataType": "NA"
+  },
+  {
+    "name": "Child 2",
+    "uuid": "4fce01d9-c2b3-4bec-8486-4061fec4418f",
+    "dataType": "NA"
+  },
+  {
+    "name": "Parent",
+    "uuid": "d76927d0-a0b9-4cb0-be29-12508275036e",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "uuid": "48e320d2-ded5-449c-a99a-63b7641aff6b"
+      },
+      {
+        "uuid": "4fce01d9-c2b3-4bec-8486-4061fec4418f"
+      }
+    ]
+  },
+  {
+    "name": "New Child",
+    "uuid": "e1d2e945-9678-4bb4-b103-9426c2389288",
+    "dataType": "NA"
+  },
+  {
+    "name": "Parent",
+    "uuid": "d76927d0-a0b9-4cb0-be29-12508275036e",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "uuid": "e1d2e945-9678-4bb4-b103-9426c2389288"
+      }
+    ]
+  }
+]

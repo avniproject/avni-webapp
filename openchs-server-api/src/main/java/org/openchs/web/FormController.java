@@ -58,6 +58,13 @@ public class FormController {
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     void save(@RequestBody FormContract formRequest) {
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
+        Form savedForm = saveForm(formRequest);
+        for (String encounterType : associatedEncounterTypes(formRequest)) {
+            formMappingRepository.save(createOrUpdateFormMapping(formRequest, encounterType, savedForm));
+        }
+    }
+
+    private Form saveForm(@RequestBody FormContract formRequest) {
         Form existingForm = formRepository.findByUuid(formRequest.getUuid());
         FormBuilder formBuilder = new FormBuilder(existingForm);
         Form form = formBuilder.withName(formRequest.getName())
@@ -65,25 +72,15 @@ public class FormController {
                 .withUUID(formRequest.getUuid())
                 .withFormElementGroups(formRequest.getFormElementGroups())
                 .build();
-
-        Form savedForm = formRepository.save(form);
-        for (String encounterType : associatedEncounterTypes(formRequest)) {
-            formMappingRepository.save(createOrUpdateFormMapping(formRequest, encounterType, savedForm));
-        }
+        return formRepository.save(form);
     }
 
     @RequestMapping(value = "/forms", method = RequestMethod.PATCH)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public void patch(@RequestBody FormContract formRequest) {
-        Form existingForm = formRepository.findByUuid(formRequest.getUuid());
-        FormBuilder formBuilder = new FormBuilder(existingForm);
-        Form form = formBuilder.withName(formRequest.getName())
-                .withType(formRequest.getFormType())
-                .withUUID(formRequest.getUuid())
-                .addFormElementGroups(formRequest.getFormElementGroups())
-                .build();
-        formRepository.save(form);
+        logger.info(String.format("Patching form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
+        save(formRequest);
     }
 
     @RequestMapping(value = "/forms", method = RequestMethod.DELETE)
