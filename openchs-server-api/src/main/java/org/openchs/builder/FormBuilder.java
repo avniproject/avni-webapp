@@ -43,18 +43,6 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         return this;
     }
 
-    public FormBuilder addFormElementGroups(List<FormElementGroupContract> formElementGroupsContract) {
-        formElementGroupsContract
-                .forEach(formElementGroupContract -> new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
-                        .withName(formElementGroupContract.getName())
-                        .withUUID(formElementGroupContract.getUuid())
-                        .withDisplay(formElementGroupContract.getDisplay())
-                        .withDisplayOrder(formElementGroupContract.getDisplayOrder())
-                        .makeFormElements(formElementGroupContract.getFormElements())
-                        .build());
-        return this;
-    }
-
     public FormBuilder withoutFormElements(Organisation organisation, List<FormElementGroupContract> formElementGroupContracts) {
         List<String> formElementGroupUUIDs = formElementGroupContracts.stream()
                 .map(CHSRequest::getUuid).collect(Collectors.toList());
