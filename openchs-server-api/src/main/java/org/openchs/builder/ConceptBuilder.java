@@ -48,7 +48,7 @@ public class ConceptBuilder extends BaseBuilder<Concept, ConceptBuilder> {
         return this.get().getConceptAnswers().stream()
                 .filter(answer -> answer.getAnswerConcept().getUuid().equals(conceptAnswerUUID))
                 .findFirst()
-                .orElse(conceptService.getAnswer(this.get().getUuid()));
+                .orElse(conceptService.getAnswer(this.get().getUuid(), conceptAnswerUUID));
     }
 
     public ConceptBuilder withConceptAnswers(List<ConceptContract> answers) {
