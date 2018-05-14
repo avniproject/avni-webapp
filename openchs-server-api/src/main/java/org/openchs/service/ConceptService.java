@@ -131,9 +131,9 @@ public class ConceptService {
         return conceptRepository.findByUuid(uuid);
     }
 
-    public ConceptAnswer getAnswer(String conceptUUID) {
+    public ConceptAnswer getAnswer(String conceptUUID, String conceptAnswerUUID) {
         Concept concept = this.get(conceptUUID);
-        Concept answerConcept = this.get(conceptUUID);
+        Concept answerConcept = this.get(conceptAnswerUUID);
         return conceptAnswerRepository.findByConceptAndAnswerConcept(concept, answerConcept);
     }
 
