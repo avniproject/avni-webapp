@@ -1,5 +1,6 @@
 package org.openchs.application;
 
+import org.openchs.domain.Concept;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
@@ -52,17 +53,6 @@ public class Form extends OrganisationAwareEntity {
         return form;
     }
 
-    public FormElementGroup getFormElementGroup(String formElementGroupName) {
-        for (FormElementGroup formElementGroup : formElementGroups) {
-            if (formElementGroup.getName().equals(formElementGroupName)) return formElementGroup;
-        }
-        return null;
-    }
-
-    public void clearGroups() {
-        formElementGroups.clear();
-    }
-
     public FormElementGroup addFormElementGroup(FormElementGroup formElementGroup) {
         this.formElementGroups.add(formElementGroup);
         if (formElementGroup.getUuid() == null) {
@@ -75,22 +65,10 @@ public class Form extends OrganisationAwareEntity {
         return formElementGroups.stream().filter(x -> x.getUuid().equals(uuid)).findAny().orElse(null);
     }
 
-    public void removeFormElementGroups(List<String> formElementGroupUUIDs) {
-        List<FormElementGroup> orphanedFormElementGroups = getFormElementGroups().stream().filter(formElementGroup -> !formElementGroupUUIDs.contains(formElementGroup.getUuid())).collect(Collectors.toList());
-        formElementGroups.removeAll(orphanedFormElementGroups);
-    }
-
-    public FormElement findFormElement(String conceptName) {
-        for (FormElementGroup formElementGroup : formElementGroups) {
-            FormElement formElement = formElementGroup.findFormElementByConcept(conceptName);
-            if (formElement != null) return formElement;
-        }
-        return null;
-    }
-
     public List<FormElement> getAllFormElements() {
         ArrayList<FormElement> formElements = new ArrayList<>();
         formElementGroups.forEach(formElementGroup -> formElements.addAll(formElementGroup.getFormElements()));
         return formElements;
     }
+
 }

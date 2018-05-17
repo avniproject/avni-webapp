@@ -2,6 +2,7 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.Individual;
+import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEnrolment", path = "programEnrolment")
@@ -29,4 +31,5 @@ public interface ProgramEnrolmentRepository extends PagingAndSortingRepository<P
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
 
+    List<ProgramEnrolment> findByProgram(Program program);
 }

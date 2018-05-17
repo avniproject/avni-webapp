@@ -28,5 +28,7 @@ public interface FormMappingRepository extends PagingAndSortingRepository<FormMa
 
     Page<FormMapping> findByEntityId(Long entityId, Pageable pageable);
 
+    List<FormMapping> findByEntityId(Long entityId);
+
     FormMapping findByEntityIdAndObservationsTypeEntityIdAndFormFormType(Long entityId, Long observationsTypeEntityId, FormType formType);
 }
