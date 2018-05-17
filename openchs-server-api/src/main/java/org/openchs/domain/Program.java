@@ -2,6 +2,7 @@ package org.openchs.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Entity
 @Table(name = "program")
@@ -9,10 +10,6 @@ public class Program extends OrganisationAwareEntity {
     @NotNull
     @Column
     private String name;
-
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="concept_id")
-    private Concept concept;
 
     private String colour;
 
@@ -22,14 +19,6 @@ public class Program extends OrganisationAwareEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Concept getConcept() {
-        return concept;
-    }
-
-    public void setConcept(Concept concept) {
-        this.concept = concept;
     }
 
     public String getColour() {

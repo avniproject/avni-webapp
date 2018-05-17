@@ -3,15 +3,10 @@ package org.openchs.excel;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.openchs.dao.ChecklistRepository;
-import org.openchs.dao.ConceptRepository;
-import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.service.ChecklistService;
-import org.openchs.service.FormService;
-import org.openchs.service.ObservationService;
 import org.openchs.service.ProgramEnrolmentService;
 import org.openchs.web.*;
 import org.openchs.web.request.EncounterRequest;
@@ -40,25 +35,13 @@ public class RowProcessor {
     @Autowired
     private ProgramEncounterController programEncounterController;
     @Autowired
-    private IndividualRepository individualRepository;
-    @Autowired
-    private ChecklistController checklistController;
-    @Autowired
     private ChecklistItemController checklistItemController;
     @Autowired
     private ChecklistService checklistService;
     @Autowired
     private ChecklistRepository checklistRepository;
     @Autowired
-    private ConceptRepository conceptRepository;
-    @Autowired
-    private ProgramEnrolmentRepository programEnrolmentRepository;
-    @Autowired
     private ProgramEnrolmentService programEnrolmentService;
-    @Autowired
-    private ObservationService observationService;
-    @Autowired
-    private FormService formService;
 
     void processIndividual(IndividualRequest individualRequest) {
         individualController.save(individualRequest);

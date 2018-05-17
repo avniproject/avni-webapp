@@ -594,3 +594,31 @@ BEGIN
 END
 $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION multi_select_coded(obs JSONB)
+  RETURNS VARCHAR LANGUAGE plpgsql
+AS $$
+DECLARE result VARCHAR;
+BEGIN
+  BEGIN
+    SELECT string_agg(c.name, ' ,')
+    FROM jsonb_array_elements_text(obs) AS vals
+      INNER JOIN concept c ON c.uuid = vals.value
+    INTO result;
+    RETURN result;
+  END;
+END $$;
+
+CREATE OR REPLACE FUNCTION single_select_coded(obs TEXT)
+  RETURNS VARCHAR LANGUAGE plpgsql
+AS $$
+DECLARE result VARCHAR;
+BEGIN
+  BEGIN
+    SELECT name
+    FROM concept
+    WHERE uuid = obs
+    INTO result;
+    RETURN result;
+  END;
+END $$;
