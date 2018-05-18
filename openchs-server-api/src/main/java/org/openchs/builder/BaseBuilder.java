@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public abstract class BaseBuilder<T extends OrganisationAwareEntity, K> {
+public abstract class BaseBuilder<T extends OrganisationAwareEntity, K extends BaseBuilder<T, K>> {
     private final Logger logger;
     protected T newEntity;
     protected T existingEntity;

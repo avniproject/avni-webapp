@@ -303,4 +303,34 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         post("/forms", json);
         assertThat(conceptRepository.findByUuid("79604c31-4fa5-4300-a460-9328d8b6217e").getUnit()).isEqualTo("mg/ml");
     }
+
+
+    @Test
+    public void shouldNotUpdateAuditInfoWhenFormUploadedTwiceWithSameKeyValues() throws IOException {
+        String formUuid = "0c444bf3-54c3-41e4-8ca9-f0deb8760831";
+        Object formJson = getJson("/ref/forms/formWithKeyValues.json");
+
+        post("/forms", formJson);
+        Form originalForm = formRepository.findByUuid(formUuid);
+        FormElementGroup originalGroup = formElementGroupRepository.findByUuid("dd37cacf-c628-457e-b474-01c4966a473c");
+        FormElement originalFormElement = formElementRepository.findByUuid("6e200310-4948-47dc-a573-411aaafd199d");
+
+        post("/forms", formJson);
+        Form updatedForm = formRepository.findByUuid(formUuid);
+        FormElementGroup updatedGroup = formElementGroupRepository.findByUuid("dd37cacf-c628-457e-b474-01c4966a473c");
+        FormElement updatedFormElement = formElementRepository.findByUuid("6e200310-4948-47dc-a573-411aaafd199d");
+
+        assertThat(originalForm).isNotNull();
+        assertThat(updatedForm).isNotNull();
+        assertThat(updatedForm.getLastModifiedDateTime()).isEqualByComparingTo(originalForm.getLastModifiedDateTime());
+
+        assertThat(originalGroup).isNotNull();
+        assertThat(updatedGroup).isNotNull();
+        assertThat(updatedGroup.getLastModifiedDateTime()).isEqualByComparingTo(originalGroup.getLastModifiedDateTime());
+
+        assertThat(originalFormElement).isNotNull();
+        assertThat(updatedFormElement).isNotNull();
+        assertThat(updatedFormElement.getLastModifiedDateTime()).isEqualByComparingTo(originalFormElement.getLastModifiedDateTime());
+
+    }
 }
