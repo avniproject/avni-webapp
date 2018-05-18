@@ -9,6 +9,7 @@ import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.Program;
+import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +59,7 @@ public class SqlGenerationService {
 
     private List<Form> getProgramEncounterForms(Program program) {
         return formMappingRepository
-                .findByEntityId(program.getId())
+                .findByEntityIdAndOrganisationIdIsNotNull(program.getId())
                 .stream()
                 .filter(formMapping -> formMapping.getForm().getFormType().equals(FormType.ProgramEncounter))
                 .map(FormMapping::getForm)
