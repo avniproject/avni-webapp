@@ -33,4 +33,16 @@ public class KeyValue implements Serializable {
     public void setKey(String key) {
         this.key = key;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        KeyValue keyValue = (KeyValue) o;
+
+        if (key != null ? !key.equals(keyValue.key) : keyValue.key != null) return false;
+        return value != null ? value.equals(keyValue.value) : keyValue.value == null;
+    }
+
 }
