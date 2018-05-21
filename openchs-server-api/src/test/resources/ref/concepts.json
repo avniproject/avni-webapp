@@ -13,5 +13,48 @@
     "name": "No",
     "uuid": "e7b50c78-3d90-484d-a224-9887887780dc",
     "dataType": "NA"
+  },
+  {
+    "uuid": "dcfc771a-0785-43be-bcb1-0d2755793e0e",
+    "name": "Have you started going to school once again",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "name": "Yes, started",
+        "uuid": "28e76608-dddd-4914-bd44-3689eccfa5ca"
+      },
+      {
+        "name": "Yes, but could not attend",
+        "uuid": "9715936e-03f2-44da-900f-33588fe95250"
+      },
+      {
+        "name": "No",
+        "uuid": "e7b50c78-3d90-484d-a224-9887887780dc"
+      }
+    ]
+  },
+  {
+    "name": "Random Numeric Question concept",
+    "uuid": "b97039c7-542b-4703-9d4f-2023fb6a45c4",
+    "dataType": "Numeric"
+  },
+  {
+    "name": "Another random numeric questionconcept",
+    "uuid": "9a1a74ff-bf38-4bb2-97b6-3fee8a61fdbd",
+    "dataType": "Numeric"
+  },
+  {
+    "uuid": "43124c33-898d-42fa-a53d-b4c6fa36c581",
+    "name": "Additional Form Element",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "uuid": "28e76608-dddd-4914-bd44-3689eccfa5ca"
+      },
+      {
+        "name": "No",
+        "uuid": "e7b50c78-3d90-484d-a224-9887887780dc"
+      }
+    ]
   }
 ]
