@@ -11,9 +11,13 @@ import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.Program;
 import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,8 +39,9 @@ public class SqlGenerationService {
     private FormMappingRepository formMappingRepository;
 
     public String getSqlFor(String programName) throws IOException, URISyntaxException {
-        VIEW_TEMPLATE = new String(Files.readAllBytes(Paths.get(this.getClass().getResource("/pivot/pivot.sql")
-                .toURI())));
+        VIEW_TEMPLATE = new BufferedReader(new InputStreamReader(new ClassPathResource("/pivot/pivot.sql").getInputStream()))
+                .lines()
+                .collect(Collectors.joining("\n"));
         List<Program> programs = new ArrayList<>();
         operationalProgramRepository.findAll().forEach(op -> programs.add(op.getProgram()));
         return programs.stream().filter(program -> program.getName().equals(programName))
