@@ -30,17 +30,16 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         return this.get().findFormElementGroup(uuid);
     }
 
-    public FormBuilder withFormElementGroups(List<FormElementGroupContract> formElementGroupsContract) throws FormBuilderException {
-        for (FormElementGroupContract formElementGroupContract : formElementGroupsContract) {
-            new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
+    public FormBuilder withFormElementGroups(List<FormElementGroupContract> formElementGroupsContract) {
+        formElementGroupsContract
+                .forEach(formElementGroupContract -> new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
                         .withName(formElementGroupContract.getName())
                         .withUUID(formElementGroupContract.getUuid())
                         .withDisplay(formElementGroupContract.getDisplay())
                         .withDisplayOrder(formElementGroupContract.getDisplayOrder())
                         .withIsVoided(formElementGroupContract.isVoided())
                         .makeFormElements(formElementGroupContract.getFormElements())
-                        .build();
-        }
+                        .build());
         return this;
     }
 

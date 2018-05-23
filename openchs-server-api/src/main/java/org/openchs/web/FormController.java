@@ -2,7 +2,6 @@ package org.openchs.web;
 
 import org.openchs.application.*;
 import org.openchs.builder.FormBuilder;
-import org.openchs.builder.FormBuilderException;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramRepository;
 import org.openchs.dao.application.FormMappingRepository;
@@ -24,8 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,21 +56,15 @@ public class FormController {
     @RequestMapping(value = "/forms", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
-    public ResponseEntity<?> save(@RequestBody FormContract formRequest) {
+    void save(@RequestBody FormContract formRequest) {
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
-        try {
-            Form savedForm = saveForm(formRequest);
-            for (String encounterType : associatedEncounterTypes(formRequest)) {
-                formMappingRepository.save(createOrUpdateFormMapping(formRequest, encounterType, savedForm));
-            }
-        } catch (FormBuilderException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
+        Form savedForm = saveForm(formRequest);
+        for (String encounterType : associatedEncounterTypes(formRequest)) {
+            formMappingRepository.save(createOrUpdateFormMapping(formRequest, encounterType, savedForm));
         }
-        return ResponseEntity.ok(null);
     }
 
-    private Form saveForm(@RequestBody FormContract formRequest) throws FormBuilderException {
+    private Form saveForm(@RequestBody FormContract formRequest) {
         Form existingForm = formRepository.findByUuid(formRequest.getUuid());
         FormBuilder formBuilder = new FormBuilder(existingForm);
         Form form = formBuilder.withName(formRequest.getName())
@@ -87,15 +78,9 @@ public class FormController {
     @RequestMapping(value = "/forms", method = RequestMethod.PATCH)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
-    public ResponseEntity<?> patch(@RequestBody FormContract formRequest) {
+    public void patch(@RequestBody FormContract formRequest) {
         logger.info(String.format("Patching form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
-        try {
-            saveForm(formRequest);
-        } catch (FormBuilderException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-        return ResponseEntity.ok(null);
+        saveForm(formRequest);
     }
 
     @RequestMapping(value = "/forms", method = RequestMethod.DELETE)

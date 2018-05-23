@@ -48,39 +48,31 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         return this.get().findFormElement(uuid);
     }
 
-    private Concept getExistingConcept(String uuid, FormElement formElement) throws FormBuilderException {
-        Concept concept = formElement.getConcept() != null && formElement.getConcept().getUuid().equals(uuid) ?
+    private Concept getExistingConcept(String uuid, FormElement formElement) {
+        return formElement.getConcept() != null && formElement.getConcept().getUuid().equals(uuid) ?
                 formElement.getConcept() : conceptService.get(uuid);
-        if (concept == null) {
-            throw new FormBuilderException(String.format("Concept with uuid '%s' not found", uuid));
-        }
-        return concept;
     }
 
-    public FormElementGroupBuilder makeFormElements(List<FormElementContract> formElementContracts) throws FormBuilderException {
-        for (FormElementContract formElementContract : formElementContracts) {
-            makeFormElement(formElementContract);
-        }
+    public FormElementGroupBuilder makeFormElements(List<FormElementContract> formElementContracts) {
+        formElementContracts.stream().forEach(formElementContract -> {
+            FormElement existingFormElement = getExistingFormElement(formElementContract.getUuid());
+            FormElement newFormElement = new FormElement();
+            Concept existingConcept = getExistingConcept(formElementContract.getConcept().getUuid(), existingFormElement == null ? newFormElement : existingFormElement);
+            FormElementBuilder formElementBuilder = new FormElementBuilder(this.get(), existingFormElement, newFormElement);
+            formElementBuilder
+                    .withName(formElementContract.getName())
+                    .withDisplayOrder(formElementContract.getDisplayOrder())
+                    .withIsVoided(formElementContract.isVoided())
+                    .withKeyValues(formElementContract.getKeyValues())
+                    .withType(formElementContract.getType())
+                    .withUUID(formElementContract.getUuid())
+                    .withMandatory(formElementContract.isMandatory())
+                    .withValidFormat(formElementContract.getValidFormat())
+                    .withConcept(existingConcept, formElementContract.getConcept()) //Concept should be in the end otherwise it may cause a flush on incomplete object causing JPA errors
+                    .build();
+            formElementBuilder.linkWithFormElementGroup();
+        });
         return this;
-    }
-
-    private void makeFormElement(FormElementContract formElementContract) throws FormBuilderException {
-        FormElement existingFormElement = getExistingFormElement(formElementContract.getUuid());
-        FormElement newFormElement = new FormElement();
-        Concept existingConcept = getExistingConcept(formElementContract.getConcept().getUuid(), existingFormElement == null ? newFormElement : existingFormElement);
-        FormElementBuilder formElementBuilder = new FormElementBuilder(this.get(), existingFormElement, newFormElement);
-        formElementBuilder
-                .withName(formElementContract.getName())
-                .withDisplayOrder(formElementContract.getDisplayOrder())
-                .withIsVoided(formElementContract.isVoided())
-                .withKeyValues(formElementContract.getKeyValues())
-                .withType(formElementContract.getType())
-                .withUUID(formElementContract.getUuid())
-                .withMandatory(formElementContract.isMandatory())
-                .withValidFormat(formElementContract.getValidFormat())
-                .withConcept(existingConcept) //Concept should be in the end otherwise it may cause a flush on incomplete object causing JPA errors
-                .build();
-        formElementBuilder.linkWithFormElementGroup();
     }
 
     public FormElementGroupBuilder withoutFormElements(Organisation organisation, List<FormElementContract> formElementContracts) {
