@@ -298,11 +298,10 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     }
 
     @Test
-    public void shouldRequireConceptsPreCreatedWhenCreatingFormElement() throws IOException {
+    public void addConceptAsPartOfFormElement() throws IOException {
         Object json = getJson("/ref/forms/formElementWithConceptDefinedAlong.json");
-        ResponseEntity<String> responseEntity = this.template.postForEntity("/forms", json, String.class);
-        assertThat(responseEntity.getStatusCode().is4xxClientError()).isTrue();
-        assertThat(responseEntity.getBody()).contains("Concept with uuid '79604c31-4fa5-4300-a460-9328d8b6217e' not found");
+        post("/forms", json);
+        assertThat(conceptRepository.findByUuid("79604c31-4fa5-4300-a460-9328d8b6217e").getUnit()).isEqualTo("mg/ml");
     }
 
 
