@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -63,8 +62,8 @@ public class FormController {
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
             Form savedForm = saveForm(formRequest);
-            for (String encounterType : associatedEncounterTypes(formRequest)) {
-                formMappingRepository.save(createOrUpdateFormMapping(formRequest, encounterType, savedForm));
+            if(FormType.valueOf(formRequest.getFormType()).equals(FormType.IndividualProfile)){
+                createFormMappingIfNotPresent(savedForm);
             }
         } catch (FormBuilderException e) {
             e.printStackTrace();
@@ -110,43 +109,14 @@ public class FormController {
         formRepository.save(form);
     }
 
-    private List<String> associatedEncounterTypes(@RequestBody FormContract formRequest) {
-        List<String> associatedEncounterTypeNames = new ArrayList<>();
-        associatedEncounterTypeNames.addAll(formRequest.getEncounterTypes());
-        if (associatedEncounterTypeNames.size() == 0) {
-            associatedEncounterTypeNames.add(formRequest.getName());
-        }
-        return associatedEncounterTypeNames;
-    }
-
-    private FormMapping createOrUpdateFormMapping(@RequestBody FormContract formRequest, String encounterTypeName, Form form) {
-        EncounterType encounterType = null;
-        if (FormType.valueOf(formRequest.getFormType()).hasEncounterType()) {
-            encounterType = encounterTypeRepository.findByName(encounterTypeName);
-            if (encounterType == null) {
-                encounterType = new EncounterType();
-                encounterType.assignUUID();
-            }
-            encounterType.setName(encounterTypeName);
-            encounterType = encounterTypeRepository.save(encounterType);
-        }
-        Long observationsTypeEntityId = encounterType == null ? null : encounterType.getId();
-
-        FormMapping formMapping = formMappingRepository.findByFormUuidAndObservationsTypeEntityId(formRequest.getUuid(), observationsTypeEntityId);
+    private void createFormMappingIfNotPresent(Form form) {
+        FormMapping formMapping = formMappingRepository.findByFormUuidAndObservationsTypeEntityId(form.getUuid(), null);
         if (formMapping == null) {
             formMapping = new FormMapping();
             formMapping.assignUUID();
             formMapping.setForm(form);
+            formMappingRepository.save(formMapping);
         }
-
-        formMapping.setObservationsTypeEntityId(observationsTypeEntityId);
-
-        if (formRequest.getProgramName() != null) {
-            Program program = programRepository.findByName(formRequest.getProgramName());
-            formMapping.setEntityId(program.getId());
-        }
-
-        return formMapping;
     }
 
 
@@ -154,21 +124,8 @@ public class FormController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public FormContract export(@RequestParam String formUUID) {
         Form form = formRepository.findByUuid(formUUID);
-        List<FormMapping> formMappings = formMappingRepository.findByFormUuid(form.getUuid());
 
-        List<String> encounterTypeNames = new ArrayList<>();
-        for (FormMapping formMapping : formMappings) {
-            if (formMapping.getObservationsTypeEntityId() != null) {
-                encounterTypeNames.add(encounterTypeRepository.findOne(formMapping.getObservationsTypeEntityId()).getName());
-            }
-        }
-
-        String programName = null;
-        if (formMappings.size() > 0 && formMappings.get(0).getEntityId() != null) {
-            programName = programRepository.findOne(formMappings.get(0).getEntityId()).getName();
-        }
-
-        FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString(), programName, encounterTypeNames);
+        FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString());
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
