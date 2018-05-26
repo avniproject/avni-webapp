@@ -3,6 +3,7 @@ package org.openchs.dao.application;
 import org.joda.time.DateTime;
 import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
+import org.openchs.dao.CHSRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -18,7 +19,7 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formMapping", path = "formMapping")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface FormMappingRepository extends PagingAndSortingRepository<FormMapping, Long> {
+public interface FormMappingRepository extends PagingAndSortingRepository<FormMapping, Long>, CHSRepository<FormMapping> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<FormMapping> findByAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
