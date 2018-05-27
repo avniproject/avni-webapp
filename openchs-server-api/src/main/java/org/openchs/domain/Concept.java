@@ -1,13 +1,18 @@
 package org.openchs.domain;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
+@Indexed
 @Table(name = "concept")
 public class Concept extends OrganisationAwareEntity {
+    @Field
     @NotNull
     private String name;
 

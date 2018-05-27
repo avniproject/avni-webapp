@@ -1,11 +1,14 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "concept_answer")
 public class ConceptAnswer extends OrganisationAwareEntity {
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "concept_id")
     private Concept concept;
