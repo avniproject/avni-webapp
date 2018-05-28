@@ -14,7 +14,6 @@ public class CHSEntity {
     @Id
     private Long id;
 
-    @JsonIgnore
     @JoinColumn(name = "audit_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Audit audit = new Audit();

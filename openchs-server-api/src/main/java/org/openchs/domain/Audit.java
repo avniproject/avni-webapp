@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -19,6 +20,7 @@ public class Audit {
     @Id
     private Long id;
 
+    @JsonIgnore
     @JoinColumn(name = "created_by_id")
     @CreatedBy
     @ManyToOne(targetEntity = User.class)
@@ -27,6 +29,7 @@ public class Audit {
     @CreatedDate
     private DateTime createdDateTime;
 
+    @JsonIgnore
     @JoinColumn(name = "last_modified_by_id")
     @LastModifiedBy
     @ManyToOne(targetEntity = User.class)
