@@ -15,12 +15,8 @@ public abstract class AbstractController<T extends CHSEntity> {
         T t = chsRepository.findByUuid(chsRequest.getUuid());
         if (t == null) {
             t = chsEntity;
-            t.getAudit().setCreatedBy(userRepository.findByUuid(chsRequest.getUserUUID()));
-            t.getAudit().setCreatedDateTime(DateTime.now());
             t.setUuid(chsRequest.getUuid());
         }
-        t.getAudit().setLastModifiedBy(userRepository.findByUuid(chsRequest.getUserUUID()));
-        t.getAudit().setLastModifiedDateTime(DateTime.now());
         return t;
     }
 }
