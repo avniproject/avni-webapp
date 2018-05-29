@@ -1,5 +1,7 @@
 package org.openchs.domain;
 
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -25,5 +27,9 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
 
     public String getEncounterTypeUUID() {
         return encounterType.getUuid();
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return getEncounterType().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getEncounterType().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }
 }

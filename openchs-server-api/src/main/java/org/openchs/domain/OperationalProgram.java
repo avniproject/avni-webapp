@@ -1,5 +1,7 @@
 package org.openchs.domain;
 
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -30,4 +32,9 @@ public class OperationalProgram extends OrganisationAwareEntity {
     public String getProgramUUID() {
         return program.getUuid();
     }
+
+    public DateTime getLastModifiedDateTime() {
+        return getProgram().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getProgram().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
+    }
+
 }
