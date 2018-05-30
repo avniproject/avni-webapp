@@ -34,7 +34,9 @@ jobs:
             - ~/openchs-server/.gradle
           key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
 
-
+      - store_artifacts:
+          path: openchs-server-api/build/reports/tests/test/*
+          destination: testReports
   publish:
     docker:
       - image: circleci/openjdk:8-jdk
