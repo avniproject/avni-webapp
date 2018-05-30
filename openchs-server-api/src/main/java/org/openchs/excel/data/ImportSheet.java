@@ -1,6 +1,5 @@
 package org.openchs.excel.data;
 
-import org.apache.logging.log4j.util.Strings;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -45,7 +44,7 @@ public class ImportSheet {
         XSSFRow row = xssfSheet.getRow(rowIndex + 1);
         if (row == null) return null;
         String rawCellValue = ExcelUtil.getRawCellValue(row, 0);
-        return Strings.isBlank(rawCellValue) ? null : row;
+        return rawCellValue == null || rawCellValue.isEmpty() ? null : row;
     }
 
     private ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ConceptRepository conceptRepository, FormElementRepository formElementRepository, ImportAnswerMetaDataList answerMetaDataList) {
@@ -106,7 +105,7 @@ public class ImportSheet {
                     break;
                 case "Last Name":
                     String lastName = importField.getTextValue(row, importSheetHeader, importSheetMetaData);
-                    individualRequest.setLastName(Strings.isBlank(lastName) ? "." : lastName);
+                    individualRequest.setLastName(lastName == null || lastName.isEmpty() ? "." : lastName);
                     break;
                 case "Age":
                     String ageInYearsOrMonths = importField.getTextValue(row, importSheetHeader, importSheetMetaData);

@@ -41,12 +41,11 @@ bootRepackage {
 
 configurations {
     dev
-    all*.exclude module: 'spring-boot-starter-logging'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
 }
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    compile "org.apache.logging.log4j:log4j-web:2.7"
     compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
     testCompile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-rest:${springBootVersion}"
