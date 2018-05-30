@@ -8,6 +8,7 @@ import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,8 @@ public class EncounterController extends AbstractController<Encounter> {
     private final EncounterRepository encounterRepository;
     private ObservationService observationService;
 
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
+
     @Autowired
     public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService) {
         this.individualRepository = individualRepository;
@@ -36,6 +39,8 @@ public class EncounterController extends AbstractController<Encounter> {
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody EncounterRequest encounterRequest) {
+        logger.info("Saving encounter with uuid %s", encounterRequest.getUuid());
+
         EncounterType encounterType;
         if (encounterRequest.getEncounterTypeUUID() == null) {
             encounterType = encounterTypeRepository.findByName(encounterRequest.getEncounterType());
@@ -51,5 +56,7 @@ public class EncounterController extends AbstractController<Encounter> {
         encounter.setObservations(observationService.createObservations(encounterRequest.getObservations()));
         encounter.setVoided(encounterRequest.isVoided());
         encounterRepository.save(encounter);
+
+        logger.info("Saved encounter with uuid %s", encounterRequest.getUuid());
     }
 }

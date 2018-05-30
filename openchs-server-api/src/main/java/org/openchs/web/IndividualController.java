@@ -40,10 +40,12 @@ public class IndividualController extends AbstractController<Individual> {
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody IndividualRequest individualRequest) {
+        logger.info(String.format("Saving individual with UUID %s", individualRequest.getUuid()));
+
         Individual individual = createIndividualWithoutObservations(individualRequest);
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
-        logger.info(String.format("Import Individual with UUID %s and with organisation id %s", individual.getUuid(), String.valueOf(individual.getOrganisationId())));
         individualRepository.save(individual);
+        logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
     }
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {
