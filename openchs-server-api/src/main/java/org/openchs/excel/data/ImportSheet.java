@@ -1,6 +1,10 @@
 package org.openchs.excel.data;
 
+
 import org.apache.logging.log4j.util.Strings;
+
+import org.apache.poi.ss.usermodel.Row;
+
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.openchs.excel.ExcelUtil;
@@ -24,7 +28,7 @@ public class ImportSheet {
         XSSFRow row = xssfSheet.getRow(rowIndex + 1);
         if (row == null) return null;
         String rawCellValue = ExcelUtil.getRawCellValue(row, 0);
-        return Strings.isBlank(rawCellValue) ? null : row;
+        return rawCellValue == null || rawCellValue.isEmpty() ? null : row;
     }
 
     public ImportSheetHeader getHeader() {
