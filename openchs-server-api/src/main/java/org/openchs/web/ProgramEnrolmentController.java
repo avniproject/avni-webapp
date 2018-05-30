@@ -10,6 +10,7 @@ import org.openchs.domain.ProgramEnrolment;
 import org.openchs.domain.ProgramOutcome;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.ProgramEnrolmentRequest;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,8 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private ObservationService observationService;
 
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
+
     @Autowired
     public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService) {
         this.programRepository = programRepository;
@@ -40,6 +43,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
+        logger.info(String.format("Saving programEnrolment with uuid %s", request.getUuid()));
         Program program;
         if (request.getProgramUUID() == null) {
             program = programRepository.findByName(request.getProgram());
@@ -64,5 +68,6 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         } else {
             programEnrolmentRepository.save(programEnrolment);
         }
+        logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
     }
 }
