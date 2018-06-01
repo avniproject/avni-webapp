@@ -2,11 +2,7 @@
   "name": "Adolescent School Dropout Followup",
   "uuid": "0c444bf3-54c3-41e4-8ca9-f0deb8760831",
   "formType": "ProgramEncounter",
-  "programName": "Adolescent",
   "userUUID": "5fed2907-df3a-4867-aef5-c87f4c78a31a",
-  "encounterTypes": [
-    "Dropout Followup Visit"
-  ],
   "formElementGroups": [
     {
       "uuid": "dd37cacf-c628-457e-b474-01c4966a473c",

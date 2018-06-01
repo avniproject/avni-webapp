@@ -2,9 +2,9 @@ package org.openchs.framework.security;
 
 import org.openchs.domain.UserContext;
 import org.openchs.service.UserContextService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -12,7 +12,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,8 +23,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
@@ -34,6 +31,9 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER);
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ADMIN);
     public final static SimpleGrantedAuthority ORGANISATION_ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ORGANISATION_ADMIN);
+
+    private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
+
 
     @Autowired
     public AuthenticationFilter(AuthenticationManager authenticationManager, UserContextService userContextService) {
@@ -46,7 +46,14 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
         try {
             Authentication authentication = this.attemptAuthentication(request, response);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            UserContext userContext = UserContextHolder.getUserContext();
+            String organisationName = userContext.getOrganisation() != null ? userContext.getOrganisation().getName(): null;
+            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), organisationName));
+
             chain.doFilter(request, response);
+
+            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), organisationName));
         } finally {
             UserContextHolder.clear();
         }
