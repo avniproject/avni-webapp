@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class SyncConfiguration extends WebMvcConfigurerAdapter {
     private final TransactionalResourceInterceptor transactionalResourceInterceptor;
     public static final List<String> RESOURCES =
-            Arrays.asList("individual", "encounter", "programEncounter", "programEnrolment", "checklist", "checklistItem");
+            Arrays.asList("individual", "encounter", "programEncounter", "programEnrolment", "checklist", "checklistItem", "individualRelative");
     private List<String> paths;
 
     @Autowired
