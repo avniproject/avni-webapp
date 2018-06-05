@@ -17,8 +17,9 @@ import org.springframework.stereotype.Repository;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface EncounterRepository extends PagingAndSortingRepository<Encounter, Long>, CHSRepository<Encounter> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<Encounter> findByAuditLastModifiedDateTimeGreaterThanAndIsVoidedFalseOrderByAudit_LastModifiedDateTimeAscIdAsc(
+    Page<Encounter> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAudit_LastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
 
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")

@@ -21,7 +21,10 @@ import java.util.List;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface ProgramEncounterRepository extends PagingAndSortingRepository<ProgramEncounter, Long>, CHSRepository<ProgramEncounter> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<ProgramEncounter> findByAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<ProgramEncounter> findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable);
 
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")
     Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
