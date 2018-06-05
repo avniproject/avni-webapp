@@ -19,7 +19,10 @@ import org.springframework.stereotype.Repository;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface FormElementRepository extends PagingAndSortingRepository<FormElement, Long>, ReferenceDataRepository<FormElement> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<FormElement> findByAuditLastModifiedDateTimeGreaterThanAndNonApplicableOrganisationsIsNullOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+    Page<FormElement> findByAuditLastModifiedDateTimeIsBetweenAndNonApplicableOrganisationsIsNullOrderByAuditLastModifiedDateTimeAscIdAsc(
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable);
 
     FormElement findFirstByConcept(Concept concept);
 }

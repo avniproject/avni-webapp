@@ -24,6 +24,13 @@ public interface OperationalProgramRepository extends PagingAndSortingRepository
     @Query("select op from OperationalProgram op where op.audit.lastModifiedDateTime > :lastModifiedDateTime or op.program.audit.lastModifiedDateTime > :lastModifiedDateTime order by CASE WHEN op.program.audit.lastModifiedDateTime > op.audit.lastModifiedDateTime THEN op.program.audit.lastModifiedDateTime ELSE op.audit.lastModifiedDateTime END")
     Page<OperationalProgram> findByAuditLastModifiedDateTimeGreaterThanOrProgramAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
+
+    @Query("select op from OperationalProgram op where op.audit.lastModifiedDateTime between :lastModifiedDateTime and :now or op.program.audit.lastModifiedDateTime between :lastModifiedDateTime and :now order by CASE WHEN op.program.audit.lastModifiedDateTime > op.audit.lastModifiedDateTime THEN op.program.audit.lastModifiedDateTime ELSE op.audit.lastModifiedDateTime END")
+    Page<OperationalProgram> findByAuditLastModifiedDateTimeIsBetweenOrProgramAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable);
+
     OperationalProgram findByProgramAndOrganisationId(Program program, long organisationId);
 
     OperationalProgram findByProgramIdAndOrganisationId(long programId, long organisationId);

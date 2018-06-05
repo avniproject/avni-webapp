@@ -16,8 +16,29 @@ import java.util.stream.Collectors;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SyncConfiguration extends WebMvcConfigurerAdapter {
     private final TransactionalResourceInterceptor transactionalResourceInterceptor;
-    public static final List<String> RESOURCES =
-            Arrays.asList("individual", "encounter", "programEncounter", "programEnrolment", "checklist", "checklistItem");
+    public static final List<String> RESOURCES = Arrays.asList("addressLevel",
+            "catchment",
+            "checklist",
+            "checklistItem",
+            "concept",
+            "conceptAnswer",
+            "encounter",
+            "encounterType",
+            "form",
+            "formElement",
+            "formElementGroup",
+            "formMapping",
+            "gender",
+            "individual",
+            "individualRelation",
+            "individualRelative",
+            "operationalEncounterType",
+            "operationalProgram",
+            "program",
+            "programConfig",
+            "programEncounter",
+            "programEnrolment",
+            "programOutcome");
     private List<String> paths;
 
     @Autowired
