@@ -14,6 +14,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "operationalProgram", path = "operationalProgram")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
@@ -21,5 +23,8 @@ public interface OperationalProgramRepository extends PagingAndSortingRepository
     @RestResource(path = "lastModified", rel = "lastModified")
     @Query("select op from OperationalProgram op where op.audit.lastModifiedDateTime > :lastModifiedDateTime or op.program.audit.lastModifiedDateTime > :lastModifiedDateTime order by CASE WHEN op.program.audit.lastModifiedDateTime > op.audit.lastModifiedDateTime THEN op.program.audit.lastModifiedDateTime ELSE op.audit.lastModifiedDateTime END")
     Page<OperationalProgram> findByAuditLastModifiedDateTimeGreaterThanOrProgramAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
+
     OperationalProgram findByProgramAndOrganisationId(Program program, long organisationId);
+
+    OperationalProgram findByProgramIdAndOrganisationId(long programId, long organisationId);
 }

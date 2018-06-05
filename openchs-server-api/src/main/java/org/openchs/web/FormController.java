@@ -4,6 +4,8 @@ import org.openchs.application.*;
 import org.openchs.builder.FormBuilder;
 import org.openchs.builder.FormBuilderException;
 import org.openchs.dao.EncounterTypeRepository;
+import org.openchs.dao.OperationalEncounterTypeRepository;
+import org.openchs.dao.OperationalProgramRepository;
 import org.openchs.dao.ProgramRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
@@ -11,10 +13,7 @@ import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormatContract;
-import org.openchs.web.request.application.BasicFormDetails;
-import org.openchs.web.request.application.FormContract;
-import org.openchs.web.request.application.FormElementContract;
-import org.openchs.web.request.application.FormElementGroupContract;
+import org.openchs.web.request.application.*;
 import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,17 +39,23 @@ public class FormController {
     private final Logger logger;
     private FormRepository formRepository;
     private ProgramRepository programRepository;
+    private OperationalProgramRepository operationalProgramRepository;
+    private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private final FormMappingRepository formMappingRepository;
     private RepositoryEntityLinks entityLinks;
 
     @Autowired
-    public FormController(FormRepository formRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository,
+    public FormController(FormRepository formRepository, ProgramRepository programRepository,
+                          EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository,
+                          OperationalProgramRepository operationalProgramRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository,
                           RepositoryEntityLinks entityLinks) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
+        this.operationalProgramRepository = operationalProgramRepository;
+        this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.entityLinks = entityLinks;
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -244,5 +249,51 @@ public class FormController {
             response.add(formsByProgram);
         });
         return response;
+    }
+
+    @RequestMapping(value = "/forms/byCategory", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
+    public Map<String, List<BasicFormMetadata>> getFormsByCategory(Pageable pageable) {
+        Map<String, List<BasicFormMetadata>> categorisedForms = new HashMap<>();
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        List<FormMapping> programFormMappings = formMappingRepository.findAllByEntityIdIsNotNull();
+        List<FormMapping> encounterFormMappings = formMappingRepository.findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNotNull();
+        List<FormMapping> otherFormMappings = formMappingRepository.findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNull();
+
+        if (organisation.getId() != 1) { // filter by operational_modules
+            programFormMappings = programFormMappings.stream().filter(x ->
+                    operationalProgramRepository.findByProgramIdAndOrganisationId(x.getEntityId(), organisation.getId()) != null &&
+                            operationalProgramRepository.findByProgramIdAndOrganisationId(x.getEntityId(), organisation.getId()).getProgram().getId().equals(x.getEntityId())
+            ).collect(Collectors.toList());
+
+            encounterFormMappings = encounterFormMappings.stream().filter(x ->
+                    operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getObservationsTypeEntityId(), organisation.getId()) != null &&
+                            operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getObservationsTypeEntityId(), organisation.getId()).getEncounterType().getId().equals(x.getObservationsTypeEntityId())
+            ).collect(Collectors.toList());
+        }
+
+        // Group by programId
+        Map<Long, List<FormMapping>> prgmIdFormMappingsMap = programFormMappings.stream()
+                .collect(Collectors.groupingBy(FormMapping::getEntityId));
+
+        if (!encounterFormMappings.isEmpty()) {
+            categorisedForms.put("Non Program", encounterFormMappings.stream().map(fm -> {
+                return new BasicFormMetadata(fm.getForm());
+            }).collect(Collectors.toList()));
+        }
+        if (!otherFormMappings.isEmpty()) {
+            categorisedForms.put("Other", otherFormMappings.stream().map(fm -> {
+                return new BasicFormMetadata(fm.getForm());
+            }).collect(Collectors.toList()));
+        }
+        for (Map.Entry<Long, List<FormMapping>> entry: prgmIdFormMappingsMap.entrySet()) {
+            String programName = programRepository.findById(entry.getKey()).getName();
+            List<BasicFormMetadata> forms = entry.getValue().stream().map(fm -> {
+                return new BasicFormMetadata(fm.getForm());
+            }).collect(Collectors.toList());
+            categorisedForms.put(programName, forms);
+        }
+
+        return categorisedForms;
     }
 }

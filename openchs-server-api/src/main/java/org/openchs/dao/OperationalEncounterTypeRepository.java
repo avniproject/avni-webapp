@@ -22,4 +22,6 @@ public interface OperationalEncounterTypeRepository extends PagingAndSortingRepo
     Page<OperationalEncounterType> findByAuditLastModifiedDateTimeGreaterThanOrEncounterTypeAuditLastModifiedDateTimeGreaterThanOrderByAuditLastModifiedDateTimeAscIdAsc(@Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime, Pageable pageable);
 
     OperationalEncounterType findByEncounterTypeAndOrganisationId(EncounterType encounterType, long organisationId);
+
+    OperationalEncounterType findByEncounterTypeIdAndOrganisationId(long encounterTypeId, long organisationId);
 }

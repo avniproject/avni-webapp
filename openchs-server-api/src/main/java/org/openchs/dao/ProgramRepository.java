@@ -21,4 +21,6 @@ public interface ProgramRepository extends PagingAndSortingRepository<Program, L
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
+
+    Program findById(long programId);
 }
