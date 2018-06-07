@@ -49,7 +49,7 @@ public class IndividualController extends AbstractController<Individual> {
     }
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {
-        AddressLevel addressLevel = individualRequest.getAddressLevelUUID() == null ? addressLevelRepository.findByTitleAndCatchmentsUuid(individualRequest.getAddressLevel(), individualRequest.getCatchmentUUID()) : addressLevelRepository.findByUuid(individualRequest.getAddressLevelUUID());
+        AddressLevel addressLevel = getAddressLevel(individualRequest);
         Gender gender = individualRequest.getGender() == null ? genderRepository.findByUuid(individualRequest.getGenderUUID()) : genderRepository.findByName(individualRequest.getGender());
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
         individual.setFirstName(individualRequest.getFirstName());
@@ -60,6 +60,16 @@ public class IndividualController extends AbstractController<Individual> {
         individual.setRegistrationDate(individualRequest.getRegistrationDate());
         individual.setVoided(individualRequest.isVoided());
         return individual;
+    }
+
+    private AddressLevel getAddressLevel(@RequestBody IndividualRequest individualRequest) {
+        if (individualRequest.getAddressLevelUUID() != null) {
+            return addressLevelRepository.findByUuid(individualRequest.getAddressLevelUUID());
+        } else if (individualRequest.getAddressLevelUUID() == null && individualRequest.getCatchmentUUID() != null) {
+            return addressLevelRepository.findByTitleAndCatchmentsUuid(individualRequest.getAddressLevel(), individualRequest.getCatchmentUUID());
+        } else {
+            return addressLevelRepository.findByTitle(individualRequest.getAddressLevel());
+        }
     }
 
     @RequestMapping(value = "/individualAndHistory", method = RequestMethod.POST)
