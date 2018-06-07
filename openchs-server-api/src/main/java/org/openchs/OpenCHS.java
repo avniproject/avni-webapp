@@ -89,6 +89,21 @@ public class OpenCHS {
     }
 
     @Bean
+    public ResourceProcessor<Resource<IndividualRelative>> individualRelativeProcessor() {
+        return new ResourceProcessor<Resource<IndividualRelative>>() {
+            @Override
+            public Resource<IndividualRelative> process(Resource<IndividualRelative> resource) {
+                IndividualRelative individualRelative = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(individualRelative.getRelation().getUuid(), "relationUUID"));
+                resource.add(new Link(individualRelative.getIndividual().getUuid(), "individualUUID"));
+                resource.add(new Link(individualRelative.getRelativeIndividual().getUuid(), "relativeIndividualUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
     public ResourceProcessor<Resource<FormElement>> formElementProcessor() {
         return new ResourceProcessor<Resource<FormElement>>() {
             @Override
