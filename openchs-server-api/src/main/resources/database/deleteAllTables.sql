@@ -56,5 +56,7 @@ DROP TABLE IF EXISTS concept CASCADE ;
 DROP TABLE IF EXISTS health_metadata_version CASCADE ;
 DROP TABLE IF EXISTS non_applicable_form_element CASCADE ;
 DROP TABLE IF EXISTS users CASCADE ;
+DROP TABLE IF EXISTS individual_relation_master CASCADE ;
+DROP TABLE IF EXISTS individual_relative CASCADE ;
 DROP TABLE IF EXISTS organisation CASCADE ;
 DROP TABLE IF EXISTS schema_version CASCADE ;
