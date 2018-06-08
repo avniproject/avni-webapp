@@ -12,6 +12,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import
+        javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -27,5 +29,4 @@ public interface EncounterTypeRepository extends PagingAndSortingRepository<Enco
     List<EncounterType> findAllByName(String name);
 
     EncounterType findByNameAndVoidedFalse(String name);
-
 }
