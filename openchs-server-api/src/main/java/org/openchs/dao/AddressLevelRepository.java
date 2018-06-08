@@ -25,6 +25,10 @@ public interface AddressLevelRepository extends PagingAndSortingRepository<Addre
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
+
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
+
+    AddressLevel findByTitle(String title);
+
     List<AddressLevel> findByCatchments(Catchment catchment);
 }

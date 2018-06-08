@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounterType", path = "encounterType")
@@ -23,4 +24,6 @@ public interface EncounterTypeRepository extends PagingAndSortingRepository<Enco
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
+
+    List<EncounterType> findAllByName(String name);
 }
