@@ -25,4 +25,7 @@ public interface EncounterTypeRepository extends PagingAndSortingRepository<Enco
             Pageable pageable);
 
     List<EncounterType> findAllByName(String name);
+
+    EncounterType findByNameAndVoidedFalse(String name);
+
 }
