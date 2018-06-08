@@ -55,7 +55,7 @@ public class OperationalModulesController {
         Program program = programRepository.findByName(programName);
         OperationalProgram operationalProgram = operationalProgramRepository.findByProgramAndOrganisationId(program, organisation.getId());
         if (operationalProgram != null) return operationalProgram;
-        if (program == null){
+        if (program == null) {
             logger.info(String.format("Program not found for name: %s", programName));
         }
 
@@ -68,7 +68,10 @@ public class OperationalModulesController {
     }
 
     private OperationalEncounterType createOperationalEncounterType(String encounterTypeName, Organisation organisation) {
-        EncounterType encounterType = encounterTypeRepository.findByNameAndVoidedFalse(encounterTypeName);
+        EncounterType encounterType = encounterTypeRepository.findAllByName(encounterTypeName)
+                .stream()
+                .filter(et -> !et.isVoided())
+                .findFirst().get();
         OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findByEncounterTypeAndOrganisationId(encounterType, organisation.getId());
         if (operationalEncounterType != null) return operationalEncounterType;
 
