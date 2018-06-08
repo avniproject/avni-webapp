@@ -68,7 +68,7 @@ public class OperationalModulesController {
     }
 
     private OperationalEncounterType createOperationalEncounterType(String encounterTypeName, Organisation organisation) {
-        EncounterType encounterType = encounterTypeRepository.findByName(encounterTypeName);
+        EncounterType encounterType = encounterTypeRepository.findByNameAndVoidedFalse(encounterTypeName);
         OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findByEncounterTypeAndOrganisationId(encounterType, organisation.getId());
         if (operationalEncounterType != null) return operationalEncounterType;
 
