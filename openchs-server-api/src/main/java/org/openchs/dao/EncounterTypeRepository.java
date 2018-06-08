@@ -23,4 +23,6 @@ public interface EncounterTypeRepository extends PagingAndSortingRepository<Enco
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
+
+    EncounterType findByNameAndVoidedFalse(String name);
 }
