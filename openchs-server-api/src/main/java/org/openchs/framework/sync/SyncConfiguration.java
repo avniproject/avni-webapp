@@ -31,6 +31,7 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "gender",
             "individual",
             "individualRelation",
+            "individualReverseRelation",
             "individualRelative",
             "operationalEncounterType",
             "operationalProgram",
