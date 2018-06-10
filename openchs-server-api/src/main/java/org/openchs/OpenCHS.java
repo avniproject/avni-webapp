@@ -104,6 +104,22 @@ public class OpenCHS {
     }
 
     @Bean
+    public ResourceProcessor<Resource<IndividualReverseRelation>> IndividualReverseRelationProcessor() {
+        return new ResourceProcessor<Resource<IndividualReverseRelation>>() {
+            @Override
+            public Resource<IndividualReverseRelation> process(Resource<IndividualReverseRelation> resource) {
+                IndividualReverseRelation individualReverseRelation = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(individualReverseRelation.getRelation().getUuid(), "relationUUID"));
+                resource.add(new Link(individualReverseRelation.getGender().getUuid(), "genderUUID"));
+                resource.add(new Link(individualReverseRelation.getReverseRelation().getUuid(), "reverseRelationUUID"));
+                return resource;
+            }
+        };
+    }
+
+
+    @Bean
     public ResourceProcessor<Resource<FormElement>> formElementProcessor() {
         return new ResourceProcessor<Resource<FormElement>>() {
             @Override
