@@ -138,6 +138,10 @@ public class FormElement extends OrganisationAwareEntity {
         this.nonApplicableOrganisations.add(organisation);
     }
 
+    public boolean isNonApplicableForOrganisation(Organisation organisation) {
+        return this.nonApplicableOrganisations.contains(organisation);
+    }
+
     public boolean isVoided() {
         return isVoided;
     }

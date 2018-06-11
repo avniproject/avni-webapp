@@ -129,7 +129,7 @@ public class FormController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public FormContract export(@RequestParam String formUUID) {
         Form form = formRepository.findByUuid(formUUID);
-
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString());
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
@@ -137,7 +137,9 @@ public class FormController {
             formElementGroupContract.setDisplay(formElementGroup.getDisplay());
             formElementGroupContract.setVoided(formElementGroup.isVoided());
             formContract.addFormElementGroup(formElementGroupContract);
-            formElementGroup.getFormElements().stream().sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
+            Set<FormElement> formElements = formElementGroup.getFormElements();
+            // DIRTY HACK ALERT: organisation.getId() == 1 ? fe.getOrganisationId() == 1
+            formElements.stream().filter(fe -> organisation.getId() == 1 ? fe.getOrganisationId() == 1 : !fe.isNonApplicableForOrganisation(organisation)).sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
                 FormElementContract formElementContract = new FormElementContract();
                 formElementContract.setUuid(formElement.getUuid());
                 formElementContract.setName(formElement.getName());
@@ -254,7 +256,9 @@ public class FormController {
     @RequestMapping(value = "/forms/byCategory", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
     public Map<String, List<BasicFormMetadata>> getFormsByCategory(Pageable pageable) {
+
         Map<String, List<BasicFormMetadata>> categorisedForms = new HashMap<>();
+
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         List<FormMapping> programFormMappings = formMappingRepository.findAllByEntityIdIsNotNull();
         List<FormMapping> encounterFormMappings = formMappingRepository.findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNotNull();
@@ -270,11 +274,21 @@ public class FormController {
                     operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getObservationsTypeEntityId(), organisation.getId()) != null &&
                             operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getObservationsTypeEntityId(), organisation.getId()).getEncounterType().getId().equals(x.getObservationsTypeEntityId())
             ).collect(Collectors.toList());
+        } else { // if organisation is OpenCHS, filter out other organisation forms
+            encounterFormMappings = encounterFormMappings.stream().filter(x -> x.getOrganisationId() == 1).collect(Collectors.toList());
+            otherFormMappings = otherFormMappings.stream().filter(x -> x.getOrganisationId() == 1).collect(Collectors.toList());
         }
 
         // Group by programId
         Map<Long, List<FormMapping>> prgmIdFormMappingsMap = programFormMappings.stream()
                 .collect(Collectors.groupingBy(FormMapping::getEntityId));
+        for (Map.Entry<Long, List<FormMapping>> entry: prgmIdFormMappingsMap.entrySet()) {
+            String programName = programRepository.findById(entry.getKey()).getName();
+            List<BasicFormMetadata> forms = entry.getValue().stream().map(fm -> {
+                return new BasicFormMetadata(fm.getForm());
+            }).collect(Collectors.toList());
+            categorisedForms.put(programName, forms);
+        }
 
         if (!encounterFormMappings.isEmpty()) {
             categorisedForms.put("Non Program", encounterFormMappings.stream().map(fm -> {
@@ -285,13 +299,6 @@ public class FormController {
             categorisedForms.put("Other", otherFormMappings.stream().map(fm -> {
                 return new BasicFormMetadata(fm.getForm());
             }).collect(Collectors.toList()));
-        }
-        for (Map.Entry<Long, List<FormMapping>> entry: prgmIdFormMappingsMap.entrySet()) {
-            String programName = programRepository.findById(entry.getKey()).getName();
-            List<BasicFormMetadata> forms = entry.getValue().stream().map(fm -> {
-                return new BasicFormMetadata(fm.getForm());
-            }).collect(Collectors.toList());
-            categorisedForms.put(programName, forms);
         }
 
         return categorisedForms;
