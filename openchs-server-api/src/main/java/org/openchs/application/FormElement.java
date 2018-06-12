@@ -26,7 +26,7 @@ public class FormElement extends OrganisationAwareEntity {
     @Type(type = "keyValues")
     private KeyValues keyValues;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "concept_id")
     private Concept concept;

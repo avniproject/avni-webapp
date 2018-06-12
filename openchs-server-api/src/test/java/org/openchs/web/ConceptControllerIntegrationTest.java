@@ -49,7 +49,7 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     @Test
-    public void shouldAddAndRemoveAnswers() throws IOException {
+    public void shouldAddAnswersAlongWithExistingAnswers() throws IOException {
         Object json = getJSON("/ref/concepts/codedConcept.json");
         post(json);
 
@@ -64,15 +64,6 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
         assertThat(withAnswer4).isNotNull();
         assertThat(withAnswer4.getConceptAnswers().size()).isEqualTo(4);
 
-        json = getJSON("/ref/concepts/removeAnswers.json");
-        post(json);
-
-        Concept withoutAnswer3 = conceptRepository.findByName("Coded Question");
-        assertThat(withoutAnswer3).isNotNull();
-        assertThat(withoutAnswer3.getConceptAnswers().size()).isEqualTo(4);
-        ConceptAnswer removedConceptAnswer = withoutAnswer3.getConceptAnswers().stream().filter(conceptAnswer -> conceptAnswer.getAnswerConcept().getName().equals("Coded Answer 3")).findFirst().get();
-        assertThat(removedConceptAnswer).isNotNull();
-        assertThat((removedConceptAnswer).isVoided()).isTrue();
     }
 
     @Test
