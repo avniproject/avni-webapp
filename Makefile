@@ -59,6 +59,9 @@ rebuild_dev_db: rebuild_db deploy_schema
 clean_testdb: ## Drops the test database
 	make _clean_db database=openchs_test
 
+_create_demo_organisation:
+	-psql -h localhost -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
+
 build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
 	make _create_demo_organisation database=openchs_test
