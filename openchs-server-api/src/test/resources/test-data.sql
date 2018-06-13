@@ -11,8 +11,10 @@ DELETE FROM encounter_type;
 DELETE FROM program_outcome;
 DELETE FROM concept_answer;
 DELETE FROM concept;
-DELETE FROM individual_reverse_relation_master;
-DELETE FROM individual_relation_master;
+DELETE FROM individual_relationship;
+DELETE FROM individual_relationship_type;
+DELETE FROM individual_relation_gender_mapping;
+DELETE FROM individual_relation;
 DELETE FROM gender;
 DELETE FROM catchment_address_mapping;
 DELETE FROM address_level;
@@ -39,8 +41,10 @@ ALTER SEQUENCE address_level_id_seq RESTART WITH 1;
 ALTER SEQUENCE catchment_id_seq RESTART WITH 1;
 ALTER SEQUENCE users_id_seq RESTART WITH 1;
 ALTER SEQUENCE organisation_id_seq RESTART WITH 1;
-ALTER SEQUENCE individual_relation_master_id_seq RESTART WITH 1;
-ALTER SEQUENCE individual_reverse_relation_master_id_seq RESTART WITH 1;
+ALTER SEQUENCE individual_relation_id_seq RESTART WITH 1;
+ALTER SEQUENCE individual_relation_gender_mapping_id_seq RESTART WITH 1;
+ALTER SEQUENCE individual_relationship_type_id_seq RESTART WITH 1;
+ALTER SEQUENCE individual_relationship_id_seq RESTART WITH 1;
 
 INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');

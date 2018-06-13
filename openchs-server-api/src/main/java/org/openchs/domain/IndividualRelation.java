@@ -4,7 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "individual_relation_master")
+@Table(name = "individual_relation")
 public class IndividualRelation extends CHSEntity {
     @NotNull
     private String name;

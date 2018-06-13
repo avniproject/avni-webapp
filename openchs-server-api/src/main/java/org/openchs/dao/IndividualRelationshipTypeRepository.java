@@ -13,9 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "individualReverseRelation", path = "individualReverseRelation")
+@RepositoryRestResource(collectionResourceRel = "individualRelationshipType", path = "individualRelationshipType")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface IndividualReverseRelationRepository extends PagingAndSortingRepository<IndividualRelationshipType, Long>, CHSRepository<IndividualRelationshipType> {
+public interface IndividualRelationshipTypeRepository extends PagingAndSortingRepository<IndividualRelationshipType, Long>, ReferenceDataRepository<IndividualRelationshipType> {
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<IndividualRelationshipType> findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,

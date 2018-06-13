@@ -1,7 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
-import org.openchs.domain.IndividualRelationshipType;
+import org.openchs.domain.IndividualRelationGenderMapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -13,11 +13,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "individualReverseRelation", path = "individualReverseRelation")
+@RepositoryRestResource(collectionResourceRel = "individualRelationGenderMapping", path = "individualRelationGenderMapping")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface IndividualReverseRelationRepository extends PagingAndSortingRepository<IndividualRelationshipType, Long>, CHSRepository<IndividualRelationshipType> {
+public interface IndividualRelationGenderMappingRepository extends PagingAndSortingRepository<IndividualRelationGenderMapping, Long>, CHSRepository<IndividualRelationGenderMapping> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    Page<IndividualRelationshipType> findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<IndividualRelationGenderMapping> findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
