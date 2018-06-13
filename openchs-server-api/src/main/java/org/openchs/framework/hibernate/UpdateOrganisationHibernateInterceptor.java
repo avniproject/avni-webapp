@@ -13,7 +13,12 @@ import java.io.Serializable;
 public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
     @Override
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
-        return updateOrganisationId(entity, state, propertyNames);
+        return updateOrganisationIdIfNeeded(entity, state, propertyNames) != null;
+    }
+
+    @Override
+    public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
+        return updateOrganisationIdIfNeeded(entity, currentState, propertyNames);
     }
 
     @Override
@@ -25,7 +30,7 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
             audit.setLastModifiedDateTime(new DateTime());
             somethingChanged = true;
         }
-        return updateOrganisationId(entity, currentState, propertyNames) || somethingChanged;
+        return somethingChanged;
     }
 
     private int getIndexOf(String[] propertyNames, String propertyName) {
@@ -35,15 +40,18 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
         return -1;
     }
 
-    private boolean updateOrganisationId(Object entity, Object[] currentState, String[] propertyNames) {
+    private int[] updateOrganisationIdIfNeeded(Object entity, Object[] currentState, String[] propertyNames) {
         if (entity instanceof OrganisationAwareEntity) {
             int organisationIdIndex = getIndexOf(propertyNames, "organisationId");
             Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
-            if (currentState[organisationIdIndex] == null) {
+            if (!organisationId.equals(currentState[organisationIdIndex])) {
                 currentState[organisationIdIndex] = organisationId;
-                return true;
+                return new int[]{organisationIdIndex};
             }
         }
-        return false;
+        //used by onFlushDirty
+        //this is to keep the default behaviour when we don't want to explicitly mark entity as dirty
+        //null - use Hibernate's default dirty-checking algorithm
+        return null;
     }
 }
