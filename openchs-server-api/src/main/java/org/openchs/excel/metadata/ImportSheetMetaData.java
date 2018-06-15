@@ -123,4 +123,13 @@ public class ImportSheetMetaData {
         map.put("Address Level", this.getAddressLevel());
         return map;
     }
+
+    @Override
+    public String toString() {
+        return "ImportSheetMetaData{" +
+                "fileName='" + fileName + '\'' +
+                ", sheetName='" + sheetName + '\'' +
+                ", entityType=" + entityType +
+                '}';
+    }
 }
