@@ -1,6 +1,6 @@
 package org.openchs.importer;
 
-import org.apache.logging.log4j.util.Strings;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.LocalDate;
 import org.openchs.excel.ImportSheetHeader;
@@ -14,6 +14,7 @@ import org.openchs.web.request.PeriodRequest;
 import org.openchs.web.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     break;
                 case "Last Name":
                     String lastName = importField.getTextValue(row, header, importSheetMetaData);
-                    individualRequest.setLastName(Strings.isBlank(lastName) ? "." : lastName);
+                    individualRequest.setLastName(StringUtils.isEmpty(lastName) ? "." : lastName);
                     break;
                 case "Age":
                     String ageInYearsOrMonths = importField.getTextValue(row, header, importSheetMetaData);

@@ -40,12 +40,6 @@ _build_db:
 	-psql -h localhost -U $(su) -d postgres  -c 'grant demo to openchs';
 # </postgres>
 
-<<<<<<< HEAD
-_create_demo_organisation:
-	-psql -h localhost -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
-
-=======
->>>>>>> 2e460253e034216f1573060679d903e2790a487f
 # <db>
 clean_db: ## Drops the database
 	make _clean_db database=openchs
