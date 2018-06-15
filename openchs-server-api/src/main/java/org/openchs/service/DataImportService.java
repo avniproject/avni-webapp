@@ -4,10 +4,12 @@ import org.openchs.domain.*;
 import org.openchs.excel.DataImportResult;
 import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.metadata.ImportMetaData;
+import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.excel.metadata.ImportSheetMetaDataList;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.*;
+import org.openchs.web.request.CHSRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -40,17 +43,19 @@ public class DataImportService {
         this.importerMap.put(Checklist.class, checklistImporter);
     }
 
-    public void importExcel(InputStream metaDataFileStream, InputStream importDataFileStream) throws IOException {
+    public Map<ImportSheetMetaData, List<CHSRequest>> importExcel(InputStream metaDataFileStream, InputStream importDataFileStream, boolean performImport) throws IOException {
         logger.info("\n>>>>Begin Import<<<<\n");
         DataImportResult dataImportResult = new DataImportResult();
         ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(metaDataFileStream);
         ImportSheetMetaDataList importSheetMetaDataList = importMetaData.getImportSheets();
         ImportFile importFile = new ImportFile(importDataFileStream);
+        Map<ImportSheetMetaData, List<CHSRequest>> requestMap = new HashMap<>();
         importSheetMetaDataList
                 .forEach(importSheetMetaData -> {
                     try {
-                        this.importerMap.get(importSheetMetaData.getEntityType())
-                                .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult);
+                        List list = this.importerMap.get(importSheetMetaData.getEntityType())
+                                .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, performImport);
+                        requestMap.put(importSheetMetaData, list);
                     } catch (Exception e) {
                         dataImportResult.exceptionHappened(importSheetMetaData.asMap(), e);
                     } finally {
@@ -59,5 +64,6 @@ public class DataImportService {
                 });
         logger.info("\n>>>>End Import<<<<\n");
         dataImportResult.report();
+        return requestMap;
     }
 }

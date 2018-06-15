@@ -24,11 +24,15 @@ import java.util.List;
 
 @Component
 public class ProgramEncounterImporter extends Importer<ProgramEncounterRequest> {
-    @Autowired
-    private ProgramEncounterController programEncounterController;
+    private final ProgramEncounterController programEncounterController;
+    private final ProgramEnrolmentService programEnrolmentService;
 
     @Autowired
-    private ProgramEnrolmentService programEnrolmentService;
+    public ProgramEncounterImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, ProgramEncounterController programEncounterController, ProgramEnrolmentService programEnrolmentService) {
+        super(conceptRepository, formElementRepository);
+        this.programEncounterController = programEncounterController;
+        this.programEnrolmentService = programEnrolmentService;
+    }
 
     private ProgramEncounter matchAndUseExistingProgramEncounter(ProgramEncounterRequest programEncounterRequest) {
         return programEnrolmentService.matchingEncounter(programEncounterRequest.getProgramEnrolmentUUID(), programEncounterRequest.getEncounterType(), programEncounterRequest.getEncounterDateTime());

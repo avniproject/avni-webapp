@@ -2,6 +2,8 @@ package org.openchs.importer;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
+import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.application.FormElementRepository;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
 import org.openchs.excel.metadata.ImportField;
@@ -16,8 +18,13 @@ import java.util.List;
 
 @Component
 public class ProgramEnrolmentImporter extends Importer<ProgramEnrolmentRequest> {
+    private final ProgramEnrolmentController programEnrolmentController;
+
     @Autowired
-    private ProgramEnrolmentController programEnrolmentController;
+    public ProgramEnrolmentImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, ProgramEnrolmentController programEnrolmentController) {
+        super(conceptRepository, formElementRepository);
+        this.programEnrolmentController = programEnrolmentController;
+    }
 
     @Override
     protected Boolean processRequest(ProgramEnrolmentRequest entityRequest) {

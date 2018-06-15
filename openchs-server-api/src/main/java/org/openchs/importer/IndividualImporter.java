@@ -3,6 +3,8 @@ package org.openchs.importer;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.LocalDate;
+import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.application.FormElementRepository;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.TextToType;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
@@ -22,8 +24,13 @@ import java.util.List;
 
 @Component
 public class IndividualImporter extends Importer<IndividualRequest> {
-    @Autowired
     private IndividualController individualController;
+
+    @Autowired
+    public IndividualImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, IndividualController individualController) {
+        super(conceptRepository, formElementRepository);
+        this.individualController = individualController;
+    }
 
     @Override
     protected Boolean processRequest(IndividualRequest entityRequest) {

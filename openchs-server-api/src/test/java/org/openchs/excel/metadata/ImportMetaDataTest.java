@@ -9,9 +9,12 @@ import org.openchs.application.FormElement;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.*;
+import org.openchs.excel.DataImportResult;
 import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.data.ImportSheet;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
+import org.openchs.importer.*;
+import org.openchs.service.DataImportService;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
@@ -19,6 +22,7 @@ import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -33,8 +37,7 @@ public class ImportMetaDataTest {
 
     @Mock
     private FormElementRepository formElementRepository;
-
-    private ImportMetaData importMetaData;
+    private InputStream metaDataInputStream;
 
     @Before
     public void setup() throws IOException {
@@ -46,11 +49,12 @@ public class ImportMetaDataTest {
         placeHolderConcept.setDataType(ConceptDataType.Text.toString());
         when(conceptRepository.findByName(anyString())).thenReturn(placeHolderConcept);
         when(formElementRepository.findFirstByConcept(any(Concept.class))).thenReturn(placeHolderFormElement);
-        importMetaData = ImportMetaDataExcelReader.readMetaData(new ClassPathResource("Import MetaData.xlsx").getInputStream());
+        metaDataInputStream = new ClassPathResource("Import MetaData.xlsx").getInputStream();
     }
 
     @Test
     public void readMetaData() throws IOException {
+        ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(metaDataInputStream);
         ImportSheetMetaDataList importSheets = importMetaData.getImportSheets();
         ImportSheetMetaData importSheetMetaData = importSheets.get(0);
 
@@ -77,8 +81,8 @@ public class ImportMetaDataTest {
         assertEquals("Yes", answerMetaDataList.getSystemAnswer("Continued", "Something else"));
     }
 
-    @Test @Ignore
-    public void getRequestFromImportSheet() throws IOException {
+    @Test
+    public void getRequestFromImportSheet() throws IOException, InterruptedException {
         Map<String, UUID> answers = new HashMap<>();
         UUID yes = UUID.randomUUID();
         answers.put("Yes", yes);
@@ -86,21 +90,14 @@ public class ImportMetaDataTest {
         when(conceptRepository.findByName("School going")).thenReturn(TestEntityFactory.createCodedConcept("School going", answers));
         when(conceptRepository.findByName("Yes")).thenReturn(TestEntityFactory.createConceptOfNotType(yes.toString(), "Yes"));
 
-        ImportFile importFile = new ImportFile(new ClassPathResource("Test Import.xlsx").getInputStream());
-        Map<ImportSheetMetaData, List<CHSRequest>> requestMap = new HashMap<>();
+        IndividualImporter individualImporter = new IndividualImporter(conceptRepository, formElementRepository, null);
+        EncounterImporter encounterImporter = new EncounterImporter(conceptRepository, formElementRepository, null);
+        ProgramEnrolmentImporter programEnrolmentImporter = new ProgramEnrolmentImporter(conceptRepository, formElementRepository, null);
+        ProgramEncounterImporter programEncounterImporter = new ProgramEncounterImporter(conceptRepository, formElementRepository, null, null);
+        ChecklistImporter checklistImporter = new ChecklistImporter(conceptRepository, formElementRepository);
+        DataImportService dataImportService = new DataImportService(individualImporter, encounterImporter, programEnrolmentImporter, programEncounterImporter, checklistImporter);
+        Map<ImportSheetMetaData, List<CHSRequest>> requestMap = dataImportService.importExcel(metaDataInputStream, new ClassPathResource("Test Import.xlsx").getInputStream(), false);
 
-        importMetaData.getImportSheets().forEach(sheetMetaData -> {
-            List<ImportField> allFields = importMetaData.getAllFields(sheetMetaData);
-            ImportSheet importSheet = importFile.getSheet(sheetMetaData.getSheetName());
-
-            int numberOfDataRows = importSheet.getNumberOfDataRows();
-            for (int i = 0; i < numberOfDataRows; i++) {
-//                CHSRequest request = importSheet.getRequest(allFields, sheetMetaData, i, conceptRepository, formElementRepository, importMetaData.getAnswerMetaDataList());
-                CHSRequest request = new CHSRequest();
-                List<CHSRequest> chsRequests = requestMap.computeIfAbsent(sheetMetaData, k -> new ArrayList<>());
-                chsRequests.add(request);
-            }
-        });
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", Individual.class)).size(), 5);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEnrolment.class)).size(), 5);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEncounter.class)).size(), 5);

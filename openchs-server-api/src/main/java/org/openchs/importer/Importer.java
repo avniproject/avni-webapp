@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -31,11 +32,13 @@ import java.util.stream.IntStream;
 
 public abstract class Importer<T extends CHSRequest> {
     protected static Logger logger = LoggerFactory.getLogger(Importer.class);
-
-    @Autowired
     private ConceptRepository conceptRepository;
-    @Autowired
     private FormElementRepository formElementRepository;
+
+    protected Importer(ConceptRepository conceptRepository, FormElementRepository formElementRepository) {
+        this.conceptRepository = conceptRepository;
+        this.formElementRepository = formElementRepository;
+    }
 
     protected abstract Boolean processRequest(T entityRequest);
 
@@ -95,7 +98,7 @@ public abstract class Importer<T extends CHSRequest> {
             existingObservationRequest.setValue(String.format("%s\n\n%s", existingObservationRequest.getValue(), observationRequest.getValue()));
     }
 
-    public Boolean importSheet(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult) throws InterruptedException {
+    public List importSheet(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult, boolean performImport) throws InterruptedException {
         List<ImportField> allFields = importMetaData.getAllFields(importSheetMetaData);
         logger.info(String.format("Reading Sheet: %s", importSheetMetaData.getSheetName()));
         ImportSheet importSheet = importFile.getSheet(importSheetMetaData.getSheetName());
@@ -103,9 +106,10 @@ public abstract class Importer<T extends CHSRequest> {
         UserContext userContext = UserContextHolder.getUserContext();
         SecurityContext context = SecurityContextHolder.getContext();
         int numberOfDataRows = importSheet.getNumberOfDataRows();
-        IntStream.range(0, numberOfDataRows)
-                .parallel()
-                .mapToObj(importSheet::getDataRow)
+        ArrayList list = new ArrayList();
+        IntStream intStream = IntStream.range(0, numberOfDataRows);
+        IntStream stream = performImport ? intStream.parallel() : intStream;
+        stream.mapToObj(importSheet::getDataRow)
                 .filter(Objects::nonNull)
                 .forEach((row) -> {
                     SecurityContextHolder.setContext(context);
@@ -113,15 +117,24 @@ public abstract class Importer<T extends CHSRequest> {
                     try {
                         logger.info(String.format("Creating Request for %s", importSheetMetaData.getEntityType()));
                         T entityRequest = makeRequest(allFields, header, importSheetMetaData, row, importMetaData.getAnswerMetaDataList());
-                        logger.info(String.format("Saving/Updating %s with UUID %s", importSheetMetaData.getEntityType(), entityRequest.getUuid()));
-                        processRequest(entityRequest);
-                        logger.info(String.format("Saved/Updated %s with UUID %s", importSheetMetaData.getEntityType(), entityRequest.getUuid()));
+                        if (!performImport)
+                            list.add(entityRequest);
+                        if (performImport) {
+                            logger.info(String.format("Saving/Updating %s with UUID %s", importSheetMetaData.getEntityType(), entityRequest.getUuid()));
+                            processRequest(entityRequest);
+                            logger.info(String.format("Saved/Updated %s with UUID %s", importSheetMetaData.getEntityType(), entityRequest.getUuid()));
+                        }
                     } catch (Exception e) {
+                        e.printStackTrace();
                         dataImportResult.exceptionHappened(importSheetMetaData.asMap(), e);
                     }
 
                 });
         logger.info(String.format("Imported Sheet: %s", importSheetMetaData.getSheetName()));
-        return true;
+        return list;
+    }
+
+    public List createRequests(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult) throws InterruptedException {
+        return importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, false);
     }
 }
