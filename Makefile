@@ -40,9 +40,12 @@ _build_db:
 	-psql -h localhost -U $(su) -d postgres  -c 'grant demo to openchs';
 # </postgres>
 
+<<<<<<< HEAD
 _create_demo_organisation:
 	-psql -h localhost -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
 
+=======
+>>>>>>> 2e460253e034216f1573060679d903e2790a487f
 # <db>
 clean_db: ## Drops the database
 	make _clean_db database=openchs
@@ -50,20 +53,23 @@ clean_db: ## Drops the database
 build_db: ## Creates new empty database
 	make _build_db database=openchs
 
-create_demo_organisation: ## Creates dummy user
-	make _create_demo_organisation database=openchs
+delete_org_meta_data:
+	psql -h localhost -U $(su) openchs -f openchs-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
 
 delete_org_meta_data:
 	psql -h localhost -U $(su) openchs -f openchs-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
 
 rebuild_db: clean_db build_db ## clean + build db
 
-rebuild_dev_db: rebuild_db deploy_schema create_demo_organisation
+rebuild_dev_db: rebuild_db deploy_schema
 # </db>
 
 # <testdb>
 clean_testdb: ## Drops the test database
 	make _clean_db database=openchs_test
+
+_create_demo_organisation:
+	-psql -h localhost -U $(su) -d $(database) -f make-scripts/create_demo_organisation.sql
 
 build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
