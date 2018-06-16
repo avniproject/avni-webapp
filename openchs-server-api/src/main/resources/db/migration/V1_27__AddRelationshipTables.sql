@@ -1,3 +1,8 @@
+/*old design table drop*/
+DROP TABLE IF EXISTS individual_relation_master CASCADE;
+DROP TABLE IF EXISTS individual_reverse_relation_master CASCADE;
+
+/*new design tables create*/
 CREATE TABLE individual_relation (
   id         SMALLSERIAL PRIMARY KEY,
   uuid          CHARACTER VARYING(255) NOT NULL,
@@ -10,18 +15,18 @@ CREATE TABLE individual_relation (
 ALTER TABLE ONLY individual_relation
   ADD CONSTRAINT individual_relation_audit FOREIGN KEY (audit_id) REFERENCES audit (id);
 
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('son', 'ade34813-dbfb-44a9-bed0-534cecbaccf2', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('daughter', '7a12cef2-febd-44e4-91f9-c6b8945d5962', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('father', '0fdf6781-698a-4b7a-bcc9-f622e078c41d', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('mother', '30ce916b-557d-4cd4-a3fd-b3154a8b594c', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('husband', 'f8b7576e-01bc-46d2-a01e-40b260e8e8ed', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('wife', '89619c86-e603-4856-af49-bd6b2658f176', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('brother', '9c303777-2e18-4d54-9ae1-53cab97893e7', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('sister', '1b0789e2-b017-4cfb-817a-9e0cddd2509e', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('grandson', 'b7c4a7f6-0b40-4bdc-a489-7d0b9c82d6e3', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('granddaughter', '6b5114c9-2d57-47b6-ad3e-1846c264c229', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('grandfather', '7d1d6931-7af9-4e10-9ece-dd1e44bb4574', 1, 1);
-INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('grandmother', 'aae67acd-c1e1-494b-b286-e87e544a3cb4', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('son', '7e876220-20b4-4c17-87b7-0e235926f7a6', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('daughter', '91fd32f2-0261-46a1-92e4-4c201247c9a3', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('father', 'eeb49484-a07d-49f7-bb4b-932b713fbc66', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('mother', '5a77c22b-a24f-456e-84a3-9bd12e104f73', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('husband', '334ea293-fd10-4dab-92f3-04ce153e27aa', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('wife', '0ab14ce3-cbdb-4cb7-8601-353bebe408c9', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('brother', '4809d13f-4ab1-49d7-aa57-ee71a821bc3f', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('sister', 'a081882c-6775-4caa-98cd-9720a0d11dfc', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('grandson', '4474c0f3-9d35-4622-a65a-5688f633a274', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('granddaughter', '82691c26-c042-48d4-972b-664bcb348fc4', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('grandfather', '0d0b0e92-79d4-49c1-b33b-cf0508ea550c', 1, 1);
+INSERT INTO individual_relation (name, uuid, version, organisation_id) VALUES ('grandmother', '8c382726-92be-4e3e-8b6e-2b032c5cd6a8', 1, 1);
 
 INSERT INTO audit (uuid, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time) (SELECT uuid, 1, 1, now(), now() FROM individual_relation);
 
