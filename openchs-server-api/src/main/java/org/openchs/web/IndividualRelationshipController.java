@@ -1,11 +1,11 @@
 package org.openchs.web;
 
-import org.openchs.dao.IndividualRelationshipRepository;
-import org.openchs.dao.IndividualRelationshipTypeRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Individual;
-import org.openchs.domain.IndividualRelationship;
-import org.openchs.domain.IndividualRelationshipType;
+import org.openchs.domain.individualRelationship.IndividualRelationship;
+import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.openchs.web.request.IndividualRelationshipRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

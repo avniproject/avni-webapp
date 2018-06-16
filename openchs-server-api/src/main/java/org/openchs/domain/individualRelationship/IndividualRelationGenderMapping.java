@@ -1,11 +1,14 @@
-package org.openchs.domain;
+package org.openchs.domain.individualRelationship;
+
+import org.openchs.domain.Gender;
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "individual_relation_gender_mapping")
-public class IndividualRelationGenderMapping extends CHSEntity{
+public class IndividualRelationGenderMapping extends OrganisationAwareEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

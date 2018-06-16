@@ -1,7 +1,8 @@
-package org.openchs.dao;
+package org.openchs.dao.individualRelationship;
 
 import org.joda.time.DateTime;
-import org.openchs.domain.IndividualRelationGenderMapping;
+import org.openchs.dao.CHSRepository;
+import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;

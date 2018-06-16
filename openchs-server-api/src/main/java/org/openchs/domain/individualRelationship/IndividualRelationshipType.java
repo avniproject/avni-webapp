@@ -1,11 +1,13 @@
-package org.openchs.domain;
+package org.openchs.domain.individualRelationship;
+
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "individual_relationship_type")
-public class IndividualRelationshipType extends CHSEntity {
+public class IndividualRelationshipType extends OrganisationAwareEntity {
 
     @NotNull
     private String name;
@@ -28,13 +30,6 @@ public class IndividualRelationshipType extends CHSEntity {
 
     public void setIndividualAIsToB(IndividualRelation individualAIsToB) {
         this.individualAIsToB = individualAIsToB;
-    }
-    
-    public static IndividualRelationshipType create(IndividualRelation relation, Gender gender, IndividualRelation reverseRelation) {
-        IndividualRelationshipType reverseRelationEntity = new IndividualRelationshipType();
-        reverseRelationEntity.individualAIsToB = relation;
-        reverseRelationEntity.individualBIsToA = reverseRelation;
-        return reverseRelationEntity;
     }
 
     public boolean isVoided() {

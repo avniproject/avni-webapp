@@ -1,7 +1,10 @@
-package org.openchs.domain;
+package org.openchs.domain.individualRelationship;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.domain.Individual;
+import org.openchs.domain.ObservationCollection;
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

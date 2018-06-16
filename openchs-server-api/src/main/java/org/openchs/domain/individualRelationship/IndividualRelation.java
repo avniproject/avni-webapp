@@ -1,11 +1,13 @@
-package org.openchs.domain;
+package org.openchs.domain.individualRelationship;
+
+import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "individual_relation")
-public class IndividualRelation extends CHSEntity {
+public class IndividualRelation extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
