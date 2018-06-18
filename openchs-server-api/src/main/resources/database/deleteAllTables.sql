@@ -32,6 +32,8 @@ DROP FUNCTION IF EXISTS has_problem(program_encounter);
 DROP FUNCTION IF EXISTS is_counselled( program_encounter );
 DROP FUNCTION IF EXISTS in_one_entity_coded_obs_contains(program_enrolment,program_encounter,text,text[]);
 
+
+DROP TABLE IF EXISTS rule_dependency CASCADE;
 DROP TABLE IF EXISTS program_encounter CASCADE;
 DROP TABLE IF EXISTS encounter CASCADE;
 DROP TABLE IF EXISTS checklist_item CASCADE ;
