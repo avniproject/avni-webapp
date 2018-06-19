@@ -2,6 +2,7 @@ package org.openchs.excel.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ImportMetaData {
     private ImportNonCalculatedFields nonCalculatedFields;
@@ -26,7 +27,12 @@ public class ImportMetaData {
     }
 
     public ImportSheetMetaDataList getImportSheets() {
-        return sheets;
+        List<ImportSheetMetaData> nonNullSheets = sheets.stream()
+                .filter(sheet -> !sheet.isNull())
+                .collect(Collectors.toList());
+        this.sheets.clear();
+        this.sheets.addAll(nonNullSheets);
+        return this.sheets;
     }
 
     public void setImportSheets(ImportSheetMetaDataList importSheets) {
