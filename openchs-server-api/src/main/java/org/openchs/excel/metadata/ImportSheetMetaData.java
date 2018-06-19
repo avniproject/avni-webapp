@@ -96,6 +96,13 @@ public class ImportSheetMetaData {
         return list;
     }
 
+    public Boolean isNull() {
+        return this.getSheetName() == null ||
+                this.getEntityType() == null ||
+                this.getFileName() == null ||
+                this.getUserFileType() == null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
