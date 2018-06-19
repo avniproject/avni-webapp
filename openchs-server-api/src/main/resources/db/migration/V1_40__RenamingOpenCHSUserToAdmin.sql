@@ -1,0 +1,1 @@
+update users set name = 'admin' where name = 'openchs' and organisation_id = 1;

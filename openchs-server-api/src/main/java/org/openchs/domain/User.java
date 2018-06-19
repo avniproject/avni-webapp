@@ -17,4 +17,11 @@ public class User extends OrganisationAwareEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    public static User newUser(String name, Long orgId) {
+        User user = new User();
+        user.setName(name);
+        user.setOrganisationId(orgId);
+        return user;
+    }
 }

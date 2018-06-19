@@ -1,5 +1,7 @@
 package org.openchs.framework.security;
 
+import org.openchs.dao.UserRepository;
+import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.openchs.service.UserContextService;
 import org.slf4j.Logger;
@@ -24,21 +26,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AuthenticationFilter extends BasicAuthenticationFilter {
-
     private static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
     public static final String ORGANISATION_NAME_HEADER = "ORGANISATION-NAME";
     private final UserContextService userContextService;
+    private UserRepository userRepository;
     public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER);
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ADMIN);
     public final static SimpleGrantedAuthority ORGANISATION_ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ORGANISATION_ADMIN);
 
     private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
-
-    @Autowired
-    public AuthenticationFilter(AuthenticationManager authenticationManager, UserContextService userContextService) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, UserContextService userContextService, UserRepository userRepository) {
         super(authenticationManager);
         this.userContextService = userContextService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -46,17 +47,32 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
         try {
             Authentication authentication = this.attemptAuthentication(request, response);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             UserContext userContext = UserContextHolder.getUserContext();
-            String organisationName = userContext.getOrganisation() != null ? userContext.getOrganisation().getName(): null;
-            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), organisationName));
+            //doing this here because loading user before setting auth gives error
+            this.setUserForInDevMode(userContext);
+
+            User user = userRepository.findByName(userContext.getUsername());
+            if (user == null) {
+                logger.info(String.format("User=%s doesn't exist. Creating user.", userContext.getUsername()));
+                User newUser = User.newUser(userContext.getUsername(), userContext.getOrganisation().getId());
+                user = userRepository.save(newUser);
+                logger.info(String.format("Created user=%s in org=%d", userContext.getUsername(), userContext.getOrganisation().getId()));
+            }
+            userContext.setUser(user);
+
+            String organisationName = userContext.getOrganisationName();
+            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUsername(), organisationName));
 
             chain.doFilter(request, response);
 
-            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), organisationName));
+            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUsername(), organisationName));
         } finally {
-            UserContextHolder.clear();
+                UserContextHolder.clear();
         }
+    }
+
+    private void setUserForInDevMode(UserContext userContext) {
+        this.userContextService.setUserForInDevMode(userContext);
     }
 
     private Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {

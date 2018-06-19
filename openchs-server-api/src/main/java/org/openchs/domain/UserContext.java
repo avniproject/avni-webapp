@@ -4,20 +4,29 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class UserContext {
-    private String userName;
     public static final String USER = "user";
     public static final String ORGANISATION_ADMIN = "organisation_admin";
     public static final String ADMIN = "admin";
 
     private Collection<String> roles = new HashSet<>();
     private Organisation organisation;
+    private User user;
+    private String username;
 
-    public String getUserName() {
-        return userName;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Collection<String> getRoles() {
@@ -47,5 +56,9 @@ public class UserContext {
 
     public void setOrganisation(Organisation organisation) {
         this.organisation = organisation;
+    }
+
+    public String getOrganisationName() {
+        return organisation == null ? null : organisation.getName();
     }
 }

@@ -6,6 +6,8 @@ import org.hibernate.type.Type;
 import org.joda.time.DateTime;
 import org.openchs.domain.Audit;
 import org.openchs.domain.OrganisationAwareEntity;
+import org.openchs.domain.User;
+import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 
 import java.io.Serializable;
@@ -27,6 +29,12 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
         int indexOf = getIndexOf(propertyNames, "audit");
         if (indexOf != -1 && currentState[indexOf] != null) {
             Audit audit = (Audit) currentState[indexOf];
+            UserContext userContext = UserContextHolder.getUserContext();
+            User user = userContext.getUser();
+            if (audit.getCreatedBy() == null) {
+                audit.setCreatedBy(user);
+            }
+            audit.setLastModifiedBy(user);
             audit.setLastModifiedDateTime(new DateTime());
             somethingChanged = true;
         }

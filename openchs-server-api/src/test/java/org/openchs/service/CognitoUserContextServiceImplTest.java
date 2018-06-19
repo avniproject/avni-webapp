@@ -1,6 +1,7 @@
 package org.openchs.service;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class CognitoUserContextServiceImplTest {
     @Before
     public void setup() {
         initMocks(this);
-        userContextService = new CognitoUserContextServiceImpl(organisationRepository, "publicKey", "clientId");
+        userContextService = new CognitoUserContextServiceImpl(organisationRepository, "poolId", "clientId");
     }
 
     @Test
@@ -53,11 +54,14 @@ public class CognitoUserContextServiceImplTest {
         Organisation organisation = new Organisation();
         when(organisationRepository.findOne(1L)).thenReturn(organisation);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = JWT.create()
-                .withClaim("custom:organisationId", "1").sign(algorithm);
-
+        String token = createForBaseToken().sign(algorithm);
         UserContext userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getOrganisation(), is(equalTo(organisation)));
+    }
+
+    private JWTCreator.Builder createForBaseToken() {
+        return JWT.create()
+                .withClaim("custom:organisationId", "1").withClaim("cognito:username", "admin");
     }
 
     @Test
@@ -65,20 +69,18 @@ public class CognitoUserContextServiceImplTest {
         Organisation organisation = new Organisation();
         when(organisationRepository.findOne(1L)).thenReturn(organisation);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = JWT.create()
+        String token = createForBaseToken()
                 .withClaim("custom:isUser", "true")
                 .withClaim("custom:isOrganisationAdmin", "false")
-                .withClaim("custom:organisationId", "1")
                 .sign(algorithm);
 
         UserContext userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getRoles(), contains(UserContext.USER));
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
 
-        token = JWT.create()
+        token = createForBaseToken()
                 .withClaim("custom:isUser", "true")
                 .withClaim("custom:isOrganisationAdmin", "True")
-                .withClaim("custom:organisationId", "1")
                 .sign(algorithm);
 
         userContext = userContextService.getUserContext(token, false, null);
@@ -94,9 +96,8 @@ public class CognitoUserContextServiceImplTest {
         when(organisationRepository.findOne(1L)).thenReturn(anOrg);
         when(organisationRepository.findByName(becomeOrg.getName())).thenReturn(becomeOrg);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = JWT.create()
+        String token = createForBaseToken()
                 .withClaim("custom:isAdmin", "true")
-                .withClaim("custom:organisationId", "1")
                 .sign(algorithm);
 
         UserContext userContext = userContextService.getUserContext(token, false, becomeOrg.getName());
