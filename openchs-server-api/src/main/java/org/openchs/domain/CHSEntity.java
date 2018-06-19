@@ -18,7 +18,7 @@ public class CHSEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Audit audit = new Audit();
 
-    @Version
+//    @Version
     @Column(name = "version")
     private int version;
 
