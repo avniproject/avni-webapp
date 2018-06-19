@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -106,7 +103,7 @@ public abstract class Importer<T extends CHSRequest> {
         UserContext userContext = UserContextHolder.getUserContext();
         SecurityContext context = SecurityContextHolder.getContext();
         int numberOfDataRows = importSheet.getNumberOfDataRows();
-        ArrayList list = new ArrayList();
+        List list = Collections.synchronizedList(new ArrayList<>());
         IntStream intStream = IntStream.range(0, numberOfDataRows);
         IntStream stream = performImport ? intStream.parallel() : intStream;
         stream.mapToObj(importSheet::getDataRow)
