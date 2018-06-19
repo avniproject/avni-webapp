@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 @Table(name = "operational_encounter_type")
 public class OperationalEncounterType extends OrganisationAwareEntity {
     @NotNull
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="encounter_type_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "encounter_type_id")
     private EncounterType encounterType;
 
     public EncounterType getEncounterType() {

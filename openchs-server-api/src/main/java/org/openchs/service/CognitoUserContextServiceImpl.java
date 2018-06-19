@@ -156,6 +156,10 @@ public class CognitoUserContextServiceImpl implements UserContextService {
 
     private void addOrganisationToContext(UserContext userContext, DecodedJWT jwt, String becomeOrganisationName) {
         Organisation becomeOrganisation = getOrganisation(becomeOrganisationName);
+        if (becomeOrganisationName != null && becomeOrganisation == null) {
+            logger.error(String.format("Organisation '%s' not found", becomeOrganisationName));
+            throw new RuntimeException(String.format("Organisation '%s' not found", becomeOrganisationName));
+        }
         if (becomeOrganisation != null && hasRole(jwt, "custom:isAdmin")) {
             userContext.setOrganisation(becomeOrganisation);
             return;

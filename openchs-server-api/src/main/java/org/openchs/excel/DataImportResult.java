@@ -1,29 +1,28 @@
 package org.openchs.excel;
 
-import org.openchs.util.ExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
+import java.util.*;
 
 public class DataImportResult {
-    private HashSet<Integer> uniqueErrorHashes = new HashSet<>();
-    private HashSet<String> uniqueErrorMessages = new HashSet<>();
-    private int errorCount;
+    private Set<DataImportError> uniqueErrors = new HashSet<>();
+    private List<DataImportError> allErrors = new ArrayList<>();
 
     private static Logger logger = LoggerFactory.getLogger(DataImportResult.class);
 
-    public void exceptionHappened(Exception error) {
-        int exceptionHash = ExceptionUtil.getExceptionHash(error);
-        uniqueErrorHashes.add(exceptionHash);
-        uniqueErrorMessages.add(error.getMessage());
-        errorCount++;
+    public DataImportError exceptionHappened(Map<String, String> info, Exception exception) {
+        DataImportError error = new DataImportError(exception, info);
+        uniqueErrors.add(error);
+        allErrors.add(error);
+        return error;
     }
 
     public void report() {
-        logger.info(String.format("FAILED ROWS: %d; UNIQUE ERRORS: %d", errorCount, uniqueErrorHashes.size()));
-        uniqueErrorMessages.forEach(s -> {
-            logger.info(s);
+        logger.info(String.format("FAILED ROWS: %d; UNIQUE ERRORS: %d", allErrors.size(), uniqueErrors.size()));
+        uniqueErrors.forEach(e -> {
+            logger.error(e.toString());
+            logger.error("Exception", e.getException());
         });
     }
 }

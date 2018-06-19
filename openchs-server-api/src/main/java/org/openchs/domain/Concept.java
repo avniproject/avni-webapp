@@ -137,15 +137,13 @@ public class Concept extends OrganisationAwareEntity {
         this.getConceptAnswers().add(conceptAnswer);
     }
 
-    public void addAll(List<ConceptAnswer> conceptAnswers) {
-        conceptAnswers.forEach(conceptAnswer -> conceptAnswer.setConcept(this));
-        List<ConceptAnswer> voidedCAs = this.getConceptAnswers().stream()
-                .filter(cA -> !conceptAnswers.contains(cA))
-                .peek(cA -> cA.setVoided(true))
-                .collect(Collectors.toList());
-        this.getConceptAnswers().clear();
-        this.getConceptAnswers().addAll(conceptAnswers);
-        this.getConceptAnswers().addAll(voidedCAs);
+    public void addAll(List<ConceptAnswer> newConceptAnswers) {
+        List<ConceptAnswer> nonRepeatingNewOnes = newConceptAnswers.stream().filter(newConceptAnswer ->
+                this.getConceptAnswers().stream().noneMatch(oldConceptAnswer ->
+                        oldConceptAnswer.hasAnswerConcept(newConceptAnswer.getAnswerConcept()))
+        ).collect(Collectors.toList());
+        this.getConceptAnswers().addAll(nonRepeatingNewOnes);
+        nonRepeatingNewOnes.forEach(conceptAnswer -> conceptAnswer.setConcept(this));
     }
 
     public void voidOrphanedConceptAnswers(List<String> answerConceptUUIDs) {

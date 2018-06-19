@@ -6,6 +6,9 @@ import org.openchs.application.FormMapping;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramRepository;
 import org.openchs.domain.*;
+import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
+import org.openchs.domain.individualRelationship.IndividualRelationship;
+import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -89,19 +92,48 @@ public class OpenCHS {
     }
 
     @Bean
-    public ResourceProcessor<Resource<IndividualRelative>> individualRelativeProcessor() {
-        return new ResourceProcessor<Resource<IndividualRelative>>() {
+    public ResourceProcessor<Resource<IndividualRelationship>> individualRelationshipProcessor() {
+        return new ResourceProcessor<Resource<IndividualRelationship>>() {
             @Override
-            public Resource<IndividualRelative> process(Resource<IndividualRelative> resource) {
-                IndividualRelative individualRelative = resource.getContent();
+            public Resource<IndividualRelationship> process(Resource<IndividualRelationship> resource) {
+                IndividualRelationship individualRelationship = resource.getContent();
                 resource.removeLinks();
-                resource.add(new Link(individualRelative.getRelation().getUuid(), "relationUUID"));
-                resource.add(new Link(individualRelative.getIndividual().getUuid(), "individualUUID"));
-                resource.add(new Link(individualRelative.getRelativeIndividual().getUuid(), "relativeIndividualUUID"));
+                resource.add(new Link(individualRelationship.getRelationship().getUuid(), "relationshipTypeUUID"));
+                resource.add(new Link(individualRelationship.getIndividuala().getUuid(), "individualAUUID"));
+                resource.add(new Link(individualRelationship.getIndividualB().getUuid(), "individualBUUID"));
                 return resource;
             }
         };
     }
+
+    @Bean
+    public ResourceProcessor<Resource<IndividualRelationshipType>> IndividualRelationshipTypeProcessor() {
+        return new ResourceProcessor<Resource<IndividualRelationshipType>>() {
+            @Override
+            public Resource<IndividualRelationshipType> process(Resource<IndividualRelationshipType> resource) {
+                IndividualRelationshipType individualRelationshipType = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(individualRelationshipType.getIndividualAIsToB().getUuid(), "individualAIsToBRelationUUID"));
+                resource.add(new Link(individualRelationshipType.getIndividualBIsToA().getUuid(), "individualBIsToBRelationUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<IndividualRelationGenderMapping>> IndividualRelationGenderMappingProcessor() {
+        return new ResourceProcessor<Resource<IndividualRelationGenderMapping>>() {
+            @Override
+            public Resource<IndividualRelationGenderMapping> process(Resource<IndividualRelationGenderMapping> resource) {
+                IndividualRelationGenderMapping individualRelationGenderMapping = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(individualRelationGenderMapping.getRelation().getUuid(), "relationUUID"));
+                resource.add(new Link(individualRelationGenderMapping.getGender().getUuid(), "genderUUID"));
+                return resource;
+            }
+        };
+    }
+
 
     @Bean
     public ResourceProcessor<Resource<FormElement>> formElementProcessor() {

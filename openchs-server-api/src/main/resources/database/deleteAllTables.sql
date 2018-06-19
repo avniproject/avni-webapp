@@ -32,6 +32,9 @@ DROP FUNCTION IF EXISTS has_problem(program_encounter);
 DROP FUNCTION IF EXISTS is_counselled( program_encounter );
 DROP FUNCTION IF EXISTS in_one_entity_coded_obs_contains(program_enrolment,program_encounter,text,text[]);
 
+
+DROP TABLE IF EXISTS rule CASCADE;
+DROP TABLE IF EXISTS rule_dependency CASCADE;
 DROP TABLE IF EXISTS program_encounter CASCADE;
 DROP TABLE IF EXISTS encounter CASCADE;
 DROP TABLE IF EXISTS checklist_item CASCADE ;
@@ -60,5 +63,8 @@ DROP TABLE IF EXISTS individual_relation_master CASCADE ;
 DROP TABLE IF EXISTS individual_relative CASCADE ;
 DROP TABLE IF EXISTS program_organisation_config CASCADE ;
 DROP TABLE IF EXISTS audit CASCADE ;
+DROP TABLE IF EXISTS organisation CASCADE ;
+DROP TABLE IF EXISTS schema_version CASCADE ;
+DROP TABLE IF EXISTS flyway_schema_history CASCADE ;
 DROP TABLE IF EXISTS organisation CASCADE ;
 DROP TABLE IF EXISTS schema_version CASCADE ;

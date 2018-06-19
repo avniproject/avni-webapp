@@ -101,4 +101,8 @@ public class ConceptAnswer extends OrganisationAwareEntity {
     public void setUnique(boolean unique) {
         this.unique = unique;
     }
+
+    public boolean hasAnswerConcept(Concept answerConcept) {
+        return getAnswerConcept().getUuid().equals(answerConcept.getUuid());
+    }
 }

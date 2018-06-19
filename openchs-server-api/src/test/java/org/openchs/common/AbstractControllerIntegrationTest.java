@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
@@ -52,6 +54,8 @@ public abstract class AbstractControllerIntegrationTest {
     }
 
     protected void post(String path, Object json) {
-        assertThat(template.postForEntity(path, json, Void.class).getStatusCode().is2xxSuccessful()).isTrue();
+        ResponseEntity<String> responseEntity = template.postForEntity(path, json, String.class);
+        String body = String.valueOf(responseEntity.getBody());
+        assertTrue(body, responseEntity.getStatusCode().is2xxSuccessful());
     }
 }

@@ -58,6 +58,7 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
     }
 
     public List<ObservationRequest> getCancelObservations() {
+        if (cancelObservations == null) return new ArrayList<>();
         return cancelObservations;
     }
 
