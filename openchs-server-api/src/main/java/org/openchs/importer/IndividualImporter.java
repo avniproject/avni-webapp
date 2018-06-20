@@ -19,12 +19,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 @Component
 public class IndividualImporter extends Importer<IndividualRequest> {
     private IndividualController individualController;
+    private static String ALIAS_CONCEPT_NAME_ADDRESS_TITLE = "ADDRESS_LEVEL_TITLE";
 
     @Autowired
     public IndividualImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, IndividualController individualController) {
@@ -54,14 +56,18 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     break;
                 case "Age":
                     String ageInYearsOrMonths = importField.getTextValue(row, header, importSheetMetaData);
-                    try {
-                        individualRequest.setAge(PeriodRequest.fromString(ageInYearsOrMonths));
-                    } catch (ValidationException ve) {
-                        logger.error(ve.getMessage());
+                    if (ageInYearsOrMonths != null) {
+                        try {
+                            individualRequest.setAge(PeriodRequest.fromString(ageInYearsOrMonths));
+                        } catch (ValidationException ve) {
+                            logger.error(ve.getMessage());
+                        }
                     }
                     break;
                 case "Date of Birth":
-                    individualRequest.setDateOfBirth(new LocalDate(importField.getDateValue(row, header, importSheetMetaData)));
+                    Date dateValue = importField.getDateValue(row, header, importSheetMetaData);
+                    if (dateValue != null)
+                        individualRequest.setDateOfBirth(new LocalDate(dateValue));
                     break;
                 case "Date of Birth Verified":
                     individualRequest.setDateOfBirthVerified(importField.getBooleanValue(row, header, importSheetMetaData));
@@ -73,7 +79,8 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     individualRequest.setRegistrationDate(new LocalDate(importField.getDateValue(row, header, importSheetMetaData)));
                     break;
                 case "Address":
-                    individualRequest.setAddressLevel(importField.getTextValue(row, header, importSheetMetaData));
+                    String userAddressValue = importField.getTextValue(row, header, importSheetMetaData);
+                    individualRequest.setAddressLevel(answerMetaDataList.getSystemAnswer(userAddressValue, ALIAS_CONCEPT_NAME_ADDRESS_TITLE));
                     break;
                 case "Individual UUID":
                     individualRequest.setUuid(importField.getTextValue(row, header, importSheetMetaData));

@@ -132,6 +132,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
                     .withIssuer(getIssuer())
                     .withClaim("token_use", "id")
                     .withAudience(clientId)
+                    .acceptLeeway(10)
                     .build();
 
             logger.debug(String.format("Verifying token for issuer: %s, token_use: id and audience: %s", this.getIssuer(), clientId));

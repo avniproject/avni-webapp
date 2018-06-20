@@ -29,8 +29,8 @@ public class EncounterImporter extends Importer<EncounterRequest> {
 
     @Override
     protected Boolean processRequest(EncounterRequest encounterRequest) {
-        if (encounterRequest.getUuid() == null)
-            encounterRequest.setupUuidIfNeeded();
+        if (encounterRequest.getObservations().isEmpty()) return false; // don't save encounter if observations is empty
+        if (encounterRequest.getUuid() == null) encounterRequest.setupUuidIfNeeded();
         encounterController.save(encounterRequest);
         return true;
     }
@@ -52,7 +52,12 @@ public class EncounterImporter extends Importer<EncounterRequest> {
                     encounterRequest.setEncounterDateTime(new DateTime(importField.getDateValue(row, header, sheetMetaData)));
                     break;
                 default:
-                    ObservationRequest observationRequest = createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList);
+                    ObservationRequest observationRequest = null;
+                    try {
+                        observationRequest = createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, encounterRequest.getEncounterDateTime().toDate());
+                    } catch (Exception e) { // let record import continue even if observation fails
+                        logger.error(String.format("Failed to create observation '%s' in row '%d' with error %s", systemFieldName, row.getRowNum(), e.getMessage()));
+                    }
                     if (observationRequest == null) break;
                     List<ObservationRequest> observations = encounterRequest.getObservations();
                     this.mergeObservations(observations, observationRequest);
