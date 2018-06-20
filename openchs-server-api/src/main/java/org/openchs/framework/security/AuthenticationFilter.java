@@ -65,6 +65,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUsername(), organisationName));
         } catch (Exception exception) {
             this.logException(request, exception);
+            throw exception;
         } finally {
             UserContextHolder.clear();
         }
