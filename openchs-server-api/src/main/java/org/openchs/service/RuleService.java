@@ -9,6 +9,8 @@ import org.openchs.domain.RuleData;
 import org.openchs.domain.RuleDependency;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.RuleRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -17,13 +19,14 @@ import javax.transaction.Transactional;
 
 @Service
 public class RuleService {
-
+    private final Logger logger;
     private final RuleDependencyRepository ruleDependencyRepository;
     private final RuleRepository ruleRepository;
     private final FormRepository formRepository;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository, RuleRepository ruleRepository, FormRepository formRepository) {
+        logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
         this.formRepository = formRepository;
@@ -38,6 +41,7 @@ public class RuleService {
         ruleDependency.setCode(ruleCode);
         ruleDependency.setChecksum(ruleHash);
         ruleDependency.assignUUIDIfRequired();
+        logger.info(String.format("Rule dependency with UUID: %s", ruleDependency.getUuid()));
         return ruleDependencyRepository.save(ruleDependency);
     }
 
@@ -53,6 +57,7 @@ public class RuleService {
         existingRule.setFnName(rule.getFnName());
         existingRule.setType(RuleType.valueOf(StringUtils.capitalize(rule.getType())));
         existingRule.setRuleDependency(ruleDependency);
+        logger.info(String.format("Creating Rule with UUID, Name, Type, Form: %s, %s, %s, %s", existingRule.getUuid(), existingRule.getName(), existingRule.getType(), existingRule.getForm().getName()));
         return ruleRepository.save(existingRule);
     }
 }
