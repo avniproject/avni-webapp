@@ -21,7 +21,7 @@ public interface RuleDependencyRepository extends PagingAndSortingRepository<Rul
     RuleDependency findByOrganisationId(Long organisationId);
 
     @RestResource(path = "lastModified", rel = "lastModified")
-    RuleDependency findByAuditLastModifiedDateTimeIsBetween(
+    Page<RuleDependency> findByAuditLastModifiedDateTimeIsBetween(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now);
+            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now, Pageable pageable);
 }
