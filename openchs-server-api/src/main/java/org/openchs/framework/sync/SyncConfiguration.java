@@ -42,7 +42,9 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "programConfig",
             "programEncounter",
             "programEnrolment",
-            "programOutcome");
+            "programOutcome",
+            "ruleDependency",
+            "rule");
 
     private List<String> paths;
 

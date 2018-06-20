@@ -227,6 +227,19 @@ public class OpenCHS {
     }
 
     @Bean
+    public ResourceProcessor<Resource<Rule>> RuleProcessor() {
+        return new ResourceProcessor<Resource<Rule>>() {
+            @Override
+            public Resource<Rule> process(Resource<Rule> resource) {
+                Rule rule = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(rule.getForm().getUuid(), "formUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
     public ResourceProcessor<Resource<ChecklistItem>> ChecklistItemProcessor() {
         return new ResourceProcessor<Resource<ChecklistItem>>() {
             @Override
