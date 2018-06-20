@@ -111,9 +111,10 @@ public abstract class Importer<T extends CHSRequest> {
                 .forEach((row) -> {
                     SecurityContextHolder.setContext(context);
                     UserContextHolder.create(userContext);
+                    T entityRequest = (T) new CHSRequest();
                     try {
                         logger.info(String.format("Creating Request for %s", importSheetMetaData.getEntityType()));
-                        T entityRequest = makeRequest(allFields, header, importSheetMetaData, row, importMetaData.getAnswerMetaDataList());
+                        entityRequest = makeRequest(allFields, header, importSheetMetaData, row, importMetaData.getAnswerMetaDataList());
                         if (!performImport)
                             list.add(entityRequest);
                         if (performImport) {
@@ -122,7 +123,7 @@ public abstract class Importer<T extends CHSRequest> {
                             logger.info(String.format("Saved/Updated %s with UUID %s", importSheetMetaData.getEntityType(), entityRequest.getUuid()));
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error(String.format("Failed %s with UUID %s with error %s", importSheetMetaData.getEntityType(), entityRequest.getUuid(), e.getMessage()));
                         dataImportResult.exceptionHappened(importSheetMetaData.asMap(), e);
                     }
 

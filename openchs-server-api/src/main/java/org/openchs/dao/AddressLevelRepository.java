@@ -28,7 +28,7 @@ public interface AddressLevelRepository extends PagingAndSortingRepository<Addre
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
-    AddressLevel findByTitle(String title);
+    AddressLevel findByTitleIgnoreCase(String title);
 
     List<AddressLevel> findByCatchments(Catchment catchment);
 }
