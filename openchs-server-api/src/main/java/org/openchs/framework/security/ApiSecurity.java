@@ -1,7 +1,7 @@
 package org.openchs.framework.security;
 
-import org.openchs.dao.UserRepository;
 import org.openchs.service.UserContextService;
+import org.openchs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -17,14 +17,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableWebSecurity(debug = false)
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ApiSecurity extends WebSecurityConfigurerAdapter {
-
     private final UserContextService userContextService;
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    public ApiSecurity(UserContextService userContextService, UserRepository userRepository) {
+    public ApiSecurity(UserContextService userContextService, UserService userService) {
         this.userContextService = userContextService;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -35,8 +34,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .authorizeRequests().anyRequest().permitAll()
                 .and()
-                .addFilter(new AuthenticationFilter(authenticationManager(), userContextService, userRepository))
+                .addFilter(new AuthenticationFilter(authenticationManager(), userContextService, userService))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
-
 }
