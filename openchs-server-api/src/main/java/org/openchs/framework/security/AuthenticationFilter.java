@@ -1,9 +1,9 @@
 package org.openchs.framework.security;
 
-import org.openchs.dao.UserRepository;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.openchs.service.UserContextService;
+import org.openchs.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -30,17 +30,17 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     private static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
     public static final String ORGANISATION_NAME_HEADER = "ORGANISATION-NAME";
     private final UserContextService userContextService;
-    private UserRepository userRepository;
+    private UserService userService;
     public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER);
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ADMIN);
     public final static SimpleGrantedAuthority ORGANISATION_ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ORGANISATION_ADMIN);
 
     private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager, UserContextService userContextService, UserRepository userRepository) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, UserContextService userContextService, UserService userService) {
         super(authenticationManager);
         this.userContextService = userContextService;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -52,14 +52,10 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             //doing this here because loading user before setting auth gives error
             this.setUserForInDevMode(userContext);
 
-            User user = userRepository.findByName(userContext.getUsername());
-            if (user == null) {
-                logger.info(String.format("User=%s doesn't exist. Creating user.", userContext.getUsername()));
-                User newUser = User.newUser(userContext.getUsername(), userContext.getOrganisation().getId());
-                user = userRepository.save(newUser);
-                logger.info(String.format("Created user=%s in org=%d", userContext.getUsername(), userContext.getOrganisation().getId()));
+            if (authentication != null) {
+                User user = userService.createUserIfNotPresent(userContext.getUsername(), userContext.getOrganisation().getId());
+                userContext.setUser(user);
             }
-            userContext.setUser(user);
 
             String organisationName = userContext.getOrganisationName();
             logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUsername(), organisationName));
