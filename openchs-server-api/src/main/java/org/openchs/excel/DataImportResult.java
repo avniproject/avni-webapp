@@ -1,15 +1,15 @@
 package org.openchs.excel;
 
-import org.openchs.util.O;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class DataImportResult {
-    private Map<DataImportError, Integer> uniqueErrors = new HashMap<>();
-    private List<DataImportError> allErrors = new ArrayList<>();
+    private Map<DataImportError, Integer> uniqueErrors = new ConcurrentHashMap<>();
+    private Queue<DataImportError> allErrors = new ConcurrentLinkedQueue<>();
 
     private static Logger logger = LoggerFactory.getLogger(DataImportResult.class);
 
