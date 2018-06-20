@@ -53,8 +53,8 @@ VALUES (2, 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
 INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (3, 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325');
 
-INSERT INTO users (id, name, uuid, version, organisation_id)
-VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 1);
+INSERT INTO users (id, name, uuid, organisation_id)
+VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1);
 
 INSERT INTO catchment (id, name, uuid, version, organisation_id, type)
 VALUES
