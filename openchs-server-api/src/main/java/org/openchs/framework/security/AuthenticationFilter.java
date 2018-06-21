@@ -73,11 +73,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private void logException(HttpServletRequest request, Exception exception) {
         logger.error("Exception on Request URI", request.getRequestURI());
-        logger.error("Exception Message:\n", exception.getMessage());
-        logger.error("Exception Cause:\n", exception.getCause());
-        StringWriter sw = new StringWriter();
-        exception.printStackTrace(new PrintWriter(sw));
-        logger.error("Exception Stacktrace:\n", sw.toString());
+        logger.error("Exception Message:", exception);
     }
 
     private void setUserForInDevMode(UserContext userContext) {
