@@ -34,7 +34,7 @@ public class Rule extends OrganisationAwareEntity {
     private RuleData data;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rule_dependency_id")
+    @JoinColumn(name = "rule_dependency_id", nullable = true)
     private RuleDependency ruleDependency;
 
     @Column(name = "execution_order", nullable = false)
