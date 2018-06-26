@@ -1,0 +1,4 @@
+ALTER TABLE rule
+  DROP COLUMN execution_order;
+ALTER TABLE rule
+  ADD COLUMN execution_order DOUBLE PRECISION NOT NULL DEFAULT 10000.0;

@@ -57,6 +57,7 @@ public class RuleService {
         existingRule.setFnName(rule.getFnName());
         existingRule.setType(RuleType.valueOf(StringUtils.capitalize(rule.getType())));
         existingRule.setRuleDependency(ruleDependency);
+        existingRule.setExecutionOrder(rule.getExecutionOrder());
         logger.info(String.format("Creating Rule with UUID, Name, Type, Form: %s, %s, %s, %s", existingRule.getUuid(), existingRule.getName(), existingRule.getType(), existingRule.getForm().getName()));
         return ruleRepository.save(existingRule);
     }
