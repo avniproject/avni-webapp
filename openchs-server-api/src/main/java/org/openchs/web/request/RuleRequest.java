@@ -6,6 +6,7 @@ public class RuleRequest {
     private String ruleDependencyUUID;
     private String formUUID;
     private String type;
+    private Double executionOrder;
 
     private Map<String, String> data;
 
@@ -68,5 +69,13 @@ public class RuleRequest {
 
     public void setRuleDependencyUUID(String ruleDependencyUUID) {
         this.ruleDependencyUUID = ruleDependencyUUID;
+    }
+
+    public Double getExecutionOrder() {
+        return executionOrder;
+    }
+
+    public void setExecutionOrder(Double executionOrder) {
+        this.executionOrder = executionOrder;
     }
 }
