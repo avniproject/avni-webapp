@@ -66,7 +66,13 @@ public class ConceptService {
             conceptAnswer = new ConceptAnswer();
             conceptAnswer.assignUUID();
         }
-        conceptAnswer.setAnswerConcept(conceptRepository.findByUuid(answerConceptRequest.getUuid()));
+        Concept answerConcept = conceptRepository.findByUuid(answerConceptRequest.getUuid());
+        if (answerConcept == null) {
+            String message = String.format("Answer concept not found for UUID:%s", answerConceptRequest.getUuid());
+            logger.error(message);
+            throw new ValidationException(message);
+        }
+        conceptAnswer.setAnswerConcept(answerConcept);
 //        conceptAnswer.setAnswerConcept(map(answerConceptRequest));
         conceptAnswer.setVoided(answerConceptRequest.isVoided());
         conceptAnswer.setOrder(answerOrder);
