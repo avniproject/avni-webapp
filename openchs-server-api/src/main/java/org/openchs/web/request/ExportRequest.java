@@ -1,8 +1,5 @@
 package org.openchs.web.request;
 
-/**
- * Created by hithacker on 6/25/18.
- */
 public class ExportRequest {
     private String fileName;
 
