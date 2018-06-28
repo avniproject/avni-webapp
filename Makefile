@@ -87,7 +87,7 @@ start_server: build_server
 	java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 debug_server: build_server
-	JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
 	./gradlew clean build -x test

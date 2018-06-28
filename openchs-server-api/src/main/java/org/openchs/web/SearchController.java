@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import org.openchs.domain.Concept;
@@ -28,5 +25,11 @@ public class SearchController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public List<Concept> searchConcept(@RequestParam(value = "name") String query) {
         return searchService.searchConcepts(query);
+    }
+
+    @RequestMapping(value = "/search/conceptAnswers", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
+    public List<Concept> searchConceptAnswers(@RequestParam(value = "name") String query) {
+        return searchService.searchConceptAnswers(query);
     }
 }

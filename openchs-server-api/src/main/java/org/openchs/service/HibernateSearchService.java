@@ -2,7 +2,9 @@ package org.openchs.service;
 
 import javax.persistence.EntityManager;
 
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -50,6 +52,24 @@ public class HibernateSearchService {
                             .onFields("name")
                             .matching(searchTerm)
                             .createQuery();
+
+        FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, Concept.class);
+
+        return jpaQuery.getResultList();
+    }
+
+    @Transactional
+    public List<Concept> searchConceptAnswers(String searchTerm) {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+
+        QueryBuilder qb = fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder()
+                .forEntity(Concept.class).get();
+
+        Query luceneQuery = qb.bool()
+                .must(qb.keyword().onField("name").matching(searchTerm).createQuery())
+                .must(qb.keyword().onField("dataType").matching("NA").createQuery())
+                .createQuery();
 
         FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, Concept.class);
 
