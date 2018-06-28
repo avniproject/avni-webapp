@@ -40,6 +40,10 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
         return encounterType.isVoided();
     }
 
+    public String getEncounterTypeName() {
+        return encounterType.getName();
+    }
+
     public DateTime getLastModifiedDateTime() {
         return getEncounterType().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getEncounterType().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }
