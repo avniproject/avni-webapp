@@ -40,6 +40,10 @@ public class OperationalProgram extends OrganisationAwareEntity {
         return program.getUuid();
     }
 
+    public String getProgramName() {
+        return program.getName();
+    }
+
     public DateTime getLastModifiedDateTime() {
         return getProgram().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getProgram().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }
