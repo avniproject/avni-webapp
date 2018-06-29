@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RuleService {
@@ -60,5 +62,18 @@ public class RuleService {
         existingRule.setExecutionOrder(rule.getExecutionOrder());
         logger.info(String.format("Creating Rule with UUID, Name, Type, Form: %s, %s, %s, %s", existingRule.getUuid(), existingRule.getName(), existingRule.getType(), existingRule.getForm().getName()));
         return ruleRepository.save(existingRule);
+    }
+
+    @Transactional
+    public List<Rule> createRules(List<RuleRequest> rules) {
+        List<Rule> allRules = ruleRepository.findByOrganisationId(UserContextHolder.getUserContext().getOrganisation().getId());
+        List<Rule> createdRules = rules.stream().map(ruleRequest -> createRule(ruleRequest.getRuleDependencyUUID(), ruleRequest))
+                .collect(Collectors.toList());
+        List<String> ruleUUIDs = createdRules.stream().map(Rule::getUuid).collect(Collectors.toList());
+        List<Rule> voidedRules = allRules.stream()
+                .filter(r -> !ruleUUIDs.contains(r.getUuid()))
+                .collect(Collectors.toList());
+        voidedRules.stream().peek(vr -> vr.setVoided(true)).forEach(ruleRepository::save);
+        return allRules;
     }
 }
