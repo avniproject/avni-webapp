@@ -38,9 +38,6 @@ public class IndividualRelationship extends OrganisationAwareEntity {
     @Type(type = "observations")
     private ObservationCollection exitObservations;
 
-
-    private boolean isVoided = false;
-
     public IndividualRelationshipType getRelationship() {
         return relationship;
     }
@@ -79,14 +76,6 @@ public class IndividualRelationship extends OrganisationAwareEntity {
 
     public void setExitDateTime(DateTime exitDateTime) {
         this.exitDateTime = exitDateTime;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
     }
 
     public ObservationCollection getExitObservations() {

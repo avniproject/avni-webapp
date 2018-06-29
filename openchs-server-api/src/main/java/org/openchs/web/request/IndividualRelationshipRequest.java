@@ -14,8 +14,6 @@ public class IndividualRelationshipRequest extends CHSRequest {
     private DateTime enterDateTime;
     private DateTime exitDateTime;
     private List<ObservationRequest> exitObservations;
-    private boolean isVoided = false;
-
 
     public String getRelationshipTypeUUID() {
         return relationshipTypeUUID;
@@ -55,14 +53,6 @@ public class IndividualRelationshipRequest extends CHSRequest {
 
     public void setExitDateTime(DateTime exitDateTime) {
         this.exitDateTime = exitDateTime;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
     }
 
     public List<ObservationRequest> getExitObservations() {

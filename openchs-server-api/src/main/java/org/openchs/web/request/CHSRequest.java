@@ -7,6 +7,7 @@ import java.util.UUID;
 public class CHSRequest {
     private String uuid;
     private String userUUID;
+    private boolean isVoided;
 
     public CHSRequest() {
     }
@@ -36,5 +37,13 @@ public class CHSRequest {
         if (StringUtils.isEmpty(uuid)) {
             setUuid(UUID.randomUUID().toString());
         }
+    }
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        isVoided = voided;
     }
 }
