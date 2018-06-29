@@ -1,6 +1,5 @@
 package org.openchs.framework.jpa;
 
-import org.openchs.dao.UserRepository;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
