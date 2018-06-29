@@ -21,9 +21,6 @@ public class FormMapping extends OrganisationAwareEntity {
     @Column(name = "observations_type_entity_id")
     private Long observationsTypeEntityId;
 
-    @Column(nullable = false)
-    private boolean isVoided = false;
-
     public Form getForm() {
         return form;
     }
@@ -49,13 +46,4 @@ public class FormMapping extends OrganisationAwareEntity {
     public void setObservationsTypeEntityId(Long observationsTypeEntityId) {
         this.observationsTypeEntityId = observationsTypeEntityId;
     }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(Boolean voided) {
-        isVoided = voided;
-    }
-
 }

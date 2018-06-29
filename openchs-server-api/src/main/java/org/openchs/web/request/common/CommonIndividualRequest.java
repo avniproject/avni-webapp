@@ -20,7 +20,6 @@ public class CommonIndividualRequest extends CHSRequest {
     private String addressLevel;
     private String catchmentUUID;
     private LocalDate registrationDate;
-    private boolean isVoided = false;
 
     public String getFirstName() {
         return firstName;
@@ -102,14 +101,6 @@ public class CommonIndividualRequest extends CHSRequest {
 
     public void setAddressLevel(String addressLevel) {
         this.addressLevel = addressLevel;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        this.isVoided = voided;
     }
 
     public String getCatchmentUUID() {

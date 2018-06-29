@@ -14,9 +14,6 @@ public class EncounterType extends OrganisationAwareEntity {
     @JoinColumn(name="concept_id")
     private Concept concept;
 
-    @Column(nullable = false)
-    private boolean isVoided = false;
-
     public String getName() {
         return name;
     }
@@ -31,14 +28,6 @@ public class EncounterType extends OrganisationAwareEntity {
 
     public void setConcept(Concept concept) {
         this.concept = concept;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(Boolean voided) {
-        isVoided = voided;
     }
 
     public static EncounterType create(String name) {

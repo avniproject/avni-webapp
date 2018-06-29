@@ -7,7 +7,6 @@ public class CommonAbstractEncounterRequest extends CHSRequest {
     private DateTime encounterDateTime;
     private String encounterTypeUUID;
     private String encounterType;
-    private boolean isVoided = false;
 
     public DateTime getEncounterDateTime() {
         return encounterDateTime;
@@ -31,13 +30,5 @@ public class CommonAbstractEncounterRequest extends CHSRequest {
 
     public void setEncounterType(String encounterType) {
         this.encounterType = encounterType;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean isVoided) {
-        this.isVoided = isVoided;
     }
 }

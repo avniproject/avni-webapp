@@ -26,6 +26,9 @@ public class CHSEntity {
     @NotNull
     private String uuid;
 
+    @Column
+    private boolean isVoided;
+
     public Long getId() {
         return id;
     }
@@ -39,6 +42,18 @@ public class CHSEntity {
             audit = new Audit();
         }
         return audit;
+    }
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        isVoided = voided;
+    }
+
+    public void setVoided(Boolean voided) {
+        isVoided = voided;
     }
 
     public void setAudit(Audit audit) {

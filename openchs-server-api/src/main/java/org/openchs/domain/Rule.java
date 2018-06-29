@@ -40,9 +40,6 @@ public class Rule extends OrganisationAwareEntity {
     @Column(name = "execution_order", nullable = false)
     private Double executionOrder;
 
-    @Column(name = "is_voided", nullable = false)
-    private Boolean isVoided = false;
-
     public Form getForm() {
         return form;
     }
@@ -97,13 +94,5 @@ public class Rule extends OrganisationAwareEntity {
 
     public void setExecutionOrder(Double executionOrder) {
         this.executionOrder = executionOrder;
-    }
-
-    public Boolean getVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(Boolean voided) {
-        isVoided = voided;
     }
 }

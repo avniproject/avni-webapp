@@ -11,8 +11,6 @@ public class IndividualRelation extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
-    private boolean isVoided = false;
-
     public String getName() {
         return name;
     }
@@ -25,13 +23,5 @@ public class IndividualRelation extends OrganisationAwareEntity {
         IndividualRelation relation = new IndividualRelation();
         relation.name = name;
         return relation;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
     }
 }

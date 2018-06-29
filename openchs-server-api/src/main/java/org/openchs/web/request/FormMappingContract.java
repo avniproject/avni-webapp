@@ -38,16 +38,6 @@ public class FormMappingContract extends ReferenceDataContract {
         this.encounterTypeUUID = encounterTypeUUID;
     }
 
-    private boolean isVoided = false;
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean isVoided) {
-        this.isVoided = isVoided;
-    }
-
     @Override
     public String toString() {
         return String.format("UUID: %s, formUUID: %s, programUUID: %s, encounterTypeUUID: %s", this.getUuid(), this.getFormUUID(), this.getProgramUUID(), this.getEncounterTypeUUID());
