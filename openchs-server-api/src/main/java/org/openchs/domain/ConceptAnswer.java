@@ -21,8 +21,6 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     private boolean abnormal;
 
-    private boolean isVoided = false;
-
     @Column(name = "uniq")
     private boolean unique = false;
 
@@ -73,18 +71,6 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     public void setAbnormal(Boolean abnormal) {
         this.abnormal = abnormal.booleanValue();
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
-    }
-
-    public void setVoided(Boolean voided) {
-        isVoided = voided.booleanValue();
     }
 
     public boolean isUnique() {

@@ -19,7 +19,6 @@ public class ConceptContract extends ReferenceDataContract {
     private String organisationUUID;
     private boolean abnormal;
     private boolean unique = false;
-    private boolean isVoided = false;
 
     public String getDataType() {
         return dataType == null ? null : dataType.trim();
@@ -95,14 +94,6 @@ public class ConceptContract extends ReferenceDataContract {
 
     public void setUnique(boolean unique) {
         this.unique = unique;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean isVoided) {
-        this.isVoided = isVoided;
     }
 
     public String getOrganisationUUID() {

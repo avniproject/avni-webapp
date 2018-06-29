@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "individual_relationship_type")
 public class IndividualRelationshipType extends OrganisationAwareEntity {
-
     @NotNull
     private String name;
 
@@ -22,22 +21,12 @@ public class IndividualRelationshipType extends OrganisationAwareEntity {
     @JoinColumn(name = "individual_b_is_to_a_relation_id")
     private IndividualRelation individualBIsToA;
 
-    private boolean isVoided = false;
-
     public IndividualRelation getIndividualAIsToB() {
         return individualAIsToB;
     }
 
     public void setIndividualAIsToB(IndividualRelation individualAIsToB) {
         this.individualAIsToB = individualAIsToB;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
     }
 
     public IndividualRelation getIndividualBIsToA() {

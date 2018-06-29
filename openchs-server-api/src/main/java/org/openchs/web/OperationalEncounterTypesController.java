@@ -38,7 +38,7 @@ public class OperationalEncounterTypesController {
     void saveOperationalEncounterTypes(@RequestBody OperationalEncounterTypesContract request) {
         Organisation organisation = organisationRepository.findByName(request.getOrganisationName());
         request.getOperationalEncounterTypes().forEach(operationalEncounterTypeContract -> {
-            operationalEncounterTypeRepository.save(createOperationalEncounterType(operationalEncounterTypeContract, organisation));
+            createOperationalEncounterType(operationalEncounterTypeContract, organisation);
         });
     }
 
@@ -63,6 +63,7 @@ public class OperationalEncounterTypesController {
         operationalEncounterType.setName(operationalEncounterTypeContract.getName());
         operationalEncounterType.setEncounterType(encounterType);
         operationalEncounterType.setOrganisationId(organisation.getId());
+        operationalEncounterType.setVoided(operationalEncounterTypeContract.isVoided());
         operationalEncounterTypeRepository.save(operationalEncounterType);
         return operationalEncounterType;
     }

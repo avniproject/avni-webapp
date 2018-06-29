@@ -40,7 +40,7 @@ public class OperationalProgramsController {
     void saveOperationalPrograms(@RequestBody OperationalProgramsContract request) {
         Organisation organisation = organisationRepository.findByName(request.getOrganisationName());
         request.getOperationalPrograms().forEach(operationalProgramContract -> {
-            operationalProgramRepository.save(createOperationalProgram(operationalProgramContract, organisation));
+            createOperationalProgram(operationalProgramContract, organisation);
         });
     }
 
@@ -65,6 +65,7 @@ public class OperationalProgramsController {
         operationalProgram.setName(operationalProgramContract.getName());
         operationalProgram.setProgram(program);
         operationalProgram.setOrganisationId(organisation.getId());
+        operationalProgram.setVoided(operationalProgramContract.isVoided());
         operationalProgramRepository.save(operationalProgram);
         return operationalProgram;
     }

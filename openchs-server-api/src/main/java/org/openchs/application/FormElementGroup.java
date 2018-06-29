@@ -27,9 +27,6 @@ public class FormElementGroup extends OrganisationAwareEntity {
     @JoinColumn(name = "form_id")
     private Form form;
 
-    @Column(nullable = false)
-    private boolean isVoided = false;
-
     public String getName() {
         return name;
     }
@@ -75,14 +72,6 @@ public class FormElementGroup extends OrganisationAwareEntity {
 
     FormElement findFormElementByConcept(String conceptName) {
         return formElements.stream().filter(x -> x.getConcept().getName().equals(conceptName)).findAny().orElse(null);
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(Boolean voided) {
-        isVoided = voided;
     }
 
     public FormElement findFormElement(String uuid) {
