@@ -1,5 +1,5 @@
 package org.openchs.application;
 
 public enum RuleType {
-    Decision, ViewFilter, VisitSchedule, Checklists
+    Decision, ViewFilter, VisitSchedule, Checklists, Validation
 }
