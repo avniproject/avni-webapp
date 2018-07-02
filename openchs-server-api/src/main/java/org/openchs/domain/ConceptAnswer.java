@@ -17,7 +17,7 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     @NotNull
     @Column(name = "answer_order")
-    private short order;
+    private double order;
 
     private boolean abnormal;
 
@@ -40,16 +40,16 @@ public class ConceptAnswer extends OrganisationAwareEntity {
         this.answerConcept = answerConcept;
     }
 
-    public short getOrder() {
+    public double getOrder() {
         return order;
     }
 
-    public void setOrder(short order) {
+    public void setOrder(double order) {
         this.order = order;
     }
 
-    public void setOrder(Short order) {
-        this.order = order.shortValue();
+    public void setOrder(Double order) {
+        this.order = order;
     }
 
     @Override
