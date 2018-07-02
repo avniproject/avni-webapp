@@ -57,7 +57,7 @@ public class ConceptService {
         return concept != null && !concept.getUuid().equals(conceptRequest.getUuid());
     }
 
-    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, ConceptContract answerConceptRequest, short answerOrder) {
+    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, ConceptContract answerConceptRequest, double answerOrder) {
         if (StringUtils.isEmpty(answerConceptRequest.getUuid())) {
             throw new ValidationException("UUID missing for answer");
         }
@@ -75,7 +75,8 @@ public class ConceptService {
         conceptAnswer.setAnswerConcept(answerConcept);
 //        conceptAnswer.setAnswerConcept(map(answerConceptRequest));
         conceptAnswer.setVoided(answerConceptRequest.isVoided());
-        conceptAnswer.setOrder(answerOrder);
+        Double providedOrder = answerConceptRequest.getOrder();
+        conceptAnswer.setOrder(providedOrder == null ? answerOrder : providedOrder);
         conceptAnswer.setAbnormal(answerConceptRequest.isAbnormal());
         conceptAnswer.setUnique(answerConceptRequest.isUnique());
         return conceptAnswer;

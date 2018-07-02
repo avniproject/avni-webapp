@@ -172,7 +172,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         Concept codedConcept = conceptRepository.findByUuid("dcfc771a-0785-43be-bcb1-0d2755793e0e");
         Set<ConceptAnswer> conceptAnswers = codedConcept.getConceptAnswers();
         conceptAnswers.forEach(conceptAnswer -> {
-            switch (conceptAnswer.getOrder()) {
+            switch ((int) conceptAnswer.getOrder()) {
                 case 1:
                     assertEquals("28e76608-dddd-4914-bd44-3689eccfa5ca", conceptAnswer.getAnswerConcept().getUuid());
                     break;
@@ -189,7 +189,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         codedConcept = conceptRepository.findByUuid("dcfc771a-0785-43be-bcb1-0d2755793e0e");
         conceptAnswers = codedConcept.getConceptAnswers();
         conceptAnswers.forEach(conceptAnswer -> {
-            switch (conceptAnswer.getOrder()) {
+            switch ((int) conceptAnswer.getOrder()) {
                 case 1:
                     assertEquals("9715936e-03f2-44da-900f-33588fe95250", conceptAnswer.getAnswerConcept().getUuid());
                     break;
