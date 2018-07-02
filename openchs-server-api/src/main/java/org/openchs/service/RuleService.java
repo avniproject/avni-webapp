@@ -1,5 +1,6 @@
 package org.openchs.service;
 
+import org.openchs.application.Form;
 import org.openchs.application.RuleType;
 import org.openchs.dao.RuleDependencyRepository;
 import org.openchs.dao.RuleRepository;
@@ -9,6 +10,7 @@ import org.openchs.domain.RuleData;
 import org.openchs.domain.RuleDependency;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.RuleRequest;
+import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,21 +50,25 @@ public class RuleService {
     }
 
     @Transactional
-    public Rule createRule(String ruleDependencyUUID, RuleRequest rule) {
+    public Rule createRule(String ruleDependencyUUID, RuleRequest ruleRequest) {
         RuleDependency ruleDependency = ruleDependencyRepository.findByUuid(ruleDependencyUUID);
-        Rule existingRule = ruleRepository.findByUuid(rule.getUuid());
-        if (existingRule == null) existingRule = new Rule();
-        existingRule.setUuid(rule.getUuid());
-        existingRule.setData(new RuleData(rule.getData()));
-        existingRule.setForm(formRepository.findByUuid(rule.getFormUUID()));
-        existingRule.setName(rule.getName());
-        existingRule.setFnName(rule.getFnName());
-        existingRule.setType(RuleType.valueOf(StringUtils.capitalize(rule.getType())));
-        existingRule.setRuleDependency(ruleDependency);
-        existingRule.setExecutionOrder(rule.getExecutionOrder());
-        existingRule.setVoided(false);
-        logger.info(String.format("Creating Rule with UUID, Name, Type, Form: %s, %s, %s, %s", existingRule.getUuid(), existingRule.getName(), existingRule.getType(), existingRule.getForm().getName()));
-        return ruleRepository.save(existingRule);
+        Rule rule = ruleRepository.findByUuid(ruleRequest.getUuid());
+        if (rule == null) rule = new Rule();
+        rule.setUuid(ruleRequest.getUuid());
+        rule.setData(new RuleData(ruleRequest.getData()));
+        Form form = formRepository.findByUuid(ruleRequest.getFormUUID());
+        if (form == null) {
+            throw new ValidationException(String.format("Not form with uuid: %s found for rule with uuid: %s", ruleRequest.getFormUUID(), ruleRequest.getUuid()));
+        }
+        rule.setForm(form);
+        rule.setName(ruleRequest.getName());
+        rule.setFnName(ruleRequest.getFnName());
+        rule.setType(RuleType.valueOf(StringUtils.capitalize(ruleRequest.getType())));
+        rule.setRuleDependency(ruleDependency);
+        rule.setExecutionOrder(ruleRequest.getExecutionOrder());
+        rule.setVoided(false);
+        logger.info(String.format("Creating Rule with UUID, Name, Type, Form: %s, %s, %s, %s", rule.getUuid(), rule.getName(), rule.getType(), rule.getForm().getName()));
+        return ruleRepository.save(rule);
     }
 
     @Transactional
