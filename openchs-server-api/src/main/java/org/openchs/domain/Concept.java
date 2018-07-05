@@ -188,7 +188,7 @@ public class Concept extends OrganisationAwareEntity {
     }
 
     @JsonIgnore
-    public ConceptContract getConceptContract() {
+    public ConceptContract toConceptContract() {
         ConceptContract conceptContract = new ConceptContract();
         BeanUtils.copyProperties(this, conceptContract);
         if (ConceptDataType.Coded.toString().equals(this.getDataType())) {

@@ -2,7 +2,6 @@ package org.openchs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.dao.ConceptRepository;
-import org.openchs.domain.Concept;
 import org.openchs.service.ConceptService;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ExportRequest;
@@ -46,12 +45,11 @@ public class ConceptController {
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     void export(@RequestBody ExportRequest exportRequest) {
         List<ConceptContract> conceptContracts = new ArrayList<>();
-        conceptRepository.findAll().iterator().forEachRemaining(concept -> conceptContracts.add(concept.getConceptContract()));
-//        conceptContracts.add(conceptRepository.findByUuid("4876f1ce-28f0-4788-8d22-d8a3db617fd2").getConceptContract());
+        conceptRepository.findAll().iterator().forEachRemaining(concept -> conceptContracts.add(concept.toConceptContract()));
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(FILE_NAME), conceptContracts);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(exportRequest.getFileName()), conceptContracts);
         } catch (IOException e) {
             e.printStackTrace();
         }
