@@ -1,7 +1,10 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.openchs.web.request.ConceptContract;
+import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,6 +19,7 @@ public class Concept extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
+    @Field
     @NotNull
     private String dataType;
 
@@ -181,5 +185,21 @@ public class Concept extends OrganisationAwareEntity {
             return isSingleSelect ? answerConcept.getUuid() : Arrays.asList(answerConcept.getUuid());
         }
         return value;
+    }
+
+    @JsonIgnore
+    public ConceptContract toConceptContract() {
+        ConceptContract conceptContract = new ConceptContract();
+        BeanUtils.copyProperties(this, conceptContract);
+        if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
+            conceptContract.setAnswers(new ArrayList<>());
+        }
+        for (ConceptAnswer answer : this.getConceptAnswers()) {
+            ConceptContract answerConceptContract = new ConceptContract();
+            answerConceptContract.setUuid(answer.getAnswerConcept().getUuid());
+            answerConceptContract.setName(answer.getAnswerConcept().getName());
+            conceptContract.getAnswers().add(answerConceptContract);
+        }
+        return conceptContract;
     }
 }
