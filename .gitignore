@@ -15,6 +15,7 @@ major_version
 **/rules/*.js
 
 # VSCode
+.vscode
 .project
 .settings
 .classpath

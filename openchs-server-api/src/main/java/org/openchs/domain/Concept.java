@@ -1,8 +1,8 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Index;
 import org.openchs.web.request.ConceptContract;
 import org.springframework.beans.BeanUtils;
 
@@ -10,12 +10,25 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.snowball.SnowballPorterFilterFactory;
+import org.hibernate.search.annotations.Parameter;
 
 @Entity
 @Indexed
 @Table(name = "concept")
+@AnalyzerDef(name = "customanalyzer",
+  tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+  filters = {
+    @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+    @TokenFilterDef(factory = SnowballPorterFilterFactory.class, params = {
+      @Parameter(name = "language", value = "English")
+    })
+  })
 public class Concept extends OrganisationAwareEntity {
     @Field
+    @Analyzer(definition = "customanalyzer")
     @NotNull
     private String name;
 
