@@ -56,6 +56,12 @@ delete_org_meta_data:
 rebuild_db: clean_db build_db ## clean + build db
 
 rebuild_dev_db: rebuild_db deploy_schema
+
+restore_db:
+	psql -Uopenchs $(DB) -f $(sqlfile)
+
+delete_tx_data:
+	psql -Uopenchs $(DB) -f openchs-server-api/src/main/resources/database/deleteTxData.sql
 # </db>
 
 # <testdb>
@@ -84,7 +90,7 @@ deploy_test_schema: ## Runs all migrations to create the schema with all the obj
 
 # <server>
 start_server: build_server
-	java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	OPENCHS_DATABASE=$(DB) java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 debug_server: build_server
 	JAVA_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
