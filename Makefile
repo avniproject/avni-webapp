@@ -59,6 +59,9 @@ rebuild_dev_db: rebuild_db deploy_schema
 # </db>
 
 # <testdb>
+backup_db:
+	sudo -u $(su) pg_dump openchs > openchs-server-api/target/backup.sql
+
 clean_testdb: ## Drops the test database
 	make _clean_db database=openchs_test
 
@@ -87,7 +90,7 @@ start_server: build_server
 	java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 debug_server: build_server
-	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
 	./gradlew clean build -x test
@@ -97,6 +100,13 @@ test_server: rebuild_testdb ## Run tests
 
 start_server_wo_gradle:
 	java -jar openchs-server-api/target/openchs-server-api-0.1-SNAPSHOT.jar --cognito.clientid=$(client) --cognito.poolid=$(pool)
+
+# I have setup the environment variables in my bash_profile so that I can just run it whenever I want in live mode. You could do that too (Vivek).
+start_server_live: build_server
+	OPENCHS_MODE=live OPENCHS_CLIENT_ID=$(STAGING_APP_CLIENT_ID) OPENCHS_USER_POOL=$(STAGING_USER_POOL_ID) java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+
+debug_server_live: build_server
+	OPENCHS_MODE=live OPENCHS_CLIENT_ID=$(STAGING_APP_CLIENT_ID) OPENCHS_USER_POOL=$(STAGING_USER_POOL_ID) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 # <server>
 
 ci-test:

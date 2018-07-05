@@ -2,9 +2,11 @@ package org.openchs.service;
 
 import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
+import org.openchs.domain.Organisation;
 import org.openchs.util.O;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.validation.ValidationException;
@@ -26,12 +28,14 @@ public class ConceptService {
     private final Logger logger;
     private ConceptRepository conceptRepository;
     private ConceptAnswerRepository conceptAnswerRepository;
+    private OrganisationRepository organisationRepository;
 
     @Autowired
-    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository) {
+    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.conceptAnswerRepository = conceptAnswerRepository;
+        this.organisationRepository = organisationRepository;
     }
 
     private Concept fetchOrCreateConcept(String uuid) {
@@ -53,7 +57,7 @@ public class ConceptService {
         return concept != null && !concept.getUuid().equals(conceptRequest.getUuid());
     }
 
-    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, ConceptContract answerConceptRequest, short answerOrder) {
+    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, ConceptContract answerConceptRequest, double answerOrder) {
         if (StringUtils.isEmpty(answerConceptRequest.getUuid())) {
             throw new ValidationException("UUID missing for answer");
         }
@@ -62,10 +66,17 @@ public class ConceptService {
             conceptAnswer = new ConceptAnswer();
             conceptAnswer.assignUUID();
         }
-        conceptAnswer.setAnswerConcept(conceptRepository.findByUuid(answerConceptRequest.getUuid()));
+        Concept answerConcept = conceptRepository.findByUuid(answerConceptRequest.getUuid());
+        if (answerConcept == null) {
+            String message = String.format("Answer concept not found for UUID:%s", answerConceptRequest.getUuid());
+            logger.error(message);
+            throw new ValidationException(message);
+        }
+        conceptAnswer.setAnswerConcept(answerConcept);
 //        conceptAnswer.setAnswerConcept(map(answerConceptRequest));
         conceptAnswer.setVoided(answerConceptRequest.isVoided());
-        conceptAnswer.setOrder(answerOrder);
+        Double providedOrder = answerConceptRequest.getOrder();
+        conceptAnswer.setOrder(providedOrder == null ? answerOrder : providedOrder);
         conceptAnswer.setAbnormal(answerConceptRequest.isAbnormal());
         conceptAnswer.setUnique(answerConceptRequest.isUnique());
         return conceptAnswer;
@@ -104,7 +115,7 @@ public class ConceptService {
         String impliedDataType = getImpliedDataType(conceptRequest, concept);
         concept.setDataType(impliedDataType);
         concept.setVoided(conceptRequest.isVoided());
-
+        updateOrganisationIfNeeded(concept, conceptRequest);
         switch (ConceptDataType.valueOf(impliedDataType)) {
             case Coded:
                 concept = createCodedConcept(concept, conceptRequest);
@@ -114,6 +125,17 @@ public class ConceptService {
                 break;
         }
         return concept;
+    }
+
+    private void updateOrganisationIfNeeded(@NotNull Concept concept, @NotNull ConceptContract conceptRequest) {
+        String organisationUuid = conceptRequest.getOrganisationUUID();
+        Organisation organisation = organisationRepository.findByUuid(organisationUuid);
+        if (organisationUuid != null && organisation == null) {
+            throw new RuntimeException(String.format("Organisation not found with uuid :'%s'", organisationUuid));
+        }
+        if (organisation != null) {
+            concept.setOrganisationId(organisation.getId());
+        }
     }
 
     public Concept saveOrUpdate(ConceptContract conceptRequest) {

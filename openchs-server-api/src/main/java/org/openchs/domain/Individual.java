@@ -36,10 +36,6 @@ public class Individual extends OrganisationAwareEntity {
     private AddressLevel addressLevel;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
-    private Set<IndividualRelative> relatives = new HashSet<>();
-
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
     private Set<ProgramEnrolment> programEnrolments = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")
@@ -48,9 +44,6 @@ public class Individual extends OrganisationAwareEntity {
     @Column
     @Type(type = "observations")
     private ObservationCollection observations;
-
-    @Column(nullable = false)
-    private boolean isVoided = false;
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
@@ -146,25 +139,5 @@ public class Individual extends OrganisationAwareEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        this.isVoided = voided;
-    }
-
-    public Set<IndividualRelative> getRelatives() {
-        return relatives;
-    }
-
-    public void setRelatives(Set<IndividualRelative> relatives) {
-        this.relatives = relatives;
-    }
-
-    public void addRelative(IndividualRelative individualRelative) {
-        this.relatives.add(individualRelative);
     }
 }

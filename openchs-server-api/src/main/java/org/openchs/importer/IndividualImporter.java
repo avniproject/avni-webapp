@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -54,14 +55,18 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     break;
                 case "Age":
                     String ageInYearsOrMonths = importField.getTextValue(row, header, importSheetMetaData);
-                    try {
-                        individualRequest.setAge(PeriodRequest.fromString(ageInYearsOrMonths));
-                    } catch (ValidationException ve) {
-                        logger.error(ve.getMessage());
+                    if (ageInYearsOrMonths != null) {
+                        try {
+                            individualRequest.setAge(PeriodRequest.fromString(ageInYearsOrMonths));
+                        } catch (ValidationException ve) {
+                            logger.error(ve.getMessage());
+                        }
                     }
                     break;
                 case "Date of Birth":
-                    individualRequest.setDateOfBirth(new LocalDate(importField.getDateValue(row, header, importSheetMetaData)));
+                    Date dateValue = importField.getDateValue(row, header, importSheetMetaData);
+                    if (dateValue != null)
+                        individualRequest.setDateOfBirth(new LocalDate(dateValue));
                     break;
                 case "Date of Birth Verified":
                     individualRequest.setDateOfBirthVerified(importField.getBooleanValue(row, header, importSheetMetaData));

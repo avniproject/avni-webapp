@@ -13,6 +13,9 @@ public class OperationalProgram extends OrganisationAwareEntity {
     @JoinColumn(name="program_id")
     private Program program;
 
+    @Column
+    private String name;
+
     public Program getProgram() {
         return program;
     }
@@ -22,7 +25,11 @@ public class OperationalProgram extends OrganisationAwareEntity {
     }
 
     public String getName() {
-        return program.getName();
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getColour() {
@@ -31,6 +38,10 @@ public class OperationalProgram extends OrganisationAwareEntity {
 
     public String getProgramUUID() {
         return program.getUuid();
+    }
+
+    public String getProgramName() {
+        return program.getName();
     }
 
     public DateTime getLastModifiedDateTime() {

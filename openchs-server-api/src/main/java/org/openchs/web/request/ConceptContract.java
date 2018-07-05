@@ -8,7 +8,7 @@ import org.openchs.domain.ConceptDataType;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"name", "uuid", "dataType", "answers", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit", "unique"})
+@JsonPropertyOrder({"name", "uuid", "dataType", "answers", "order", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit", "unique", "organisationUUID"})
 public class ConceptContract extends ReferenceDataContract {
     private String dataType;
     private List<ConceptContract> answers;
@@ -17,9 +17,10 @@ public class ConceptContract extends ReferenceDataContract {
     private Double lowNormal;
     private Double highNormal;
     private String unit;
+    private String organisationUUID;
     private boolean abnormal;
     private boolean unique = false;
-    private boolean isVoided = false;
+    private Double order;
 
     public String getDataType() {
         return dataType == null ? null : dataType.trim();
@@ -98,12 +99,20 @@ public class ConceptContract extends ReferenceDataContract {
         this.unique = unique;
     }
 
-    public boolean isVoided() {
-        return isVoided;
+    public String getOrganisationUUID() {
+        return organisationUUID;
     }
 
-    public void setVoided(boolean isVoided) {
-        this.isVoided = isVoided;
+    public void setOrganisationUUID(String organisationUUID) {
+        this.organisationUUID = organisationUUID;
+    }
+
+    public Double getOrder() {
+        return order;
+    }
+
+    public void setOrder(Double order) {
+        this.order = order;
     }
 
     @Override

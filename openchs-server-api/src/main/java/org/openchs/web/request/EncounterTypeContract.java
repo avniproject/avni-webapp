@@ -9,15 +9,4 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"name", "uuid"})
 public class EncounterTypeContract extends ReferenceDataContract {
-    private boolean isVoided;
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
-    }
-
-
 }

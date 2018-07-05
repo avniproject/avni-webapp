@@ -31,7 +31,6 @@ public class Concept extends OrganisationAwareEntity {
     private Double lowNormal;
     private Double highNormal;
     private String unit;
-    private boolean isVoided = false;
 
     public String getName() {
         return name;
@@ -87,19 +86,6 @@ public class Concept extends OrganisationAwareEntity {
 
     public void setConceptAnswers(Set<ConceptAnswer> conceptAnswers) {
         this.conceptAnswers = conceptAnswers;
-    }
-
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
-    }
-
-    public void setVoided(Boolean voided) {
-        isVoided = voided.booleanValue();
     }
 
     public static Concept create(String name, String dataType) {

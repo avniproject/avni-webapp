@@ -13,6 +13,9 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
     @JoinColumn(name = "encounter_type_id")
     private EncounterType encounterType;
 
+    @Column
+    private String name;
+
     public EncounterType getEncounterType() {
         return encounterType;
     }
@@ -22,7 +25,11 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
     }
 
     public String getName() {
-        return encounterType.getName();
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEncounterTypeUUID() {
@@ -31,6 +38,10 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
 
     public Boolean getEncounterTypeVoided() {
         return encounterType.isVoided();
+    }
+
+    public String getEncounterTypeName() {
+        return encounterType.getName();
     }
 
     public DateTime getLastModifiedDateTime() {

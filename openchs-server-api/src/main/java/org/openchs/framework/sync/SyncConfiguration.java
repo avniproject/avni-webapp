@@ -35,14 +35,15 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "individualRelationGenderMapping",
             "individualRelationshipType",
             "individualRelationship",
-            "individualRelative",
             "operationalEncounterType",
             "operationalProgram",
             "program",
             "programConfig",
             "programEncounter",
             "programEnrolment",
-            "programOutcome");
+            "programOutcome",
+            "ruleDependency",
+            "rule");
 
     private List<String> paths;
 

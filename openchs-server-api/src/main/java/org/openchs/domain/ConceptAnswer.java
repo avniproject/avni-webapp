@@ -20,11 +20,9 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     @NotNull
     @Column(name = "answer_order")
-    private short order;
+    private double order;
 
     private boolean abnormal;
-
-    private boolean isVoided = false;
 
     @Column(name = "uniq")
     private boolean unique = false;
@@ -45,16 +43,16 @@ public class ConceptAnswer extends OrganisationAwareEntity {
         this.answerConcept = answerConcept;
     }
 
-    public short getOrder() {
+    public double getOrder() {
         return order;
     }
 
-    public void setOrder(short order) {
+    public void setOrder(double order) {
         this.order = order;
     }
 
-    public void setOrder(Short order) {
-        this.order = order.shortValue();
+    public void setOrder(Double order) {
+        this.order = order;
     }
 
     @Override
@@ -76,18 +74,6 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     public void setAbnormal(Boolean abnormal) {
         this.abnormal = abnormal.booleanValue();
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
-    }
-
-    public void setVoided(Boolean voided) {
-        isVoided = voided.booleanValue();
     }
 
     public boolean isUnique() {

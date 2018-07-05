@@ -20,16 +20,6 @@ public class IndividualRelationGenderMapping extends OrganisationAwareEntity {
     @JoinColumn(name = "gender_id")
     private Gender gender;
 
-    private boolean isVoided = false;
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(boolean voided) {
-        isVoided = voided;
-    }
-
     public IndividualRelation getRelation() {
         return relation;
     }

@@ -48,9 +48,6 @@ public class FormElement extends OrganisationAwareEntity {
     @Embedded
     private Format validFormat;
 
-    @Column(nullable = false)
-    private boolean isVoided = false;
-
     public String getName() {
         return name;
     }
@@ -139,14 +136,6 @@ public class FormElement extends OrganisationAwareEntity {
     }
 
     public boolean isNonApplicableForOrganisation(Organisation organisation) {
-        return this.nonApplicableOrganisations.contains(organisation);
-    }
-
-    public boolean isVoided() {
-        return isVoided;
-    }
-
-    public void setVoided(Boolean voided) {
-        isVoided = voided;
+      return this.nonApplicableOrganisations.contains(organisation);
     }
 }

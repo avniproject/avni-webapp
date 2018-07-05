@@ -34,8 +34,11 @@ public class Rule extends OrganisationAwareEntity {
     private RuleData data;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rule_dependency_id")
+    @JoinColumn(name = "rule_dependency_id", nullable = true)
     private RuleDependency ruleDependency;
+
+    @Column(name = "execution_order", nullable = false)
+    private Double executionOrder;
 
     public Form getForm() {
         return form;
@@ -83,5 +86,13 @@ public class Rule extends OrganisationAwareEntity {
 
     public void setFnName(String fnName) {
         this.fnName = fnName;
+    }
+
+    public Double getExecutionOrder() {
+        return executionOrder;
+    }
+
+    public void setExecutionOrder(Double executionOrder) {
+        this.executionOrder = executionOrder;
     }
 }

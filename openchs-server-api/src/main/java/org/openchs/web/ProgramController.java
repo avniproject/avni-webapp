@@ -30,10 +30,6 @@ public class ProgramController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ProgramRequest programRequest) {
         logger.info(String.format("Creating program: %s", programRequest.toString()));
-        if (programExistsWithSameNameAndDifferentUUID(programRequest)) {
-            throw new RuntimeException(String.format("Program %s exists with different uuid", programRequest.getName()));
-        }
-
         Program program = programRepository.findByUuid(programRequest.getUuid());
         if (program == null) {
             program = createProgram(programRequest);
