@@ -16,7 +16,7 @@ import java.util.Date;
 
 public class ExcelUtil {
     private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
-    private static DateTimeFormatter[] possibleFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy")};
+    private static DateTimeFormatter[] possibleFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy"), DateTimeFormat.forPattern("dd.M.yyyy")};
 
     public static String getText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
