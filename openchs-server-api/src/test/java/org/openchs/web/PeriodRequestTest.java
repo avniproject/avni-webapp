@@ -34,6 +34,7 @@ public class PeriodRequestTest {
 
     @Test
     public void testInputWithoutUnit() {
+
         PeriodRequest pr = PeriodRequest.fromString("22 ");
         assertThat(pr.getValue(), is(equalTo(22)));
         assertThat(pr.getUnit(), is(equalTo(IntervalUnit.YEARS)));
