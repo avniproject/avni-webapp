@@ -47,7 +47,7 @@ public class PeriodRequestTest {
     @Test
     public void testInvalidInputs() {
         String[] badInputs = {
-                "0 years", "0.5 months",
+                "0.5 months",
                 "22 days", "1 mts", "1 ms", "10 s", "10 hrs", "2yrs",
                 "1m", "years"
         };
