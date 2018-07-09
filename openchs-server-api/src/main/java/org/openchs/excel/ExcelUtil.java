@@ -42,6 +42,8 @@ public class ExcelUtil {
             Cell cell = row.getCell(0);
             if (cell == null) return true;
             return cell.getStringCellValue().trim().isEmpty();
+        } catch (NullPointerException ne) {
+            return true;
         } catch (Exception e) {
             return false;
         }
