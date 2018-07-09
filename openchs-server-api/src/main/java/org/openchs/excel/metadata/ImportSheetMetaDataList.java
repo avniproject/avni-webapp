@@ -19,4 +19,8 @@ public class ImportSheetMetaDataList extends ArrayList<ImportSheetMetaData> {
         String systemFieldName = systemFields.get(position);
         importSheetMetaData.addDefaultValue(systemFieldName, defaultValue);
     }
+
+    public boolean containsUserFileType(String userFileType) {
+        return this.stream().anyMatch(importSheetMetaData -> importSheetMetaData.getUserFileType().equals(userFileType));
+    }
 }
