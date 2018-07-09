@@ -101,6 +101,10 @@ public class ImportNonCalculatedField implements ImportField {
         return aBoolean;
     }
 
+    public int userFileCount() {
+        return this.userFileTypeFieldNameMap.size();
+    }
+
     @Override
     public String toString() {
         return "{" +

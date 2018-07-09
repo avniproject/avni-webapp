@@ -38,6 +38,10 @@ public class PeriodRequest {
         this.unit = unit;
     }
 
+    public LocalDate toDate(LocalDate referenceDate) {
+        return IntervalUnit.YEARS.equals(unit) ? referenceDate.minusYears(value) : referenceDate.minusMonths(value);
+    }
+
     @JsonIgnore
     public LocalDate calculateDateOfBirth(LocalDate toDate) {
         switch (getUnit()) {
@@ -51,13 +55,14 @@ public class PeriodRequest {
         }
     }
 
-    public static PeriodRequest fromString(String str) throws ValidationException {
+    public static PeriodRequest fromString(String str) {
         String[] parts = str.split(" ");
         int value;
 
         try {
             value = Integer.parseInt(parts[0]);
-            if (value >= 1) {
+            if (parts.length == 1) return new PeriodRequest(value, IntervalUnit.YEARS);
+            if (value >= 0) {
                 if (yearPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.YEARS);
                 if (monthPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.MONTHS);
             }

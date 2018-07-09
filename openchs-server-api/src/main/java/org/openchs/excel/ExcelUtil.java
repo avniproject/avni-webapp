@@ -37,7 +37,9 @@ public class ExcelUtil {
 
     public static Boolean isFirstCellEmpty(Row row) {
         try {
-            return row.getCell(0).getStringCellValue().trim().isEmpty();
+            Cell cell = row.getCell(0);
+            if (cell == null) return true;
+            return cell.getStringCellValue().trim().isEmpty();
         } catch (Exception e) {
             return false;
         }

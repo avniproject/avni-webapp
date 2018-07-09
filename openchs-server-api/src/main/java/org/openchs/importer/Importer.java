@@ -17,9 +17,9 @@ import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ObservationRequest;
+import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -96,6 +96,11 @@ public abstract class Importer<T extends CHSRequest> {
     }
 
     public List importSheet(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult, boolean performImport) throws InterruptedException {
+        List<String> errors = importMetaData.compile();
+        if (errors.size() != 0) {
+            errors.forEach(o -> logger.error(o));
+//            throw new ValidationException("Metadata file has errors");
+        }
         List<ImportField> allFields = importMetaData.getAllFields(importSheetMetaData);
         logger.info(String.format("Reading Sheet: %s", importSheetMetaData.getSheetName()));
         ImportSheet importSheet = importFile.getSheet(importSheetMetaData.getSheetName());
