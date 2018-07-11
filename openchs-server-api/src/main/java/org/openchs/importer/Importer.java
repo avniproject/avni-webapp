@@ -62,7 +62,7 @@ public abstract class Importer<T extends CHSRequest> {
         } else if (ConceptDataType.Date.toString().equals(concept.getDataType())) {
             cellValue = importField.getTextValue(row, sheetHeader, sheetMetaData);
             if (cellValue != null) {
-                if (((String) cellValue).matches("[0-9]+|.*[A-Za-z]+.*"))
+                if (((String) cellValue).matches("\b[0-9]+\b|.*[A-Za-z]+.*"))
                     cellValue = ExcelUtil.getDateFromDuration(cellValue.toString(), referenceDate);
                 else
                     cellValue = importField.getDateValue(row, sheetHeader, sheetMetaData);
