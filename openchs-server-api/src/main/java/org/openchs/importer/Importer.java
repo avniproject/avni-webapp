@@ -67,9 +67,7 @@ public abstract class Importer<T extends CHSRequest> {
                 else
                     cellValue = importField.getDateValue(row, sheetHeader, sheetMetaData);
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-                sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-                cellValue = sdf.format(cellValue);
+                cellValue = toISODateFormat((Date) cellValue);
             }
         } else {
             cellValue = importField.getBooleanValue(row, sheetHeader, sheetMetaData);
@@ -102,6 +100,12 @@ public abstract class Importer<T extends CHSRequest> {
         if (cellValue == null) return null;
         observationRequest.setValue(cellValue);
         return observationRequest;
+    }
+
+    private String toISODateFormat(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+        return sdf.format(date);
     }
 
     protected void mergeObservations(List<ObservationRequest> observationRequests, ObservationRequest observationRequest) {
