@@ -25,12 +25,6 @@ public class PeriodRequestTest {
             assertThat(pr.getUnit(), is(equalTo(IntervalUnit.YEARS)));
         }
 
-        for (String yearStr : validYearStrings) {
-            PeriodRequest pr = PeriodRequest.fromString("0 " + yearStr);
-            assertThat(pr.getValue(), is(equalTo(0)));
-            assertThat(pr.getUnit(), is(equalTo(IntervalUnit.YEARS)));
-        }
-
         for (String monthStr : validMonthStrings) {
             PeriodRequest pr = PeriodRequest.fromString("02 " + monthStr);
             assertThat(pr.getValue(), is(equalTo(2)));
@@ -40,17 +34,14 @@ public class PeriodRequestTest {
 
     @Test
     public void testInputWithoutUnit() {
-        assertThat(PeriodRequest.fromString("22 ").getValue(), is(equalTo(22)));
-        assertThat(PeriodRequest.fromString("22").getValue(), is(equalTo(22)));
+        PeriodRequest pr = PeriodRequest.fromString("22 ");
+        assertThat(pr.getValue(), is(equalTo(22)));
+        assertThat(pr.getUnit(), is(equalTo(IntervalUnit.YEARS)));
     }
 
     @Test
     public void testInvalidInputs() {
-        String[] badInputs = {
-                "0.5 months",
-                "22 days", "1 mts", "1 ms", "10 s", "10 hrs", "2yrs",
-                "1m", "years"
-        };
+        String[] badInputs = {"22 days", "1 mts", "1 ms", "10 s", "10 hrs", "1m", "years"};
 
         for (String badInputStr : badInputs) {
             try {

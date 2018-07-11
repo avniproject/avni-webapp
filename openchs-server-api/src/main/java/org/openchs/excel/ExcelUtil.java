@@ -6,8 +6,10 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.openchs.web.request.PeriodRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -49,6 +51,10 @@ public class ExcelUtil {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return null;
         return ((XSSFCell) cell).getRawValue();
+    }
+
+    public static Date getDateFromDuration(String durationString, Date referenceDate) {
+        return PeriodRequest.fromString(durationString).toDate(new LocalDate(referenceDate)).toDate();
     }
 
     public static Date getDate(Row row, int cellNum) {

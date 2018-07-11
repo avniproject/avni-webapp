@@ -11,6 +11,8 @@ public class PeriodRequest {
     private int value;
     private IntervalUnit unit;
 
+    private static Pattern numberPattern = Pattern.compile("([0-9]+)");
+    private static Pattern alphabetPattern = Pattern.compile("([A-Za-z]+)");
     private static Pattern yearPattern = Pattern.compile("([Yy](ear|r))");
     private static Pattern monthPattern = Pattern.compile("([Mm](on|nth|th))");
 
@@ -56,15 +58,15 @@ public class PeriodRequest {
     }
 
     public static PeriodRequest fromString(String str) {
-        String[] parts = str.split(" ");
-        int value;
-
+        Matcher numMatcher = numberPattern.matcher(str);
+        Matcher alphabetMatcher = alphabetPattern.matcher(str);
+        int value = -1;
         try {
-            value = Integer.parseInt(parts[0]);
-            if (parts.length == 1) return new PeriodRequest(value, IntervalUnit.YEARS);
-            if (value >= 0) {
-                if (yearPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.YEARS);
-                if (monthPattern.matcher(parts[1]).find()) return new PeriodRequest(value, IntervalUnit.MONTHS);
+            if (numMatcher.find()) value = Integer.parseInt(numMatcher.group(1));
+            if (value >= 1) {
+                if (!alphabetMatcher.find()) return new PeriodRequest(value, IntervalUnit.YEARS); // default to Years if input is only a number
+                if (yearPattern.matcher(str).find()) return new PeriodRequest(value, IntervalUnit.YEARS);
+                if (monthPattern.matcher(str).find()) return new PeriodRequest(value, IntervalUnit.MONTHS);
             }
         } catch (Exception e) {
             throw new ValidationException("Bad input. Received: " + str);

@@ -7,6 +7,7 @@ import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.UserContext;
 import org.openchs.excel.DataImportResult;
+import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.data.ImportSheet;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -42,6 +44,10 @@ public abstract class Importer<T extends CHSRequest> {
     protected abstract T makeRequest(List<ImportField> allFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList);
 
     protected ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList) {
+        return createObservationRequest(row, sheetHeader, sheetMetaData, importField, systemFieldName, answerMetaDataList, null);
+    }
+
+    protected ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList, Date referenceDate) {
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(systemFieldName);
         Concept concept = conceptRepository.findByName(systemFieldName);
@@ -54,7 +60,17 @@ public abstract class Importer<T extends CHSRequest> {
         } else if (ConceptDataType.Numeric.toString().equals(concept.getDataType())) {
             cellValue = importField.getDoubleValue(row, sheetHeader, sheetMetaData);
         } else if (ConceptDataType.Date.toString().equals(concept.getDataType())) {
-            cellValue = importField.getDateValue(row, sheetHeader, sheetMetaData);
+            cellValue = importField.getTextValue(row, sheetHeader, sheetMetaData);
+            if (cellValue != null) {
+                if (((String) cellValue).matches("[0-9]+|.*[A-Za-z]+.*"))
+                    cellValue = ExcelUtil.getDateFromDuration(cellValue.toString(), referenceDate);
+                else
+                    cellValue = importField.getDateValue(row, sheetHeader, sheetMetaData);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+                cellValue = sdf.format(cellValue);
+            }
         } else {
             cellValue = importField.getBooleanValue(row, sheetHeader, sheetMetaData);
         }
