@@ -47,8 +47,14 @@ clean_db: ## Drops the database
 build_db: ## Creates new empty database
 	make _build_db database=$(DB)
 
+orgId:= $(if $(orgId),$(orgId),0)
+
 delete_org_meta_data:
 	psql -h localhost -U $(su) $(DB) -f openchs-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
+
+delete_org_data:
+	@echo 'Delete for Organisation ID = $(orgId)'
+	psql -h localhost -U $(su) $(DB) -f openchs-server-api/src/main/resources/database/deleteOrgData.sql -v orgId=$(orgId)
 
 rebuild_db: clean_db build_db ## clean + build db
 
@@ -57,8 +63,6 @@ rebuild_dev_db: rebuild_db deploy_schema
 restore_db:
 	psql -Uopenchs $(DB) -f $(sqlfile)
 
-delete_tx_data:
-	psql -Uopenchs $(DB) -f openchs-server-api/src/main/resources/database/deleteTxData.sql
 # </db>
 
 # <testdb>
