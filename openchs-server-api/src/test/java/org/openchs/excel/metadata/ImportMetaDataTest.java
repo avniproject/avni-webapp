@@ -2,16 +2,12 @@ package org.openchs.excel.metadata;
 
 import org.joda.time.LocalDate;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openchs.application.FormElement;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.*;
-import org.openchs.excel.DataImportResult;
-import org.openchs.excel.data.ImportFile;
-import org.openchs.excel.data.ImportSheet;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.importer.*;
 import org.openchs.service.DataImportService;
@@ -132,5 +128,56 @@ public class ImportMetaDataTest {
         List<CHSRequest> encountersAmalzarMadhyamik = requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEncounter.class));
         ProgramEncounterRequest encounterAmalzarMadhyamik = (ProgramEncounterRequest) encountersAmalzarMadhyamik.get(0);
         //Father's occupation when none
+    }
+
+    @Test
+    public void userFileTypeNamesShouldMatch() {
+        ImportMetaData importMetaData = new ImportMetaData();
+        ImportSheetMetaDataList importSheetMetaDataList = new ImportSheetMetaDataList();
+        createSheetMetaData(importSheetMetaDataList,"File type 1");
+        importMetaData.setImportSheets(importSheetMetaDataList);
+
+        ImportCalculatedFields calculatedFields = new ImportCalculatedFields();
+        createCalculatedField(calculatedFields, "File type 1");
+        createCalculatedField(calculatedFields, "File type 2");
+        importMetaData.setCalculatedFields(calculatedFields);
+
+        ImportNonCalculatedFields nonCalculatedFields = new ImportNonCalculatedFields();
+        nonCalculatedFields.addFileType(0, "File type 1");
+        nonCalculatedFields.addFileType(1, "File type 2");
+        ImportNonCalculatedField nonCalculatedField1 = createNonCalculatedField(nonCalculatedFields, "File type 1");
+        ImportNonCalculatedField nonCalculatedField2 = createNonCalculatedField(nonCalculatedFields, "File type 2");
+        nonCalculatedFields.addUserField(0, "field1", nonCalculatedField1);
+        importMetaData.setNonCalculatedFields(nonCalculatedFields);
+
+        List compilationErrors = importMetaData.compile();
+        assertEquals(3, compilationErrors.size());
+
+        createSheetMetaData(importSheetMetaDataList,"File type 2");
+        compilationErrors = importMetaData.compile();
+        assertEquals(1, compilationErrors.size());
+
+        nonCalculatedFields.addUserField(1, "field2", nonCalculatedField2);
+        compilationErrors = importMetaData.compile();
+        assertEquals(0, compilationErrors.size());
+    }
+
+    private void createCalculatedField(ImportCalculatedFields calculatedFields, String userFileType) {
+        ImportCalculatedField calculatedField = new ImportCalculatedField();
+        calculatedField.setUserFileType(userFileType);
+        calculatedFields.add(calculatedField);
+    }
+
+    private ImportNonCalculatedField createNonCalculatedField(ImportNonCalculatedFields nonCalculatedFields, String userFileType) {
+        ImportNonCalculatedField nonCalculatedField = new ImportNonCalculatedField();
+        nonCalculatedField.setImportUserFileType(userFileType);
+        nonCalculatedFields.add(nonCalculatedField);
+        return nonCalculatedField;
+    }
+
+    private void createSheetMetaData(ImportSheetMetaDataList importSheetMetaDataList, String userFileType) {
+        ImportSheetMetaData importSheetMetaData = new ImportSheetMetaData();
+        importSheetMetaData.setUserFileType(userFileType);
+        importSheetMetaDataList.add(importSheetMetaData);
     }
 }

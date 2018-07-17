@@ -68,7 +68,7 @@ public class IndividualController extends AbstractController<Individual> {
         } else if (individualRequest.getAddressLevelUUID() == null && individualRequest.getCatchmentUUID() != null) {
             return addressLevelRepository.findByTitleAndCatchmentsUuid(individualRequest.getAddressLevel(), individualRequest.getCatchmentUUID());
         } else {
-            return addressLevelRepository.findByTitle(individualRequest.getAddressLevel());
+            return addressLevelRepository.findByTitleIgnoreCase(individualRequest.getAddressLevel());
         }
     }
 

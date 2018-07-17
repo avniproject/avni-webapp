@@ -26,6 +26,7 @@ import java.util.List;
 @Component
 public class IndividualImporter extends Importer<IndividualRequest> {
     private IndividualController individualController;
+    private static String ALIAS_CONCEPT_NAME_ADDRESS_TITLE = "ADDRESS_LEVEL_TITLE";
 
     @Autowired
     public IndividualImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, IndividualController individualController) {
@@ -78,7 +79,8 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     individualRequest.setRegistrationDate(new LocalDate(importField.getDateValue(row, header, importSheetMetaData)));
                     break;
                 case "Address":
-                    individualRequest.setAddressLevel(importField.getTextValue(row, header, importSheetMetaData));
+                    String userAddressValue = importField.getTextValue(row, header, importSheetMetaData);
+                    individualRequest.setAddressLevel(answerMetaDataList.getSystemAnswer(userAddressValue, ALIAS_CONCEPT_NAME_ADDRESS_TITLE));
                     break;
                 case "Individual UUID":
                     individualRequest.setUuid(importField.getTextValue(row, header, importSheetMetaData));

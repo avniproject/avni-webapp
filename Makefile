@@ -18,12 +18,12 @@ define _deploy_schema
 	flyway -user=openchs -password=password -url=jdbc:postgresql://localhost:5432/$1 -schemas=public -locations=filesystem:../openchs-server/openchs-server-api/src/main/resources/db/migration/ -table=schema_version migrate
 endef
 
-
 su:=$(shell id -un)
+DB=openchs
 
 # <postgres>
 clean_db_server:
-	make _clean_db database=openchs
+	make _clean_db database=$(DB)
 	make _clean_db database=openchs_test
 	-psql -h localhost -U $(su) -d postgres -c 'drop role openchs';
 	-psql -h localhost -U $(su) -d postgres -c 'drop role demo';
@@ -33,7 +33,7 @@ _clean_db:
 	-psql -h localhost -U $(su) -d postgres -c 'drop database $(database)';
 
 _build_db:
-	-psql -h localhost -U $(su) -d postgres -c "create user $(database) with password 'password'";
+	-psql -h localhost -U $(su) -d postgres -c "create user openchs with password 'password'";
 	psql -h localhost -U $(su) -d postgres -c 'create database $(database) with owner openchs';
 	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "uuid-ossp"';
 	-psql -h localhost -U $(su) -d postgres  -c 'create role demo with NOINHERIT NOLOGIN';
@@ -42,20 +42,27 @@ _build_db:
 
 # <db>
 clean_db: ## Drops the database
-	make _clean_db database=openchs
+	make _clean_db database=$(DB)
 
 build_db: ## Creates new empty database
-	make _build_db database=openchs
+	make _build_db database=$(DB)
+
+orgId:= $(if $(orgId),$(orgId),0)
 
 delete_org_meta_data:
-	psql -h localhost -U $(su) openchs -f openchs-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
+	psql -h localhost -U $(su) $(DB) -f openchs-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
 
-delete_org_meta_data:
-	psql -h localhost -U $(su) openchs -f openchs-server-api/src/main/resources/database/deleteOrgMetadata.sql -v orgId=$(orgId)
+delete_org_data:
+	@echo 'Delete for Organisation ID = $(orgId)'
+	psql -h localhost -U $(su) $(DB) -f openchs-server-api/src/main/resources/database/deleteOrgData.sql -v orgId=$(orgId)
 
 rebuild_db: clean_db build_db ## clean + build db
 
 rebuild_dev_db: rebuild_db deploy_schema
+
+restore_db:
+	psql -Uopenchs $(DB) -f $(sqlfile)
+
 # </db>
 
 # <testdb>
@@ -78,7 +85,7 @@ rebuild_testdb: clean_testdb build_testdb deploy_test_schema ## clean + build te
 
 # <schema>
 deploy_schema: ## Runs all migrations to create the schema with all the objects
-	$(call _deploy_schema,openchs)
+	$(call _deploy_schema,$(DB))
 
 deploy_test_schema: ## Runs all migrations to create the schema with all the objects
 	$(call _deploy_schema,openchs_test)
@@ -87,10 +94,10 @@ deploy_test_schema: ## Runs all migrations to create the schema with all the obj
 
 # <server>
 start_server: build_server
-	java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	OPENCHS_DATABASE=$(DB) java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 debug_server: build_server
-	java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
+	OPENCHS_DATABASE=$(DB) java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 build_server: ## Builds the jar file
 	./gradlew clean build -x test

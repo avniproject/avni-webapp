@@ -1,11 +1,94 @@
-SELECT
-  f.name Form,
-  feg.display FormGroup,
-  fe.name FormElement,
-  fe.display_order
-FROM form_element fe, form_element_group feg, form f
-WHERE feg.form_id = f.id AND fe.form_element_group_id = feg.id AND f.name = 'ANC'
-ORDER BY feg.display_order, fe.display_order;
+select *
+from form
+where organisation_id = 9;
+-- VIEW FORM
+select
+  form.uuid                        AS form_uuid,
+  form_element_group.uuid          AS "Group UUID",
+  form_element.uuid                as "Element UUID",
+  c2.uuid                          as "Concept UUID",
+  form.name                        as "Form",
+  form_element_group.name          as "Group name",
+  form_element.name                as "Element Name",
+  c2.name                          as "Concept name",
+  form_element_group.display_order as "Group Display Order",
+  c2.data_type                     as "Concept Data Type"
+from form_element
+  join form_element_group on form_element.form_element_group_id = form_element_group.id
+  join form on form_element_group.form_id = form.id
+  join concept c2 on form_element.concept_id = c2.id
+where form.id = 24
+order by form.name, form_element_group.display_order asc, form_element.display_order asc;
+
+-- VIEW CONCEPT WITH ANSWERS
+select
+  concept.name,
+  a.uuid  AS "Concept Answer UUID",
+  c2.uuid as "Answer UUID",
+  c2.name as "Answer",
+  a.answer_order,
+  a.organisation_id
+from concept
+  inner join concept_answer a on concept.id = a.concept_id
+  inner join concept c2 on a.answer_concept_id = c2.id
+where concept.name = 'Refer to oral cancer specialist'
+order by a.answer_order;
+
+-- Get all the form elements and concept (without answers) for translation
+select
+  p.name,
+  f.name  as FormName
+  -- ,fm.entity_id
+  -- ,fm.observations_type_entity_id
+  -- ,fm.organisation_id
+  ,
+  feg.name,
+  fe.name as "Form Element",
+  c2.name as "Concept"
+from operational_program p
+  inner join form_mapping fm on (fm.entity_id = p.program_id)
+  inner join form f on fm.form_id = f.id
+  inner join form_element_group feg on feg.form_id = f.id
+  inner join form_element fe on fe.form_element_group_id = feg.id
+  inner join concept c2 on fe.concept_id = c2.id
+where p.organisation_id = 2 and f.form_type != 'ProgramEncounterCancellation' and fe.id not in (select form_element_id
+                                                                                                from non_applicable_form_element
+                                                                                                where organisation_id = 2)
+order by
+  p.name
+  , f.name
+  , feg.display_order asc
+  , fe.display_order asc;
+
+-- Get all the REGISTRATION form elements and concept (without answers) for translation
+select
+  f.name  as FormName
+  -- ,fm.entity_id
+  -- ,fm.observations_type_entity_id
+  -- ,fm.organisation_id
+  ,
+  feg.name,
+  fe.name as "Form Element",
+  c2.name as "Concept"
+from form f
+  inner join form_element_group feg on feg.form_id = f.id
+  inner join form_element fe on fe.form_element_group_id = feg.id
+  inner join concept c2 on fe.concept_id = c2.id
+where f.organisation_id = 9 and f.form_type = 'IndividualProfile'
+order by
+  f.name
+  , feg.display_order asc
+  , fe.display_order asc;
+
+-- Catchment and address
+select
+  catchment.name,
+  a.title
+from catchment
+  inner join catchment_address_mapping m2 on catchment.id = m2.catchment_id
+  inner join address_level a on m2.addresslevel_id = a.id
+where catchment.organisation_id = 9
+order by catchment.id, a.title;
 
 
 SELECT
@@ -48,9 +131,6 @@ FROM jsonb_to_record('{
 SELECT x."07b3e014-cbe4-4998-9055-290194481b20" AS foo
 FROM individual, jsonb_to_record(individual.observations) AS x("07b3e014-cbe4-4998-9055-290194481b20" TEXT);
 
-SELECT *
-FROM concept
-WHERE uuid = '07b3e014-cbe4-4998-9055-290194481b20';
 
 SELECT
   i.name,
@@ -61,34 +141,5 @@ FROM individual i
                            FROM concept
                            WHERE name = 'Number of Members in House') = c.uuid;
 
-SELECT
-  i.name,
-  c.name
-FROM individual i
-  INNER JOIN concept c
-    ON i.observations ->> (SELECT uuid
-                           FROM concept
-                           WHERE name = 'Number of Members in House') = c.uuid;
-
-
-SELECT name
-FROM concept
-WHERE uuid LIKE '9175b794-7a53-49ec-9b03-fbd58b11f1ec';
-
-SELECT
-  individual.name,
-  program_enrolment.enrolment_date_time,
-  individual.date_of_birth,
-  address_level.title,
-  date_obs(program_enrolment, 'Last Menstrual Period') LMP,
-  date_obs(program_enrolment, 'Estimated Date of Delivery') EDD
-FROM program_enrolment, individual, address_level
-WHERE program_enrolment.individual_id = individual.id AND individual.address_id = address_level.id AND individual.address_id = address_level.id;
-
-SELECT pg_typeof(last_modified_date_time) FROM program_enrolment;
-SELECT uuid, observations FROM program_enrolment;
-
-DELETE from checklist_item;
-DELETE from checklist;
-DELETE from program_enrolment;
-DELETE from individual;
+SELECT pg_typeof(last_modified_date_time)
+FROM program_enrolment;

@@ -62,4 +62,20 @@ public class ImportMetaData {
         importFields.addAll(importSheetMetaData.getDefaultFields());
         return importFields;
     }
+
+    public List<String> compile() {
+        List<String> errors = new ArrayList<>();
+        addErrorIfUseFileTypeIsNotSpecified(errors, calculatedFields.getUserFileTypes(), "Calculated");
+        addErrorIfUseFileTypeIsNotSpecified(errors, nonCalculatedFields.getUserFileTypes(), "Non Calculated");
+        addErrorIfNonCalculatedFieldIsNotUsedForAnyFileType(errors, nonCalculatedFields);
+        return errors;
+    }
+
+    private void addErrorIfNonCalculatedFieldIsNotUsedForAnyFileType(List<String> errors, ImportNonCalculatedFields nonCalculatedFields) {
+        nonCalculatedFields.stream().filter(importNonCalculatedField -> importNonCalculatedField.userFileCount() == 0).forEach(importNonCalculatedField -> errors.add(String.format("Field: %s, doesn't have any file specified", importNonCalculatedField.getSystemFieldName())));
+    }
+
+    private void addErrorIfUseFileTypeIsNotSpecified(List<String> errors, List<String> userFileTypes, String fieldType) {
+        userFileTypes.stream().filter(userFileType -> !sheets.containsUserFileType(userFileType)).forEach(missingUserFileType -> errors.add(String.format("%s field is using user file type: %s, that doesn't exist", fieldType, missingUserFileType)));
+    }
 }
