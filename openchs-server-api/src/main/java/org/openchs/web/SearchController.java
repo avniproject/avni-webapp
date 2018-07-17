@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.openchs.service.HibernateSearchService;
+import org.openchs.web.request.ConceptContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class SearchController {
 
     @RequestMapping(value = "/search/concept", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
-    public List<Concept> searchConcept(@RequestParam(value = "name") String query) {
+    public List<ConceptContract> searchConcept(@RequestParam(value = "name") String query) {
         return searchService.searchConcepts(query);
     }
 }

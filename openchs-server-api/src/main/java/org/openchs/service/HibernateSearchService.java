@@ -8,12 +8,14 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 
+import org.openchs.web.request.ConceptContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.openchs.domain.Concept;
 
@@ -39,7 +41,7 @@ public class HibernateSearchService {
     }
 
     @Transactional
-    public List<Concept> searchConcepts(String searchTerm) {
+    public List<ConceptContract> searchConcepts(String searchTerm) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
 
         QueryBuilder qb = fullTextEntityManager.getSearchFactory()
@@ -53,6 +55,10 @@ public class HibernateSearchService {
 
         FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(luceneQuery, Concept.class);
 
-        return jpaQuery.getResultList();
+        List resultList = jpaQuery.getResultList();
+        List<ConceptContract> searchResult = new ArrayList<>();
+        resultList.forEach(o -> searchResult.add(((Concept)o).toConceptContract()));
+
+        return searchResult;
     }
 }
