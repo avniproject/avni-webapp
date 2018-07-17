@@ -1,7 +1,5 @@
 package org.openchs.excel.metadata;
 
-import org.openchs.application.FormType;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,23 +13,23 @@ public class ImportNonCalculatedFields extends ArrayList<ImportNonCalculatedFiel
         positionFileTypeMap.put(index, userFileType);
     }
 
-    public ImportNonCalculatedField getField(FormType formType, String userField, String fileName) {
-        return this.stream().filter(importNonCalculatedField -> importNonCalculatedField.getSystemFieldName().equals(userField)).findFirst().orElse(null);
-    }
-
     public void addUserField(int position, String userFieldName, ImportNonCalculatedField nonCalculatedField) {
         String userFileType = positionFileTypeMap.get(position);
         nonCalculatedField.addUserField(userFieldName, userFileType);
     }
 
-    public List<ImportField> getFieldsFor(ImportSheetMetaData metaDataSheet) {
+    public List<ImportField> getFieldsFor(ImportSheetMetaData sheetMetaData) {
         return this.stream().filter(field -> {
-            String userField = field.getUserField(metaDataSheet.getUserFileType());
-            return field.getFormType().equals(metaDataSheet.getFormType()) && userField != null;
+            String userField = field.getUserField(sheetMetaData.getUserFileType());
+            return field.getFormType().equals(sheetMetaData.getFormType()) && userField != null;
         }).collect(Collectors.toList());
     }
 
     public int getNumberOfFileTypes() {
         return positionFileTypeMap.size();
+    }
+
+    public List<String> getUserFileTypes() {
+        return this.stream().map(ImportNonCalculatedField::getImportUserFileType).distinct().collect(Collectors.toList());
     }
 }

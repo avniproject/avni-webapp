@@ -6,8 +6,10 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.openchs.web.request.PeriodRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -16,7 +18,7 @@ import java.util.Date;
 
 public class ExcelUtil {
     private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
-    private static DateTimeFormatter[] possibleFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy")};
+    private static DateTimeFormatter[] possibleFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy"), DateTimeFormat.forPattern("dd.M.yyyy")};
 
     public static String getText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
@@ -37,7 +39,11 @@ public class ExcelUtil {
 
     public static Boolean isFirstCellEmpty(Row row) {
         try {
-            return row.getCell(0).getStringCellValue().trim().isEmpty();
+            Cell cell = row.getCell(0);
+            if (cell == null) return true;
+            return cell.getStringCellValue().trim().isEmpty();
+        } catch (NullPointerException ne) {
+            return true;
         } catch (Exception e) {
             return false;
         }
@@ -47,6 +53,10 @@ public class ExcelUtil {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return null;
         return ((XSSFCell) cell).getRawValue();
+    }
+
+    public static Date getDateFromDuration(String durationString, Date referenceDate) {
+        return PeriodRequest.fromString(durationString).toDate(new LocalDate(referenceDate)).toDate();
     }
 
     public static Date getDate(Row row, int cellNum) {

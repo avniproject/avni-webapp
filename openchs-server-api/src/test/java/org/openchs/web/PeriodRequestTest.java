@@ -14,42 +14,43 @@ import static org.hamcrest.core.Is.is;
 
 
 public class PeriodRequestTest {
-    private String[] validYearStrings = {"Years","years","year","yrs","yr"};
-    private String[] validMonthStrings = {"Months","months","month","mons","mon","mnths","mnth","mths","mth"};
+    private String[] validYearStrings = {"Years", "years", "year", "yrs", "yr"};
+    private String[] validMonthStrings = {"Months", "months", "month", "mons", "mon", "mnths", "mnth", "mths", "mth"};
 
     @Test
     public void testValidInputs() {
-        for (String yearStr: validYearStrings) {
-            PeriodRequest pr = PeriodRequest.fromString("22 " +yearStr);
+        for (String yearStr : validYearStrings) {
+            PeriodRequest pr = PeriodRequest.fromString("22 " + yearStr);
             assertThat(pr.getValue(), is(equalTo(22)));
             assertThat(pr.getUnit(), is(equalTo(IntervalUnit.YEARS)));
         }
 
-        for (String monthStr: validMonthStrings) {
-            PeriodRequest pr = PeriodRequest.fromString("02 " +monthStr);
+        for (String monthStr : validMonthStrings) {
+            PeriodRequest pr = PeriodRequest.fromString("02 " + monthStr);
             assertThat(pr.getValue(), is(equalTo(2)));
             assertThat(pr.getUnit(), is(equalTo(IntervalUnit.MONTHS)));
         }
     }
 
     @Test
-    public void testInvalidInputs() {
-        String[] badInputs = {
-                "0 years", "0.5 months",
-                "22 days", "1 mts", "1 ms", "10 s", "10 hrs", "2yrs",
-                "1m", "years"
-        };
+    public void testInputWithoutUnit() {
+        PeriodRequest pr = PeriodRequest.fromString("22 ");
+        assertThat(pr.getValue(), is(equalTo(22)));
+        assertThat(pr.getUnit(), is(equalTo(IntervalUnit.YEARS)));
+    }
 
-        for (String badInputStr: badInputs) {
+    @Test
+    public void testInvalidInputs() {
+        String[] badInputs = {"22 days", "1 mts", "1 ms", "10 s", "10 hrs", "1m", "years"};
+
+        for (String badInputStr : badInputs) {
             try {
                 if (PeriodRequest.fromString(badInputStr) != null)
-                    Assert.fail("Received valid input in testInvalidInputs: \"" +badInputStr+ "\"");
+                    Assert.fail("Received valid input in testInvalidInputs: \"" + badInputStr + "\"");
             } catch (ValidationException ve) {
                 System.out.println(ve.getMessage());
                 assertThat(ve.getMessage(), containsString("Bad input"));
             }
         }
-
-
     }
 }

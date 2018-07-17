@@ -13,6 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -82,7 +83,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     private Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         String token = request.getHeader(AUTH_TOKEN_HEADER);
-        if (token == null) token = UUID.randomUUID().toString();
+        if (token == null || StringUtils.isEmpty(token)) token = UUID.randomUUID().toString();
         String becomeOrganisationName = request.getHeader(ORGANISATION_NAME_HEADER);
 
         final UserContext userContext = this.userContextService.getUserContext(token, becomeOrganisationName);
