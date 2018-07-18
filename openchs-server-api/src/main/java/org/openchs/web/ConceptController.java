@@ -25,7 +25,6 @@ public class ConceptController {
     private final Logger logger;
     private ConceptRepository conceptRepository;
     private ConceptService conceptService;
-    private static final String FILE_NAME = "/Users/hithacker/projects/openchs/openchs-client/packages/openchs-health-modules/health_modules/exportedConcepts.json";
 
     @Autowired
     public ConceptController(ConceptRepository conceptRepository, ConceptService conceptService) {
