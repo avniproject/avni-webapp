@@ -13,6 +13,7 @@ import java.util.List;
 public class FormContract extends ReferenceDataContract {
     private String formType;
     private List<FormElementGroupContract> formElementGroups;
+    private Long organisationId;
 
     public FormContract() {
     }
@@ -49,5 +50,13 @@ public class FormContract extends ReferenceDataContract {
                 "name=" + this.getName() + '\'' +
                 "formType='" + formType + '\'' +
                 '}';
+    }
+
+    public void setOrganisationId(Long organisationId) {
+        this.organisationId = organisationId;
+    }
+
+    public Long getOrganisationId() {
+        return organisationId;
     }
 }

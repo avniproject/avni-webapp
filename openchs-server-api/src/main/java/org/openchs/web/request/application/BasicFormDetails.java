@@ -10,6 +10,7 @@ import org.springframework.hateoas.ResourceSupport;
 @JsonPropertyOrder({ "name", "uuid", "formType", "programName", "createdDateTime",
         "lastModifiedDate", "createdBy", "lastModifiedBy", "createdByUUID", "lastModifiedByUUID" })
 public class BasicFormDetails extends ResourceSupport {
+
     private String name;
     private String uuid;
     private String formType;
@@ -20,6 +21,7 @@ public class BasicFormDetails extends ResourceSupport {
     private String lastModifiedBy;
     private String createdByUUID;
     private String lastModifiedByUUID;
+    private Long organisationId;
 
     public BasicFormDetails(Form form, String programName) {
         this.name = form.getName();
@@ -32,6 +34,7 @@ public class BasicFormDetails extends ResourceSupport {
         this.createdByUUID = form.getAudit().getCreatedBy().getUuid();
         this.lastModifiedBy = form.getAudit().getLastModifiedBy().getName();
         this.lastModifiedByUUID = form.getAudit().getLastModifiedBy().getUuid();
+        this.organisationId = form.getOrganisationId();
     }
 
     public String getName() {
@@ -72,5 +75,9 @@ public class BasicFormDetails extends ResourceSupport {
 
     public String getLastModifiedByUUID() {
         return lastModifiedByUUID;
+    }
+
+    public Long getOrganisationId() {
+        return organisationId;
     }
 }

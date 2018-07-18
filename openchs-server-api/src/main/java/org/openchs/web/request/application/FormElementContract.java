@@ -21,6 +21,7 @@ public class FormElementContract extends ReferenceDataContract {
     private Double displayOrder;
     private String type;
     private FormatContract validFormat;
+    private Long organisationId;
 
     public FormElementContract() {
     }
@@ -103,5 +104,13 @@ public class FormElementContract extends ReferenceDataContract {
 
     public void setValidFormat(FormatContract validFormat) {
         this.validFormat = validFormat;
+    }
+
+    public void setOrganisationId(Long organisationId) {
+        this.organisationId = organisationId;
+    }
+
+    public Long getOrganisationId() {
+        return organisationId;
     }
 }
