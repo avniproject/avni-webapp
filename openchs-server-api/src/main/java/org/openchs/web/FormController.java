@@ -131,11 +131,13 @@ public class FormController {
         Form form = formRepository.findByUuid(formUUID);
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString());
+        formContract.setOrganisationId(form.getOrganisationId());
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
             formElementGroupContract.setDisplay(formElementGroup.getDisplay());
             formElementGroupContract.setVoided(formElementGroup.isVoided());
+            formElementGroupContract.setOrganisationId(formElementGroup.getOrganisationId());
             formContract.addFormElementGroup(formElementGroupContract);
             Set<FormElement> formElements = formElementGroup.getFormElements();
             // DIRTY HACK ALERT: organisation.getId() == 1 ? fe.getOrganisationId() == 1
@@ -149,6 +151,7 @@ public class FormController {
                 formElementContract.setConcept(getConceptContract(formElement.getConcept()));
                 formElementContract.setDisplayOrder(formElement.getDisplayOrder());
                 formElementContract.setType(formElement.getType());
+                formElementContract.setOrganisationId(formElement.getOrganisationId());
                 if (formElement.getValidFormat() != null) {
                     formElementContract.setValidFormat(new FormatContract(formElement.getValidFormat().getRegex(),
                             formElement.getValidFormat().getDescriptionKey()));

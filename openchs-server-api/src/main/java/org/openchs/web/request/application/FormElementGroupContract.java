@@ -11,6 +11,7 @@ public class FormElementGroupContract extends ReferenceDataContract {
     private Double displayOrder;
     private String display;
     private List<FormElementContract> formElements;
+    private Long organisationId;
 
     public FormElementGroupContract() {
     }
@@ -56,5 +57,13 @@ public class FormElementGroupContract extends ReferenceDataContract {
                 "displayOrder=" + displayOrder +
                 ", display='" + display + '\'' +
                 '}';
+    }
+
+    public void setOrganisationId(Long organisationId) {
+        this.organisationId = organisationId;
+    }
+
+    public Long getOrganisationId() {
+        return organisationId;
     }
 }
