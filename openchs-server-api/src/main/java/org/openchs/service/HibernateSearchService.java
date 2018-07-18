@@ -32,12 +32,8 @@ public class HibernateSearchService {
     }
 
     void initializeHibernateSearch() {
-        try {
-            FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch (InterruptedException e) {
-            logger.error(e.toString());
-        }
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+        fullTextEntityManager.createIndexer().start();
     }
 
     @Transactional
