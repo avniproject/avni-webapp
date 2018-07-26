@@ -3,9 +3,11 @@ package org.openchs.web;
 import org.openchs.dao.ChecklistItemRepository;
 import org.openchs.dao.ChecklistRepository;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.ChecklistItemStatus;
+import org.openchs.service.ObservationService;
 import org.openchs.web.request.application.ChecklistItemRequest;
 import org.openchs.web.request.application.ChecklistItemStatusRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +24,19 @@ import java.util.Map;
 
 @RestController
 public class ChecklistItemController extends AbstractController<ChecklistItem> {
+    private final FormRepository formRepository;
+    private final ObservationService observationService;
     private ChecklistRepository checklistRepository;
     private ChecklistItemRepository checklistItemRepository;
     private ConceptRepository conceptRepository;
 
     @Autowired
-    public ChecklistItemController(ChecklistRepository checklistRepository, ChecklistItemRepository checklistItemRepository, ConceptRepository conceptRepository) {
+    public ChecklistItemController(ChecklistRepository checklistRepository, ChecklistItemRepository checklistItemRepository, ConceptRepository conceptRepository, FormRepository formRepository, ObservationService observationService) {
         this.checklistRepository = checklistRepository;
         this.checklistItemRepository = checklistItemRepository;
         this.conceptRepository = conceptRepository;
+        this.formRepository = formRepository;
+        this.observationService = observationService;
     }
 
     @Transactional
@@ -41,7 +47,10 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> {
         checklistItem.setConcept(conceptRepository.findByUuid(checklistItemRequest.getConceptUUID()));
         checklistItem.setCompletionDate(checklistItemRequest.getCompletionDate());
         checklistItem.setChecklistItemStatus(this.makeStatus(checklistItemRequest.getStatus()));
-
+        if (checklistItemRequest.getFormUUID() != null) {
+            checklistItem.setForm(this.formRepository.findByUuid(checklistItemRequest.getFormUUID()));
+        }
+        checklistItem.setObservations(this.observationService.createObservations(checklistItemRequest.getObservations()));
         if (checklistItem.isNew()) {
             Checklist checklist = checklistRepository.findByUuid(checklistItemRequest.getChecklistUUID());
             checklistItem.setChecklist(checklist);

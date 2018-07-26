@@ -124,13 +124,9 @@ CREATE OR REPLACE VIEW checklist_items AS
     address_level.id                                                 address,
     checklist_item.id                                                checklist_item_id,
     to_char(checklist_item.completion_date, 'DD-Mon-YYYY')           completion_date,
-    to_char(checklist_item.due_date, 'DD-Mon-YYYY')                  due_date,
-    to_char(checklist_item.max_date, 'DD-Mon-YYYY')                  max_date,
     concept.id                                                       checklist_item,
     checklist.id                                                     checklist,
-    checklist_item.completion_date                                   internal_completion_date,
-    checklist_item.due_date                                          internal_due_date,
-    checklist_item.max_date                                          internal_max_date
+    checklist_item.completion_date                                   internal_completion_date
   FROM checklist_item
     INNER JOIN concept ON checklist_item.concept_id = concept.id
     INNER JOIN checklist ON checklist.id = checklist_item.checklist_id

@@ -3,6 +3,7 @@ package org.openchs.domain;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.openchs.application.Form;
 import org.openchs.domain.programConfig.VisitScheduleConfig;
 
 import javax.persistence.*;
@@ -22,6 +23,15 @@ public class ChecklistItem extends OrganisationAwareEntity {
 
     @Column
     private DateTime completionDate;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_id")
+    private Form form;
+
+    @Column
+    @Type(type = "observations")
+    private ObservationCollection observations;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -58,5 +68,21 @@ public class ChecklistItem extends OrganisationAwareEntity {
 
     public void setChecklistItemStatus(ChecklistItemStatus checklistItemStatus) {
         this.checklistItemStatus = checklistItemStatus;
+    }
+
+    public Form getForm() {
+        return form;
+    }
+
+    public void setForm(Form form) {
+        this.form = form;
+    }
+
+    public ObservationCollection getObservations() {
+        return observations;
+    }
+
+    public void setObservations(ObservationCollection observations) {
+        this.observations = observations;
     }
 }
