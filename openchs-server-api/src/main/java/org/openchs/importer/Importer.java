@@ -79,7 +79,10 @@ public abstract class Importer<T extends CHSRequest> {
                 String systemAnswer = answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName());
                 if (systemAnswer == null) cellValue = null;
                 else {
-                    cellValue = conceptRepository.findByName(systemAnswer.trim()).getUuid();
+                    Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
+                    if (answerConcept == null)
+                        throw new NullPointerException(String.format("Answer concept |%s| not found", systemAnswer.trim()));
+                    cellValue = answerConcept.getUuid();
                 }
             } else {
                 List<String> userAnswers = Arrays.asList(((String) cellValue).split(","))
