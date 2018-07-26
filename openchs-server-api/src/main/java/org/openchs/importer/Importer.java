@@ -18,14 +18,12 @@ import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ObservationRequest;
-import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.SimpleDateFormat;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
