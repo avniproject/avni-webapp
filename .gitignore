@@ -20,3 +20,4 @@ major_version
 .settings
 .classpath
 bin/
+openchs-server-api/org.openchs.domain.Concept/
