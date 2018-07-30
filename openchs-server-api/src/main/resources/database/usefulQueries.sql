@@ -1,13 +1,23 @@
 select *
 from form
 where organisation_id = 9;
+
+-- FORMS, Encounter Types and Operational Encounter Types
+select form.name as "Form", form.uuid as "Form UUID", o.name as "Operational Encounter Type", encounter_type.name as "Encounter Type"
+from form
+inner join form_mapping m2 on form.id = m2.form_id
+inner join encounter_type on m2.observations_type_entity_id = encounter_type.id
+inner join operational_encounter_type o on encounter_type.id = o.encounter_type_id
+  where m2.organisation_id in (1,2)
+order by form.name;
+
 -- VIEW FORM
 select
   form.uuid                        AS form_uuid,
+  form.name                        as "Form",
   form_element_group.uuid          AS "Group UUID",
   form_element.uuid                as "Element UUID",
   c2.uuid                          as "Concept UUID",
-  form.name                        as "Form",
   form_element_group.name          as "Group name",
   form_element.name                as "Element Name",
   c2.name                          as "Concept name",
@@ -80,6 +90,10 @@ order by
   , feg.display_order asc
   , fe.display_order asc;
 
+-- Organisations
+SELECT *
+from organisation;
+
 -- Catchment and address
 select
   catchment.name,
@@ -90,56 +104,19 @@ from catchment
 where catchment.organisation_id = 9
 order by catchment.id, a.title;
 
+-- Encounter types
+select et.name "EncounterType", oet.name "OrgEncounterType" from operational_encounter_type oet
+inner join encounter_type et on oet.encounter_type_id = et.id;
 
-SELECT
-  catchment.name,
-  address_level.title
-FROM catchment, address_level, catchment_address_mapping
-WHERE catchment_address_mapping.addresslevel_id = address_level.id AND catchment_address_mapping.catchment_id = catchment.id;
-
-SELECT program_enrolment.*
-FROM program_enrolment, program
-WHERE program_enrolment.program_id = program.id AND program.name = 'Mother';
-SELECT *
-FROM concept
-WHERE name = 'Obstetrics History';
-SELECT *
-FROM program_enrolment
-WHERE uuid = '7ce1a50f-c672-4019-bc53-8af19e72e337';
-
-SELECT
-  pe.uuid uuid,
-  c.name,
-  ci.due_date,
-  ci.completion_date
-FROM checklist_item ci, concept c, checklist cl, program_enrolment pe
-WHERE ci.concept_id = c.id AND pe.id = cl.program_enrolment_id AND ci.checklist_id = cl.id
-ORDER BY pe.uuid, checklist_id, due_date ASC;
-
-SELECT *
-FROM individual
-WHERE id = 13;
-
-
-SELECT *
-FROM jsonb_to_record('{
-  "a": 1,
-  "b": "2",
-  "c": "bar"
-}') AS x(a INT, b TEXT, d TEXT);
-
-SELECT x."07b3e014-cbe4-4998-9055-290194481b20" AS foo
-FROM individual, jsonb_to_record(individual.observations) AS x("07b3e014-cbe4-4998-9055-290194481b20" TEXT);
-
-
-SELECT
-  i.name,
-  c.name
-FROM individual i
-  INNER JOIN concept c
-    ON i.observations ->> (SELECT uuid
-                           FROM concept
-                           WHERE name = 'Number of Members in House') = c.uuid;
-
-SELECT pg_typeof(last_modified_date_time)
-FROM program_enrolment;
+-- Cancel Forms
+select
+  f2.id as FormMappingId
+  ,program.name as Program
+  ,encounter_type.name as EncounterType
+from form f
+  inner join form_mapping f2 on f.id = f2.form_id
+  inner join encounter_type on encounter_type.id = f2.observations_type_entity_id
+  inner join program on program.id = f2.entity_id
+where f2.organisation_id = 2 and f.form_type = 'ProgramEncounterCancellation'
+order by
+  Program;
