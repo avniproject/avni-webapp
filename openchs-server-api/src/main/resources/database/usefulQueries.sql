@@ -1,7 +1,3 @@
-select *
-from form
-where organisation_id = 9;
-
 -- FORMS, Encounter Types and Operational Encounter Types
 select form.name as "Form", form.uuid as "Form UUID", o.name as "Operational Encounter Type", encounter_type.name as "Encounter Type"
 from form
@@ -11,7 +7,7 @@ inner join operational_encounter_type o on encounter_type.id = o.encounter_type_
   where m2.organisation_id in (1,2)
 order by form.name;
 
--- VIEW FORM
+-- VIEW FORM WITH ALL ELEMENTS AND ANSWERS
 select
   form.uuid                        AS form_uuid,
   form.name                        as "Form",
@@ -27,7 +23,7 @@ from form_element
   join form_element_group on form_element.form_element_group_id = form_element_group.id
   join form on form_element_group.form_id = form.id
   join concept c2 on form_element.concept_id = c2.id
-where form.id = 24
+where form.uuid = :formUUID
 order by form.name, form_element_group.display_order asc, form_element.display_order asc;
 
 -- VIEW CONCEPT WITH ANSWERS
@@ -44,7 +40,7 @@ from concept
 where concept.name = 'Refer to oral cancer specialist'
 order by a.answer_order;
 
--- Get all the form elements and concept (without answers) for translation
+-- GET ALL THE FORM ELEMENTS AND CONCEPT (WITHOUT ANSWERS) FOR TRANSLATION
 select
   p.name,
   f.name  as FormName
@@ -101,7 +97,7 @@ select
 from catchment
   inner join catchment_address_mapping m2 on catchment.id = m2.catchment_id
   inner join address_level a on m2.addresslevel_id = a.id
-where catchment.organisation_id = 9
+where catchment.organisation_id = 2
 order by catchment.id, a.title;
 
 -- Encounter types

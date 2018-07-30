@@ -91,17 +91,8 @@ public class SqlGenerationService {
                 StringBuilder stringBuilder = new StringBuilder();
                 switch (ConceptDataType.valueOf(formElement.getConcept().getDataType())) {
                     case Numeric:
-                        stringBuilder.append(key)
-                                .append(".observations->>'")
-                                .append(formElement.getConcept().getUuid())
-                                .append("'");
-                        break;
                     case Text:
-                        stringBuilder.append(key)
-                                .append(".observations->>'")
-                                .append(formElement.getConcept().getUuid())
-                                .append("'");
-                        break;
+                    case Notes:
                     case Date:
                         stringBuilder
                                 .append(key)
