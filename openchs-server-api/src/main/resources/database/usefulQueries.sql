@@ -1,13 +1,35 @@
--- FORMS, Encounter Types and Operational Encounter Types
-select form.name as "Form", form.uuid as "Form UUID", o.name as "Operational Encounter Type", encounter_type.name as "Encounter Type"
-from form
-inner join form_mapping m2 on form.id = m2.form_id
-inner join encounter_type on m2.observations_type_entity_id = encounter_type.id
-inner join operational_encounter_type o on encounter_type.id = o.encounter_type_id
-  where m2.organisation_id in (1,2)
-order by form.name;
+-- ALL FORMS FOR AN ORGANISATION (Required for translations, do not change this one)
+select distinct
+  x.form_uuid,
+  x.form_name
+from (select
+        form.uuid as form_uuid,
+        form.name as form_name
+      from form
+        inner join form_mapping m2 on form.id = m2.form_id
+      where m2.organisation_id = :organisation_id
 
--- VIEW FORM WITH ALL ELEMENTS AND ANSWERS
+      union
+
+      select
+        form.uuid as form_uuid,
+        form.name as form_name
+      from form
+        inner join form_mapping m2 on form.id = m2.form_id and m2.organisation_id = 1
+        inner join operational_encounter_type oet on (oet.organisation_id = 2 and oet.encounter_type_id = m2.observations_type_entity_id)
+
+      union
+
+      select
+        form.uuid as form_uuid,
+        form.name as form_name
+      from form
+        inner join form_mapping m2 on form.id = m2.form_id and m2.organisation_id = 1
+        inner join operational_program op on (op.organisation_id = 2 and op.program_id = m2.entity_id)
+     ) as x
+order by x.form_name;
+
+-- VIEW FORM WITH ALL ELEMENTS AND ANSWERS (Required for translations, do not change this one)
 select
   form.uuid                        AS form_uuid,
   form.name                        as "Form",
@@ -26,6 +48,21 @@ from form_element
 where form.uuid = :formUUID
 order by form.name, form_element_group.display_order asc, form_element.display_order asc;
 
+-- VIEW CONCEPT WITH ANSWERS THAT ARE NOT USED BY ANY FORM
+select concept.name concept_name
+from concept
+where concept.id not in (select concept.id
+                         from concept
+                           inner join form_element element2 on concept.id = element2.concept_id
+                         where concept.organisation_id = :org_id
+                         union
+                         select concept.id
+                         from concept
+                           inner join concept_answer ca on concept.id = ca.answer_concept_id
+                         where concept.organisation_id = :org_id
+)
+      and concept.organisation_id = :org_id;
+
 -- VIEW CONCEPT WITH ANSWERS
 select
   concept.name,
@@ -40,7 +77,7 @@ from concept
 where concept.name = 'Refer to oral cancer specialist'
 order by a.answer_order;
 
--- GET ALL THE FORM ELEMENTS AND CONCEPT (WITHOUT ANSWERS) FOR TRANSLATION
+-- GET ALL THE FORM ELEMENTS AND CONCEPT (WITHOUT ANSWERS) IN AN ORG - (Required for translations, do not change this one)
 select
   p.name,
   f.name  as FormName
@@ -90,25 +127,30 @@ order by
 SELECT *
 from organisation;
 
--- Catchment and address
+-- ADDRESS LEVELS (Required for translations, do not change this one)
 select
-  catchment.name,
-  a.title
+  distinct a.title
+from address_level a
+where a.organisation_id = :org_id
+order by a.title;
+
+-- CATCHMENT TYPE (Required for translations, do not change this one)
+select distinct type
 from catchment
-  inner join catchment_address_mapping m2 on catchment.id = m2.catchment_id
-  inner join address_level a on m2.addresslevel_id = a.id
-where catchment.organisation_id = 2
-order by catchment.id, a.title;
+where organisation_id = :org_id;
 
 -- Encounter types
-select et.name "EncounterType", oet.name "OrgEncounterType" from operational_encounter_type oet
-inner join encounter_type et on oet.encounter_type_id = et.id;
+select
+  et.name  "EncounterType",
+  oet.name "OrgEncounterType"
+from operational_encounter_type oet
+  inner join encounter_type et on oet.encounter_type_id = et.id;
 
 -- Cancel Forms
 select
-  f2.id as FormMappingId
-  ,program.name as Program
-  ,encounter_type.name as EncounterType
+  f2.id               as FormMappingId,
+  program.name        as Program,
+  encounter_type.name as EncounterType
 from form f
   inner join form_mapping f2 on f.id = f2.form_id
   inner join encounter_type on encounter_type.id = f2.observations_type_entity_id
