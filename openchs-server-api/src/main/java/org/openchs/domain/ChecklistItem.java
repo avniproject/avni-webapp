@@ -1,7 +1,10 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.openchs.application.Form;
+import org.openchs.domain.programConfig.VisitScheduleConfig;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -14,12 +17,21 @@ public class ChecklistItem extends OrganisationAwareEntity {
     @JoinColumn(name = "concept_id")
     private Concept concept;
 
-    @Column
-    private DateTime dueDate;
-    @Column
-    private DateTime maxDate;
+    @Column(name = "status")
+    @Type(type = "status")
+    private ChecklistItemStatus checklistItemStatus;
+
     @Column
     private DateTime completionDate;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_id")
+    private Form form;
+
+    @Column
+    @Type(type = "observations")
+    private ObservationCollection observations;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,22 +44,6 @@ public class ChecklistItem extends OrganisationAwareEntity {
 
     public void setConcept(Concept concept) {
         this.concept = concept;
-    }
-
-    public DateTime getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(DateTime dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public DateTime getMaxDate() {
-        return maxDate;
-    }
-
-    public void setMaxDate(DateTime maxDate) {
-        this.maxDate = maxDate;
     }
 
     public DateTime getCompletionDate() {
@@ -64,5 +60,29 @@ public class ChecklistItem extends OrganisationAwareEntity {
 
     public void setChecklist(Checklist checklist) {
         this.checklist = checklist;
+    }
+
+    public ChecklistItemStatus getChecklistItemStatus() {
+        return checklistItemStatus;
+    }
+
+    public void setChecklistItemStatus(ChecklistItemStatus checklistItemStatus) {
+        this.checklistItemStatus = checklistItemStatus;
+    }
+
+    public Form getForm() {
+        return form;
+    }
+
+    public void setForm(Form form) {
+        this.form = form;
+    }
+
+    public ObservationCollection getObservations() {
+        return observations;
+    }
+
+    public void setObservations(ObservationCollection observations) {
+        this.observations = observations;
     }
 }

@@ -248,6 +248,11 @@ public class OpenCHS {
                 resource.removeLinks();
                 resource.add(new Link(checklistItem.getChecklist().getUuid(), "checklistUUID"));
                 resource.add(new Link(checklistItem.getConcept().getUuid(), "conceptUUID"));
+                if (checklistItem.getForm() != null) {
+                    resource.add(new Link(checklistItem.getForm().getUuid(), "formUUID"));
+                } else {
+                    resource.add(new Link("", "formUUID"));
+                }
                 return resource;
             }
         };
