@@ -1,7 +1,6 @@
 package org.openchs.domain;
 
-import org.jetbrains.annotations.NotNull;
-
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
