@@ -1,67 +1,72 @@
--- ALL FORMS FOR AN ORGANISATION (Required for translations, do not change this one)
-select distinct
-  x.form_uuid,
-  x.form_name
-from (select
-        form.uuid as form_uuid,
-        form.name as form_name
-      from form
-        inner join form_mapping m2 on form.id = m2.form_id
-      where m2.organisation_id = :organisation_id
+-- ITEMS FOR TRANSLATION
+select distinct name
+from (
+       select form_element_group_name as name
+       from all_form_element_groups
+       where organisation_id = :organisation_id
+       union
+       select form_element_name as name
+       from all_form_elements
+       where organisation_id = :organisation_id
+       union
+       select concept_name as name
+       from all_concepts
+       where organisation_id = :organisation_id
+       union
+       select answer_concept_name as name
+       from all_concept_answers
+       where organisation_id = :organisation_id
+       union
+       select operational_encounter_type_name as name
+       from all_operational_encounter_types
+       where organisation_id = :organisation_id
+       union
+       select encounter_type_name as name
+       from all_encounter_types
+       where organisation_id = :organisation_id
+       union
+       select operational_program_name as name
+       from all_operational_programs
+       where organisation_id = :organisation_id
+       union
+       select program_name as name
+       from all_programs
+       where organisation_id = :organisation_id
+     ) x
+order by name;
 
+-- VIEW CONCEPT WITH ANSWERS THAT ARE NOT USED BY ANY FORM (this will output concepts that from health modules in core that may not be used by the implementation)
+select distinct concept_name as name
+from (select concept.name concept_name
+      from concept
+      where concept.id not in (select concept.id
+                               from concept
+                                 inner join form_element element2 on concept.id = element2.concept_id
+                               where concept.organisation_id = :organisation_id
+                               union
+                               select concept.id
+                               from concept
+                                 inner join concept_answer ca on concept.id = ca.answer_concept_id
+                               where concept.organisation_id = :organisation_id
+      )
+            and concept.organisation_id = :organisation_id and not concept.is_voided
       union
 
-      select
-        form.uuid as form_uuid,
-        form.name as form_name
-      from form
-        inner join form_mapping m2 on form.id = m2.form_id and m2.organisation_id = 1
-        inner join operational_encounter_type oet on (oet.organisation_id = 2 and oet.encounter_type_id = m2.observations_type_entity_id)
-
-      union
-
-      select
-        form.uuid as form_uuid,
-        form.name as form_name
-      from form
-        inner join form_mapping m2 on form.id = m2.form_id and m2.organisation_id = 1
-        inner join operational_program op on (op.organisation_id = 2 and op.program_id = m2.entity_id)
-     ) as x
-order by x.form_name;
-
--- VIEW FORM WITH ALL ELEMENTS AND ANSWERS (Required for translations, do not change this one)
-select
-  form.uuid                        AS form_uuid,
-  form.name                        as "Form",
-  form_element_group.uuid          AS "Group UUID",
-  form_element.uuid                as "Element UUID",
-  c2.uuid                          as "Concept UUID",
-  form_element_group.name          as "Group name",
-  form_element.name                as "Element Name",
-  c2.name                          as "Concept name",
-  form_element_group.display_order as "Group Display Order",
-  c2.data_type                     as "Concept Data Type"
-from form_element
-  join form_element_group on form_element.form_element_group_id = form_element_group.id
-  join form on form_element_group.form_id = form.id
-  join concept c2 on form_element.concept_id = c2.id
-where form.uuid = :formUUID
-order by form.name, form_element_group.display_order asc, form_element.display_order asc;
-
--- VIEW CONCEPT WITH ANSWERS THAT ARE NOT USED BY ANY FORM
-select concept.name concept_name
-from concept
-where concept.id not in (select concept.id
-                         from concept
-                           inner join form_element element2 on concept.id = element2.concept_id
-                         where concept.organisation_id = :org_id
-                         union
-                         select concept.id
-                         from concept
-                           inner join concept_answer ca on concept.id = ca.answer_concept_id
-                         where concept.organisation_id = :org_id
-)
-      and concept.organisation_id = :org_id;
+      select concept.name concept_name
+      from concept
+      where concept.id not in (select concept.id
+                               from concept
+                                 inner join form_element element2 on concept.id = element2.concept_id
+                               where concept.organisation_id = 1
+                               union
+                               select concept.id
+                               from concept
+                                 inner join concept_answer ca on concept.id = ca.answer_concept_id
+                               where concept.organisation_id = 1
+            )
+            and concept.organisation_id = 1 and not concept.is_voided
+     ) X
+order by concept_name;
 
 -- VIEW CONCEPT WITH ANSWERS
 select
