@@ -7,7 +7,7 @@ public class ChecklistItemStatusRequest implements Serializable {
     private Object to;
     private String color;
     private String state;
-    private String uuid;
+    private Double displayOrder;
 
 
     public Object getFrom() {
@@ -42,11 +42,11 @@ public class ChecklistItemStatusRequest implements Serializable {
         this.state = state;
     }
 
-    public String getUuid() {
-        return uuid;
+    public Double getDisplayOrder() {
+        return displayOrder;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setDisplayOrder(Double displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }

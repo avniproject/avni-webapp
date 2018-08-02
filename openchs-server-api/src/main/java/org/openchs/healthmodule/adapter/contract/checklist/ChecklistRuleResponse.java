@@ -40,7 +40,6 @@ public class ChecklistRuleResponse extends RuleResponse {
     public ChecklistRequest getChecklistRequest() {
         ChecklistRequest checklistRequest = new ChecklistRequest();
         checklistRequest.setBaseDate(baseDate);
-        checklistRequest.setName(name);
         return checklistRequest;
     }
 }

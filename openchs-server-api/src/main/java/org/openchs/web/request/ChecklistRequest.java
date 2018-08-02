@@ -3,16 +3,16 @@ package org.openchs.web.request;
 import org.joda.time.DateTime;
 
 public class ChecklistRequest extends CHSRequest {
-    private String name;
+    private String checklistDetailUUID;
     private DateTime baseDate;
     private String programEnrolmentUUID;
 
-    public String getName() {
-        return name;
+    public String getChecklistDetailUUID() {
+        return checklistDetailUUID;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setChecklistDetailUUID(String checklistDetailUUID) {
+        this.checklistDetailUUID = checklistDetailUUID;
     }
 
     public DateTime getBaseDate() {

@@ -9,20 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ChecklistItemRequest extends CHSRequest {
-    private String conceptUUID;
-    private List<ChecklistItemStatusRequest> status;
     private DateTime completionDate;
     private String checklistUUID;
-    private String formUUID;
     private List<ObservationRequest> observations;
-
-    public String getConceptUUID() {
-        return conceptUUID;
-    }
-
-    public void setConceptUUID(String conceptUUID) {
-        this.conceptUUID = conceptUUID;
-    }
+    private String checklistItemDetailUUID;
 
     public DateTime getCompletionDate() {
         return completionDate;
@@ -40,27 +30,19 @@ public class ChecklistItemRequest extends CHSRequest {
         this.checklistUUID = checklistUUID;
     }
 
-    public List<ChecklistItemStatusRequest> getStatus() {
-        return status;
-    }
-
-    public void setStatus(List<ChecklistItemStatusRequest> status) {
-        this.status = status;
-    }
-
-    public String getFormUUID() {
-        return formUUID;
-    }
-
-    public void setFormUUID(String formUUID) {
-        this.formUUID = formUUID;
-    }
-
     public List<ObservationRequest> getObservations() {
         return observations;
     }
 
     public void setObservations(List<ObservationRequest> observations) {
         this.observations = observations;
+    }
+
+    public String getChecklistItemDetailUUID() {
+        return checklistItemDetailUUID;
+    }
+
+    public void setChecklistItemDetailUUID(String checklistItemDetailUUID) {
+        this.checklistItemDetailUUID = checklistItemDetailUUID;
     }
 }

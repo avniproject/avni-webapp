@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import org.openchs.dao.ChecklistDetailRepository;
 import org.openchs.dao.ChecklistRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.Checklist;
@@ -15,11 +16,13 @@ import javax.transaction.Transactional;
 
 @RestController
 public class ChecklistController extends AbstractController<Checklist> {
+    private final ChecklistDetailRepository checklistDetailRepository;
     private ChecklistRepository checklistRepository;
     private ProgramEnrolmentRepository programEnrolmentRepository;
 
     @Autowired
-    public ChecklistController(ChecklistRepository checklistRepository, ProgramEnrolmentRepository programEnrolmentRepository) {
+    public ChecklistController(ChecklistRepository checklistRepository, ProgramEnrolmentRepository programEnrolmentRepository, ChecklistDetailRepository checklistDetailRepository) {
+        this.checklistDetailRepository = checklistDetailRepository;
         this.checklistRepository = checklistRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
     }
@@ -29,7 +32,7 @@ public class ChecklistController extends AbstractController<Checklist> {
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ChecklistRequest checklistRequest) {
         Checklist checklist = newOrExistingEntity(checklistRepository, checklistRequest, new Checklist());
-        checklist.setName(checklistRequest.getName());
+        checklist.setChecklistDetail(this.checklistDetailRepository.findByUuid(checklistRequest.getChecklistDetailUUID()));
         checklist.setProgramEnrolment(programEnrolmentRepository.findByUuid(checklistRequest.getProgramEnrolmentUUID()));
         checklist.setBaseDate(checklistRequest.getBaseDate());
         checklistRepository.save(checklist);

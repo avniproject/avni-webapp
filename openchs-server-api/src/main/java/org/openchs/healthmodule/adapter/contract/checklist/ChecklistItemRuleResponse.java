@@ -29,7 +29,6 @@ public class ChecklistItemRuleResponse extends RuleResponse {
         if (concept == null)
             throw new RuntimeException(String.format("Couldn't find concept with name=%s in checklist being created from the rule", name));
         checklistItemRequest.setUuid(checklistItem == null ? UUID.randomUUID().toString() : checklistItem.getUuid());
-        checklistItemRequest.setConceptUUID(concept.getUuid());
         return checklistItemRequest;
     }
 }

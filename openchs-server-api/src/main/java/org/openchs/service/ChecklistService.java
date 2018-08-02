@@ -39,7 +39,6 @@ public class ChecklistService {
 
         return checklist.getItems()
                 .stream()
-                .filter(x -> x.getConcept().getName().equals(checklistItemName))
                 .findFirst()
                 .orElse(null);
     }

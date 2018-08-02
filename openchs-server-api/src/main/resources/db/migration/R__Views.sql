@@ -108,31 +108,3 @@ CREATE OR REPLACE VIEW adolescent_visit AS
     LEFT OUTER JOIN program ON program_enrolment.program_id = program.id
 WHERE program.name = 'Adolescent';
 
-
--- <Common>
-CREATE OR REPLACE VIEW checklist_items AS
-  SELECT
-    individual.id                                                    individual,
-    catchment.id                                                     catchment,
-    program_enrolment.id                                             enrolment,
-    program_enrolment.enrolment_date_time                            internal_enrolment_date,
-    to_char(program_enrolment.enrolment_date_time, 'DD-Mon-YYYY')    enrolment_date,
-    program_enrolment.program_exit_date_time                         internal_exit_date,
-    to_char(program_enrolment.program_exit_date_time, 'DD-Mon-YYYY') exit_date,
-    individual.date_of_birth                                         internal_date_of_birth,
-    to_char(individual.date_of_birth, 'DD-Mon-YYYY')                 date_of_birth,
-    address_level.id                                                 address,
-    checklist_item.id                                                checklist_item_id,
-    to_char(checklist_item.completion_date, 'DD-Mon-YYYY')           completion_date,
-    concept.id                                                       checklist_item,
-    checklist.id                                                     checklist,
-    checklist_item.completion_date                                   internal_completion_date
-  FROM checklist_item
-    INNER JOIN concept ON checklist_item.concept_id = concept.id
-    INNER JOIN checklist ON checklist.id = checklist_item.checklist_id
-    INNER JOIN program_enrolment ON program_enrolment.id = checklist.program_enrolment_id
-    INNER JOIN individual ON program_enrolment.individual_id = individual.id
-    INNER JOIN address_level ON address_level.id = individual.address_id
-    INNER JOIN catchment_address_mapping ON catchment_address_mapping.addresslevel_id = address_level.id
-    INNER JOIN catchment ON catchment_address_mapping.catchment_id = catchment.id;
--- </Common>

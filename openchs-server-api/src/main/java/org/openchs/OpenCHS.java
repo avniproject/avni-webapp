@@ -221,6 +221,7 @@ public class OpenCHS {
                 Checklist checklist = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(checklist.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
+                resource.add(new Link(checklist.getChecklistDetail().getUuid(), "checklistDetailUUID"));
                 return resource;
             }
         };
@@ -247,12 +248,22 @@ public class OpenCHS {
                 ChecklistItem checklistItem = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(checklistItem.getChecklist().getUuid(), "checklistUUID"));
-                resource.add(new Link(checklistItem.getConcept().getUuid(), "conceptUUID"));
-                if (checklistItem.getForm() != null) {
-                    resource.add(new Link(checklistItem.getForm().getUuid(), "formUUID"));
-                } else {
-                    resource.add(new Link("", "formUUID"));
-                }
+                resource.add(new Link(checklistItem.getChecklistItemDetail().getUuid(), "checklistItemDetailUUID"));
+                return resource;
+            }
+        };
+    }
+
+    @Bean
+    public ResourceProcessor<Resource<ChecklistItemDetail>> ChecklistItemDetailProcessor() {
+        return new ResourceProcessor<Resource<ChecklistItemDetail>>() {
+            @Override
+            public Resource<ChecklistItemDetail> process(Resource<ChecklistItemDetail> resource) {
+                ChecklistItemDetail content = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(content.getChecklistDetail().getUuid(), "checklistDetailUUID"));
+                resource.add(new Link(content.getConcept().getUuid(), "conceptUUID"));
+                resource.add(new Link(content.getForm().getUuid(), "formUUID"));
                 return resource;
             }
         };

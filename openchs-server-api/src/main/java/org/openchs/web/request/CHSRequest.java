@@ -7,7 +7,7 @@ import java.util.UUID;
 public class CHSRequest {
     private String uuid;
     private String userUUID;
-    private boolean isVoided;
+    private boolean isVoided = false;
 
     public CHSRequest() {
     }

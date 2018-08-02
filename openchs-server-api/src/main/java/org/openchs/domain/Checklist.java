@@ -10,35 +10,29 @@ import java.util.List;
 @Entity
 @Table(name = "checklist")
 public class Checklist extends OrganisationAwareEntity {
+    @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
-    private String name;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "checklist")
-    private List<ChecklistItem> items = new ArrayList<>();
+    @JoinColumn(name = "checklist_detail_id")
+    private ChecklistDetail checklistDetail;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "checklist")
+    private List<ChecklistItem> items = new ArrayList<>();
+
     @NotNull
     @Column
     private DateTime baseDate;
 
-    public String getName() {
-        return name;
+    public ChecklistDetail getChecklistDetail() {
+        return checklistDetail;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<ChecklistItem> getItems() {
-        return items == null ? new ArrayList<>() : items;
-    }
-
-    public void setItems(List<ChecklistItem> items) {
-        this.items = items;
+    public void setChecklistDetail(ChecklistDetail checklistDetail) {
+        this.checklistDetail = checklistDetail;
     }
 
     public ProgramEnrolment getProgramEnrolment() {
@@ -57,7 +51,11 @@ public class Checklist extends OrganisationAwareEntity {
         this.baseDate = baseDate;
     }
 
-    public void addItem(ChecklistItem checklistItem) {
-        this.items.add(checklistItem);
+    public List<ChecklistItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<ChecklistItem> items) {
+        this.items = items;
     }
 }
