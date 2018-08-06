@@ -1,72 +1,73 @@
+select *
+from organisation;
+
 -- ITEMS FOR TRANSLATION
 select distinct name
-from (
-       select form_element_group_name as name
-       from all_form_element_groups
-       where organisation_id = :organisation_id
-       union
-       select form_element_name as name
-       from all_form_elements
-       where organisation_id = :organisation_id
-       union
-       select concept_name as name
-       from all_concepts
-       where organisation_id = :organisation_id
-       union
-       select answer_concept_name as name
-       from all_concept_answers
-       where organisation_id = :organisation_id
-       union
-       select operational_encounter_type_name as name
-       from all_operational_encounter_types
-       where organisation_id = :organisation_id
-       union
-       select encounter_type_name as name
-       from all_encounter_types
-       where organisation_id = :organisation_id
-       union
-       select operational_program_name as name
-       from all_operational_programs
-       where organisation_id = :organisation_id
-       union
-       select program_name as name
-       from all_programs
-       where organisation_id = :organisation_id
-     ) x
-order by name;
+from
+  (
+    select form_element_group_name as name
+    from all_form_element_groups
+    where organisation_id = :organisation_id
+    union
+    select form_element_name as name
+    from all_form_elements
+    where organisation_id = :organisation_id
+    union
+    select concept_name as name
+    from all_concepts
+    where organisation_id = :organisation_id
+    union
+    select answer_concept_name as name
+    from all_concept_answers
+    where organisation_id = :organisation_id
+    union
+    select operational_encounter_type_name as name
+    from all_operational_encounter_types
+    where organisation_id = :organisation_id
+    union
+    select encounter_type_name as name
+    from all_encounter_types
+    where organisation_id = :organisation_id
+    union
+    select operational_program_name as name
+    from all_operational_programs
+    where organisation_id = :organisation_id
+    union
+    select program_name as name
+    from all_programs
+    where organisation_id = :organisation_id
 
--- VIEW CONCEPT WITH ANSWERS THAT ARE NOT USED BY ANY FORM (this will output concepts that from health modules in core that may not be used by the implementation)
-select distinct concept_name as name
-from (select concept.name concept_name
-      from concept
-      where concept.id not in (select concept.id
-                               from concept
-                                 inner join form_element element2 on concept.id = element2.concept_id
-                               where concept.organisation_id = :organisation_id
-                               union
-                               select concept.id
-                               from concept
-                                 inner join concept_answer ca on concept.id = ca.answer_concept_id
-                               where concept.organisation_id = :organisation_id
-      )
-            and concept.organisation_id = :organisation_id and not concept.is_voided
-      union
+    union
 
-      select concept.name concept_name
-      from concept
-      where concept.id not in (select concept.id
-                               from concept
-                                 inner join form_element element2 on concept.id = element2.concept_id
-                               where concept.organisation_id = 1
-                               union
-                               select concept.id
-                               from concept
-                                 inner join concept_answer ca on concept.id = ca.answer_concept_id
-                               where concept.organisation_id = 1
-            )
-            and concept.organisation_id = 1 and not concept.is_voided
-     ) X
-order by concept_name;
+    select concept.name as name
+    from concept
+    where
+      concept.id not in (select concept.id
+                         from concept
+                           inner join form_element element2 on concept.id = element2.concept_id
+                         where concept.organisation_id = :organisation_id
+                         union
+                         select concept.id
+                         from concept
+                           inner join concept_answer ca on concept.id = ca.answer_concept_id
+                         where concept.organisation_id = :organisation_id) and
+      concept.organisation_id = :organisation_id and not concept.is_voided
+
+    union
+
+    select concept.name concept_name
+    from concept
+    where concept.id not in (select concept.id
+                             from concept
+                               inner join form_element element2 on concept.id = element2.concept_id
+                             where concept.organisation_id = 1
+                             union
+                             select concept.id
+                             from concept
+                               inner join concept_answer ca on concept.id = ca.answer_concept_id
+                             where concept.organisation_id = 1
+    ) and concept.organisation_id = 1 and not concept.is_voided
+  ) as X order by name;
 
 -- VIEW CONCEPT WITH ANSWERS
 select
