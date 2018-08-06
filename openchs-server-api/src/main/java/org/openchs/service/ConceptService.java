@@ -7,6 +7,7 @@ import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.Organisation;
+import org.openchs.domain.OrganisationAwareEntity;
 import org.openchs.util.O;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.validation.ValidationException;
@@ -86,7 +87,9 @@ public class ConceptService {
         List<ConceptContract> answers = (List<ConceptContract>) O.coalesce(conceptRequest.getAnswers(), new ArrayList<>());
         AtomicInteger index = new AtomicInteger(0);
         List<ConceptAnswer> conceptAnswers = answers.stream()
-                .map(answerContract -> fetchOrCreateConceptAnswer(concept, answerContract, (short) index.incrementAndGet()))
+                .map(answerContract -> updateOrganisationIfNeeded(
+                        fetchOrCreateConceptAnswer(concept, answerContract, (short) index.incrementAndGet()),
+                        answerContract))
                 .collect(Collectors.toList());
         concept.addAll(conceptAnswers);
         return concept;
@@ -127,15 +130,16 @@ public class ConceptService {
         return concept;
     }
 
-    private void updateOrganisationIfNeeded(@NotNull Concept concept, @NotNull ConceptContract conceptRequest) {
+    private <OAE extends OrganisationAwareEntity> OAE updateOrganisationIfNeeded(@NotNull OAE entity, @NotNull ConceptContract conceptRequest) {
         String organisationUuid = conceptRequest.getOrganisationUUID();
         Organisation organisation = organisationRepository.findByUuid(organisationUuid);
         if (organisationUuid != null && organisation == null) {
             throw new RuntimeException(String.format("Organisation not found with uuid :'%s'", organisationUuid));
         }
         if (organisation != null) {
-            concept.setOrganisationId(organisation.getId());
+            entity.setOrganisationId(organisation.getId());
         }
+        return entity;
     }
 
     public Concept saveOrUpdate(ConceptContract conceptRequest) {
