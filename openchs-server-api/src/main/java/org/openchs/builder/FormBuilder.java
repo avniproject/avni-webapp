@@ -7,6 +7,7 @@ import org.openchs.domain.Organisation;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.FormElementGroupContract;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,13 +45,15 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         return this;
     }
 
-    public FormBuilder withoutFormElements(Organisation organisation, List<FormElementGroupContract> formElementGroupContracts) {
+    public FormBuilder withoutFormElements(Organisation organisation, List<FormElementGroupContract> formElementGroupContracts) throws FormBuilderException {
         List<String> formElementGroupUUIDs = formElementGroupContracts.stream()
                 .map(CHSRequest::getUuid).collect(Collectors.toList());
-        Set<FormElementGroup> formElementGroups = formElementGroupContracts.stream().map(formElementGroupContract ->
-                new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
-                        .withoutFormElements(organisation, formElementGroupContract.getFormElements())
-                        .build()).collect(Collectors.toSet());
+        Set<FormElementGroup> formElementGroups = new HashSet<>();
+        for (FormElementGroupContract formElementGroupContract : formElementGroupContracts) {
+            formElementGroups.add(new FormElementGroupBuilder(this.get(), getExistingFormElementGroup(formElementGroupContract.getUuid()), new FormElementGroup())
+                    .withoutFormElements(organisation, formElementGroupContract.getFormElements())
+                    .build());
+        }
         Set<FormElementGroup> allFormElementGroups = this.get().getFormElementGroups().stream()
                 .filter(feg -> !formElementGroupUUIDs.contains(feg.getUuid())).collect(Collectors.toSet());
         allFormElementGroups.addAll(formElementGroups);

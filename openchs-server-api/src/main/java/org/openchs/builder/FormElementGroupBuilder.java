@@ -7,11 +7,9 @@ import org.openchs.domain.Concept;
 import org.openchs.domain.Organisation;
 import org.openchs.framework.ApplicationContextProvider;
 import org.openchs.service.ConceptService;
-import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.application.FormElementContract;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormElementGroupBuilder> {
     private final ConceptService conceptService;
@@ -83,14 +81,24 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         formElementBuilder.linkWithFormElementGroup();
     }
 
-    public FormElementGroupBuilder withoutFormElements(Organisation organisation, List<FormElementContract> formElementContracts) {
-        List<String> formElementUUIDs = formElementContracts.stream().map(CHSRequest::getUuid).collect(Collectors.toList());
-        this.get().getFormElements().stream().map((formElement -> {
-            if (formElementUUIDs.contains(formElement.getUuid())) {
-                formElement.addNonApplicableOrganisations(organisation);
-            }
-            return formElement;
-        })).collect(Collectors.toSet());
+    public FormElementGroupBuilder withoutFormElements(Organisation organisation, List<FormElementContract> formElementContracts) throws FormBuilderException {
+        for (FormElementContract formElementContract : formElementContracts) {
+            FormElement formElement = getFormElement(formElementContract);
+            NonApplicableFormElementBuilder nonApplicableFormElementBuilder = new NonApplicableFormElementBuilder(formElement.getNonApplicable());
+            nonApplicableFormElementBuilder.withOrganisation(organisation);
+            nonApplicableFormElementBuilder.withFormElement(formElement);
+            nonApplicableFormElementBuilder.withVoided(formElementContract.isVoided());
+            formElement.setNonApplicable(nonApplicableFormElementBuilder.build());
+        }
         return this;
     }
+
+    private FormElement getFormElement(FormElementContract formElementContract) throws FormBuilderException {
+        FormElement formElement = get().findFormElement(formElementContract.getUuid());
+        if (formElement == null) {
+            throw new FormBuilderException(String.format("FormElement with uuid '%s' not found", formElementContract.getUuid()));
+        }
+        return formElement;
+    }
+
 }

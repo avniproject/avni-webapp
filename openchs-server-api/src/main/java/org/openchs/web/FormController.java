@@ -105,13 +105,20 @@ public class FormController {
     @RequestMapping(value = "/forms", method = RequestMethod.DELETE)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
-    public void remove(@RequestBody FormContract formRequest) {
-        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        Form existingForm = formRepository.findByUuid(formRequest.getUuid());
-        FormBuilder formBuilder = new FormBuilder(existingForm);
-        Form form = formBuilder.withoutFormElements(organisation, formRequest.getFormElementGroups())
-                .build();
-        formRepository.save(form);
+    public ResponseEntity<?> remove(@RequestBody FormContract formRequest) {
+        logger.info(String.format("Deleting from form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
+        try {
+            Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+            Form existingForm = formRepository.findByUuid(formRequest.getUuid());
+            FormBuilder formBuilder = new FormBuilder(existingForm);
+            Form form = formBuilder.withoutFormElements(organisation, formRequest.getFormElementGroups())
+                    .build();
+            formRepository.save(form);
+        } catch (FormBuilderException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok(null);
     }
 
     private void createFormMappingIfNotPresent(Form form) {
@@ -139,9 +146,7 @@ public class FormController {
             formElementGroupContract.setVoided(formElementGroup.isVoided());
             formElementGroupContract.setOrganisationId(formElementGroup.getOrganisationId());
             formContract.addFormElementGroup(formElementGroupContract);
-            Set<FormElement> formElements = formElementGroup.getFormElements();
-            // DIRTY HACK ALERT: organisation.getId() == 1 ? fe.getOrganisationId() == 1
-            formElements.stream().filter(fe -> organisation.getId() == 1 ? fe.getOrganisationId() == 1 : !fe.isNonApplicableForOrganisation(organisation)).sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
+            formElementGroup.getFormElements().stream().sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
                 FormElementContract formElementContract = new FormElementContract();
                 formElementContract.setUuid(formElement.getUuid());
                 formElementContract.setName(formElement.getName());

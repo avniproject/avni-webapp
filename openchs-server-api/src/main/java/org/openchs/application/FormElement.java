@@ -1,14 +1,15 @@
 package org.openchs.application;
 
 import org.hibernate.annotations.Type;
+import org.joda.time.DateTime;
+import org.openchs.domain.CHSEntity;
 import org.openchs.domain.Concept;
-import org.openchs.domain.Organisation;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "form_element")
@@ -39,11 +40,8 @@ public class FormElement extends OrganisationAwareEntity {
     @Column(name = "type", nullable = true)
     private String type;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "non_applicable_form_element",
-            joinColumns = @JoinColumn(name = "form_element_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "organisation_id", referencedColumnName = "id"))
-    private Set<Organisation> nonApplicableOrganisations = null;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "formElement")
+    private Set<NonApplicableFormElement> nonApplicableFormElements = null;
 
     @Embedded
     private Format validFormat;
@@ -89,7 +87,7 @@ public class FormElement extends OrganisationAwareEntity {
     }
 
     public void setMandatory(Boolean mandatory) {
-        isMandatory = mandatory.booleanValue();
+        isMandatory = mandatory;
     }
 
     public FormElementGroup getFormElementGroup() {
@@ -120,22 +118,31 @@ public class FormElement extends OrganisationAwareEntity {
         return "SingleSelect".equals(this.type);
     }
 
-    public void setNonApplicableOrganisations(Set<Organisation> nonApplicableOrganisations) {
-        if (nonApplicableOrganisations == null) {
-            nonApplicableOrganisations = new HashSet<>();
-        }
-        this.nonApplicableOrganisations.clear();
-        this.nonApplicableOrganisations.addAll(nonApplicableOrganisations);
+    public DateTime getLastModifiedDateTime() {
+        NonApplicableFormElement nonApplicable = getNonApplicable();
+        return nonApplicable != null && nonApplicable.getLastModifiedDateTime().isAfter(super.getLastModifiedDateTime()) ?
+                nonApplicable.getLastModifiedDateTime() : super.getLastModifiedDateTime();
     }
 
-    public void addNonApplicableOrganisations(Organisation organisation) {
-        if (nonApplicableOrganisations == null) {
-            nonApplicableOrganisations = new HashSet<>();
+    public Set<NonApplicableFormElement> getNonApplicableFormElements() {
+        if (nonApplicableFormElements == null) {
+            nonApplicableFormElements = new HashSet<>();
         }
-        this.nonApplicableOrganisations.add(organisation);
+        return nonApplicableFormElements;
     }
 
-    public boolean isNonApplicableForOrganisation(Organisation organisation) {
-      return this.nonApplicableOrganisations.contains(organisation);
+    public NonApplicableFormElement getNonApplicable() {
+        return getNonApplicableFormElements().stream().findFirst().orElse(null);
+    }
+
+    public void setNonApplicable(NonApplicableFormElement nonApplicable) {
+        getNonApplicableFormElements().add(nonApplicable);
+    }
+
+    public boolean isVoided() {
+        if(super.isVoided()) {
+            return true;
+        }
+        return getNonApplicable() != null && !getNonApplicable().isVoided();
     }
 }
