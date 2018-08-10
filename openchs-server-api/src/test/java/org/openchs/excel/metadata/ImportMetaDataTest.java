@@ -7,10 +7,13 @@ import org.mockito.Mock;
 import org.openchs.application.FormElement;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.domain.*;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.importer.*;
 import org.openchs.service.DataImportService;
+import org.openchs.web.IndividualRelationshipController;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
@@ -34,6 +37,11 @@ public class ImportMetaDataTest {
     @Mock
     private FormElementRepository formElementRepository;
     private InputStream metaDataInputStream;
+
+    @Mock
+    private IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
+    @Mock
+    private IndividualRelationshipController individualRelationshipController;
 
     @Before
     public void setup() throws IOException {
@@ -91,7 +99,8 @@ public class ImportMetaDataTest {
         ProgramEnrolmentImporter programEnrolmentImporter = new ProgramEnrolmentImporter(conceptRepository, formElementRepository, null);
         ProgramEncounterImporter programEncounterImporter = new ProgramEncounterImporter(conceptRepository, formElementRepository, null, null);
         ChecklistImporter checklistImporter = new ChecklistImporter(conceptRepository, formElementRepository);
-        DataImportService dataImportService = new DataImportService(individualImporter, encounterImporter, programEnrolmentImporter, programEncounterImporter, checklistImporter);
+        IndividualRelationshipImporter individualRelationshipImporter = new IndividualRelationshipImporter(conceptRepository, formElementRepository, individualRelationshipTypeRepository, individualRelationshipController);
+        DataImportService dataImportService = new DataImportService(individualImporter, encounterImporter, programEnrolmentImporter, programEncounterImporter, checklistImporter, individualRelationshipImporter);
         Map<ImportSheetMetaData, List<CHSRequest>> requestMap = dataImportService.importExcel(metaDataInputStream, new ClassPathResource("Test Import.xlsx").getInputStream(), false);
 
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", Individual.class)).size(), 5);
