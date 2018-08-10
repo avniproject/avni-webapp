@@ -1,26 +1,22 @@
 package org.openchs.service;
 
 import org.openchs.domain.*;
+import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.excel.DataImportResult;
 import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.metadata.ImportMetaData;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.excel.metadata.ImportSheetMetaDataList;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
-import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.*;
 import org.openchs.web.request.CHSRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,12 +31,14 @@ public class DataImportService {
                              EncounterImporter encounterImporter,
                              ProgramEnrolmentImporter programEnrolmentImporter,
                              ProgramEncounterImporter programEncounterImporter,
-                             ChecklistImporter checklistImporter) {
+                             ChecklistImporter checklistImporter,
+                             IndividualRelationshipImporter individualRelationshipImporter) {
         this.importerMap.put(Individual.class, individualImporter);
         this.importerMap.put(Encounter.class, encounterImporter);
         this.importerMap.put(ProgramEnrolment.class, programEnrolmentImporter);
         this.importerMap.put(ProgramEncounter.class, programEncounterImporter);
         this.importerMap.put(Checklist.class, checklistImporter);
+        this.importerMap.put(IndividualRelationship.class, individualRelationshipImporter);
     }
 
     public Map<ImportSheetMetaData, List<CHSRequest>> importExcel(InputStream metaDataFileStream, InputStream importDataFileStream, boolean performImport) throws IOException {
