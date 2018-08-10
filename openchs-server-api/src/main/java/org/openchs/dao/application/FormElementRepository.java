@@ -20,14 +20,6 @@ import org.springframework.stereotype.Repository;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface FormElementRepository extends PagingAndSortingRepository<FormElement, Long>, ReferenceDataRepository<FormElement> {
     @RestResource(path = "lastModified", rel = "lastModified")
-    @Query("select fm " +
-            "from FormElement fm left join fm.nonApplicableFormElements as nfm " +
-            "where fm.audit.lastModifiedDateTime between :lastModifiedDateTime and :now " +
-            "   or nfm.audit.lastModifiedDateTime between :lastModifiedDateTime and :now " +
-            "order by CASE " +
-            "   WHEN nfm.audit.lastModifiedDateTime > fm.audit.lastModifiedDateTime" +
-            "   THEN nfm.audit.lastModifiedDateTime " +
-            "   ELSE fm.audit.lastModifiedDateTime END")
     Page<FormElement> findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

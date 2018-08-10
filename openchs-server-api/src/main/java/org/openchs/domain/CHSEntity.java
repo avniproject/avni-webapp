@@ -18,7 +18,7 @@ public class CHSEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Audit audit = new Audit();
 
-//    @Version
+    //    @Version
     @Column(name = "version")
     private int version;
 
@@ -58,6 +58,10 @@ public class CHSEntity {
 
     public void setAudit(Audit audit) {
         this.audit = audit;
+    }
+
+    public void updateLastModifiedDateTime() {
+        this.getAudit().setLastModifiedDateTime(new DateTime());
     }
 
     public String getUuid() {

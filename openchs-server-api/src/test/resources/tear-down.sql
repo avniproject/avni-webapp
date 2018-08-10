@@ -1,3 +1,4 @@
+DELETE FROM non_applicable_form_element;
 DELETE FROM form_element;
 DELETE FROM form_element_group;
 DELETE FROM form_mapping;
@@ -17,3 +18,4 @@ DELETE FROM address_level;
 DELETE FROM catchment;
 DELETE FROM users;
 DELETE FROM organisation;
+DELETE FROM audit;

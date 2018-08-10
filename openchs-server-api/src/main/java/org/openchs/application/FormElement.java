@@ -2,14 +2,14 @@ package org.openchs.application;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
-import org.openchs.domain.CHSEntity;
+import org.openchs.domain.Audit;
 import org.openchs.domain.Concept;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "form_element")
@@ -140,7 +140,7 @@ public class FormElement extends OrganisationAwareEntity {
     }
 
     public boolean isVoided() {
-        if(super.isVoided()) {
+        if (super.isVoided()) {
             return true;
         }
         return getNonApplicable() != null && !getNonApplicable().isVoided();

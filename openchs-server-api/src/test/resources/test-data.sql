@@ -1,3 +1,4 @@
+DELETE FROM non_applicable_form_element;
 DELETE FROM form_element;
 DELETE FROM form_element_group;
 DELETE FROM form_mapping;
@@ -21,7 +22,9 @@ DELETE FROM address_level;
 DELETE FROM catchment;
 DELETE FROM users;
 DELETE FROM organisation;
+DELETE FROM audit;
 
+ALTER SEQUENCE non_applicable_form_element_id_seq RESTART WITH 1;
 ALTER SEQUENCE form_element_id_seq RESTART WITH 1;
 ALTER SEQUENCE form_element_group_id_seq RESTART WITH 1;
 ALTER SEQUENCE form_mapping_id_seq RESTART WITH 1;
@@ -45,6 +48,7 @@ ALTER SEQUENCE individual_relation_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relation_gender_mapping_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_type_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_id_seq RESTART WITH 1;
+ALTER SEQUENCE audit_id_seq RESTART WITH 1;
 
 INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
@@ -222,46 +226,81 @@ INSERT INTO form (NAME, form_type, uuid, version)
 VALUES ('encounter_form', 'Encounter', '2c32a184-6d27-4c51-841d-551ca94594a5', 1);
 
 
-INSERT INTO audit(created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+INSERT INTO audit (created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
 VALUES (1, 1, now(), now());
 
-UPDATE form SET audit_id = (SELECT currval('audit_id_seq'));
+UPDATE form
+SET audit_id = (SELECT currval('audit_id_seq'));
 
 INSERT INTO form_element_group (NAME, form_id, uuid, version)
 VALUES ('default_group', 1, '4b317705-4372-4405-a628-6c8bb8da8671', 1);
 
-INSERT INTO form_element (name, display_order, is_mandatory, concept_id, form_element_group_id, uuid, version)
-VALUES
-  ('Complaint', 2, TRUE, 2, 1, '2f256e95-3011-4f42-8ebe-1c1af5e6b8d2', 1);
+INSERT INTO audit (id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1001, 1, 1, now() - INTERVAL '1 year', now() - INTERVAL '1 year');
 
-INSERT INTO form_element (name, display_order, is_mandatory, concept_id, form_element_group_id, uuid, version)
-VALUES
-  ('Temperature', 1, TRUE, 1, 1, '2b2e9964-d942-4f83-a296-1096db2c2f0b', 1);
+INSERT INTO audit (id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1002, 1, 1, now() - INTERVAL '1 year', now() - INTERVAL '1 year');
 
-INSERT INTO form_element (name, display_order, is_mandatory, concept_id, form_element_group_id, uuid, version)
+INSERT INTO audit (id, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+VALUES (1003, 1, 1, now() - INTERVAL '1 year', now() - INTERVAL '1 year');
+
+INSERT INTO form_element (name, display_order, is_mandatory, concept_id, form_element_group_id, uuid, version, audit_id)
 VALUES
-  ('Paracheck', 3, TRUE, 19, 1, 'b6edbb87-22d8-4265-9231-aad499475d0c', 1);
+  ('Complaint', 2, TRUE, 2, 1, '2f256e95-3011-4f42-8ebe-1c1af5e6b8d2', 1, 1001);
+
+INSERT INTO form_element (name, display_order, is_mandatory, concept_id, form_element_group_id, uuid, version, audit_id)
+VALUES
+  ('Temperature', 1, TRUE, 1, 1, '2b2e9964-d942-4f83-a296-1096db2c2f0b', 1, 1002);
+
+INSERT INTO form_element (name, display_order, is_mandatory, concept_id, form_element_group_id, uuid, version, audit_id)
+VALUES
+  ('Paracheck', 3, TRUE, 19, 1, 'b6edbb87-22d8-4265-9231-aad499475d0c', 1, 1003);
 
 INSERT INTO form_mapping (form_id, entity_id, uuid, version)
 VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0);
 
-SELECT setval('catchment_id_seq', COALESCE((SELECT MAX(id)+1 FROM catchment), 1), false);
-SELECT setval('organisation_id_seq', COALESCE((SELECT MAX(id)+1 FROM organisation), 1), false);
-SELECT setval('form_element_id_seq', COALESCE((SELECT MAX(id)+1 FROM form_element), 1), false);
-SELECT setval('form_element_group_id_seq', COALESCE((SELECT MAX(id)+1 FROM form_element_group), 1), false);
-SELECT setval('form_mapping_id_seq', COALESCE((SELECT MAX(id)+1 FROM form_mapping), 1), false);
-SELECT setval('form_id_seq', COALESCE((SELECT MAX(id)+1 FROM form), 1), false);
-SELECT setval('encounter_id_seq', COALESCE((SELECT MAX(id)+1 FROM encounter), 1), false);
-SELECT setval('program_encounter_id_seq', COALESCE((SELECT MAX(id)+1 FROM program_encounter), 1), false);
-SELECT setval('program_enrolment_id_seq', COALESCE((SELECT MAX(id)+1 FROM program_enrolment), 1), false);
-SELECT setval('individual_id_seq', COALESCE((SELECT MAX(id)+1 FROM individual), 1), false);
-SELECT setval('program_id_seq', COALESCE((SELECT MAX(id)+1 FROM program), 1), false);
-SELECT setval('encounter_type_id_seq', COALESCE((SELECT MAX(id)+1 FROM encounter_type), 1), false);
-SELECT setval('program_outcome_id_seq', COALESCE((SELECT MAX(id)+1 FROM program_outcome), 1), false);
-SELECT setval('concept_answer_id_seq', COALESCE((SELECT MAX(id)+1 FROM concept_answer), 1), false);
-SELECT setval('concept_id_seq', COALESCE((SELECT MAX(id)+1 FROM concept), 1), false);
-SELECT setval('gender_id_seq', COALESCE((SELECT MAX(id)+1 FROM gender), 1), false);
-SELECT setval('catchment_address_mapping_id_seq', COALESCE((SELECT MAX(id)+1 FROM catchment_address_mapping), 1), false);
-SELECT setval('address_level_id_seq', COALESCE((SELECT MAX(id)+1 FROM address_level), 1), false);
-SELECT setval('catchment_id_seq', COALESCE((SELECT MAX(id)+1 FROM catchment), 1), false);
-SELECT setval('users_id_seq', COALESCE((SELECT MAX(id)+1 FROM users), 1), false);
+SELECT setval('non_applicable_form_element_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                       FROM non_applicable_form_element), 1), FALSE);
+SELECT setval('catchment_id_seq', COALESCE((SELECT MAX(id) + 1
+                                            FROM catchment), 1), FALSE);
+SELECT setval('organisation_id_seq', COALESCE((SELECT MAX(id) + 1
+                                               FROM organisation), 1), FALSE);
+SELECT setval('form_element_id_seq', COALESCE((SELECT MAX(id) + 1
+                                               FROM form_element), 1), FALSE);
+SELECT setval('form_element_group_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                     FROM form_element_group), 1), FALSE);
+SELECT setval('form_mapping_id_seq', COALESCE((SELECT MAX(id) + 1
+                                               FROM form_mapping), 1), FALSE);
+SELECT setval('form_id_seq', COALESCE((SELECT MAX(id) + 1
+                                       FROM form), 1), FALSE);
+SELECT setval('encounter_id_seq', COALESCE((SELECT MAX(id) + 1
+                                            FROM encounter), 1), FALSE);
+SELECT setval('program_encounter_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                    FROM program_encounter), 1), FALSE);
+SELECT setval('program_enrolment_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                    FROM program_enrolment), 1), FALSE);
+SELECT setval('individual_id_seq', COALESCE((SELECT MAX(id) + 1
+                                             FROM individual), 1), FALSE);
+SELECT setval('program_id_seq', COALESCE((SELECT MAX(id) + 1
+                                          FROM program), 1), FALSE);
+SELECT setval('encounter_type_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                 FROM encounter_type), 1), FALSE);
+SELECT setval('program_outcome_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                  FROM program_outcome), 1), FALSE);
+SELECT setval('concept_answer_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                 FROM concept_answer), 1), FALSE);
+SELECT setval('concept_id_seq', COALESCE((SELECT MAX(id) + 1
+                                          FROM concept), 1), FALSE);
+SELECT setval('gender_id_seq', COALESCE((SELECT MAX(id) + 1
+                                         FROM gender), 1), FALSE);
+SELECT setval('catchment_address_mapping_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                            FROM catchment_address_mapping), 1), FALSE);
+SELECT setval('address_level_id_seq', COALESCE((SELECT MAX(id) + 1
+                                                FROM address_level), 1), FALSE);
+SELECT setval('catchment_id_seq', COALESCE((SELECT MAX(id) + 1
+                                            FROM catchment), 1), FALSE);
+SELECT setval('users_id_seq', COALESCE((SELECT MAX(id) + 1
+                                        FROM users), 1), FALSE);
+
+SELECT setval('audit_id_seq', COALESCE((SELECT MAX(id) + 1
+                                        FROM audit), 1), FALSE);

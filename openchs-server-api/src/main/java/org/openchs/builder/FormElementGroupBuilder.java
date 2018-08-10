@@ -1,5 +1,6 @@
 package org.openchs.builder;
 
+import org.joda.time.DateTime;
 import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
@@ -89,6 +90,7 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
             nonApplicableFormElementBuilder.withFormElement(formElement);
             nonApplicableFormElementBuilder.withVoided(formElementContract.isVoided());
             formElement.setNonApplicable(nonApplicableFormElementBuilder.build());
+            formElement.updateLastModifiedDateTime();
         }
         return this;
     }
