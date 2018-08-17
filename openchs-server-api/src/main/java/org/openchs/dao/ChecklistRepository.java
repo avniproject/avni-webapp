@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import javax.transaction.Transactional;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "checklist", path = "checklist")
+@RepositoryRestResource(collectionResourceRel = "txNewChecklistEntity", path = "txNewChecklistEntity")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface ChecklistRepository extends PagingAndSortingRepository<Checklist, Long>, CHSRepository<Checklist> {
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")

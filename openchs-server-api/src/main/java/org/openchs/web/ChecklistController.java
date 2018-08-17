@@ -1,8 +1,6 @@
 package org.openchs.web;
 
-import org.openchs.dao.ChecklistDetailRepository;
-import org.openchs.dao.ChecklistRepository;
-import org.openchs.dao.ProgramEnrolmentRepository;
+import org.openchs.dao.*;
 import org.openchs.domain.Checklist;
 import org.openchs.web.request.ChecklistRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +19,16 @@ public class ChecklistController extends AbstractController<Checklist> {
     private ProgramEnrolmentRepository programEnrolmentRepository;
 
     @Autowired
-    public ChecklistController(ChecklistRepository checklistRepository, ProgramEnrolmentRepository programEnrolmentRepository, ChecklistDetailRepository checklistDetailRepository) {
+    public ChecklistController(ChecklistRepository checklistRepository,
+                               ProgramEnrolmentRepository programEnrolmentRepository,
+                               ChecklistDetailRepository checklistDetailRepository) {
         this.checklistDetailRepository = checklistDetailRepository;
         this.checklistRepository = checklistRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
     }
 
     @Transactional
-    @RequestMapping(value = "/checklists", method = RequestMethod.POST)
+    @RequestMapping(value = "/txNewChecklistEntitys", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public void save(@RequestBody ChecklistRequest checklistRequest) {
         Checklist checklist = newOrExistingEntity(checklistRepository, checklistRequest, new Checklist());
@@ -36,5 +36,12 @@ public class ChecklistController extends AbstractController<Checklist> {
         checklist.setProgramEnrolment(programEnrolmentRepository.findByUuid(checklistRequest.getProgramEnrolmentUUID()));
         checklist.setBaseDate(checklistRequest.getBaseDate());
         checklistRepository.save(checklist);
+    }
+
+    @Transactional
+    @RequestMapping(value = "/checklists", method = RequestMethod.POST)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public void save(@RequestBody Object object) {
+
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "checklistItem", path = "checklistItem")
+@RepositoryRestResource(collectionResourceRel = "txNewChecklistItemEntity", path = "txNewChecklistItemEntity")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface ChecklistItemRepository extends PagingAndSortingRepository<ChecklistItem, Long>, CHSRepository<ChecklistItem> {
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")

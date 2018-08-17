@@ -1,5 +1,6 @@
 package org.openchs;
 
+import org.hibernate.annotations.Check;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
 import org.openchs.application.FormMapping;
@@ -221,7 +222,9 @@ public class OpenCHS {
                 Checklist checklist = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(checklist.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
-                resource.add(new Link(checklist.getChecklistDetail().getUuid(), "checklistDetailUUID"));
+                if (checklist.getChecklistDetail() != null) {
+                    resource.add(new Link(checklist.getChecklistDetail().getUuid(), "checklistDetailUUID"));
+                }
                 return resource;
             }
         };
@@ -248,7 +251,9 @@ public class OpenCHS {
                 ChecklistItem checklistItem = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(checklistItem.getChecklist().getUuid(), "checklistUUID"));
-                resource.add(new Link(checklistItem.getChecklistItemDetail().getUuid(), "checklistItemDetailUUID"));
+                if (checklistItem.getChecklistItemDetail() != null) {
+                    resource.add(new Link(checklistItem.getChecklistItemDetail().getUuid(), "checklistItemDetailUUID"));
+                }
                 return resource;
             }
         };
