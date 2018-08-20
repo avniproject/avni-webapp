@@ -1,6 +1,7 @@
 package org.openchs.importer;
 
 import org.apache.poi.ss.usermodel.Row;
+import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
@@ -14,8 +15,10 @@ import org.openchs.web.request.IndividualRelationshipRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @Component
@@ -40,7 +43,15 @@ public class IndividualRelationshipImporter extends Importer<IndividualRelations
     @Override
     protected IndividualRelationshipRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList) {
         IndividualRelationshipRequest individualRelationshipRequest = new IndividualRelationshipRequest();
-        HashMap<String, Consumer<String>> propSetters = new HashMap<String, Consumer<String>>() {{
+        Map<String, Consumer<Date>> dateSetters = new HashMap<String, Consumer<Date>>() {{
+            put("EnterDateTime", (dateTime) -> {
+                individualRelationshipRequest.setEnterDateTime(new DateTime(dateTime));
+            });
+            put("ExitDateTime", (dateTime) -> {
+                individualRelationshipRequest.setExitDateTime(new DateTime(dateTime));
+            });
+        }};
+        Map<String, Consumer<String>> propSetters = new HashMap<String, Consumer<String>>() {{
             put("IndividualAUUID", individualRelationshipRequest::setIndividualAUUID);
             put("IndividualBUUID", individualRelationshipRequest::setIndividualBUUID);
             put("RelationshipType", (name) -> {
@@ -54,10 +65,14 @@ public class IndividualRelationshipImporter extends Importer<IndividualRelations
         }};
         for (ImportField importField : importFields) {
             String fieldName = importField.getSystemFieldName();
-            String value = importField.getTextValue(row, header, importSheetMetaData);
             Consumer<String> setter = propSetters.get(fieldName);
+            Consumer<Date> dateSetter = dateSetters.get(fieldName);
             if (setter != null) {
+                String value = importField.getTextValue(row, header, importSheetMetaData);
                 setter.accept(value);
+            } else if (dateSetter != null) {
+                Date dateValue = importField.getDateValue(row, header, importSheetMetaData);
+                dateSetter.accept(dateValue);
             } else {
                 System.out.println(String.format("Field '%s' not recognised.", fieldName));
             }
