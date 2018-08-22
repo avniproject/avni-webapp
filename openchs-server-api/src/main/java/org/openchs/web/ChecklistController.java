@@ -41,7 +41,7 @@ public class ChecklistController extends AbstractController<Checklist> {
     @Transactional
     @RequestMapping(value = "/checklists", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-    public void save(@RequestBody Object object) {
+    public void saveOld(@RequestBody Object object) {
 
     }
 }

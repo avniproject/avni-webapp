@@ -5,14 +5,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openchs.application.FormElement;
-import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.*;
 import org.openchs.dao.application.FormElementRepository;
-import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.domain.*;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.importer.*;
 import org.openchs.service.DataImportService;
+import org.openchs.web.ChecklistController;
+import org.openchs.web.ChecklistItemController;
 import org.openchs.web.IndividualRelationshipController;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.IndividualRequest;
@@ -40,6 +41,22 @@ public class ImportMetaDataTest {
 
     @Mock
     private IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
+
+    @Mock
+    private ChecklistItemRepository checklistItemRepository;
+    @Mock
+    private ChecklistRepository checklistRepository;
+    @Mock
+    private ChecklistDetailRepository checklistDetailRepository;
+    @Mock
+    private ChecklistItemDetailRepository checklistItemDetailRepository;
+
+    @Mock
+    private ChecklistController checklistController;
+
+    @Mock
+    private ChecklistItemController checklistItemController;
+
     @Mock
     private IndividualRelationshipController individualRelationshipController;
 
@@ -62,22 +79,22 @@ public class ImportMetaDataTest {
         ImportSheetMetaDataList importSheets = importMetaData.getImportSheets();
         ImportSheetMetaData importSheetMetaData = importSheets.get(0);
 
-        assertEquals(8, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
+        assertEquals(9, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
         assertEquals(3, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
         List<ImportField> defaultFields = importSheetMetaData.getDefaultFields();
         assertEquals(4, defaultFields.size());
-        assertEquals(15, importMetaData.getAllFields(importSheetMetaData).size());
+        assertEquals(16, importMetaData.getAllFields(importSheetMetaData).size());
 
         ImportDefaultField importField = (ImportDefaultField) defaultFields.get(1);
         assertEquals(importField.getSystemFieldName(), "Registration Date");
         assertEquals(importField.getDefaultValue(), new LocalDate(2017, 7, 24).toDate());
 
         importSheetMetaData = importSheets.get(1);
-        assertEquals(1, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
+        assertEquals(3, importMetaData.getNonCalculatedFields().getFieldsFor(importSheetMetaData).size());
         assertEquals(0, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
 
         importSheetMetaData = importSheets.get(9);
-        assertEquals(1, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
+        assertEquals(0, importMetaData.getCalculatedFields().getFieldsFor(importSheetMetaData).size());
         assertEquals(1, importSheetMetaData.getDefaultFields().size());
 
         ImportAnswerMetaDataList answerMetaDataList = importMetaData.getAnswerMetaDataList();
@@ -98,7 +115,7 @@ public class ImportMetaDataTest {
         EncounterImporter encounterImporter = new EncounterImporter(conceptRepository, formElementRepository, null);
         ProgramEnrolmentImporter programEnrolmentImporter = new ProgramEnrolmentImporter(conceptRepository, formElementRepository, null);
         ProgramEncounterImporter programEncounterImporter = new ProgramEncounterImporter(conceptRepository, formElementRepository, null, null);
-        ChecklistImporter checklistImporter = new ChecklistImporter(conceptRepository, formElementRepository);
+        ChecklistImporter checklistImporter = new ChecklistImporter(conceptRepository, formElementRepository, checklistDetailRepository, checklistItemDetailRepository, checklistRepository, checklistController, checklistItemController, null);
         IndividualRelationshipImporter individualRelationshipImporter = new IndividualRelationshipImporter(conceptRepository, formElementRepository, individualRelationshipTypeRepository, individualRelationshipController);
         DataImportService dataImportService = new DataImportService(individualImporter, encounterImporter, programEnrolmentImporter, programEncounterImporter, checklistImporter, individualRelationshipImporter);
         Map<ImportSheetMetaData, List<CHSRequest>> requestMap = dataImportService.importExcel(metaDataInputStream, new ClassPathResource("Test Import.xlsx").getInputStream(), false);
@@ -111,7 +128,7 @@ public class ImportMetaDataTest {
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Prathmik_3-8", ProgramEncounter.class)).size(), 5);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Madhyamik_Follow up_26-9", Individual.class)), null);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Madhyamik_Follow up_26-9", ProgramEnrolment.class)), null);
-        assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Madhyamik_Follow up_26-9", ProgramEncounter.class)).size(), 6);
+        assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Madhyamik_Follow up_26-9", ProgramEncounter.class)).size(), 5);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "ambos 3-10", Individual.class)).size(), 7);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "ambos 3-10", ProgramEnrolment.class)).size(), 7);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "ambos 3-10", ProgramEncounter.class)).size(), 7);
@@ -143,7 +160,7 @@ public class ImportMetaDataTest {
     public void userFileTypeNamesShouldMatch() {
         ImportMetaData importMetaData = new ImportMetaData();
         ImportSheetMetaDataList importSheetMetaDataList = new ImportSheetMetaDataList();
-        createSheetMetaData(importSheetMetaDataList,"File type 1");
+        createSheetMetaData(importSheetMetaDataList, "File type 1");
         importMetaData.setImportSheets(importSheetMetaDataList);
 
         ImportCalculatedFields calculatedFields = new ImportCalculatedFields();
@@ -162,7 +179,7 @@ public class ImportMetaDataTest {
         List compilationErrors = importMetaData.compile();
         assertEquals(3, compilationErrors.size());
 
-        createSheetMetaData(importSheetMetaDataList,"File type 2");
+        createSheetMetaData(importSheetMetaDataList, "File type 2");
         compilationErrors = importMetaData.compile();
         assertEquals(1, compilationErrors.size());
 

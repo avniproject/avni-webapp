@@ -25,7 +25,7 @@ public class Mappings {
         ENTITY_TYPE_FORM_TYPE_MAP.put(Encounter.class, FormType.Encounter);
         ENTITY_TYPE_FORM_TYPE_MAP.put(ProgramEnrolment.class, FormType.ProgramEnrolment);
         ENTITY_TYPE_FORM_TYPE_MAP.put(ProgramEncounter.class, FormType.ProgramEncounter);
-        ENTITY_TYPE_FORM_TYPE_MAP.put(Checklist.class, FormType.ProgramEncounter);
+        ENTITY_TYPE_FORM_TYPE_MAP.put(Checklist.class, FormType.ChecklistItem);
         ENTITY_TYPE_FORM_TYPE_MAP.put(IndividualRelationship.class, FormType.IndividualRelationship);
     }
 }

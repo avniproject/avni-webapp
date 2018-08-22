@@ -5,13 +5,14 @@ import org.joda.time.LocalDate;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ObservationRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ChecklistItemRequest extends CHSRequest {
     private DateTime completionDate;
     private String checklistUUID;
-    private List<ObservationRequest> observations;
+    private List<ObservationRequest> observations = new ArrayList<>();
     private String checklistItemDetailUUID;
 
     public DateTime getCompletionDate() {

@@ -1,6 +1,7 @@
 package org.openchs.importer;
 
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.Concept;
@@ -30,12 +31,14 @@ import java.util.stream.IntStream;
 
 public abstract class Importer<T extends CHSRequest> {
     protected static Logger logger = LoggerFactory.getLogger(Importer.class);
+    protected boolean inParallel;
     private ConceptRepository conceptRepository;
     private FormElementRepository formElementRepository;
 
     protected Importer(ConceptRepository conceptRepository, FormElementRepository formElementRepository) {
         this.conceptRepository = conceptRepository;
         this.formElementRepository = formElementRepository;
+        inParallel = true;
     }
 
     protected abstract Boolean processRequest(T entityRequest);
@@ -132,7 +135,7 @@ public abstract class Importer<T extends CHSRequest> {
         int numberOfDataRows = importSheet.getNumberOfDataRows();
         List list = Collections.synchronizedList(new ArrayList<>());
         IntStream intStream = IntStream.range(0, numberOfDataRows);
-        IntStream stream = performImport ? intStream.parallel() : intStream;
+        IntStream stream = (performImport && inParallel) ? intStream.parallel() : intStream;
         stream.mapToObj(importSheet::getDataRow)
                 .filter(Objects::nonNull)
                 .forEach((row) -> {
@@ -157,6 +160,10 @@ public abstract class Importer<T extends CHSRequest> {
                 });
         logger.info(String.format("Imported Sheet: %s", importSheetMetaData.getSheetName()));
         return list;
+    }
+
+    protected void preProcess(List<ImportField> allFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, XSSFRow row, ImportAnswerMetaDataList answerMetaDataList) {
+
     }
 
     public List createRequests(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult) throws InterruptedException {

@@ -28,5 +28,5 @@ public interface ChecklistRepository extends PagingAndSortingRepository<Checklis
 
     Checklist findByProgramEnrolmentId(long programEnrolmentId);
 
-    Checklist findByProgramEnrolmentUuid(String enrolmentUUID, String name);
+    Checklist findByProgramEnrolmentUuidAndChecklistDetailName(String enrolmentUUID, String name);
 }

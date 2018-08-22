@@ -33,14 +33,8 @@ public class ChecklistService {
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
-    public ChecklistItem findChecklistItem(String programEnrolmentUUID, String checklistItemName) {
-        Checklist checklist = this.findChecklist(programEnrolmentUUID);
-        if (checklist == null) return null;
-
-        return checklist.getItems()
-                .stream()
-                .findFirst()
-                .orElse(null);
+    public ChecklistItem findChecklistItem(String checklistUUID, String checklistItemDetailUUID) {
+        return checklistItemRepository.findByChecklistUuidAndChecklistItemDetailUuid(checklistUUID, checklistItemDetailUUID);
     }
 
     @Transactional(Transactional.TxType.REQUIRED)
