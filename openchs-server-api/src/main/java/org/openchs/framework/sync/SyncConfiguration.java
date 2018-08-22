@@ -18,6 +18,7 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
     private final TransactionalResourceInterceptor transactionalResourceInterceptor;
 
     public static final List<String> RESOURCES = Arrays.asList("addressLevel",
+            "locations",
             "catchment",
             "checklist",
             "txNewChecklistEntity",

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "addressLevel", path = "addressLevel")
+@RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface AddressLevelRepository extends PagingAndSortingRepository<AddressLevel, Long>, CHSRepository<AddressLevel> {
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")

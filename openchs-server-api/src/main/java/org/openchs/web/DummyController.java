@@ -11,13 +11,13 @@ import java.util.Map;
 
 @RestController
 public class DummyController {
-    private Map<Object, Object> getEmptyMap(String checklistItem) {
+    private Map<Object, Object> getEmptyMap(String entityName) {
         HashMap<Object, Object> map = new HashMap<>();
         PageImpl<Checklist> page = new PageImpl<>(new ArrayList<>());
         map.put("page", page);
         map.put("_links", new Object());
         HashMap<Object, Object> embedded = new HashMap<>();
-        embedded.put(checklistItem, new ArrayList<>());
+        embedded.put(entityName, new ArrayList<>());
         map.put("_embedded", embedded);
         return map;
     }
@@ -25,6 +25,11 @@ public class DummyController {
     @RequestMapping("/checklist/search/byIndividualsOfCatchmentAndLastModified")
     public Map<Object, Object> checklists() {
         return getEmptyMap("checklist");
+    }
+
+    @RequestMapping("/addressLevel/search/byCatchmentAndLastModified")
+    public Map<Object, Object> addressLevels() {
+        return getEmptyMap("addressLevel");
     }
 
     @RequestMapping("/checklistItem/search/byIndividualsOfCatchmentAndLastModified")
