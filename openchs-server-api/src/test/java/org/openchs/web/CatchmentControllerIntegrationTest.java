@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
-import org.openchs.dao.AddressLevelRepository;
+import org.openchs.dao.LocationRepository;
 import org.openchs.dao.CatchmentRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Catchment;
@@ -23,7 +23,7 @@ public class CatchmentControllerIntegrationTest extends AbstractControllerIntegr
     public CatchmentRepository catchmentRepository;
 
     @Autowired
-    public AddressLevelRepository addressLevelRepository;
+    public LocationRepository locationRepository;
 
     @Test
     public void shouldUploadCatchments() {
@@ -35,13 +35,13 @@ public class CatchmentControllerIntegrationTest extends AbstractControllerIntegr
             Catchment ghotpadi = catchmentRepository.findByName("Ghotpadi");
             assertThat(ghotpadi).isNotNull();
 
-            List<AddressLevel> addressLevels = addressLevelRepository.findByCatchments(ghotpadi);
+            List<AddressLevel> addressLevels = locationRepository.findByCatchments(ghotpadi);
             assertThat(addressLevels.size()).isEqualTo(5);
 
             Catchment masterCatchment = catchmentRepository.findByName("demo Master Catchment");
             assertThat(masterCatchment).isNotNull();
 
-            List<AddressLevel> allAddressLevels = addressLevelRepository.findByCatchments(masterCatchment);
+            List<AddressLevel> allAddressLevels = locationRepository.findByCatchments(masterCatchment);
             assertThat(allAddressLevels.size()).isEqualTo(27);
         } catch (IOException e) {
             Assert.fail();
@@ -60,7 +60,7 @@ public class CatchmentControllerIntegrationTest extends AbstractControllerIntegr
             Catchment ghotpadi = catchmentRepository.findByName("Ghotpadi");
             assertThat(ghotpadi).isNotNull();
 
-            List<AddressLevel> addressLevels = addressLevelRepository.findByCatchments(ghotpadi);
+            List<AddressLevel> addressLevels = locationRepository.findByCatchments(ghotpadi);
             assertThat(addressLevels.size()).isEqualTo(4);//Removed Ghotpadi Boarding School
             assertThat(
                     addressLevels.stream()

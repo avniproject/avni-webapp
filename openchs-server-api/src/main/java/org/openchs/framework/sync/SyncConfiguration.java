@@ -19,6 +19,7 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
 
     public static final List<String> RESOURCES = Arrays.asList("addressLevel",
             "locations",
+            "locationMapping",
             "catchment",
             "checklist",
             "txNewChecklistEntity",

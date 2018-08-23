@@ -273,4 +273,18 @@ public class OpenCHS {
             }
         };
     }
+
+    @Bean
+    public ResourceProcessor<Resource<ParentLocationMapping>> locationMappingProcessor() {
+        return new ResourceProcessor<Resource<ParentLocationMapping>>() {
+            @Override
+            public Resource<ParentLocationMapping> process(Resource<ParentLocationMapping> resource) {
+                ParentLocationMapping content = resource.getContent();
+                resource.removeLinks();
+                resource.add(new Link(content.getLocation().getUuid(), "locationUUID"));
+                resource.add(new Link(content.getParentLocation().getUuid(), "parentLocationUUID"));
+                return resource;
+            }
+        };
+    }
 }

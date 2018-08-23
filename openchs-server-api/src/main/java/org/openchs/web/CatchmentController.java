@@ -1,6 +1,6 @@
 package org.openchs.web;
 
-import org.openchs.dao.AddressLevelRepository;
+import org.openchs.dao.LocationRepository;
 import org.openchs.dao.CatchmentRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 public class CatchmentController {
     private final Logger logger;
     private CatchmentRepository catchmentRepository;
-    private AddressLevelRepository addressLevelRepository;
+    private LocationRepository locationRepository;
     private OrganisationRepository organisationRepository;
 
     @Autowired
-    public CatchmentController(CatchmentRepository catchmentRepository, AddressLevelRepository addressLevelRepository, OrganisationRepository organisationRepository) {
+    public CatchmentController(CatchmentRepository catchmentRepository, LocationRepository locationRepository, OrganisationRepository organisationRepository) {
         this.catchmentRepository = catchmentRepository;
-        this.addressLevelRepository = addressLevelRepository;
+        this.locationRepository = locationRepository;
         this.organisationRepository = organisationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -84,7 +84,7 @@ public class CatchmentController {
                 .flatMap(x -> x.stream())
                 .collect(Collectors.toList());
         allAddressLevels.forEach(addressLevel -> masterCatchment.addAddressLevel(addressLevel));
-        addressLevelRepository.save(allAddressLevels);
+        locationRepository.save(allAddressLevels);
     }
 
     private Catchment saveOrUpdateMasterCatchment(String masterCatchmentType, Organisation organisation) {
@@ -102,7 +102,7 @@ public class CatchmentController {
         for (AddressLevelContract addressLevelRequest : catchmentRequest.getAddressLevels()) {
             AddressLevel addressLevel = catchment.findAddressLevel(addressLevelRequest.getUuid());
             if (addressLevel == null) {
-                addressLevel = addressLevelRepository.findByUuid(addressLevelRequest.getUuid());
+                addressLevel = locationRepository.findByUuid(addressLevelRequest.getUuid());
                 if (addressLevel == null) {
                     addressLevel = createAddressLevel(addressLevelRequest);
                 }
@@ -111,7 +111,7 @@ public class CatchmentController {
             addressLevel.setTitle(addressLevelRequest.getName());
             addressLevel.setLevel(addressLevelRequest.getLevel());
             addressLevel.setType(addressLevelRequest.getType());
-            addressLevelRepository.save(addressLevel);
+            locationRepository.save(addressLevel);
         }
     }
 

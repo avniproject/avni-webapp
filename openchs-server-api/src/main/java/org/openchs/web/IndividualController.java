@@ -1,6 +1,6 @@
 package org.openchs.web;
 
-import org.openchs.dao.AddressLevelRepository;
+import org.openchs.dao.LocationRepository;
 import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.AddressLevel;
@@ -22,16 +22,16 @@ import javax.transaction.Transactional;
 @RestController
 public class IndividualController extends AbstractController<Individual> {
     private final IndividualRepository individualRepository;
-    private final AddressLevelRepository addressLevelRepository;
+    private final LocationRepository locationRepository;
     private final GenderRepository genderRepository;
     private ObservationService observationService;
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, AddressLevelRepository addressLevelRepository, GenderRepository genderRepository, ObservationService observationService) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService) {
         this.individualRepository = individualRepository;
-        this.addressLevelRepository = addressLevelRepository;
+        this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
         this.observationService = observationService;
     }
@@ -64,11 +64,11 @@ public class IndividualController extends AbstractController<Individual> {
 
     private AddressLevel getAddressLevel(@RequestBody IndividualRequest individualRequest) {
         if (individualRequest.getAddressLevelUUID() != null) {
-            return addressLevelRepository.findByUuid(individualRequest.getAddressLevelUUID());
+            return locationRepository.findByUuid(individualRequest.getAddressLevelUUID());
         } else if (individualRequest.getAddressLevelUUID() == null && individualRequest.getCatchmentUUID() != null) {
-            return addressLevelRepository.findByTitleAndCatchmentsUuid(individualRequest.getAddressLevel(), individualRequest.getCatchmentUUID());
+            return locationRepository.findByTitleAndCatchmentsUuid(individualRequest.getAddressLevel(), individualRequest.getCatchmentUUID());
         } else {
-            return addressLevelRepository.findByTitleIgnoreCase(individualRequest.getAddressLevel());
+            return locationRepository.findByTitleIgnoreCase(individualRequest.getAddressLevel());
         }
     }
 
