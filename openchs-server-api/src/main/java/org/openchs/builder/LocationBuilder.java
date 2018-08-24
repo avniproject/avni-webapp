@@ -20,7 +20,7 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
         locationRepository = ApplicationContextProvider.getContext().getBean(LocationRepository.class);
     }
 
-    public LocationBuilder copy(LocationContract locationRequest) throws LocationBuilderException {
+    public LocationBuilder copy(LocationContract locationRequest) throws BuilderException {
         get().setUuid(locationRequest.getUuid());
         get().setTitle(locationRequest.getName());
         get().setType(locationRequest.getType());
