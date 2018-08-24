@@ -1,13 +1,11 @@
 package org.openchs.web;
 
 import org.openchs.builder.LocationBuilder;
-import org.openchs.builder.LocationBuilderException;
+import org.openchs.builder.BuilderException;
 import org.openchs.dao.LocationRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
-import org.openchs.domain.Organisation;
 import org.openchs.web.request.LocationContract;
-import org.openchs.web.request.LocationsContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,17 +42,17 @@ public class LocationController {
                 logger.info(String.format("Processing location request: %s", locationContract.toString()));
                 saveLocation(locationContract);
             }
-        } catch (LocationBuilderException e) {
+        } catch (BuilderException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok(null);
     }
 
-    private void saveLocation(LocationContract locationRequest) throws LocationBuilderException {
+    private void saveLocation(LocationContract locationRequest) throws BuilderException {
         LocationBuilder locationBuilder = new LocationBuilder(locationRepository.findByUuid(locationRequest.getUuid()));
         if (locationExistsWithSameNameAndDifferentUUID(locationRequest)) {
-            throw new LocationBuilderException(String.format("Location %s exists with different uuid", locationRequest.getName()));
+            throw new BuilderException(String.format("Location %s exists with different uuid", locationRequest.getName()));
         }
         locationBuilder.copy(locationRequest);
         locationRepository.save(locationBuilder.build());

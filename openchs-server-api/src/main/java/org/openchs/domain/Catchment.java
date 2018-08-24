@@ -1,6 +1,9 @@
 package org.openchs.domain;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +33,7 @@ public class Catchment extends OrganisationAwareEntity {
     }
 
     public Set<AddressLevel> getAddressLevels() {
+        if (addressLevels == null) addressLevels = new HashSet<>();
         return addressLevels;
     }
 
@@ -38,7 +42,7 @@ public class Catchment extends OrganisationAwareEntity {
     }
 
     public AddressLevel findAddressLevel(String addressLevelUUID) {
-        return addressLevels.stream().filter(x -> x.getUuid().equals(addressLevelUUID)).findAny().orElse(null);
+        return getAddressLevels().stream().filter(x -> x.getUuid().equals(addressLevelUUID)).findAny().orElse(null);
     }
 
     public String getType() {
@@ -50,12 +54,12 @@ public class Catchment extends OrganisationAwareEntity {
     }
 
     public void addAddressLevel(AddressLevel addressLevel) {
-        addressLevels.add(addressLevel);
+        getAddressLevels().add(addressLevel);
         addressLevel.addCatchment(this);
     }
 
     public void remove(AddressLevel addressLevel) {
-        addressLevels.remove(addressLevel);
+        getAddressLevels().remove(addressLevel);
         addressLevel.removeCatchment(this);
     }
 }

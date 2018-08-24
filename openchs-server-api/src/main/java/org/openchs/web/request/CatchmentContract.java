@@ -5,14 +5,14 @@ import java.util.List;
 public class CatchmentContract extends ReferenceDataContract {
     private String type;
 
-    private List<AddressLevelContract> addressLevels;
+    private List<AddressLevelContract> locations;
 
-    public List<AddressLevelContract> getAddressLevels() {
-        return addressLevels;
+    public List<AddressLevelContract> getLocations() {
+        return locations;
     }
 
-    public void setAddressLevels(List<AddressLevelContract> addressLevels) {
-        this.addressLevels = addressLevels;
+    public void setLocations(List<AddressLevelContract> locations) {
+        this.locations = locations;
     }
 
     public String getType() {
