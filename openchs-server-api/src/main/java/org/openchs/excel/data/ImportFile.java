@@ -1,14 +1,13 @@
 package org.openchs.excel.data;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openchs.excel.metadata.ImportSheetMetaData;
-import org.openchs.web.request.CHSRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class ImportFile {
-    private final XSSFWorkbook workbook;
+    private final Workbook workbook;
 
     public ImportFile(InputStream inputStream) throws IOException {
         workbook = new XSSFWorkbook(inputStream);

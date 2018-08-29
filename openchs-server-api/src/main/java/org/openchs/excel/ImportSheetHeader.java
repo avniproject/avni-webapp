@@ -1,6 +1,6 @@
 package org.openchs.excel;
 
-import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.ss.usermodel.Row;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.Map;
 public class ImportSheetHeader {
     private Map<String, Integer> map = new HashMap<>();
 
-    public ImportSheetHeader(XSSFRow row) {
+    public ImportSheetHeader(Row row) {
         for (int i = 0; i < row.getLastCellNum(); i++) {
             String text = ExcelUtil.getText(row, i);
             if (StringUtils.isEmpty(text)) break;
