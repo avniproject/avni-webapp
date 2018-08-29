@@ -1,5 +1,31 @@
+-- ORGANISATION DATA
+---- Organisations and their parent
 select *
-from organisation;
+from (select
+        o1.id      parent_organisation_id,
+        o1.name    parent_organisation_name,
+        o1.db_user parent_organisation_db_user,
+        o2.id      organisation_id,
+        o2.name    organisation_name,
+        o2.db_user organisation_db_user
+      from organisation o1
+        left outer join organisation o2 on o1.id = o2.parent_organisation_id) X
+where parent_organisation_name = 'OpenCHS' or organisation_name is not null;
+
+
+---- Organisation with address and catchment
+select
+  o.id organisation_id,
+  c2.id catchment_id,
+  c2.name catchment_name,
+  address_level.id address_level_id,
+  address_level.title address_level_title
+from address_level
+  inner join catchment_address_mapping m2 on address_level.id = m2.addresslevel_id
+  inner join catchment c2 on m2.catchment_id = c2.id
+  inner join organisation o on c2.organisation_id = o.id
+where o.name = :organisation_name
+order by c2.name;
 
 -- ITEMS FOR TRANSLATION
 select distinct name
@@ -67,7 +93,8 @@ from
                                inner join concept_answer ca on concept.id = ca.answer_concept_id
                              where concept.organisation_id = 1
     ) and concept.organisation_id = 1 and not concept.is_voided
-  ) as X order by name;
+  ) as X
+order by name;
 
 -- VIEW CONCEPT WITH ANSWERS
 select
@@ -80,7 +107,7 @@ select
 from concept
   inner join concept_answer a on concept.id = a.concept_id
   inner join concept c2 on a.answer_concept_id = c2.id
-where concept.name = 'Refer to oral cancer specialist'
+where concept.name = :concept_name
 order by a.answer_order;
 
 -- GET ALL THE FORM ELEMENTS AND CONCEPT (WITHOUT ANSWERS) IN AN ORG - (Required for translations, do not change this one)
@@ -129,21 +156,13 @@ order by
   , feg.display_order asc
   , fe.display_order asc;
 
--- Organisations
-SELECT *
-from organisation;
-
--- ADDRESS LEVELS (Required for translations, do not change this one)
+-- Get Programs
 select
-  distinct a.title
-from address_level a
-where a.organisation_id = :org_id
-order by a.title;
-
--- CATCHMENT TYPE (Required for translations, do not change this one)
-select distinct type
-from catchment
-where organisation_id = :org_id;
+  operational_program.name,
+  p.name
+from operational_program
+  inner join program p on operational_program.program_id = p.id
+where operational_program.organisation_id = :organisation_id;
 
 -- Encounter types
 select
@@ -164,3 +183,25 @@ from form f
 where f2.organisation_id = 2 and f.form_type = 'ProgramEncounterCancellation'
 order by
   Program;
+
+
+select
+  i.id,
+  audit.last_modified_date_time
+from address_level
+  inner join catchment_address_mapping m2 on address_level.id = m2.addresslevel_id
+  inner join individual i on address_level.id = i.address_id
+  inner join catchment on catchment.id = m2.catchment_id
+  inner join program_enrolment on i.id = program_enrolment.individual_id
+  inner join audit on audit.id = i.audit_id
+where m2.catchment_id = 2
+order by audit.last_modified_date_time desc;
+
+
+select distinct i.id
+from address_level
+  inner join catchment_address_mapping m2 on address_level.id = m2.addresslevel_id
+  inner join individual i on address_level.id = i.address_id
+  inner join catchment on catchment.id = m2.catchment_id
+  left outer join program_enrolment on i.id = program_enrolment.individual_id
+where m2.catchment_id = 2 and program_enrolment.id is null;

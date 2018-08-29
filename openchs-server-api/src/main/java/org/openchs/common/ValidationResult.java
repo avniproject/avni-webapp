@@ -1,4 +1,6 @@
-package org.openchs.web.validation;
+package org.openchs.common;
+
+import org.openchs.web.validation.ValidationResultType;
 
 public class ValidationResult {
     private String message;

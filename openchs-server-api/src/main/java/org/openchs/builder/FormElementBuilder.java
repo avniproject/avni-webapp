@@ -4,8 +4,12 @@ import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
 import org.openchs.application.Format;
 import org.openchs.application.KeyValues;
+import org.openchs.common.ValidationResult;
 import org.openchs.domain.Concept;
 import org.openchs.web.request.ConceptContract;
+import org.openchs.web.validation.ValidationException;
+
+import java.util.List;
 
 public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuilder> {
     private final FormElementGroup formElementGroup;
@@ -60,5 +64,12 @@ public class FormElementBuilder extends BaseBuilder<FormElement, FormElementBuil
         this.get().setFormElementGroup(formElementGroup);
         if (existingEntity == null)
             formElementGroup.addFormElement(newEntity);
+    }
+
+    @Override
+    public FormElement build() {
+        FormElement formElement = super.build();
+        formElement.validate();
+        return formElement;
     }
 }

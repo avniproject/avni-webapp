@@ -7,10 +7,7 @@ import org.openchs.application.KeyValues;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ReferenceDataContract;
 import org.openchs.web.request.FormatContract;
-import org.openchs.web.validation.ValidationResult;
-import org.springframework.util.StringUtils;
-
-import javax.validation.Valid;
+import org.openchs.common.ValidationResult;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type"})

@@ -2,13 +2,17 @@ package org.openchs.application;
 
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.common.ValidationResult;
 import org.openchs.domain.Audit;
 import org.openchs.domain.Concept;
 import org.openchs.domain.OrganisationAwareEntity;
+import org.openchs.web.validation.ValidationException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -144,5 +148,17 @@ public class FormElement extends OrganisationAwareEntity {
             return true;
         }
         return getNonApplicable() != null && !getNonApplicable().isVoided();
+    }
+
+    public List<ValidationResult> validate() {
+        ArrayList<ValidationResult> validationResults = new ArrayList<>();
+        if (this.getType() == null || this.getType().trim().isEmpty()) {
+            try {
+                FormElementType.valueOf(this.getType());
+            } catch (IllegalArgumentException e) {
+                throw new ValidationException(String.format("%s - is not a valid form element type", this.getType()));
+            }
+        }
+        return validationResults;
     }
 }
