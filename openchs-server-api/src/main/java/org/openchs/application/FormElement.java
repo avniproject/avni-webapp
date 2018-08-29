@@ -3,7 +3,6 @@ package org.openchs.application;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.openchs.common.ValidationResult;
-import org.openchs.domain.Audit;
 import org.openchs.domain.Concept;
 import org.openchs.domain.OrganisationAwareEntity;
 import org.openchs.web.validation.ValidationException;
@@ -152,13 +151,21 @@ public class FormElement extends OrganisationAwareEntity {
 
     public List<ValidationResult> validate() {
         ArrayList<ValidationResult> validationResults = new ArrayList<>();
-        if (this.getType() == null || this.getType().trim().isEmpty()) {
+        if (this.getType() != null && !this.getType().trim().isEmpty()) {
             try {
                 FormElementType.valueOf(this.getType());
-            } catch (IllegalArgumentException e) {
-                throw new ValidationException(String.format("%s - is not a valid form element type", this.getType()));
+            } catch (IllegalArgumentException | NullPointerException e) {
+                throw new ValidationException(String.format("%s - is not a valid form element type, for form element: %s", this.getType(), this.toString()));
             }
         }
         return validationResults;
+    }
+
+    @Override
+    public String toString() {
+        return "FormElement{" +
+                "name='" + name + '\'' +
+                "uuid='" + this.getUuid() + '\'' +
+                '}';
     }
 }
