@@ -16,8 +16,9 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(collectionResourceRel = "locationMapping", path = "locationMapping")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface LocationMappingRepository extends PagingAndSortingRepository<ParentLocationMapping, Long>, CHSRepository<ParentLocationMapping> {
-    @RestResource(path = "lastModified", rel = "lastModified")
-    Page<ParentLocationMapping> findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
+    Page<ParentLocationMapping> findByParentLocationVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            @Param("catchmentId") long catchmentId,
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);

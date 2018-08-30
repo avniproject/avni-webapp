@@ -21,7 +21,7 @@ import java.util.List;
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface LocationRepository extends PagingAndSortingRepository<AddressLevel, Long>, CHSRepository<AddressLevel> {
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
-    Page<AddressLevel> findByCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<AddressLevel> findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("catchmentId") long catchmentId,
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

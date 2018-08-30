@@ -1,5 +1,7 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.Immutable;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -26,7 +28,12 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "catchment_address_mapping", joinColumns = {@JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
-    private Set<Catchment> catchments = new HashSet<Catchment>();
+    private Set<Catchment> catchments = new HashSet<>();
+
+    @ManyToMany()
+    @Immutable
+    @JoinTable(name = "virtual_catchment_address_mapping_table", joinColumns = {@JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
+    private Set<Catchment> virtualCatchments = new HashSet<>();
 
     public String getTitle() {
         return title;
@@ -76,16 +83,24 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.parentLocationMappings = parentLocationMappings;
     }
 
+    public Set<Catchment> getVirtualCatchments() {
+        return virtualCatchments;
+    }
+
+    public void setVirtualCatchments(Set<Catchment> virtualCatchments) {
+        this.virtualCatchments = virtualCatchments;
+    }
+
     public void addAll(List<ParentLocationMapping> parentLocationMappings) {
         List<ParentLocationMapping> nonRepeatingNewOnes = parentLocationMappings.stream().filter(parentLocationMapping ->
                 this.getParentLocationMappings().stream().noneMatch(oldMapping ->
                         oldMapping.getParentLocation().equals(parentLocationMapping.getParentLocation())
-        )).collect(Collectors.toList());
+                )).collect(Collectors.toList());
         this.getParentLocationMappings().addAll(nonRepeatingNewOnes);
         nonRepeatingNewOnes.forEach(locationMapping -> locationMapping.setLocation(this));
     }
 
-    public ParentLocationMapping findLocationMappingByParentLocationUUID(String uuid){
+    public ParentLocationMapping findLocationMappingByParentLocationUUID(String uuid) {
         return parentLocationMappings.stream().filter(parentLocationMapping -> parentLocationMapping.getParentLocation().getUuid().equals(uuid)).findFirst().orElse(null);
     }
 }
