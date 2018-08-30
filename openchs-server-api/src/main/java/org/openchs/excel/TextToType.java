@@ -20,6 +20,9 @@ public class TextToType {
         genderMap.put("male", "Male");
         genderMap.put("female", "Female");
         genderMap.put("other", "Other");
+        genderMap.put("m", "Male");
+        genderMap.put("f", "Female");
+        genderMap.put("o", "Other");
     }
 
     public static boolean toBoolean(String str) {
