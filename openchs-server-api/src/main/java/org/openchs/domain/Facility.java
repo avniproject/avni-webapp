@@ -12,7 +12,7 @@ public class Facility extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
     private AddressLevel addressLevel;
-    
+
     public AddressLevel getAddressLevel() {
         return addressLevel;
     }

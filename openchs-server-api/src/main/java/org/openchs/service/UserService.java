@@ -2,12 +2,14 @@ package org.openchs.service;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.UserRepository;
-import org.openchs.domain.Audit;
-import org.openchs.domain.User;
+import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -34,5 +36,17 @@ public class UserService {
             logger.info(String.format("Created user=%s in org=%d", userName, organisationId));
         }
         return user;
+    }
+
+    public Facility getUserFacility() {
+        UserContext userContext = UserContextHolder.getUserContext();
+        User user = userContext.getUser();
+        Set<UserFacilityMapping> userFacilityMappings = user.getUserFacilityMappings();
+        if (userFacilityMappings.size() > 1) {
+            throw new AssertionError("User cannot belong to more than one facility yet");
+        } else if (userFacilityMappings.size() == 1) {
+            return userFacilityMappings.stream().findFirst().get().getFacility();
+        }
+        return null;
     }
 }

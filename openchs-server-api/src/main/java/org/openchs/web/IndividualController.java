@@ -6,7 +6,10 @@ import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
+import org.openchs.domain.UserContext;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.ObservationService;
+import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.IndividualWithHistory;
 import org.slf4j.LoggerFactory;
@@ -25,15 +28,17 @@ public class IndividualController extends AbstractController<Individual> {
     private final LocationRepository locationRepository;
     private final GenderRepository genderRepository;
     private ObservationService observationService;
+    private UserService userService;
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
         this.observationService = observationService;
+        this.userService = userService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -59,13 +64,14 @@ public class IndividualController extends AbstractController<Individual> {
         individual.setGender(gender);
         individual.setRegistrationDate(individualRequest.getRegistrationDate());
         individual.setVoided(individualRequest.isVoided());
+        individual.setFacility(userService.getUserFacility());
         return individual;
     }
 
     private AddressLevel getAddressLevel(@RequestBody IndividualRequest individualRequest) {
         if (individualRequest.getAddressLevelUUID() != null) {
             return locationRepository.findByUuid(individualRequest.getAddressLevelUUID());
-        } else if (individualRequest.getAddressLevelUUID() == null && individualRequest.getCatchmentUUID() != null) {
+        } else if (individualRequest.getCatchmentUUID() != null) {
             return locationRepository.findByTitleAndCatchmentsUuid(individualRequest.getAddressLevel(), individualRequest.getCatchmentUUID());
         } else {
             return locationRepository.findByTitleIgnoreCase(individualRequest.getAddressLevel());

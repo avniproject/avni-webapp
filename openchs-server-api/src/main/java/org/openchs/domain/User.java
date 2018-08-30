@@ -9,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -43,6 +45,9 @@ public class User {
 
     @NotNull
     private DateTime lastModifiedDateTime;
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<UserFacilityMapping> userFacilityMappings = new HashSet<>();
 
     public String getName() {
         return name;
@@ -130,5 +135,13 @@ public class User {
 
     public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
         this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public Set<UserFacilityMapping> getUserFacilityMappings() {
+        return userFacilityMappings;
+    }
+
+    public void setUserFacilityMappings(Set<UserFacilityMapping> userFacilityMappings) {
+        this.userFacilityMappings = userFacilityMappings;
     }
 }

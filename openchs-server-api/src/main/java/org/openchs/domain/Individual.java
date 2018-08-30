@@ -45,6 +45,10 @@ public class Individual extends OrganisationAwareEntity {
     @Type(type = "observations")
     private ObservationCollection observations;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "facility_id")
+    private Facility facility;
+
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
@@ -139,5 +143,13 @@ public class Individual extends OrganisationAwareEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Facility getFacility() {
+        return facility;
+    }
+
+    public void setFacility(Facility facility) {
+        this.facility = facility;
     }
 }
