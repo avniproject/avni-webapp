@@ -6,6 +6,7 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
+import org.openchs.excel.metadata.ImportCalculatedFields;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.web.ProgramEnrolmentController;
@@ -33,7 +34,7 @@ public class ProgramEnrolmentImporter extends Importer<ProgramEnrolmentRequest> 
     }
 
     @Override
-    protected ProgramEnrolmentRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData sheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList) {
+    protected ProgramEnrolmentRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData sheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields) {
         ProgramEnrolmentRequest programEnrolmentRequest = new ProgramEnrolmentRequest();
         programEnrolmentRequest.setProgram(sheetMetaData.getProgramName());
         programEnrolmentRequest.setObservations(new ArrayList<>());
@@ -53,7 +54,7 @@ public class ProgramEnrolmentImporter extends Importer<ProgramEnrolmentRequest> 
                 case "Address":
                     break;
                 default:
-                    programEnrolmentRequest.addObservation(createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList));
+                    programEnrolmentRequest.addObservation(createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields));
                     break;
             }
         });

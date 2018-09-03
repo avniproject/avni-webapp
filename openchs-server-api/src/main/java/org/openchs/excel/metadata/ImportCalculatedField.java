@@ -5,7 +5,9 @@ import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.util.Mappings;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +17,7 @@ public class ImportCalculatedField implements ImportField {
     private String sourceUserField;
     private Class entityType;
     private Pattern pattern;
+    private String separator;
 
     public String getSystemField() {
         return systemField;
@@ -101,5 +104,17 @@ public class ImportCalculatedField implements ImportField {
                 ", entityType=" + entityType +
                 ", pattern=" + pattern +
                 '}';
+    }
+
+    public Boolean isMultiSelect() {
+        return separator != null;
+    }
+
+    public List<String> getCodedValues(String cellValue) {
+        return Arrays.asList(cellValue.split(separator==null?",":separator));
+    }
+
+    public void setSeparator(String separator) {
+        this.separator = separator;
     }
 }

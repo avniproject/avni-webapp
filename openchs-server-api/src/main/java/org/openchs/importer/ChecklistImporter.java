@@ -13,6 +13,7 @@ import org.openchs.domain.ChecklistItem;
 import org.openchs.domain.ChecklistItemDetail;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
+import org.openchs.excel.metadata.ImportCalculatedFields;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.service.ChecklistService;
@@ -67,7 +68,7 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
     }
 
     @Override
-    protected ChecklistRequest makeRequest(List<ImportField> allFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList) {
+    protected ChecklistRequest makeRequest(List<ImportField> allFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields) {
         ChecklistRequest checklistRequest = new ChecklistRequest();
         ChecklistItemRequest checklistItemRequest = new ChecklistItemRequest();
         final String checklistName = allFields.stream()
@@ -121,7 +122,7 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
                 default:
                     ObservationRequest observationRequest = null;
                     try {
-                        observationRequest = createObservationRequest(row, header, importSheetMetaData, importField, systemFieldName, answerMetaDataList, checklistItemRequest.getCompletionDate().toDate());
+                        observationRequest = createObservationRequest(row, header, importSheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields, checklistItemRequest.getCompletionDate().toDate());
                     } catch (Exception e) { // let record import continue even if observation fails
                         logger.error(String.format("Failed to create observation '%s' in row '%d' with error %s", systemFieldName, row.getRowNum(), e.getMessage()));
                     }

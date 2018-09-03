@@ -6,6 +6,7 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
+import org.openchs.excel.metadata.ImportCalculatedFields;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.web.EncounterController;
@@ -36,7 +37,7 @@ public class EncounterImporter extends Importer<EncounterRequest> {
     }
 
     @Override
-    protected EncounterRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData sheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList) {
+    protected EncounterRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData sheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields) {
         EncounterRequest encounterRequest = new EncounterRequest();
         encounterRequest.setObservations(new ArrayList<>());
         importFields.forEach(importField -> {
@@ -54,7 +55,7 @@ public class EncounterImporter extends Importer<EncounterRequest> {
                 default:
                     ObservationRequest observationRequest = null;
                     try {
-                        observationRequest = createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, encounterRequest.getEncounterDateTime().toDate());
+                        observationRequest = createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields, encounterRequest.getEncounterDateTime().toDate());
                     } catch (Exception e) { // let record import continue even if observation fails
                         logger.error(String.format("Failed to create observation '%s' in row '%d' with error %s", systemFieldName, row.getRowNum(), e.getMessage()));
                     }

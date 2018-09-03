@@ -8,6 +8,7 @@ import org.openchs.dao.application.FormElementRepository;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.TextToType;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
+import org.openchs.excel.metadata.ImportCalculatedFields;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.web.IndividualController;
@@ -41,7 +42,7 @@ public class IndividualImporter extends Importer<IndividualRequest> {
     }
 
     @Override
-    protected IndividualRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList) {
+    protected IndividualRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields) {
         IndividualRequest individualRequest = new IndividualRequest();
         individualRequest.setObservations(new ArrayList<>());
         importFields.forEach(importField -> {
@@ -89,7 +90,7 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     individualRequest.setCatchmentUUID(importField.getTextValue(row, header, importSheetMetaData));
                     break;
                 default:
-                    individualRequest.addObservation(createObservationRequest(row, header, importSheetMetaData, importField, systemFieldName, answerMetaDataList));
+                    individualRequest.addObservation(createObservationRequest(row, header, importSheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields));
                     break;
             }
         });

@@ -98,6 +98,7 @@ public class ImportMetaDataExcelReader {
                 calculatedField.setSystemField(ExcelUtil.getText(row, 2));
                 calculatedField.setSourceUserField(ExcelUtil.getText(row, 3));
                 calculatedField.setRegex(ExcelUtil.getText(row, 4));
+                calculatedField.setSeparator(ExcelUtil.getText(row, 5));
                 calculatedFields.add(calculatedField);
             }
             logger.info(String.format("Read row number %d of Calculated Fields", k));

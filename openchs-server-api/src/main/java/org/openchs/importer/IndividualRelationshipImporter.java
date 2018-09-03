@@ -8,6 +8,7 @@ import org.openchs.dao.individualRelationship.IndividualRelationshipTypeReposito
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
+import org.openchs.excel.metadata.ImportCalculatedFields;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.web.IndividualRelationshipController;
@@ -41,7 +42,7 @@ public class IndividualRelationshipImporter extends Importer<IndividualRelations
     }
 
     @Override
-    protected IndividualRelationshipRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList) {
+    protected IndividualRelationshipRequest makeRequest(List<ImportField> importFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields) {
         IndividualRelationshipRequest individualRelationshipRequest = new IndividualRelationshipRequest();
         Map<String, Consumer<Date>> dateSetters = new HashMap<String, Consumer<Date>>() {{
             put("EnterDateTime", (dateTime) -> {

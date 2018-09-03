@@ -12,10 +12,7 @@ import org.openchs.excel.ExcelUtil;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.data.ImportFile;
 import org.openchs.excel.data.ImportSheet;
-import org.openchs.excel.metadata.ImportAnswerMetaDataList;
-import org.openchs.excel.metadata.ImportField;
-import org.openchs.excel.metadata.ImportMetaData;
-import org.openchs.excel.metadata.ImportSheetMetaData;
+import org.openchs.excel.metadata.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ObservationRequest;
@@ -43,13 +40,13 @@ public abstract class Importer<T extends CHSRequest> {
 
     protected abstract Boolean processRequest(T entityRequest);
 
-    protected abstract T makeRequest(List<ImportField> allFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList);
+    protected abstract T makeRequest(List<ImportField> allFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields);
 
-    protected ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList) {
-        return createObservationRequest(row, sheetHeader, sheetMetaData, importField, systemFieldName, answerMetaDataList, null);
+    protected ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields) {
+        return createObservationRequest(row, sheetHeader, sheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields, null);
     }
 
-    protected ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList, Date referenceDate) {
+    protected ObservationRequest createObservationRequest(Row row, ImportSheetHeader sheetHeader, ImportSheetMetaData sheetMetaData, ImportField importField, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields, Date referenceDate) {
         ObservationRequest observationRequest = new ObservationRequest();
         observationRequest.setConceptName(systemFieldName);
         Concept concept = conceptRepository.findByName(systemFieldName);
@@ -77,34 +74,34 @@ public abstract class Importer<T extends CHSRequest> {
         if (cellValue == null) return null;
 
         if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
-            Boolean isSingleSelect = formElementRepository.findFirstByConcept(concept).isSingleSelect();
-            if (isSingleSelect) {
-                String systemAnswer = answerMetaDataList.getSystemAnswer((String) cellValue, concept.getName());
-                if (systemAnswer == null) cellValue = null;
-                else {
-                    Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
-                    if (answerConcept == null)
-                        throw new NullPointerException(String.format("Answer concept |%s| not found", systemAnswer.trim()));
-                    cellValue = answerConcept.getUuid();
-                }
-            } else {
-                List<String> userAnswers = Arrays.asList(((String) cellValue).split(","))
-                        .stream()
-                        .map((userAnswer) -> {
-                            String systemAnswer = answerMetaDataList.getSystemAnswer(userAnswer, concept.getName());
-                            Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
-                            if (answerConcept == null)
-                                throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", userAnswer, systemFieldName));
-                            return answerConcept.getUuid();
-                        })
-                        .collect(Collectors.toList());
-                cellValue = userAnswers;
-            }
+            cellValue = getCodedConceptValue((String) cellValue, calculatedFields, concept, systemFieldName, answerMetaDataList);
         }
 
         if (cellValue == null) return null;
         observationRequest.setValue(cellValue);
         return observationRequest;
+    }
+
+    private Object getCodedConceptValue(String cellValue, ImportCalculatedFields calculatedFields, Concept concept, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList) {
+        ImportCalculatedField calculatedField = calculatedFields.stream().filter(x-> x.getSystemField().equals(systemFieldName)).findFirst().orElse(null);
+        if (calculatedField != null && calculatedField.isMultiSelect()) {
+            List<String> answers = calculatedField.getCodedValues(cellValue);
+            return answers.stream().map((userAnswer) -> getConceptUuid(concept, systemFieldName, answerMetaDataList, userAnswer)).collect(Collectors.toList());
+        }
+        return getConceptUuid(concept, systemFieldName, answerMetaDataList, cellValue);
+    }
+
+    private String getConceptUuid(Concept concept, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList, String userAnswer) {
+        String systemAnswer = answerMetaDataList.getSystemAnswer(userAnswer, concept.getName());
+        if (systemAnswer == null) {
+            return null;
+        }
+        Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
+        if (answerConcept == null) {
+            logger.error(String.format("Answer concept |%s| not found in concept |%s|", userAnswer, systemFieldName));
+            throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", userAnswer, systemFieldName));
+        }
+        return answerConcept.getUuid();
     }
 
     private String toISODateFormat(Date date) {
@@ -144,7 +141,7 @@ public abstract class Importer<T extends CHSRequest> {
                     T entityRequest = (T) new CHSRequest();
                     try {
                         logger.info(String.format("Creating Request for %s", importSheetMetaData.getEntityType()));
-                        entityRequest = makeRequest(allFields, header, importSheetMetaData, row, importMetaData.getAnswerMetaDataList());
+                        entityRequest = makeRequest(allFields, header, importSheetMetaData, row, importMetaData.getAnswerMetaDataList(), importMetaData.getCalculatedFields());
                         if (!performImport)
                             list.add(entityRequest);
                         if (performImport) {
