@@ -12,7 +12,6 @@ from (select
         left outer join organisation o2 on o1.id = o2.parent_organisation_id) X
 where parent_organisation_name = 'OpenCHS' or organisation_name is not null;
 
-
 ---- Organisation with address and catchment
 select
   o.id organisation_id,
@@ -24,7 +23,7 @@ from address_level
   inner join catchment_address_mapping m2 on address_level.id = m2.addresslevel_id
   inner join catchment c2 on m2.catchment_id = c2.id
   inner join organisation o on c2.organisation_id = o.id
-where o.name = :organisation_name
+where o.name = ?
 order by c2.name;
 
 -- ITEMS FOR TRANSLATION
@@ -127,14 +126,32 @@ from operational_program p
   inner join form_element_group feg on feg.form_id = f.id
   inner join form_element fe on fe.form_element_group_id = feg.id
   inner join concept c2 on fe.concept_id = c2.id
-where p.organisation_id = 2 and f.form_type != 'ProgramEncounterCancellation' and fe.id not in (select form_element_id
+where p.organisation_id = ?1 and f.form_type != 'ProgramEncounterCancellation' and fe.id not in (select form_element_id
                                                                                                 from non_applicable_form_element
-                                                                                                where organisation_id = 2)
+                                                                                                where organisation_id = ?1)
 order by
-  p.name
   , f.name
   , feg.display_order asc
   , fe.display_order asc;
+
+
+-- GET ALL DETAILS OF A FORM
+select
+--   feg.name form_element_group_name,
+  fe.name as form_element_name,
+  c.name as concept_name,
+  ac.name as answer_concept_name
+from form f
+  inner join form_element_group feg on feg.form_id = f.id
+  inner join form_element fe on fe.form_element_group_id = feg.id
+  inner join concept c on fe.concept_id = c.id
+  left outer join concept_answer ca on c.id = ca.concept_id
+  left outer join concept ac on ca.answer_concept_id = ac.id
+where f.name = ? and fe.id not in (select form_element_id from non_applicable_form_element where organisation_id = ?)
+order by
+  feg.display_order asc
+  ,fe.display_order asc
+  ,ca.answer_order;
 
 -- Get all the REGISTRATION form elements and concept (without answers) for translation
 select
@@ -162,7 +179,7 @@ select
   p.name
 from operational_program
   inner join program p on operational_program.program_id = p.id
-where operational_program.organisation_id = :organisation_id;
+where operational_program.organisation_id = :org_name;
 
 -- Encounter types
 select
@@ -170,6 +187,23 @@ select
   oet.name "OrgEncounterType"
 from operational_encounter_type oet
   inner join encounter_type et on oet.encounter_type_id = et.id;
+
+-- Program with its encounter types
+select
+  distinct
+  operational_program.name operational_program_name,
+  p.name program_name,
+  form.id form_id,
+  form.name form_name,
+  encounter_type.name encouter_type_name
+from operational_program
+  inner join program p on operational_program.program_id = p.id
+  inner join form_mapping on form_mapping.entity_id = p.id
+  inner join form on form_mapping.form_id = form.id
+  left outer join encounter_type on encounter_type.id = form_mapping.observations_type_entity_id
+where operational_program.organisation_id = ?
+order by operational_program_name, program_name, form_name;
+
 
 -- Cancel Forms
 select
