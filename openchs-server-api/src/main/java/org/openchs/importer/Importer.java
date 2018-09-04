@@ -3,9 +3,11 @@ package org.openchs.importer;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.UserRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
+import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.openchs.excel.DataImportResult;
 import org.openchs.excel.ExcelUtil;
@@ -29,13 +31,15 @@ import java.util.stream.IntStream;
 public abstract class Importer<T extends CHSRequest> {
     protected static Logger logger = LoggerFactory.getLogger(Importer.class);
     protected boolean inParallel;
+    protected UserRepository userRepository;
     private ConceptRepository conceptRepository;
     private FormElementRepository formElementRepository;
 
-    protected Importer(ConceptRepository conceptRepository, FormElementRepository formElementRepository) {
+    protected Importer(ConceptRepository conceptRepository, FormElementRepository formElementRepository, UserRepository userRepository) {
         this.conceptRepository = conceptRepository;
         this.formElementRepository = formElementRepository;
         inParallel = true;
+        this.userRepository = userRepository;
     }
 
     protected abstract Boolean processRequest(T entityRequest);
@@ -137,7 +141,7 @@ public abstract class Importer<T extends CHSRequest> {
                 .filter(Objects::nonNull)
                 .forEach((row) -> {
                     SecurityContextHolder.setContext(context);
-                    UserContextHolder.create(userContext);
+                    UserContextHolder.create(userContext); //Use this user context, till the importer reads the rows and sets its own user context if it finds the user data
                     T entityRequest = (T) new CHSRequest();
                     try {
                         logger.info(String.format("Creating Request for %s", importSheetMetaData.getEntityType()));
@@ -159,11 +163,9 @@ public abstract class Importer<T extends CHSRequest> {
         return list;
     }
 
-    protected void preProcess(List<ImportField> allFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, XSSFRow row, ImportAnswerMetaDataList answerMetaDataList) {
-
-    }
-
-    public List createRequests(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult) throws InterruptedException {
-        return importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, false);
+    protected void setUser(ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportField importField) {
+        User user = userRepository.findByName(importField.getTextValue(row, header, importSheetMetaData));
+        if (user != null)
+            UserContextHolder.getUserContext().setUser(user);
     }
 }

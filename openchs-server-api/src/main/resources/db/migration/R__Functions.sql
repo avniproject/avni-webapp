@@ -320,7 +320,6 @@ END;
 $$
 LANGUAGE plpgsql;
 
-
 -------------------------------- VISIT RELATED --------------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION is_overdue_visit(PROGRAM_ENCOUNTER)
   RETURNS NUMERIC AS $$

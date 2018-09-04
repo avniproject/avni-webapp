@@ -3,6 +3,7 @@ package org.openchs.importer;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.UserRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.ProgramEncounter;
 import org.openchs.excel.ImportSheetHeader;
@@ -25,8 +26,8 @@ public class ProgramEncounterImporter extends Importer<ProgramEncounterRequest> 
     private final ProgramEnrolmentService programEnrolmentService;
 
     @Autowired
-    public ProgramEncounterImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, ProgramEncounterController programEncounterController, ProgramEnrolmentService programEnrolmentService) {
-        super(conceptRepository, formElementRepository);
+    public ProgramEncounterImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, ProgramEncounterController programEncounterController, ProgramEnrolmentService programEnrolmentService, UserRepository userRepository) {
+        super(conceptRepository, formElementRepository, userRepository);
         this.programEncounterController = programEncounterController;
         this.programEnrolmentService = programEnrolmentService;
     }
@@ -75,6 +76,9 @@ public class ProgramEncounterImporter extends Importer<ProgramEncounterRequest> 
                     programEncounterRequest.setMaxDateTime(new DateTime(importField.getDateValue(row, header, sheetMetaData)));
                     break;
                 case "Address":
+                    break;
+                case "User":
+                    setUser(header, sheetMetaData, row, importField);
                     break;
                 default:
                     programEncounterRequest.addObservation(createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields));

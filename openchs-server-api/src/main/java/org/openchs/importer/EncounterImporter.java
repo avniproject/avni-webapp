@@ -3,6 +3,7 @@ package org.openchs.importer;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.UserRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
@@ -23,8 +24,8 @@ public class EncounterImporter extends Importer<EncounterRequest> {
     private EncounterController encounterController;
 
     @Autowired
-    public EncounterImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, EncounterController encounterController) {
-        super(conceptRepository, formElementRepository);
+    public EncounterImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, EncounterController encounterController, UserRepository userRepository) {
+        super(conceptRepository, formElementRepository, userRepository);
         this.encounterController = encounterController;
     }
 
@@ -51,6 +52,9 @@ public class EncounterImporter extends Importer<EncounterRequest> {
                     break;
                 case "Encounter DateTime":
                     encounterRequest.setEncounterDateTime(new DateTime(importField.getDateValue(row, header, sheetMetaData)));
+                    break;
+                case "User":
+                    setUser(header, sheetMetaData, row, importField);
                     break;
                 default:
                     ObservationRequest observationRequest = null;

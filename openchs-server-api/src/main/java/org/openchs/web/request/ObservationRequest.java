@@ -1,5 +1,9 @@
 package org.openchs.web.request;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 public class ObservationRequest {
     private String conceptUUID;
     private String conceptName;
@@ -36,5 +40,11 @@ public class ObservationRequest {
                 ", conceptName='" + conceptName + '\'' +
                 ", value=" + value +
                 '}';
+    }
+
+    public void update(Object value) {
+        HashSet<String> existingValues = new HashSet<String>((List) this.value);
+        existingValues.addAll((List) value);
+        this.value = Arrays.asList(existingValues.toArray());
     }
 }

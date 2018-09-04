@@ -18,7 +18,8 @@ import java.util.Date;
 
 public class ExcelUtil {
     private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
-    private static DateTimeFormatter[] possibleFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy"), DateTimeFormat.forPattern("dd.M.yyyy")};
+    //Do not remove any pattern because this is built up based on formats we have encountered so far in various migration data
+    private static DateTimeFormatter[] possibleDateFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy"), DateTimeFormat.forPattern("dd.M.yyyy"), DateTimeFormat.forPattern("yyyy-MMM-dd")};
 
     public static String getText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
@@ -77,7 +78,7 @@ public class ExcelUtil {
     }
 
     public static Date getDateFromString(String text) {
-        for (DateTimeFormatter possibleFormatter : possibleFormatters) {
+        for (DateTimeFormatter possibleFormatter : possibleDateFormatters) {
             try {
                 DateTime dateTime = possibleFormatter.parseDateTime(text);
                 return dateTime.toDate();

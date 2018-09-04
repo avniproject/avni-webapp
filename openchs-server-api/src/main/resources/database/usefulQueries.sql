@@ -109,6 +109,7 @@ from concept
 where concept.name = :concept_name
 order by a.answer_order;
 
+
 -- GET ALL THE FORM ELEMENTS AND CONCEPT (WITHOUT ANSWERS) IN AN ORG - (Required for translations, do not change this one)
 select
   p.name,
@@ -140,6 +141,7 @@ select
 --   feg.name form_element_group_name,
   fe.name as form_element_name,
   c.name as concept_name,
+  c.data_type concept_data_type,
   ac.name as answer_concept_name
 from form f
   inner join form_element_group feg on feg.form_id = f.id
@@ -147,7 +149,7 @@ from form f
   inner join concept c on fe.concept_id = c.id
   left outer join concept_answer ca on c.id = ca.concept_id
   left outer join concept ac on ca.answer_concept_id = ac.id
-where f.name = ? and fe.id not in (select form_element_id from non_applicable_form_element where organisation_id = ?)
+where f.name = ? and fe.id not in (select form_element_id from non_applicable_form_element where organisation_id = ?) and c.uuid != 'b4e5a662-97bf-4846-b9b7-9baeab4d89c4'
 order by
   feg.display_order asc
   ,fe.display_order asc

@@ -142,3 +142,17 @@ CREATE OR REPLACE VIEW virtual_catchment_address_mapping_table AS (
     WHERE cid IS NOT NULL
     GROUP BY cid, aid
 );
+
+create or replace view latest_program_encounter as
+  select
+    program_encounter.*,
+    et.name encounter_type_name
+  from program_encounter
+    inner join (select max(program_encounter.id) as latest_encounter_id
+                from program_encounter
+                  inner join program_enrolment
+                    on program_encounter.program_enrolment_id = program_enrolment.id and program_encounter.encounter_date_time is not null
+                where program_encounter.cancel_date_time is null and program_encounter.encounter_date_time is not null
+                group by program_enrolment.id) as latest_program_encounter
+      on program_encounter.id = latest_program_encounter.latest_encounter_id
+    inner join encounter_type et on program_encounter.encounter_type_id = et.id;

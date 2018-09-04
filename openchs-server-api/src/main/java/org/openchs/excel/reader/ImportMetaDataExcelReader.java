@@ -56,10 +56,10 @@ public class ImportMetaDataExcelReader {
         while (iterator.hasNext()) {
             Row row = iterator.next();
             if (k == 0) {
-                for (int i = 6; i < row.getLastCellNum(); i++) {
+                for (int i = 7; i < row.getLastCellNum(); i++) {
                     String systemFieldName = ExcelUtil.getText(row, i);
                     if (StringUtils.isEmpty(systemFieldName)) break;
-                    importSheets.addSystemField(i - 6, systemFieldName);
+                    importSheets.addSystemField(i - 7, systemFieldName);
                 }
                 logger.info("Read header of Sheets");
             } else if (!ExcelUtil.isFirstCellEmpty(row)) {
@@ -70,9 +70,10 @@ public class ImportMetaDataExcelReader {
                 importSheetMetaData.setEntityType(ExcelUtil.getText(row, 3));
                 importSheetMetaData.setProgramName(ExcelUtil.getText(row, 4));
                 importSheetMetaData.setEncounterType(ExcelUtil.getText(row, 5));
-                importSheetMetaData.setAddressLevel(ExcelUtil.getText(row, 6));
+                importSheetMetaData.setActive(ExcelUtil.getText(row, 6).equals("Yes"));
+                importSheetMetaData.setAddressLevel(ExcelUtil.getText(row, 7));
                 for (int i = 0; i < importSheets.getNumberOfSystemFields(); i++) {
-                    Object defaultValue = ExcelUtil.getValueOfBestType(row, i + 6);
+                    Object defaultValue = ExcelUtil.getValueOfBestType(row, i + 7);
                     if (defaultValue == null) continue;
                     importSheets.addDefaultValue(i, defaultValue, importSheetMetaData);
                 }

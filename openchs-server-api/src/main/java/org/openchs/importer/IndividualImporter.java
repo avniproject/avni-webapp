@@ -4,6 +4,7 @@ package org.openchs.importer;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.LocalDate;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.UserRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.TextToType;
@@ -30,8 +31,8 @@ public class IndividualImporter extends Importer<IndividualRequest> {
     private static String ALIAS_CONCEPT_NAME_ADDRESS_TITLE = "ADDRESS_LEVEL_TITLE";
 
     @Autowired
-    public IndividualImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, IndividualController individualController) {
-        super(conceptRepository, formElementRepository);
+    public IndividualImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, IndividualController individualController, UserRepository userRepository) {
+        super(conceptRepository, formElementRepository, userRepository);
         this.individualController = individualController;
     }
 
@@ -88,6 +89,9 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     break;
                 case "Catchment UUID":
                     individualRequest.setCatchmentUUID(importField.getTextValue(row, header, importSheetMetaData));
+                    break;
+                case "User":
+                    setUser(header, importSheetMetaData, row, importField);
                     break;
                 default:
                     individualRequest.addObservation(createObservationRequest(row, header, importSheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields));

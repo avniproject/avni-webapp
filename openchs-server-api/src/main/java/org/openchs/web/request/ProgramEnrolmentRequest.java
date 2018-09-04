@@ -30,6 +30,11 @@ public class ProgramEnrolmentRequest extends org.openchs.web.request.common.Comm
             this.observations.add(observationRequest);
     }
 
+    public void addExitObservation(ObservationRequest observationRequest) {
+        if (observationRequest != null)
+            this.programExitObservations.add(observationRequest);
+    }
+
     public ObservationRequest findObservation(String conceptName) {
         return observations.stream().filter(observationRequest -> observationRequest.getConceptName().equals(conceptName)).findAny().orElse(null);
     }

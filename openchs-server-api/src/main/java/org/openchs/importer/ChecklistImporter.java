@@ -2,20 +2,15 @@ package org.openchs.importer;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
-import org.openchs.dao.ChecklistDetailRepository;
-import org.openchs.dao.ChecklistItemDetailRepository;
-import org.openchs.dao.ChecklistRepository;
-import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.*;
 import org.openchs.dao.application.FormElementRepository;
-import org.openchs.domain.Checklist;
-import org.openchs.domain.ChecklistDetail;
-import org.openchs.domain.ChecklistItem;
-import org.openchs.domain.ChecklistItemDetail;
+import org.openchs.domain.*;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
 import org.openchs.excel.metadata.ImportCalculatedFields;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.ChecklistService;
 import org.openchs.web.ChecklistController;
 import org.openchs.web.ChecklistItemController;
@@ -42,8 +37,9 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
                              ChecklistItemDetailRepository checklistItemDetailRepository,
                              ChecklistRepository checklistRepository,
                              ChecklistController checklistController,
-                             ChecklistItemController checklistItemController, ChecklistService checklistService) {
-        super(conceptRepository, formElementRepository);
+                             ChecklistItemController checklistItemController, ChecklistService checklistService,
+                             UserRepository userRepository) {
+        super(conceptRepository, formElementRepository, userRepository);
         this.checklistDetailRepository = checklistDetailRepository;
         this.checklistItemDetailRepository = checklistItemDetailRepository;
         this.checklistRepository = checklistRepository;
@@ -119,6 +115,9 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
                 case "Completion Date":
                     checklistItemRequest.setCompletionDate(new DateTime(importField.getDateValue(row, header, importSheetMetaData)));
                     break;
+                case "User":
+                    setUser(header, importSheetMetaData, row, importField);
+                    break;
                 default:
                     ObservationRequest observationRequest = null;
                     try {
@@ -137,4 +136,5 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
         checklistItemRequest.setupUuidIfNeeded();
         return checklistRequest;
     }
+
 }

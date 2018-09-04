@@ -13,6 +13,7 @@ public class ImportSheetMetaData {
     private String programName;
     private String encounterType;
     private String addressLevel;
+    private boolean isActive;
 
     public ImportSheetMetaData() {
     }
@@ -138,5 +139,13 @@ public class ImportSheetMetaData {
                 ", sheetName='" + sheetName + '\'' +
                 ", entityType=" + entityType +
                 '}';
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 }

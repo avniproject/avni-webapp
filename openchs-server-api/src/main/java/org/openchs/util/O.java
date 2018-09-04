@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class O {
-    private static DateTimeFormatter userFormat = DateTimeFormat.forPattern("dd-MMM-yyyy");
     private static String dbFormat = "yyyy-MM-dd";
     private static DateTimeFormatter dbFormatter = DateTimeFormat.forPattern(dbFormat);
 

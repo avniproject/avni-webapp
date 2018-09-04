@@ -41,7 +41,7 @@ public class DataImportService {
         this.importerMap.put(IndividualRelationship.class, individualRelationshipImporter);
     }
 
-    public Map<ImportSheetMetaData, List<CHSRequest>> importExcel(InputStream metaDataFileStream, InputStream importDataFileStream, boolean performImport) throws IOException {
+    public Map<ImportSheetMetaData, List<CHSRequest>> importExcel(InputStream metaDataFileStream, InputStream importDataFileStream, String fileName, boolean performImport) throws IOException {
         logger.info("\n>>>>Begin Import<<<<\n");
         DataImportResult dataImportResult = new DataImportResult();
         ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(metaDataFileStream);
@@ -50,14 +50,16 @@ public class DataImportService {
         Map<ImportSheetMetaData, List<CHSRequest>> requestMap = new HashMap<>();
         importSheetMetaDataList
                 .forEach(importSheetMetaData -> {
-                    try {
-                        List list = this.importerMap.get(importSheetMetaData.getEntityType())
-                                .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, performImport);
-                        requestMap.put(importSheetMetaData, list);
-                    } catch (Exception e) {
-                        dataImportResult.exceptionHappened(importSheetMetaData.asMap(), e);
-                    } finally {
-                        importFile.close();
+                    if (importSheetMetaData.isActive() && importSheetMetaData.getFileName().equals(fileName)) {
+                        try {
+                            List list = this.importerMap.get(importSheetMetaData.getEntityType())
+                                    .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, performImport);
+                            requestMap.put(importSheetMetaData, list);
+                        } catch (Exception e) {
+                            dataImportResult.exceptionHappened(importSheetMetaData.asMap(), e);
+                        } finally {
+                            importFile.close();
+                        }
                     }
                 });
         logger.info("\n>>>>End Import<<<<\n");

@@ -10,6 +10,13 @@ import java.util.List;
 public class IndividualRequest extends org.openchs.web.request.common.CommonIndividualRequest {
     private List<ObservationRequest> observations;
 
+    public IndividualRequest() {
+    }
+
+    public IndividualRequest(List<ObservationRequest> observations) {
+        this.observations = observations;
+    }
+
     public List<ObservationRequest> getObservations() {
         return observations;
     }
@@ -19,8 +26,14 @@ public class IndividualRequest extends org.openchs.web.request.common.CommonIndi
     }
 
     public void addObservation(ObservationRequest observationRequest) {
-        if (observationRequest != null)
-            this.observations.add(observationRequest);
+        if (observationRequest != null) {
+            ObservationRequest existingObservationRequest = this.observations.stream().filter(obj -> obj.getConceptName().equals(observationRequest.getConceptName())).findFirst().orElse(null);
+            if (existingObservationRequest == null) {
+                this.observations.add(observationRequest);
+            } else {
+                existingObservationRequest.update(observationRequest.getValue());
+            }
+        }
     }
 
     public ObservationRequest findObservation(String conceptName) {

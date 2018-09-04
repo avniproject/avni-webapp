@@ -2,7 +2,9 @@ package org.openchs.importer;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
+import org.openchs.application.FormType;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.UserRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.excel.ImportSheetHeader;
 import org.openchs.excel.metadata.ImportAnswerMetaDataList;
@@ -10,6 +12,7 @@ import org.openchs.excel.metadata.ImportCalculatedFields;
 import org.openchs.excel.metadata.ImportField;
 import org.openchs.excel.metadata.ImportSheetMetaData;
 import org.openchs.web.ProgramEnrolmentController;
+import org.openchs.web.request.ObservationRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,8 +25,8 @@ public class ProgramEnrolmentImporter extends Importer<ProgramEnrolmentRequest> 
     private final ProgramEnrolmentController programEnrolmentController;
 
     @Autowired
-    public ProgramEnrolmentImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, ProgramEnrolmentController programEnrolmentController) {
-        super(conceptRepository, formElementRepository);
+    public ProgramEnrolmentImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, ProgramEnrolmentController programEnrolmentController, UserRepository userRepository) {
+        super(conceptRepository, formElementRepository, userRepository);
         this.programEnrolmentController = programEnrolmentController;
     }
 
@@ -53,8 +56,18 @@ public class ProgramEnrolmentImporter extends Importer<ProgramEnrolmentRequest> 
                     break;
                 case "Address":
                     break;
+                case "Exit Date":
+                    programEnrolmentRequest.setProgramExitDateTime(new DateTime(importField.getDateValue(row, header, sheetMetaData)));
+                    break;
+                case "User":
+                    setUser(header, sheetMetaData, row, importField);
+                    break;
                 default:
-                    programEnrolmentRequest.addObservation(createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields));
+                    ObservationRequest observationRequest = createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields);
+                    if (sheetMetaData.getFormType().equals(FormType.ProgramExit))
+                        programEnrolmentRequest.addExitObservation(observationRequest);
+                    else
+                        programEnrolmentRequest.addObservation(observationRequest);
                     break;
             }
         });

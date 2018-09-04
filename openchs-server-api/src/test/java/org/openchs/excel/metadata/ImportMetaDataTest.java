@@ -50,6 +50,8 @@ public class ImportMetaDataTest {
     private ChecklistDetailRepository checklistDetailRepository;
     @Mock
     private ChecklistItemDetailRepository checklistItemDetailRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private ChecklistController checklistController;
@@ -111,14 +113,15 @@ public class ImportMetaDataTest {
         when(conceptRepository.findByName("School going")).thenReturn(TestEntityFactory.createCodedConcept("School going", answers));
         when(conceptRepository.findByName("Yes")).thenReturn(TestEntityFactory.createConceptOfNotType(yes.toString(), "Yes"));
 
-        IndividualImporter individualImporter = new IndividualImporter(conceptRepository, formElementRepository, null);
-        EncounterImporter encounterImporter = new EncounterImporter(conceptRepository, formElementRepository, null);
-        ProgramEnrolmentImporter programEnrolmentImporter = new ProgramEnrolmentImporter(conceptRepository, formElementRepository, null);
-        ProgramEncounterImporter programEncounterImporter = new ProgramEncounterImporter(conceptRepository, formElementRepository, null, null);
-        ChecklistImporter checklistImporter = new ChecklistImporter(conceptRepository, formElementRepository, checklistDetailRepository, checklistItemDetailRepository, checklistRepository, checklistController, checklistItemController, null);
-        IndividualRelationshipImporter individualRelationshipImporter = new IndividualRelationshipImporter(conceptRepository, formElementRepository, individualRelationshipTypeRepository, individualRelationshipController);
+        IndividualImporter individualImporter = new IndividualImporter(conceptRepository, formElementRepository, null, userRepository);
+        EncounterImporter encounterImporter = new EncounterImporter(conceptRepository, formElementRepository, null, userRepository);
+        ProgramEnrolmentImporter programEnrolmentImporter = new ProgramEnrolmentImporter(conceptRepository, formElementRepository, null, userRepository);
+        ProgramEncounterImporter programEncounterImporter = new ProgramEncounterImporter(conceptRepository, formElementRepository, null, null, userRepository);
+        ChecklistImporter checklistImporter = new ChecklistImporter(conceptRepository, formElementRepository, checklistDetailRepository, checklistItemDetailRepository, checklistRepository, checklistController, checklistItemController, null, userRepository);
+        IndividualRelationshipImporter individualRelationshipImporter = new IndividualRelationshipImporter(conceptRepository, formElementRepository, individualRelationshipTypeRepository, individualRelationshipController, userRepository);
         DataImportService dataImportService = new DataImportService(individualImporter, encounterImporter, programEnrolmentImporter, programEncounterImporter, checklistImporter, individualRelationshipImporter);
-        Map<ImportSheetMetaData, List<CHSRequest>> requestMap = dataImportService.importExcel(metaDataInputStream, new ClassPathResource("Test Import.xlsx").getInputStream(), false);
+        String fileName = "Test Import";
+        Map<ImportSheetMetaData, List<CHSRequest>> requestMap = dataImportService.importExcel(metaDataInputStream, new ClassPathResource(fileName + ".xlsx").getInputStream(), fileName, false);
 
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", Individual.class)).size(), 5);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEnrolment.class)).size(), 5);

@@ -3,6 +3,7 @@ package org.openchs.importer;
 import org.apache.poi.ss.usermodel.Row;
 import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.UserRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
@@ -29,8 +30,8 @@ public class IndividualRelationshipImporter extends Importer<IndividualRelations
     private final IndividualRelationshipController individualRelationshipController;
 
     @Autowired
-    public IndividualRelationshipImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, IndividualRelationshipTypeRepository individualRelationshipTypeRepository, IndividualRelationshipController individualRelationshipController) {
-        super(conceptRepository, formElementRepository);
+    public IndividualRelationshipImporter(ConceptRepository conceptRepository, FormElementRepository formElementRepository, IndividualRelationshipTypeRepository individualRelationshipTypeRepository, IndividualRelationshipController individualRelationshipController, UserRepository userRepository) {
+        super(conceptRepository, formElementRepository, userRepository);
         this.individualRelationshipTypeRepository = individualRelationshipTypeRepository;
         this.individualRelationshipController = individualRelationshipController;
     }
@@ -74,6 +75,8 @@ public class IndividualRelationshipImporter extends Importer<IndividualRelations
             } else if (dateSetter != null) {
                 Date dateValue = importField.getDateValue(row, header, importSheetMetaData);
                 dateSetter.accept(dateValue);
+            } else if (fieldName.equals("User")) {
+                setUser(header, importSheetMetaData, row, importField);
             } else {
                 System.out.println(String.format("Field '%s' not recognised.", fieldName));
             }
