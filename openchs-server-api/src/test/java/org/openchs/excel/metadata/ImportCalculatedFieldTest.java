@@ -11,6 +11,8 @@ public class ImportCalculatedFieldTest {
         assertEquals("John Doe", getActual("John Doe Danish", "\\w+\\s+\\w+"));
         assertEquals("३ दिवस\nपॅरासिटामॉल १ टॅबलेट दिवसातून तीन वेळा जेवणानंतर\n", getActual("३ दिवस\nपॅरासिटामॉल १ टॅबलेट दिवसातून तीन वेळा जेवणानंतर\n05/10/2016 18:56:56", "[^0-9:/]*"));
         assertEquals("३ दिवस\nपॅरासिटामॉल १ टॅबलेट दिवसातून तीन वेळा जेवणानंतर\n", getActual("३ दिवस\nपॅरासिटामॉल १ टॅबलेट दिवसातून तीन वेळा जेवणानंतर\n05/10/2016 18:56:56", "[^0-9:/]*"));
+        assertEquals("80", getActual("80/50", "([0-9]+)(?:/[0-9]+)"));
+        assertEquals("80", getActual("120/80", "(?:[0-9]+/)([0-9]+)"));
     }
 
     private String getActual(String name, String regex) {
