@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocationContract extends ReferenceDataContract {
-    private Integer level;
+    private Double level;
     private List<LocationContract> parents;
     private String type;
 
-    public Integer getLevel() {
+    public Double getLevel() {
         return level;
     }
 
-    public void setLevel(Integer level) {
+    public void setLevel(Double level) {
         this.level = level;
     }
 

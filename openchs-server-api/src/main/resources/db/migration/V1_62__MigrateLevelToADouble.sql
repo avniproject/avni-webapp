@@ -1,0 +1,2 @@
+ALTER TABLE address_level
+  ALTER COLUMN level TYPE DOUBLE PRECISION;

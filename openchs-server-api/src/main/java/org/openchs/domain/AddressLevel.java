@@ -18,7 +18,7 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     @Column
     @NotNull
-    private int level;
+    private Double level;
 
     @Column(name = "type", nullable = true)
     private String type;
@@ -43,11 +43,11 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.title = title;
     }
 
-    public int getLevel() {
+    public Double getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(Double level) {
         this.level = level;
     }
 
