@@ -1,12 +1,14 @@
 package org.openchs.web.request;
 
+import org.openchs.domain.AddressLevelType;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class LocationContract extends ReferenceDataContract {
     private Double level;
     private List<LocationContract> parents;
-    private String type;
+    private AddressLevelType type;
 
     public Double getLevel() {
         return level;
@@ -16,11 +18,11 @@ public class LocationContract extends ReferenceDataContract {
         this.level = level;
     }
 
-    public String getType() {
+    public AddressLevelType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(AddressLevelType type) {
         this.type = type;
     }
 

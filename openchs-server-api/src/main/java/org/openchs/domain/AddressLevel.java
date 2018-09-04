@@ -20,8 +20,10 @@ public class AddressLevel extends OrganisationAwareEntity {
     @NotNull
     private Double level;
 
-    @Column(name = "type", nullable = true)
-    private String type;
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_id")
+    private AddressLevelType type;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "location")
     private Set<ParentLocationMapping> parentLocationMappings = new HashSet<>();
@@ -59,11 +61,11 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.catchments = catchments;
     }
 
-    public String getType() {
+    public AddressLevelType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(AddressLevelType type) {
         this.type = type;
     }
 
