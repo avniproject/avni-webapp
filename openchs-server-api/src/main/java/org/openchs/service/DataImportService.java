@@ -10,6 +10,7 @@ import org.openchs.excel.metadata.ImportSheetMetaDataList;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.importer.*;
 import org.openchs.web.request.CHSRequest;
+import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +47,18 @@ public class DataImportService {
         DataImportResult dataImportResult = new DataImportResult();
         ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(metaDataFileStream);
         ImportSheetMetaDataList importSheetMetaDataList = importMetaData.getImportSheets();
+
+        List<String> errors = importMetaData.compile();
+        if (errors.size() != 0) {
+            errors.forEach(o -> logger.warn(o));
+        }
+
         ImportFile importFile = new ImportFile(importDataFileStream);
         Map<ImportSheetMetaData, List<CHSRequest>> requestMap = new HashMap<>();
         importSheetMetaDataList
                 .forEach(importSheetMetaData -> {
                     if (importSheetMetaData.isActive() && importSheetMetaData.getFileName().equals(fileName)) {
+                        logger.info(String.format("Processing virtual sheet: %s", importSheetMetaData));
                         try {
                             List list = this.importerMap.get(importSheetMetaData.getEntityType())
                                     .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, performImport);
@@ -60,6 +68,8 @@ public class DataImportService {
                         } finally {
                             importFile.close();
                         }
+                    } else {
+                        logger.info(String.format("Ignored virtual sheet: %s", importSheetMetaData));
                     }
                 });
         logger.info("\n>>>>End Import<<<<\n");

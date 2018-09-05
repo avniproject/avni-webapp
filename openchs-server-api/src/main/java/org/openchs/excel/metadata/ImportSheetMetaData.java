@@ -136,8 +136,12 @@ public class ImportSheetMetaData {
     public String toString() {
         return "ImportSheetMetaData{" +
                 "fileName='" + fileName + '\'' +
+                ", userFileType='" + userFileType + '\'' +
                 ", sheetName='" + sheetName + '\'' +
                 ", entityType=" + entityType +
+                ", programName='" + programName + '\'' +
+                ", encounterType='" + encounterType + '\'' +
+                ", isActive=" + isActive +
                 '}';
     }
 
