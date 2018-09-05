@@ -11,6 +11,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.UserRepository;
 import org.openchs.domain.Organisation;
+import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,6 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         logger.debug("Cognito configuration");
         logger.debug(String.format("Pool Id: %s", poolId));
         logger.debug(String.format("Client Id: %s", clientId));
-        logger.debug(String.format("Default organisation: %s", defaultOrganisation));
         logger.debug(String.format("Dev mode: %s", isDev));
     }
 
@@ -108,6 +108,9 @@ public class CognitoUserContextServiceImpl implements UserContextService {
 
         DecodedJWT jwt = verifyAndDecodeToken(token, verify);
         if (jwt == null) return userContext;
+
+        String userUUID = getValueInToken(jwt, "custom:userUUID");
+        User user = userRepository.findByUuid(userUUID);
 
         addOrganisationToContext(userContext, jwt, becomeOrganisationName);
         addRolesToContext(userContext, jwt);
@@ -161,10 +164,9 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         return COGNITO_URL + this.poolId;
     }
 
-
     private boolean hasRole(DecodedJWT jwt, String role) {
-        Claim claim = jwt.getClaim(role);
-        return !claim.isNull() && claim.asString().equalsIgnoreCase("true");
+        String valueInToken = getValueInToken(jwt, role);
+        return valueInToken != null && valueInToken.equalsIgnoreCase("true");
     }
 
     private void addOrganisationToContext(UserContext userContext, DecodedJWT jwt, String becomeOrganisationName) {
@@ -179,12 +181,12 @@ public class CognitoUserContextServiceImpl implements UserContextService {
             return;
         }
 
-        Claim orgClaim = jwt.getClaim("custom:organisationId");
-        if (orgClaim.isNull()) {
+        String organisationIdString = getValueInToken(jwt, "custom:organisationId");
+        if (organisationIdString == null) {
             logger.error("Organisation claim not found for user " + jwt.getId());
             throw new RuntimeException("Could not find out organisation Id");
         }
-        Long organisationId = Long.parseLong(orgClaim.asString());
+        Long organisationId = Long.parseLong(organisationIdString);
         if (organisationId != 0) {
             userContext.setOrganisation(organisationRepository.findOne(organisationId));
         }
@@ -192,14 +194,19 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         setUserInContext(userContext, jwt);
     }
 
+    private String getValueInToken(DecodedJWT jwt, String name) {
+        Claim claim = jwt.getClaim(name);
+        if (claim.isNull()) return null;
+        return claim.asString();
+    }
+
     private void setUserInContext(UserContext userContext, DecodedJWT jwt) {
-        Claim usernameClaim = jwt.getClaim("cognito:username");
-        if (usernameClaim.isNull()) {
+        String userName = getValueInToken(jwt, "cognito:username");
+        if (userName == null) {
             logger.error("Username claim not found for the user " + jwt.getId());
             throw new RuntimeException("Could not find out username");
         }
-        String username = usernameClaim.asString();
-        userContext.setUsername(username);
+        userContext.setUsername(userName);
     }
 
     private Organisation getOrganisation(String becomeOrganisationName) {

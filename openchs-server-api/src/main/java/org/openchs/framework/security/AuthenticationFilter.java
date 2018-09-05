@@ -20,8 +20,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,16 +45,11 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
-            Authentication authentication = this.attemptAuthentication(request, response);
+            Authentication authentication = this.attemptAuthentication(request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserContext userContext = UserContextHolder.getUserContext();
             //doing this here because loading user before setting auth gives error
             this.setUserForInDevMode(userContext);
-
-            if (authentication != null) {
-                User user = userService.createUserIfNotPresent(userContext.getUsername(), userContext.getOrganisation().getId());
-                userContext.setUser(user);
-            }
 
             String organisationName = userContext.getOrganisationName();
             logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUsername(), organisationName));
@@ -81,7 +74,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
         this.userContextService.setUserForInDevMode(userContext);
     }
 
-    private Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    private Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
         String token = request.getHeader(AUTH_TOKEN_HEADER);
         if (token == null || StringUtils.isEmpty(token)) token = UUID.randomUUID().toString();
         String becomeOrganisationName = request.getHeader(ORGANISATION_NAME_HEADER);
