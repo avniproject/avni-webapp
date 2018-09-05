@@ -172,21 +172,15 @@ public class ImportMetaDataTest {
         importMetaData.setCalculatedFields(calculatedFields);
 
         ImportNonCalculatedFields nonCalculatedFields = new ImportNonCalculatedFields();
-        nonCalculatedFields.addFileType(0, "File type 1");
-        nonCalculatedFields.addFileType(1, "File type 2");
-        ImportNonCalculatedField nonCalculatedField1 = createNonCalculatedField(nonCalculatedFields, "File type 1");
-        ImportNonCalculatedField nonCalculatedField2 = createNonCalculatedField(nonCalculatedFields, "File type 2");
-        nonCalculatedFields.addUserField(0, "field1", nonCalculatedField1);
+        ImportNonCalculatedField nonCalculatedField1 = createNonCalculatedField(nonCalculatedFields,"File type 1");
+        ImportNonCalculatedField nonCalculatedField2 = createNonCalculatedField(nonCalculatedFields,"File type 2");
+        nonCalculatedFields.addUserField("field1", nonCalculatedField1);
         importMetaData.setNonCalculatedFields(nonCalculatedFields);
 
         List compilationErrors = importMetaData.compile();
-        assertEquals(3, compilationErrors.size());
+        assertEquals(2, compilationErrors.size());
 
         createSheetMetaData(importSheetMetaDataList, "File type 2");
-        compilationErrors = importMetaData.compile();
-        assertEquals(1, compilationErrors.size());
-
-        nonCalculatedFields.addUserField(1, "field2", nonCalculatedField2);
         compilationErrors = importMetaData.compile();
         assertEquals(0, compilationErrors.size());
     }

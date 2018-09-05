@@ -11,11 +11,9 @@ import java.util.Map;
 
 public class ImportNonCalculatedField implements ImportField {
     private FormType formType;
-    private Boolean isCore;
     private String systemFieldName;
     private String userFileType;
-
-    private Map<String, String> userFileTypeFieldNameMap = new HashMap<>();
+    private String userField;
 
     public FormType getFormType() {
         return formType;
@@ -23,14 +21,6 @@ public class ImportNonCalculatedField implements ImportField {
 
     public void setFormType(FormType formType) {
         this.formType = formType;
-    }
-
-    public boolean isCore() {
-        return isCore;
-    }
-
-    public void setCore(Boolean core) {
-        isCore = core;
     }
 
     @Override
@@ -42,48 +32,47 @@ public class ImportNonCalculatedField implements ImportField {
         this.systemFieldName = systemFieldName;
     }
 
-    public String getUserFileType() {
-        return userFileType;
-    }
-
     public void setUserFileType(String userFileType) {
         this.userFileType = userFileType;
     }
 
-    public void addUserField(String userFieldName, String userFileType) {
-        userFileTypeFieldNameMap.put(userFileType, userFieldName);
+    public String getUserField() {
+        return userField;
     }
 
-    public String getUserField(String userFileType) {
-        return userFileTypeFieldNameMap.get(userFileType);
+    public String getUserFileType() {
+        return userFileType;
+    }
+
+    public void setUserField(String userField) {
+        this.userField = userField;
     }
 
     @Override
     public String getTextValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        int position = getPosition(importSheetHeader, importSheetMetaData);
+        int position = getPosition(importSheetHeader);
         return position == -1 ? null : ExcelUtil.getText(row, position);
     }
 
     @Override
     public Double getDoubleValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        int position = getPosition(importSheetHeader, importSheetMetaData);
+        int position = getPosition(importSheetHeader);
         return position == -1 ? null : ExcelUtil.getNumber(row, position);
     }
 
-    private int getPosition(ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        String userFieldName = userFileTypeFieldNameMap.get(importSheetMetaData.getUserFileType());
-        return importSheetHeader.getPosition(userFieldName);
+    private int getPosition(ImportSheetHeader importSheetHeader) {
+        return importSheetHeader.getPosition(userField);
     }
 
     @Override
     public Date getDateValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        int position = getPosition(importSheetHeader, importSheetMetaData);
+        int position = getPosition(importSheetHeader);
         return position == -1 ? null : ExcelUtil.getDate(row, position);
     }
 
     @Override
     public Boolean getBooleanValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
-        int position = getPosition(importSheetHeader, importSheetMetaData);
+        int position = getPosition(importSheetHeader);
         if (position == -1) {
             return false;
         }
@@ -92,15 +81,10 @@ public class ImportNonCalculatedField implements ImportField {
         return aBoolean;
     }
 
-    public int userFileCount() {
-        return this.userFileTypeFieldNameMap.size();
-    }
-
     @Override
     public String toString() {
         return "{" +
                 ", formType=" + formType +
-                ", isCore=" + isCore +
                 ", systemFieldName='" + systemFieldName + '\'' +
                 ", userFileType='" + userFileType + '\'' +
                 '}';

@@ -7,26 +7,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ImportNonCalculatedFields extends ArrayList<ImportNonCalculatedField> {
-    private Map<Integer, String> positionFileTypeMap = new HashMap<>();
-
-    public void addFileType(int index, String userFileType) {
-        positionFileTypeMap.put(index, userFileType);
-    }
-
-    public void addUserField(int position, String userFieldName, ImportNonCalculatedField nonCalculatedField) {
-        String userFileType = positionFileTypeMap.get(position);
-        nonCalculatedField.addUserField(userFieldName, userFileType);
+    public void addUserField(String userFieldName, ImportNonCalculatedField nonCalculatedField) {
+        nonCalculatedField.setUserField(userFieldName);
     }
 
     public List<ImportField> getFieldsFor(ImportSheetMetaData sheetMetaData) {
         return this.stream().filter(field -> {
-            String userField = field.getUserField(sheetMetaData.getUserFileType());
+            String userField = field.getUserField();
             return field.getFormType().equals(sheetMetaData.getFormType()) && userField != null;
         }).collect(Collectors.toList());
-    }
-
-    public int getNumberOfFileTypes() {
-        return positionFileTypeMap.size();
     }
 
     public List<String> getUserFileTypes() {
