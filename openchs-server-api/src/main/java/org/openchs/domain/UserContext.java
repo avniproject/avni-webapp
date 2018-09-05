@@ -4,14 +4,11 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class UserContext {
-    public static final String USER = "user";
-    public static final String ORGANISATION_ADMIN = "organisation_admin";
-    public static final String ADMIN = "admin";
+
 
     private Collection<String> roles = new HashSet<>();
     private Organisation organisation;
     private User user;
-    private String username;
 
     public User getUser() {
         return user;
@@ -19,14 +16,6 @@ public class UserContext {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public Collection<String> getRoles() {

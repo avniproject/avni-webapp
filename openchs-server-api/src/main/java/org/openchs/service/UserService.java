@@ -34,4 +34,9 @@ public class UserService {
         }
         return null;
     }
+
+    public User getCurrentUser() {
+        UserContext userContext = UserContextHolder.getUserContext();
+        return userContext.getUser();
+    }
 }

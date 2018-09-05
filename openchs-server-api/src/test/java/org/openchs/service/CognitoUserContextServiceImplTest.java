@@ -60,8 +60,7 @@ public class CognitoUserContextServiceImplTest {
     }
 
     private JWTCreator.Builder createForBaseToken() {
-        return JWT.create()
-                .withClaim("custom:organisationId", "1").withClaim("cognito:username", "admin");
+        return JWT.create();
     }
 
     @Test
@@ -69,19 +68,13 @@ public class CognitoUserContextServiceImplTest {
         Organisation organisation = new Organisation();
         when(organisationRepository.findOne(1L)).thenReturn(organisation);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = createForBaseToken()
-                .withClaim("custom:isUser", "true")
-                .withClaim("custom:isOrganisationAdmin", "false")
-                .sign(algorithm);
+        String token = createForBaseToken().sign(algorithm);
 
         UserContext userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getRoles(), contains(UserContext.USER));
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
 
-        token = createForBaseToken()
-                .withClaim("custom:isUser", "true")
-                .withClaim("custom:isOrganisationAdmin", "True")
-                .sign(algorithm);
+        token = createForBaseToken().sign(algorithm);
 
         userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getRoles(), containsInAnyOrder(UserContext.USER, UserContext.ORGANISATION_ADMIN));
@@ -96,9 +89,7 @@ public class CognitoUserContextServiceImplTest {
         when(organisationRepository.findOne(1L)).thenReturn(anOrg);
         when(organisationRepository.findByName(becomeOrg.getName())).thenReturn(becomeOrg);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = createForBaseToken()
-                .withClaim("custom:isAdmin", "true")
-                .sign(algorithm);
+        String token = createForBaseToken().sign(algorithm);
 
         UserContext userContext = userContextService.getUserContext(token, false, becomeOrg.getName());
         assertThat(userContext.getOrganisation(), is(equalTo(becomeOrg)));

@@ -44,7 +44,6 @@ public class FormElementRepositoryTest extends AbstractControllerIntegrationTest
         User admin = userRepository.findByName("admin");
         userContext.setOrganisation(organisationRepository.findByUuid("3539a906-dfae-4ec3-8fbb-1b08f35c3884"));
         userContext.setUser(admin);
-        userContext.setUsername("admin");
         UserContextHolder.create(userContext);
     }
 

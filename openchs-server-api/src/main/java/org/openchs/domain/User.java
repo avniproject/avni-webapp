@@ -9,10 +9,14 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+<<<<<<< HEAD
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+=======
+import java.util.*;
+>>>>>>> 2a9bef1... WIP: User Migration from Cognito
 
 @Entity
 @Table(name = "users")
@@ -60,6 +64,10 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "catchment_id")
     private Catchment catchment;
+
+    public static final String USER = "user";
+    public static final String ORGANISATION_ADMIN = "organisation_admin";
+    public static final String ADMIN = "admin";
 
     public String getName() {
         return name;
@@ -162,5 +170,31 @@ public class User {
 
     public void addUserFacilityMappings(List<UserFacilityMapping> userFacilityMappings) {
         userFacilityMappings.forEach(this::addUserFacilityMapping);
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    @NotNull
+    public DateTime getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public User getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    @NotNull
+    public DateTime getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public String[] getRoles() {
+        ArrayList<String> roles = new ArrayList<>();
+        roles.add(USER);
+        if (this.isAdmin) roles.add(ADMIN);
+        if (this.isOrgAdmin) roles.add(ORGANISATION_ADMIN);
+        return (String[]) roles.toArray();
     }
 }

@@ -1,12 +1,16 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.CatchmentRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.UserFacilityMappingRepository;
 import org.openchs.dao.UserRepository;
-import org.openchs.domain.*;
+import org.openchs.domain.Catchment;
+import org.openchs.domain.Organisation;
+import org.openchs.domain.User;
+import org.openchs.domain.UserFacilityMapping;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.web.request.IndividualRequest;
+import org.openchs.service.UserService;
 import org.openchs.web.request.UserContract;
 import org.openchs.web.request.UserInfo;
 import org.slf4j.Logger;
@@ -27,14 +31,16 @@ public class UserInfoController {
     private UserRepository userRepository;
     private UserFacilityMappingRepository userFacilityMappingRepository;
     private OrganisationRepository organisationRepository;
+    private UserService userService;
     private final Logger logger;
 
     @Autowired
-    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, UserFacilityMappingRepository userFacilityMappingRepository, OrganisationRepository organisationRepository) {
+    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, UserFacilityMappingRepository userFacilityMappingRepository, OrganisationRepository organisationRepository, UserService userService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.userFacilityMappingRepository = userFacilityMappingRepository;
         this.organisationRepository = organisationRepository;
+        this.userService = userService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -72,8 +78,21 @@ public class UserInfoController {
 
         List<UserFacilityMapping> userFacilityMappings = userContract.getUserFacilityMappingContracts().stream().map(userFacilityMappingContract -> userFacilityMappingRepository.findByUuid(userFacilityMappingContract.getUuid())).collect(Collectors.toList());
         user.addUserFacilityMappings(userFacilityMappings);
+        user.setOrganisationId(organisationRepository.findByUuid(userContract.getOrganisationUUID()).getId());
+
+        setAuditInfo(user);
 
         userRepository.save(user);
         logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
+    }
+
+    private void setAuditInfo(User user) {
+        User currentUser = userService.getCurrentUser();
+        if (user.getCreatedBy() == null) {
+            user.setCreatedBy(currentUser);
+            user.setCreatedDateTime(new DateTime());
+        }
+        user.setLastModifiedBy(currentUser);
+        user.setLastModifiedDateTime(new DateTime());
     }
 }

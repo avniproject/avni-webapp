@@ -52,11 +52,11 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             this.setUserForInDevMode(userContext);
 
             String organisationName = userContext.getOrganisationName();
-            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUsername(), organisationName));
+            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUser().getName(), organisationName));
 
             chain.doFilter(request, response);
 
-            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUsername(), organisationName));
+            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUser().getName(), organisationName));
         } catch (Exception exception) {
             this.logException(request, exception);
             throw exception;
