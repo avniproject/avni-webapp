@@ -199,7 +199,7 @@ public class ImportMetaDataTest {
 
     private ImportNonCalculatedField createNonCalculatedField(ImportNonCalculatedFields nonCalculatedFields, String userFileType) {
         ImportNonCalculatedField nonCalculatedField = new ImportNonCalculatedField();
-        nonCalculatedField.setImportUserFileType(userFileType);
+        nonCalculatedField.setUserFileType(userFileType);
         nonCalculatedFields.add(nonCalculatedField);
         return nonCalculatedField;
     }

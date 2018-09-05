@@ -10,21 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ImportNonCalculatedField implements ImportField {
-    private String formName;
     private FormType formType;
     private Boolean isCore;
     private String systemFieldName;
-    private String importUserFileType;
+    private String userFileType;
 
     private Map<String, String> userFileTypeFieldNameMap = new HashMap<>();
-
-    public String getFormName() {
-        return formName;
-    }
-
-    public void setFormName(String formName) {
-        this.formName = formName;
-    }
 
     public FormType getFormType() {
         return formType;
@@ -51,12 +42,12 @@ public class ImportNonCalculatedField implements ImportField {
         this.systemFieldName = systemFieldName;
     }
 
-    public String getImportUserFileType() {
-        return importUserFileType;
+    public String getUserFileType() {
+        return userFileType;
     }
 
-    public void setImportUserFileType(String importUserFileType) {
-        this.importUserFileType = importUserFileType;
+    public void setUserFileType(String userFileType) {
+        this.userFileType = userFileType;
     }
 
     public void addUserField(String userFieldName, String userFileType) {
@@ -108,11 +99,10 @@ public class ImportNonCalculatedField implements ImportField {
     @Override
     public String toString() {
         return "{" +
-                "formName='" + formName + '\'' +
                 ", formType=" + formType +
                 ", isCore=" + isCore +
                 ", systemFieldName='" + systemFieldName + '\'' +
-                ", importUserFileType='" + importUserFileType + '\'' +
+                ", userFileType='" + userFileType + '\'' +
                 '}';
     }
 }

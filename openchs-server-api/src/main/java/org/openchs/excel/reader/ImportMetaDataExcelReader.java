@@ -21,9 +21,9 @@ public class ImportMetaDataExcelReader {
         XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
         ImportMetaData importMetaData = new ImportMetaData();
         ImportMetaDataExcelReader importMetaDataExcelReader = new ImportMetaDataExcelReader();
+        importMetaData.setImportSheets(importMetaDataExcelReader.readSheets(workbook));
         importMetaData.setNonCalculatedFields(importMetaDataExcelReader.readFields(workbook));
         importMetaData.setCalculatedFields(importMetaDataExcelReader.readCalculatedFields(workbook));
-        importMetaData.setImportSheets(importMetaDataExcelReader.readSheets(workbook));
         importMetaData.setAnswerMetaDataList(importMetaDataExcelReader.readAnswerMetaDataList(workbook));
         return importMetaData;
     }
@@ -123,11 +123,11 @@ public class ImportMetaDataExcelReader {
                 }
                 logger.info("Read header of Fields");
             } else {
-                String formName = ExcelUtil.getText(row, 0);
-                if (StringUtils.isEmpty(formName)) break;
+                String userFileType = ExcelUtil.getText(row, 0);
+                if (StringUtils.isEmpty(userFileType)) break;
 
                 ImportNonCalculatedField nonCalculatedField = new ImportNonCalculatedField();
-                nonCalculatedField.setFormName(formName);
+                nonCalculatedField.setUserFileType(userFileType);
                 nonCalculatedField.setFormType(FormType.valueOf(ExcelUtil.getText(row, 1)));
                 nonCalculatedField.setCore(ExcelUtil.getBoolean(row, 2));
                 nonCalculatedField.setSystemFieldName(ExcelUtil.getText(row, 3));

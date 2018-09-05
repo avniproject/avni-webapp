@@ -30,6 +30,6 @@ public class ImportNonCalculatedFields extends ArrayList<ImportNonCalculatedFiel
     }
 
     public List<String> getUserFileTypes() {
-        return this.stream().map(ImportNonCalculatedField::getImportUserFileType).distinct().collect(Collectors.toList());
+        return this.stream().map(ImportNonCalculatedField::getUserFileType).distinct().collect(Collectors.toList());
     }
 }
