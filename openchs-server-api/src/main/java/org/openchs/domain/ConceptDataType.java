@@ -12,6 +12,7 @@ public enum ConceptDataType {
     NA,
     Date,
     DateTime,
+    Time,
     Duration;
 
     private static List<ConceptDataType> stringTypes = Arrays.asList(Text, Coded, Notes);
