@@ -22,8 +22,8 @@ public class ProgramDataImportController {
 
     @RequestMapping(value = "/excelImport", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
-    public ResponseEntity<?> uploadData(@RequestParam("metaDataFile") MultipartFile metaDataFile, @RequestParam("dataFile") MultipartFile dataFile, @RequestParam String fileName) throws Exception {
-        dataImportService.importExcel(metaDataFile.getInputStream(), dataFile.getInputStream(), fileName,true);
+    public ResponseEntity<?> uploadData(@RequestParam("metaDataFile") MultipartFile metaDataFile, @RequestParam("dataFile") MultipartFile dataFile, @RequestParam String fileName, @RequestParam Integer maxNumberOfRecords) throws Exception {
+        dataImportService.importExcel(metaDataFile.getInputStream(), dataFile.getInputStream(), fileName,true, maxNumberOfRecords);
         return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 }

@@ -12,5 +12,6 @@ public class ExcelUtilTest {
         ExcelUtil.getDateFromString("20/Jan/2018");
         ExcelUtil.getDateFromString("2014-Feb-13");
         ExcelUtil.getDateFromString("2012-10-27");
+        System.out.println(ExcelUtil.getDateFromString("2012-12-27"));
     }
 }

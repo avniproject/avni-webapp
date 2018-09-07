@@ -42,7 +42,7 @@ public class DataImportService {
         this.importerMap.put(IndividualRelationship.class, individualRelationshipImporter);
     }
 
-    public Map<ImportSheetMetaData, List<CHSRequest>> importExcel(InputStream metaDataFileStream, InputStream importDataFileStream, String fileName, boolean performImport) throws IOException {
+    public Map<ImportSheetMetaData, List<CHSRequest>> importExcel(InputStream metaDataFileStream, InputStream importDataFileStream, String fileName, boolean performImport, Integer maxNumberOfRecords) throws IOException {
         logger.info("\n>>>>Begin Import<<<<\n");
         DataImportResult dataImportResult = new DataImportResult();
         ImportMetaData importMetaData = ImportMetaDataExcelReader.readMetaData(metaDataFileStream);
@@ -61,7 +61,7 @@ public class DataImportService {
                         logger.info(String.format("Processing virtual sheet: %s", importSheetMetaData));
                         try {
                             List list = this.importerMap.get(importSheetMetaData.getEntityType())
-                                    .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, performImport);
+                                    .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, performImport, maxNumberOfRecords);
                             requestMap.put(importSheetMetaData, list);
                         } catch (Exception e) {
                             dataImportResult.exceptionHappened(importSheetMetaData.asMap(), e);

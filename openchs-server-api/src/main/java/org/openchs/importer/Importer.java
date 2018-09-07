@@ -122,7 +122,7 @@ public abstract class Importer<T extends CHSRequest> {
             existingObservationRequest.setValue(String.format("%s\n\n%s", existingObservationRequest.getValue(), observationRequest.getValue()));
     }
 
-    public List importSheet(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult, boolean performImport) throws InterruptedException {
+    public List importSheet(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult, boolean performImport, Integer maxNumberOfRecords) {
         List<ImportField> allFields = importMetaData.getAllFields(importSheetMetaData);
         logger.info(String.format("Reading Sheet: %s", importSheetMetaData.getSheetName()));
         ImportSheet importSheet = importFile.getSheet(importSheetMetaData.getSheetName());
@@ -132,10 +132,11 @@ public abstract class Importer<T extends CHSRequest> {
         int numberOfDataRows = importSheet.getNumberOfDataRows();
         List list = Collections.synchronizedList(new ArrayList<>());
         IntStream intStream = IntStream.range(0, numberOfDataRows);
-        IntStream stream = (performImport && inParallel) ? intStream.parallel() : intStream;
+        IntStream stream = (performImport && inParallel && maxNumberOfRecords == null) ? intStream.parallel() : intStream;
         stream.mapToObj(importSheet::getDataRow)
                 .filter(Objects::nonNull)
                 .forEach((row) -> {
+                    if (row.getRowNum() > 100) return;
                     SecurityContextHolder.setContext(context);
                     UserContextHolder.create(userContext); //Use this user context, till the importer reads the rows and sets its own user context if it finds the user data
                     T entityRequest = (T) new CHSRequest();
