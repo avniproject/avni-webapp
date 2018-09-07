@@ -621,3 +621,14 @@ BEGIN
     RETURN result;
   END;
 END $$;
+
+
+CREATE OR REPLACE FUNCTION create_audit()
+  RETURNS INTEGER AS $$
+DECLARE result INTEGER;
+BEGIN
+  INSERT INTO audit(created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
+  VALUES(1,1, now(), now()) RETURNING id into result;
+  RETURN result;
+END $$
+LANGUAGE plpgsql;

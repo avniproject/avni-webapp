@@ -25,6 +25,9 @@ public class AddressLevel extends OrganisationAwareEntity {
     @JoinColumn(name = "type_id")
     private AddressLevelType type;
 
+    @Transient
+    private String typeString;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "location")
     private Set<ParentLocationMapping> parentLocationMappings = new HashSet<>();
 
@@ -67,6 +70,14 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     public void setType(AddressLevelType type) {
         this.type = type;
+    }
+
+    public String getTypeString() {
+        return this.type.getName();
+    }
+
+    public void setTypeString(String typeString) {
+        this.typeString = typeString;
     }
 
     public void addCatchment(Catchment catchment) {

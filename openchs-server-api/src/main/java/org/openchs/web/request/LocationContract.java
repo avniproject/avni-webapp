@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import org.openchs.domain.AddressLevelType;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 public class LocationContract extends ReferenceDataContract {
     private Double level;
     private List<LocationContract> parents;
-    private AddressLevelType type;
+    private String type;
 
     public Double getLevel() {
         return level;
@@ -18,11 +19,11 @@ public class LocationContract extends ReferenceDataContract {
         this.level = level;
     }
 
-    public AddressLevelType getType() {
-        return type;
+    public String getType() {
+        return type != null ? StringUtils.capitalize(type.trim().toLowerCase()) : null;
     }
 
-    public void setType(AddressLevelType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

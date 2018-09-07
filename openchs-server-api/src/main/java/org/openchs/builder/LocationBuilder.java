@@ -2,6 +2,7 @@ package org.openchs.builder;
 
 import org.openchs.dao.LocationRepository;
 import org.openchs.domain.AddressLevel;
+import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.ParentLocationMapping;
 import org.openchs.framework.ApplicationContextProvider;
 import org.openchs.web.request.LocationContract;
@@ -13,17 +14,19 @@ import java.util.stream.Collectors;
 
 public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> {
 
+    private final AddressLevelType type;
     private LocationRepository locationRepository;
 
-    public LocationBuilder(AddressLevel existingEntity) {
+    public LocationBuilder(AddressLevel existingEntity, AddressLevelType type) {
         super(existingEntity, new AddressLevel());
+        this.type = type;
         locationRepository = ApplicationContextProvider.getContext().getBean(LocationRepository.class);
     }
 
     public LocationBuilder copy(LocationContract locationRequest) throws BuilderException {
         get().setUuid(locationRequest.getUuid());
         get().setTitle(locationRequest.getName());
-        get().setType(locationRequest.getType());
+        get().setType(type);
         get().setLevel(locationRequest.getLevel());
         List<ParentLocationMapping> mappings = locationRequest.getParents().stream()
                 .map(parentLocationContract -> fetchOrCreateLocationMapping(get(), parentLocationContract))

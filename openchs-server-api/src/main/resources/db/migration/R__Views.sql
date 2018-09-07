@@ -74,7 +74,7 @@ CREATE OR REPLACE VIEW adolescents AS
     gender.name                                                   gender,
     catchment.type                                                catchment_type,
     address_level.id                                              address_level,
-    address_level.type                                            address_level_type,
+    address_level.type_id                                          address_level_type,
     program_enrolment.id                                          enrolment_id,
     program_enrolment.enrolment_date_time                         internal_enrolment_date,
     to_char(program_enrolment.enrolment_date_time, 'DD-Mon-YYYY') enrolment_date
