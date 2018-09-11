@@ -66,6 +66,7 @@ public class ImportMetaDataExcelReader {
                 logger.info("Read header of Sheets");
             } else if (!ExcelUtil.isFirstCellEmpty(row)) {
                 ImportSheetMetaData importSheetMetaData = new ImportSheetMetaData();
+                importSheetMetaData.setRowNo(row.getRowNum());
                 importSheetMetaData.setFileName(ExcelUtil.getText(row, 0));
                 importSheetMetaData.setUserFileType(ExcelUtil.getText(row, 1));
                 importSheetMetaData.setSheetName(ExcelUtil.getText(row, 2));

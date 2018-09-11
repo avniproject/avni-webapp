@@ -14,6 +14,7 @@ public class ImportSheetMetaData {
     private String encounterType;
     private String addressLevel;
     private boolean isActive;
+    private Integer rowNo;
 
     public ImportSheetMetaData() {
     }
@@ -121,6 +122,7 @@ public class ImportSheetMetaData {
 
     public Map<String, String> asMap() {
         Map<String, String> map = new HashMap<>();
+        map.put("Row No", this.rowNo.toString());
         map.put("Sheet Name", this.getSheetName());
         map.put("User File Type", this.getUserFileType());
         map.put("Entity Type", this.getEntityType().getCanonicalName());
@@ -135,7 +137,8 @@ public class ImportSheetMetaData {
     @Override
     public String toString() {
         return "ImportSheetMetaData{" +
-                "fileName='" + fileName + '\'' +
+                "rowNo='" + rowNo + '\'' +
+                ", fileName='" + fileName + '\'' +
                 ", userFileType='" + userFileType + '\'' +
                 ", sheetName='" + sheetName + '\'' +
                 ", entityType=" + entityType +
@@ -151,5 +154,13 @@ public class ImportSheetMetaData {
 
     public boolean isActive() {
         return isActive;
+    }
+
+    public Integer getRowNo() {
+        return rowNo;
+    }
+
+    public void setRowNo(Integer rowNo) {
+        this.rowNo = rowNo;
     }
 }

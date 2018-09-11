@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 public class ProgramDataImportController {
     private final DataImportService dataImportService;
@@ -22,8 +24,11 @@ public class ProgramDataImportController {
 
     @RequestMapping(value = "/excelImport", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
-    public ResponseEntity<?> uploadData(@RequestParam("metaDataFile") MultipartFile metaDataFile, @RequestParam("dataFile") MultipartFile dataFile, @RequestParam String fileName, @RequestParam Integer maxNumberOfRecords) throws Exception {
-        dataImportService.importExcel(metaDataFile.getInputStream(), dataFile.getInputStream(), fileName,true, maxNumberOfRecords);
+    public ResponseEntity<?> uploadData(@RequestParam("metaDataFile") MultipartFile metaDataFile,
+                                        @RequestParam("dataFile") MultipartFile dataFile, @RequestParam String fileName,
+                                        @RequestParam Integer maxNumberOfRecords,
+                                        @RequestParam List<Integer> activeSheets) throws Exception {
+        dataImportService.importExcel(metaDataFile.getInputStream(), dataFile.getInputStream(), fileName,true, maxNumberOfRecords, activeSheets);
         return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 }
