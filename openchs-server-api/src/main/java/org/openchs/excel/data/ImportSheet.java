@@ -24,8 +24,7 @@ public class ImportSheet {
     public Row getDataRow(int rowIndex) {
         Row row = xssfSheet.getRow(rowIndex + 1);
         if (row == null) return null;
-        String rawCellValue = ExcelUtil.getRawCellValue(row, 0);
-        return rawCellValue == null || rawCellValue.isEmpty() ? null : row;
+        return ExcelUtil.isFirstCellEmpty(row)? null: row;
     }
 
     public ImportSheetHeader getHeader() {

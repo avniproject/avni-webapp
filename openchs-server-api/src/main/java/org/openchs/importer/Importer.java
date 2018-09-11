@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public abstract class Importer<T extends CHSRequest> {
     protected static Logger logger = LoggerFactory.getLogger(Importer.class);
@@ -133,10 +134,9 @@ public abstract class Importer<T extends CHSRequest> {
         List list = Collections.synchronizedList(new ArrayList<>());
         IntStream intStream = IntStream.range(0, numberOfDataRows);
         IntStream stream = (performImport && inParallel && maxNumberOfRecords == null) ? intStream.parallel() : intStream;
-        stream.mapToObj(importSheet::getDataRow)
-                .filter(Objects::nonNull)
+        Stream<Row> rowStream = stream.mapToObj(importSheet::getDataRow).filter(Objects::nonNull);
+        (maxNumberOfRecords != null ? rowStream.limit(maxNumberOfRecords) : rowStream)
                 .forEach((row) -> {
-                    if (row.getRowNum() > 100) return;
                     SecurityContextHolder.setContext(context);
                     UserContextHolder.create(userContext); //Use this user context, till the importer reads the rows and sets its own user context if it finds the user data
                     T entityRequest = (T) new CHSRequest();

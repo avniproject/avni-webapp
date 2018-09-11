@@ -1,6 +1,8 @@
 package org.openchs.web.request;
 
-import java.util.Arrays;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -42,9 +44,17 @@ public class ObservationRequest {
                 '}';
     }
 
+    public <T> List<T> addAll(Collection<T> value) {
+        HashSet<T> existingValues = new HashSet<>((Collection<T>) this.value);
+        existingValues.addAll(value);
+        return new ArrayList<>(existingValues);
+    }
+
     public void update(Object value) {
-        HashSet<String> existingValues = new HashSet<String>((List) this.value);
-        existingValues.addAll((List) value);
-        this.value = Arrays.asList(existingValues.toArray());
+        if(this.value instanceof Collection && value instanceof Collection) {
+            this.value = addAll((Collection) value);
+        } else {
+            this.value = value;
+        }
     }
 }
