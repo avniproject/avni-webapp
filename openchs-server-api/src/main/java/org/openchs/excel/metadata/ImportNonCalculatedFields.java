@@ -14,7 +14,8 @@ public class ImportNonCalculatedFields extends ArrayList<ImportNonCalculatedFiel
     public List<ImportField> getFieldsFor(ImportSheetMetaData sheetMetaData) {
         return this.stream().filter(field -> {
             String userField = field.getUserField();
-            return field.getFormType().equals(sheetMetaData.getFormType()) && userField != null;
+            return field.getFormType().equals(sheetMetaData.getFormType()) && userField != null
+                    && field.getUserFileType().equals(sheetMetaData.getUserFileType());
         }).collect(Collectors.toList());
     }
 
