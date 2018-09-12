@@ -55,21 +55,24 @@ public class DataImportService {
 
         ImportFile importFile = new ImportFile(importDataFileStream);
         Map<ImportSheetMetaData, List<CHSRequest>> requestMap = new HashMap<>();
-        importSheetMetaDataList
+        importSheetMetaDataList.stream()
+                .filter(importSheetMetaData -> {
+                    if ((importSheetMetaData.isActive() || activeSheets.contains(importSheetMetaData.getRowNo())) && importSheetMetaData.getFileName().equals(fileName)) {
+                        return true;
+                    }
+                    logger.info(String.format("Ignored virtual sheet: %s", importSheetMetaData));
+                    return false;
+                })
                 .forEach(importSheetMetaData -> {
-                    if ((importSheetMetaData.getFileName().equals(fileName) && importSheetMetaData.isActive()) || activeSheets.contains(importSheetMetaData.getRowNo())) {
-                        logger.info(String.format("Processing virtual sheet: %s", importSheetMetaData));
-                        try {
-                            List list = this.importerMap.get(importSheetMetaData.getEntityType())
-                                    .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, performImport, maxNumberOfRecords);
-                            requestMap.put(importSheetMetaData, list);
-                        } catch (Exception e) {
-                            dataImportResult.exceptionHappened(importSheetMetaData.asMap(), e);
-                        } finally {
-                            importFile.close();
-                        }
-                    } else {
-                        logger.info(String.format("Ignored virtual sheet: %s", importSheetMetaData));
+                    logger.info(String.format("Processing virtual sheet: %s", importSheetMetaData));
+                    try {
+                        List list = this.importerMap.get(importSheetMetaData.getEntityType())
+                                .importSheet(importFile, importMetaData, importSheetMetaData, dataImportResult, performImport, maxNumberOfRecords);
+                        requestMap.put(importSheetMetaData, list);
+                    } catch (Exception e) {
+                        dataImportResult.exceptionHappened(importSheetMetaData.asMap(), e);
+                    } finally {
+                        importFile.close();
                     }
                 });
         logger.info("\n>>>>End Import<<<<\n");
