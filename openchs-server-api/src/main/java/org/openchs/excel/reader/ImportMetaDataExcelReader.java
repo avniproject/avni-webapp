@@ -66,7 +66,7 @@ public class ImportMetaDataExcelReader {
                 logger.info("Read header of Sheets");
             } else if (!ExcelUtil.isFirstCellEmpty(row)) {
                 ImportSheetMetaData importSheetMetaData = new ImportSheetMetaData();
-                importSheetMetaData.setRowNo(row.getRowNum());
+                importSheetMetaData.setRowNo(k+1);
                 importSheetMetaData.setFileName(ExcelUtil.getText(row, 0));
                 importSheetMetaData.setUserFileType(ExcelUtil.getText(row, 1));
                 importSheetMetaData.setSheetName(ExcelUtil.getText(row, 2));
@@ -105,8 +105,8 @@ public class ImportMetaDataExcelReader {
                 calculatedField.setRegex(ExcelUtil.getText(row, 4));
                 calculatedField.setSeparator(ExcelUtil.getText(row, 5));
                 calculatedFields.add(calculatedField);
+                logger.info(String.format("Read row number %d of Calculated Fields", k));
             }
-            logger.info(String.format("Read row number %d of Calculated Fields", k));
             k++;
         }
         return calculatedFields;

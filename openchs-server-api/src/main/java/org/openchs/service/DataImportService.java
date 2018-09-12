@@ -57,7 +57,7 @@ public class DataImportService {
         Map<ImportSheetMetaData, List<CHSRequest>> requestMap = new HashMap<>();
         importSheetMetaDataList
                 .forEach(importSheetMetaData -> {
-                    if (importSheetMetaData.getFileName().equals(fileName) && (importSheetMetaData.isActive() || activeSheets.contains(importSheetMetaData.getRowNo()))) {
+                    if ((importSheetMetaData.getFileName().equals(fileName) && importSheetMetaData.isActive()) || activeSheets.contains(importSheetMetaData.getRowNo())) {
                         logger.info(String.format("Processing virtual sheet: %s", importSheetMetaData));
                         try {
                             List list = this.importerMap.get(importSheetMetaData.getEntityType())
