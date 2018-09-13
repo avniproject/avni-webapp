@@ -18,12 +18,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ApiSecurity extends WebSecurityConfigurerAdapter {
     private final UserContextService userContextService;
-    private UserService userService;
 
     @Autowired
-    public ApiSecurity(UserContextService userContextService, UserService userService) {
+    public ApiSecurity(UserContextService userContextService) {
         this.userContextService = userContextService;
-        this.userService = userService;
     }
 
     @Override
@@ -34,7 +32,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .authorizeRequests().anyRequest().permitAll()
                 .and()
-                .addFilter(new AuthenticationFilter(authenticationManager(), userContextService, userService))
+                .addFilter(new AuthenticationFilter(authenticationManager(), userContextService))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 }

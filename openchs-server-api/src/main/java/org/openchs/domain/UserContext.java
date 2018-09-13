@@ -23,15 +23,15 @@ public class UserContext {
     }
 
     public UserContext addUserRole() {
-        return addRole(USER);
+        return addRole(User.USER);
     }
 
     public UserContext addOrganisationAdminRole() {
-        return addRole(ORGANISATION_ADMIN);
+        return addRole(User.ORGANISATION_ADMIN);
     }
 
     public UserContext addAdminRole() {
-        return addRole(ADMIN);
+        return addRole(User.ADMIN);
     }
 
     public UserContext addRole(String role) {

@@ -7,7 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openchs.dao.OrganisationRepository;
+import org.openchs.dao.UserRepository;
 import org.openchs.domain.Organisation;
+import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 
 import java.io.UnsupportedEncodingException;
@@ -21,18 +23,22 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CognitoUserContextServiceImplTest {
-
     @Mock
     private OrganisationRepository organisationRepository;
-
+    @Mock
+    private UserRepository userRepository;
 
     private CognitoUserContextServiceImpl userContextService;
-
+    private User user;
 
     @Before
     public void setup() {
         initMocks(this);
-        userContextService = new CognitoUserContextServiceImpl(organisationRepository, "poolId", "clientId");
+        userContextService = new CognitoUserContextServiceImpl(organisationRepository, userRepository, "poolId", "clientId");
+        String uuid = "9ecc2805-6528-47ee-8267-9368b266ad39";
+        user = new User();
+        user.setUuid(uuid);
+        user.setOrganisationId(1L);
     }
 
     @Test
@@ -53,31 +59,34 @@ public class CognitoUserContextServiceImplTest {
     public void shouldAddOrganisationToContext() throws UnsupportedEncodingException {
         Organisation organisation = new Organisation();
         when(organisationRepository.findOne(1L)).thenReturn(organisation);
+        when(userRepository.findByUuid(user.getUuid())).thenReturn(user);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = createForBaseToken().sign(algorithm);
+        String token = createForBaseToken(user.getUuid()).sign(algorithm);
         UserContext userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getOrganisation(), is(equalTo(organisation)));
     }
 
-    private JWTCreator.Builder createForBaseToken() {
-        return JWT.create();
+    private JWTCreator.Builder createForBaseToken(String userUuid) {
+        return JWT.create().withClaim("custom:userUUID", userUuid);
     }
 
     @Test
     public void shouldAddRolesToContext() throws UnsupportedEncodingException {
         Organisation organisation = new Organisation();
         when(organisationRepository.findOne(1L)).thenReturn(organisation);
+        when(userRepository.findByUuid(user.getUuid())).thenReturn(user);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = createForBaseToken().sign(algorithm);
+        String token = createForBaseToken(user.getUuid()).sign(algorithm);
 
         UserContext userContext = userContextService.getUserContext(token, false, null);
-        assertThat(userContext.getRoles(), contains(UserContext.USER));
+        assertThat(userContext.getRoles(), contains(User.USER));
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
 
-        token = createForBaseToken().sign(algorithm);
+        token = createForBaseToken(user.getUuid()).sign(algorithm);
 
+        user.setOrgAdmin(true);
         userContext = userContextService.getUserContext(token, false, null);
-        assertThat(userContext.getRoles(), containsInAnyOrder(UserContext.USER, UserContext.ORGANISATION_ADMIN));
+        assertThat(userContext.getRoles(), containsInAnyOrder(User.USER, User.ORGANISATION_ADMIN));
         assertThat(userContext.getRoles().size(), is(equalTo(2)));
     }
 
@@ -88,15 +97,14 @@ public class CognitoUserContextServiceImplTest {
         becomeOrg.setName("BecomeOrg");
         when(organisationRepository.findOne(1L)).thenReturn(anOrg);
         when(organisationRepository.findByName(becomeOrg.getName())).thenReturn(becomeOrg);
+        when(userRepository.findByUuid(user.getUuid())).thenReturn(user);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = createForBaseToken().sign(algorithm);
+        String token = createForBaseToken(user.getUuid()).sign(algorithm);
 
         UserContext userContext = userContextService.getUserContext(token, false, becomeOrg.getName());
         assertThat(userContext.getOrganisation(), is(equalTo(becomeOrg)));
 
         userContext = userContextService.getUserContext(token, false, null);
         assertThat(userContext.getOrganisation(), is(equalTo(anOrg)));
-
     }
-
 }

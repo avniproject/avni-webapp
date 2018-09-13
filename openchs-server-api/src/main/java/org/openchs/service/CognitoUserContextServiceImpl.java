@@ -57,8 +57,9 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         this.isDev = isDev();
     }
 
-    public CognitoUserContextServiceImpl(OrganisationRepository organisationRepository, String poolId, String clientId) {
+    public CognitoUserContextServiceImpl(OrganisationRepository organisationRepository, UserRepository userRepository, String poolId, String clientId) {
         this.organisationRepository = organisationRepository;
+        this.userRepository = userRepository;
         this.poolId = poolId;
         this.clientId = clientId;
         logger = LoggerFactory.getLogger(this.getClass());
@@ -109,14 +110,14 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         userContext.setUser(user);
 
         addOrganisationToContext(userContext, jwt, becomeOrganisationName);
-        addRolesToContext(user);
+        addRolesToContext(userContext, user);
 
         return userContext;
     }
 
-    private void addRolesToContext(User user) {
-        user.getRoles();
-        Arrays.stream(roles).filter((role) -> hasRole(jwt, role[0])).forEach((role) -> userContext.addRole(role[1]));
+    private void addRolesToContext(UserContext userContext, User user) {
+        String[] roles = user.getRoles();
+        Arrays.stream(roles).forEach(userContext::addRole);
     }
 
     private DecodedJWT verifyAndDecodeToken(String token, boolean verify) {

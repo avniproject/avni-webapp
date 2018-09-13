@@ -29,17 +29,15 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     private static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
     public static final String ORGANISATION_NAME_HEADER = "ORGANISATION-NAME";
     private final UserContextService userContextService;
-    private UserService userService;
-    public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(UserContext.USER);
-    public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ADMIN);
-    public final static SimpleGrantedAuthority ORGANISATION_ADMIN_AUTHORITY = new SimpleGrantedAuthority(UserContext.ORGANISATION_ADMIN);
+    public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(User.USER);
+    public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(User.ADMIN);
+    public final static SimpleGrantedAuthority ORGANISATION_ADMIN_AUTHORITY = new SimpleGrantedAuthority(User.ORGANISATION_ADMIN);
 
     private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager, UserContextService userContextService, UserService userService) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, UserContextService userContextService) {
         super(authenticationManager);
         this.userContextService = userContextService;
-        this.userService = userService;
     }
 
     @Override

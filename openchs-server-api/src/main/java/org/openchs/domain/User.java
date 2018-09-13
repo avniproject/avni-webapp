@@ -2,21 +2,10 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-<<<<<<< HEAD
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-=======
 import java.util.*;
->>>>>>> 2a9bef1... WIP: User Migration from Cognito
 
 @Entity
 @Table(name = "users")
@@ -195,6 +184,10 @@ public class User {
         roles.add(USER);
         if (this.isAdmin) roles.add(ADMIN);
         if (this.isOrgAdmin) roles.add(ORGANISATION_ADMIN);
-        return (String[]) roles.toArray();
+        return roles.toArray(new String[0]);
+    }
+
+    public void setOrgAdmin(boolean orgAdmin) {
+        isOrgAdmin = orgAdmin;
     }
 }
