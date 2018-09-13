@@ -22,6 +22,11 @@ public class ExcelUtil {
     private static DateTimeFormatter[] possibleDateFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy"), DateTimeFormat.forPattern("dd.M.yyyy"), DateTimeFormat.forPattern("yyyy-MMM-dd"), DateTimeFormat.forPattern("yyyy-MM-dd")};
 
     public static String getText(Row row, int cellNum) {
+        String fatText = ExcelUtil.getFatText(row, cellNum);
+        return fatText == null ? null : fatText.replaceAll(" +", " ");
+    }
+
+    public static String getFatText(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
         if (cell == null) return null;
         String stringCellValue;
@@ -34,8 +39,8 @@ public class ExcelUtil {
                 stringCellValue = cell.toString();
             }
         }
-        String s = stringCellValue.trim().replaceAll(" +", " ");
-        return StringUtils.isEmpty(s) ? null : s;
+        String trimmed = StringUtils.trimWhitespace(stringCellValue);
+        return StringUtils.isEmpty(trimmed) ? null : trimmed;
     }
 
     public static Boolean isFirstCellEmpty(Row row) {

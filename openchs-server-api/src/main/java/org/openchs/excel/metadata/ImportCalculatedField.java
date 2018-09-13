@@ -36,7 +36,7 @@ public class ImportCalculatedField implements ImportField {
     }
 
     public void setRegex(String regex) {
-        pattern = Pattern.compile(regex, Pattern.UNICODE_CHARACTER_CLASS);
+        pattern = Pattern.compile(regex == null ? ".*" : regex, Pattern.UNICODE_CHARACTER_CLASS);
     }
 
     public String getUserFileType() {
@@ -82,7 +82,12 @@ public class ImportCalculatedField implements ImportField {
     public Double getDoubleValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         int position = importSheetHeader.getPosition(sourceUserField);
         if (position == -1) return null;
-        return ExcelUtil.getNumber(row, position);
+        String text = find(ExcelUtil.getFatText(row, position));
+        try {
+            return text == null ? null : Double.parseDouble(text);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(String.format("getDoubleValue failed for row_number=%d, cell_number=%d, cell_value=%s, regexp=%s", row.getRowNum(), position, text, pattern.pattern()));
+        }
     }
 
     @Override
