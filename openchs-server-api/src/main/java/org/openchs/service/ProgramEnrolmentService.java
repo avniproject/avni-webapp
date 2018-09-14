@@ -19,6 +19,9 @@ public class ProgramEnrolmentService {
     @Transactional
     public ProgramEncounter matchingEncounter(String programEnrolmentUUID, String encounterTypeName, DateTime encounterDateTime) {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
+        if (programEnrolment == null) {
+            throw new IllegalArgumentException(String.format("ProgramEnrolment not found with UUID '%s'", programEnrolmentUUID));
+        }
         return programEnrolment.getProgramEncounters().stream()
                 .filter(programEncounter ->
                         programEncounter.getEncounterType().getName().equals(encounterTypeName)
