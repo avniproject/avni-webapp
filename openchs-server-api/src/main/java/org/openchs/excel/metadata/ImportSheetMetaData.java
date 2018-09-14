@@ -121,7 +121,7 @@ public class ImportSheetMetaData {
     }
 
     public Map<String, String> asMap() {
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         map.put("Row No", this.rowNo.toString());
         map.put("Sheet Name", this.getSheetName());
         map.put("User File Type", this.getUserFileType());
@@ -131,21 +131,16 @@ public class ImportSheetMetaData {
         map.put("Program Name", this.getProgramName());
         map.put("Encounter Type", this.getEncounterType());
         map.put("Address Level", this.getAddressLevel());
+        map.put("Is Active", String.valueOf(isActive));
         return map;
     }
 
     @Override
     public String toString() {
-        return "ImportSheetMetaData{" +
-                "rowNo='" + rowNo + '\'' +
-                ", fileName='" + fileName + '\'' +
-                ", userFileType='" + userFileType + '\'' +
-                ", sheetName='" + sheetName + '\'' +
-                ", entityType=" + entityType +
-                ", programName='" + programName + '\'' +
-                ", encounterType='" + encounterType + '\'' +
-                ", isActive=" + isActive +
-                '}';
+        StringBuilder stringBuilder = new StringBuilder("ImportSheetMetaData{");
+        asMap().forEach((k, v) -> stringBuilder.append(String.format("%s='%s', ", k, v)));
+        stringBuilder.append("}");
+        return stringBuilder.toString();
     }
 
     public void setActive(boolean isActive) {

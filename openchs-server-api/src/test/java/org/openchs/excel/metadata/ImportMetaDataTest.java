@@ -71,6 +71,7 @@ public class ImportMetaDataTest {
         placeHolderFormElement.setConcept(placeHolderConcept);
         placeHolderConcept.setDataType(ConceptDataType.Text.toString());
         when(conceptRepository.findByName(anyString())).thenReturn(placeHolderConcept);
+        when(conceptRepository.findByNameIgnoreCase(anyString())).thenReturn(placeHolderConcept);
         when(formElementRepository.findFirstByConcept(any(Concept.class))).thenReturn(placeHolderFormElement);
         metaDataInputStream = new ClassPathResource("Import MetaData.xlsx").getInputStream();
     }
@@ -111,7 +112,7 @@ public class ImportMetaDataTest {
         answers.put("Yes", yes);
         answers.put("Dropped out", UUID.randomUUID());
         when(conceptRepository.findByName("School going")).thenReturn(TestEntityFactory.createCodedConcept("School going", answers));
-        when(conceptRepository.findByName("Yes")).thenReturn(TestEntityFactory.createConceptOfNotType(yes.toString(), "Yes"));
+        when(conceptRepository.findByNameIgnoreCase("Yes")).thenReturn(TestEntityFactory.createConceptOfNotType(yes.toString(), "Yes"));
 
         IndividualImporter individualImporter = new IndividualImporter(conceptRepository, formElementRepository, null, userRepository);
         EncounterImporter encounterImporter = new EncounterImporter(conceptRepository, formElementRepository, null, userRepository);

@@ -102,7 +102,7 @@ public abstract class Importer<T extends CHSRequest> {
         if (systemAnswer == null) {
             return null;
         }
-        Concept answerConcept = conceptRepository.findByName(systemAnswer.trim());
+        Concept answerConcept = conceptRepository.findByNameIgnoreCase(systemAnswer.trim());
         if (answerConcept == null) {
             logger.error(String.format("Answer concept |%s| not found in concept |%s|", userAnswer, systemFieldName));
             throw new NullPointerException(String.format("Answer concept |%s| not found in concept |%s|", userAnswer, systemFieldName));
