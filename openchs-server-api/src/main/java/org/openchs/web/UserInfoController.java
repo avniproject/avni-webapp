@@ -22,7 +22,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -65,25 +67,30 @@ public class UserInfoController {
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-    public void save(@RequestBody UserContract userContract) {
-        logger.info(String.format("Saving user with UUID %s", userContract.getUuid()));
+    public void save(@RequestBody UserContract[] userContracts) {
+        Arrays.stream(userContracts).forEach(userContract -> {
+            logger.info(String.format("Saving user with UUID/Name %s/%s", userContract.getUuid(), userContract.getName()));
+            User user = userContract.getUuid() == null ? userRepository.findByName(userContract.getName()) : userRepository.findByUuid(userContract.getUuid());
+            if (user == null) {
+                user = new User();
+                user.setUuid(UUID.randomUUID().toString());
+                user.setName(userContract.getName());
+            }
+            Catchment catchment = userContract.getCatchmentUUID() == null ? catchmentRepository.findOne(userContract.getCatchmentId()) : catchmentRepository.findByUuid(userContract.getCatchmentUUID());
+            user.setCatchment(catchment);
 
-        User user = userRepository.findByUuid(userContract.getUuid());
-        if (user == null) {
-            user = new User();
-            user.setUuid(userContract.getUuid());
-        }
-        Catchment catchment = catchmentRepository.findByUuid(userContract.getCatchmentUUID());
-        user.setCatchment(catchment);
+            List<UserFacilityMapping> userFacilityMappings = userContract.getUserFacilityMappingContracts().stream().map(userFacilityMappingContract -> userFacilityMappingRepository.findByUuid(userFacilityMappingContract.getUuid())).collect(Collectors.toList());
+            user.addUserFacilityMappings(userFacilityMappings);
+            Long organisationId = userContract.getOrganisationUUID() == null ? userContract.getOrganisationId() : organisationRepository.findByUuid(userContract.getOrganisationUUID()).getId();
+            user.setOrganisationId(organisationId);
+            user.setOrgAdmin(userContract.isOrgAdmin());
+            user.setAdmin(userContract.isAdmin());
 
-        List<UserFacilityMapping> userFacilityMappings = userContract.getUserFacilityMappingContracts().stream().map(userFacilityMappingContract -> userFacilityMappingRepository.findByUuid(userFacilityMappingContract.getUuid())).collect(Collectors.toList());
-        user.addUserFacilityMappings(userFacilityMappings);
-        user.setOrganisationId(organisationRepository.findByUuid(userContract.getOrganisationUUID()).getId());
+            setAuditInfo(user);
 
-        setAuditInfo(user);
-
-        userRepository.save(user);
-        logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
+            userRepository.save(user);
+            logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
+        });
     }
 
     private void setAuditInfo(User user) {

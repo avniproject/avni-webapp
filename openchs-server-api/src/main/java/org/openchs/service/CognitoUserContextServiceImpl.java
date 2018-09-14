@@ -105,19 +105,13 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         DecodedJWT jwt = verifyAndDecodeToken(token, verify);
         if (jwt == null) return userContext;
 
+
         String userUUID = getValueInToken(jwt, "custom:userUUID");
         User user = userRepository.findByUuid(userUUID);
         userContext.setUser(user);
-
         addOrganisationToContext(userContext, jwt, becomeOrganisationName);
-        addRolesToContext(userContext, user);
 
         return userContext;
-    }
-
-    private void addRolesToContext(UserContext userContext, User user) {
-        String[] roles = user.getRoles();
-        Arrays.stream(roles).forEach(userContext::addRole);
     }
 
     private DecodedJWT verifyAndDecodeToken(String token, boolean verify) {
@@ -133,7 +127,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
                     .withIssuer(getIssuer())
                     .withClaim("token_use", "id")
                     .withAudience(clientId)
-                    .acceptLeeway(10)
+                    .acceptLeeway(240)
                     .build();
 
             logger.debug(String.format("Verifying token for issuer: %s, token_use: id and audience: %s", this.getIssuer(), clientId));

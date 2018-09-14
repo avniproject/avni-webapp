@@ -190,4 +190,8 @@ public class User {
     public void setOrgAdmin(boolean orgAdmin) {
         isOrgAdmin = orgAdmin;
     }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
 }

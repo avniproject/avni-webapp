@@ -1,11 +1,10 @@
 package org.openchs.domain;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class UserContext {
-
-
     private Collection<String> roles = new HashSet<>();
     private Organisation organisation;
     private User user;
@@ -14,8 +13,19 @@ public class UserContext {
         return user;
     }
 
+    public String getUserName() {
+        User user = this.getUser();
+        return user == null ? null : user.getName();
+    }
+
     public void setUser(User user) {
         this.user = user;
+        this.addRolesToContext();
+    }
+
+    private void addRolesToContext() {
+        String[] roles = this.user.getRoles();
+        Arrays.stream(roles).forEach(this::addRole);
     }
 
     public Collection<String> getRoles() {

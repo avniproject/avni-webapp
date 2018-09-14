@@ -43,6 +43,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
+            SecurityContextHolder.getContext().setAuthentication(createTempAuth());
             Authentication authentication = this.attemptAuthentication(request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserContext userContext = UserContextHolder.getUserContext();
@@ -50,11 +51,9 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             this.setUserForInDevMode(userContext);
 
             String organisationName = userContext.getOrganisationName();
-            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUser().getName(), organisationName));
-
+            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), organisationName));
             chain.doFilter(request, response);
-
-            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUser().getName(), organisationName));
+            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), organisationName));
         } catch (Exception exception) {
             this.logException(request, exception);
             throw exception;
@@ -87,6 +86,12 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
         UserContextHolder.create(userContext);
 
         if (authorities.isEmpty()) return null;
+        return new AnonymousAuthenticationToken(token, token, authorities);
+    }
+
+    private Authentication createTempAuth() {
+        String token = UUID.randomUUID().toString();
+        List<SimpleGrantedAuthority> authorities = Stream.of(USER_AUTHORITY, ADMIN_AUTHORITY, ORGANISATION_ADMIN_AUTHORITY).collect(Collectors.toList());
         return new AnonymousAuthenticationToken(token, token, authorities);
     }
 }
