@@ -154,6 +154,7 @@ public class User {
     public void addUserFacilityMapping(UserFacilityMapping userFacilityMapping) {
         if (this.userFacilityMappings == null)
             this.userFacilityMappings = new HashSet<>();
+        userFacilityMapping.setUser(this);
         this.userFacilityMappings.add(userFacilityMapping);
     }
 

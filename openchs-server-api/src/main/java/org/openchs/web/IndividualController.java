@@ -77,21 +77,4 @@ public class IndividualController extends AbstractController<Individual> {
             return locationRepository.findByTitleIgnoreCase(individualRequest.getAddressLevel());
         }
     }
-
-    @RequestMapping(value = "/individualAndHistory", method = RequestMethod.POST)
-    @Transactional
-    void save(@RequestBody IndividualWithHistory individualWithHistory) {
-
-//        KeyValueIndividualRequest individual = individualWithHistory.getIndividual();
-//        this.save(individual);
-//
-//        ProgramEnrolmentRequest programEnrolmentRequest = individualWithHistory.getEnrolment();
-//        programEnrolmentRequest.setIndividualUUID(individual.getUuid());
-//        programEnrolmentController.save(programEnrolmentRequest);
-//
-//        individualWithHistory.getEncounters().forEach(programEncounterRequest -> {
-//            programEncounterRequest.setProgramEnrolmentUUID(programEnrolmentRequest.getUuid());
-//            programEncounterController.save(programEncounterRequest);
-//        });
-    }
 }

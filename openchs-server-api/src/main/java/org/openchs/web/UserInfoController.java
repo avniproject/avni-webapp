@@ -1,10 +1,7 @@
 package org.openchs.web;
 
 import org.joda.time.DateTime;
-import org.openchs.dao.CatchmentRepository;
-import org.openchs.dao.OrganisationRepository;
-import org.openchs.dao.UserFacilityMappingRepository;
-import org.openchs.dao.UserRepository;
+import org.openchs.dao.*;
 import org.openchs.domain.Catchment;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
@@ -34,15 +31,17 @@ public class UserInfoController {
     private UserFacilityMappingRepository userFacilityMappingRepository;
     private OrganisationRepository organisationRepository;
     private UserService userService;
+    private FacilityRepository facilityRepository;
     private final Logger logger;
 
     @Autowired
-    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, UserFacilityMappingRepository userFacilityMappingRepository, OrganisationRepository organisationRepository, UserService userService) {
+    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, UserFacilityMappingRepository userFacilityMappingRepository, OrganisationRepository organisationRepository, UserService userService, FacilityRepository facilityRepository) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.userFacilityMappingRepository = userFacilityMappingRepository;
         this.organisationRepository = organisationRepository;
         this.userService = userService;
+        this.facilityRepository = facilityRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -79,7 +78,15 @@ public class UserInfoController {
             Catchment catchment = userContract.getCatchmentUUID() == null ? catchmentRepository.findOne(userContract.getCatchmentId()) : catchmentRepository.findByUuid(userContract.getCatchmentUUID());
             user.setCatchment(catchment);
 
-            List<UserFacilityMapping> userFacilityMappings = userContract.getUserFacilityMappingContracts().stream().map(userFacilityMappingContract -> userFacilityMappingRepository.findByUuid(userFacilityMappingContract.getUuid())).collect(Collectors.toList());
+            List<UserFacilityMapping> userFacilityMappings = userContract.getFacilities().stream().map(userFacilityMappingContract -> {
+                UserFacilityMapping mapping = userFacilityMappingRepository.findByUuid(userFacilityMappingContract.getUuid());
+                if (mapping == null) {
+                    mapping = new UserFacilityMapping();
+                    mapping.setUuid(userFacilityMappingContract.getUuid());
+                }
+                mapping.setFacility(facilityRepository.findByUuid(userFacilityMappingContract.getFacilityUUID()));
+                return mapping;
+            }).collect(Collectors.toList());
             user.addUserFacilityMappings(userFacilityMappings);
             Long organisationId = userContract.getOrganisationUUID() == null ? userContract.getOrganisationId() : organisationRepository.findByUuid(userContract.getOrganisationUUID()).getId();
             user.setOrganisationId(organisationId);

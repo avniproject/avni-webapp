@@ -9,7 +9,7 @@ import java.util.List;
 public class UserContract extends ReferenceDataContract {
     private String organisationUUID;
     private long organisationId;
-    private List<UserFacilityMappingContract> userFacilityMappingContracts;
+    private List<UserFacilityMappingContract> facilities;
     private String catchmentUUID;
     private long catchmentId;
     private boolean orgAdmin;
@@ -23,12 +23,12 @@ public class UserContract extends ReferenceDataContract {
         this.organisationUUID = organisationUUID;
     }
 
-    public List<UserFacilityMappingContract> getUserFacilityMappingContracts() {
-        return userFacilityMappingContracts == null ? new ArrayList<>() : userFacilityMappingContracts;
+    public List<UserFacilityMappingContract> getFacilities() {
+        return facilities == null ? new ArrayList<>() : facilities;
     }
 
-    public void setUserFacilityMappingContracts(List<UserFacilityMappingContract> userFacilityMappingContracts) {
-        this.userFacilityMappingContracts = userFacilityMappingContracts;
+    public void setFacilities(List<UserFacilityMappingContract> facilities) {
+        this.facilities = facilities;
     }
 
     public String getCatchmentUUID() {
