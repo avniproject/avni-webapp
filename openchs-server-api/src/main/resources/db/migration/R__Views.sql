@@ -156,3 +156,9 @@ create or replace view latest_program_encounter as
                 group by program_enrolment.id) as latest_program_encounter
       on program_encounter.id = latest_program_encounter.latest_encounter_id
     inner join encounter_type et on program_encounter.encounter_type_id = et.id;
+
+
+CREATE OR REPLACE VIEW address_level_type_view AS
+  SELECT al.*, alt.name as "type"
+  from address_level al
+         inner join address_level_type alt on al.type_id = alt.id;

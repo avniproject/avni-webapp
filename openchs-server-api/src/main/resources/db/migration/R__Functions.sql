@@ -427,7 +427,7 @@ BEGIN
                         SELECT 0, 0, atname, gname from (
                             SELECT DISTINCT type atname,
                             name gname
-                          FROM address_level, gender
+                          FROM address_level_type_view, gender
                           WHERE name != ''Other''
                           UNION ALL
                           SELECT
@@ -439,7 +439,7 @@ BEGIN
                           SELECT DISTINCT
                             type atname,
                             ''Total'' gname
-                          FROM address_level
+                          FROM address_level_type_view
                           UNION ALL
                           SELECT
                             ''All'' atname,
@@ -569,7 +569,7 @@ BEGIN
                         SELECT 0, 0, atname, gname from (
                             SELECT DISTINCT type atname,
                             name gname
-                          FROM address_level, gender
+                          FROM address_level_type_view, gender
                           WHERE name != ''Other''
                           UNION ALL
                           SELECT
@@ -581,7 +581,7 @@ BEGIN
                           SELECT DISTINCT
                             type atname,
                             ''Total'' gname
-                          FROM address_level
+                          FROM address_level_type_view
                           UNION ALL
                           SELECT
                             ''All'' atname,
