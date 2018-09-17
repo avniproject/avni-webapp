@@ -47,6 +47,9 @@ public class EncounterImporter extends Importer<EncounterRequest> {
                 case "Individual UUID":
                     encounterRequest.setIndividualUUID(importField.getTextValue(row, header, sheetMetaData));
                     break;
+                case "UUID":
+                    encounterRequest.setUuid(importField.getTextValue(row, header, sheetMetaData));
+                    break;
                 case "Visit Type":
                     encounterRequest.setEncounterType(importField.getTextValue(row, header, sheetMetaData));
                     break;

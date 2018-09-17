@@ -48,6 +48,9 @@ public class EncounterController extends AbstractController<Encounter> {
             encounterType = encounterTypeRepository.findByUuid(encounterRequest.getEncounterTypeUUID());
         }
         Individual individual = individualRepository.findByUuid(encounterRequest.getIndividualUUID());
+        if (individual == null) {
+            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", encounterRequest.getIndividualUUID()));
+        }
 
         Encounter encounter = newOrExistingEntity(encounterRepository, encounterRequest, new Encounter());
         encounter.setEncounterDateTime(encounterRequest.getEncounterDateTime());
