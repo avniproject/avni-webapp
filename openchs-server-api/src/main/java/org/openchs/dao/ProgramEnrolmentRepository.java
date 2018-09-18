@@ -1,7 +1,6 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
-import org.openchs.domain.Individual;
 import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
@@ -14,19 +13,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEnrolment", path = "programEnrolment")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface ProgramEnrolmentRepository extends PagingAndSortingRepository<ProgramEnrolment, Long>, CHSRepository<ProgramEnrolment> {
-    @RestResource(path = "lastModified", rel = "lastModified")
-    Page<ProgramEnrolment> findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            Pageable pageable);
-
+public interface ProgramEnrolmentRepository extends PagingAndSortingRepository<ProgramEnrolment, Long>, CHSRepository<ProgramEnrolment>, FindByLastModifiedDateTime<ProgramEnrolment> {
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")
     Page<ProgramEnrolment> findByIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("catchmentId") long catchmentId,
