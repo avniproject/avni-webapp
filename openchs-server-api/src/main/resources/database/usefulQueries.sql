@@ -156,7 +156,7 @@ order by
   ,ca.answer_order;
 
 -- Concept with answers
-select q.name, string_agg(a.name,' | ' order by ca.answer_order)
+select q.name, string_agg(a.name,E'\n' order by ca.answer_order)
 from concept_answer ca
 inner join concept a on ca.answer_concept_id = a.id
 inner join concept q on ca.concept_id = q.id
@@ -168,18 +168,23 @@ select
   f.name  as FormName,
   feg.name as FormElementGroup,
   fe.name as FormElement,
+  co.name as ConceptOwn,
+  feo.name as FormElementOwn,
   c.name as Concept,
   coalesce(ca.answers, '<'||c.data_type||'>') as Answers
 from form f
   inner join form_element_group feg on feg.form_id = f.id
   inner join form_element fe on fe.form_element_group_id = feg.id
   inner join concept c on fe.concept_id = c.id
+  inner join organisation co on co.id = c.organisation_id
+  inner join organisation feo on feo.id = fe.organisation_id
   left join (
-          select ca.concept_id, string_agg(a.name,' | ' order by ca.answer_order) answers
+          select ca.concept_id, string_agg(a.name,E'\n' order by ca.answer_order) answers
           from concept_answer ca inner join concept a on ca.answer_concept_id = a.id
           group by ca.concept_id
       ) ca on ca.concept_id = c.id
-where f.name = ?
+  left join non_applicable_form_element rem on rem.form_element_id = fe.id and rem.is_voided <> TRUE and rem.organisation_id = ?
+where rem.id is null and f.name = ?
 order by
   f.name
   , feg.display_order asc
