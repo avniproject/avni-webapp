@@ -25,7 +25,6 @@ import org.springframework.util.StringUtils;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Arrays;
 
 @Service
 @Profile({"default", "live", "dev", "test"})
@@ -109,7 +108,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         String userUUID = getValueInToken(jwt, "custom:userUUID");
         User user = userRepository.findByUuid(userUUID);
         userContext.setUser(user);
-        addOrganisationToContext(userContext, jwt, becomeOrganisationName);
+        addOrganisationToContext(userContext, becomeOrganisationName);
 
         return userContext;
     }
@@ -156,18 +155,13 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         return COGNITO_URL + this.poolId;
     }
 
-    private boolean hasRole(DecodedJWT jwt, String role) {
-        String valueInToken = getValueInToken(jwt, role);
-        return valueInToken != null && valueInToken.equalsIgnoreCase("true");
-    }
-
-    private void addOrganisationToContext(UserContext userContext, DecodedJWT jwt, String becomeOrganisationName) {
+    private void addOrganisationToContext(UserContext userContext, String becomeOrganisationName) {
         Organisation becomeOrganisation = getOrganisation(becomeOrganisationName);
         if (becomeOrganisationName != null && becomeOrganisation == null) {
             logger.error(String.format("Organisation '%s' not found", becomeOrganisationName));
             throw new RuntimeException(String.format("Organisation '%s' not found", becomeOrganisationName));
         }
-        if (becomeOrganisation != null && hasRole(jwt, "custom:isAdmin")) {
+        if (becomeOrganisation != null && userContext.getUser().isAdmin()) {
             userContext.setOrganisation(becomeOrganisation);
             return;
         }

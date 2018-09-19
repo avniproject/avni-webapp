@@ -72,7 +72,7 @@ public class UserInfoController {
             User user = userContract.getUuid() == null ? userRepository.findByName(userContract.getName()) : userRepository.findByUuid(userContract.getUuid());
             if (user == null) {
                 user = new User();
-                user.setUuid(UUID.randomUUID().toString());
+                user.setUuid(userContract.getUuid() == null? UUID.randomUUID().toString() : userContract.getUuid());
                 user.setName(userContract.getName());
             }
             Catchment catchment = userContract.getCatchmentUUID() == null ? catchmentRepository.findOne(userContract.getCatchmentId()) : catchmentRepository.findByUuid(userContract.getCatchmentUUID());
