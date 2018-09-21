@@ -2,9 +2,10 @@ package org.openchs.framework.sync;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+import org.openchs.domain.Catchment;
+import org.openchs.domain.UserContext;
+import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @Component
 public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter {
+    public static final int DEFAULT_CATCHMENT_ID_FOR_DEV = 1;
     @Autowired
     private Environment environment;
 
@@ -33,7 +35,21 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
             DateTime now = new DateTime();
             DateTime nowMinus10Seconds = now.minusSeconds(nowMap.get(environment.getActiveProfiles()[0]));
             ((MutableRequestWrapper) request).addParameter("now", nowMinus10Seconds.toString(ISODateTimeFormat.dateTime()));
+            Long catchmentId = getCatchmentId();
+            ((MutableRequestWrapper) request).addParameter("catchmentId", catchmentId.toString());
         }
         return true;
     }
+
+    private Long getCatchmentId() {
+        UserContext userContext = UserContextHolder.getUserContext();
+        Catchment catchment = userContext.getUser().getCatchment();
+        return (isDev() && catchment == null) ? DEFAULT_CATCHMENT_ID_FOR_DEV : catchment.getId();
+    }
+
+    private boolean isDev() {
+        String[] activeProfiles = environment.getActiveProfiles();
+        return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
+    }
+
 }

@@ -60,6 +60,7 @@ public class UserInfoController {
             return new ResponseEntity<>(new UserInfo(null, null), HttpStatus.NOT_FOUND);
         }
 
+        //TODO catchmentType in userInfo is deprecated and should be removed completely in a month's time.
         return new ResponseEntity<>(new UserInfo(catchment.getType(), organisation.getName()), HttpStatus.OK);
     }
 

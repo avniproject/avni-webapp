@@ -1,9 +1,6 @@
 package org.openchs.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +17,7 @@ public class Catchment extends OrganisationAwareEntity {
     @NotNull
     private String type;
 
-    @ManyToMany(mappedBy = "catchments")
+    @ManyToMany(mappedBy = "catchments", fetch = FetchType.LAZY)
     private Set<AddressLevel> addressLevels = new HashSet<>();
 
 

@@ -49,7 +49,8 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "ruleDependency",
             "checklistDetail",
             "checklistItemDetail",
-            "rule");
+            "rule",
+            "userInfo");
 
     private List<String> paths;
 

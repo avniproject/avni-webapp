@@ -50,7 +50,7 @@ public class User {
     private boolean isAdmin;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "catchment_id")
     private Catchment catchment;
 

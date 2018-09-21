@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 public class UserInfo {
+    @Deprecated
     private String catchmentType;
     private String organisationName;
 
