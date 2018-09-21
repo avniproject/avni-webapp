@@ -19,7 +19,7 @@ import java.util.Date;
 public class ExcelUtil {
     private static Logger logger = LoggerFactory.getLogger(ExcelUtil.class);
     //Do not remove any pattern because this is built up based on formats we have encountered so far in various migration data
-    private static DateTimeFormatter[] possibleDateFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy"), DateTimeFormat.forPattern("dd.M.yyyy"), DateTimeFormat.forPattern("yyyy-MMM-dd"), DateTimeFormat.forPattern("yyyy-MM-dd")};
+    private static DateTimeFormatter[] possibleDateFormatters = new DateTimeFormatter[]{DateTimeFormat.forPattern("dd/MMM/yyyy"), DateTimeFormat.forPattern("dd/M/yyyy"), DateTimeFormat.forPattern("dd-MMM-yyyy"), DateTimeFormat.forPattern("dd-M-yyyy"), DateTimeFormat.forPattern("dd.M.yyyy"), DateTimeFormat.forPattern("yyyy-MMM-dd"), DateTimeFormat.forPattern("yyyy-MM-dd"), DateTimeFormat.forPattern("yyyy-MM-dd H:m:s.S"),DateTimeFormat.forPattern("yyyy-MM-dd H:m:s")};
     private static String NAN = "NAN";
 
     public static String getText(Row row, int cellNum) {
