@@ -18,6 +18,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
 
+import java.util.stream.Collectors;
+
 @SpringBootApplication
 public class OpenCHS {
     private final ProgramRepository programRepository;
@@ -171,6 +173,8 @@ public class OpenCHS {
                 ProgramOrganisationConfig content = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(content.getProgram().getUuid(), "programUUID"));
+                String conceptUUIDs = content.getAtRiskConcepts().stream().map(CHSEntity::getUuid).collect(Collectors.joining(","));
+                resource.add(new Link(conceptUUIDs, "conceptUUIDs"));
                 return resource;
             }
         };

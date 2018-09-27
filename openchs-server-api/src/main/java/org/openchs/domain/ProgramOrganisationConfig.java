@@ -5,9 +5,7 @@ import org.openchs.domain.programConfig.VisitScheduleConfig;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Entity(name = "program_organisation_config")
 public class ProgramOrganisationConfig extends OrganisationAwareEntity {
@@ -20,6 +18,9 @@ public class ProgramOrganisationConfig extends OrganisationAwareEntity {
     @Type(type = "visitSchedules")
     private VisitScheduleConfig visitSchedule;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "program_organisation_config_at_risk_concept", joinColumns = {@JoinColumn(name = "program_organisation_config_id")}, inverseJoinColumns = {@JoinColumn(name = "concept_id")})
+    private Set<Concept> atRiskConcepts = new HashSet<>();
 
     public Program getProgram() {
         return program;
@@ -35,5 +36,17 @@ public class ProgramOrganisationConfig extends OrganisationAwareEntity {
 
     public void setVisitSchedule(VisitScheduleConfig visitSchedule) {
         this.visitSchedule = visitSchedule;
+    }
+
+    public Set<Concept> getAtRiskConcepts() {
+        return atRiskConcepts;
+    }
+
+    public void setAtRiskConcepts(Set<Concept> atRiskConcepts) {
+        this.atRiskConcepts = atRiskConcepts;
+    }
+
+    public void addAtRiskConcept(Concept concept) {
+        this.atRiskConcepts.add(concept);
     }
 }

@@ -1,7 +1,9 @@
 package org.openchs.web;
 
+import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.ProgramOrganisationConfigRepository;
 import org.openchs.dao.ProgramRepository;
+import org.openchs.domain.Concept;
 import org.openchs.domain.Program;
 import org.openchs.domain.ProgramOrganisationConfig;
 import org.openchs.domain.programConfig.VisitScheduleConfig;
@@ -22,6 +24,9 @@ public class ProgramConfigController {
     @Autowired
     private ProgramRepository programRepository;
 
+    @Autowired
+    private ConceptRepository conceptRepository;
+
 
     @RequestMapping(value = "/{programName}/config", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
@@ -35,6 +40,10 @@ public class ProgramConfigController {
         programOrganisationConfig.setProgram(program);
         programOrganisationConfig.setVisitSchedule(visitScheduleConfig);
         programOrganisationConfig.assignUUIDIfRequired();
+        programConfig.getAtRiskConcepts().forEach(conceptContract -> {
+            Concept concept = conceptRepository.findByUuid(conceptContract.getUuid());
+            programOrganisationConfig.addAtRiskConcept(concept);
+        });
         programOrganisationConfigRepository.save(programOrganisationConfig);
     }
 
