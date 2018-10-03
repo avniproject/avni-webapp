@@ -20,12 +20,14 @@ public class ErrorInterceptors {
     private final Logger logger;
     private final Bugsnag bugsnag;
 
-    @Autowired
     private Environment environment;
 
-    public ErrorInterceptors() {
+    @Autowired
+    public ErrorInterceptors(Environment environment) {
         this.logger = LoggerFactory.getLogger(this.getClass());
-        bugsnag = new Bugsnag(environment.getProperty("OPENCHS_SERVER_BUGSNAG_API_KEY"));
+        this.environment = environment;
+        String bugsnagAPIKey = environment.getProperty("openchs.bugsnag.apiKey");
+        bugsnag = new Bugsnag(bugsnagAPIKey);
     }
 
     @ExceptionHandler(value = {Exception.class})
