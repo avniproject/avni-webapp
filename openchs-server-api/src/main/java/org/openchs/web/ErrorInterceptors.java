@@ -27,6 +27,7 @@ public class ErrorInterceptors {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.environment = environment;
         String bugsnagAPIKey = environment.getProperty("openchs.bugsnag.apiKey");
+        logger.info(String.format("bugsnagAPIKey is: %s", bugsnagAPIKey));
         bugsnag = new Bugsnag(bugsnagAPIKey);
     }
 
