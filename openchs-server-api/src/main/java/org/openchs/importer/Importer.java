@@ -26,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -89,7 +90,7 @@ public abstract class Importer<T extends CHSRequest> {
     }
 
     private Object getCodedConceptValue(String cellValue, ImportCalculatedFields calculatedFields, Concept concept, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList) {
-        ImportCalculatedField calculatedField = calculatedFields.stream().filter(x-> x.getSystemField().equals(systemFieldName)).findFirst().orElse(null);
+        ImportCalculatedField calculatedField = calculatedFields.stream().filter(x -> x.getSystemField().equals(systemFieldName)).findFirst().orElse(null);
         if (calculatedField != null && calculatedField.isMultiSelect()) {
             List<String> answers = calculatedField.getCodedValues(cellValue);
             return answers.stream().map((userAnswer) -> getConceptUuid(concept, systemFieldName, answerMetaDataList, userAnswer)).collect(Collectors.toList());
@@ -131,6 +132,7 @@ public abstract class Importer<T extends CHSRequest> {
         UserContext userContext = UserContextHolder.getUserContext();
         SecurityContext context = SecurityContextHolder.getContext();
         int numberOfDataRows = importSheet.getNumberOfDataRows();
+        AtomicInteger importedRowCount = new AtomicInteger(0);
         List list = Collections.synchronizedList(new ArrayList<>());
         IntStream intStream = IntStream.range(0, numberOfDataRows);
         IntStream stream = (performImport && inParallel && maxNumberOfRecords == null) ? intStream.parallel() : intStream;
@@ -149,6 +151,7 @@ public abstract class Importer<T extends CHSRequest> {
                             logger.info(String.format("Saving/Updating %s with UUID %s", importSheetMetaData.getEntityType(), entityRequest.getUuid()));
                             processRequest(entityRequest);
                             logger.info(String.format("Saved/Updated %s with UUID %s", importSheetMetaData.getEntityType(), entityRequest.getUuid()));
+                            logger.info(String.format("[IMPORTED] %d/%d ROWS", importedRowCount.incrementAndGet(), numberOfDataRows));
                         }
                     } catch (Exception e) {
                         logger.error(String.format("Failed %s with UUID %s with error %s", importSheetMetaData.getEntityType(), entityRequest.getUuid(), e.getMessage()));
