@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @RestController
 public class ProgramController {
@@ -28,27 +29,24 @@ public class ProgramController {
     @RequestMapping(value = "/programs", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-    public void save(@RequestBody ProgramRequest programRequest) {
-        logger.info(String.format("Creating program: %s", programRequest.toString()));
-        Program program = programRepository.findByUuid(programRequest.getUuid());
-        if (program == null) {
-            program = createProgram(programRequest);
-        }
+    public void save(@RequestBody List<ProgramRequest> programRequests) {
+        programRequests.forEach(programRequest -> {
+            logger.info(String.format("Creating program: %s", programRequest.toString()));
+            Program program = programRepository.findByUuid(programRequest.getUuid());
+            if (program == null) {
+                program = createProgram(programRequest);
+            }
 
-        program.setName(programRequest.getName());
-        program.setColour(programRequest.getColour());
+            program.setName(programRequest.getName());
+            program.setColour(programRequest.getColour());
 
-        programRepository.save(program);
+            programRepository.save(program);
+        });
     }
 
     private Program createProgram(ProgramRequest programRequest) {
         Program program = new Program();
         program.setUuid(programRequest.getUuid());
         return program;
-    }
-
-    private boolean programExistsWithSameNameAndDifferentUUID(ProgramRequest programRequest) {
-        Program program = programRepository.findByName(programRequest.getName());
-        return program != null && !program.getUuid().equals(programRequest.getUuid());
     }
 }
