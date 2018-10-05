@@ -428,13 +428,11 @@ BEGIN
                             SELECT DISTINCT type atname,
                             name gname
                           FROM address_level_type_view, gender
-                          WHERE name != ''Other''
                           UNION ALL
                           SELECT
                             ''All'' atname,
                             name gname
                           FROM gender
-                          WHERE name != ''Other''
                           UNION ALL
                           SELECT DISTINCT
                             type atname,
@@ -570,13 +568,11 @@ BEGIN
                             SELECT DISTINCT type atname,
                             name gname
                           FROM address_level_type_view, gender
-                          WHERE name != ''Other''
                           UNION ALL
                           SELECT
                             ''All'' atname,
                             name gname
                           FROM gender
-                          WHERE name != ''Other''
                           UNION ALL
                           SELECT DISTINCT
                             type atname,
