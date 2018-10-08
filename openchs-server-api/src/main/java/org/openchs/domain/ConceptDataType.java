@@ -16,8 +16,13 @@ public enum ConceptDataType {
     Duration;
 
     private static List<ConceptDataType> stringTypes = Arrays.asList(Text, Coded, Notes);
+    private static List<ConceptDataType> dateTypes = Arrays.asList(Date, DateTime,Duration);
 
     public static boolean stringType(String string) {
         return stringTypes.contains(ConceptDataType.valueOf(string));
+    }
+
+    public static boolean dateType(String dataType) {
+        return dateTypes.contains(ConceptDataType.valueOf(dataType));
     }
 }

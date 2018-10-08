@@ -65,7 +65,7 @@ public abstract class Importer<T extends CHSRequest> {
             cellValue = importField.getTextValue(row, sheetHeader, sheetMetaData);
         } else if (ConceptDataType.Numeric.toString().equals(concept.getDataType())) {
             cellValue = importField.getDoubleValue(row, sheetHeader, sheetMetaData);
-        } else if (ConceptDataType.Date.toString().equals(concept.getDataType())) {
+        } else if (ConceptDataType.dateType(concept.getDataType())) {
             cellValue = importField.getTextValue(row, sheetHeader, sheetMetaData);
             if (cellValue != null) {
                 if (((String) cellValue).matches("\b[0-9]+\b|.*[A-Za-z]+.*"))
