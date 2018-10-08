@@ -1,21 +1,24 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 
 @RestController
-public class ProgramEncounterController extends AbstractController<ProgramEncounter> {
+public class ProgramEncounterController extends AbstractController<ProgramEncounter> implements RestControllerResourceProcessor<ProgramEncounter> {
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private ProgramEnrolmentRepository programEnrolmentRepository;
@@ -51,5 +54,33 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
 
         programEncounterRepository.save(encounter);
         logger.info(String.format("Saved programEncounter with uuid %s", request.getUuid()));
+    }
+
+    @RequestMapping(value = "/programEncounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<ProgramEncounter>> getByIndividualsOfCatchmentAndLastModified(
+            @RequestParam("catchmentId") long catchmentId,
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(programEncounterRepository.findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
+    }
+
+    @RequestMapping(value = "/programEncounter/search/lastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<ProgramEncounter>> getByLastModified(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
+    }
+
+    @Override
+    public Resource<ProgramEncounter> process(Resource<ProgramEncounter> resource) {
+        ProgramEncounter programEncounter = resource.getContent();
+        resource.removeLinks();
+        resource.add(new Link(programEncounter.getEncounterType().getUuid(), "encounterTypeUUID"));
+        resource.add(new Link(programEncounter.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
+        return resource;
     }
 }

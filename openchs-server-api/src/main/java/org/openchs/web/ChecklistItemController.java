@@ -1,30 +1,27 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.ChecklistItemDetailRepository;
 import org.openchs.dao.ChecklistItemRepository;
 import org.openchs.dao.ChecklistRepository;
-import org.openchs.dao.ConceptRepository;
-import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
-import org.openchs.domain.ChecklistItemStatus;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.application.ChecklistItemRequest;
-import org.openchs.web.request.application.ChecklistItemStatusRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
-public class ChecklistItemController extends AbstractController<ChecklistItem> {
+public class ChecklistItemController extends AbstractController<ChecklistItem> implements RestControllerResourceProcessor<ChecklistItem> {
     private final ObservationService observationService;
     private final ChecklistItemDetailRepository checklistItemDetailRepository;
     private ChecklistRepository checklistRepository;
@@ -59,5 +56,26 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> {
             checklistItem.setChecklistItemDetail(checklistItemDetailRepository.findByUuid(checklistItemRequest.getChecklistItemDetailUUID()));
         }
         checklistItemRepository.save(checklistItem);
+    }
+
+    @RequestMapping(value = "/txNewChecklistItemEntity/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<ChecklistItem>> getByIndividualsOfCatchmentAndLastModified(
+            @RequestParam("catchmentId") long catchmentId,
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(checklistItemRepository.findByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId,lastModifiedDateTime,now,pageable));
+    }
+
+    @Override
+    public Resource<ChecklistItem> process(Resource<ChecklistItem> resource) {
+        ChecklistItem checklistItem = resource.getContent();
+        resource.removeLinks();
+        resource.add(new Link(checklistItem.getChecklist().getUuid(), "checklistUUID"));
+        if (checklistItem.getChecklistItemDetail() != null) {
+            resource.add(new Link(checklistItem.getChecklistItemDetail().getUuid(), "checklistItemDetailUUID"));
+        }
+        return resource;
     }
 }

@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.dao.ProgramOutcomeRepository;
@@ -12,16 +13,18 @@ import org.openchs.service.ObservationService;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 
 @RestController
-public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> {
+public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment> {
     private final ProgramRepository programRepository;
     private final IndividualRepository individualRepository;
     private final ProgramOutcomeRepository programOutcomeRepository;
@@ -69,5 +72,36 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             programEnrolmentRepository.save(programEnrolment);
         }
         logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
+    }
+
+    @RequestMapping(value = "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<ProgramEnrolment>> getByIndividualsOfCatchmentAndLastModified(
+            @RequestParam("catchmentId") long catchmentId,
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(programEnrolmentRepository.findByIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
+    }
+
+    @RequestMapping(value = "/programEnrolment/search/lastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<ProgramEnrolment>> getByLastModified(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
+    }
+
+    @Override
+    public Resource<ProgramEnrolment> process(Resource<ProgramEnrolment> resource) {
+        ProgramEnrolment programEnrolment = resource.getContent();
+        resource.removeLinks();
+        resource.add(new Link(programEnrolment.getProgram().getUuid(), "programUUID"));
+        resource.add(new Link(programEnrolment.getIndividual().getUuid(), "individualUUID"));
+        if (programEnrolment.getProgramOutcome() != null) {
+            resource.add(new Link(programEnrolment.getProgramOutcome().getUuid(), "programOutcomeUUID"));
+        }
+        return resource;
     }
 }

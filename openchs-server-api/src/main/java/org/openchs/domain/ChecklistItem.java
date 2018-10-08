@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "checklist_item")
+@JsonIgnoreProperties({"checklist"})
 public class ChecklistItem extends OrganisationAwareEntity {
     @Column
     private DateTime completionDate;

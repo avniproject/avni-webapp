@@ -36,78 +36,6 @@ public class OpenCHS {
         app.run(args);
     }
 
-    @Bean
-    public ResourceProcessor<Resource<Individual>> individualProcessor() {
-        return new ResourceProcessor<Resource<Individual>>() {
-            @Override
-            public Resource<Individual> process(Resource<Individual> resource) {
-                Individual individual = resource.getContent();
-                resource.removeLinks();
-                resource.add(new Link(individual.getAddressLevel().getUuid(), "addressUUID"));
-                resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
-                return resource;
-            }
-        };
-    }
-
-    @Bean
-    public ResourceProcessor<Resource<ProgramEncounter>> programEncounterProcessor() {
-        return new ResourceProcessor<Resource<ProgramEncounter>>() {
-            @Override
-            public Resource<ProgramEncounter> process(Resource<ProgramEncounter> resource) {
-                ProgramEncounter programEncounter = resource.getContent();
-                resource.removeLinks();
-                resource.add(new Link(programEncounter.getEncounterType().getUuid(), "encounterTypeUUID"));
-                resource.add(new Link(programEncounter.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
-                return resource;
-            }
-        };
-    }
-
-    @Bean
-    public ResourceProcessor<Resource<Encounter>> encounterProcessor() {
-        return new ResourceProcessor<Resource<Encounter>>() {
-            @Override
-            public Resource<Encounter> process(Resource<Encounter> resource) {
-                Encounter encounter = resource.getContent();
-                resource.removeLinks();
-                resource.add(new Link(encounter.getEncounterType().getUuid(), "encounterTypeUUID"));
-                resource.add(new Link(encounter.getIndividual().getUuid(), "individualUUID"));
-                return resource;
-            }
-        };
-    }
-
-    @Bean
-    public ResourceProcessor<Resource<ProgramEnrolment>> programEnrolmentProcessor() {
-        return new ResourceProcessor<Resource<ProgramEnrolment>>() {
-            @Override
-            public Resource<ProgramEnrolment> process(Resource<ProgramEnrolment> resource) {
-                ProgramEnrolment programEnrolment = resource.getContent();
-                resource.removeLinks();
-                resource.add(new Link(programEnrolment.getProgram().getUuid(), "programUUID"));
-                resource.add(new Link(programEnrolment.getIndividual().getUuid(), "individualUUID"));
-                if (programEnrolment.getProgramOutcome() != null)
-                    resource.add(new Link(programEnrolment.getProgramOutcome().getUuid(), "programOutcomeUUID"));
-                return resource;
-            }
-        };
-    }
-
-    @Bean
-    public ResourceProcessor<Resource<IndividualRelationship>> individualRelationshipProcessor() {
-        return new ResourceProcessor<Resource<IndividualRelationship>>() {
-            @Override
-            public Resource<IndividualRelationship> process(Resource<IndividualRelationship> resource) {
-                IndividualRelationship individualRelationship = resource.getContent();
-                resource.removeLinks();
-                resource.add(new Link(individualRelationship.getRelationship().getUuid(), "relationshipTypeUUID"));
-                resource.add(new Link(individualRelationship.getIndividuala().getUuid(), "individualAUUID"));
-                resource.add(new Link(individualRelationship.getIndividualB().getUuid(), "individualBUUID"));
-                return resource;
-            }
-        };
-    }
 
     @Bean
     public ResourceProcessor<Resource<IndividualRelationshipType>> IndividualRelationshipTypeProcessor() {
@@ -219,22 +147,6 @@ public class OpenCHS {
     }
 
     @Bean
-    public ResourceProcessor<Resource<Checklist>> ChecklistProcessor() {
-        return new ResourceProcessor<Resource<Checklist>>() {
-            @Override
-            public Resource<Checklist> process(Resource<Checklist> resource) {
-                Checklist checklist = resource.getContent();
-                resource.removeLinks();
-                resource.add(new Link(checklist.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
-                if (checklist.getChecklistDetail() != null) {
-                    resource.add(new Link(checklist.getChecklistDetail().getUuid(), "checklistDetailUUID"));
-                }
-                return resource;
-            }
-        };
-    }
-
-    @Bean
     public ResourceProcessor<Resource<Rule>> RuleProcessor() {
         return new ResourceProcessor<Resource<Rule>>() {
             @Override
@@ -242,22 +154,6 @@ public class OpenCHS {
                 Rule rule = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(rule.getForm().getUuid(), "formUUID"));
-                return resource;
-            }
-        };
-    }
-
-    @Bean
-    public ResourceProcessor<Resource<ChecklistItem>> ChecklistItemProcessor() {
-        return new ResourceProcessor<Resource<ChecklistItem>>() {
-            @Override
-            public Resource<ChecklistItem> process(Resource<ChecklistItem> resource) {
-                ChecklistItem checklistItem = resource.getContent();
-                resource.removeLinks();
-                resource.add(new Link(checklistItem.getChecklist().getUuid(), "checklistUUID"));
-                if (checklistItem.getChecklistItemDetail() != null) {
-                    resource.add(new Link(checklistItem.getChecklistItemDetail().getUuid(), "checklistItemDetailUUID"));
-                }
                 return resource;
             }
         };

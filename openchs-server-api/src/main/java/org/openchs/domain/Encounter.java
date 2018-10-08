@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "encounter")
+@JsonIgnoreProperties({"individual"})
 public class Encounter extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull

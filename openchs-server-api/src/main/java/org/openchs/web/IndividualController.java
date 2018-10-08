@@ -1,29 +1,29 @@
 package org.openchs.web;
 
-import org.openchs.dao.LocationRepository;
+import org.joda.time.DateTime;
 import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.LocationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
-import org.openchs.domain.UserContext;
-import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
-import org.openchs.web.request.IndividualWithHistory;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 
 @RestController
-public class IndividualController extends AbstractController<Individual> {
+public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual> {
     private final IndividualRepository individualRepository;
     private final LocationRepository locationRepository;
     private final GenderRepository genderRepository;
@@ -51,6 +51,34 @@ public class IndividualController extends AbstractController<Individual> {
         individual.setObservations(observationService.createObservations(individualRequest.getObservations()));
         individualRepository.save(individual);
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
+    }
+
+    @RequestMapping(value = "/individual/search/byCatchmentAndLastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<Individual>> getIndividualsByCatchmentAndLastModified(
+            @RequestParam("catchmentId") long catchmentId,
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(individualRepository.findByAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
+    }
+
+    @RequestMapping(value = "/individual/search/lastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<Individual>> getIndividualsByLastModified(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(individualRepository.findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
+    }
+
+    @Override
+    public Resource<Individual> process(Resource<Individual> resource) {
+        Individual individual = resource.getContent();
+        resource.removeLinks();
+        resource.add(new Link(individual.getAddressLevel().getUuid(), "addressUUID"));
+        resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
+        return resource;
     }
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {

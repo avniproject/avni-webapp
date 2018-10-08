@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "checklist")
+@JsonIgnoreProperties({"items","programEnrolment"})
 public class Checklist extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull

@@ -13,7 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter")
+@RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter", exported = false)
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface ProgramEncounterRepository extends PagingAndSortingRepository<ProgramEncounter, Long>, CHSRepository<ProgramEncounter>, FindByLastModifiedDateTime<ProgramEncounter> {
     @RestResource(path = "byIndividualsOfCatchmentAndLastModified", rel = "byIndividualsOfCatchmentAndLastModified")

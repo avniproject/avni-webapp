@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -9,6 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "program_encounter")
+@JsonIgnoreProperties({"programEnrolment"})
 public class ProgramEncounter extends OrganisationAwareEntity {
     @Column
     private String name;
