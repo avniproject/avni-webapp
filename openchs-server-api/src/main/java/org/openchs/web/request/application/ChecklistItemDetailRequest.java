@@ -3,6 +3,7 @@ package org.openchs.web.request.application;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ConceptContract;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChecklistItemDetailRequest extends CHSRequest {
@@ -19,7 +20,7 @@ public class ChecklistItemDetailRequest extends CHSRequest {
     }
 
     public List<ChecklistItemStatusRequest> getStatus() {
-        return status;
+        return status == null ? new ArrayList<>() : this.status;
     }
 
     public void setStatus(List<ChecklistItemStatusRequest> status) {

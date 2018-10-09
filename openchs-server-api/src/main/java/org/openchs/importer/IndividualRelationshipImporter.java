@@ -38,6 +38,7 @@ public class IndividualRelationshipImporter extends Importer<IndividualRelations
 
     @Override
     protected Boolean processRequest(IndividualRelationshipRequest entityRequest) {
+        logger.info(String.format("Saving Relationship %s, between %s and %s", entityRequest.getRelationshipTypeUUID(), entityRequest.getIndividualAUUID(), entityRequest.getIndividualBUUID()));
         individualRelationshipController.save(entityRequest);
         return true;
     }

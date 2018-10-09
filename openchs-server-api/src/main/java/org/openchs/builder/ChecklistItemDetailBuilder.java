@@ -51,7 +51,7 @@ public class ChecklistItemDetailBuilder extends BaseBuilder<ChecklistItemDetail,
     }
 
     public ChecklistItemDetailBuilder withChecklistItemStatus(List<ChecklistItemStatusRequest> checklistItemStatuses) {
-        this.set("ChecklistItemStatus", this.makeStatus(checklistItemStatuses), ChecklistItemStatus.class);
+        this.get().setChecklistItemStatus(this.makeStatus(checklistItemStatuses));
         return this;
     }
 

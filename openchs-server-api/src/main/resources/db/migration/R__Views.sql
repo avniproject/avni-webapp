@@ -162,3 +162,12 @@ CREATE OR REPLACE VIEW address_level_type_view AS
   SELECT al.*, alt.name as "type"
   from address_level al
          inner join address_level_type alt on al.type_id = alt.id;
+
+
+
+CREATE OR REPLACE VIEW coded_concept AS
+select c2.id as id, c2.name as name, string_agg(c1.name, ', ') as answers
+from concept_answer ca
+       inner join concept c1 on ca.answer_concept_id = c1.id
+       inner join concept c2 on ca.concept_id = c2.id
+GROUP BY c2.id;
