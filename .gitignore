@@ -21,3 +21,4 @@ major_version
 .classpath
 bin/
 openchs-server-api/org.openchs.domain.Concept/
+local.properties

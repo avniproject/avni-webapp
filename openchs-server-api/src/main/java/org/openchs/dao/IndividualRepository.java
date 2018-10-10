@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface IndividualRepository extends PagingAndSortingRepository<Individual, Long>, CHSRepository<Individual> {
+public interface IndividualRepository extends PagingAndSortingRepository<Individual, Long>, CHSRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
     Page<Individual> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -23,4 +23,20 @@ public interface IndividualRepository extends PagingAndSortingRepository<Individ
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
+
+    Page<Individual> findByFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long facilityId,
+            DateTime lastModifiedDateTime,
+            DateTime now,
+            Pageable pageable);
+
+    @Override
+    default Page<Individual> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+        return findByAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default Page<Individual> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+        return findByFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, lastModifiedDateTime, now, pageable);
+    }
 }

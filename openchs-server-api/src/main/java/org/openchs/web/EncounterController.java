@@ -4,9 +4,11 @@ import org.joda.time.DateTime;
 import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
+import org.openchs.service.UserService;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
 import org.slf4j.LoggerFactory;
@@ -22,20 +24,22 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 
 @RestController
-public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter> {
+public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter>, OperatingIndividualScopeAwareController<Encounter> {
     private final IndividualRepository individualRepository;
     private final EncounterTypeRepository encounterTypeRepository;
     private final EncounterRepository encounterRepository;
-    private ObservationService observationService;
+    private final ObservationService observationService;
+    private final UserService userService;
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
     @Autowired
-    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService) {
+    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService, UserService userService) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
+        this.userService = userService;
     }
 
     @RequestMapping(value = "/encounters", method = RequestMethod.POST)
@@ -85,6 +89,15 @@ public class EncounterController extends AbstractController<Encounter> implement
         return wrap(encounterRepository.findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
     }
 
+    @RequestMapping(value = "/encounter", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<Encounter>> getEncountersByOperatingIndividualScope(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+    }
+
     @Override
     public Resource<Encounter> process(Resource<Encounter> resource) {
         Encounter encounter = resource.getContent();
@@ -92,5 +105,10 @@ public class EncounterController extends AbstractController<Encounter> implement
         resource.add(new Link(encounter.getEncounterType().getUuid(), "encounterTypeUUID"));
         resource.add(new Link(encounter.getIndividual().getUuid(), "individualUUID"));
         return resource;
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository<Encounter> resourceRepository() {
+        return encounterRepository;
     }
 }

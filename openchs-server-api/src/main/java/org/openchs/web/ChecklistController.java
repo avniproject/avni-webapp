@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.Checklist;
+import org.openchs.service.UserService;
 import org.openchs.web.request.ChecklistRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -16,18 +17,20 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 
 @RestController
-public class ChecklistController extends AbstractController<Checklist> implements RestControllerResourceProcessor<Checklist> {
+public class ChecklistController extends AbstractController<Checklist> implements RestControllerResourceProcessor<Checklist>, OperatingIndividualScopeAwareController<Checklist> {
     private final ChecklistDetailRepository checklistDetailRepository;
-    private ChecklistRepository checklistRepository;
-    private ProgramEnrolmentRepository programEnrolmentRepository;
+    private final ChecklistRepository checklistRepository;
+    private final ProgramEnrolmentRepository programEnrolmentRepository;
+    private final UserService userService;
 
     @Autowired
     public ChecklistController(ChecklistRepository checklistRepository,
                                ProgramEnrolmentRepository programEnrolmentRepository,
-                               ChecklistDetailRepository checklistDetailRepository) {
+                               ChecklistDetailRepository checklistDetailRepository, UserService userService) {
         this.checklistDetailRepository = checklistDetailRepository;
         this.checklistRepository = checklistRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
+        this.userService = userService;
     }
 
     @Transactional
@@ -58,6 +61,17 @@ public class ChecklistController extends AbstractController<Checklist> implement
         return wrap(checklistRepository.findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
     }
 
+
+    @RequestMapping(value = "/txNewChecklistEntity", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<Checklist>> getChecklistsByOperatingIndividualScope(
+            @RequestParam("catchmentId") long catchmentId,
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+    }
+
     @Override
     public Resource<Checklist> process(Resource<Checklist> resource) {
         Checklist checklist = resource.getContent();
@@ -69,4 +83,8 @@ public class ChecklistController extends AbstractController<Checklist> implement
         return resource;
     }
 
+    @Override
+    public OperatingIndividualScopeAwareRepository<Checklist> resourceRepository() {
+        return checklistRepository;
+    }
 }

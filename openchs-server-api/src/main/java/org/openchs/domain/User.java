@@ -54,6 +54,11 @@ public class User {
     @JoinColumn(name = "catchment_id")
     private Catchment catchment;
 
+    @NotNull
+    @Column(name = "operating_individual_scope")
+    @Enumerated(value = EnumType.STRING)
+    private OperatingIndividualScope operatingIndividualScope;
+
     public static final String USER = "user";
     public static final String ORGANISATION_ADMIN = "organisation_admin";
     public static final String ADMIN = "admin";
@@ -198,5 +203,24 @@ public class User {
 
     public boolean isAdmin() {
         return isAdmin;
+    }
+
+    @NotNull
+    public OperatingIndividualScope getOperatingIndividualScope() {
+        return operatingIndividualScope;
+    }
+
+    public void setOperatingIndividualScope(@NotNull OperatingIndividualScope operatingIndividualScope) {
+        this.operatingIndividualScope = operatingIndividualScope;
+    }
+
+    public Facility getFacility() {
+        Set<UserFacilityMapping> userFacilityMappings = getUserFacilityMappings();
+        if (userFacilityMappings.size() > 1) {
+            throw new AssertionError("User cannot belong to more than one facility yet");
+        } else if (userFacilityMappings.size() == 1) {
+            return userFacilityMappings.stream().findFirst().get().getFacility();
+        }
+        return null;
     }
 }

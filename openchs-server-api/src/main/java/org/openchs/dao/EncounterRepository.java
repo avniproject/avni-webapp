@@ -12,15 +12,23 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter", exported = false)
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface EncounterRepository extends PagingAndSortingRepository<Encounter, Long>, CHSRepository<Encounter> {
+public interface EncounterRepository extends PagingAndSortingRepository<Encounter, Long>, CHSRepository<Encounter>, OperatingIndividualScopeAwareRepository<Encounter> {
     Page<Encounter> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAudit_LastModifiedDateTimeAscIdAsc(
-            DateTime lastModifiedDateTime,
-            DateTime now,
-            Pageable pageable);
+            DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
     Page<Encounter> findByIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
-            Pageable pageable);
+            long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+
+    Page<Encounter> findByIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+
+    @Override
+    default Page<Encounter> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+        return findByIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default Page<Encounter> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+        return findByIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, lastModifiedDateTime, now, pageable);
+    }
 }

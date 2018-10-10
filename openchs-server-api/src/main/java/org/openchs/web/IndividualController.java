@@ -4,9 +4,8 @@ import org.joda.time.DateTime;
 import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.LocationRepository;
-import org.openchs.domain.AddressLevel;
-import org.openchs.domain.Gender;
-import org.openchs.domain.Individual;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
+import org.openchs.domain.*;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
@@ -23,12 +22,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 
 @RestController
-public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual> {
+public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual>, OperatingIndividualScopeAwareController<Individual> {
     private final IndividualRepository individualRepository;
     private final LocationRepository locationRepository;
     private final GenderRepository genderRepository;
-    private ObservationService observationService;
-    private UserService userService;
+    private final ObservationService observationService;
+    private final UserService userService;
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
@@ -53,6 +52,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
     }
 
+    @Deprecated
     @RequestMapping(value = "/individual/search/byCatchmentAndLastModified", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public PagedResources<Resource<Individual>> getIndividualsByCatchmentAndLastModified(
@@ -63,6 +63,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         return wrap(individualRepository.findByAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
     }
 
+    @Deprecated
     @RequestMapping(value = "/individual/search/lastModified", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
     public PagedResources<Resource<Individual>> getIndividualsByLastModified(
@@ -72,6 +73,15 @@ public class IndividualController extends AbstractController<Individual> impleme
         return wrap(individualRepository.findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
     }
 
+    @RequestMapping(value = "/individual", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<Individual>> getIndividualsByOperatingIndividualScope(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+    }
+
     @Override
     public Resource<Individual> process(Resource<Individual> resource) {
         Individual individual = resource.getContent();
@@ -79,6 +89,11 @@ public class IndividualController extends AbstractController<Individual> impleme
         resource.add(new Link(individual.getAddressLevel().getUuid(), "addressUUID"));
         resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
         return resource;
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository<Individual> resourceRepository() {
+        return individualRepository;
     }
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {

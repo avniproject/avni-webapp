@@ -12,14 +12,25 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "txNewChecklistEntity", path = "txNewChecklistEntity", exported = false)
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface ChecklistRepository extends PagingAndSortingRepository<Checklist, Long>, CHSRepository<Checklist> {
+public interface ChecklistRepository extends PagingAndSortingRepository<Checklist, Long>, CHSRepository<Checklist>, OperatingIndividualScopeAwareRepository<Checklist> {
+
     Page<Checklist> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId,
-            DateTime lastModifiedDateTime,
-            DateTime now,
-            Pageable pageable);
+            long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+
+    Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
     Checklist findByProgramEnrolmentId(long programEnrolmentId);
 
     Checklist findByProgramEnrolmentUuidAndChecklistDetailName(String enrolmentUUID, String name);
+
+    @Override
+    default Page<Checklist> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+        return findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default Page<Checklist> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+        return findByProgramEnrolmentIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, lastModifiedDateTime, now, pageable);
+    }
 }

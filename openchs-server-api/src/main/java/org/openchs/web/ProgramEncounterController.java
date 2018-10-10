@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.service.ObservationService;
+import org.openchs.service.UserService;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +19,22 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 
 @RestController
-public class ProgramEncounterController extends AbstractController<ProgramEncounter> implements RestControllerResourceProcessor<ProgramEncounter> {
+public class ProgramEncounterController extends AbstractController<ProgramEncounter> implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter> {
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private ProgramEnrolmentRepository programEnrolmentRepository;
     private ObservationService observationService;
+    private UserService userService;
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationService = observationService;
+        this.userService = userService;
     }
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
@@ -75,6 +78,15 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         return wrap(programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
     }
 
+    @RequestMapping(value = "/programEncounter", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    public PagedResources<Resource<ProgramEncounter>> getProgramEncountersByOperatingIndividualScope(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(),lastModifiedDateTime, now, pageable));
+    }
+
     @Override
     public Resource<ProgramEncounter> process(Resource<ProgramEncounter> resource) {
         ProgramEncounter programEncounter = resource.getContent();
@@ -82,5 +94,10 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         resource.add(new Link(programEncounter.getEncounterType().getUuid(), "encounterTypeUUID"));
         resource.add(new Link(programEncounter.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
         return resource;
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository<ProgramEncounter> resourceRepository() {
+        return programEncounterRepository;
     }
 }
