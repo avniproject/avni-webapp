@@ -30,7 +30,7 @@ public class ChecklistItem extends OrganisationAwareEntity {
     @JoinColumn(name = "checklist_id")
     private Checklist checklist;
 
-    public DateTime getCompletion3Date() {
+    public DateTime getCompletionDate() {
         return completionDate;
     }
 
