@@ -37,6 +37,7 @@ public abstract class Importer<T extends CHSRequest> {
     protected UserRepository userRepository;
     private ConceptRepository conceptRepository;
     private FormElementRepository formElementRepository;
+    private boolean ignoreMissingAnswers;
 
     protected Importer(ConceptRepository conceptRepository, FormElementRepository formElementRepository, UserRepository userRepository) {
         this.conceptRepository = conceptRepository;
@@ -81,7 +82,8 @@ public abstract class Importer<T extends CHSRequest> {
         if (cellValue == null) return null;
 
         if (ConceptDataType.Coded.toString().equals(concept.getDataType())) {
-            cellValue = getCodedConceptValue((String) cellValue, calculatedFields, concept, systemFieldName, answerMetaDataList);
+            ignoreMissingAnswers = importField.doIgnoreMissingAnswers();
+            cellValue = getCodedConceptValue((String) cellValue, calculatedFields, concept, systemFieldName, answerMetaDataList,ignoreMissingAnswers);
         }
 
         if (cellValue == null) return null;
@@ -89,18 +91,18 @@ public abstract class Importer<T extends CHSRequest> {
         return observationRequest;
     }
 
-    private Object getCodedConceptValue(String cellValue, ImportCalculatedFields calculatedFields, Concept concept, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList) {
+    private Object getCodedConceptValue(String cellValue, ImportCalculatedFields calculatedFields, Concept concept, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList, boolean ignoreMissingAnswers) {
         ImportCalculatedField calculatedField = calculatedFields.stream().filter(x -> x.getSystemField().equals(systemFieldName)).findFirst().orElse(null);
         if (calculatedField != null && calculatedField.isMultiSelect()) {
             List<String> answers = calculatedField.getCodedValues(cellValue);
-            return answers.stream().map((userAnswer) -> getConceptUuid(concept, systemFieldName, answerMetaDataList, userAnswer)).collect(Collectors.toList());
+            return answers.stream().map((userAnswer) -> getConceptUuid(concept, systemFieldName, answerMetaDataList, userAnswer, ignoreMissingAnswers)).collect(Collectors.toList());
         }
-        return getConceptUuid(concept, systemFieldName, answerMetaDataList, cellValue);
+        return getConceptUuid(concept, systemFieldName, answerMetaDataList, cellValue, ignoreMissingAnswers);
     }
 
-    private String getConceptUuid(Concept concept, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList, String userAnswer) {
+    private String getConceptUuid(Concept concept, String systemFieldName, ImportAnswerMetaDataList answerMetaDataList, String userAnswer, boolean ignoreMissingAnswers) {
         String systemAnswer = answerMetaDataList.getSystemAnswer(userAnswer, concept.getName());
-        if (systemAnswer == null) {
+        if (systemAnswer == null|| ignoreMissingAnswers) {
             return null;
         }
         Concept answerConcept = conceptRepository.findByNameIgnoreCase(systemAnswer.trim());

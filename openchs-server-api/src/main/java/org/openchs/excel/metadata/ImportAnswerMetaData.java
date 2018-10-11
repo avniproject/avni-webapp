@@ -34,6 +34,10 @@ public class ImportAnswerMetaData {
     }
 
     public boolean matches(String userAnswer, String conceptName) {
+        if(this.getUserAnswer() == null)
+        {
+            throw new RuntimeException("userAnswer is null for Answer Field:  "+this.conceptName);
+        }
         return this.getUserAnswer().equals(userAnswer) && (StringUtils.isEmpty(this.conceptName) || this.conceptName.equals(conceptName));
     }
 }

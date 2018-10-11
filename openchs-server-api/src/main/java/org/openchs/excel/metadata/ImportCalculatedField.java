@@ -55,6 +55,10 @@ public class ImportCalculatedField implements ImportField {
         return entityType;
     }
 
+    public Boolean doIgnoreMissingAnswers() {
+        return false;
+    }
+
     @Override
     public String getSystemFieldName() {
         return systemField;

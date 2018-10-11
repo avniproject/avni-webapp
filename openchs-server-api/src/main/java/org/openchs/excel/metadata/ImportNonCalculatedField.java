@@ -14,6 +14,7 @@ public class ImportNonCalculatedField implements ImportField {
     private String systemFieldName;
     private String userFileType;
     private String userField;
+    private String ignoreMissingAnswers;
 
     public FormType getFormType() {
         return formType;
@@ -48,6 +49,10 @@ public class ImportNonCalculatedField implements ImportField {
         this.userField = userField;
     }
 
+    public void setIgnoreMissingAnswers(String ignoreMissingAnswers){
+        this.ignoreMissingAnswers = ignoreMissingAnswers;
+    }
+
     @Override
     public String getTextValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         int position = getPosition(importSheetHeader);
@@ -70,6 +75,12 @@ public class ImportNonCalculatedField implements ImportField {
         return position == -1 ? null : ExcelUtil.getDate(row, position);
     }
 
+    public Boolean doIgnoreMissingAnswers() {
+        if (this.ignoreMissingAnswers == null || this.ignoreMissingAnswers.isEmpty()) return false;
+        else if (this.ignoreMissingAnswers.toLowerCase().equals("true")) return true;
+        return false;
+    }
+
     @Override
     public Boolean getBooleanValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         int position = getPosition(importSheetHeader);
@@ -87,6 +98,7 @@ public class ImportNonCalculatedField implements ImportField {
                 ", formType=" + formType +
                 ", systemFieldName='" + systemFieldName + '\'' +
                 ", userFileType='" + userFileType + '\'' +
+                ", ignoreMissingAnswers='" + ignoreMissingAnswers + '\'' +
                 '}';
     }
 }

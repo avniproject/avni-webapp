@@ -23,6 +23,10 @@ public class ImportDefaultField implements ImportField {
         return systemFieldName;
     }
 
+    public Boolean doIgnoreMissingAnswers() {
+        return false;
+    }
+
     @Override
     public String getTextValue(Row row, ImportSheetHeader importSheetHeader, ImportSheetMetaData importSheetMetaData) {
         if (defaultValue instanceof Double) {

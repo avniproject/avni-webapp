@@ -129,6 +129,7 @@ public class ImportMetaDataExcelReader {
             nonCalculatedField.setFormType(FormType.valueOf(ExcelUtil.getText(row, 1)));
             nonCalculatedField.setSystemFieldName(ExcelUtil.getText(row, 2));
             nonCalculatedField.setUserField(ExcelUtil.getText(row, 3));
+            nonCalculatedField.setIgnoreMissingAnswers(ExcelUtil.getText(row, 4));
             nonCalculatedFields.add(nonCalculatedField);
             logger.info(String.format("Read row number %d of Fields", rowNumber - 1));
         }
