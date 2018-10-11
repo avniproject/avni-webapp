@@ -58,7 +58,11 @@ INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (3, 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325');
 
 INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope)
-VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'ByCatchment');
+VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'None');
+INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope)
+VALUES (2, 'demo-admin', '0e53a72c-a109-49f2-918c-9599b266a585', 2, 'None');
+INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope)
+VALUES (3, 'a-demo-admin', 'd84df3cf-cdb4-4309-ad91-e0402f6e326a', 3, 'None');
 
 INSERT INTO catchment (id, name, uuid, version, organisation_id, type)
 VALUES

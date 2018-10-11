@@ -42,7 +42,7 @@ public abstract class AbstractControllerIntegrationTest {
         template.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "OpenCHS");
+                            .add(AuthenticationFilter.USER_NAME_HEADER, "admin");
                     return execution.execute(request, body);
                 }));
 

@@ -50,4 +50,4 @@ INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
 
 INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope)
-VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'ByCatchment');
+VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'None');

@@ -40,8 +40,8 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     @Value("${cognito.clientid}")
     private String clientId;
 
-    @Value("${openchs.defaultOrgName}")
-    private String defaultOrganisation;
+    @Value("${openchs.defaultUserName}")
+    private String defaultUserName;
 
     private OrganisationRepository organisationRepository;
     private UserRepository userRepository;
@@ -77,23 +77,17 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     }
 
     @Override
-    public UserContext getUserContext(String token, String becomeOrganisationName) {
+    public UserContext getUserContext(String token, String becomeUserName) {
         logConfiguration();
         if (isDev) {
             UserContext userContext = new UserContext();
-            String organisationName = StringUtils.isEmpty(becomeOrganisationName) ? defaultOrganisation : becomeOrganisationName.trim();
-            userContext.setOrganisation(organisationRepository.findByName(organisationName));
+            User user = userRepository.findByName(StringUtils.isEmpty(becomeUserName) ? defaultUserName : becomeUserName);
+            userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
             userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
+            userContext.setUser(user);
             return userContext;
         } else {
-            return getUserContext(token, true, becomeOrganisationName);
-        }
-    }
-
-    @Override
-    public void setUserForInDevMode(UserContext userContext) {
-        if (isDev) {
-            userContext.setUser(userRepository.findByName("admin"));
+            return getUserContext(token, true, becomeUserName);
         }
     }
 

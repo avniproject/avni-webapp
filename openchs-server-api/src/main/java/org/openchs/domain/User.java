@@ -49,7 +49,6 @@ public class User {
     @Column
     private boolean isAdmin;
 
-    @NotNull
     @ManyToOne
     @JoinColumn(name = "catchment_id")
     private Catchment catchment;
@@ -103,7 +102,6 @@ public class User {
         this.uuid = uuid;
     }
 
-    @NotNull
     public Catchment getCatchment() {
         return catchment;
     }

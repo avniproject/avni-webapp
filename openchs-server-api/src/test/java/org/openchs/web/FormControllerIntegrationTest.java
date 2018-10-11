@@ -72,7 +72,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         template.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "OpenCHS");
+                            .add(AuthenticationFilter.USER_NAME_HEADER, "admin");
                     return execution.execute(request, body);
                 }));
     }
@@ -213,7 +213,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         template.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "demo");
+                            .add(AuthenticationFilter.USER_NAME_HEADER, "demo-admin");
                     return execution.execute(request, body);
                 }));
         template.patchForObject("/forms", getJson("/ref/demo/originalFormChanges.json"), Void.class, new Object());
@@ -238,7 +238,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         template.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "demo");
+                            .add(AuthenticationFilter.USER_NAME_HEADER, "demo-admin");
                     return execution.execute(request, body);
                 }));
         template.patchForObject("/forms", getJson("/ref/demo/originalNewFormElementGroup.json"), Void.class, new Object());
@@ -263,7 +263,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         template.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "demo");
+                            .add(AuthenticationFilter.USER_NAME_HEADER, "admin");
                     return execution.execute(request, body);
                 }));
         template.patchForObject("/forms", getJson("/ref/demo/originalNewFormElementGroup.json"), Void.class, new Object());
@@ -289,7 +289,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         template.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
-                            .add(AuthenticationFilter.ORGANISATION_NAME_HEADER, "a-demo");
+                            .add(AuthenticationFilter.USER_NAME_HEADER, "a-admin");
                     return execution.execute(request, body);
                 }));
         formResponse = template.getForEntity(path, LinkedHashMap.class, uriParams);

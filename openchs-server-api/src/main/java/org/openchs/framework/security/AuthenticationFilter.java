@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 public class AuthenticationFilter extends BasicAuthenticationFilter {
     private static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
-    public static final String ORGANISATION_NAME_HEADER = "ORGANISATION-NAME";
+    public static final String USER_NAME_HEADER = "USER-NAME";
     private final UserContextService userContextService;
     public final static SimpleGrantedAuthority USER_AUTHORITY = new SimpleGrantedAuthority(User.USER);
     public final static SimpleGrantedAuthority ADMIN_AUTHORITY = new SimpleGrantedAuthority(User.ADMIN);
@@ -43,17 +43,15 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
+            logger.info(String.format("Processing %s %s?%s Header: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), request.getHeader("USER")));
             SecurityContextHolder.getContext().setAuthentication(createTempAuth());
             Authentication authentication = this.attemptAuthentication(request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserContext userContext = UserContextHolder.getUserContext();
-            //doing this here because loading user before setting auth gives error
-            this.setUserForInDevMode(userContext);
 
-            String organisationName = userContext.getOrganisationName();
-            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), organisationName));
+            UserContext userContext = UserContextHolder.getUserContext();
+            logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), userContext.getOrganisationName()));
             chain.doFilter(request, response);
-            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), organisationName));
+            logger.info(String.format("Processed %s %s?%s User: %s, Organisation: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), userContext.getUserName(), userContext.getOrganisationName()));
         } catch (Exception exception) {
             this.logException(request, exception);
             throw exception;
@@ -67,22 +65,17 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
         logger.error("Exception Message:", exception);
     }
 
-    private void setUserForInDevMode(UserContext userContext) {
-        this.userContextService.setUserForInDevMode(userContext);
-    }
-
+    //Side effect
     private Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
         String token = request.getHeader(AUTH_TOKEN_HEADER);
         if (token == null || StringUtils.isEmpty(token)) token = UUID.randomUUID().toString();
-        String becomeOrganisationName = request.getHeader(ORGANISATION_NAME_HEADER);
+        String becomeUserName = request.getHeader(USER_NAME_HEADER);
 
-        final UserContext userContext = this.userContextService.getUserContext(token, becomeOrganisationName);
+        final UserContext userContext = this.userContextService.getUserContext(token, becomeUserName);
 
         List<SimpleGrantedAuthority> authorities = Stream.of(USER_AUTHORITY, ADMIN_AUTHORITY, ORGANISATION_ADMIN_AUTHORITY)
                 .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))
                 .collect(Collectors.toList());
-
-        //Side effect
         UserContextHolder.create(userContext);
 
         if (authorities.isEmpty()) return null;

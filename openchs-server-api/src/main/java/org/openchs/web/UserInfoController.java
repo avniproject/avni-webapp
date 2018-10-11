@@ -2,10 +2,7 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.Catchment;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.User;
-import org.openchs.domain.UserFacilityMapping;
+import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.UserService;
 import org.openchs.web.request.UserContract;
@@ -93,6 +90,7 @@ public class UserInfoController {
             user.setOrganisationId(organisationId);
             user.setOrgAdmin(userContract.isOrgAdmin());
             user.setAdmin(userContract.isAdmin());
+            user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
 
             setAuditInfo(user);
 
