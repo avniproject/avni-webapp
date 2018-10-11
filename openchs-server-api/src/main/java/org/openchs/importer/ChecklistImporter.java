@@ -103,13 +103,13 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
                     break;
                 case "Item Name":
                     String checklistItemName = importField.getTextValue(row, header, importSheetMetaData);
-                    ChecklistItemDetail checklistItemDetail = checklistItemDetailRepository.findByConceptName(checklistItemName);
-                    try {
+                    ChecklistItemDetail checklistItemDetail = checklistItemDetailRepository.findByConceptNameIgnoreCase(checklistItemName);
+                    if (checklistItemDetail != null) {
                         logger.info(String.format("Checklist Item Detail: %s", checklistItemDetail.getUuid()));
                         checklistItemRequest.setChecklistItemDetailUUID(checklistItemDetail.getUuid());
-                    } catch (Exception e) {
+                    } else {
                         logger.error(String.format("Checklist Item Detail By Name %s not found", checklistItemName));
-                        throw e;
+                        throw new NullPointerException(String.format("Checklist Item Detail By Name %s not found", checklistItemName));
                     }
                     break;
                 case "Completion Date":

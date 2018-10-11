@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(collectionResourceRel = "checklistItemDetail", path = "checklistItemDetail")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
 public interface ChecklistItemDetailRepository extends PagingAndSortingRepository<ChecklistItemDetail, Long>, CHSRepository<ChecklistItemDetail>, FindByLastModifiedDateTime<ChecklistItemDetail> {
-    ChecklistItemDetail findByConceptName(String conceptName);
+    ChecklistItemDetail findByConceptNameIgnoreCase(String conceptName);
 }
