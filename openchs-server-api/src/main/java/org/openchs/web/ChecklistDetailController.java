@@ -20,11 +20,13 @@ import javax.transaction.Transactional;
 
 @RestController
 public class ChecklistDetailController {
+    private final ChecklistDetailRepository checklistDetailRepository;
+    private static Logger logger = LoggerFactory.getLogger(ChecklistDetailController.class);
+
     @Autowired
-    private ChecklistDetailRepository checklistDetailRepository;
-
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    public ChecklistDetailController(ChecklistDetailRepository checklistDetailRepository) {
+        this.checklistDetailRepository = checklistDetailRepository;
+    }
 
     @RequestMapping(value = "/checklistDetail", method = RequestMethod.POST)
     @Transactional

@@ -18,15 +18,19 @@ import java.util.Map;
 
 @Component
 public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter {
-    public static final int DEFAULT_CATCHMENT_ID_FOR_DEV = 1;
-    @Autowired
-    private Environment environment;
+    private static final int DEFAULT_CATCHMENT_ID_FOR_DEV = 1;
+    private final Environment environment;
 
     private final Map<String, Integer> nowMap = new HashMap<String, Integer>() {{
         put("live", 10);
         put("dev", 0);
         put("test", 0);
     }};
+
+    @Autowired
+    public TransactionalResourceInterceptor(Environment environment) {
+        this.environment = environment;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request,
