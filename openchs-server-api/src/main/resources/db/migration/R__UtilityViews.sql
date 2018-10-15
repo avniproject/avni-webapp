@@ -118,3 +118,5 @@ create view all_programs as
   from operational_program
     inner join program p on p.id = operational_program.program_id
   where not operational_program.is_voided or not p.is_voided;
+
+create view all_

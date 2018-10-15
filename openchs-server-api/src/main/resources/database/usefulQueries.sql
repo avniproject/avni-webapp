@@ -61,6 +61,18 @@ from
     select program_name as name
     from all_programs
     where organisation_id = :organisation_id
+    union
+    select name
+    from checklist_detail
+    where organisation_id = :organisation_id
+    union
+    select type as name
+    from catchment
+    where organisation_id = :organisation_id
+    union
+    select title as name
+    from address_level
+    where organisation_id = :organisation_id
 
     union
 
