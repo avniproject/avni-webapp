@@ -4,6 +4,7 @@ DROP VIEW IF EXISTS adolescent_visit_summary;
 DROP VIEW IF EXISTS adolescents;
 DROP VIEW IF EXISTS adolescent_visit;
 DROP VIEW IF EXISTS checklist_items;
+DROP VIEW IF EXISTS boolean;
 
 -- <RCH>
 CREATE OR REPLACE VIEW mother_program_enrolments AS
@@ -171,3 +172,8 @@ from concept_answer ca
        inner join concept c1 on ca.answer_concept_id = c1.id
        inner join concept c2 on ca.concept_id = c2.id
 GROUP BY c2.id;
+
+CREATE VIEW boolean AS
+(select 'Yes' as status
+ union
+select 'No' as status);
