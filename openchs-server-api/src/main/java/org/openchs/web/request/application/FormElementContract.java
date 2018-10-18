@@ -2,6 +2,7 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.application.FormElement;
 import org.openchs.application.Format;
 import org.openchs.application.KeyValues;
 import org.openchs.web.request.ConceptContract;
@@ -79,7 +80,7 @@ public class FormElementContract extends ReferenceDataContract {
     }
 
     public String getType() {
-        return type;
+        return type == null || type.trim().isEmpty() ? FormElement.SINGLE_SELECT : this.type;
     }
 
     public void setType(String type) {
