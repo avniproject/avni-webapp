@@ -4,6 +4,7 @@ DROP VIEW IF EXISTS adolescent_visit_summary;
 DROP VIEW IF EXISTS adolescents;
 DROP VIEW IF EXISTS adolescent_visit;
 DROP VIEW IF EXISTS checklist_items;
+DROP VIEW IF EXISTS boolean;
 
 -- <RCH>
 CREATE OR REPLACE VIEW mother_program_enrolments AS
@@ -108,3 +109,8 @@ CREATE OR REPLACE VIEW adolescent_visit AS
     LEFT OUTER JOIN program ON program_enrolment.program_id = program.id
 WHERE program.name = 'Adolescent';
 
+
+CREATE VIEW boolean AS
+(select 'Yes' as status
+ union
+select 'No' as status);
