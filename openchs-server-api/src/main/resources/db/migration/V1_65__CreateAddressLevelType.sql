@@ -21,4 +21,4 @@ SET type_id = (select alt.id
                  and alt.organisation_id = al.organisation_id);
 
 alter table address_level
-  DROP COLUMN type;
+  DROP COLUMN type CASCADE;
