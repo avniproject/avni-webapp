@@ -132,7 +132,9 @@ select
   ,
   feg.name,
   fe.name as "Form Element",
-  c2.name as "Concept"
+  c2.name as "Concept",
+   f.organisation_id as "Organisation Id",
+       fe.is_voided as "Form Element Voided"
 from operational_program p
   inner join form_mapping fm on (fm.entity_id = p.program_id)
   inner join form f on fm.form_id = f.id
@@ -143,7 +145,7 @@ where p.organisation_id = ?1 and f.form_type != 'ProgramEncounterCancellation' a
                                                                                                 from non_applicable_form_element
                                                                                                 where organisation_id = ?1)
 order by
-  , f.name
+  f.name
   , feg.display_order asc
   , fe.display_order asc;
 

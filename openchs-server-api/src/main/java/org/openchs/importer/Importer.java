@@ -27,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -38,6 +39,7 @@ public abstract class Importer<T extends CHSRequest> {
     private ConceptRepository conceptRepository;
     private FormElementRepository formElementRepository;
     private boolean ignoreMissingAnswers;
+    private static Pattern datePattern = Pattern.compile("\b[0-9]+\b|.*[A-Za-z]+.*");
 
     protected Importer(ConceptRepository conceptRepository, FormElementRepository formElementRepository, UserRepository userRepository) {
         this.conceptRepository = conceptRepository;
@@ -69,7 +71,7 @@ public abstract class Importer<T extends CHSRequest> {
         } else if (ConceptDataType.dateType(concept.getDataType())) {
             cellValue = importField.getTextValue(row, sheetHeader, sheetMetaData);
             if (cellValue != null) {
-                if (((String) cellValue).matches("\b[0-9]+\b|.*[A-Za-z]+.*"))
+                if (datePattern.matcher(((String) cellValue)).matches())
                     cellValue = ExcelUtil.getDateFromDuration(cellValue.toString(), referenceDate);
                 else
                     cellValue = importField.getDateValue(row, sheetHeader, sheetMetaData);
