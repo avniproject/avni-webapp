@@ -58,4 +58,9 @@ public abstract class AbstractControllerIntegrationTest {
         String body = String.valueOf(responseEntity.getBody());
         assertTrue(body, responseEntity.getStatusCode().is2xxSuccessful());
     }
+
+    protected String postForBody(String path, Object json) {
+        ResponseEntity<String> responseEntity = template.postForEntity(path, json, String.class);
+        return String.valueOf(responseEntity.getBody());
+    }
 }

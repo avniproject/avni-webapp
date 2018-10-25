@@ -77,12 +77,11 @@ VALUES (3, 'Other', '188ad77e-fe46-4328-b0e2-98f3a05c554c', 1);
 
 INSERT INTO concept (name, data_type, uuid, version)
 VALUES
-  ('Temperature', 'numeric', '95c4b174-6ce6-4d9a-b223-1f9000b60006', 1);
+  ('Temperature', 'Numeric', '95c4b174-6ce6-4d9a-b223-1f9000b60006', 1);
 
 /* muliselect */
 INSERT INTO concept (NAME, data_type, uuid, version)
-VALUES
-  ('Complaint', 'multiselect', '9daa0b8a-985a-464d-a5ab-8a4f90e8a26b', 1);
+VALUES ('Complaint', 'Coded', '9daa0b8a-985a-464d-a5ab-8a4f90e8a26b', 1);
 INSERT INTO concept (NAME, data_type, uuid, version)
 VALUES ('Fever', 'N/A', 'd2e35080-ec9b-46f6-bf8c-7087fcf0ecfd', 1);
 INSERT INTO concept (NAME, data_type, uuid, version)
@@ -152,7 +151,7 @@ VALUES (2, 18, 16, 'a9ca3096-6f4d-4af2-8b91-9cf87f5d4d13', 1);
 /* single select */
 INSERT INTO concept (NAME, data_type, uuid, version)
 VALUES
-  ('Paracheck', 'singleselect', '405f25bb-4553-4b7c-b6bc-a44082ef576f', 1);
+  ('Paracheck', 'Coded', '405f25bb-4553-4b7c-b6bc-a44082ef576f', 1);
 INSERT INTO concept (NAME, data_type, uuid, version)
 VALUES ('Negative', 'N/A', '782d6227-b815-4fed-aef1-52354e1dcf77', 1);
 INSERT INTO concept (NAME, data_type, uuid, version)
@@ -173,6 +172,14 @@ VALUES (19, 22, 3, '676c358d-0d21-46cf-bb38-c3a5bfb5ead1', 1);
 INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version)
 VALUES (19, 23, 4, '7dc1c6db-419b-483d-8b47-0d2b89d9919b', 1);
 
+INSERT INTO concept (NAME, data_type, uuid, version)
+VALUES ('Some random concept', 'N/A', '6f83d3e4-0e25-4f51-8b5e-5421322f3ffe', 1);
+
+INSERT INTO concept (NAME, data_type, uuid, version)
+VALUES ('Some random concept for voided ConceptAnswer', 'N/A', '766eb773-942e-4874-819d-29039d6794b9', 1);
+
+INSERT INTO concept_answer (concept_id, answer_concept_id, answer_order, uuid, version, is_voided)
+VALUES (2, 25, 100, '734f93e8-0bd8-4457-bdbe-e3514a2600ea', 1, true);
 
 INSERT INTO encounter_type (name, uuid, version)
 VALUES ('Sample Encounter Type', '3a1535d0-81fd-48fc-85b5-dc9da81064a3', 1);
