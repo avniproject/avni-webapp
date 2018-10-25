@@ -17,6 +17,8 @@ import java.util.Set;
 @Entity
 @Table(name = "form_element")
 public class FormElement extends OrganisationAwareEntity {
+    public static final String SINGLE_SELECT = "SingleSelect";
+
     @NotNull
     private String name;
 
@@ -118,7 +120,7 @@ public class FormElement extends OrganisationAwareEntity {
     }
 
     public boolean isSingleSelect() {
-        return "SingleSelect".equals(this.type);
+        return SINGLE_SELECT.equals(this.type);
     }
 
     public DateTime getLastModifiedDateTime() {

@@ -1,0 +1,12 @@
+{
+  "uuid": "a82c8687-0bb3-4907-93b8-e45dec290e3f",
+  "encounterTypeUUID": "3a1535d0-81fd-48fc-85b5-dc9da81064a3",
+  "individualUUID": "4378dce3-247e-4393-8dd5-032c6eb0a655",
+  "encounterDateTime": "2018-02-22T17:10:30.000Z",
+  "observations": [
+    {
+      "conceptUUID": "9daa0b8a-985a-464d-a5ab-8a4f90e8a26b",
+      "value": "6f83d3e4-0e25-4f51-8b5e-5421322f3ffe"
+    }
+  ]
+}

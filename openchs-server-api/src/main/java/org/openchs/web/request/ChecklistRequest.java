@@ -10,6 +10,7 @@ public class ChecklistRequest extends CHSRequest {
     private DateTime baseDate;
     private String programEnrolmentUUID;
     private List<ChecklistItemRequest> checklistItemRequestList;
+    private String name;
 
     public String getChecklistDetailUUID() {
         return checklistDetailUUID;
@@ -41,5 +42,13 @@ public class ChecklistRequest extends CHSRequest {
 
     public void setChecklistItemRequestList(List<ChecklistItemRequest> checklistItemRequestList) {
         this.checklistItemRequestList = checklistItemRequestList;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }

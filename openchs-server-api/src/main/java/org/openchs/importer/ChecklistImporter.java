@@ -46,12 +46,12 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
         this.checklistController = checklistController;
         this.checklistItemController = checklistItemController;
         this.checklistService = checklistService;
-        this.inParallel = false;
+        this.inParallel = true;
     }
 
     @Override
     protected Boolean processRequest(ChecklistRequest checklistRequest) {
-        this.checklistController.save(checklistRequest);
+        saveChecklist(checklistRequest);
         checklistRequest.getChecklistItemRequestList().forEach(checklistItemRequest -> {
             ChecklistItem existingChecklistItem = checklistService
                     .findChecklistItem(checklistRequest.getUuid(), checklistItemRequest.getChecklistItemDetailUUID());
@@ -63,15 +63,32 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
         return true;
     }
 
+    private void saveChecklist(ChecklistRequest checklistRequest) {
+        String checklistName = checklistRequest.getName();
+        ChecklistDetail checklistDetail = this.checklistDetailRepository.findByName(checklistName);
+        if(checklistDetail != null) {
+            logger.info(String.format("Checklist Detail: %s", checklistDetail.getUuid()));
+            checklistRequest.setChecklistDetailUUID(checklistDetail.getUuid());
+        } else {
+            logger.error(String.format("Checklist Detail By Name %s not found", checklistName));
+            throw new NullPointerException(String.format("Checklist Detail By Name %s not found", checklistName));
+        }
+
+        synchronized (checklistRequest.getProgramEnrolmentUUID().intern()) {
+            Checklist existingChecklist = checklistRepository.findByProgramEnrolmentUuidAndChecklistDetailName(checklistRequest.getProgramEnrolmentUUID(), checklistName);
+            if (existingChecklist != null) {
+                checklistRequest.setUuid(existingChecklist.getUuid());
+            }
+            checklistRequest.setupUuidIfNeeded();
+            checklistRequest.getChecklistItemRequestList().forEach(item-> item.setChecklistUUID(checklistRequest.getUuid()));
+            this.checklistController.save(checklistRequest);
+        }
+    }
+
     @Override
     protected ChecklistRequest makeRequest(List<ImportField> allFields, ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportAnswerMetaDataList answerMetaDataList, ImportCalculatedFields calculatedFields) {
         ChecklistRequest checklistRequest = new ChecklistRequest();
         ChecklistItemRequest checklistItemRequest = new ChecklistItemRequest();
-        final String checklistName = allFields.stream()
-                .filter(field -> field.getSystemFieldName().equals("Checklist Name"))
-                .findFirst()
-                .get()
-                .getTextValue(row, header, importSheetMetaData);
         allFields.forEach(importField -> {
             String systemFieldName = importField.getSystemFieldName();
             switch (systemFieldName) {
@@ -79,27 +96,14 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
                     String enrolmentUUID = importField.getTextValue(row, header, importSheetMetaData);
                     logger.info(String.format("Enrolment UUID: %s", enrolmentUUID));
                     checklistRequest.setProgramEnrolmentUUID(enrolmentUUID);
-                    Checklist existingChecklist = checklistRepository.findByProgramEnrolmentUuidAndChecklistDetailName(enrolmentUUID, checklistName);
-                    if (existingChecklist != null) {
-                        checklistItemRequest.setChecklistUUID(existingChecklist.getUuid());
-                        checklistRequest.setUuid(existingChecklist.getUuid());
-                    } else {
-                        checklistRequest.setupUuidIfNeeded();
-                        checklistItemRequest.setChecklistUUID(checklistRequest.getUuid());
-                    }
                     break;
                 case "Base Date":
                     checklistRequest.setBaseDate(new DateTime(importField.getDateValue(row, header, importSheetMetaData)));
                     break;
                 case "Checklist Name":
-                    ChecklistDetail checklistDetail = this.checklistDetailRepository.findByName(checklistName);
-                    try {
-                        logger.info(String.format("Checklist Detail: %s", checklistDetail.getUuid()));
-                        checklistRequest.setChecklistDetailUUID(checklistDetail.getUuid());
-                    } catch (NullPointerException ne) {
-                        logger.error(String.format("Checklist Detail By Name %s not found", checklistName));
-                        throw ne;
-                    }
+                    String checklistName = importField.getTextValue(row, header, importSheetMetaData);
+                    logger.info(String.format("Checklist Name: %s", checklistName));
+                    checklistRequest.setName(checklistName);
                     break;
                 case "Item Name":
                     String checklistItemName = importField.getTextValue(row, header, importSheetMetaData);

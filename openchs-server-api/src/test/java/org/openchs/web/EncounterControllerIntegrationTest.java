@@ -78,4 +78,42 @@ public class EncounterControllerIntegrationTest extends AbstractControllerIntegr
             Assert.fail();
         }
     }
+
+    @Test
+    public void failWhenSingleSelectObservationHasNonExistentConceptAnswer() {
+        try {
+            Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/invalidSingleSelectAnswer.json"), Object.class);
+            String responseBody = postForBody("/encounters", json);
+
+            assertThat(responseBody).isEqualTo("Concept answer '6f83d3e4-0e25-4f51-8b5e-5421322f3ffe' not found in Concept '9daa0b8a-985a-464d-a5ab-8a4f90e8a26b'");
+
+        } catch (IOException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void failWhenMultiSelectObservationHasNonExistentConceptAnswer() {
+        try {
+            Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/invalidMultiSelectAnswers.json"), Object.class);
+            String responseBody = postForBody("/encounters", json);
+
+            assertThat(responseBody).isEqualTo("Concept answer '6f83d3e4-0e25-4f51-8b5e-5421322f3ffe' not found in Concept '9daa0b8a-985a-464d-a5ab-8a4f90e8a26b'");
+
+        } catch (IOException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void doesNotFailWhenObservationHasVoidedConceptAnswer() {
+        try {
+            Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/voidedConceptAnswer.json"), Object.class);
+            String responseBody = postForBody("/encounters", json);
+
+            assertThat(responseBody).isEqualTo("null");
+        } catch (IOException e) {
+            Assert.fail();
+        }
+    }
 }

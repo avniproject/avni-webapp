@@ -7,6 +7,7 @@ import org.openchs.dao.LocationRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.LocationContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,8 @@ public class LocationController {
 
     private AddressLevelType saveType(String type) {
         if (type == null) return null;
-        AddressLevelType existingType = addressLevelTypeRepository.findByName(type);
+        AddressLevelType existingType = addressLevelTypeRepository.findByNameAndOrganisationId(type,
+                UserContextHolder.getUserContext().getOrganisation().getId());
         if (existingType == null) {
             AddressLevelType addressLevelType = new AddressLevelType();
             addressLevelType.setName(type);
