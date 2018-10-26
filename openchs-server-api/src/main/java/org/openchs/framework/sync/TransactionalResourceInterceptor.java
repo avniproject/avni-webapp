@@ -23,8 +23,6 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
 
     private final Map<String, Integer> nowMap = new HashMap<String, Integer>() {{
         put("live", 10);
-        put("dev", 0);
-        put("test", 0);
     }};
 
     @Autowired
@@ -37,7 +35,7 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
                              HttpServletResponse response, Object object) throws Exception {
         if (request.getMethod().equals(RequestMethod.GET.name())) {
             DateTime now = new DateTime();
-            DateTime nowMinus10Seconds = now.minusSeconds(nowMap.get(environment.getActiveProfiles()[0]));
+            DateTime nowMinus10Seconds = now.minusSeconds(nowMap.getOrDefault(environment.getActiveProfiles()[0], 0));
             ((MutableRequestWrapper) request).addParameter("now", nowMinus10Seconds.toString(ISODateTimeFormat.dateTime()));
             Long catchmentId = getCatchmentId();
             ((MutableRequestWrapper) request).addParameter("catchmentId", catchmentId.toString());
