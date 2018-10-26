@@ -97,7 +97,10 @@ public abstract class Importer<T extends CHSRequest> {
         ImportCalculatedField calculatedField = calculatedFields.stream().filter(x -> x.getSystemField().equals(systemFieldName)).findFirst().orElse(null);
         if (calculatedField != null && calculatedField.isMultiSelect()) {
             List<String> answers = calculatedField.getCodedValues(cellValue);
-            return answers.stream().map((userAnswer) -> getConceptUuid(concept, systemFieldName, answerMetaDataList, userAnswer, ignoreMissingAnswers)).collect(Collectors.toList());
+            return answers.stream()
+                    .map((userAnswer) -> getConceptUuid(concept, systemFieldName, answerMetaDataList, userAnswer, ignoreMissingAnswers))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
         }
         return getConceptUuid(concept, systemFieldName, answerMetaDataList, cellValue, ignoreMissingAnswers);
     }
@@ -124,8 +127,26 @@ public abstract class Importer<T extends CHSRequest> {
     protected void mergeObservations(List<ObservationRequest> observationRequests, ObservationRequest observationRequest) {
         ObservationRequest existingObservationRequest = observationRequests.stream().filter(x -> x.getConceptName().equals(observationRequest.getConceptName())).findAny().orElse(null);
         if (existingObservationRequest == null) observationRequests.add(observationRequest);
-        else
-            existingObservationRequest.setValue(String.format("%s\n\n%s", existingObservationRequest.getValue(), observationRequest.getValue()));
+        else {
+            Object oldValue = existingObservationRequest.getValue();
+            Object newValue = observationRequest.getValue();
+            if (oldValue instanceof Collection) {
+                Collection existingValue = (Collection) oldValue;
+                if (observationRequest.getValue() instanceof Collection) {
+                    existingValue.addAll((Collection) newValue);
+                } else {
+                    existingValue.add(newValue);
+                }
+                existingObservationRequest.setValue(existingValue);
+            } else {
+                if (observationRequest.getValue() instanceof Collection) {
+                    ((Collection) newValue).add(oldValue);
+                    existingObservationRequest.setValue(newValue);
+                } else {
+                    existingObservationRequest.setValue(Arrays.asList(oldValue, newValue));
+                }
+            }
+        }
     }
 
     public List importSheet(ImportFile importFile, ImportMetaData importMetaData, ImportSheetMetaData importSheetMetaData, DataImportResult dataImportResult, boolean performImport, Integer maxNumberOfRecords) {

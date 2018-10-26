@@ -76,9 +76,7 @@ public class ImportNonCalculatedField implements ImportField {
     }
 
     public Boolean doIgnoreMissingAnswers() {
-        if (this.ignoreMissingAnswers == null || this.ignoreMissingAnswers.isEmpty()) return false;
-        else if (this.ignoreMissingAnswers.toLowerCase().equals("true")) return true;
-        return false;
+        return "true".equalsIgnoreCase(this.ignoreMissingAnswers);
     }
 
     @Override
