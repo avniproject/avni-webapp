@@ -87,23 +87,21 @@ public class CognitoUserContextServiceImpl implements UserContextService {
             userContext.setUser(user);
             return userContext;
         } else {
-            return getUserContext(token, true, becomeUserName);
+            return getUserContext(token, true);
         }
     }
 
-    protected UserContext getUserContext(String token, boolean verify, String becomeOrganisationName) {
+    protected UserContext getUserContext(String token, boolean verify) {
         UserContext userContext = new UserContext();
         if (token == null) return userContext;
 
         DecodedJWT jwt = verifyAndDecodeToken(token, verify);
         if (jwt == null) return userContext;
 
-
         String userUUID = getValueInToken(jwt, "custom:userUUID");
         User user = userRepository.findByUuid(userUUID);
         userContext.setUser(user);
-        addOrganisationToContext(userContext, becomeOrganisationName);
-
+        userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
         return userContext;
     }
 
@@ -149,27 +147,9 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         return COGNITO_URL + this.poolId;
     }
 
-    private void addOrganisationToContext(UserContext userContext, String becomeOrganisationName) {
-        Organisation becomeOrganisation = getOrganisation(becomeOrganisationName);
-        if (becomeOrganisationName != null && becomeOrganisation == null) {
-            logger.error(String.format("Organisation '%s' not found", becomeOrganisationName));
-            throw new RuntimeException(String.format("Organisation '%s' not found", becomeOrganisationName));
-        }
-        if (becomeOrganisation != null && userContext.getUser().isAdmin()) {
-            userContext.setOrganisation(becomeOrganisation);
-            return;
-        }
-        userContext.setOrganisation(organisationRepository.findOne(userContext.getUser().getOrganisationId()));
-    }
-
     private String getValueInToken(DecodedJWT jwt, String name) {
         Claim claim = jwt.getClaim(name);
         if (claim.isNull()) return null;
         return claim.asString();
-    }
-
-    private Organisation getOrganisation(String becomeOrganisationName) {
-        return !StringUtils.isEmpty(becomeOrganisationName) ?
-                organisationRepository.findByName(becomeOrganisationName) : null;
     }
 }

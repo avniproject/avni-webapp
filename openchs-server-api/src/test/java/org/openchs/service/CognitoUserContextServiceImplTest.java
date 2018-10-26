@@ -62,7 +62,7 @@ public class CognitoUserContextServiceImplTest {
         when(userRepository.findByUuid(user.getUuid())).thenReturn(user);
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
         String token = createForBaseToken(user.getUuid()).sign(algorithm);
-        UserContext userContext = userContextService.getUserContext(token, false, null);
+        UserContext userContext = userContextService.getUserContext(token, false);
         assertThat(userContext.getOrganisation(), is(equalTo(organisation)));
     }
 
@@ -78,33 +78,15 @@ public class CognitoUserContextServiceImplTest {
         Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
         String token = createForBaseToken(user.getUuid()).sign(algorithm);
 
-        UserContext userContext = userContextService.getUserContext(token, false, null);
+        UserContext userContext = userContextService.getUserContext(token, false);
         assertThat(userContext.getRoles(), contains(User.USER));
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
 
         token = createForBaseToken(user.getUuid()).sign(algorithm);
 
         user.setOrgAdmin(true);
-        userContext = userContextService.getUserContext(token, false, null);
+        userContext = userContextService.getUserContext(token, false);
         assertThat(userContext.getRoles(), containsInAnyOrder(User.USER, User.ORGANISATION_ADMIN));
         assertThat(userContext.getRoles().size(), is(equalTo(2)));
-    }
-
-    @Test
-    public void shouldBeAbleToSwitchOrganisationIfAdmin() throws UnsupportedEncodingException {
-        Organisation anOrg = new Organisation();
-        Organisation becomeOrg = new Organisation();
-        becomeOrg.setName("BecomeOrg");
-        when(organisationRepository.findOne(1L)).thenReturn(anOrg);
-        when(organisationRepository.findByName(becomeOrg.getName())).thenReturn(becomeOrg);
-        when(userRepository.findByUuid(user.getUuid())).thenReturn(user);
-        Algorithm algorithm = Algorithm.HMAC256("not very useful secret");
-        String token = createForBaseToken(user.getUuid()).sign(algorithm);
-
-        UserContext userContext = userContextService.getUserContext(token, false, becomeOrg.getName());
-        assertThat(userContext.getOrganisation(), is(equalTo(becomeOrg)));
-
-        userContext = userContextService.getUserContext(token, false, null);
-        assertThat(userContext.getOrganisation(), is(equalTo(anOrg)));
     }
 }

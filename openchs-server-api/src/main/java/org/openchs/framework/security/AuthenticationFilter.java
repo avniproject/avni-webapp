@@ -43,7 +43,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
-            logger.info(String.format("Processing %s %s?%s Header: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), request.getHeader("USER")));
+            logger.info(String.format("Processing %s %s?%s Header: %s", request.getMethod(), request.getRequestURI(), request.getQueryString(), request.getHeader("USER-NAME")));
             SecurityContextHolder.getContext().setAuthentication(createTempAuth());
             Authentication authentication = this.attemptAuthentication(request);
             SecurityContextHolder.getContext().setAuthentication(authentication);
