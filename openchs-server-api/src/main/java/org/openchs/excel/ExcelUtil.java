@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +35,7 @@ public class ExcelUtil {
             "H:m:s"
     ).map(DateTimeFormat::forPattern).collect(Collectors.toList());
     private static String NAN = "NAN";
+    private static DecimalFormat numberToStringFormat = new DecimalFormat("0.####");
 
     public static String getText(Row row, int cellNum) {
         String fatText = ExcelUtil.getFatText(row, cellNum);
@@ -48,7 +50,7 @@ public class ExcelUtil {
             stringCellValue = cell.getStringCellValue();
         } catch (IllegalStateException e) {
             if (cell.getCellTypeEnum().equals(CellType.NUMERIC)) {
-                stringCellValue = String.valueOf(Double.valueOf(cell.getNumericCellValue()).intValue());
+                stringCellValue = numberToStringFormat.format(cell.getNumericCellValue());
             } else {
                 stringCellValue = cell.toString();
             }
