@@ -80,7 +80,7 @@ public class ProgramEncounterImporter extends Importer<ProgramEncounterRequest> 
                 case "Cancel Date":
                     programEncounterRequest.setCancelDateTime(new DateTime(importField.getDateValue(row, header, sheetMetaData)));
                     programEncounterRequest.setCancelObservations(programEncounterRequest.getObservations());
-                    programEncounterRequest.setObservations(null);
+                    programEncounterRequest.setObservations(new ArrayList<>());
                     break;
                 case "User":
                     setUser(header, sheetMetaData, row, importField);
