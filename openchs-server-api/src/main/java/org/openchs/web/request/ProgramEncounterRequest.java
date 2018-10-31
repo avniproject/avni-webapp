@@ -86,6 +86,14 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
         return observations.stream().filter(observationRequest -> observationRequest.getConceptName().equals(conceptName)).findAny().orElse(null);
     }
 
+    public void addObservation(ObservationRequest observationRequest) {
+        if (this.cancelDateTime != null && observationRequest != null) {
+            this.cancelObservations.add(observationRequest);
+        } else {
+            super.addObservation(observationRequest);
+        }
+    }
+
     public Object getObservationValue(String conceptName) {
         return findObservation(conceptName).getValue();
     }
