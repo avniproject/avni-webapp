@@ -8,6 +8,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.common.base.Strings;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.UserRepository;
 import org.openchs.domain.Organisation;
@@ -98,8 +99,10 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         DecodedJWT jwt = verifyAndDecodeToken(token, verify);
         if (jwt == null) return userContext;
 
+        String username = getValueInToken(jwt, "cognito:username");
         String userUUID = getValueInToken(jwt, "custom:userUUID");
-        User user = userRepository.findByUuid(userUUID);
+        User user = Strings.isNullOrEmpty(userUUID) ?
+                userRepository.findByName(username) : userRepository.findByUuid(userUUID);
         userContext.setUser(user);
         userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
         return userContext;
