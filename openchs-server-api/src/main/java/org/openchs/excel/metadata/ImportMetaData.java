@@ -57,9 +57,9 @@ public class ImportMetaData {
 
     public List<ImportField> getAllFields(ImportSheetMetaData importSheetMetaData) {
         ArrayList<ImportField> importFields = new ArrayList<>();
+        importFields.addAll(importSheetMetaData.getDefaultFields());
         importFields.addAll(nonCalculatedFields.getFieldsFor(importSheetMetaData));
         importFields.addAll(calculatedFields.getFieldsFor(importSheetMetaData));
-        importFields.addAll(importSheetMetaData.getDefaultFields());
         return importFields;
     }
 
