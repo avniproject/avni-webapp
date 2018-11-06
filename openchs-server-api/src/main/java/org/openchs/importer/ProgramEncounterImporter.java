@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -78,9 +79,13 @@ public class ProgramEncounterImporter extends Importer<ProgramEncounterRequest> 
                 case "Address":
                     break;
                 case "Cancel Date":
-                    programEncounterRequest.setCancelDateTime(new DateTime(importField.getDateValue(row, header, sheetMetaData)));
-                    programEncounterRequest.setCancelObservations(programEncounterRequest.getObservations());
-                    programEncounterRequest.setObservations(new ArrayList<>());
+                    Date cancelDateTimeString = importField.getDateValue(row, header, sheetMetaData);
+                    if (cancelDateTimeString != null) {
+                        DateTime cancelDateTime = new DateTime(cancelDateTimeString);
+                        programEncounterRequest.setCancelDateTime(cancelDateTime);
+                        programEncounterRequest.setCancelObservations(programEncounterRequest.getObservations());
+                        programEncounterRequest.setObservations(new ArrayList<>());
+                    }
                     break;
                 case "User":
                     setUser(header, sheetMetaData, row, importField);
