@@ -114,11 +114,13 @@ select
   c2.uuid as "Answer UUID",
   c2.name as "Answer",
   a.answer_order,
-  a.organisation_id
+  a.organisation_id map_organisation_id,
+  concept.organisation_id q_organisation_id,
+  c2.organisation_id ans_organisation_id
 from concept
   inner join concept_answer a on concept.id = a.concept_id
   inner join concept c2 on a.answer_concept_id = c2.id
-where concept.name = :concept_name
+where concept.uuid = '58b6367a-825f-43e2-b6b7-b35a5cbc3a09'
 order by a.answer_order;
 
 
