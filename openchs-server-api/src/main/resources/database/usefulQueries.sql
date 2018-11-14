@@ -291,3 +291,16 @@ from address_level
   inner join catchment on catchment.id = m2.catchment_id
   left outer join program_enrolment on i.id = program_enrolment.individual_id
 where m2.catchment_id = 2 and program_enrolment.id is null;
+
+
+-- Queries to test and fix the audit last_modified_by updating with wrong user issue. Card #982 will provide a solution.
+-- Query to run after implementation deployment. The count is desired to be 0
+select count(a.id) from form_element x
+  inner join audit a on x.audit_id = a.id
+where x.organisation_id = 1 and a.last_modified_by_id != 1;
+
+-- Query to fix
+update audit set last_modified_by_id = 1 where id in (select a.id from form_element x
+  inner join audit a on x.audit_id = a.id
+where x.organisation_id = 1 and a.last_modified_by_id != 1
+);
