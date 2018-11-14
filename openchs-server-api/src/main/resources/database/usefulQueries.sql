@@ -114,11 +114,13 @@ select
   c2.uuid as "Answer UUID",
   c2.name as "Answer",
   a.answer_order,
-  a.organisation_id
+  a.organisation_id map_organisation_id,
+  concept.organisation_id q_organisation_id,
+  c2.organisation_id ans_organisation_id
 from concept
   inner join concept_answer a on concept.id = a.concept_id
   inner join concept c2 on a.answer_concept_id = c2.id
-where concept.name = :concept_name
+where concept.uuid = '58b6367a-825f-43e2-b6b7-b35a5cbc3a09'
 order by a.answer_order;
 
 
@@ -291,3 +293,16 @@ from address_level
   inner join catchment on catchment.id = m2.catchment_id
   left outer join program_enrolment on i.id = program_enrolment.individual_id
 where m2.catchment_id = 2 and program_enrolment.id is null;
+
+
+-- Queries to test and fix the audit last_modified_by updating with wrong user issue. Card #982 will provide a solution.
+-- Query to run after implementation deployment. The count is desired to be 0
+select count(a.id) from form_element x
+  inner join audit a on x.audit_id = a.id
+where x.organisation_id = 1 and a.last_modified_by_id != 1;
+
+-- Query to fix
+update audit set last_modified_by_id = 1 where id in (select a.id from form_element x
+  inner join audit a on x.audit_id = a.id
+where x.organisation_id = 1 and a.last_modified_by_id != 1
+);

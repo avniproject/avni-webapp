@@ -616,7 +616,7 @@ BEGIN
     INTO result;
     RETURN result;
   END;
-END $$;
+END $$ STABLE;
 
 
 CREATE OR REPLACE FUNCTION create_audit()
@@ -628,3 +628,45 @@ BEGIN
   RETURN result;
 END $$
 LANGUAGE plpgsql;
+
+drop function if exists checklist_itemstatus_starting(status jsonb);
+CREATE OR REPLACE FUNCTION checklist_itemstatus_starting(status jsonb)
+  RETURNS INTERVAL AS $$
+DECLARE
+  returnValue INTERVAL;
+BEGIN
+  select (CASE
+      WHEN status#>>'{from,day}' NOTNULL
+             THEN status#>>'{from,day}' || ' day'
+      WHEN status#>>'{from,week}' NOTNULL
+             THEN status#>>'{from,week}' || ' week'
+      WHEN status#>>'{from,month}' NOTNULL
+             THEN status#>>'{from,month}' || ' month'
+      WHEN status#>>'{from,year}' NOTNULL
+             THEN status#>>'{from,year}' || ' year' END) :: INTERVAL
+  into returnValue;
+  RETURN returnValue;
+END;
+$$
+LANGUAGE plpgsql IMMUTABLE;
+
+drop function if exists checklist_itemstatus_ending(status jsonb);
+CREATE OR REPLACE FUNCTION checklist_itemstatus_ending(status jsonb)
+  RETURNS INTERVAL AS $$
+DECLARE
+  returnValue INTERVAL ;
+BEGIN
+  select (CASE
+      WHEN status#>>'{to,day}' NOTNULL
+             THEN status#>>'{to,day}' || ' day'
+      WHEN status#>>'{to,week}' NOTNULL
+             THEN status#>>'{to,week}' || ' week'
+      WHEN status#>>'{to,month}' NOTNULL
+             THEN status#>>'{to,month}' || ' month'
+      WHEN status#>>'{to,year}' NOTNULL
+             THEN status#>>'{to,year}' || ' year' END) :: INTERVAL
+  into returnValue;
+  RETURN returnValue;
+END;
+$$
+LANGUAGE plpgsql IMMUTABLE;
