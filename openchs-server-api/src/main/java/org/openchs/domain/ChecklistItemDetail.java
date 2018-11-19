@@ -18,6 +18,10 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
     @Type(type = "status")
     private ChecklistItemStatus checklistItemStatus;
 
+    @JoinColumn(name = "dependent_on", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ChecklistItemDetail leadingChecklistItemDetail;
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id")
@@ -58,5 +62,13 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
 
     public void setChecklistDetail(ChecklistDetail checklistDetail) {
         this.checklistDetail = checklistDetail;
+    }
+
+    public ChecklistItemDetail getLeadingChecklistItemDetail() {
+        return leadingChecklistItemDetail;
+    }
+
+    public void setLeadingChecklistItemDetail(ChecklistItemDetail leadingChecklistItemDetail) {
+        this.leadingChecklistItemDetail = leadingChecklistItemDetail;
     }
 }

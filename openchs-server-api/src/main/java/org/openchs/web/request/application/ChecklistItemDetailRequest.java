@@ -10,6 +10,7 @@ public class ChecklistItemDetailRequest extends CHSRequest {
     private ConceptContract concept;
     private List<ChecklistItemStatusRequest> status;
     private String formUUID;
+    private String dependentOn;
 
     public ConceptContract getConcept() {
         return concept;
@@ -33,5 +34,13 @@ public class ChecklistItemDetailRequest extends CHSRequest {
 
     public void setFormUUID(String formUUID) {
         this.formUUID = formUUID;
+    }
+
+    public String getDependentOn() {
+        return dependentOn;
+    }
+
+    public void setDependentOn(String dependentOn) {
+        this.dependentOn = dependentOn;
     }
 }
