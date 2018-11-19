@@ -1,0 +1,1 @@
+alter table checklist_item_detail add column dependent_on int references checklist_item_detail (id);

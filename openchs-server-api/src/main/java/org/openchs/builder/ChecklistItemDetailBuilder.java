@@ -2,10 +2,7 @@ package org.openchs.builder;
 
 import org.openchs.application.Form;
 import org.openchs.dao.application.FormRepository;
-import org.openchs.domain.ChecklistDetail;
-import org.openchs.domain.ChecklistItemDetail;
-import org.openchs.domain.ChecklistItemStatus;
-import org.openchs.domain.Concept;
+import org.openchs.domain.*;
 import org.openchs.framework.ApplicationContextProvider;
 import org.openchs.service.ConceptService;
 import org.openchs.web.request.ConceptContract;
@@ -57,6 +54,11 @@ public class ChecklistItemDetailBuilder extends BaseBuilder<ChecklistItemDetail,
 
     public ChecklistItemDetailBuilder withform(Form form) {
         this.set("Form", form, Form.class);
+        return this;
+    }
+
+    public ChecklistItemDetailBuilder withLeadItem(ChecklistItemDetail checklistItemDetail) {
+        this.get().setLeadingChecklistItemDetail(checklistItemDetail);
         return this;
     }
 }
