@@ -6,6 +6,7 @@ import org.openchs.web.request.ObservationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class ObservationService {
     public ObservationCollection createObservations(List<ObservationRequest> observationRequests) {
         Map<String, Object> completedObservationRequests = observationRequests
                 .stream()
-                .peek(observationRequest -> {
+                .map(observationRequest -> {
                     Concept concept;
                     if (observationRequest.getConceptUUID() == null && observationRequest.getConceptName() != null) {
                         concept = conceptRepository.findByName(observationRequest.getConceptName());
@@ -33,12 +34,13 @@ public class ObservationService {
                     } else {
                         concept = conceptRepository.findByUuid(observationRequest.getConceptUUID());
                     }
-                    if (ConceptDataType.valueOf(concept.getDataType()).equals(ConceptDataType.Coded)) {
-                        validate(concept, observationRequest.getValue());
-                    }
+                    return new SimpleEntry<>(concept, observationRequest.getValue());
                 })
+                .filter(obsReqAsMap -> null != obsReqAsMap.getKey()
+                        && !"null".equalsIgnoreCase(String.valueOf(obsReqAsMap.getValue())))
+                .peek(this::validate)
                 .collect(Collectors
-                        .toConcurrentMap(ObservationRequest::getConceptUUID, ObservationRequest::getValue, (oldVal, newVal) -> newVal));
+                        .toConcurrentMap((it -> it.getKey().getUuid()), SimpleEntry::getValue, (oldVal, newVal) -> newVal));
         return new ObservationCollection(completedObservationRequests);
     }
 
@@ -87,11 +89,15 @@ public class ObservationService {
         return getObservationValue(encounterWithObs, concept);
     }
 
-    private void validate(Concept question, Object value) {
-        if (value instanceof Collection<?>) {
-            ((Collection<String>) value).forEach(vl-> validateAnswer(question, vl));
-        } else {
-            validateAnswer(question, (String) value);
+    private void validate(SimpleEntry<Concept, Object> obsReqAsMap) {
+        Concept question = obsReqAsMap.getKey();
+        Object value = obsReqAsMap.getValue();
+        if (ConceptDataType.valueOf(question.getDataType()).equals(ConceptDataType.Coded)) {
+            if (value instanceof Collection<?>) {
+                ((Collection<String>) value).forEach(vl -> validateAnswer(question, vl));
+            } else {
+                validateAnswer(question, (String) value);
+            }
         }
     }
 
