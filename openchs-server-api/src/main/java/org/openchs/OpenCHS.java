@@ -1,6 +1,5 @@
 package org.openchs;
 
-import org.hibernate.annotations.Check;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
 import org.openchs.application.FormMapping;
@@ -8,7 +7,6 @@ import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramRepository;
 import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
-import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -169,6 +167,10 @@ public class OpenCHS {
                 resource.add(new Link(content.getChecklistDetail().getUuid(), "checklistDetailUUID"));
                 resource.add(new Link(content.getConcept().getUuid(), "conceptUUID"));
                 resource.add(new Link(content.getForm().getUuid(), "formUUID"));
+                ChecklistItemDetail leadChecklistItemDetail = content.getLeadChecklistItemDetail();
+                if (leadChecklistItemDetail != null) {
+                    resource.add(new Link(leadChecklistItemDetail.getUuid(), "leadDetailUUID"));
+                }
                 return resource;
             }
         };

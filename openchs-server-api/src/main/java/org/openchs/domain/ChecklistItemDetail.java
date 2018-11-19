@@ -20,7 +20,7 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
 
     @JoinColumn(name = "dependent_on", nullable = true)
     @ManyToOne(fetch = FetchType.LAZY)
-    private ChecklistItemDetail leadingChecklistItemDetail;
+    private ChecklistItemDetail leadChecklistItemDetail;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,11 +64,11 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
         this.checklistDetail = checklistDetail;
     }
 
-    public ChecklistItemDetail getLeadingChecklistItemDetail() {
-        return leadingChecklistItemDetail;
+    public ChecklistItemDetail getLeadChecklistItemDetail() {
+        return leadChecklistItemDetail;
     }
 
-    public void setLeadingChecklistItemDetail(ChecklistItemDetail leadingChecklistItemDetail) {
-        this.leadingChecklistItemDetail = leadingChecklistItemDetail;
+    public void setLeadChecklistItemDetail(ChecklistItemDetail leadChecklistItemDetail) {
+        this.leadChecklistItemDetail = leadChecklistItemDetail;
     }
 }
