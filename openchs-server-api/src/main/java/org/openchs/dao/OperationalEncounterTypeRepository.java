@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "operationalEncounterType", path = "operationalEncounterType")
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface OperationalEncounterTypeRepository extends PagingAndSortingRepository<OperationalEncounterType, Long>, CHSRepository<OperationalEncounterType> {
+public interface OperationalEncounterTypeRepository extends PagingAndSortingRepository<OperationalEncounterType, Long>, ReferenceDataRepository<OperationalEncounterType> {
     @RestResource(path = "lastModified", rel = "lastModified")
     @Query("select oet from OperationalEncounterType oet where oet.audit.lastModifiedDateTime between :lastModifiedDateTime and :now or oet.encounterType.audit.lastModifiedDateTime between :lastModifiedDateTime and :now order by CASE WHEN oet.encounterType.audit.lastModifiedDateTime > oet.audit.lastModifiedDateTime THEN oet.encounterType.audit.lastModifiedDateTime ELSE oet.audit.lastModifiedDateTime END")
     Page<OperationalEncounterType> findByAuditLastModifiedDateTimeIsBetweenOrEncounterTypeAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(

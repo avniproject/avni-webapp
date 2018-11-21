@@ -71,4 +71,8 @@ public class Form extends OrganisationAwareEntity {
         return formElements;
     }
 
+    public List<FormElement> getApplicableFormElements() {
+        return getAllFormElements().stream().filter(fe->!fe.isVoided()).collect(Collectors.toList());
+    }
+
 }

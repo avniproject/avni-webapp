@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formMapping", path = "formMapping")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+@PreAuthorize(value = "hasAnyAuthority('user', 'admin','organisation_admin')")
 public interface FormMappingRepository extends PagingAndSortingRepository<FormMapping, Long>, CHSRepository<FormMapping>, FindByLastModifiedDateTime<FormMapping> {
     List<FormMapping> findByFormUuid(String uuid);
 
@@ -32,4 +32,5 @@ public interface FormMappingRepository extends PagingAndSortingRepository<FormMa
     List<FormMapping> findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNull();
 
     FormMapping findByEntityIdAndObservationsTypeEntityIdAndFormFormType(Long entityId, Long observationsTypeEntityId, FormType formType);
+
 }

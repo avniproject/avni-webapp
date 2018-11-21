@@ -596,11 +596,23 @@ AS $$
 DECLARE result VARCHAR;
 BEGIN
   BEGIN
-    SELECT string_agg(c.name, ' ,')
-    FROM jsonb_array_elements_text(obs) AS vals
-      INNER JOIN concept c ON c.uuid = vals.value
-    INTO result;
-    RETURN result;
+    IF JSONB_TYPEOF(obs) = 'array'
+    THEN
+      SELECT STRING_AGG(C.NAME, ' ,')
+      FROM JSONB_ARRAY_ELEMENTS_TEXT(obs) AS OB (UUID)
+             JOIN CONCEPT C ON C.UUID = OB.UUID
+      INTO RESULT;
+    ELSEIF obs NOTNULL then
+      raise notice '% is not MultiSelect', obs;
+      SELECT SINGLE_SELECT_CODED(obs::TEXT) INTO RESULT;
+    ELSE
+      select null into result;
+    END IF;
+    RETURN RESULT;
+  EXCEPTION WHEN OTHERS
+    THEN
+      RAISE NOTICE 'Failed while processing multi_select_coded(''%'')', obs :: TEXT;
+      RAISE NOTICE '% %', SQLERRM, SQLSTATE;
   END;
 END $$;
 

@@ -15,9 +15,11 @@ public class FormMapping extends OrganisationAwareEntity {
     @JoinColumn(name = "form_id")
     private Form form;
 
+    //program id
     @Column(name = "entity_id")
     private Long entityId;
 
+    //encounter type id
     @Column(name = "observations_type_entity_id")
     private Long observationsTypeEntityId;
 
