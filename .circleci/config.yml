@@ -121,9 +121,6 @@ workflows:
           requires:
             - publish
       - deploy:
-          filters:
-            branches:
-              only: master
           requires:
             - hold
 notify:
