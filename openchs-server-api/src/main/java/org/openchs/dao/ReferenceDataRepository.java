@@ -1,11 +1,16 @@
 package org.openchs.dao;
 
 import org.openchs.domain.CHSEntity;
+import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 
-import java.util.Collection;
-import java.util.List;
-
-public interface ReferenceDataRepository<T extends CHSEntity> extends CHSRepository<T> {
+@NoRepositoryBean
+@PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
+public interface ReferenceDataRepository<T extends CHSEntity> extends CHSRepository<T>, PagingAndSortingRepository<T, Long> {
     T findByName(String name);
     T findByNameIgnoreCase(String name);
+
+    @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
+    <S extends T> S save(S concept);
 }

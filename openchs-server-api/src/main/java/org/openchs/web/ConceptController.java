@@ -35,13 +35,11 @@ public class ConceptController {
 
     @RequestMapping(value = "/concepts", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
     void save(@RequestBody List<ConceptContract> conceptRequests) {
         conceptRequests.forEach(conceptService::saveOrUpdate);
     }
 
     @RequestMapping(value = "/concepts/export", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
     void export(@RequestBody ExportRequest exportRequest) {
         List<ConceptContract> conceptContracts = new ArrayList<>();
         conceptRepository.findAll().iterator().forEachRemaining(concept -> conceptContracts.add(concept.toConceptContract()));

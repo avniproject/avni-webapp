@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "addressLevelType", path = "addressLevelType")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface AddressLevelTypeRepository extends PagingAndSortingRepository<AddressLevelType, Long>, ReferenceDataRepository<AddressLevelType> {
+public interface AddressLevelTypeRepository extends ReferenceDataRepository<AddressLevelType> {
     AddressLevelType findByNameAndOrganisationId(String name, Long organisationId);
 }

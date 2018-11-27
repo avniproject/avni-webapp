@@ -162,9 +162,4 @@ public class ConceptService {
         Concept answerConcept = this.get(conceptAnswerUUID);
         return conceptAnswerRepository.findByConceptAndAnswerConcept(concept, answerConcept);
     }
-
-    public Concept saveOrUpdate(Concept concept) {
-        return conceptRepository.save(concept);
-    }
-
 }

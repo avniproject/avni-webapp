@@ -10,6 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formElementGroup", path = "formElementGroup")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
-public interface FormElementGroupRepository extends PagingAndSortingRepository<FormElementGroup, Long>, ReferenceDataRepository<FormElementGroup>, FindByLastModifiedDateTime<FormElementGroup> {
+public interface FormElementGroupRepository extends ReferenceDataRepository<FormElementGroup>, FindByLastModifiedDateTime<FormElementGroup> {
 }

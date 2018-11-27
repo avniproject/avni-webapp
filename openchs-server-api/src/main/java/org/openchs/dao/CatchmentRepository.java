@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "catchment", path = "catchment")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface CatchmentRepository extends PagingAndSortingRepository<Catchment, Long>, ReferenceDataRepository<Catchment>, FindByLastModifiedDateTime<Catchment> {
+public interface CatchmentRepository extends ReferenceDataRepository<Catchment>, FindByLastModifiedDateTime<Catchment> {
 }

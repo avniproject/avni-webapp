@@ -10,7 +10,5 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounterType", path = "encounterType")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface EncounterTypeRepository extends PagingAndSortingRepository<EncounterType, Long>, ReferenceDataRepository<EncounterType>, FindByLastModifiedDateTime<EncounterType> {
-    List<EncounterType> findAllByName(String name);
+public interface EncounterTypeRepository extends ReferenceDataRepository<EncounterType>, FindByLastModifiedDateTime<EncounterType> {
 }

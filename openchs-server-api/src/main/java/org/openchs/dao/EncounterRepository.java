@@ -11,8 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter", exported = false)
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface EncounterRepository extends PagingAndSortingRepository<Encounter, Long>, CHSRepository<Encounter>, OperatingIndividualScopeAwareRepository<Encounter> {
+public interface EncounterRepository extends TransactionalDataRepository<Encounter>, OperatingIndividualScopeAwareRepository<Encounter> {
     Page<Encounter> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAudit_LastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 

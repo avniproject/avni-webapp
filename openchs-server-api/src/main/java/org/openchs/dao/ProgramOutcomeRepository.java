@@ -6,8 +6,9 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programOutcome", path = "programOutcome")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface ProgramOutcomeRepository extends PagingAndSortingRepository<ProgramOutcome, Long>, CHSRepository<ProgramOutcome>, FindByLastModifiedDateTime<ProgramOutcome> {
+public interface ProgramOutcomeRepository extends TransactionalDataRepository<ProgramOutcome>, FindByLastModifiedDateTime<ProgramOutcome> {
 }

@@ -18,8 +18,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface LocationRepository extends PagingAndSortingRepository<AddressLevel, Long>, CHSRepository<AddressLevel> {
+public interface LocationRepository extends ReferenceDataRepository<AddressLevel> {
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
     Page<AddressLevel> findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("catchmentId") long catchmentId,
@@ -34,4 +33,12 @@ public interface LocationRepository extends PagingAndSortingRepository<AddressLe
     List<AddressLevel> findByCatchments(Catchment catchment);
 
     AddressLevel findByTitle(String title);
+
+    default AddressLevel findByName(String name) {
+        return findByTitle(name);
+    }
+
+    default AddressLevel findByNameIgnoreCase(String name) {
+        return findByTitleIgnoreCase(name);
+    }
 }

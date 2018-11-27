@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "program", path = "program")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface ProgramRepository extends PagingAndSortingRepository<Program, Long>, ReferenceDataRepository<Program>, FindByLastModifiedDateTime<Program> {
+public interface ProgramRepository extends ReferenceDataRepository<Program>, FindByLastModifiedDateTime<Program> {
     Program findById(long programId);
 }

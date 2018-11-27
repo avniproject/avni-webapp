@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "rule", path = "rule")
-@PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
-public interface RuleRepository extends PagingAndSortingRepository<Rule, Long>, ReferenceDataRepository<Rule>, FindByLastModifiedDateTime<Rule> {
+public interface RuleRepository extends ReferenceDataRepository<Rule>, FindByLastModifiedDateTime<Rule> {
     List<Rule> findByOrganisationId(Long id);
 }

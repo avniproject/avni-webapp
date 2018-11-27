@@ -84,7 +84,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
             UserContext userContext = new UserContext();
             User user = userRepository.findByName(StringUtils.isEmpty(becomeUserName) ? defaultUserName : becomeUserName);
             userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
-            userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
+//            userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
             userContext.setUser(user);
             return userContext;
         } else {
