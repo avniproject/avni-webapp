@@ -16,7 +16,7 @@ public class UserContextHolder {
         return userContext.get();
     }
 
-    static void clear() {
+    public static void clear() {
         userContext.remove();
     }
 }

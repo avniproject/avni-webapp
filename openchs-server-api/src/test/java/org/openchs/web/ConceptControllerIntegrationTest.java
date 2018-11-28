@@ -1,10 +1,10 @@
 package org.openchs.web;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Concept;
-import org.openchs.domain.ConceptAnswer;
 import org.openchs.domain.ConceptDataType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
@@ -20,6 +20,12 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
 
     private void post(Object json) {
         super.post("/concepts", json);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        setUser("demo-admin");
     }
 
     @Test

@@ -2,6 +2,7 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.dao.ConceptRepository;
@@ -13,8 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @Sql({"/test-data.sql"})
 public class ConceptDirtyCheckingIntegrationTest extends AbstractControllerIntegrationTest {
     @Autowired
@@ -22,6 +21,12 @@ public class ConceptDirtyCheckingIntegrationTest extends AbstractControllerInteg
 
     private void post(Object json) {
         super.post("/concepts", json);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        setUser("demo-admin");
     }
 
     @Test

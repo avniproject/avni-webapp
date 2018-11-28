@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.dao.IndividualRepository;
@@ -21,6 +22,12 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
     private IndividualRepository individualRepository;
 
     private String INDIVIDUAL_UUID = "0a1bf764-4576-4d71-b8ec-25895a113e81";
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        setUser("demo-user");
+    }
 
     @Test
     public void testGetAll() throws Exception {

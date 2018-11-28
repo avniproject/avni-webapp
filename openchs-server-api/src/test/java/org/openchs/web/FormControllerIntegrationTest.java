@@ -1,7 +1,6 @@
 package org.openchs.web;
 
 import org.hibernate.Hibernate;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -35,7 +34,6 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 @Sql({"/test-data.sql"})
 public class FormControllerIntegrationTest extends AbstractControllerIntegrationTest {
@@ -62,19 +60,10 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        setUser("demo-admin");
         post("/programs", getJson("/ref/program.json"));
         post("/concepts", getJson("/ref/concepts.json"));
         post("/forms", getJson("/ref/forms/originalForm.json"));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        template.getRestTemplate().setInterceptors(
-                Collections.singletonList((request, body, execution) -> {
-                    request.getHeaders()
-                            .add(AuthenticationFilter.USER_NAME_HEADER, "admin");
-                    return execution.execute(request, body);
-                }));
     }
 
     @Test

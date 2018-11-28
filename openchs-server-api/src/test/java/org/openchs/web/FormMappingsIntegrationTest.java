@@ -4,9 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openchs.application.FormMapping;
 import org.openchs.common.AbstractControllerIntegrationTest;
-import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
-import org.openchs.domain.EncounterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -28,6 +26,7 @@ public class FormMappingsIntegrationTest extends AbstractControllerIntegrationTe
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        setUser("demo-admin");
         post("/concepts", getJSON("/ref/concepts.json"));
         post("/encounterTypes", getJSON("/ref/encounterTypes/encounterTypes.json"));
         post("/forms", getJSON("/ref/forms/originalForm.json"));
@@ -42,7 +41,7 @@ public class FormMappingsIntegrationTest extends AbstractControllerIntegrationTe
 
         FormMapping formMapping = formMappingRepository.findByUuid("bc253834-9e6f-4bc5-ac1e-73aca27d4c53");
         assertThat(formMapping).isNotNull();
-        assertEquals(formMapping.getForm().getName(),"Adolescent School Dropout Followup");
+        assertEquals(formMapping.getForm().getName(), "Adolescent School Dropout Followup");
         assertThat(formMapping.getEntityId()).isEqualTo(1);
         assertThat(formMapping.getObservationsTypeEntityId()).isEqualTo(1);
     }

@@ -185,9 +185,9 @@ public class User {
 
     public String[] getRoles() {
         ArrayList<String> roles = new ArrayList<>();
-        roles.add(USER);
-        if (this.isAdmin) roles.add(ADMIN);
-        if (this.isOrgAdmin) roles.add(ORGANISATION_ADMIN);
+        if (!(isOrgAdmin || isAdmin)) roles.add(USER);
+        if (isAdmin) roles.add(ADMIN);
+        if (isOrgAdmin) roles.add(ORGANISATION_ADMIN);
         return roles.toArray(new String[0]);
     }
 

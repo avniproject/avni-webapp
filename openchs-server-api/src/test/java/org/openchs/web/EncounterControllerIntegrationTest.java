@@ -21,6 +21,12 @@ public class EncounterControllerIntegrationTest extends AbstractControllerIntegr
 
     private String ENCOUNTER_UUID = "fbfd4ce8-b03b-45b9-b919-1ef8a0d9651e";
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        setUser("demo-user");
+    }
+
     @Test
     public void createNewEncounter() {
         try {

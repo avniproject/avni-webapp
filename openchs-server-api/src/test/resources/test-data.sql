@@ -57,16 +57,21 @@ VALUES (2, 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
 INSERT INTO organisation (id, name, db_user, uuid)
 VALUES (3, 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325');
 
-INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope)
-VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'None');
-INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope)
-VALUES (2, 'demo-admin', '0e53a72c-a109-49f2-918c-9599b266a585', 2, 'None');
-INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope)
-VALUES (3, 'a-demo-admin', 'd84df3cf-cdb4-4309-ad91-e0402f6e326a', 3, 'None');
+INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin)
+VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'None', false, true);
+INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin)
+VALUES (2, 'demo-admin', '0e53a72c-a109-49f2-918c-9599b266a585', 2, 'None', true, false );
+INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin)
+VALUES (3, 'a-demo-admin', 'd84df3cf-cdb4-4309-ad91-e0402f6e326a', 3, 'None', true, false);
 
 INSERT INTO catchment (id, name, uuid, version, organisation_id, type)
 VALUES
   (1, 'CatchmentX', '1722e2d4-3ef3-4ea0-a4c8-72090504ec7f', 0, 1, 'TypeX');
+
+INSERT INTO catchment (id, name, uuid, version, organisation_id, type)
+VALUES  (2, 'CatchmentY', 'b95cf900-6740-4696-95a1-219db2a8bdcb', 0, 2, 'TypeY');
+INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin, catchment_id)
+VALUES (4, 'demo-user', 'f10b5e79-30ef-45ce-a1f5-f1a5101d7c7f', 2, 'ByCatchment', false, false, 2);
 
 INSERT INTO gender (id, name, uuid, version)
 VALUES (1, 'Female', 'ad7d1d14-54fd-45a2-86b7-ea329b744484', 1);

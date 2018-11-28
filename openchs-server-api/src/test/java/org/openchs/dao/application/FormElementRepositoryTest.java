@@ -7,11 +7,6 @@ import org.openchs.application.FormElement;
 import org.openchs.application.NonApplicableFormElement;
 import org.openchs.builder.NonApplicableFormElementBuilder;
 import org.openchs.common.AbstractControllerIntegrationTest;
-import org.openchs.dao.OrganisationRepository;
-import org.openchs.dao.UserRepository;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.User;
-import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,12 +22,6 @@ public class FormElementRepositoryTest extends AbstractControllerIntegrationTest
     @Autowired
     private FormElementRepository formElementRepository;
 
-    @Autowired
-    private OrganisationRepository organisationRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
     private PageRequest pageRequest;
 
     @Override
@@ -40,11 +29,7 @@ public class FormElementRepositoryTest extends AbstractControllerIntegrationTest
     public void setUp() throws Exception {
         super.setUp();
         pageRequest = new PageRequest(0, 100);
-        UserContext userContext = new UserContext();
-        User admin = userRepository.findByName("admin");
-        userContext.setOrganisation(organisationRepository.findByUuid("3539a906-dfae-4ec3-8fbb-1b08f35c3884"));
-        userContext.setUser(admin);
-        UserContextHolder.create(userContext);
+        setUser("demo-admin");
     }
 
     @Test

@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.dao.EncounterTypeRepository;
@@ -18,6 +19,12 @@ public class EncounterTypesIntegrationTest extends AbstractControllerIntegration
 
     private void post(Object json) {
         super.post("/encounterTypes", json);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        setUser("demo-admin");
     }
 
     @Test

@@ -84,9 +84,29 @@ public class CognitoUserContextServiceImplTest {
 
         token = createForBaseToken(user.getUuid()).sign(algorithm);
 
+        user.setAdmin(false);
         user.setOrgAdmin(true);
         userContext = userContextService.getUserContext(token, false);
-        assertThat(userContext.getRoles(), containsInAnyOrder(User.USER, User.ORGANISATION_ADMIN));
+        assertThat(userContext.getRoles().size(), is(equalTo(1)));
+        assertThat(userContext.getRoles(), contains(User.ORGANISATION_ADMIN));
+
+        user.setAdmin(true);
+        user.setOrgAdmin(false);
+        userContext = userContextService.getUserContext(token, false);
+        assertThat(userContext.getRoles().size(), is(equalTo(1)));
+        assertThat(userContext.getRoles(), contains(User.ADMIN));
+
+        user.setAdmin(false);
+        user.setOrgAdmin(false);
+        userContext = userContextService.getUserContext(token, false);
+        assertThat(userContext.getRoles().size(), is(equalTo(1)));
+        assertThat(userContext.getRoles(), contains(User.USER));
+
+        user.setAdmin(true);
+        user.setOrgAdmin(true);
+        userContext = userContextService.getUserContext(token, false);
         assertThat(userContext.getRoles().size(), is(equalTo(2)));
+        assertThat(userContext.getRoles(), containsInAnyOrder(User.ADMIN,User.ORGANISATION_ADMIN));
+
     }
 }
