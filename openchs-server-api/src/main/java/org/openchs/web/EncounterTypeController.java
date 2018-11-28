@@ -29,7 +29,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> {
 
     @RequestMapping(value = "/encounterTypes", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     void save(@RequestBody List<EncounterTypeContract> encounterTypeRequests) {
         for (EncounterTypeContract encounterTypeRequest : encounterTypeRequests) {
             EncounterType encounterType = newOrExistingEntity(encounterTypeRepository, encounterTypeRequest, new EncounterType());

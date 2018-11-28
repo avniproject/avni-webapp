@@ -39,7 +39,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody ProgramEncounterRequest request) {
         logger.info(String.format("Saving programEncounter with uuid %s", request.getUuid()));
         EncounterType encounterType = (EncounterType) ReferenceDataRepositoryImpl.findReferenceEntity(encounterTypeRepository, request.getEncounterType(), request.getEncounterTypeUUID());
@@ -60,7 +60,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     }
 
     @RequestMapping(value = "/programEncounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEncounter>> getByIndividualsOfCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -70,7 +70,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     }
 
     @RequestMapping(value = "/programEncounter/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEncounter>> getByLastModified(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -79,7 +79,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     }
 
     @RequestMapping(value = "/programEncounter", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEncounter>> getProgramEncountersByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

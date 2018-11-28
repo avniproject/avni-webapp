@@ -33,7 +33,7 @@ public class FacilityController extends AbstractController<Facility> {
 
     @RequestMapping(value = "/facilities", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity<?> save(@RequestBody List<FacilityContract> facilityRequests) {
         List<Facility> facilities = new ArrayList<>();
         for (FacilityContract facilityRequest : facilityRequests) {

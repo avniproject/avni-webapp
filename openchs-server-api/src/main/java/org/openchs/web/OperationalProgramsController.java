@@ -35,7 +35,7 @@ public class OperationalProgramsController {
     }
 
     @RequestMapping(value = "/operationalPrograms", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     void saveOperationalPrograms(@RequestBody OperationalProgramsContract request) {
         Organisation organisation = organisationRepository.findByName(request.getOrganisationName());

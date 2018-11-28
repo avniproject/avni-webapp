@@ -39,13 +39,13 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
     }
 
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @RequestMapping(value = "/checklistItems", method = RequestMethod.POST)
     public void saveOld(@RequestBody Object object) {
     }
 
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @RequestMapping(value = "/txNewChecklistItemEntitys", method = RequestMethod.POST)
     public void save(@RequestBody ChecklistItemRequest checklistItemRequest) {
         ChecklistItem checklistItem = newOrExistingEntity(checklistItemRepository, checklistItemRequest, new ChecklistItem());
@@ -62,7 +62,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
     }
 
     @RequestMapping(value = "/txNewChecklistItemEntity/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ChecklistItem>> getByIndividualsOfCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -73,7 +73,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
 
 
     @RequestMapping(value = "/txNewChecklistItemEntity", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ChecklistItem>> getChecklistItemsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

@@ -34,7 +34,7 @@ public class UtilityController {
     }
 
     @RequestMapping(value = "/util/formElementHandlerNames", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public List<String> formElementHandlerNames(@RequestParam(value = "formUUID") String formUUID) {
         Form form = formRepository.findByUuid(formUUID);
         return form.getAllFormElements().stream()

@@ -29,7 +29,7 @@ public class RuleController {
     }
 
     @RequestMapping(value = "/ruleDependency", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> saveDependency(@RequestBody RuleDependencyRequest ruleDependency) {
         logger.info(String.format("Creating rule dependency for: %s", UserContextHolder.getUserContext().getOrganisation().getName()));
         return new ResponseEntity<>(ruleService.createDependency(ruleDependency.getCode(), ruleDependency.getHash()).getUuid(),
@@ -37,7 +37,7 @@ public class RuleController {
     }
 
     @RequestMapping(value = "/rules", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> saveRules(@RequestBody List<RuleRequest> ruleRequests) {
         logger.info(String.format("Creating rules for: %s", UserContextHolder.getUserContext().getOrganisation().getName()));
         ruleService.createRules(ruleRequests);
@@ -45,7 +45,7 @@ public class RuleController {
     }
 
     @RequestMapping(value = "/rule", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> saveRule(@RequestBody RuleRequest ruleRequest) {
         logger.info(String.format("Creating rules for: %s", UserContextHolder.getUserContext().getOrganisation().getName()));
         ruleService.createRule(ruleRequest.getRuleDependencyUUID(), ruleRequest);

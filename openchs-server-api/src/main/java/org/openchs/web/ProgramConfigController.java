@@ -29,7 +29,7 @@ public class ProgramConfigController {
 
 
     @RequestMapping(value = "/{programName}/config", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @Transactional
     public void save(@PathVariable("programName") String programName, @RequestBody ProgramConfig programConfig) {
         VisitScheduleConfig visitScheduleConfig = new VisitScheduleConfig(programConfig.getVisitSchedule());

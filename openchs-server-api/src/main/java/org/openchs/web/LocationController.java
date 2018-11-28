@@ -45,7 +45,7 @@ public class LocationController {
     }
 
     @RequestMapping(value = "/locations", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @Transactional
     public ResponseEntity<?> save(@RequestBody List<LocationContract> locationContracts) {
         try {

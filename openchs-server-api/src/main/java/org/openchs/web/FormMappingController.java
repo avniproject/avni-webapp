@@ -44,7 +44,7 @@ public class FormMappingController extends AbstractController<FormMapping>{
 
     @RequestMapping(value = "/formMappings", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     void save(@RequestBody List<FormMappingContract> formMappingRequests) {
         for (FormMappingContract formMappingRequest : formMappingRequests) {
             createOrUpdateFormMapping(formMappingRequest);

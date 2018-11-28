@@ -28,7 +28,7 @@ public class ProgramController {
 
     @RequestMapping(value = "/programs", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public void save(@RequestBody List<ProgramRequest> programRequests) {
         programRequests.forEach(programRequest -> {
             logger.info(String.format("Creating program: %s", programRequest.toString()));

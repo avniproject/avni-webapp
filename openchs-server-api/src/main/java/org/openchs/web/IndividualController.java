@@ -42,7 +42,7 @@ public class IndividualController extends AbstractController<Individual> impleme
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody IndividualRequest individualRequest) {
         logger.info(String.format("Saving individual with UUID %s", individualRequest.getUuid()));
 
@@ -54,7 +54,7 @@ public class IndividualController extends AbstractController<Individual> impleme
 
     @Deprecated
     @RequestMapping(value = "/individual/search/byCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Individual>> getIndividualsByCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -65,7 +65,7 @@ public class IndividualController extends AbstractController<Individual> impleme
 
     @Deprecated
     @RequestMapping(value = "/individual/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Individual>> getIndividualsByLastModified(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -74,7 +74,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @RequestMapping(value = "/individual", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Individual>> getIndividualsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

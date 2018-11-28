@@ -62,7 +62,7 @@ public class FormController {
 
     @RequestMapping(value = "/forms", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public ResponseEntity<?> save(@RequestBody FormContract formRequest) {
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
@@ -90,7 +90,7 @@ public class FormController {
 
     @RequestMapping(value = "/forms", method = RequestMethod.PATCH)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> patch(@RequestBody FormContract formRequest) {
         logger.info(String.format("Patching form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
@@ -104,7 +104,7 @@ public class FormController {
 
     @RequestMapping(value = "/forms", method = RequestMethod.DELETE)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> remove(@RequestBody FormContract formRequest) {
         logger.info(String.format("Deleting from form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
@@ -133,7 +133,7 @@ public class FormController {
 
 
     @RequestMapping(value = "/forms/export", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public FormContract export(@RequestParam String formUUID) {
         Form form = formRepository.findByUuid(formUUID);
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
@@ -198,7 +198,7 @@ public class FormController {
      * </ol>
      */
     @RequestMapping(value = "/forms/program/{programId}", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public List<BasicFormDetails> getForms(@PathVariable("programId") Long programId, Pageable pageable) {
         Program program = programRepository.findOne(programId);
         if (program == null) {
@@ -242,7 +242,7 @@ public class FormController {
      * @return list of program/forms
      */
     @RequestMapping(value = "/forms", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public List<Map<String, Object>> getForms(Pageable pageable) {
         Iterable<Program> programItr = programRepository.findAll();
         List<Map<String, Object>> response = new ArrayList<>();
@@ -262,7 +262,7 @@ public class FormController {
     }
 
     @RequestMapping(value = "/forms/byCategory", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public Map<String, List<BasicFormMetadata>> getFormsByCategory(Pageable pageable) {
 
         Map<String, List<BasicFormMetadata>> categorisedForms = new HashMap<>();

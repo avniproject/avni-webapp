@@ -23,7 +23,7 @@ public class ProgramDataImportController {
     }
 
     @RequestMapping(value = "/excelImport", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('importer')")
     public ResponseEntity<?> uploadData(@RequestParam("metaDataFile") MultipartFile metaDataFile,
                                         @RequestParam MultipartFile dataFile,
                                         @RequestParam(required = false) Integer maxNumberOfRecords,

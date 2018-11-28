@@ -43,7 +43,7 @@ public class UserInfoController {
     }
 
     @RequestMapping(value = "/userInfo", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
     public ResponseEntity<UserInfo> getUserInfo(@RequestParam(value = "catchmentId", required = true) Integer catchmentId) {
         Catchment catchment = this.catchmentRepository.findOne(Long.valueOf(catchmentId));
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
@@ -63,7 +63,7 @@ public class UserInfoController {
 
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public void save(@RequestBody UserContract[] userContracts) {
         Arrays.stream(userContracts).forEach(userContract -> {
             logger.info(String.format("Saving user with UUID/Name %s/%s", userContract.getUuid(), userContract.getName()));

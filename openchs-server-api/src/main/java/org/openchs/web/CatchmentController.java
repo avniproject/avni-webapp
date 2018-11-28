@@ -40,7 +40,7 @@ public class CatchmentController {
     }
 
     @RequestMapping(value = "/catchments", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     ResponseEntity<?> save(@RequestBody CatchmentsContract catchmentsContract) {
         try {

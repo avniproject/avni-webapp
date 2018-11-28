@@ -30,7 +30,7 @@ public class ChecklistDetailController {
 
     @RequestMapping(value = "/checklistDetail", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> save(@RequestBody ChecklistDetailRequest checklistDetail) {
         logger.info(String.format("Saving checklist detail: %s, with UUID: %s", checklistDetail.getName(), checklistDetail.getUuid()));
         ChecklistDetail checklist = checklistDetailRepository.findByUuid(checklistDetail.getUuid());

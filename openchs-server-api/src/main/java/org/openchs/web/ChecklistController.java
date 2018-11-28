@@ -35,7 +35,7 @@ public class ChecklistController extends AbstractController<Checklist> implement
 
     @Transactional
     @RequestMapping(value = "/txNewChecklistEntitys", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody ChecklistRequest checklistRequest) {
         Checklist checklist = newOrExistingEntity(checklistRepository, checklistRequest, new Checklist());
         checklist.setChecklistDetail(this.checklistDetailRepository.findByUuid(checklistRequest.getChecklistDetailUUID()));
@@ -46,13 +46,13 @@ public class ChecklistController extends AbstractController<Checklist> implement
 
     @Transactional
     @RequestMapping(value = "/checklists", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void saveOld(@RequestBody Object object) {
 
     }
 
     @RequestMapping(value = "/txNewChecklistEntity/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Checklist>> getByIndividualsOfCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -63,7 +63,7 @@ public class ChecklistController extends AbstractController<Checklist> implement
 
 
     @RequestMapping(value = "/txNewChecklistEntity", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Checklist>> getChecklistsByOperatingIndividualScope(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,

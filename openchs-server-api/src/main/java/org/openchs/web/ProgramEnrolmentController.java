@@ -43,7 +43,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
         logger.info(String.format("Saving programEnrolment with uuid %s", request.getUuid()));
@@ -75,7 +75,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @RequestMapping(value = "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEnrolment>> getByIndividualsOfCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -85,7 +85,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @RequestMapping(value = "/programEnrolment/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEnrolment>> getByLastModified(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -94,7 +94,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @RequestMapping(value = "/programEnrolment", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEnrolment>> getProgramEnrolmentsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
