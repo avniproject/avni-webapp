@@ -165,7 +165,8 @@ create view latest_program_encounter as
 CREATE OR REPLACE VIEW address_level_type_view AS
   SELECT al.*, alt.name as "type"
   from address_level al
-         inner join address_level_type alt on al.type_id = alt.id;
+         inner join address_level_type alt on al.type_id = alt.id
+where alt.is_voided is not true;
 
 
 
