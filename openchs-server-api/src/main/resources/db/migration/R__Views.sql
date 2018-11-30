@@ -163,10 +163,19 @@ create view latest_program_encounter as
   select * from latest_on_top where rank = 1;
 
 CREATE OR REPLACE VIEW address_level_type_view AS
+  WITH RECURSIVE list_of_orgs(id,
+      parent_organisation_id) AS (SELECT id, parent_organisation_id
+                                  FROM organisation
+                                  WHERE db_user = current_user
+                                  UNION ALL SELECT o.id, o.parent_organisation_id
+                                            FROM organisation o,
+                                                 list_of_orgs log
+                                            WHERE o.id = log.parent_organisation_id)
   SELECT al.*, alt.name as "type"
   from address_level al
          inner join address_level_type alt on al.type_id = alt.id
-where alt.is_voided is not true;
+         inner join list_of_orgs loo on loo.id=al.organisation_id
+  where alt.is_voided is not true;
 
 
 
