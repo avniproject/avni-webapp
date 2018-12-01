@@ -183,7 +183,7 @@ group by q.name;
 select
   f.name  as FormName,
   feg.name as FormElementGroup,
-  fe.name as FormElement,
+  CASE WHEN fe.is_mandatory=true THEN '* ' ELSE '  ' END || fe.name as "M  FormElement",
   co.name as ConceptOwn,
   feo.name as FormElementOwn,
   c.name as Concept,
