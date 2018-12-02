@@ -11,10 +11,13 @@ import javax.validation.constraints.NotNull;
 
 @Entity(name = "rule")
 public class Rule extends OrganisationAwareEntity {
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id")
     private Form form;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "operational_program_id")
+    private OperationalProgram operationalProgram;
 
     @NotNull
     @Column(name = "type")
@@ -46,6 +49,14 @@ public class Rule extends OrganisationAwareEntity {
 
     public void setForm(Form form) {
         this.form = form;
+    }
+
+    public OperationalProgram getOperationalProgram() {
+        return operationalProgram;
+    }
+
+    public void setOperationalProgram(OperationalProgram operationalProgram) {
+        this.operationalProgram = operationalProgram;
     }
 
     public RuleType getType() {

@@ -4,7 +4,11 @@ import java.util.Map;
 
 public class RuleRequest {
     private String ruleDependencyUUID;
+
     private String formUUID;
+    private String entityUUID;
+    private String entityType;
+
     private String type;
     private Double executionOrder;
 
@@ -14,6 +18,22 @@ public class RuleRequest {
 
     private String uuid;
     private String fnName;
+
+    public String getEntityUUID() {
+        return entityUUID;
+    }
+
+    public void setEntityUUID(String entityUUID) {
+        this.entityUUID = entityUUID;
+    }
+
+    public String getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
+    }
 
     public String getFormUUID() {
         return formUUID;

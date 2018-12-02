@@ -2,9 +2,12 @@ package org.openchs.service;
 
 import org.openchs.application.Form;
 import org.openchs.application.RuleType;
+import org.openchs.application.RuleableEntity;
+import org.openchs.dao.OperationalProgramRepository;
 import org.openchs.dao.RuleDependencyRepository;
 import org.openchs.dao.RuleRepository;
 import org.openchs.dao.application.FormRepository;
+import org.openchs.domain.OperationalProgram;
 import org.openchs.domain.Rule;
 import org.openchs.domain.RuleData;
 import org.openchs.domain.RuleDependency;
@@ -27,13 +30,19 @@ public class RuleService {
     private final RuleDependencyRepository ruleDependencyRepository;
     private final RuleRepository ruleRepository;
     private final FormRepository formRepository;
+    private final OperationalProgramRepository operationalProgramRepository;
 
     @Autowired
-    public RuleService(RuleDependencyRepository ruleDependencyRepository, RuleRepository ruleRepository, FormRepository formRepository) {
+    public RuleService(RuleDependencyRepository ruleDependencyRepository,
+                       RuleRepository ruleRepository,
+                       FormRepository formRepository,
+                       OperationalProgramRepository operationalProgramRepository)
+    {
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
         this.formRepository = formRepository;
+        this.operationalProgramRepository = operationalProgramRepository;
     }
 
     @Transactional
@@ -49,25 +58,47 @@ public class RuleService {
         return ruleDependencyRepository.save(ruleDependency);
     }
 
+    private Rule _setCommonAttributes(Rule rule, RuleRequest ruleRequest) {
+        rule.setUuid(ruleRequest.getUuid());
+        rule.setData(new RuleData(ruleRequest.getData()));
+        rule.setName(ruleRequest.getName());
+        rule.setFnName(ruleRequest.getFnName());
+        rule.setType(RuleType.valueOf(StringUtils.capitalize(ruleRequest.getType())));
+        rule.setExecutionOrder(ruleRequest.getExecutionOrder());
+        rule.setVoided(false);
+        return rule;
+    }
+
+    private Rule _setVaryingAttributes(Rule rule, RuleRequest ruleRequest) {
+        if (StringUtils.capitalize(ruleRequest.getEntityType()).equals(RuleableEntity.Form.name())) {
+            Form form = formRepository.findByUuid(ruleRequest.getFormUUID());
+            if (form == null) {
+                throw new ValidationException(String.format("Form with uuid: %s not found for rule with uuid: %s", ruleRequest.getFormUUID(), ruleRequest.getUuid()));
+            }
+            rule.setForm(form);
+        }
+        else if (StringUtils.capitalize(ruleRequest.getEntityType()).equals(RuleableEntity.OperationalProgram.name())) {
+            OperationalProgram opProgram = operationalProgramRepository.findByUuid(ruleRequest.getEntityUUID());
+            if (opProgram == null) {
+                throw new ValidationException(String.format("OperationalProgram with uuid: %s not found for rule with uuid: %s", ruleRequest.getEntityUUID(), ruleRequest.getUuid()));
+            }
+            rule.setOperationalProgram(opProgram);
+        }
+        return rule;
+    }
+
     @Transactional
     public Rule createRule(String ruleDependencyUUID, RuleRequest ruleRequest) {
         RuleDependency ruleDependency = ruleDependencyRepository.findByUuid(ruleDependencyUUID);
         Rule rule = ruleRepository.findByUuid(ruleRequest.getUuid());
         if (rule == null) rule = new Rule();
-        rule.setUuid(ruleRequest.getUuid());
-        rule.setData(new RuleData(ruleRequest.getData()));
-        Form form = formRepository.findByUuid(ruleRequest.getFormUUID());
-        if (form == null) {
-            throw new ValidationException(String.format("Not form with uuid: %s found for rule with uuid: %s", ruleRequest.getFormUUID(), ruleRequest.getUuid()));
-        }
-        rule.setForm(form);
-        rule.setName(ruleRequest.getName());
-        rule.setFnName(ruleRequest.getFnName());
-        rule.setType(RuleType.valueOf(StringUtils.capitalize(ruleRequest.getType())));
         rule.setRuleDependency(ruleDependency);
-        rule.setExecutionOrder(ruleRequest.getExecutionOrder());
-        rule.setVoided(false);
-        logger.info(String.format("Creating Rule with UUID, Name, Type, Form: %s, %s, %s, %s", rule.getUuid(), rule.getName(), rule.getType(), rule.getForm().getName()));
+        rule = this._setCommonAttributes(rule, ruleRequest);
+        rule = this._setVaryingAttributes(rule, ruleRequest);
+        if (rule.getForm() != null)
+            logger.info(String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', Form '%s'", rule.getUuid(), rule.getName(), rule.getType(), rule.getForm().getName()));
+        else
+            logger.info(String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', OperationalProgram '%s'", rule.getUuid(), rule.getName(), rule.getType(), rule.getOperationalProgram().getName()));
         return ruleRepository.save(rule);
     }
 

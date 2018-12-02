@@ -151,7 +151,10 @@ public class OpenCHS {
             public Resource<Rule> process(Resource<Rule> resource) {
                 Rule rule = resource.getContent();
                 resource.removeLinks();
-                resource.add(new Link(rule.getForm().getUuid(), "formUUID"));
+                if (rule.getForm() != null)
+                    resource.add(new Link(rule.getForm().getUuid(), "formUUID"));
+                else if (rule.getOperationalProgram() != null)
+                    resource.add(new Link(rule.getOperationalProgram().getUuid(), "operationalProgramUUID"));
                 return resource;
             }
         };

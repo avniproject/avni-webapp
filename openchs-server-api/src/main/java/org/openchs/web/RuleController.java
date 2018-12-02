@@ -4,6 +4,7 @@ import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.RuleService;
 import org.openchs.web.request.RuleDependencyRequest;
 import org.openchs.web.request.RuleRequest;
+import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,12 @@ public class RuleController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> saveRules(@RequestBody List<RuleRequest> ruleRequests) {
         logger.info(String.format("Creating rules for: %s", UserContextHolder.getUserContext().getOrganisation().getName()));
-        ruleService.createRules(ruleRequests);
+        try {
+            ruleService.createRules(ruleRequests);
+        } catch (ValidationException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
