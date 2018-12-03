@@ -1,11 +1,13 @@
 package org.openchs.web.request;
 
+import org.openchs.application.RuleableEntity;
+import org.springframework.util.StringUtils;
+
 import java.util.Map;
 
 public class RuleRequest {
     private String ruleDependencyUUID;
 
-    private String formUUID;
     private String entityUUID;
     private String entityType;
 
@@ -35,12 +37,14 @@ public class RuleRequest {
         this.entityType = entityType;
     }
 
-    public String getFormUUID() {
-        return formUUID;
+    public boolean isFormType() {
+        return StringUtils.capitalize(this.getEntityType())
+                .equals(RuleableEntity.Form.name());
     }
 
-    public void setFormUUID(String formUUID) {
-        this.formUUID = formUUID;
+    public boolean isProgramType() {
+        return StringUtils.capitalize(this.getEntityType())
+                .equals(RuleableEntity.Program.name());
     }
 
     public String getType() {

@@ -2,15 +2,12 @@ package org.openchs.service;
 
 import org.openchs.application.Form;
 import org.openchs.application.RuleType;
-import org.openchs.application.RuleableEntity;
-import org.openchs.dao.OperationalProgramRepository;
+import org.openchs.dao.ProgramRepository;
+import org.openchs.dao.ProgramRuleRepository;
 import org.openchs.dao.RuleDependencyRepository;
 import org.openchs.dao.RuleRepository;
 import org.openchs.dao.application.FormRepository;
-import org.openchs.domain.OperationalProgram;
-import org.openchs.domain.Rule;
-import org.openchs.domain.RuleData;
-import org.openchs.domain.RuleDependency;
+import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.RuleRequest;
 import org.openchs.web.validation.ValidationException;
@@ -30,19 +27,22 @@ public class RuleService {
     private final RuleDependencyRepository ruleDependencyRepository;
     private final RuleRepository ruleRepository;
     private final FormRepository formRepository;
-    private final OperationalProgramRepository operationalProgramRepository;
+    private final ProgramRepository programRepository;
+    private final ProgramRuleRepository programRuleRepository;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
                        RuleRepository ruleRepository,
                        FormRepository formRepository,
-                       OperationalProgramRepository operationalProgramRepository)
+                       ProgramRepository programRepository,
+                       ProgramRuleRepository programRuleRepository)
     {
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
         this.formRepository = formRepository;
-        this.operationalProgramRepository = operationalProgramRepository;
+        this.programRepository = programRepository;
+        this.programRuleRepository = programRuleRepository;
     }
 
     @Transactional
@@ -70,19 +70,24 @@ public class RuleService {
     }
 
     private Rule _setVaryingAttributes(Rule rule, RuleRequest ruleRequest) {
-        if (StringUtils.capitalize(ruleRequest.getEntityType()).equals(RuleableEntity.Form.name())) {
-            Form form = formRepository.findByUuid(ruleRequest.getFormUUID());
+        if (ruleRequest.isFormType()) {
+            Form form = formRepository.findByUuid(ruleRequest.getEntityUUID());
             if (form == null) {
-                throw new ValidationException(String.format("Form with uuid: %s not found for rule with uuid: %s", ruleRequest.getFormUUID(), ruleRequest.getUuid()));
+                throw new ValidationException(String.format("Form with uuid: %s not found for rule with uuid: %s", ruleRequest.getEntityUUID(), ruleRequest.getUuid()));
             }
             rule.setForm(form);
         }
-        else if (StringUtils.capitalize(ruleRequest.getEntityType()).equals(RuleableEntity.OperationalProgram.name())) {
-            OperationalProgram opProgram = operationalProgramRepository.findByUuid(ruleRequest.getEntityUUID());
-            if (opProgram == null) {
-                throw new ValidationException(String.format("OperationalProgram with uuid: %s not found for rule with uuid: %s", ruleRequest.getEntityUUID(), ruleRequest.getUuid()));
+        else if (ruleRequest.isProgramType()) {
+            Program program = programRepository.findByUuid(ruleRequest.getEntityUUID());
+            if (program == null) {
+                throw new ValidationException(String.format("Program with uuid: %s not found for rule with uuid: %s", ruleRequest.getEntityUUID(), ruleRequest.getUuid()));
             }
-            rule.setOperationalProgram(opProgram);
+            ProgramRule programRule = programRuleRepository.findByRule_Uuid(rule.getUuid());
+            if (programRule == null) {
+                programRule = new ProgramRule(program, rule);
+                programRule.assignUUID();
+            }
+            rule.setProgramRule(programRule);
         }
         return rule;
     }
@@ -95,10 +100,14 @@ public class RuleService {
         rule.setRuleDependency(ruleDependency);
         rule = this._setCommonAttributes(rule, ruleRequest);
         rule = this._setVaryingAttributes(rule, ruleRequest);
-        if (rule.getForm() != null)
-            logger.info(String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', Form '%s'", rule.getUuid(), rule.getName(), rule.getType(), rule.getForm().getName()));
-        else
-            logger.info(String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', OperationalProgram '%s'", rule.getUuid(), rule.getName(), rule.getType(), rule.getOperationalProgram().getName()));
+        if (rule.appliesToForm())
+            logger.info(
+                String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', Form '%s'",
+                    rule.getUuid(), rule.getName(), rule.getType(), rule.getForm().getName()));
+        else if (rule.appliesToProgram())
+            logger.info(
+                String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', Program '%s'",
+                    rule.getUuid(), rule.getName(), rule.getType(), rule.getProgramRule().getProgram().getName()));
         return ruleRepository.save(rule);
     }
 
