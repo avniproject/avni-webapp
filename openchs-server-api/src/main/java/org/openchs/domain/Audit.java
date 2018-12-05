@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Entity
 @EntityListeners({AuditingEntityListener.class})
 @Table(name = "audit")
+@BatchSize(size = 100)
 public class Audit {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

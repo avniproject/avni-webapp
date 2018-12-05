@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "address_level")
+@BatchSize(size = 100)
 public class AddressLevel extends OrganisationAwareEntity {
     @Column
     @NotNull
