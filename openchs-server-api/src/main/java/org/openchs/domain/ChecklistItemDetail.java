@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.openchs.application.Form;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "checklist_item_detail")
+@BatchSize(size = 100)
 public class ChecklistItemDetail extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull

@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.BatchSize;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -10,7 +11,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "checklist")
-@JsonIgnoreProperties({"items","programEnrolment"})
+@JsonIgnoreProperties({"items", "programEnrolment"})
+@BatchSize(size = 100)
 public class Checklist extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
