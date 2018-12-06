@@ -10,7 +10,6 @@ import org.springframework.web.servlet.handler.MappedInterceptor;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -50,19 +49,19 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "checklistDetail",
             "checklistItemDetail",
             "rule",
+            "video",
             "userInfo");
 
-    private List<String> paths;
+    private final String[] paths;
 
     @Autowired
     public SyncConfiguration(TransactionalResourceInterceptor transactionalResourceInterceptor) {
         this.transactionalResourceInterceptor = transactionalResourceInterceptor;
-        paths = RESOURCES
-                .stream().map((path) -> "/" + path + "/**").collect(Collectors.toList());
+        paths = RESOURCES.stream().map(path-> "/" + path + "/**").toArray(String[]::new);
     }
 
     @Bean("mappedTransactionalResourceInterceptor")
     public MappedInterceptor mappedTransactionalResourceInterceptor() {
-        return new MappedInterceptor(this.paths.toArray(new String[]{}), transactionalResourceInterceptor);
+        return new MappedInterceptor(paths, transactionalResourceInterceptor);
     }
 }

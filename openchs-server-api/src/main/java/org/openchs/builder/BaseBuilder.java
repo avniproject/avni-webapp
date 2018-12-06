@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 public abstract class BaseBuilder<T extends OrganisationAwareEntity, K extends BaseBuilder<T, K>> {
     private final Logger logger;
@@ -35,6 +36,13 @@ public abstract class BaseBuilder<T extends OrganisationAwareEntity, K extends B
         } catch (Exception ignored) {
             logger.error("Error While Setting Value", ignored);
         }
+    }
+
+    protected <P> void set(Consumer<P> setter, P val) {
+        if (val == null) return;
+        if (val instanceof Collection && ((Collection) val).size() == 0) return;
+        if (val instanceof String && ((String) val).isEmpty()) return;
+        setter.accept(val);
     }
 
     public T get() {
