@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <logger name="org.openchs" level="INFO"/>
-    <logger name="org.springframework" level="OFF"/>
-    <logger name="org.hibernate.search.batchindexing.impl.SimpleIndexingProgressMonitor" level="OFF" />
-</configuration>
