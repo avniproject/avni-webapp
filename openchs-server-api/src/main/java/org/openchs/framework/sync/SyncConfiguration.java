@@ -50,6 +50,7 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "checklistItemDetail",
             "rule",
             "video",
+            "videotelemetric",
             "userInfo");
 
     private final String[] paths;

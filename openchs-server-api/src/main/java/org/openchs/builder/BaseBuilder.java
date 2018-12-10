@@ -1,6 +1,6 @@
 package org.openchs.builder;
 
-import org.openchs.domain.OrganisationAwareEntity;
+import org.openchs.domain.CHSBaseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public abstract class BaseBuilder<T extends OrganisationAwareEntity, K extends BaseBuilder<T, K>> {
+public abstract class BaseBuilder<T extends CHSBaseEntity, K extends BaseBuilder<T, K>> {
     private final Logger logger;
     protected T newEntity;
     protected T existingEntity;

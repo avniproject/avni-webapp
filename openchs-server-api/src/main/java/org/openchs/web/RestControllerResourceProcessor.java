@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 
@@ -18,5 +19,10 @@ public interface RestControllerResourceProcessor<T> {
         List<Resource<T>> resources = new ArrayList<>();
         for (T it : page) resources.add(this.process(new Resource<>(it)));
         return new PagedResources<>(resources, pageMetadata);
+    }
+
+    default PagedResources<Resource<T>> empty(Pageable pageable) {
+        PagedResources.PageMetadata pageMetadata = new PagedResources.PageMetadata(pageable.getPageSize(), 0, 0, 0);
+        return new PagedResources<>(new ArrayList<>(), pageMetadata);
     }
 }
