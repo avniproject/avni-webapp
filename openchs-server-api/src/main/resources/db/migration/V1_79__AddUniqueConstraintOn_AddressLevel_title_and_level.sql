@@ -1,0 +1,1 @@
+alter table address_level add constraint address_level_unique_titel_level unique (title, level);

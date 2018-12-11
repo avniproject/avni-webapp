@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 public class LocationController {
@@ -75,18 +74,17 @@ public class LocationController {
         return existingType;
     }
 
-    private void saveLocation(LocationContract locationRequest, AddressLevelType type) throws BuilderException {
-        LocationBuilder locationBuilder = new LocationBuilder(locationRepository.findByUuid(locationRequest.getUuid()), type);
-        if (locationExistsWithSameNameAndDifferentUUID(locationRequest)) {
-            throw new BuilderException(String.format("Location %s exists with different uuid", locationRequest.getName()));
+    private void saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {
+        LocationBuilder locationBuilder = new LocationBuilder(locationRepository.findByUuid(contract.getUuid()), type);
+        if (possibleDuplicate(contract)) {
+            throw new BuilderException(String.format("Location{name='%s',level='%s',..} with different uuid exists", contract.getName(),contract.getLevel()));
         }
-        locationBuilder.copy(locationRequest);
+        locationBuilder.copy(contract);
         locationRepository.save(locationBuilder.build());
     }
 
-    private boolean locationExistsWithSameNameAndDifferentUUID(LocationContract locationRequest) {
-        AddressLevel location = locationRepository.findByTitle(locationRequest.getName());
-        return location != null && !location.getUuid().equals(locationRequest.getUuid());
+    private boolean possibleDuplicate(LocationContract locationRequest) {
+        List<AddressLevel> locations = locationRepository.findByTitleAndLevelAndUuidNot(locationRequest.getName(), locationRequest.getLevel(), locationRequest.getUuid());
+        return !locations.isEmpty();
     }
-
 }

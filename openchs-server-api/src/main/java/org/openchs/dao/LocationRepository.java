@@ -28,17 +28,17 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
+    List<AddressLevel> findByTitleAndLevelAndUuidNot(String title, Double level, String uuid);
+
     AddressLevel findByTitleIgnoreCase(String title);
 
     List<AddressLevel> findByCatchments(Catchment catchment);
 
-    AddressLevel findByTitle(String title);
-
     default AddressLevel findByName(String name) {
-        return findByTitle(name);
+        throw new UnsupportedOperationException("No field 'name' in Location. Field 'title' not unique.");
     }
 
     default AddressLevel findByNameIgnoreCase(String name) {
-        return findByTitleIgnoreCase(name);
+        throw new UnsupportedOperationException("No field 'name' in Location. Field 'title' not unique.");
     }
 }
