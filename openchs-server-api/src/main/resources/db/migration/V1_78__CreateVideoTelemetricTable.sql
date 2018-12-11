@@ -17,6 +17,8 @@ alter table only video_telemetric
   add constraint video_telemetric_user foreign key (user_id) references users (id),
   add constraint video_telemetric_organisation foreign key (organisation_id) references organisation (id);
 
+alter table video_telemetric enable row level security;
+
 create policy video_telemetric_orgs
   on video_telemetric using (organisation_id in
                   (with recursive list_of_orgs(id, parent_organisation_id) as (select id, parent_organisation_id

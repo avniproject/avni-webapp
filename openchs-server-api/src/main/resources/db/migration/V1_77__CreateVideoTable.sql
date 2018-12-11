@@ -16,6 +16,8 @@ alter table only video
 ALTER TABLE ONLY video
   ADD CONSTRAINT video_organisation FOREIGN KEY (organisation_id) REFERENCES organisation (id);
 
+ALTER TABLE video ENABLE ROW LEVEL SECURITY;
+
 CREATE POLICY video_orgs
   ON video USING (organisation_id IN
                   (WITH RECURSIVE list_of_orgs(id, parent_organisation_id) AS (SELECT id, parent_organisation_id
