@@ -113,16 +113,20 @@ workflows:
   test_and_publish_and_deploy:
     jobs:
       - test
-      - publish:
+      - approve-publish:
+          type: approval
           requires:
             - test
-      - hold:
+      - publish:
+          requires:
+            - approve-publish
+      - approve-deployment:
           type: approval
           requires:
             - publish
       - deploy:
           requires:
-            - hold
+            - approve-deployment
 notify:
   webhooks:
     - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
