@@ -37,6 +37,7 @@ public class Individual extends OrganisationAwareEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
+    @NotNull
     private AddressLevel addressLevel;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "individual")

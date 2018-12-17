@@ -5,7 +5,9 @@ import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.LocationRepository;
 import org.openchs.dao.OperatingIndividualScopeAwareRepository;
-import org.openchs.domain.*;
+import org.openchs.domain.AddressLevel;
+import org.openchs.domain.Gender;
+import org.openchs.domain.Individual;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
@@ -20,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Objects;
 
 @RestController
 public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual>, OperatingIndividualScopeAwareController<Individual> {
@@ -98,6 +101,8 @@ public class IndividualController extends AbstractController<Individual> impleme
 
     private Individual createIndividualWithoutObservations(@RequestBody IndividualRequest individualRequest) {
         AddressLevel addressLevel = getAddressLevel(individualRequest);
+        Objects.requireNonNull(addressLevel, String.format("Individual{uuid='%s',addressLevel='%s'} addressLevel doesn't exist.",
+                individualRequest.getUuid(), individualRequest.getAddressLevel()));
         Gender gender = individualRequest.getGender() == null ? genderRepository.findByUuid(individualRequest.getGenderUUID()) : genderRepository.findByName(individualRequest.getGender());
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
         individual.setFirstName(individualRequest.getFirstName());
