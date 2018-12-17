@@ -143,7 +143,7 @@ public abstract class Importer<T extends CHSRequest> {
                     ((Collection) newValue).add(oldValue);
                     existingObservationRequest.setValue(newValue);
                 } else {
-                    existingObservationRequest.setValue(Arrays.asList(oldValue, newValue));
+                    existingObservationRequest.setValue(new ArrayList<>(Arrays.asList(oldValue, newValue)));
                 }
             }
         }
