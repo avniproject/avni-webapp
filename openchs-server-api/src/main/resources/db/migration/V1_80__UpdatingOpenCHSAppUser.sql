@@ -1,1 +1,0 @@
-UPDATE organisation set db_user='openchs_core' where name='OpenCHS';
