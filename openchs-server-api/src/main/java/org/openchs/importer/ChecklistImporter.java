@@ -122,6 +122,9 @@ public class ChecklistImporter extends Importer<ChecklistRequest> {
                 case "User":
                     setUser(header, importSheetMetaData, row, importField);
                     break;
+                case "Voided":
+                    checklistItemRequest.setVoided(importField.getBooleanValue(row, header, importSheetMetaData));
+                    break;
                 default:
                     ObservationRequest observationRequest = null;
                     try {

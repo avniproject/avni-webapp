@@ -62,6 +62,9 @@ public class ProgramEnrolmentImporter extends Importer<ProgramEnrolmentRequest> 
                 case "User":
                     setUser(header, sheetMetaData, row, importField);
                     break;
+                case "Voided":
+                    programEnrolmentRequest.setVoided(importField.getBooleanValue(row, header, sheetMetaData));
+                    break;
                 default:
                     ObservationRequest observationRequest = createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields);
                     if (sheetMetaData.getFormType().equals(FormType.ProgramExit))
