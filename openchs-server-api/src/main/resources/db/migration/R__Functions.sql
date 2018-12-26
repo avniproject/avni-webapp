@@ -338,7 +338,7 @@ $$
 LANGUAGE plpgsql;
 
 ------------------------------------- JSONB FUNCTIONS ------------------------------------------------------------------
-DROP FUNCTION IF EXISTS jsonb_merge( JSONB );
+DROP FUNCTION IF EXISTS jsonb_merge( JSONB ) CASCADE;
 
 CREATE OR REPLACE FUNCTION jsonb_merge(arr JSONB)
   RETURNS JSONB AS $$
