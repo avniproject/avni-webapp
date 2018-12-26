@@ -90,6 +90,9 @@ public class ProgramEncounterImporter extends Importer<ProgramEncounterRequest> 
                 case "User":
                     setUser(header, sheetMetaData, row, importField);
                     break;
+                case "Voided":
+                    programEncounterRequest.setVoided(importField.getBooleanValue(row, header, sheetMetaData));
+                    break;
                 default:
                     programEncounterRequest.addObservation(createObservationRequest(row, header, sheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields));
                     break;

@@ -78,6 +78,8 @@ public class IndividualRelationshipImporter extends Importer<IndividualRelations
                 dateSetter.accept(dateValue);
             } else if (fieldName.equals("User")) {
                 setUser(header, importSheetMetaData, row, importField);
+            } else if (fieldName.equals("Voided")) {
+                individualRelationshipRequest.setVoided(importField.getBooleanValue(row, header, importSheetMetaData));
             } else {
                 System.out.println(String.format("Field '%s' not recognised.", fieldName));
             }

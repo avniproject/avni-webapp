@@ -59,6 +59,9 @@ public class EncounterImporter extends Importer<EncounterRequest> {
                 case "User":
                     setUser(header, sheetMetaData, row, importField);
                     break;
+                case "Voided":
+                    encounterRequest.setVoided(importField.getBooleanValue(row, header, sheetMetaData));
+                    break;
                 default:
                     ObservationRequest observationRequest = null;
                     try {
