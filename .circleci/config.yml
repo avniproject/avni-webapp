@@ -71,13 +71,15 @@ jobs:
 
       - run: cp major_version ~/artifacts/major_version;
 
+      - run: cp ~/openchs-server/openchs-server-api/build/distributions/openchs-server-*.noarch.rpm ~/artifacts/;
+
       - persist_to_workspace:
           root: ~/artifacts
           paths:
            - minor_version
            - major_version
       - store_artifacts:
-          path: ~/openchs-server/openchs-server-api/build/distributions/openchs-server-*.noarch.rpm
+          path: ~/artifacts
 
 
   deploy:
