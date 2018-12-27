@@ -77,7 +77,7 @@ jobs:
            - minor_version
            - major_version
       - store_artifacts:
-          path: ~/openchs-server/openchs-server-api/build/distributions/openchs-server-0.0.1-1204.noarch.rpm
+          path: ~/openchs-server/openchs-server-api/build/distributions/openchs-server-*.noarch.rpm
 
 
   deploy:
