@@ -14,7 +14,7 @@ minor_version
 major_version
 **/rules/*.js
 
-# VSCode
+# VSCode files
 .vscode
 .project
 .settings
