@@ -13,9 +13,10 @@ public enum ConceptDataType {
     Date,
     DateTime,
     Time,
-    Duration;
+    Duration,
+    Image;
 
-    private static List<ConceptDataType> stringTypes = Arrays.asList(Text, Coded, Notes);
+    private static List<ConceptDataType> stringTypes = Arrays.asList(Text, Coded, Notes, Image);
     private static List<ConceptDataType> dateTypes = Arrays.asList(Date, DateTime,Duration,Time);
 
     public static boolean stringType(String string) {
