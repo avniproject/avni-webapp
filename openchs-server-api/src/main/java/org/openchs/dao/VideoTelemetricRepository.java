@@ -1,4 +1,4 @@
-package org.openchs.web;
+package org.openchs.dao;
 
 import org.openchs.domain.VideoTelemetric;
 import org.springframework.data.repository.PagingAndSortingRepository;

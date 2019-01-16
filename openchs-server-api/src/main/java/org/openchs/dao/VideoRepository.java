@@ -1,4 +1,4 @@
-package org.openchs.web;
+package org.openchs.dao;
 
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ImplReferenceDataRepository;

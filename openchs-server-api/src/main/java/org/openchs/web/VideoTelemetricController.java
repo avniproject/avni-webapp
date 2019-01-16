@@ -2,6 +2,8 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.builder.VideoTelemetricBuilder;
+import org.openchs.dao.VideoRepository;
+import org.openchs.dao.VideoTelemetricRepository;
 import org.openchs.domain.User;
 import org.openchs.domain.Video;
 import org.openchs.domain.VideoTelemetric;

@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.openchs.builder.VideoBuilder;
+import org.openchs.dao.VideoRepository;
 import org.openchs.domain.Video;
 import org.openchs.web.request.VideoContract;
 import org.springframework.beans.factory.annotation.Autowired;
