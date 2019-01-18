@@ -20,7 +20,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
           - v1-dependencies-
 
       - run: sudo apt-get install make postgresql-client
@@ -32,7 +32,7 @@ jobs:
             - ~/.m2
             - ~/.gradle
             - ~/openchs-server/.gradle
-          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
 
       - store_artifacts:
           path: openchs-server-api/build/reports/tests/test
@@ -51,7 +51,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
           - v1-dependencies-
 
       - run: sudo apt-get install make openssl
@@ -63,7 +63,7 @@ jobs:
             - ~/.m2
             - ~/.gradle
             - ~/openchs-server/.gradle
-          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-health-module-adapter/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
 
       - run: mkdir -p ~/artifacts;
 
@@ -106,7 +106,7 @@ jobs:
       - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
 
       - run: cp -f ~/artifacts/major_version ~/infra/server/version/major_version
-      
+
       - run: cp -f ~/artifacts/minor_version ~/infra/server/version/minor_version
 
       - run: cd ~/infra; make install; make staging-create;
