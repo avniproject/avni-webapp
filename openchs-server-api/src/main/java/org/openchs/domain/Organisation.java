@@ -22,6 +22,9 @@ public class Organisation {
     private String dbUser;
 
     @Column
+    private String mediaDirectory;
+
+    @Column
     @NotNull
     private String uuid;
 
@@ -66,6 +69,14 @@ public class Organisation {
 
     public void assignUUID() {
         this.uuid = UUID.randomUUID().toString();
+    }
+
+    public String getMediaDirectory() {
+        return mediaDirectory;
+    }
+
+    public void setMediaDirectory(String mediaDirectory) {
+        this.mediaDirectory = mediaDirectory;
     }
 
     @Override

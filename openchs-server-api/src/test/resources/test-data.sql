@@ -50,12 +50,12 @@ ALTER SEQUENCE individual_relationship_type_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_id_seq RESTART WITH 1;
 ALTER SEQUENCE audit_id_seq RESTART WITH 1;
 
-INSERT INTO organisation (id, name, db_user, uuid)
-VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
-INSERT INTO organisation (id, name, db_user, uuid)
-VALUES (2, 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
-INSERT INTO organisation (id, name, db_user, uuid)
-VALUES (3, 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325');
+INSERT INTO organisation (id, name, db_user, media_directory, uuid)
+VALUES (1, 'OpenCHS', 'openchs', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
+INSERT INTO organisation (id, name, db_user, media_directory, uuid)
+VALUES (2, 'demo', 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
+INSERT INTO organisation (id, name, db_user, media_directory, uuid)
+VALUES (3, 'a-demo', 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325');
 
 INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin)
 VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'None', false, true);

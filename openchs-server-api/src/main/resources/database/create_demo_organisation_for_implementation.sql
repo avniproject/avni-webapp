@@ -8,5 +8,5 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO :db_user;
 GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO :db_user;
 
 
-INSERT into organisation(name, db_user, uuid, parent_organisation_id)
-  SELECT '' || :org_name || ' Demo', :db_user_string, :uuid, :parent_organisation_id;
+INSERT into organisation(name, db_user, uuid, parent_organisation_id, media_directory)
+  SELECT '' || :org_name || ' Demo', :db_user_string, :uuid, :parent_organisation_id, :media_directory;

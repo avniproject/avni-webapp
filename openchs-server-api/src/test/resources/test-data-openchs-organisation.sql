@@ -46,8 +46,8 @@ ALTER SEQUENCE individual_relation_gender_mapping_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_type_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_id_seq RESTART WITH 1;
 
-INSERT INTO organisation (id, name, db_user, uuid)
-VALUES (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
+INSERT INTO organisation (id, name, db_user, media_directory, uuid)
+VALUES (1, 'OpenCHS', 'openchs', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
 
 INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope)
 VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'None');
