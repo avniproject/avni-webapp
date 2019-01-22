@@ -28,7 +28,7 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
 
     List<FormMapping> findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNull();
 
-    FormMapping findByEntityIdAndObservationsTypeEntityIdAndFormFormType(Long entityId, Long observationsTypeEntityId, FormType formType);
+    FormMapping findByEntityIdAndObservationsTypeEntityIdAndFormFormTypeAndIsVoidedFalse(Long entityId, Long observationsTypeEntityId, FormType formType);
 
     default FormMapping findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in FormMapping");

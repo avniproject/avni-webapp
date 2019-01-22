@@ -98,7 +98,7 @@ public class SqlGenerationService {
     }
 
     private List<FormElement> getFormElements(Long programId, Long typeId, FormType formType) {
-        FormMapping formMapping = formMappingRepository.findByEntityIdAndObservationsTypeEntityIdAndFormFormType(programId, typeId, formType);
+        FormMapping formMapping = formMappingRepository.findByEntityIdAndObservationsTypeEntityIdAndFormFormTypeAndIsVoidedFalse(programId, typeId, formType);
         List<FormElement> formElements = formMapping == null ? Collections.EMPTY_LIST : formMapping.getForm().getApplicableFormElements();
         return formElements.stream().filter(fe -> !PLACE_HOLDER_FOR_COUNSELLING_FORM_ELEMENT.equals(fe.getConcept().getUuid())).collect(Collectors.toList());
     }
