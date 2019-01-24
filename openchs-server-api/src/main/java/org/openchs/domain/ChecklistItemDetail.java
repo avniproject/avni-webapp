@@ -34,6 +34,9 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
     @JoinColumn(name = "checklist_detail_id")
     private ChecklistDetail checklistDetail;
 
+    @Column
+    private boolean scheduleOnExpiryOfDependency;
+
     public Concept getConcept() {
         return concept;
     }
@@ -72,5 +75,13 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
 
     public void setLeadChecklistItemDetail(ChecklistItemDetail leadChecklistItemDetail) {
         this.leadChecklistItemDetail = leadChecklistItemDetail;
+    }
+
+    public boolean getScheduleOnExpiryOfDependency() {
+        return scheduleOnExpiryOfDependency;
+    }
+
+    public void setScheduleOnExpiryOfDependency(boolean scheduleOnExpiryOfDependency) {
+        this.scheduleOnExpiryOfDependency = scheduleOnExpiryOfDependency;
     }
 }

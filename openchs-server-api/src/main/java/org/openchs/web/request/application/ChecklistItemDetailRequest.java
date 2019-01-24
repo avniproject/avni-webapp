@@ -11,6 +11,7 @@ public class ChecklistItemDetailRequest extends CHSRequest {
     private List<ChecklistItemStatusRequest> status;
     private String formUUID;
     private String dependentOn;
+    private boolean scheduleOnExpiryOfDependency;
 
     public ConceptContract getConcept() {
         return concept;
@@ -42,5 +43,13 @@ public class ChecklistItemDetailRequest extends CHSRequest {
 
     public void setDependentOn(String dependentOn) {
         this.dependentOn = dependentOn;
+    }
+
+    public boolean getScheduleOnExpiryOfDependency() {
+        return scheduleOnExpiryOfDependency;
+    }
+
+    public void setScheduleOnExpiryOfDependency(boolean scheduleOnExpiryOfDependency) {
+        this.scheduleOnExpiryOfDependency = scheduleOnExpiryOfDependency;
     }
 }

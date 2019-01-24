@@ -43,6 +43,11 @@ public class ChecklistItemDetailBuilder extends BaseBuilder<ChecklistItemDetail,
         return this;
     }
 
+    public ChecklistItemDetailBuilder withScheduleOnExpiryOfDependency(Boolean scheduleOnExpiryOfDependency) {
+        this.get().setScheduleOnExpiryOfDependency(scheduleOnExpiryOfDependency);
+        return this;
+    }
+
     public ChecklistItemDetailBuilder withChecklistItemStatus(List<ChecklistItemStatusRequest> checklistItemStatuses) {
         this.get().setChecklistItemStatus(this.makeStatus(checklistItemStatuses));
         return this;
