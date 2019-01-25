@@ -57,7 +57,15 @@ public class UserContext {
         this.organisation = organisation;
     }
 
+    private Organisation nullSafeGetOrganisation() {
+        return organisation == null? new Organisation(): organisation;
+    }
+
     public String getOrganisationName() {
-        return organisation == null ? null : organisation.getName();
+        return nullSafeGetOrganisation().getName();
+    }
+
+    public String getMediaDirectory() {
+        return nullSafeGetOrganisation().getMediaDirectory();
     }
 }
