@@ -117,6 +117,7 @@ public class SqlGenerationService {
                 case Notes:
                 case Date:
                 case Image:
+                case Video:
                     stringBuilder
                             .append(obsColumn)
                             .append("->>'")
