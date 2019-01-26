@@ -56,7 +56,7 @@ public class MediaController {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    @RequestMapping(value = "/media/uploadUrl/{fileName}", method = RequestMethod.GET)
+    @RequestMapping(value = "/media/uploadUrl/{fileName:.+}", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public String generateUploadUrl(@PathVariable String fileName) throws IOException {
 
