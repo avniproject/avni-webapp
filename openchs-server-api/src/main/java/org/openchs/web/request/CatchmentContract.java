@@ -1,11 +1,12 @@
 package org.openchs.web.request;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CatchmentContract extends ReferenceDataContract {
     private String type;
 
-    private List<AddressLevelContract> locations;
+    private List<AddressLevelContract> locations = new ArrayList<>();
 
     public List<AddressLevelContract> getLocations() {
         return locations;

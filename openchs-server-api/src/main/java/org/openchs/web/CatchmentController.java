@@ -24,6 +24,8 @@ import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @RestController
 public class CatchmentController {
     private final Logger logger;
@@ -109,7 +111,11 @@ public class CatchmentController {
     }
 
     private void addAddressLevels(CatchmentContract catchmentRequest, Catchment catchment) throws BuilderException {
-        for (AddressLevelContract addressLevelRequest : catchmentRequest.getLocations()) {
+        List<AddressLevelContract> locations = catchmentRequest.getLocations();
+        if(isNull(locations) || locations.isEmpty()) {
+            logger.warn(String.format("Locations not defined in Catchment {uuid='%s',locations=undefined,...}", catchment.getUuid()));
+        }
+        for (AddressLevelContract addressLevelRequest : locations) {
             AddressLevel addressLevel = locationRepository.findByUuid(addressLevelRequest.getUuid());
             if (addressLevel == null) {
                 logger.error(String.format("AddressLevel with UUID '%s' not found.", addressLevelRequest.getUuid()));
