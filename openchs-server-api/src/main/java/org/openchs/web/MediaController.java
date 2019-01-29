@@ -1,39 +1,35 @@
 package org.openchs.web;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SDKGlobalConfiguration;
-import com.amazonaws.SdkClientException;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.SystemPropertiesCredentialsProvider;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.util.JodaTime;
+import org.joda.time.DateTime;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
+import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.util.ArrayList;
-import java.util.Date;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import java.time.Duration;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import static java.lang.String.format;
 
 @RestController
 public class MediaController {
@@ -49,54 +45,91 @@ public class MediaController {
     private String secretAccessKey;
 
     private Regions REGION = Regions.AP_SOUTH_1;
-    private int ONE_HOUR_IN_MILLIS = 1000 * 60 * 60;
+    private long UPLOAD_EXPIRY_DURATION = Duration.ofHours(1).toMillis();
+    private long DOWNLOAD_EXPIRY_DURATION = Duration.ofMinutes(2).toMillis();
+    private AmazonS3 s3Client;
+    private Pattern urlPathPattern = Pattern.compile("^/?(?<bucket>[^/]+)/(?<objectKey>(?<mediaDir>[^/]+)/.+)$");
 
     @Autowired
     public MediaController() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
+    @PostConstruct
+    public void init() {
+        s3Client = AmazonS3ClientBuilder.standard()
+                .withRegion(REGION)
+                .withCredentials(getCredentialsProvider())
+                .build();
+    }
+
     @RequestMapping(value = "/media/uploadUrl/{fileName:.+}", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public String generateUploadUrl(@PathVariable String fileName) throws IOException {
+    public ResponseEntity<String> generateUploadUrl(@PathVariable String fileName) {
 
         UserContext userContext = UserContextHolder.getUserContext();
         if (userContext == null) {
             logger.error("UserContext is null");
-            return "";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format(""));
         }
 
         String mediaDirectory = userContext.getOrganisation().getMediaDirectory();
         if (mediaDirectory == null || bucketName == null) {
             logger.error("Setup error. Media directory needs to be set up in organisation table. openchs.bucketName should be present in properties file");
-            logger.error(String.format("Media directory = %s, Bucket Name = %s", bucketName, mediaDirectory));
+            logger.error(format("Media directory = %s, Bucket Name = %s", bucketName, mediaDirectory));
         }
 
-        String objectKey = String.format("%s/%s", mediaDirectory, fileName);
-
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                .withRegion(REGION)
-                .withCredentials(getCredentialsProvider())
-                .build();
+        String objectKey = format("%s/%s", mediaDirectory, fileName);
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
                 new GeneratePresignedUrlRequest(bucketName, objectKey)
                         .withMethod(HttpMethod.PUT)
-                        .withExpiration(getExpirationDate());
+                        .withExpiration(getExpireDate(UPLOAD_EXPIRY_DURATION));
         URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
 
-        logger.debug(String.format("Generating presigned url: %s", url.toString()));
+        logger.debug(format("Generating presigned url: %s", url.toString()));
 
-        return url.toString();
+        return ResponseEntity.ok(url.toString());
+    }
+
+    @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public ResponseEntity<String> generateDownloadUrl(@RequestParam String url) throws IOException {
+        UserContext userContext = UserContextHolder.getUserContext();
+        if (userContext == null) {
+            logger.error("UserContext is null");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Authentication required");
+        }
+
+        String mediaDirectory = userContext.getOrganisation().getMediaDirectory();
+        if (mediaDirectory == null || bucketName == null) {
+            logger.error("Setup error. Media directory needs to be set up in organisation table. openchs.bucketName should be present in properties file");
+            logger.error(format("Media directory = %s, Bucket Name = %s", bucketName, mediaDirectory));
+        }
+
+        String path = new URL(url).getPath();
+        Matcher matcher = urlPathPattern.matcher(path);
+        matcher.find();
+        String objectKey = matcher.group("objectKey");
+        String mediaDirectoryFromUrl = matcher.group("mediaDir");
+        if (!mediaDirectory.equals(mediaDirectoryFromUrl)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format("User '%s' not authorized", userContext.getUserName()));
+        }
+
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                new GeneratePresignedUrlRequest(bucketName, objectKey)
+                        .withMethod(HttpMethod.GET)
+                        .withExpiration(getExpireDate(DOWNLOAD_EXPIRY_DURATION));
+        return ResponseEntity.ok(s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString());
     }
 
     private AWSStaticCredentialsProvider getCredentialsProvider() {
         return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretAccessKey));
     }
 
-    private Date getExpirationDate() {
+    private Date getExpireDate(long expireDuration) {
         Date expiration = new Date();
-        expiration.setTime(expiration.getTime() + ONE_HOUR_IN_MILLIS);
+        expiration.setTime(expiration.getTime() + expireDuration);
         return expiration;
     }
 }
