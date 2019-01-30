@@ -6,9 +6,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.util.JodaTime;
-import org.joda.time.DateTime;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Date;
@@ -48,7 +46,7 @@ public class MediaController {
     private long UPLOAD_EXPIRY_DURATION = Duration.ofHours(1).toMillis();
     private long DOWNLOAD_EXPIRY_DURATION = Duration.ofMinutes(2).toMillis();
     private AmazonS3 s3Client;
-    private Pattern urlPathPattern = Pattern.compile("^/?(?<bucket>[^/]+)/(?<objectKey>(?<mediaDir>[^/]+)/.+)$");
+    private Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
 
     @Autowired
     public MediaController() {
@@ -70,7 +68,7 @@ public class MediaController {
         UserContext userContext = UserContextHolder.getUserContext();
         if (userContext == null) {
             logger.error("UserContext is null");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format(""));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         }
 
         String mediaDirectory = userContext.getOrganisation().getMediaDirectory();
@@ -105,13 +103,17 @@ public class MediaController {
         if (mediaDirectory == null || bucketName == null) {
             logger.error("Setup error. Media directory needs to be set up in organisation table. openchs.bucketName should be present in properties file");
             logger.error(format("Media directory = %s, Bucket Name = %s", bucketName, mediaDirectory));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Information missing. Media Directory for Implementation or Bucket name for Environment absent");
         }
 
-        String path = new URL(url).getPath();
-        Matcher matcher = urlPathPattern.matcher(path);
-        matcher.find();
-        String objectKey = matcher.group("objectKey");
-        String mediaDirectoryFromUrl = matcher.group("mediaDir");
+        AmazonS3URI amazonS3URI = new AmazonS3URI(url);
+        String objectKey = amazonS3URI.getKey();
+        Matcher matcher = mediaDirPattern.matcher(objectKey);
+        String mediaDirectoryFromUrl = null;
+        if(matcher.find()) {
+            mediaDirectoryFromUrl = matcher.group("mediaDir");
+        }
         if (!mediaDirectory.equals(mediaDirectoryFromUrl)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format("User '%s' not authorized", userContext.getUserName()));
         }
