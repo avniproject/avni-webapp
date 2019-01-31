@@ -48,6 +48,11 @@ public class ChecklistItemDetailBuilder extends BaseBuilder<ChecklistItemDetail,
         return this;
     }
 
+    public ChecklistItemDetailBuilder withMinDaysFromStartDate(Integer minDaysFromStartDate) {
+        this.get().setMinDaysFromStartDate(minDaysFromStartDate);
+        return this;
+    }
+
     public ChecklistItemDetailBuilder withChecklistItemStatus(List<ChecklistItemStatusRequest> checklistItemStatuses) {
         this.get().setChecklistItemStatus(this.makeStatus(checklistItemStatuses));
         return this;

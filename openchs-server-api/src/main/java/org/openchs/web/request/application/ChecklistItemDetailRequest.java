@@ -12,6 +12,7 @@ public class ChecklistItemDetailRequest extends CHSRequest {
     private String formUUID;
     private String dependentOn;
     private boolean scheduleOnExpiryOfDependency;
+    private Integer minDaysFromStartDate;
 
     public ConceptContract getConcept() {
         return concept;
@@ -51,5 +52,13 @@ public class ChecklistItemDetailRequest extends CHSRequest {
 
     public void setScheduleOnExpiryOfDependency(boolean scheduleOnExpiryOfDependency) {
         this.scheduleOnExpiryOfDependency = scheduleOnExpiryOfDependency;
+    }
+
+    public Integer getMinDaysFromStartDate() {
+        return minDaysFromStartDate;
+    }
+
+    public void setMinDaysFromStartDate(Integer minDaysFromStartDate) {
+        this.minDaysFromStartDate = minDaysFromStartDate;
     }
 }

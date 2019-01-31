@@ -37,6 +37,9 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
     @Column
     private boolean scheduleOnExpiryOfDependency;
 
+    @Column
+    private Integer minDaysFromStartDate;
+
     public Concept getConcept() {
         return concept;
     }
@@ -83,5 +86,13 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
 
     public void setScheduleOnExpiryOfDependency(boolean scheduleOnExpiryOfDependency) {
         this.scheduleOnExpiryOfDependency = scheduleOnExpiryOfDependency;
+    }
+
+    public Integer getMinDaysFromStartDate() {
+        return minDaysFromStartDate;
+    }
+
+    public void setMinDaysFromStartDate(Integer minDaysFromStartDate) {
+        this.minDaysFromStartDate = minDaysFromStartDate;
     }
 }
