@@ -306,3 +306,13 @@ update audit set last_modified_by_id = 1 where id in (select a.id from form_elem
   inner join audit a on x.audit_id = a.id
 where x.organisation_id = 1 and a.last_modified_by_id != 1
 );
+
+with updates(audit_id) as (
+  update individual
+  set is_voided = true
+  where false
+  returning audit_id
+)
+update audit
+set last_modified_date_time = current_timestamp
+where id in (select audit_id from updates);
