@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
+import org.openchs.geo.Point;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -53,6 +54,10 @@ public class Individual extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "facility_id")
     private Facility facility;
+
+    @Type(type="org.openchs.geo.PointType")
+    @Column
+    private Point registrationLocation;
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
@@ -156,5 +161,13 @@ public class Individual extends OrganisationAwareEntity {
 
     public void setFacility(Facility facility) {
         this.facility = facility;
+    }
+
+    public Point getRegistrationLocation() {
+        return registrationLocation;
+    }
+
+    public void setRegistrationLocation(Point registrationLocation) {
+        this.registrationLocation = registrationLocation;
     }
 }
