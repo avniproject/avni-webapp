@@ -1,12 +1,14 @@
 package org.openchs.web.request.common;
 
 import org.joda.time.LocalDate;
-import org.openchs.geo.Point;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.PeriodRequest;
 import org.openchs.web.request.PointRequest;
 
 public class CommonIndividualRequest extends CHSRequest {
+
+    private String subjectTypeUUID;
+
     private String firstName;
 
     private String lastName;
@@ -120,5 +122,13 @@ public class CommonIndividualRequest extends CHSRequest {
 
     public void setRegistrationLocation(PointRequest registrationLocation) {
         this.registrationLocation = registrationLocation;
+    }
+
+    public String getSubjectTypeUUID() {
+        return subjectTypeUUID;
+    }
+
+    public void setSubjectTypeUUID(String subjectTypeUUID) {
+        this.subjectTypeUUID = subjectTypeUUID;
     }
 }

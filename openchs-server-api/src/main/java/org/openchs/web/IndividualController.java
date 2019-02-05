@@ -1,14 +1,12 @@
 package org.openchs.web;
 
 import org.joda.time.DateTime;
-import org.openchs.dao.GenderRepository;
-import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.LocationRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepository;
+import org.openchs.dao.*;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
 import org.openchs.geo.Point;
+import org.openchs.domain.SubjectType;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
@@ -33,16 +31,18 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final GenderRepository genderRepository;
     private final ObservationService observationService;
     private final UserService userService;
+    private SubjectTypeRepository subjectTypeRepository;
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
         this.observationService = observationService;
         this.userService = userService;
+        this.subjectTypeRepository = subjectTypeRepository;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -92,7 +92,12 @@ public class IndividualController extends AbstractController<Individual> impleme
         Individual individual = resource.getContent();
         resource.removeLinks();
         resource.add(new Link(individual.getAddressLevel().getUuid(), "addressUUID"));
-        resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
+        if (individual.getGender() != null) {
+            resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
+        }
+        if (individual.getSubjectType()!= null) {
+            resource.add(new Link(individual.getSubjectType().getUuid(), "subjectTypeUUID"));
+        }
         return resource;
     }
 
@@ -106,7 +111,9 @@ public class IndividualController extends AbstractController<Individual> impleme
         Objects.requireNonNull(addressLevel, String.format("Individual{uuid='%s',addressLevel='%s'} addressLevel doesn't exist.",
                 individualRequest.getUuid(), individualRequest.getAddressLevel()));
         Gender gender = individualRequest.getGender() == null ? genderRepository.findByUuid(individualRequest.getGenderUUID()) : genderRepository.findByName(individualRequest.getGender());
+        SubjectType subjectType = individualRequest.getSubjectTypeUUID() == null ? subjectTypeRepository.findByUuid("9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3") : subjectTypeRepository.findByUuid(individualRequest.getSubjectTypeUUID());
         Individual individual = newOrExistingEntity(individualRepository, individualRequest, new Individual());
+        individual.setSubjectType(subjectType);
         individual.setFirstName(individualRequest.getFirstName());
         individual.setLastName(individualRequest.getLastName());
         individual.setDateOfBirth(individualRequest.getDateOfBirth());

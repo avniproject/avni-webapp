@@ -16,22 +16,24 @@ import java.util.Set;
 @JsonIgnoreProperties({"programEnrolments", "encounters"})
 @BatchSize(size = 100)
 public class Individual extends OrganisationAwareEntity {
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_type_id")
+    private SubjectType subjectType;
+
     @NotNull
     private String firstName;
 
-    @NotNull
     private String lastName;
 
-    @NotNull
     private LocalDate dateOfBirth;
 
-    @NotNull
     private boolean dateOfBirthVerified;
 
     @NotNull
     private LocalDate registrationDate;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gender_id")
     private Gender gender;
@@ -169,5 +171,13 @@ public class Individual extends OrganisationAwareEntity {
 
     public void setRegistrationLocation(Point registrationLocation) {
         this.registrationLocation = registrationLocation;
+    }
+
+    public SubjectType getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(SubjectType subjectType) {
+        this.subjectType = subjectType;
     }
 }
