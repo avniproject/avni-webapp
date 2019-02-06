@@ -74,7 +74,7 @@ public class MediaController {
         String mediaDirectory = userContext.getOrganisation().getMediaDirectory();
         if (mediaDirectory == null || bucketName == null) {
             logger.error("Setup error. Media directory needs to be set up in organisation table. openchs.bucketName should be present in properties file");
-            logger.error(format("Media directory = %s, Bucket Name = %s", bucketName, mediaDirectory));
+            logger.error(format("Media directory = %s, Bucket Name = %s", mediaDirectory, bucketName));
         }
 
         String objectKey = format("%s/%s", mediaDirectory, fileName);
@@ -102,7 +102,7 @@ public class MediaController {
         String mediaDirectory = userContext.getOrganisation().getMediaDirectory();
         if (mediaDirectory == null || bucketName == null) {
             logger.error("Setup error. Media directory needs to be set up in organisation table. openchs.bucketName should be present in properties file");
-            logger.error(format("Media directory = %s, Bucket Name = %s", bucketName, mediaDirectory));
+            logger.error(format("Media directory = %s, Bucket Name = %s", mediaDirectory, bucketName));
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Information missing. Media Directory for Implementation or Bucket name for Environment absent");
         }
