@@ -307,6 +307,11 @@ update audit set last_modified_by_id = 1 where id in (select a.id from form_elem
 where x.organisation_id = 1 and a.last_modified_by_id != 1
 );
 
+select count(a.id) from audit a
+where a.last_modified_by_id = 1 and a.created_by_id != 1
+
+update audit set created_by_id = 1 where last_modified_by_id = 1;
+
 with updates(audit_id) as (
   update individual
   set is_voided = true
