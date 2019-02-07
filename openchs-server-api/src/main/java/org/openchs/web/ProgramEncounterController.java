@@ -3,8 +3,10 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
+import org.openchs.geo.Point;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,12 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         encounter.setMaxVisitDateTime(request.getMaxVisitDateTime());
         encounter.setCancelDateTime(request.getCancelDateTime());
         encounter.setCancelObservations(observationService.createObservations(request.getCancelObservations()));
+        PointRequest encounterLocation = request.getEncounterLocation();
+        if(encounterLocation != null)
+            encounter.setEncounterLocation(new Point(encounterLocation.getX(), encounterLocation.getY()));
+        PointRequest cancelLocation = request.getCancelLocation();
+        if(cancelLocation != null)
+            encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
 
         programEncounterRepository.save(encounter);
         logger.info(String.format("Saved programEncounter with uuid %s", request.getUuid()));

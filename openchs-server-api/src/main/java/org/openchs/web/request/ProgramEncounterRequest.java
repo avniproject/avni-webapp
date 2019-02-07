@@ -16,6 +16,8 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
     private DateTime maxVisitDateTime;
     private DateTime cancelDateTime;
     private List<ObservationRequest> cancelObservations;
+    private PointRequest encounterLocation;
+    private PointRequest cancelLocation;
 
     public String getProgramEnrolmentUUID() {
         return programEnrolmentUUID;
@@ -96,5 +98,21 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
 
     public Object getObservationValue(String conceptName) {
         return findObservation(conceptName).getValue();
+    }
+
+    public PointRequest getEncounterLocation() {
+        return encounterLocation;
+    }
+
+    public void setEncounterLocation(PointRequest encounterLocation) {
+        this.encounterLocation = encounterLocation;
+    }
+
+    public PointRequest getCancelLocation() {
+        return cancelLocation;
+    }
+
+    public void setCancelLocation(PointRequest cancelLocation) {
+        this.cancelLocation = cancelLocation;
     }
 }

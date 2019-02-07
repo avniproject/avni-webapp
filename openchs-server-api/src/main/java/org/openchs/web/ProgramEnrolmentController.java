@@ -6,8 +6,10 @@ import org.openchs.domain.Individual;
 import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.domain.ProgramOutcome;
+import org.openchs.geo.Point;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,12 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         programEnrolment.setProgramOutcome(programOutcome);
         programEnrolment.setEnrolmentDateTime(request.getEnrolmentDateTime());
         programEnrolment.setProgramExitDateTime(request.getProgramExitDateTime());
+        PointRequest enrolmentLocation = request.getEnrolmentLocation();
+        if(enrolmentLocation != null)
+            programEnrolment.setEnrolmentLocation(new Point(enrolmentLocation.getX(), enrolmentLocation.getY()));
+        PointRequest exitLocation = request.getExitLocation();
+        if(exitLocation != null)
+            programEnrolment.setExitLocation(new Point(exitLocation.getX(), exitLocation.getY()));
         programEnrolment.setObservations(observationService.createObservations(request.getObservations()));
         programEnrolment.setProgramExitObservations(observationService.createObservations(request.getProgramExitObservations()));
 

@@ -3,6 +3,7 @@ package org.openchs.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.geo.Point;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -44,6 +45,14 @@ public class ProgramEncounter extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
+
+    @Type(type="org.openchs.geo.PointType")
+    @Column
+    private Point encounterLocation;
+
+    @Type(type="org.openchs.geo.PointType")
+    @Column
+    private Point cancelLocation;
 
     public EncounterType getEncounterType() {
         return encounterType;
@@ -123,5 +132,21 @@ public class ProgramEncounter extends OrganisationAwareEntity {
 
     public boolean dateFallsWithIn(DateTime encounterDateTime) {
         return encounterDateTime.isAfter(this.earliestVisitDateTime) && encounterDateTime.isBefore(this.maxVisitDateTime);
+    }
+
+    public Point getEncounterLocation() {
+        return encounterLocation;
+    }
+
+    public void setEncounterLocation(Point encounterLocation) {
+        this.encounterLocation = encounterLocation;
+    }
+
+    public Point getCancelLocation() {
+        return cancelLocation;
+    }
+
+    public void setCancelLocation(Point cancelLocation) {
+        this.cancelLocation = cancelLocation;
     }
 }

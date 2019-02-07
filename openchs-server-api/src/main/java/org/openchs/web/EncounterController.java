@@ -8,9 +8,11 @@ import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
+import org.openchs.geo.Point;
 import org.openchs.service.UserService;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
+import org.openchs.web.request.PointRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +67,9 @@ public class EncounterController extends AbstractController<Encounter> implement
         encounter.setEncounterType(encounterType);
         encounter.setObservations(observationService.createObservations(encounterRequest.getObservations()));
         encounter.setVoided(encounterRequest.isVoided());
+        PointRequest encounterLocation = encounterRequest.getEncounterLocation();
+        if(encounterLocation != null)
+            encounter.setEncounterLocation(new Point(encounterLocation.getX(), encounterLocation.getY()));
         encounterRepository.save(encounter);
 
         logger.info("Saved encounter with uuid %s", encounterRequest.getUuid());

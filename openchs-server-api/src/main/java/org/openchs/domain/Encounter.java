@@ -3,6 +3,7 @@ package org.openchs.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.geo.Point;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,10 @@ public class Encounter extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "individual_id")
     private Individual individual;
+
+    @Type(type="org.openchs.geo.PointType")
+    @Column
+    private Point encounterLocation;
 
     public EncounterType getEncounterType() {
         return encounterType;
@@ -58,5 +63,13 @@ public class Encounter extends OrganisationAwareEntity {
 
     public void setObservations(ObservationCollection observations) {
         this.observations = observations;
+    }
+
+    public Point getEncounterLocation() {
+        return encounterLocation;
+    }
+
+    public void setEncounterLocation(Point encounterLocation) {
+        this.encounterLocation = encounterLocation;
     }
 }

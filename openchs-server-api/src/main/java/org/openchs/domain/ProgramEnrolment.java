@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.geo.Point;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -42,6 +43,14 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
 
     @Column
     private DateTime programExitDateTime;
+
+    @Type(type="org.openchs.geo.PointType")
+    @Column
+    private Point enrolmentLocation;
+
+    @Type(type="org.openchs.geo.PointType")
+    @Column
+    private Point exitLocation;
 
     @Column
     @Type(type = "observations")
@@ -116,5 +125,21 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
 
     public ProgramEncounter findEncounter(String encounterTypeName, String encounterName) {
         return this.getProgramEncounters().stream().filter(programEncounter -> programEncounter.matches(encounterTypeName, encounterName)).findAny().orElse(null);
+    }
+
+    public Point getEnrolmentLocation() {
+        return enrolmentLocation;
+    }
+
+    public void setEnrolmentLocation(Point enrolmentLocation) {
+        this.enrolmentLocation = enrolmentLocation;
+    }
+
+    public Point getExitLocation() {
+        return exitLocation;
+    }
+
+    public void setExitLocation(Point exitLocation) {
+        this.exitLocation = exitLocation;
     }
 }

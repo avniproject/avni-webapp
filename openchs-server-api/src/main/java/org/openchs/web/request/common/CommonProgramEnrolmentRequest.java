@@ -2,6 +2,7 @@ package org.openchs.web.request.common;
 
 import org.joda.time.DateTime;
 import org.openchs.web.request.CHSRequest;
+import org.openchs.web.request.PointRequest;
 
 public class CommonProgramEnrolmentRequest extends CHSRequest {
     private String programUUID;
@@ -10,6 +11,8 @@ public class CommonProgramEnrolmentRequest extends CHSRequest {
     private DateTime enrolmentDateTime;
     private String programOutcomeUUID;
     private DateTime programExitDateTime;
+    private PointRequest enrolmentLocation;
+    private PointRequest exitLocation;
 
     public String getProgramUUID() {
         return programUUID;
@@ -57,5 +60,21 @@ public class CommonProgramEnrolmentRequest extends CHSRequest {
 
     public void setProgram(String program) {
         this.program = program;
+    }
+
+    public PointRequest getEnrolmentLocation() {
+        return enrolmentLocation;
+    }
+
+    public void setEnrolmentLocation(PointRequest enrolmentLocation) {
+        this.enrolmentLocation = enrolmentLocation;
+    }
+
+    public PointRequest getExitLocation() {
+        return exitLocation;
+    }
+
+    public void setExitLocation(PointRequest exitLocation) {
+        this.exitLocation = exitLocation;
     }
 }
