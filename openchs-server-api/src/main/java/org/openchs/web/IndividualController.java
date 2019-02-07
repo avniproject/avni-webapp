@@ -116,7 +116,8 @@ public class IndividualController extends AbstractController<Individual> impleme
         individual.setVoided(individualRequest.isVoided());
         individual.setFacility(userService.getUserFacility());
         PointRequest pointRequest = individualRequest.getRegistrationLocation();
-        individual.setRegistrationLocation(new Point(pointRequest.getX(), pointRequest.getY()));
+        if(pointRequest != null)
+            individual.setRegistrationLocation(new Point(pointRequest.getX(), pointRequest.getY()));
         return individual;
     }
 
