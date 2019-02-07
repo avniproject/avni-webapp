@@ -1,8 +1,10 @@
 package org.openchs.web.request.common;
 
 import org.joda.time.LocalDate;
+import org.openchs.geo.Point;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.PeriodRequest;
+import org.openchs.web.request.PointRequest;
 
 public class CommonIndividualRequest extends CHSRequest {
     private String firstName;
@@ -20,6 +22,7 @@ public class CommonIndividualRequest extends CHSRequest {
     private String addressLevel;
     private String catchmentUUID;
     private LocalDate registrationDate;
+    private PointRequest registrationLocation;
 
     public String getFirstName() {
         return firstName;
@@ -109,5 +112,13 @@ public class CommonIndividualRequest extends CHSRequest {
 
     public void setCatchmentUUID(String catchmentUUID) {
         this.catchmentUUID = catchmentUUID;
+    }
+
+    public PointRequest getRegistrationLocation() {
+        return registrationLocation;
+    }
+
+    public void setRegistrationLocation(PointRequest registrationLocation) {
+        this.registrationLocation = registrationLocation;
     }
 }

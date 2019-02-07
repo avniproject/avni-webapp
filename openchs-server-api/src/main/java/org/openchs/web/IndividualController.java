@@ -8,9 +8,11 @@ import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
+import org.openchs.geo.Point;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
+import org.openchs.web.request.PointRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -113,6 +115,8 @@ public class IndividualController extends AbstractController<Individual> impleme
         individual.setRegistrationDate(individualRequest.getRegistrationDate());
         individual.setVoided(individualRequest.isVoided());
         individual.setFacility(userService.getUserFacility());
+        PointRequest pointRequest = individualRequest.getRegistrationLocation();
+        individual.setRegistrationLocation(new Point(pointRequest.getX(), pointRequest.getY()));
         return individual;
     }
 
