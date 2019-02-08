@@ -21,6 +21,7 @@ DELETE FROM catchment_address_mapping;
 DELETE FROM address_level;
 DELETE FROM catchment;
 DELETE FROM users;
+DELETE FROM subject_type;
 DELETE FROM organisation;
 DELETE FROM audit;
 
@@ -56,6 +57,8 @@ INSERT INTO organisation (id, name, db_user, media_directory, uuid)
 VALUES (2, 'demo', 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
 INSERT INTO organisation (id, name, db_user, media_directory, uuid)
 VALUES (3, 'a-demo', 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325');
+
+insert into subject_type(uuid, name, organisation_id, audit_id) VALUES ('9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3', 'Individual', 1, create_audit());
 
 INSERT INTO users (id, name, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin)
 VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'None', false, true);
@@ -200,8 +203,10 @@ VALUES ('Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1);
 INSERT INTO catchment_address_mapping (catchment_id, addresslevel_id)
 VALUES (1, 1);
 
-INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id)
-VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2);
+INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id,
+ subject_type_id)
+VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2,
+ (select id from subject_type where name = 'Individual'));
 
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version)
 VALUES (1, 1, current_timestamp, 'ba0a3b91-2d4d-446b-a3ee-d56e7edaf3d3', 1);
@@ -225,9 +230,11 @@ VALUES (1, 1, '
 INSERT INTO program (name, uuid, version)
 VALUES ('Nutrition', 'ac8cfbcb-39d2-4fcb-b02f-4ef80335f553', 1);
 
-INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, uuid, version)
+INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, uuid, version,
+ subject_type_id)
 VALUES
-  (1, '1950-09-17', FALSE, 'Ramesh', 'Kumar', 2, '8d3d49af-f776-4cca-8413-ee571d9042fd', 1);
+  (1, '1950-09-17', FALSE, 'Ramesh', 'Kumar', 2, '8d3d49af-f776-4cca-8413-ee571d9042fd', 1,
+  (select id from subject_type where name = 'Individual'));
 
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version)
 VALUES (2, 1, current_timestamp, '0ae41288-78c5-4ed4-af60-68d4ad2af1d0', 1);
@@ -235,8 +242,10 @@ VALUES (2, 1, current_timestamp, '0ae41288-78c5-4ed4-af60-68d4ad2af1d0', 1);
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version)
 VALUES (2, 2, current_timestamp, '529aa9ed-46bc-4530-9768-6ec941c0e2e0', 1);
 
-INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, uuid, version)
-VALUES (1, '1955-01-05', FALSE, 'Ram', 'Kumari', 1, 'c415ef96-8ff9-4cbb-8407-e7618c90a055', 1);
+INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, uuid, version,
+  subject_type_id)
+VALUES (1, '1955-01-05', FALSE, 'Ram', 'Kumari', 1, 'c415ef96-8ff9-4cbb-8407-e7618c90a055', 1,
+  (select id from subject_type where name = 'Individual'));
 
 INSERT INTO form (NAME, form_type, uuid, version)
 VALUES ('encounter_form', 'Encounter', '2c32a184-6d27-4c51-841d-551ca94594a5', 1);

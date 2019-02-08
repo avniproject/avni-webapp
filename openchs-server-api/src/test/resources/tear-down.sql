@@ -7,6 +7,7 @@ DELETE FROM encounter;
 DELETE FROM program_encounter;
 DELETE FROM program_enrolment;
 DELETE FROM individual;
+DELETE FROM subject_type;
 DELETE FROM program;
 DELETE FROM encounter_type;
 DELETE FROM program_outcome;
