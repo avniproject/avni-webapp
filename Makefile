@@ -138,3 +138,7 @@ upload-rpm:
 exec-sql: ## Usage: make exec-sql sqlfile=</path/to/sql>
 	psql -Uopenchs -f $(sqlfile)
 # </exec-sql>
+
+# remote
+tail-prod:
+	ssh openchs-server-prod "tail -f /var/log/openchs/openchs.log"
