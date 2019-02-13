@@ -1,12 +1,13 @@
 package org.openchs.web;
 
-import org.openchs.builder.LocationBuilder;
 import org.openchs.builder.BuilderException;
+import org.openchs.builder.LocationBuilder;
 import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.dao.LocationRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
+import org.openchs.domain.Organisation;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.LocationContract;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,14 +79,27 @@ public class LocationController {
     private void saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {
         LocationBuilder locationBuilder = new LocationBuilder(locationRepository.findByUuid(contract.getUuid()), type);
         if (possibleDuplicate(contract)) {
-            throw new BuilderException(String.format("Location{name='%s',level='%s',..} with different uuid exists", contract.getName(),contract.getLevel()));
+            throw new BuilderException(String.format("Location{name='%s',level='%s',..} with different uuid exists", contract.getName(), contract.getLevel()));
         }
         locationBuilder.copy(contract);
-        locationRepository.save(locationBuilder.build());
+        AddressLevel location = locationBuilder.build();
+        updateOrganisationIfNeeded(location, contract);
+        locationRepository.save(location);
     }
 
     private boolean possibleDuplicate(LocationContract locationRequest) {
         List<AddressLevel> locations = locationRepository.findByTitleAndLevelAndUuidNot(locationRequest.getName(), locationRequest.getLevel(), locationRequest.getUuid());
         return !locations.isEmpty();
+    }
+
+    private void updateOrganisationIfNeeded(AddressLevel location, @NotNull LocationContract contract) {
+        String organisationUuid = contract.getOrganisationUUID();
+        if (organisationUuid != null) {
+            Organisation organisation = organisationRepository.findByUuid(organisationUuid);
+            if (organisation == null) {
+                throw new RuntimeException(String.format("Organisation not found with uuid :'%s'", organisationUuid));
+            }
+            location.setOrganisationId(organisation.getId());
+        }
     }
 }

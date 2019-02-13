@@ -10,6 +10,7 @@ public class LocationContract extends ReferenceDataContract {
     private Double level;
     private List<LocationContract> parents;
     private String type;
+    private String organisationUUID;
 
     public Double getLevel() {
         return level;
@@ -36,5 +37,13 @@ public class LocationContract extends ReferenceDataContract {
 
     public void setParents(List<LocationContract> parents) {
         this.parents = parents;
+    }
+
+    public String getOrganisationUUID() {
+        return organisationUUID;
+    }
+
+    public void setOrganisationUUID(String organisationUUID) {
+        this.organisationUUID = organisationUUID;
     }
 }
