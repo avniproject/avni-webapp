@@ -96,6 +96,9 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                 case "Voided":
                     individualRequest.setVoided(importField.getBooleanValue(row, header, importSheetMetaData));
                     break;
+                case "SubjectTypeUUID":
+                    individualRequest.setSubjectTypeUUID(importField.getTextValue(row, header, importSheetMetaData));
+                    break;
                 default:
                     individualRequest.addObservation(createObservationRequest(row, header, importSheetMetaData, importField, systemFieldName, answerMetaDataList, calculatedFields));
                     break;
