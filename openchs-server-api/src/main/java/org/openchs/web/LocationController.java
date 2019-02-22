@@ -78,13 +78,15 @@ public class LocationController {
 
     private void saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {
         LocationBuilder locationBuilder = new LocationBuilder(locationRepository.findByUuid(contract.getUuid()), type);
-        if (possibleDuplicate(contract)) {
-            throw new BuilderException(String.format("Location{name='%s',level='%s',..} with different uuid exists", contract.getName(), contract.getLevel()));
-        }
         locationBuilder.copy(contract);
         AddressLevel location = locationBuilder.build();
         updateOrganisationIfNeeded(location, contract);
-        locationRepository.save(location);
+        try {
+            locationRepository.save(location);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuilderException(String.format("Unable to create Location{name='%s',level='%s',orgUUID='%s',..}: '%s'", contract.getName(), contract.getLevel(), contract.getOrganisationUUID(), e.getMessage()));
+        }
     }
 
     private boolean possibleDuplicate(LocationContract locationRequest) {
