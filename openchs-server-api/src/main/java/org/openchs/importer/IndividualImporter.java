@@ -84,6 +84,10 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     String userAddressValue = importField.getTextValue(row, header, importSheetMetaData);
                     individualRequest.setAddressLevel(answerMetaDataList.getSystemAnswer(userAddressValue, ALIAS_CONCEPT_NAME_ADDRESS_TITLE));
                     break;
+                case "AddressUUID":
+                    String userAddressValueUUID = importField.getTextValue(row, header, importSheetMetaData);
+                    individualRequest.setAddressLevelUUID(answerMetaDataList.getSystemAnswer(userAddressValueUUID, ALIAS_CONCEPT_NAME_ADDRESS_TITLE));
+                    break;
                 case "Individual UUID":
                     individualRequest.setUuid(importField.getTextValue(row, header, importSheetMetaData));
                     break;
