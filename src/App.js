@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Auth } from "aws-amplify";
 import { withAuthenticator, Greetings, SignIn,
-  ConfirmSignIn, ForgotPassword } from 'aws-amplify-react';
+  ConfirmSignIn, ForgotPassword, RequireNewPassword,
+  ConfirmSignUp, VerifyContact, Loading } from 'aws-amplify-react';
 import logo from './logo.svg';
 import './App.css';
 import {__DEV__} from "./constants";
@@ -9,7 +10,6 @@ import {__DEV__} from "./constants";
 class App extends Component {
   constructor(props) {
     super(props);
-    //this.userIsSignedIn = this.userIsSignedIn.bind(this);
     this.signOut = this.signOut.bind(this);
   }
 
@@ -57,7 +57,11 @@ const authenticatorComponents = [
   <Greetings/>,
   <SignIn/>,
   <ConfirmSignIn/>,
-  <ForgotPassword/>
+  <ForgotPassword/>,
+  <RequireNewPassword/>,
+  <ConfirmSignUp/>,
+  <VerifyContact/>,
+  <Loading/>
 ];
 
 export default __DEV__ ? App : withAuthenticator(App, {authenticatorComponents});
