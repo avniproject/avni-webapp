@@ -7,7 +7,8 @@ import Amplify from "aws-amplify";
 import awsConfig from "./aws-config";
 import {__DEV__} from "./constants";
 
-window.LOG_LEVEL = 'DEBUG';
+if (__DEV__)
+    window.LOG_LEVEL = 'DEBUG';
 
 !__DEV__ && Amplify.configure({
     Auth: {
