@@ -1,8 +1,35 @@
 import React, { Component } from 'react';
+import { Auth } from "aws-amplify";
+import { withAuthenticator, Greetings, SignIn,
+  ConfirmSignIn, ForgotPassword } from 'aws-amplify-react';
 import logo from './logo.svg';
 import './App.css';
+import {__DEV__} from "./constants";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    //this.userIsSignedIn = this.userIsSignedIn.bind(this);
+    this.signOut = this.signOut.bind(this);
+  }
+
+  componentDidMount() {
+    !__DEV__ &&
+      Auth.currentAuthenticatedUser()
+          .then(user => console.log(user))
+          .catch(err => console.log(err));
+  }
+
+  userIsSignedIn() {
+    return this.props.authState === 'signedIn';
+  };
+
+  signOut() {
+    Auth.signOut()
+        .then(data => console.log(data))
+        .catch(err => console.log(err));
+  }
+
   render() {
     return (
       <div className="App">
@@ -19,10 +46,18 @@ class App extends Component {
           >
             Learn React
           </a>
+          {this.userIsSignedIn() && <button onClick={this.signOut}>Sign Out</button>}
         </header>
       </div>
     );
   }
 }
 
-export default App;
+const authenticatorComponents = [
+  <Greetings/>,
+  <SignIn/>,
+  <ConfirmSignIn/>,
+  <ForgotPassword/>
+];
+
+export default __DEV__ ? App : withAuthenticator(App, {authenticatorComponents});

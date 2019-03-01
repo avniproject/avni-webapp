@@ -2,7 +2,10 @@
   "name": "openchs-webapp",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8021",
   "dependencies": {
+    "aws-amplify": "^1.1.19",
+    "aws-amplify-react": "^2.3.0",
     "prop-types": "^15.7.2",
     "ra-data-json-server": "^2.7.2",
     "react": "^16.8.3",
