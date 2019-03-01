@@ -51,6 +51,7 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "rule",
             "video",
             "videotelemetric",
+            "userSettings",
             "userInfo",
             "subjectType",
             "operationalSubjectType");

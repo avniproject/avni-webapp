@@ -69,6 +69,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
 
     @RequestMapping(value = "/programEncounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
+    @Deprecated()
     public PagedResources<Resource<ProgramEncounter>> getByIndividualsOfCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
