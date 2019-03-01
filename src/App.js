@@ -5,7 +5,7 @@ import { withAuthenticator, Greetings, SignIn,
   ConfirmSignUp, VerifyContact, Loading } from 'aws-amplify-react';
 import logo from './logo.svg';
 import './App.css';
-import {__DEV__} from "./constants";
+import {isDevEnv} from "./constants";
 
 class App extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    !__DEV__ &&
+    !isDevEnv &&
       Auth.currentAuthenticatedUser()
           .then(user => console.log(user))
           .catch(err => console.log(err));
@@ -64,4 +64,4 @@ const authenticatorComponents = [
   <Loading/>
 ];
 
-export default __DEV__ ? App : withAuthenticator(App, {authenticatorComponents});
+export default isDevEnv ? App : withAuthenticator(App, {authenticatorComponents});

@@ -5,12 +5,12 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import Amplify from "aws-amplify";
 import awsConfig from "./aws-config";
-import {__DEV__} from "./constants";
+import {isDevEnv} from "./constants";
 
-if (__DEV__)
+if (isDevEnv)
     window.LOG_LEVEL = 'DEBUG';
 
-!__DEV__ && Amplify.configure({
+!isDevEnv && Amplify.configure({
     Auth: {
         mandatorySignIn: true,
         region: awsConfig.cognito.REGION,
