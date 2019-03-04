@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 @RestController
 public class UserInfoController {
     private final CatchmentRepository catchmentRepository;
+    private final Logger logger;
     private UserRepository userRepository;
     private UserFacilityMappingRepository userFacilityMappingRepository;
     private OrganisationRepository organisationRepository;
     private UserService userService;
     private FacilityRepository facilityRepository;
-    private final Logger logger;
 
     @Autowired
     public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, UserFacilityMappingRepository userFacilityMappingRepository, OrganisationRepository organisationRepository, UserService userService, FacilityRepository facilityRepository) {
@@ -48,11 +48,11 @@ public class UserInfoController {
         Catchment catchment = this.catchmentRepository.findOne(Long.valueOf(catchmentId));
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
 
-        if (catchment == null){
+        if (catchment == null) {
             logger.info(String.format("Catchment not found for ID: %s", catchmentId));
             return new ResponseEntity<>(new UserInfo(null, null), HttpStatus.NOT_FOUND);
         }
-        if (organisation == null){
+        if (organisation == null) {
             logger.info(String.format("Organisation not found for catchment ID: %s", catchmentId));
             return new ResponseEntity<>(new UserInfo(null, null), HttpStatus.NOT_FOUND);
         }
@@ -70,7 +70,7 @@ public class UserInfoController {
             User user = userContract.getUuid() == null ? userRepository.findByName(userContract.getName()) : userRepository.findByUuid(userContract.getUuid());
             if (user == null) {
                 user = new User();
-                user.setUuid(userContract.getUuid() == null? UUID.randomUUID().toString() : userContract.getUuid());
+                user.setUuid(userContract.getUuid() == null ? UUID.randomUUID().toString() : userContract.getUuid());
                 user.setName(userContract.getName());
             }
             Catchment catchment = userContract.getCatchmentUUID() == null ? catchmentRepository.findOne(userContract.getCatchmentId()) : catchmentRepository.findByUuid(userContract.getCatchmentUUID());
@@ -86,7 +86,7 @@ public class UserInfoController {
                 return mapping;
             }).collect(Collectors.toList());
             user.addUserFacilityMappings(userFacilityMappings);
-            Long organisationId = userContract.getOrganisationUUID() == null ? userContract.getOrganisationId() : organisationRepository.findByUuid(userContract.getOrganisationUUID()).getId();
+            Long organisationId = getOrganisationId(userContract);
             user.setOrganisationId(organisationId);
             user.setOrgAdmin(userContract.isOrgAdmin());
             user.setAdmin(userContract.isAdmin());
@@ -97,6 +97,22 @@ public class UserInfoController {
             userRepository.save(user);
             logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
         });
+    }
+
+    private Long getOrganisationId(UserContract userContract) {
+        String uuid = userContract.getOrganisationUUID();
+        Long id = userContract.getOrganisationId();
+        if (id == null && uuid == null) {
+            throw new RuntimeException("Not found: Organisation{uuid=null, id=null}");
+        }
+        if (id != null) {
+            return id;
+        }
+        Organisation organisation = organisationRepository.findByUuid(uuid);
+        if (organisation == null) {
+            throw new RuntimeException(String.format("Not found: Organisation{uuid='%s'}", uuid));
+        }
+        return organisation.getId();
     }
 
     private void setAuditInfo(User user) {

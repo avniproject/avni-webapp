@@ -8,7 +8,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserContract extends ReferenceDataContract {
     private String organisationUUID;
-    private long organisationId;
+    private Long organisationId;
     private List<UserFacilityMappingContract> facilities;
     private String catchmentUUID;
     private long catchmentId;
@@ -56,11 +56,11 @@ public class UserContract extends ReferenceDataContract {
         this.admin = admin;
     }
 
-    public long getOrganisationId() {
+    public Long getOrganisationId() {
         return organisationId;
     }
 
-    public void setOrganisationId(long organisationId) {
+    public void setOrganisationId(Long organisationId) {
         this.organisationId = organisationId;
     }
 

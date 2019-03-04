@@ -11,7 +11,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.base.Strings;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.UserRepository;
-import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.slf4j.Logger;
@@ -81,8 +80,12 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     public UserContext getUserContext(String token, String becomeUserName) {
         logConfiguration();
         if (isDev) {
+            String username = StringUtils.isEmpty(becomeUserName) ? defaultUserName : becomeUserName;
+            User user = userRepository.findByName(username);
+            if (user == null) {
+                throw new RuntimeException(String.format("Not found: User{name='%s'}", username));
+            }
             UserContext userContext = new UserContext();
-            User user = userRepository.findByName(StringUtils.isEmpty(becomeUserName) ? defaultUserName : becomeUserName);
             userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
 //            userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
             userContext.setUser(user);
