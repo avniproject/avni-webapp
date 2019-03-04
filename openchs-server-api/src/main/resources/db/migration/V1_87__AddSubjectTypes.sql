@@ -68,5 +68,5 @@ WITH CHECK ((organisation_id = (select id
 
 --insert individual subject type
 insert into subject_type(uuid, name, organisation_id, audit_id) VALUES ('9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3', 'Individual', 1, create_audit());
-ALTER TABLE public.individual ALTER COLUMN date_of_birth DROP NOT NULL;
-ALTER TABLE public.individual ALTER COLUMN gender_id DROP NOT NULL;
+ALTER TABLE individual ALTER COLUMN date_of_birth DROP NOT NULL;
+ALTER TABLE individual ALTER COLUMN gender_id DROP NOT NULL;
