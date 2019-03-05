@@ -65,6 +65,7 @@ public class MediaController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<String> generateUploadUrl(@PathVariable String fileName) {
 
+        logger.info("getting media upload url");
         UserContext userContext = UserContextHolder.getUserContext();
         if (userContext == null) {
             logger.error("UserContext is null");
