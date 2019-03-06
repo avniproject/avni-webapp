@@ -1,4 +1,5 @@
 SELECT
+  individual.id "Ind.Id",
   individual.uuid "Ind.uuid",
   individual.first_name "Ind.first_name",
   individual.last_name "Ind.last_name",
@@ -11,9 +12,11 @@ SELECT
   c2.name "Ind.Catchment",
   individual.is_voided "Ind.is_voided",
   op.name "Enl.Program Name",
+  programEnrolment.id  "Enl.Id",
   programEnrolment.uuid  "Enl.uuid",
   programEnrolment.is_voided "Enl.is_voided",
   oet.name "Enc.Type",
+  programEncounter.id "Enc.Id",
   programEncounter.earliest_visit_date_time "Enc.earliest_visit_date_time",
   programEncounter.encounter_date_time "Enc.encounter_date_time",
   programEncounter.program_enrolment_id "Enc.program_enrolment_id",
