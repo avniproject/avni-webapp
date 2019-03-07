@@ -1,5 +1,6 @@
 SELECT
   individual.id "Ind.Id",
+  individual.address_id "Ind.address_id",
   individual.uuid "Ind.uuid",
   individual.first_name "Ind.first_name",
   individual.last_name "Ind.last_name",
