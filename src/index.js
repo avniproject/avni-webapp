@@ -1,25 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import {App, AppWithAuth} from './App';
-import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
-import Auth from "@aws-amplify/auth";
-import awsConfig from "./aws-config";
-import { isDevEnv } from './constants';
+import * as serviceWorker from './serviceWorker';
+import {isDevEnv, isFauxProd} from './constants';
+import './index.css';
+import { App, SecureApp } from './app';
+import rootReducer from './rootReducer';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 
 
-Auth.configure({
-    mandatorySignIn: true,
-    region: awsConfig.cognito.REGION,
-    userPoolId: awsConfig.cognito.USER_POOL_ID,
-    userPoolWebClientId: awsConfig.cognito.APP_CLIENT_ID
-});
+const store = createStore(rootReducer,
+    isDevEnv && window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 ReactDOM.render(
-    <BrowserRouter>
-      { isDevEnv ? <App/> : <AppWithAuth /> }
-    </BrowserRouter>,
+    <Provider store={store}>
+      <BrowserRouter>
+        { isDevEnv && !isFauxProd ? <App /> : <SecureApp /> }
+      </BrowserRouter>
+    </Provider>,
     document.getElementById('root')
 );
 
