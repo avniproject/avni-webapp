@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.UUID;
 
 @MappedSuperclass
 public class CHSEntity extends CHSBaseEntity {
 
+    @JsonIgnore
     @JoinColumn(name = "audit_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Audit audit = new Audit();
@@ -43,6 +42,10 @@ public class CHSEntity extends CHSBaseEntity {
 
     public DateTime getLastModifiedDateTime() {
         return getAudit().getLastModifiedDateTime();
+    }
+
+    public Long getAuditId() {
+        return getAudit().getId();
     }
 
     @JsonIgnore

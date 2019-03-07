@@ -1,6 +1,6 @@
 package org.openchs.application;
 
-import org.openchs.domain.Concept;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
@@ -65,12 +65,14 @@ public class Form extends OrganisationAwareEntity {
         return formElementGroups.stream().filter(x -> x.getUuid().equals(uuid)).findAny().orElse(null);
     }
 
+    @JsonIgnore
     public List<FormElement> getAllFormElements() {
         ArrayList<FormElement> formElements = new ArrayList<>();
         formElementGroups.forEach(formElementGroup -> formElements.addAll(formElementGroup.getFormElements()));
         return formElements;
     }
 
+    @JsonIgnore
     public List<FormElement> getApplicableFormElements() {
         return getAllFormElements().stream().filter(fe->!fe.isVoided()).collect(Collectors.toList());
     }

@@ -71,4 +71,8 @@ public class Audit {
     public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
         this.lastModifiedDateTime = lastModifiedDateTime;
     }
+
+    public Long getId() {
+        return id;
+    }
 }
