@@ -46,19 +46,39 @@ public class UserInfoController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
     public ResponseEntity<UserInfo> getUserInfo(@RequestParam(value = "catchmentId", required = true) Integer catchmentId) {
         Catchment catchment = this.catchmentRepository.findOne(Long.valueOf(catchmentId));
-        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        UserContext userContext = UserContextHolder.getUserContext();
+        User user = userContext.getUser();
+        Organisation organisation = userContext.getOrganisation();
 
         if (catchment == null) {
             logger.info(String.format("Catchment not found for ID: %s", catchmentId));
-            return new ResponseEntity<>(new UserInfo(null, null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new UserInfo(null, null, null), HttpStatus.NOT_FOUND);
         }
         if (organisation == null) {
             logger.info(String.format("Organisation not found for catchment ID: %s", catchmentId));
-            return new ResponseEntity<>(new UserInfo(null, null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new UserInfo(null, null, null), HttpStatus.NOT_FOUND);
         }
 
         //TODO catchmentType in userInfo is deprecated and should be removed completely in a month's time.
-        return new ResponseEntity<>(new UserInfo(catchment.getType(), organisation.getName()), HttpStatus.OK);
+        UserInfo userInfo = new UserInfo(catchment.getType(), organisation.getName(), user.getSettings());
+        return new ResponseEntity<>(userInfo, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/me", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
+    public ResponseEntity<UserInfo> getMyProfile(@RequestParam(value = "catchmentId", required = true) Integer catchmentId) {
+        return getUserInfo(catchmentId);
+    }
+
+    @RequestMapping(value = "/me", method = RequestMethod.POST)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public void saveMyProfile(@RequestBody UserInfo userInfo) {
+        User user = userService.getCurrentUser();
+        user.setSettings(userInfo.getSettings());
+        user.setLastModifiedBy(user);
+        user.setLastModifiedDateTime(new DateTime());
+        userRepository.save(user);
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.POST)
@@ -91,6 +111,7 @@ public class UserInfoController {
             user.setOrgAdmin(userContract.isOrgAdmin());
             user.setAdmin(userContract.isAdmin());
             user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
+            user.setSettings(userContract.getSettings());
 
             setAuditInfo(user);
 

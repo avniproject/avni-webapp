@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -57,6 +58,10 @@ public class User {
     @Column(name = "operating_individual_scope")
     @Enumerated(value = EnumType.STRING)
     private OperatingIndividualScope operatingIndividualScope;
+
+    @Column
+    @Type(type = "userSettings")
+    private UserSettingsCollection settings;
 
     public static final String USER = "user";
     public static final String ORGANISATION_ADMIN = "organisation_admin";
@@ -220,5 +225,13 @@ public class User {
             return userFacilityMappings.stream().findFirst().get().getFacility();
         }
         return null;
+    }
+
+    public UserSettingsCollection getSettings() {
+        return settings;
+    }
+
+    public void setSettings(UserSettingsCollection settings) {
+        this.settings = settings;
     }
 }

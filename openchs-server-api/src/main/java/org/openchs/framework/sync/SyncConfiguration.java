@@ -54,7 +54,8 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "userSettings",
             "userInfo",
             "subjectType",
-            "operationalSubjectType");
+            "operationalSubjectType",
+            "me");
 
     private final String[] paths;
 
