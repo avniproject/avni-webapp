@@ -8,7 +8,7 @@ import { isFauxProd, isDevEnv } from '../common/constants';
 import awsConfigFromEnv from '../common/awsConfig';
 import App from "./App";
 import logo from "../logo.png";
-import _reducer, * as actions from './ducks';
+import { setAwsConfig, setCognitoUser, setUserInfo } from './ducks';
 
 
 class SecureApp extends Component {
@@ -67,4 +67,8 @@ const mapStateToProps = state => ({
 });
 
 
-export default withRouter(connect(mapStateToProps, actions)(SecureApp));
+export default withRouter(connect(mapStateToProps, {
+    setAwsConfig,
+    setCognitoUser,
+    setUserInfo
+})(SecureApp));
