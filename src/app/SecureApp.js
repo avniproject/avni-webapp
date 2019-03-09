@@ -7,7 +7,7 @@ import { isFauxProd, isDevEnv } from '../constants';
 import awsConfigFromEnv from '../awsConfig';
 import App from "./App";
 import logo from "../logo.png";
-import * as actions from './actions';
+import _reducer, * as actions from './ducks';
 
 
 class SecureApp extends Component {
