@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Auth from "@aws-amplify/auth";
 import { Authenticator, Greetings, SignUp } from "aws-amplify-react";
 import { connect } from "react-redux";
+import { withRouter } from 'react-router-dom';
 
 import { isFauxProd, isDevEnv } from '../constants';
 import awsConfigFromEnv from '../awsConfig';
@@ -66,4 +67,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps, actions)(SecureApp);
+export default withRouter(connect(mapStateToProps, actions)(SecureApp));
