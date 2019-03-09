@@ -4,8 +4,8 @@ import { Authenticator, Greetings, SignUp } from "aws-amplify-react";
 import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom';
 
-import { isFauxProd, isDevEnv } from '../constants';
-import awsConfigFromEnv from '../awsConfig';
+import { isFauxProd, isDevEnv } from '../common/constants';
+import awsConfigFromEnv from '../common/awsConfig';
 import App from "./App";
 import logo from "../logo.png";
 import _reducer, * as actions from './ducks';
