@@ -1,48 +1,44 @@
-import {AWS_REGION} from "./constants";
 
-const SET_AWS_CONFIG = 'app/SET_AWS_CONFIG';
-const SET_COGNITO_USER = 'app/SET_COGNITO_USER';
-const SET_USER_INFO = 'app/SET_USER_INFO';
+export const types = {
+    INIT_COGNITO: 'app/INIT_COGNITO',
+    SET_COGNITO_USER: 'app/SET_COGNITO_USER',
+    GET_USER_INFO: 'app/GET_USER_INFO',
+    SET_USER_INFO: 'app/SET_USER_INFO'
+};
 
-export const setAwsConfig = config => ({
-    type: SET_AWS_CONFIG,
-    payload: {
-        region: config.region || AWS_REGION,
-        poolId: config.poolId,
-        clientId: config.clientId
-    }
+export const initCognito = () => ({
+    type: types.INIT_COGNITO
 });
 
 export const setCognitoUser = (authState, authData) => ({
-    type: SET_COGNITO_USER,
+    type: types.SET_COGNITO_USER,
     payload: {
         authState,
         authData
     }
 });
 
-export const setUserInfo = (userInfo) => ({
-    type: SET_USER_INFO,
-    payload: { orgName: userInfo.organisationName }
+export const getUserInfo = () => ({
+    type: types.GET_USER_INFO
 });
 
+export const setUserInfo = userInfo => ({
+    type: types.SET_USER_INFO,
+    payload: userInfo.organisationName
+});
+
+
 const initialState = {
-    awsConfig: {},
     user: {
         authState: undefined,
         cognito: undefined
     }
 };
 
+// reducer
 export default function(state=initialState, action) {
     switch(action.type) {
-        case SET_AWS_CONFIG: {
-            return {
-                ...state,
-                awsConfig: action.payload
-            }
-        }
-        case SET_COGNITO_USER: {
+        case types.SET_COGNITO_USER: {
             return {
                 ...state,
                 user: {
@@ -52,7 +48,7 @@ export default function(state=initialState, action) {
                 }
             }
         }
-        case SET_USER_INFO: {
+        case types.SET_USER_INFO: {
             return {
                 ...state,
                 user: {

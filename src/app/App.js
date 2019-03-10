@@ -1,10 +1,24 @@
-import React from 'react';
-import './App.css';
+import React, { Component } from 'react';
+import { connect } from "react-redux";
+import { withRouter } from 'react-router-dom';
+
 import Routes from './Routes';
+import { getUserInfo } from "./ducks";
 
-const App = () =>
-    <div>
-      <Routes />
-    </div>;
+class App extends Component {
+    componentDidMount() {
+        this.props.getUserInfo();
+    }
 
-export default App;
+    render() {
+        return (
+            <div>
+              <Routes />
+            </div>
+        );
+    }
+}
+
+export default withRouter(
+    connect(null, { getUserInfo })(App)
+);

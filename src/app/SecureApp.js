@@ -1,50 +1,28 @@
 import React, { Component } from "react";
-import Auth from "@aws-amplify/auth";
 import { Authenticator, Greetings, SignUp } from "aws-amplify-react";
 import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom';
 
-import { isFauxProd, isDevEnv } from '../common/constants';
-import awsConfigFromEnv from '../common/awsConfig';
+import './SecureApp.css';
 import App from "./App";
 import logo from "../logo.png";
-import { setAwsConfig, setCognitoUser, setUserInfo } from './ducks';
+import { initCognito, setCognitoUser } from './ducks';
 
 
 class SecureApp extends Component {
     constructor(props) {
         super(props);
         this.setAuthState = this.setAuthState.bind(this);
-        this.configureAuth = this.configureAuth.bind(this);
     }
 
     setAuthState(authState, authData) {
         if (authState === 'signedIn') {
             this.props.setCognitoUser(authState, authData);
-            fetch('/userInfo')
-                .then(data => data.json())
-                .then(userInfo => this.props.setUserInfo(userInfo));
         }
-    }
-
-    configureAuth(awsConfig) {
-        Auth.configure({
-            mandatorySignIn: true,
-            region: awsConfig.region,
-            userPoolId: awsConfig.poolId,
-            userPoolWebClientId: awsConfig.clientId
-        });
     }
 
     componentDidMount() {
-        if(isDevEnv && isFauxProd) {
-            this.props.setAwsConfig(awsConfigFromEnv.cognito);
-            this.configureAuth(awsConfigFromEnv.cognito);
-        } else {
-            fetch('/cognito-details')
-                .then(data => this.props.setAwsConfig(data.json()))
-                .then(resp => this.configureAuth(resp.payload));
-        }
+        this.props.initCognito();
     }
 
     render() {
@@ -52,8 +30,8 @@ class SecureApp extends Component {
             this.props.user.authState === 'signedIn' ?
                 <App />
                 :
-                <div className="App-header">
-                  <img src={logo} alt="logo" />
+                <div className="authContainer">
+                  <img src={logo} alt="OpenCHS" />
                   <Authenticator
                       hide={[Greetings, SignUp]}
                       onStateChange={this.setAuthState} />
@@ -67,8 +45,6 @@ const mapStateToProps = state => ({
 });
 
 
-export default withRouter(connect(mapStateToProps, {
-    setAwsConfig,
-    setCognitoUser,
-    setUserInfo
-})(SecureApp));
+export default withRouter(
+    connect(mapStateToProps, { initCognito, setCognitoUser })(SecureApp)
+);
