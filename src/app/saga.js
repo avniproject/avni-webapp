@@ -1,7 +1,7 @@
 import { call, put, take, takeLatest } from 'redux-saga/effects';
 
 import { types, setUserInfo as setUserInfoAction } from "./ducks";
-import { authInDev } from "../common/constants";
+import { cognitoInDev } from "../common/constants";
 import { fetchJson } from "../common/utils";
 import { cognitoConfig as cognitoConfigFromEnv } from '../common/awsConfig';
 import { configureAuth } from "./utils";
@@ -15,7 +15,7 @@ const api = {
 export function* initializeCognito() {
     yield take(types.INIT_COGNITO);
     try {
-        const cognitoDetails = authInDev ? cognitoConfigFromEnv : yield call(api.fetchCognitoDetails);
+        const cognitoDetails = cognitoInDev ? cognitoConfigFromEnv : yield call(api.fetchCognitoDetails);
         yield call(configureAuth, cognitoDetails);
     } catch (e) {
         yield call(alert, e);
