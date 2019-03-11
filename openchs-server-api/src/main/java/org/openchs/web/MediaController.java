@@ -115,8 +115,10 @@ public class MediaController {
         if(matcher.find()) {
             mediaDirectoryFromUrl = matcher.group("mediaDir");
         }
-        if (!mediaDirectory.equals(mediaDirectoryFromUrl)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format("User '%s' not authorized", userContext.getUserName()));
+        if (!mediaDirectory.equals(mediaDirectoryFromUrl) || !(bucketName.equals(amazonS3URI.getBucket()))) {
+            String message = format("User '%s' not authorized to access '%s'", userContext.getUserName(), url);
+            logger.info(message);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
         }
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
