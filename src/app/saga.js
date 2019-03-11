@@ -1,7 +1,7 @@
 import { call, put, takeEvery } from 'redux-saga/effects';
 
 import { types, setUserInfo as setUserInfoAction } from "./ducks";
-import { isFauxProd } from "../common/constants";
+import { authInDev } from "../common/constants";
 import { fetchJson } from "../common/utils";
 import { cognitoConfig as cognitoConfigFromEnv } from '../common/awsConfig';
 import { configureAuth } from "./utils";
@@ -22,7 +22,7 @@ export function* userInfoWatcher() {
 
 function* initializeCognito() {
     try {
-        const cognitoDetails = isFauxProd ? cognitoConfigFromEnv : yield call(api.fetchCognitoDetails);
+        const cognitoDetails = authInDev ? cognitoConfigFromEnv : yield call(api.fetchCognitoDetails);
         yield call(configureAuth, cognitoDetails);
     }
     catch (e) {

@@ -9,7 +9,7 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import rootReducer from './rootReducer';
 import rootSaga from './rootSaga';
-import { isDevEnv } from './common/constants';
+import { isDevEnv, authInDev } from './common/constants';
 import { App, SecureApp } from './app';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -28,7 +28,7 @@ sagaMiddleware.run(rootSaga);
 ReactDOM.render(
     <Provider store={store}>
       <BrowserRouter>
-        { isDevEnv ? <App /> : <SecureApp /> }
+        { !authInDev ? <App /> : <SecureApp /> }
       </BrowserRouter>
     </Provider>,
     document.getElementById('root')
