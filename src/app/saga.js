@@ -1,4 +1,4 @@
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, take, takeLatest } from 'redux-saga/effects';
 
 import { types, setUserInfo as setUserInfoAction } from "./ducks";
 import { authInDev } from "../common/constants";
@@ -12,22 +12,18 @@ const api = {
     fetchUserInfo: () => fetchJson('/userInfo')
 };
 
-export function* initCognitoWatcher() {
-    yield takeEvery(types.INIT_COGNITO, initializeCognito);
-}
-
-export function* userInfoWatcher() {
-    yield takeEvery(types.GET_USER_INFO, setUserDetails);
-}
-
-function* initializeCognito() {
+export function* initializeCognito() {
+    yield take(types.INIT_COGNITO);
     try {
         const cognitoDetails = authInDev ? cognitoConfigFromEnv : yield call(api.fetchCognitoDetails);
         yield call(configureAuth, cognitoDetails);
-    }
-    catch (e) {
+    } catch (e) {
         yield call(alert, e);
     }
+}
+
+export function* userInfoWatcher() {
+    yield takeLatest(types.GET_USER_INFO, setUserDetails);
 }
 
 function* setUserDetails() {
