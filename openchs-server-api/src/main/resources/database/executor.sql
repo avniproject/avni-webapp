@@ -13,10 +13,10 @@ CREATE OR REPLACE FUNCTION test()
 BEGIN
   raise notice 'Starting....';
 
-  INSERT INTO gender (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-  VALUES ('foo', '6c734a0e-e051-467e-82ec-8f31baa1a14a', 1, 1, 1, current_timestamp, current_timestamp);
-  INSERT INTO gender (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time)
-  VALUES ('foo2', '6c734a0e-e051-467e-82ec-8f31baa1a14a', 1, 1, 1, current_timestamp, current_timestamp);
+  INSERT INTO gender (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, organisation_id)
+  VALUES ('foo', '6c734a0e-e051-467e-82ec-8f31baa1a14a', 1, 1, 1, current_timestamp, current_timestamp, 1);
+  INSERT INTO gender (name, uuid, version, created_by_id, last_modified_by_id, created_date_time, last_modified_date_time, organisation_id)
+  VALUES ('foo2', '6c734a0e-e051-467e-82ec-8f31baa1a14a', 1, 1, 1, current_timestamp, current_timestamp, 1);
 
 
   EXCEPTION WHEN others THEN

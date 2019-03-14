@@ -115,7 +115,7 @@ public class UserInfoController {
 
             setAuditInfo(user);
 
-            userRepository.save(user);
+            userService.save(user);
             logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
         });
     }

@@ -25,6 +25,9 @@ public class Organisation {
     private String mediaDirectory;
 
     @Column
+    private Long parentOrganisationId;
+
+    @Column
     @NotNull
     private String uuid;
 
@@ -77,6 +80,14 @@ public class Organisation {
 
     public void setMediaDirectory(String mediaDirectory) {
         this.mediaDirectory = mediaDirectory;
+    }
+
+    public Long getParentOrganisationId() {
+        return parentOrganisationId;
+    }
+
+    public void setParentOrganisationId(Long parentOrganisationId) {
+        this.parentOrganisationId = parentOrganisationId;
     }
 
     @Override

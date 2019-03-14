@@ -3,11 +3,7 @@ package org.openchs.service;
 import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationRepository;
-import org.openchs.domain.Concept;
-import org.openchs.domain.ConceptAnswer;
-import org.openchs.domain.ConceptDataType;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.OrganisationAwareEntity;
+import org.openchs.domain.*;
 import org.openchs.util.O;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.validation.ValidationException;
@@ -30,9 +26,11 @@ public class ConceptService {
     private ConceptRepository conceptRepository;
     private ConceptAnswerRepository conceptAnswerRepository;
     private OrganisationRepository organisationRepository;
+    private UserService userService;
 
     @Autowired
-    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository) {
+    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService) {
+        this.userService = userService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.conceptAnswerRepository = conceptAnswerRepository;
@@ -73,6 +71,10 @@ public class ConceptService {
             logger.error(message);
             throw new ValidationException(message);
         }
+        updateOrganisationIfNeeded(conceptAnswer, answerConceptRequest);
+        if (!conceptAnswer.editableBy(userService.getCurrentUser().getOrganisationId())) {
+            return conceptAnswer;
+        }
         conceptAnswer.setAnswerConcept(answerConcept);
 //        conceptAnswer.setAnswerConcept(map(answerConceptRequest));
         conceptAnswer.setVoided(answerConceptRequest.isVoided());
@@ -87,9 +89,7 @@ public class ConceptService {
         List<ConceptContract> answers = (List<ConceptContract>) O.coalesce(conceptRequest.getAnswers(), new ArrayList<>());
         AtomicInteger index = new AtomicInteger(0);
         List<ConceptAnswer> conceptAnswers = answers.stream()
-                .map(answerContract -> updateOrganisationIfNeeded(
-                        fetchOrCreateConceptAnswer(concept, answerContract, (short) index.incrementAndGet()),
-                        answerContract))
+                .map(answerContract -> fetchOrCreateConceptAnswer(concept, answerContract, (short) index.incrementAndGet()))
                 .collect(Collectors.toList());
         concept.addAll(conceptAnswers);
         return concept;

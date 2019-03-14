@@ -208,6 +208,10 @@ public class User {
         return isAdmin;
     }
 
+    public boolean isOrgAdmin() {
+        return isOrgAdmin;
+    }
+
     @NotNull
     public OperatingIndividualScope getOperatingIndividualScope() {
         return operatingIndividualScope;

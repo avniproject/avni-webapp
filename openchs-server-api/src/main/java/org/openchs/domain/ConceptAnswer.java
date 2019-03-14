@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "concept_answer")
@@ -90,5 +91,9 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     public boolean hasAnswerConcept(Concept answerConcept) {
         return getAnswerConcept().getUuid().equals(answerConcept.getUuid());
+    }
+
+    public boolean editableBy(Long orgId) {
+        return getOrganisationId() == null || Objects.equals(getOrganisationId(), orgId);
     }
 }
