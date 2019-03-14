@@ -1,17 +1,23 @@
 import React from "react";
-import {Link} from "react-router-dom";
+import { Admin, Resource, ListGuesser } from 'react-admin';
+import { Link } from "react-router-dom";
 
-export const UserManager = () => (
-    <div>
-      <h1>Manage Users</h1>
-    </div>
+import { authProvider, dataProvider } from "../rootSaga";
+
+export const Main = () => (
+    <Admin
+        authProvider={authProvider}
+        dataProvider={dataProvider}
+        title="Admin"
+    >
+        <Resource name="users" list={ListGuesser} />
+    </Admin>
 );
-
 
 export const Home = () => (
     <div>
       <ul>
-        <li><Link to="/manage-users">Manage Users</Link></li>
+        <li><Link to="/adm/">Manage Users</Link></li>
       </ul>
     </div>
 );
