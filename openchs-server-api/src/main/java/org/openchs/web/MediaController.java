@@ -7,6 +7,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3URI;
+import com.amazonaws.services.s3.Headers;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
@@ -61,6 +63,10 @@ public class MediaController {
                 .build();
     }
 
+    private String getContentType(String fileName) {
+        return fileName.endsWith("jpg")? "image/jpeg": "video/mp4";
+    }
+
     @RequestMapping(value = "/media/uploadUrl/{fileName:.+}", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<String> generateUploadUrl(@PathVariable String fileName) {
@@ -83,7 +89,10 @@ public class MediaController {
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
                 new GeneratePresignedUrlRequest(bucketName, objectKey)
                         .withMethod(HttpMethod.PUT)
+                        .withContentType(getContentType(fileName))
                         .withExpiration(getExpireDate(UPLOAD_EXPIRY_DURATION));
+        generatePresignedUrlRequest.addRequestParameter(Headers.S3_CANNED_ACL, CannedAccessControlList.PublicRead.toString());
+
         URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
 
         logger.debug(format("Generating presigned url: %s", url.toString()));
@@ -112,7 +121,7 @@ public class MediaController {
         String objectKey = amazonS3URI.getKey();
         Matcher matcher = mediaDirPattern.matcher(objectKey);
         String mediaDirectoryFromUrl = null;
-        if(matcher.find()) {
+        if (matcher.find()) {
             mediaDirectoryFromUrl = matcher.group("mediaDir");
         }
         if (!mediaDirectory.equals(mediaDirectoryFromUrl)) {
