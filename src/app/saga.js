@@ -9,7 +9,7 @@ import { configureAuth } from "./utils";
 
 const api = {
     fetchCognitoDetails: () => fetchJson('/cognito-details'),
-    fetchUserInfo: () => fetchJson('/userInfo')
+    fetchUserInfo: () => fetchJson('/me')
 };
 
 export function* initializeCognito() {
