@@ -8,23 +8,22 @@ public class UserInfo {
 
     }
 
-    @Deprecated
-    private String catchmentType;
+    private String username;
     private String organisationName;
     private UserSettingsCollection settings;
 
-    public UserInfo(String catchmentType, String orgName, UserSettingsCollection settings) {
-        this.catchmentType = catchmentType;
+    public UserInfo(String username, String orgName, UserSettingsCollection settings) {
+        this.username = username;
         this.organisationName = orgName;
         this.settings = settings;
     }
 
-    public String getCatchmentType() {
-        return catchmentType;
+    public String getUsername() {
+        return username;
     }
 
-    public void setCatchmentType(String catchmentType) {
-        this.catchmentType = catchmentType;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getOrganisationName() {
