@@ -308,10 +308,11 @@ where x.organisation_id = 1 and a.last_modified_by_id != 1
 );
 
 select count(a.id) from audit a
-where a.last_modified_by_id = 1 and a.created_by_id != 1
+where a.last_modified_by_id = 1 and a.created_by_id != 1;
 
 update audit set created_by_id = 1 where last_modified_by_id = 1;
 
+--This query shows an example of how to update audit table after updating the entity
 with updates(audit_id) as (
   update individual
   set is_voided = true

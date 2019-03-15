@@ -1,7 +1,9 @@
 package org.openchs.service;
 
+import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.UserRepository;
 import org.openchs.domain.Facility;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
@@ -14,10 +16,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private UserRepository userRepository;
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
+    private OrganisationRepository organisationRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, OrganisationRepository organisationRepository) {
         this.userRepository = userRepository;
+        this.organisationRepository = organisationRepository;
     }
 
     public Facility getUserFacility() {
@@ -28,5 +32,15 @@ public class UserService {
     public User getCurrentUser() {
         UserContext userContext = UserContextHolder.getUserContext();
         return userContext.getUser();
+    }
+
+    public User save(User user) {
+        Organisation organisation = organisationRepository.findOne(user.getOrganisationId());
+        user = userRepository.save(user);
+        if(organisation.getParentOrganisationId() == null && user.isOrgAdmin()) {
+            user.setCreatedBy(user);
+            user.setLastModifiedBy(user);
+        }
+        return userRepository.save(user);
     }
 }
