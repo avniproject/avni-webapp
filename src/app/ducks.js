@@ -24,7 +24,7 @@ export const getUserInfo = () => ({
 
 export const setUserInfo = userInfo => ({
     type: types.SET_USER_INFO,
-    payload: userInfo.organisationName
+    payload: userInfo
 });
 
 
@@ -44,7 +44,6 @@ export default function(state=initialState, action) {
                 user: {
                     authState: action.payload.authState,
                     cognito: action.payload.authData,
-                    userName: action.payload.authData.username
                 }
             }
         }
@@ -53,7 +52,8 @@ export default function(state=initialState, action) {
                 ...state,
                 user: {
                     ...state.user,
-                    orgName: action.payload
+                    username: state.user.cognito ? state.user.cognito.username : action.payload.username,
+                    orgName: action.payload.organisationName
                 }
             }
         }
