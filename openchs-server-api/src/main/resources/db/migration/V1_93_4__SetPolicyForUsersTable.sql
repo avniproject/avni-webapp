@@ -48,4 +48,4 @@ WITH CHECK (organisation_id in (WITH RECURSIVE children(id, parent_organisation_
 )
 select children.id
 from children
-UNION ALL select id from organisation where parent_organisation_id ISNULL and CURRENT_USER = 'openchs_impl'));
+UNION ALL select id from organisation where parent_organisation_id ISNULL and CURRENT_USER = ('openchs_impl'::name)));
