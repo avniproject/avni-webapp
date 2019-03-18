@@ -5,19 +5,22 @@ import { formMiddleware } from 'react-admin';
 import rootReducer from "./rootReducer";
 import rootSaga from "./rootSaga";
 
-const sagaMiddleware = createSagaMiddleware();
+export default (initialState={}) => {
+    const sagaMiddleware = createSagaMiddleware();
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const store = createStore(rootReducer,
-    composeEnhancers(
-        applyMiddleware(
-            sagaMiddleware,
-            formMiddleware,
+    const store = createStore(rootReducer,
+        initialState,
+        composeEnhancers(
+            applyMiddleware(
+                sagaMiddleware,
+                formMiddleware
+            )
         )
-    )
-);
+    );
 
-sagaMiddleware.run(rootSaga);
+    sagaMiddleware.run(rootSaga);
 
-export default store;
+    return store;
+}
