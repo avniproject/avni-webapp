@@ -5,11 +5,10 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import configureStore from './initRedux';
+import { store } from './configureStore';
 import { cognitoInDev, isProdEnv } from './common/constants';
 import { App, SecureApp } from './app';
 
-const store = configureStore();
 
 ReactDOM.render(
     <Provider store={store}>
