@@ -91,7 +91,6 @@ public class MediaController {
                         .withMethod(HttpMethod.PUT)
                         .withContentType(getContentType(fileName))
                         .withExpiration(getExpireDate(UPLOAD_EXPIRY_DURATION));
-        generatePresignedUrlRequest.addRequestParameter(Headers.S3_CANNED_ACL, CannedAccessControlList.PublicRead.toString());
 
         URL url = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
 
