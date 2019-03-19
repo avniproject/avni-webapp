@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.time.Duration;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -64,7 +65,7 @@ public class MediaController {
     }
 
     private String getContentType(String fileName) {
-        return fileName.endsWith("jpg")? "image/jpeg": "video/mp4";
+        return URLConnection.guessContentTypeFromName(fileName);
     }
 
     @RequestMapping(value = "/media/uploadUrl/{fileName:.+}", method = RequestMethod.GET)
