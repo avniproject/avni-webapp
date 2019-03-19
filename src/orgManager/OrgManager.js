@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Admin, Resource, ListGuesser } from "react-admin";
 
 import { authProvider } from "../rootSaga";
-import { store, history } from "../configureStore";
+import { store, adminHistory } from "../store";
 
 export class OrgManager extends Component {
     getChildContext() {
@@ -12,7 +12,7 @@ export class OrgManager extends Component {
 
     render() {
         return (
-            <Admin authProvider={authProvider} history={history} title="Manage Organisation">
+            <Admin authProvider={authProvider} history={adminHistory} title="Manage Organisation">
                 <Resource name="users" list={ListGuesser} />
             </Admin>
         );

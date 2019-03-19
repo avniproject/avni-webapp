@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import { store } from './configureStore';
+import { store } from './store';
 import { cognitoInDev, isProdEnv } from './common/constants';
 import { App, SecureApp } from './app';
 

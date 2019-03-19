@@ -7,6 +7,8 @@ import createHistory from 'history/createHashHistory';
 import rootReducer from "./rootReducer";
 import rootSaga from "./rootSaga";
 
+export const adminHistory = createHistory();
+
 const configureStore = initialState => {
     const sagaMiddleware = createSagaMiddleware();
 
@@ -18,7 +20,7 @@ const configureStore = initialState => {
             applyMiddleware(
                 sagaMiddleware,
                 formMiddleware,
-                routerMiddleware(history),
+                routerMiddleware(adminHistory),
             )
         )
     );
@@ -28,5 +30,4 @@ const configureStore = initialState => {
     return store;
 };
 
-export const history = createHistory();
 export const store = configureStore();
