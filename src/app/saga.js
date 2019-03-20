@@ -1,7 +1,7 @@
 import { call, put, take, takeLatest } from 'redux-saga/effects';
 
 import { types, setUserInfo as setUserInfoAction } from "./ducks";
-import { cognitoInDev } from "../common/constants";
+import { cognitoInDev, isProdEnv } from "../common/constants";
 import { fetchJson } from "../common/utils";
 import { cognitoConfig as cognitoConfigFromEnv } from '../common/awsConfig';
 import { configureAuth } from "./utils";
@@ -12,7 +12,8 @@ const api = {
     fetchUserInfo: () => fetchJson('/me')
 };
 
-export function* initializeCognito() {
+export function* initialiseCognito() {
+    if (!(isProdEnv || cognitoInDev)) return;
     yield take(types.INIT_COGNITO);
     try {
         const cognitoDetails = cognitoInDev ? cognitoConfigFromEnv : yield call(api.fetchCognitoDetails);
