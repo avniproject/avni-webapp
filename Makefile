@@ -121,7 +121,7 @@ debug_server_live: build_server
 
 ci-test:
 	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
-	./gradlew clean test
+	./gradlew clean test --debug --stacktrace
 
 open_test_results:
 	open openchs-server-api/build/reports/tests/test/index.html
