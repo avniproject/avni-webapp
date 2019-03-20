@@ -1,4 +1,4 @@
-import { all } from 'redux-saga/effects';
+import { all, fork } from 'redux-saga/effects';
 import { adminSaga, defaultI18nProvider } from 'react-admin';
 import jsonServerProvider from 'ra-data-json-server';
 
@@ -13,7 +13,7 @@ const i18nProvider = defaultI18nProvider;
 export default function* rootSaga() {
     yield all([
         adminSaga(dataProvider, authProvider, i18nProvider),
-        initialiseCognito(),
-        userInfoWatcher()
-    ])
+        initialiseCognito,
+        userInfoWatcher
+    ].map(fork));
 }
