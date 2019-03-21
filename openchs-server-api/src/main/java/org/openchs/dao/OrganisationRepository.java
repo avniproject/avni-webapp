@@ -1,6 +1,7 @@
 package org.openchs.dao;
 
 import org.openchs.domain.Organisation;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
@@ -14,4 +15,8 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Lon
 
     @PreAuthorize("hasAnyAuthority('admin')")
     <S extends Organisation> S save(S entity);
+
+    @PreAuthorize("hasAnyAuthority('admin')")
+    @Procedure(value = "create_db_user")
+    void createDBUser(String name, String pass);
 }
