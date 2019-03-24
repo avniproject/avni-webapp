@@ -8,7 +8,7 @@ class HttpClient {
             return HttpClient.instance;
         this.authContext = _authContext;
         this.initAuthContext = this.initAuthContext.bind(this);
-        this.getHeaders = this.getHeaders.bind(this);
+        this.setHeaders = this.setHeaders.bind(this);
         this.fetchJson = this.fetchJson.bind(this);
         HttpClient.instance = this;
     }
@@ -17,7 +17,7 @@ class HttpClient {
         this.authContext.init(userInfo);
     }
 
-    getHeaders(params) {
+    setHeaders(params) {
         const authParams = this.authContext.get();
         let headers = params.headers || new Headers({ Accept: 'application/json' });
         if (!headers.has('Content-Type') &&
@@ -33,7 +33,7 @@ class HttpClient {
     }
 
     fetchJson(url, params = {}) {
-        params.headers = this.getHeaders(params);
+        params.headers = this.setHeaders(params);
         return fetch(url, params)
                 .then(response => response.json());
     }

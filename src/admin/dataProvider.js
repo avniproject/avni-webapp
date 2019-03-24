@@ -26,7 +26,6 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             options.user = { authenticated: true, token: authParams.token };
         options.headers = options.headers || new Headers({ Accept: 'application/json' });
         options.headers.set('user-name', authParams.username);
-        return options;
     };
 
     /**
@@ -37,7 +36,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
      */
     const convertDataRequestToHTTP = (type, resource, params) => {
         let url = `${apiUrl}/${resource}`;
-        let options = {};
+        const options = {};
         switch (type) {
             case GET_LIST:
                 url = `${url}/${UrlPartsGenerator.forList(params)}`;
@@ -51,7 +50,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             default:
                 throw new Error(`Unsupported fetch action type ${type}`);
         }
-        options = appendAuthParams(options);
+        appendAuthParams(options);
         return {url, options};
     };
 

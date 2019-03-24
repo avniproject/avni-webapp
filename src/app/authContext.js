@@ -3,8 +3,8 @@ import _ from 'lodash';
 export const authContext  = (function() {
     const obj = {};
     return {
-        init: (userInfo) => {
-            if (!_.isEmpty(obj)) {
+        init: (userInfo, reset=false) => {
+            if (!_.isEmpty(obj) && !reset) {
                 console.warn('authContext already initialised. Ignoring...');
                 return;
             }

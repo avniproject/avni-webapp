@@ -35,6 +35,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "chai": "^4.2.0"
+    "chai": "^4.2.0",
+    "redux-saga-test-plan": "^3.7.0"
   }
 }
