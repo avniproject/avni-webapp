@@ -10,11 +10,13 @@ public class UserInfo {
 
     private String username;
     private String organisationName;
+    private Long organisationId;
     private UserSettingsCollection settings;
 
-    public UserInfo(String username, String orgName, UserSettingsCollection settings) {
+    public UserInfo(String username, String orgName, Long orgId, UserSettingsCollection settings) {
         this.username = username;
         this.organisationName = orgName;
+        this.organisationId = orgId;
         this.settings = settings;
     }
 
@@ -33,6 +35,10 @@ public class UserInfo {
     public void setOrganisationName(String organisationName) {
         this.organisationName = organisationName;
     }
+
+    public Long getOrganisationId() { return organisationId; }
+
+    public void setOrganisationId(Long organisationId) { this.organisationId = organisationId; }
 
     public UserSettingsCollection getSettings() {
         return settings;

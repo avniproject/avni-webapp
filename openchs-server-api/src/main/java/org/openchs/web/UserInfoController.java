@@ -52,14 +52,14 @@ public class UserInfoController {
 
         if (catchment == null) {
             logger.info(String.format("Catchment not found for ID: %s", catchmentId));
-            return new ResponseEntity<>(new UserInfo(null, null, null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new UserInfo(null, null, null, null), HttpStatus.NOT_FOUND);
         }
         if (organisation == null) {
             logger.info(String.format("Organisation not found for catchment ID: %s", catchmentId));
-            return new ResponseEntity<>(new UserInfo(null, null, null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new UserInfo(null, null, null, null), HttpStatus.NOT_FOUND);
         }
 
-        UserInfo userInfo = new UserInfo(user.getName(), organisation.getName(), user.getSettings());
+        UserInfo userInfo = new UserInfo(user.getName(), organisation.getName(), organisation.getId(), user.getSettings());
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 

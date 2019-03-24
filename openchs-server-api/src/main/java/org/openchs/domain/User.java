@@ -42,6 +42,9 @@ public class User {
     @NotNull
     private DateTime lastModifiedDateTime;
 
+    @Column
+    private boolean isVoided;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     private Set<UserFacilityMapping> userFacilityMappings = new HashSet<>();
 
@@ -111,8 +114,20 @@ public class User {
         return catchment;
     }
 
+    public Long getCatchmentId() {
+        return catchment != null ? catchment.getId() : null;
+    }
+
     public void setCatchment(@NotNull Catchment catchment) {
         this.catchment = catchment;
+    }
+
+    public Boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        isVoided = voided;
     }
 
     @Override
