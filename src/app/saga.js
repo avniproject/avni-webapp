@@ -1,15 +1,13 @@
 import { call, put, take, takeLatest } from 'redux-saga/effects';
-
-import { types, setUserInfo as setUserInfoAction } from "./ducks";
-import { cognitoInDev, isProdEnv } from "../common/constants";
-import { fetchJson } from "../common/utils";
-import { cognitoConfig as cognitoConfigFromEnv } from '../common/awsConfig';
+import { types, getUserInfo, setUserInfo, sendInitComplete } from "./ducks";
+import { cognitoInDev, isProdEnv, isDevEnv } from "../common/constants";
+import { httpClient } from "../utils/httpClient";
+import { cognitoConfig as cognitoConfigFromEnv } from '../common/constants';
 import { configureAuth } from "./utils";
 
-
 const api = {
-    fetchCognitoDetails: () => fetchJson('/cognito-details'),
-    fetchUserInfo: () => fetchJson('/me')
+    fetchCognitoDetails: () => httpClient.fetchJson('/cognito-details'),
+    fetchUserInfo: () => httpClient.fetchJson('/me'),
 };
 
 export function* initialiseCognito() {
@@ -23,11 +21,24 @@ export function* initialiseCognito() {
     }
 }
 
+export function* onSetCognitoUser() {
+    const action = yield take(types.SET_COGNITO_USER);
+    yield call(httpClient.initAuthContext, {
+        username: action.payload.authData.username,
+        idToken: action.payload.authData.signInUserSession.idToken.jwtToken
+    });
+    yield put(getUserInfo());
+}
+
 export function* userInfoWatcher() {
     yield takeLatest(types.GET_USER_INFO, setUserDetails);
 }
 
 function* setUserDetails() {
     const userDetails = yield call(api.fetchUserInfo);
-    yield put(setUserInfoAction(userDetails));
+    yield put(setUserInfo(userDetails));
+    if (isDevEnv && !cognitoInDev) {
+        yield call(httpClient.initAuthContext, { username: userDetails.username });
+    }
+    yield put(sendInitComplete());
 }

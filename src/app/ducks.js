@@ -3,7 +3,8 @@ export const types = {
     INIT_COGNITO: 'app/INIT_COGNITO',
     SET_COGNITO_USER: 'app/SET_COGNITO_USER',
     GET_USER_INFO: 'app/GET_USER_INFO',
-    SET_USER_INFO: 'app/SET_USER_INFO'
+    SET_USER_INFO: 'app/SET_USER_INFO',
+    INIT_COMPLETE: 'app/INIT_COMPLETE'
 };
 
 export const initCognito = () => ({
@@ -27,12 +28,21 @@ export const setUserInfo = userInfo => ({
     payload: userInfo
 });
 
+export const sendInitComplete = () => ({
+    type: types.INIT_COMPLETE
+});
 
 const initialState = {
     user: {
         authState: undefined,
-        cognito: undefined
-    }
+        cognito: undefined,
+        username: undefined
+    },
+    organisation: {
+        id: undefined,
+        name: undefined
+    },
+    appInitialised: false
 };
 
 // reducer
@@ -44,6 +54,7 @@ export default function(state=initialState, action) {
                 user: {
                     authState: action.payload.authState,
                     cognito: action.payload.authData,
+                    username: action.payload.authData.username
                 }
             }
         }
@@ -52,9 +63,18 @@ export default function(state=initialState, action) {
                 ...state,
                 user: {
                     ...state.user,
-                    username: state.user.cognito ? state.user.cognito.username : action.payload.username,
-                    orgName: action.payload.organisationName
+                    username: state.user.username || action.payload.username
+                },
+                organisation: {
+                    id: action.payload.organisationId,
+                    name: action.payload.organisationName
                 }
+            }
+        }
+        case types.INIT_COMPLETE: {
+            return {
+                ...state,
+                appInitialised: true
             }
         }
         default:

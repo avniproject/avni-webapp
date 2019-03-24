@@ -1,2 +1,2 @@
-import { OrgManager } from "./OrgManager";
+import OrgManager from "./OrgManager";
 export { OrgManager };

@@ -2,12 +2,12 @@ import { applyMiddleware, compose, createStore } from "redux";
 import createSagaMiddleware from 'redux-saga';
 import { formMiddleware } from 'react-admin';
 import { routerMiddleware } from 'react-router-redux';
-import createHistory from 'history/createHashHistory';
+import { createHashHistory } from 'history';
 
-import rootReducer from "./rootReducer";
-import rootSaga from "./rootSaga";
+import rootReducer from "../rootReducer";
+import rootSaga from "../rootSaga";
 
-export const adminHistory = createHistory();
+export const adminHistory = createHashHistory();
 
 const configureStore = initialState => {
     const sagaMiddleware = createSagaMiddleware();
