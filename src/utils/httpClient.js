@@ -19,21 +19,21 @@ class HttpClient {
 
     setHeaders(params) {
         const authParams = this.authContext.get();
-        let headers = params.headers || new Headers({ Accept: 'application/json' });
-        if (!headers.has('Content-Type') &&
-            !(params && params.body && params.body instanceof FormData)) {
-            headers.set('Content-Type', 'application/json');
+        if (!params.headers)
+            params.headers = new Headers({ Accept: 'application/json' });
+        if (!params.headers.has('Content-Type') &&
+            !(params.body && params.body instanceof FormData)) {
+                params.headers.set('Content-Type', 'application/json');
         }
         if (!isEmpty(authParams)) {
-            headers.set('user-name', authParams.username);
+            params.headers.set('user-name', authParams.username);
             if (authParams.token)
-                headers.set('Authorization', authParams.token);
+                params.headers.set('Authorization', authParams.token);
         }
-        return headers;
     }
 
     fetchJson(url, params = {}) {
-        params.headers = this.setHeaders(params);
+        this.setHeaders(params);
         return fetch(url, params)
                 .then(response => response.json());
     }
