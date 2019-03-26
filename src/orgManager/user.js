@@ -1,5 +1,6 @@
 import React from 'react';
-import { ReferenceField, Datagrid, List, TextField, FunctionField } from 'react-admin';
+import { ReferenceField, Datagrid, List,
+    TextField, FunctionField, Show, SimpleShowLayout } from 'react-admin';
 
 
 const formatRoles = roles =>
@@ -11,13 +12,27 @@ const formatRoles = roles =>
 
 export const UserList = props => (
     <List {...props} filter={{ organisationId: props.organisation.id }}>
-        <Datagrid rowClick="edit">
+        <Datagrid rowClick="show">
             <TextField label="Username" source="name" />
-            <ReferenceField label="Catchment" source="catchmentId" reference="catchment" allowEmpty>
+            <ReferenceField label="Catchment" source="catchmentId" reference="catchment"
+                            linkType="show" allowEmpty>
                 <TextField source="name" />
             </ReferenceField>
             <FunctionField label="Role" render={user => formatRoles(user.roles)} />
             <FunctionField label="Active" render={user => user.voided === false ? 'Yes' : 'No'} />
         </Datagrid>
     </List>
+);
+
+export const UserDetail = props => (
+    <Show {...props}>
+        <SimpleShowLayout>
+            <TextField source="name" />
+            <ReferenceField label="Catchment" source="catchmentId" reference="catchment"
+                            linkType="show" allowEmpty>
+                <TextField source="name" />
+            </ReferenceField>
+            <FunctionField label="Role" render={user => formatRoles(user.roles)} />
+        </SimpleShowLayout>
+    </Show>
 );

@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import PropTypes from 'prop-types';
 import { Admin, Resource } from "react-admin";
 import { withRouter } from 'react-router-dom';
+import { connect } from "react-redux";
 
 import { authProvider } from "../admin";
 import { store, adminHistory } from "../store";
-import { UserList } from './user';
-import { connect } from "react-redux";
+import { UserList, UserDetail } from './user';
+import { CatchmentDetail } from "./catchment";
 
 class OrgManager extends Component {
     static childContextTypes = {
@@ -21,8 +22,8 @@ class OrgManager extends Component {
         const _UserList = props => <UserList {...props} organisation={this.props.organisation} />;
         return (
             <Admin authProvider={authProvider} history={adminHistory} title="Manage Organisation">
-                <Resource name="user" list={_UserList} />
-                <Resource name="catchment" />
+                <Resource name="user" list={_UserList} show={UserDetail} />
+                <Resource name="catchment" show={CatchmentDetail} />
             </Admin>
         );
     }
