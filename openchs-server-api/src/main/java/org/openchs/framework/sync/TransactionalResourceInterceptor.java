@@ -30,6 +30,19 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
         this.environment = environment;
     }
 
+    /**
+     * This is a hack to fix the problem of missing data when multiple users sync at the same time.
+     * During sync, it is possible that the tables being sync GETted are also being updated concurrently.
+     *
+     * By retrieving data that is slightly old, we ensure that any data that was updated during the sync
+     * is retrieved completely during the next sync process, and we do not miss any data.
+     *
+     * @param request
+     * @param response
+     * @param object
+     * @return
+     * @throws Exception
+     */
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object object) throws Exception {

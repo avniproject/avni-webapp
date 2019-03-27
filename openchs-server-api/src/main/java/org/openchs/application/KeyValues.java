@@ -1,6 +1,5 @@
 package org.openchs.application;
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
