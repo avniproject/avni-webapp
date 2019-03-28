@@ -114,7 +114,7 @@ public class UserController {
             logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getName(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         }
-        catch (ValidationException | UserNotFoundException ex) {
+        catch (ValidationException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
