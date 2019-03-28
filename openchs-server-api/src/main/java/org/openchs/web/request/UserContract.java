@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.openchs.domain.OperatingIndividualScope;
 import org.openchs.domain.UserSettingsCollection;
 
 import java.util.ArrayList;
@@ -8,85 +9,48 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserContract extends ReferenceDataContract {
-    private String organisationUUID;
-    private Long organisationId;
-    private List<UserFacilityMappingContract> facilities;
-    private String catchmentUUID;
     private long catchmentId;
-    private boolean orgAdmin;
-    private boolean admin;
-    private String operatingIndividualScope;
+    private List<UserFacilityMappingContract> facilities;
+    private String phoneNumber;
+    private String email;
+    private boolean orgAdmin = false;
+    private boolean admin = false;
+    private String operatingIndividualScope = OperatingIndividualScope.None.toString();
     private UserSettingsCollection settings;
 
-    public String getOrganisationUUID() {
-        return organisationUUID;
-    }
+    public long getCatchmentId() { return catchmentId; }
 
-    public void setOrganisationUUID(String organisationUUID) {
-        this.organisationUUID = organisationUUID;
-    }
+    public void setCatchmentId(long catchmentId) { this.catchmentId = catchmentId; }
 
     public List<UserFacilityMappingContract> getFacilities() {
         return facilities == null ? new ArrayList<>() : facilities;
     }
 
-    public void setFacilities(List<UserFacilityMappingContract> facilities) {
-        this.facilities = facilities;
-    }
+    public void setFacilities(List<UserFacilityMappingContract> facilities) { this.facilities = facilities; }
 
-    public String getCatchmentUUID() {
-        return catchmentUUID;
-    }
+    public String getPhoneNumber() { return phoneNumber; }
 
-    public void setCatchmentUUID(String catchmentUUID) {
-        this.catchmentUUID = catchmentUUID;
-    }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
-    public boolean isOrgAdmin() {
-        return orgAdmin;
-    }
+    public String getEmail() { return email; }
 
-    public void setOrgAdmin(boolean orgAdmin) {
-        this.orgAdmin = orgAdmin;
-    }
+    public void setEmail(String email) { this.email = email; }
 
-    public boolean isAdmin() {
-        return admin;
-    }
+    public boolean isOrgAdmin() { return orgAdmin; }
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
+    public void setOrgAdmin(boolean orgAdmin) { this.orgAdmin = orgAdmin; }
 
-    public Long getOrganisationId() {
-        return organisationId;
-    }
+    public boolean isAdmin() { return admin; }
 
-    public void setOrganisationId(Long organisationId) {
-        this.organisationId = organisationId;
-    }
+    public void setAdmin(boolean admin) { this.admin = admin; }
 
-    public long getCatchmentId() {
-        return catchmentId;
-    }
-
-    public void setCatchmentId(long catchmentId) {
-        this.catchmentId = catchmentId;
-    }
-
-    public String getOperatingIndividualScope() {
-        return operatingIndividualScope;
-    }
+    public String getOperatingIndividualScope() { return operatingIndividualScope; }
 
     public void setOperatingIndividualScope(String operatingIndividualScope) {
         this.operatingIndividualScope = operatingIndividualScope;
     }
 
-    public UserSettingsCollection getSettings() {
-        return settings;
-    }
+    public UserSettingsCollection getSettings() { return settings; }
 
-    public void setSettings(UserSettingsCollection settings) {
-        this.settings = settings;
-    }
+    public void setSettings(UserSettingsCollection settings) { this.settings = settings; }
 }

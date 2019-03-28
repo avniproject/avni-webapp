@@ -5,7 +5,7 @@ import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.UserService;
-import org.openchs.web.request.UserContract;
+import org.openchs.web.request.UserBulkUploadContract;
 import org.openchs.web.request.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,10 +80,10 @@ public class UserInfoController {
         userRepository.save(user);
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.POST)
+    @RequestMapping(value = "/users/bulkUpload", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public void save(@RequestBody UserContract[] userContracts) {
+    public void save(@RequestBody UserBulkUploadContract[] userContracts) {
         Arrays.stream(userContracts).forEach(userContract -> {
             logger.info(String.format("Saving user with UUID/Name %s/%s", userContract.getUuid(), userContract.getName()));
             User user = userContract.getUuid() == null ? userRepository.findByName(userContract.getName()) : userRepository.findByUuid(userContract.getUuid());
@@ -111,15 +111,13 @@ public class UserInfoController {
             user.setAdmin(userContract.isAdmin());
             user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
             user.setSettings(userContract.getSettings());
-
-            setAuditInfo(user);
-
+            user.setAuditInfo(userService.getCurrentUser());
             userService.save(user);
             logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
         });
     }
 
-    private Long getOrganisationId(UserContract userContract) {
+    private Long getOrganisationId(UserBulkUploadContract userContract) {
         String uuid = userContract.getOrganisationUUID();
         Long id = userContract.getOrganisationId();
         if (id == null && uuid == null) {
@@ -135,13 +133,4 @@ public class UserInfoController {
         return organisation.getId();
     }
 
-    private void setAuditInfo(User user) {
-        User currentUser = userService.getCurrentUser();
-        if (user.getCreatedBy() == null) {
-            user.setCreatedBy(currentUser);
-            user.setCreatedDateTime(new DateTime());
-        }
-        user.setLastModifiedBy(currentUser);
-        user.setLastModifiedDateTime(new DateTime());
-    }
 }

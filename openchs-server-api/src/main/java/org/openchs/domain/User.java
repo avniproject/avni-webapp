@@ -27,7 +27,14 @@ public class User {
     @Column
     private Long organisationId;
 
+    @Column
+    private String email;
+
+    @Column
+    private String phoneNumber;
+
     // Audit is not getting used for managing users because, the application goes in a loop managing audit information generically and automatically assigning the user to the entities
+    @JsonIgnore
     @JoinColumn(name = "created_by_id")
     @ManyToOne(targetEntity = User.class)
     private User createdBy;
@@ -35,6 +42,7 @@ public class User {
     @NotNull
     private DateTime createdDateTime;
 
+    @JsonIgnore
     @JoinColumn(name = "last_modified_by_id")
     @ManyToOne(targetEntity = User.class)
     private User lastModifiedBy;
@@ -53,6 +61,7 @@ public class User {
     @Column
     private boolean isAdmin;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "catchment_id")
     private Catchment catchment;
@@ -93,6 +102,14 @@ public class User {
     public void setOrganisationId(Long organisationId) {
         this.organisationId = organisationId;
     }
+
+    public String getEmail() { return email; }
+
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
     public Long getId() {
         return id;
@@ -252,5 +269,14 @@ public class User {
 
     public void setSettings(UserSettingsCollection settings) {
         this.settings = settings;
+    }
+
+    public void setAuditInfo(User currentUser) {
+        if (this.getCreatedBy() == null) {
+            this.setCreatedBy(currentUser);
+            this.setCreatedDateTime(new DateTime());
+        }
+        this.setLastModifiedBy(currentUser);
+        this.setLastModifiedDateTime(new DateTime());
     }
 }
