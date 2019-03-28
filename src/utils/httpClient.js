@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash';
+import { fetchUtils } from 'react-admin';
 import { authContext as _authContext } from "../app/authContext";
 
 class HttpClient {
@@ -34,8 +35,9 @@ class HttpClient {
 
     fetchJson(url, params = {}) {
         this.setHeaders(params);
-        return fetch(url, params)
-                .then(response => response.json());
+        return fetchUtils.fetchJson(url, params)
+            .then(response => response.json)
+            .catch(error => alert(error));
     }
 }
 

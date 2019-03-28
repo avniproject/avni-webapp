@@ -54,6 +54,16 @@ class UrlPartsGenerator {
         let queryString = _.trim([FilterProcessor.stringifyFilter(filter), paginationPart].join('&'), '&');
         return `${path}?${queryString}`;
     }
+
+    static forManyReference(params) {
+        let paginationPart = stringifyPagination(params.pagination, params.sort);
+        let constructedFilter = {};
+        constructedFilter[params.target] = params.id;
+        let path = FilterProcessor.getPath(constructedFilter);
+        path += `?${params.target}=${params.id}`;
+        path +=  `&${paginationPart}`;
+        return path;
+    }
 }
 
 export { stringifyPagination, FilterProcessor, UrlPartsGenerator }

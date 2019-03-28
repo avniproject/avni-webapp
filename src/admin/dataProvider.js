@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {CREATE, DELETE_MANY, fetchUtils, GET_LIST, GET_MANY,
+import {CREATE, UPDATE, DELETE_MANY, fetchUtils, GET_LIST, GET_MANY,
     GET_MANY_REFERENCE, GET_ONE, UPDATE_MANY,} from 'react-admin';
 import { UrlPartsGenerator } from './requestUtils';
 import SpringResponse from "./SpringResponse";
@@ -46,6 +46,19 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                 break;
             case GET_MANY:
                 url = `${url}/search/findAllById?ids=${_.join(params["ids"])}`;
+                break;
+            case GET_MANY_REFERENCE:
+                url = `${url}/${UrlPartsGenerator.forManyReference(params)}`;
+                break;
+            case CREATE:
+                url = `${url}s`;
+                options.method = 'POST';
+                options.body = JSON.stringify(params.data);
+                break;
+            case UPDATE:
+                url = `${url}s`;
+                options.method = 'PUT';
+                options.body = JSON.stringify(params.data);
                 break;
             default:
                 throw new Error(`Unsupported fetch action type ${type}`);
