@@ -1,4 +1,4 @@
 ALTER TABLE users
-  ADD COLUMN email citext,
+  ADD COLUMN email VARCHAR(320),
   ADD COLUMN phone_number VARCHAR(32),
   ADD COLUMN disabled_in_cognito BOOLEAN DEFAULT FALSE;
