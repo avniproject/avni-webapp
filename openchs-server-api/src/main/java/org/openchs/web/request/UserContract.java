@@ -2,7 +2,7 @@ package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.openchs.domain.OperatingIndividualScope;
-import org.openchs.domain.UserSettingsCollection;
+import org.openchs.domain.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class UserContract extends ReferenceDataContract {
     private boolean orgAdmin = false;
     private boolean admin = false;
     private String operatingIndividualScope = OperatingIndividualScope.None.toString();
-    private UserSettingsCollection settings;
+    private JsonObject settings;
 
     public long getCatchmentId() { return catchmentId; }
 
@@ -50,7 +50,11 @@ public class UserContract extends ReferenceDataContract {
         this.operatingIndividualScope = operatingIndividualScope;
     }
 
-    public UserSettingsCollection getSettings() { return settings; }
+    public JsonObject getSettings() {
+        return settings;
+    }
 
-    public void setSettings(UserSettingsCollection settings) { this.settings = settings; }
+    public void setSettings(JsonObject settings) {
+        this.settings = settings;
+    }
 }

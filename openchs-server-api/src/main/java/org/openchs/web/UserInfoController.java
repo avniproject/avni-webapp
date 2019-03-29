@@ -10,6 +10,9 @@ import org.openchs.web.request.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-public class UserInfoController {
+public class UserInfoController implements RestControllerResourceProcessor<UserInfo> {
     private final CatchmentRepository catchmentRepository;
     private final Logger logger;
     private UserRepository userRepository;
@@ -67,6 +70,16 @@ public class UserInfoController {
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
     public ResponseEntity<UserInfo> getMyProfile(@RequestParam(value = "catchmentId", required = true) Integer catchmentId) {
         return getUserInfo(catchmentId);
+    }
+
+    @RequestMapping(value = "/v2/me", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
+    public PagedResources<Resource<UserInfo>> getMyProfile() {
+        UserContext userContext = UserContextHolder.getUserContext();
+        User user = userContext.getUser();
+        Organisation organisation = userContext.getOrganisation();
+        UserInfo userInfo = new UserInfo(user.getName(), organisation.getName(), organisation.getId(), user.getSettings());
+        return wrap(new PageImpl<>(Arrays.asList(userInfo)));
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.POST)

@@ -1,7 +1,10 @@
 package org.openchs.web.request;
 
-import org.openchs.domain.UserSettingsCollection;
+import org.joda.time.DateTime;
+import org.openchs.domain.JsonObject;
+import org.springframework.hateoas.core.Relation;
 
+@Relation(collectionRelation = "userInfo")
 public class UserInfo {
 
     public UserInfo() {
@@ -11,13 +14,15 @@ public class UserInfo {
     private String username;
     private String organisationName;
     private Long organisationId;
-    private UserSettingsCollection settings;
+    private JsonObject settings;
+    private DateTime lastModifiedDateTime;
 
-    public UserInfo(String username, String orgName, Long orgId, UserSettingsCollection settings) {
+    public UserInfo(String username, String orgName, Long orgId, JsonObject settings) {
         this.username = username;
         this.organisationName = orgName;
         this.organisationId = orgId;
         this.settings = settings;
+        this.lastModifiedDateTime = DateTime.now();
     }
 
     public String getUsername() {
@@ -40,11 +45,19 @@ public class UserInfo {
 
     public void setOrganisationId(Long organisationId) { this.organisationId = organisationId; }
 
-    public UserSettingsCollection getSettings() {
+    public JsonObject getSettings() {
         return settings;
     }
 
-    public void setSettings(UserSettingsCollection settings) {
+    public void setSettings(JsonObject settings) {
         this.settings = settings;
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return lastModifiedDateTime;
+    }
+
+    public void setLastModifiedDateTime(DateTime lastModifiedDateTime) {
+        this.lastModifiedDateTime = lastModifiedDateTime;
     }
 }

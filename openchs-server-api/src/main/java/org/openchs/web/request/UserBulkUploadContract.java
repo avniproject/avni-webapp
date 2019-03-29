@@ -1,7 +1,7 @@
 package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.openchs.domain.UserSettingsCollection;
+import org.openchs.domain.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class UserBulkUploadContract extends ReferenceDataContract {
     private boolean orgAdmin;
     private boolean admin;
     private String operatingIndividualScope;
-    private UserSettingsCollection settings;
+    private JsonObject settings;
 
     public String getOrganisationUUID() {
         return organisationUUID;
@@ -82,11 +82,11 @@ public class UserBulkUploadContract extends ReferenceDataContract {
         this.operatingIndividualScope = operatingIndividualScope;
     }
 
-    public UserSettingsCollection getSettings() {
+    public JsonObject getSettings() {
         return settings;
     }
 
-    public void setSettings(UserSettingsCollection settings) {
+    public void setSettings(JsonObject settings) {
         this.settings = settings;
     }
 }

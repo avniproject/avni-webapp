@@ -72,8 +72,8 @@ public class User {
     private OperatingIndividualScope operatingIndividualScope;
 
     @Column
-    @Type(type = "userSettings")
-    private UserSettingsCollection settings;
+    @Type(type = "jsonObject")
+    private JsonObject settings;
 
     public static final String USER = "user";
     public static final String ORGANISATION_ADMIN = "organisation_admin";
@@ -263,11 +263,11 @@ public class User {
         return null;
     }
 
-    public UserSettingsCollection getSettings() {
+    public JsonObject getSettings() {
         return settings;
     }
 
-    public void setSettings(UserSettingsCollection settings) {
+    public void setSettings(JsonObject settings) {
         this.settings = settings;
     }
 
