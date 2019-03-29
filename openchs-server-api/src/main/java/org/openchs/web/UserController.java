@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.transaction.Transactional;
@@ -96,10 +93,20 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.PUT)
+    @GetMapping(value = "/user/{userId}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity getUser(@PathVariable Long userId) {
+        User user = userRepository.findById(userId);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/user/{userId}")
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity updateUser(@RequestBody UserContract userContract) {
+    public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable Long userId) {
         try {
             User user = userRepository.findByName(userContract.getName());
             if (user == null)
