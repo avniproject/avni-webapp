@@ -33,6 +33,9 @@ public class User {
     @Column
     private String phoneNumber;
 
+    @Column
+    private boolean disabledInCognito;
+
     // Audit is not getting used for managing users because, the application goes in a loop managing audit information generically and automatically assigning the user to the entities
     @JsonIgnore
     @JoinColumn(name = "created_by_id")
@@ -110,6 +113,13 @@ public class User {
     public String getPhoneNumber() { return phoneNumber; }
 
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public boolean isDisabledInCognito() {
+        return disabledInCognito;
+    }
+
+    public void setDisabledInCognito(boolean disabledInCognito) {
+        this.disabledInCognito = disabledInCognito;
+    }
 
     public Long getId() {
         return id;

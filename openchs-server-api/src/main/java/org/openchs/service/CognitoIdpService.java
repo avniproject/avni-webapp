@@ -16,6 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 
 @Service
 @Profile({"default", "live", "dev", "test"})
@@ -58,6 +59,7 @@ public class CognitoIdpService {
 
     private boolean isDev() {
         String[] activeProfiles = environment.getActiveProfiles();
+        Arrays.stream(activeProfiles).forEach(x -> System.out.println( "->>>>>>> "+x));
         return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
     }
 
@@ -111,6 +113,14 @@ public class CognitoIdpService {
         logger.info(String.format("Initiating UPDATE cognito-user request | username '%s' | uuid '%s'", user.getName(), user.getUuid()));
         cognitoClient.adminUpdateUserAttributes(updateUserRequest);
         logger.info(String.format("Updated cognito-user | username '%s'", user.getName()));
+    }
+
+    public void disableUser(User user) {
+        cognitoClient.adminDisableUser(new AdminDisableUserRequest().withUserPoolId(userPoolId).withUsername(user.getName()));
+    }
+
+    public void deleteUser(User user) {
+        cognitoClient.adminDeleteUser(new AdminDeleteUserRequest().withUserPoolId(userPoolId).withUsername(user.getName()));
     }
 
 }

@@ -82,12 +82,10 @@ public class UserController {
 
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getName(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
-        }
-        catch (ValidationException | UsernameExistsException ex) {
+        } catch (ValidationException | UsernameExistsException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-        catch (AWSCognitoIdentityProviderException ex) {
+        } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
@@ -110,16 +108,44 @@ public class UserController {
 
             logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getName(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
-        }
-        catch (ValidationException ex) {
+        } catch (ValidationException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-        catch (AWSCognitoIdentityProviderException ex) {
+        } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
+
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity deleteUser(@PathVariable("id") Long id,
+                                     @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable) {
+        try {
+            User user = userRepository.findById(id);
+            if (disable) {
+                cognitoService.disableUser(user);
+                user.setDisabledInCognito(true);
+                userRepository.save(user);
+                logger.info(String.format("Disabled User '%s', UUID '%s'", user.getName(), user.getUuid()));
+            } else {
+                cognitoService.deleteUser(user);
+                user.setVoided(true);
+                user.setDisabledInCognito(true);
+                userRepository.save(user);
+                logger.info(String.format("Deleted user '%s', UUID '%s'", user.getName(), user.getUuid()));
+            }
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (ValidationException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (AWSCognitoIdentityProviderException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
+
 
     private Boolean emailIsValid(String email) {
         return EmailValidator.getInstance().isValid(email);
