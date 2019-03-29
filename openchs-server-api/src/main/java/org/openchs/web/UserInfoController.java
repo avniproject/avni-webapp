@@ -80,7 +80,7 @@ public class UserInfoController {
         userRepository.save(user);
     }
 
-    @RequestMapping(value = "/users/bulkUpload", method = RequestMethod.POST)
+    @RequestMapping(value = "/users", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public void save(@RequestBody UserBulkUploadContract[] userContracts) {
