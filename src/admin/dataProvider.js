@@ -51,7 +51,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                 url = `${url}/${UrlPartsGenerator.forManyReference(params)}`;
                 break;
             case CREATE:
-                url = `${url}s`;
+                url = `${url}`;
                 options.method = 'POST';
                 options.body = JSON.stringify(params.data);
                 break;
