@@ -11,11 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
 @Service
+@Profile({"default", "live", "dev", "test"})
 public class CognitoIdpService {
     private final Logger logger;
 
@@ -34,8 +37,13 @@ public class CognitoIdpService {
 
     private AWSCognitoIdentityProvider cognitoClient;
 
+    private boolean isDev;
+    private Environment environment;
+
     @Autowired
-    public CognitoIdpService() {
+    public CognitoIdpService(Environment environment) {
+        this.environment = environment;
+        this.isDev = isDev();
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -46,6 +54,11 @@ public class CognitoIdpService {
                 .withRegion(REGION)
                 .build();
         logger.info("Initialize CognitoIDP client");
+    }
+
+    private boolean isDev() {
+        String[] activeProfiles = environment.getActiveProfiles();
+        return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
     }
 
     private AWSStaticCredentialsProvider getCredentialsProvider() {
@@ -67,6 +80,10 @@ public class CognitoIdpService {
     }
 
     public UserType createUser(User user) {
+        if (isDev) {
+            logger.info("Skipping Cognito CREATE in dev mode...");
+            return null;
+        }
         AdminCreateUserRequest createUserRequest = prepareCreateUserRequest(user);
         logger.info(String.format("Initiating CREATE cognito-user request | username '%s' | uuid '%s'", user.getName(), user.getUuid()));
         AdminCreateUserResult createUserResult =  cognitoClient.adminCreateUser(createUserRequest);
@@ -86,9 +103,13 @@ public class CognitoIdpService {
     }
 
     public void updateUser(User user) {
+        if (isDev) {
+            logger.info("Skipping Cognito UPDATE in dev mode...");
+            return;
+        }
         AdminUpdateUserAttributesRequest updateUserRequest = prepareUpdateUserRequest(user);
         logger.info(String.format("Initiating UPDATE cognito-user request | username '%s' | uuid '%s'", user.getName(), user.getUuid()));
-        AdminUpdateUserAttributesResult updateResult = cognitoClient.adminUpdateUserAttributes(updateUserRequest);
+        cognitoClient.adminUpdateUserAttributes(updateUserRequest);
         logger.info(String.format("Updated cognito-user | username '%s'", user.getName()));
     }
 
