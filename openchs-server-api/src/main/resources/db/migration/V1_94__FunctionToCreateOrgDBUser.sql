@@ -6,6 +6,7 @@ $BODY$
     IF NOT EXISTS(SELECT rolname FROM pg_roles WHERE rolname = inrolname)
     THEN
       EXECUTE 'CREATE ROLE ' || quote_ident(inrolname) || ' NOINHERIT LOGIN PASSWORD ' || quote_literal(inpassword);
+      EXECUTE 'GRANT ' || quote_ident(inrolname) || ' TO openchs';
       PERFORM grant_all_on_all(inrolname);
     END IF;
     RETURN 1;
