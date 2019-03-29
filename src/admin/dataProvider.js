@@ -56,7 +56,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                 options.body = JSON.stringify(params.data);
                 break;
             case UPDATE:
-                url = `${url}s`;
+                url = `${url}/${params.id}`;
                 options.method = 'PUT';
                 options.body = JSON.stringify(params.data);
                 break;
