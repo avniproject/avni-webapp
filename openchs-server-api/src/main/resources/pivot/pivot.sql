@@ -1,3 +1,4 @@
+--[Data Extract Report]
 SELECT
   individual.id "Ind.Id",
   individual.address_id "Ind.address_id",
@@ -37,7 +38,7 @@ FROM program_encounter programEncounter
   LEFT OUTER JOIN individual individual ON programEnrolment.individual_id = individual.id
   LEFT OUTER JOIN gender g ON g.id = individual.gender_id
   LEFT OUTER JOIN address_level a ON individual.address_id = a.id
-  LEFT OUTER JOIN catchment_address_mapping m2 ON a.id = m2.addresslevel_id
+  LEFT OUTER JOIN virtual_catchment_address_mapping_table m2 ON a.id = m2.addresslevel_id
   LEFT OUTER JOIN catchment c2 ON m2.catchment_id = c2.id
 WHERE c2.name not ilike '%master%'
   AND op.uuid = '${operationalProgramUuid}'
