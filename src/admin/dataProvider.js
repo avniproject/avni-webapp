@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import {CREATE, UPDATE, DELETE_MANY, fetchUtils, GET_LIST, GET_MANY,
-    GET_MANY_REFERENCE, GET_ONE, UPDATE_MANY,} from 'react-admin';
+    GET_MANY_REFERENCE, GET_ONE, UPDATE_MANY, DELETE} from 'react-admin';
 import { UrlPartsGenerator } from './requestUtils';
 import SpringResponse from "./SpringResponse";
 import { authContext } from "../app/authContext";
@@ -59,6 +59,10 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                 url = `${url}/${params.id}`;
                 options.method = 'PUT';
                 options.body = JSON.stringify(params.data);
+                break;
+            case DELETE:
+                url = `${url}`;
+                options.method = 'DELETE';
                 break;
             default:
                 throw new Error(`Unsupported fetch action type ${type}`);

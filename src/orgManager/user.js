@@ -1,12 +1,14 @@
-import { isEmpty } from 'lodash';
+import {isEmpty} from 'lodash';
 import React from 'react';
 import {
     ReferenceField, Datagrid, List, Create, Edit,
     TextField, FunctionField, Show, SimpleShowLayout,
     SimpleForm, TextInput, ReferenceInput, SelectInput,
-    BooleanInput, DisabledInput,
+    BooleanInput, DisabledInput, Toolbar,
+    SaveButton,
 } from 'react-admin';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
+import UserActionButton from './UserActionButton';
 
 const formatRoles = roles =>
     !isEmpty(roles) &&  // check required thanks to optimistic rendering shenanigans
@@ -17,7 +19,7 @@ const formatRoles = roles =>
 
 
 export const UserList = props => (
-    <List {...props} filter={{ organisationId: props.organisation.id }}>
+    <List {...props} filter={{organisationId: props.organisation.id}}>
         <Datagrid rowClick="show">
             <TextField label="Username" source="name"/>
             <ReferenceField label="Catchment" source="catchmentId" reference="catchment"
@@ -27,7 +29,10 @@ export const UserList = props => (
             <FunctionField label="Role" render={user => formatRoles(user.roles)}/>
             <TextField source="email"/>
             <TextField source="phoneNumber"/>
-            <FunctionField label="Status" render={user => user.voided === false ? 'Active' : 'Disabled'}/>
+            <FunctionField label="Status"
+                           render={user => user.voided === false ? (user.disabledInCognito === true ? 'Disabled' : 'Active') : 'Deleted'}/>
+            <FunctionField label="Cognito Status"
+                           render={user => user.disabledInCognito === false ? 'Active' : 'Disabled'}/>
         </Datagrid>
     </List>
 );
@@ -72,8 +77,26 @@ const formStyle = {
     verticalMargin: { marginTop: '3em', marginBottom: '1em' },
 };
 
-const UserForm = withStyles(formStyle)(({ classes, ...props }) => (
-    <SimpleForm {...props} redirect="show">
+const toolbarStyles = {
+    toolbar: {
+        display: 'flex',
+        justifyContent: 'space-between',
+    }
+};
+
+const CustomToolbar = withStyles(toolbarStyles)(props => (
+    <Toolbar {...props}>
+        <SaveButton/>
+        <div >
+            <UserActionButton {...props} label="Disable User" disable={true}/>
+            <UserActionButton {...props} label="Delete User" disable={false}/>
+        </div>
+    </Toolbar>
+));
+
+
+const UserForm = withStyles(formStyle)(({classes, ...props}) => (
+    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
         {props.edit && <DisabledInput source="id"/>}
         {props.edit ?
             <DisabledInput source="name" label="Username" />
