@@ -31,8 +31,6 @@ export const UserList = props => (
             <TextField source="phoneNumber"/>
             <FunctionField label="Status"
                            render={user => user.voided === false ? (user.disabledInCognito === true ? 'Disabled' : 'Active') : 'Deleted'}/>
-            <FunctionField label="Cognito Status"
-                           render={user => user.disabledInCognito === false ? 'Active' : 'Disabled'}/>
         </Datagrid>
     </List>
 );
