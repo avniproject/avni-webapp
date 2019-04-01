@@ -23,5 +23,5 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
     User save(User user);
 
     @RestResource(path = "findByOrganisation", rel = "findByOrganisation")
-    Page<User> findByOrganisationId(@Param("organisationId") Long organisationId, Pageable pageable);
+    Page<User> findByOrganisationIdAndIsVoidedFalse(@Param("organisationId") Long organisationId, Pageable pageable);
 }
