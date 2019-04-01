@@ -30,7 +30,7 @@ class OrgManager extends Component {
 }
 
 const mapStateToProps = state => ({
-    organisation: state.app.organisation
+    organisation: state.app.organisation,
 });
 
 export default withRouter(

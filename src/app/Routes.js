@@ -1,13 +1,34 @@
 import React from 'react';
-import { Route, Switch } from "react-router-dom";
-import { Home } from "../common/components";
+import { intersection, isEmpty } from 'lodash';
+import { Route, Switch, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { AccessDenied } from "../common/components";
 import { OrgManager } from "../orgManager";
+import { ROLES } from "../common/constants";
+import './SecureApp.css';
 
-const Routes = () =>
+const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) =>
+    <Route {...rest} render={ routerProps =>
+        isEmpty(allowedRoles) || !isEmpty(intersection(allowedRoles, currentUserRoles)) ?
+            <C {...routerProps} />
+            : <AccessDenied/>
+    }/>;
+
+
+const Routes = (props) =>
     <Switch>
-      <Route exact path="/" component={Home} />
-      <Route exact path="/org" component={OrgManager} />
+      <RestrictedRoute exact path="/"
+                       allowedRoles={[ROLES.ORG_ADMIN,]}
+                       currentUserRoles={props.userRoles}
+                       component={OrgManager} />
     </Switch>;
 
 
-export default Routes;
+const mapStateToProps = state => ({
+    userRoles: state.app.user.roles
+});
+
+
+export default withRouter(
+    connect(mapStateToProps, null)(Routes)
+);

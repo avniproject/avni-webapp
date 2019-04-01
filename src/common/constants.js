@@ -10,3 +10,9 @@ export const cognitoConfig = {
     poolId: process.env.REACT_APP_COGNITO_USER_POOL_ID,
     clientId: process.env.REACT_APP_COGNITO_APP_CLIENT_ID,
 };
+
+export const ROLES = {
+    ADMIN: 'admin',
+    ORG_ADMIN: 'organisation_admin',
+    USER: 'user'
+};

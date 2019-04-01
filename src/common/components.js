@@ -9,3 +9,6 @@ export const Home = () => (
       </ul>
     </div>
 );
+
+export const AccessDenied = () =>
+    <div className="centerContainer"><h2>Access denied</h2></div>;
