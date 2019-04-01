@@ -91,10 +91,10 @@ public class UserController {
         }
     }
 
-    @PutMapping(value = "/user/{userId}")
+    @PutMapping(value = "/user/{id}")
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable Long userId) {
+    public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable("id") Long id) {
         try {
             User user = userRepository.findByName(userContract.getName());
             if (user == null)

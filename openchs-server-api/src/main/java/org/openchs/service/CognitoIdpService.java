@@ -16,7 +16,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
 
 @Service
 @Profile({"default", "live", "dev", "test"})
@@ -39,6 +38,12 @@ public class CognitoIdpService {
     private AWSCognitoIdentityProvider cognitoClient;
 
     private boolean isDev;
+
+    @Value("${openchs.connectToCognitoInDev}")
+    private boolean cognitoInDevProperty;
+
+    private boolean cognitoInDev;
+
     private Environment environment;
 
     @Autowired
@@ -50,17 +55,22 @@ public class CognitoIdpService {
 
     @PostConstruct
     public void init() {
-        cognitoClient = AWSCognitoIdentityProviderClientBuilder.standard()
-                .withCredentials(getCredentialsProvider())
-                .withRegion(REGION)
-                .build();
-        logger.info("Initialize CognitoIDP client");
+        if (!isDev || cognitoInDev()) {
+            cognitoClient = AWSCognitoIdentityProviderClientBuilder.standard()
+                    .withCredentials(getCredentialsProvider())
+                    .withRegion(REGION)
+                    .build();
+            logger.info("Initialized CognitoIDP client");
+        }
     }
 
     private boolean isDev() {
         String[] activeProfiles = environment.getActiveProfiles();
-        Arrays.stream(activeProfiles).forEach(x -> System.out.println( "->>>>>>> "+x));
         return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
+    }
+
+    private boolean cognitoInDev() {
+        return isDev && cognitoInDevProperty;
     }
 
     private AWSStaticCredentialsProvider getCredentialsProvider() {
@@ -82,7 +92,7 @@ public class CognitoIdpService {
     }
 
     public UserType createUser(User user) {
-        if (isDev) {
+        if (isDev && !cognitoInDev()) {
             logger.info("Skipping Cognito CREATE in dev mode...");
             return null;
         }
@@ -105,7 +115,7 @@ public class CognitoIdpService {
     }
 
     public void updateUser(User user) {
-        if (isDev) {
+        if (isDev && !cognitoInDev()) {
             logger.info("Skipping Cognito UPDATE in dev mode...");
             return;
         }
@@ -116,10 +126,18 @@ public class CognitoIdpService {
     }
 
     public void disableUser(User user) {
+        if (isDev && !cognitoInDev()) {
+            logger.info("Skipping Cognito DISABLE in dev mode...");
+            return;
+        }
         cognitoClient.adminDisableUser(new AdminDisableUserRequest().withUserPoolId(userPoolId).withUsername(user.getName()));
     }
 
     public void deleteUser(User user) {
+        if (isDev && !cognitoInDev()) {
+            logger.info("Skipping Cognito DELETE in dev mode...");
+            return;
+        }
         cognitoClient.adminDeleteUser(new AdminDeleteUserRequest().withUserPoolId(userPoolId).withUsername(user.getName()));
     }
 
