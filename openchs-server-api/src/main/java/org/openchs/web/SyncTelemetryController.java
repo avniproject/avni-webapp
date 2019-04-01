@@ -48,6 +48,9 @@ public class SyncTelemetryController implements RestControllerResourceProcessor<
         syncTelemetry.setSyncStartTime(request.getSyncStartTime());
         syncTelemetry.setSyncEndTime(request.getSyncEndTime());
         syncTelemetry.setEntityStatus(request.getEntityStatus());
+        syncTelemetry.setAppVersion(request.getAppVersion());
+        syncTelemetry.setAndroidVersion(request.getAndroidVersion());
+        syncTelemetry.setDeviceName(request.getDeviceName());
         syncTelemetryRepository.save(syncTelemetry);
     }
 }

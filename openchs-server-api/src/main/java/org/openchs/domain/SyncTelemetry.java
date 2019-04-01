@@ -40,6 +40,15 @@ public class SyncTelemetry {
     @Column
     private DateTime syncEndTime;
 
+    @Column
+    private String appVersion;
+
+    @Column
+    private String androidVersion;
+
+    @Column
+    private String deviceName;
+
     public User getUser() {
         return user;
     }
@@ -102,5 +111,29 @@ public class SyncTelemetry {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public String getAndroidVersion() {
+        return androidVersion;
+    }
+
+    public void setAndroidVersion(String androidVersion) {
+        this.androidVersion = androidVersion;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 }

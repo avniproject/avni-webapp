@@ -10,6 +10,9 @@ public class SyncTelemetryRequest {
     private JsonObject entityStatus;
     private DateTime syncStartTime;
     private DateTime syncEndTime;
+    private String appVersion;
+    private String androidVersion;
+    private String deviceName;
 
     public String getUuid() {
         return uuid;
@@ -57,5 +60,29 @@ public class SyncTelemetryRequest {
 
     public void setSyncEndTime(DateTime syncEndTime) {
         this.syncEndTime = syncEndTime;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public String getAndroidVersion() {
+        return androidVersion;
+    }
+
+    public void setAndroidVersion(String androidVersion) {
+        this.androidVersion = androidVersion;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 }
