@@ -19,7 +19,8 @@ class UserActionButton extends Component {
 
     handleConfirm = () => {
         const {basePath, crudDelete, record, resource} = this.props;
-        crudDelete(`${resource}/${record.id}?disable=${this.props.disable}`, record.id, record, basePath);
+        //dirty hack: passing delete request param appended in id.
+        crudDelete(`${resource}`, `${record.id}?disable=${this.props.disable}`, record, basePath);
         this.setState({isOpen: true});
     };
 
