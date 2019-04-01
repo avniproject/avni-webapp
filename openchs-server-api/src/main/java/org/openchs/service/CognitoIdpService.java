@@ -42,8 +42,6 @@ public class CognitoIdpService {
     @Value("${openchs.connectToCognitoInDev}")
     private boolean cognitoInDevProperty;
 
-    private boolean cognitoInDev;
-
     private Environment environment;
 
     @Autowired

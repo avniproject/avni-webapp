@@ -11,12 +11,15 @@ public class UserInfo {
     private String username;
     private String organisationName;
     private Long organisationId;
+    private String[] roles;
+
     private UserSettingsCollection settings;
 
-    public UserInfo(String username, String orgName, Long orgId, UserSettingsCollection settings) {
+    public UserInfo(String username, String orgName, Long orgId, String[] roles, UserSettingsCollection settings) {
         this.username = username;
         this.organisationName = orgName;
         this.organisationId = orgId;
+        this.roles = roles;
         this.settings = settings;
     }
 
@@ -39,6 +42,10 @@ public class UserInfo {
     public Long getOrganisationId() { return organisationId; }
 
     public void setOrganisationId(Long organisationId) { this.organisationId = organisationId; }
+
+    public String[] getRoles() { return roles; }
+
+    public void setRoles(String[] roles) { this.roles = roles; }
 
     public UserSettingsCollection getSettings() {
         return settings;
