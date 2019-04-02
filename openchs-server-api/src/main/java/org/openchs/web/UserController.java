@@ -121,7 +121,8 @@ public class UserController {
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity deleteUser(@PathVariable("id") Long id,
-                                     @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable) {
+                                     @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable,
+                                     @RequestParam(value = "enable", required = false, defaultValue = "false") boolean enable) {
         try {
             User user = userRepository.findById(id);
             if (disable) {
@@ -129,6 +130,11 @@ public class UserController {
                 user.setDisabledInCognito(true);
                 userRepository.save(user);
                 logger.info(String.format("Disabled User '%s', UUID '%s'", user.getName(), user.getUuid()));
+            } else if (enable) {
+                cognitoService.enableUser(user);
+                user.setDisabledInCognito(false);
+                userRepository.save(user);
+                logger.info(String.format("Enabled User '%s', UUID '%s'", user.getName(), user.getUuid()));
             } else {
                 cognitoService.deleteUser(user);
                 user.setVoided(true);
