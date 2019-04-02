@@ -9,13 +9,15 @@ import {
 
 } from 'react-admin';
 import {withStyles} from '@material-ui/core/styles';
-import EnableDisableButton from './EnableDisableButton';
 import CardActions from '@material-ui/core/CardActions';
+import EnableDisableButton from './EnableDisableButton';
+
 
 export const UserList = props => (
     <List {...props} filter={{organisationId: props.organisation.id}}>
         <Datagrid rowClick="show">
-            <TextField label="Username" source="username"/>
+            <TextField label="Login ID" source="username"/>
+            <TextField source="name" label="Name of the person" />
             <ReferenceField label="Catchment" source="catchmentId" reference="catchment"
                             linkType="show" allowEmpty>
                 <TextField source="name"/>
@@ -32,7 +34,8 @@ export const UserList = props => (
 export const UserDetail = props => (
     <Show title={<UserTitle/>} actions={<CustomShowActions/>} {...props}>
         <SimpleShowLayout>
-            <TextField source="username" label="Username" />
+            <TextField source="username" label="Login ID (username)" />
+            <TextField source="name" label="Name of the person" />
             <TextField source="email" />
             <TextField source="phoneNumber" />
             <ReferenceField label="Catchment" source="catchmentId" reference="catchment"
@@ -65,9 +68,10 @@ const formStyle = {
 const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
     <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
         {edit ?
-            <DisabledInput source="username" label="Username" />
-                : <TextInput source="username" label="Username" />}
-        {edit && <PasswordTextField/> }
+            <DisabledInput source="username" label="Login ID (username)" />
+                : <TextInput source="username" label="Login ID (username)" />}
+        {!edit && <PasswordTextField/> }
+        <TextInput source="name" label="Name of the person" />
         <TextInput source="email" />
         <TextInput source="phoneNumber" />
         <SelectInput source="operatingIndividualScope"
