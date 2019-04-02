@@ -45,7 +45,7 @@ public class ConceptController {
     void export(@RequestBody ExportRequest exportRequest) {
         List<ConceptContract> conceptContracts = new ArrayList<>();
         conceptRepository.findAll().iterator().forEachRemaining(concept -> conceptContracts.add(concept.toConceptContract()));
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = null; //Use global instance of ObjectMapper
 
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(new File(exportRequest.getFileName()), conceptContracts);
