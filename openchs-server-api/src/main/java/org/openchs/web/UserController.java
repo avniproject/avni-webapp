@@ -146,12 +146,16 @@ public class UserController {
                 cognitoService.disableUser(user);
                 user.setDisabledInCognito(true);
                 userRepository.save(user);
-                logger.info(String.format("Disabled User '%s', UUID '%s'", user.getName(), user.getUuid()));
+                logger.info(String.format("Disabled user '%s', UUID '%s'", user.getName(), user.getUuid()));
             } else {
-                cognitoService.enableUser(user);
-                user.setDisabledInCognito(false);
-                userRepository.save(user);
-                logger.info(String.format("Enabled User '%s', UUID '%s'", user.getName(), user.getUuid()));
+                if (user.isDisabledInCognito()) {
+                    cognitoService.enableUser(user);
+                    user.setDisabledInCognito(false);
+                    userRepository.save(user);
+                    logger.info(String.format("Enabled previously disabled user '%s', UUID '%s'", user.getName(), user.getUuid()));
+                } else {
+                    logger.info(String.format("User '%s', UUID '%s' already enabled", user.getName(), user.getUuid()));
+                }
             }
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (AWSCognitoIdentityProviderException ex) {
