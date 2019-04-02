@@ -78,13 +78,15 @@ const toolbarStyles = {
     }
 };
 
-const CustomToolbar = withStyles(toolbarStyles)(props => (
+const CustomToolbar = withStyles(toolbarStyles)(({edit, ...props}) => (
     <Toolbar {...props}>
         <SaveButton/>
-        <div >
+        {edit &&
+        <div>
             <UserActionButton {...props} label="Disable User" disable={true}/>
             <UserActionButton {...props} label="Delete User" disable={false}/>
         </div>
+        }
     </Toolbar>
 ));
 
@@ -96,11 +98,16 @@ const catchmentChangeMessage = `Please ensure that the user has already synced a
 data for their previous catchment, and has deleted all local data from their app`;
 
 const UserForm = withStyles(formStyle)(({classes, ...props}) => (
-    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
+    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar edit={props.edit}/>}>
         {props.edit && <DisabledInput source="id"/>}
         {props.edit ?
             <DisabledInput source="name" label="Username" />
                 : <TextInput source="name" label="Username" />}
+        {!props.edit &&
+        <sub>
+          <br/>Default temporary password is "password". User will
+          <br/>be prompted to set their own password on first login
+        </sub>}
         <TextInput source="email" />
         <TextInput source="phoneNumber" />
         <SelectInput source="operatingIndividualScope"
@@ -110,7 +117,7 @@ const UserForm = withStyles(formStyle)(({classes, ...props}) => (
             {({ formData, ...rest }) =>
                 formData.operatingIndividualScope === 'ByCatchment' &&
                     <ReferenceInput source="catchmentId" reference="catchment"
-                                    onChange={() => alert(catchmentChangeMessage)}>
+                                    onChange={() => props.edit && alert(catchmentChangeMessage)}>
                         <CatchmentSelectInput source="name" />
                     </ReferenceInput>
             }
