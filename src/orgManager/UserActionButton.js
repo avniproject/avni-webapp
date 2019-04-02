@@ -34,7 +34,7 @@ class UserActionButton extends Component {
                 </Button>
                 <Confirm
                     isOpen={this.state.isOpen}
-                    title={this.props.label}
+                    title={`${this.props.label} #${this.props.record.id}`}
                     content={`Are you sure you want to ${this.props.label} ?`}
                     onConfirm={this.handleConfirm}
                     onClose={this.handleDialogClose}
