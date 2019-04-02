@@ -5,7 +5,7 @@ import {
     TextField, FunctionField, Show, SimpleShowLayout,
     SimpleForm, TextInput, ReferenceInput, SelectInput,
     BooleanInput, DisabledInput, Toolbar,
-    SaveButton,
+    SaveButton,DeleteButton
 } from 'react-admin';
 import {withStyles} from '@material-ui/core/styles';
 import UserActionButton from './UserActionButton';
@@ -31,8 +31,6 @@ export const UserList = props => (
             <TextField source="phoneNumber"/>
             <FunctionField label="Status"
                            render={user => user.voided === false ? (user.disabledInCognito === true ? 'Disabled' : 'Active') : 'Deleted'}/>
-            <FunctionField label="Cognito Status"
-                           render={user => user.disabledInCognito === false ? 'Active' : 'Disabled'}/>
         </Datagrid>
     </List>
 );
@@ -40,7 +38,7 @@ export const UserList = props => (
 const formatOpScope = opScope =>
     opScope && opScope.replace(/^By/, '');
 
-const UserTitle = ({ record, titlePrefix }) => {
+const UserTitle = ({record, titlePrefix}) => {
     return record && <span>{titlePrefix} user: <b>{record.name}</b></span>;
 };
 
@@ -56,7 +54,7 @@ export const UserDetail = props => (
             </ReferenceField>
             <FunctionField label="Role" render={user => formatRoles(user.roles)} />
             <FunctionField label="Operating Scope"
-                           render={user => formatOpScope(user.operatingIndividualScope)} />
+                           render={user => formatOpScope(user.operatingIndividualScope)}/>
         </SimpleShowLayout>
     </Show>
 );
@@ -87,9 +85,12 @@ const toolbarStyles = {
 const CustomToolbar = withStyles(toolbarStyles)(props => (
     <Toolbar {...props}>
         <SaveButton/>
-        <div >
-            <UserActionButton {...props} label="Disable User" disable={true}/>
-            <UserActionButton {...props} label="Delete User" disable={false}/>
+        <div>
+            {props.record.disabledInCognito ?
+                <UserActionButton {...props} label="Enable User" pathParam={"?disable=false"}/>
+                :
+                <UserActionButton {...props} label="Disable User" pathParam={"?disable=true"}/>}
+            <DeleteButton {...props} label="Delete User" undoable={false} redirect={'/user'}/>
         </div>
     </Toolbar>
 ));
