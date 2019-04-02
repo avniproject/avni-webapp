@@ -78,7 +78,7 @@ public class CognitoIdpService {
     private AdminCreateUserRequest prepareCreateUserRequest(User user) {
         return new AdminCreateUserRequest()
                 .withUserPoolId(userPoolId)
-                .withUsername(user.getName())
+                .withUsername(user.getUsername())
                 .withUserAttributes(
                     new AttributeType().withName("email").withValue(user.getEmail()),
                     new AttributeType().withName("phone_number").withValue(user.getPhoneNumber()),
@@ -95,16 +95,16 @@ public class CognitoIdpService {
             return null;
         }
         AdminCreateUserRequest createUserRequest = prepareCreateUserRequest(user);
-        logger.info(String.format("Initiating CREATE cognito-user request | username '%s' | uuid '%s'", user.getName(), user.getUuid()));
+        logger.info(String.format("Initiating CREATE cognito-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
         AdminCreateUserResult createUserResult =  cognitoClient.adminCreateUser(createUserRequest);
-        logger.info(String.format("Created cognito-user | username '%s' | '%s'", user.getName(), createUserResult.toString()));
+        logger.info(String.format("Created cognito-user | username '%s' | '%s'", user.getUsername(), createUserResult.toString()));
         return createUserResult.getUser();
     }
 
     private AdminUpdateUserAttributesRequest prepareUpdateUserRequest(User user) {
         return new AdminUpdateUserAttributesRequest()
                 .withUserPoolId(userPoolId)
-                .withUsername(user.getName())
+                .withUsername(user.getUsername())
                 .withUserAttributes(
                     new AttributeType().withName("email").withValue(user.getEmail()),
                     new AttributeType().withName("phone_number").withValue(user.getPhoneNumber()),
@@ -118,9 +118,9 @@ public class CognitoIdpService {
             return;
         }
         AdminUpdateUserAttributesRequest updateUserRequest = prepareUpdateUserRequest(user);
-        logger.info(String.format("Initiating UPDATE cognito-user request | username '%s' | uuid '%s'", user.getName(), user.getUuid()));
+        logger.info(String.format("Initiating UPDATE cognito-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
         cognitoClient.adminUpdateUserAttributes(updateUserRequest);
-        logger.info(String.format("Updated cognito-user | username '%s'", user.getName()));
+        logger.info(String.format("Updated cognito-user | username '%s'", user.getUsername()));
     }
 
     public void disableUser(User user) {
@@ -128,9 +128,9 @@ public class CognitoIdpService {
             logger.info("Skipping Cognito DISABLE in dev mode...");
             return;
         }
-        logger.info(String.format("Initiating DISABLE cognito-user request | username '%s' | uuid '%s'", user.getName(), user.getUuid()));
-        cognitoClient.adminDisableUser(new AdminDisableUserRequest().withUserPoolId(userPoolId).withUsername(user.getName()));
-        logger.info(String.format("Disabled cognito-user | username '%s'", user.getName()));
+        logger.info(String.format("Initiating DISABLE cognito-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
+        cognitoClient.adminDisableUser(new AdminDisableUserRequest().withUserPoolId(userPoolId).withUsername(user.getUsername()));
+        logger.info(String.format("Disabled cognito-user | username '%s'", user.getUsername()));
     }
 
     public void deleteUser(User user) {
@@ -138,9 +138,9 @@ public class CognitoIdpService {
             logger.info("Skipping Cognito DELETE in dev mode...");
             return;
         }
-        logger.info(String.format("Initiating DELETE cognito-user request | username '%s' | uuid '%s'", user.getName(), user.getUuid()));
-        cognitoClient.adminDeleteUser(new AdminDeleteUserRequest().withUserPoolId(userPoolId).withUsername(user.getName()));
-        logger.info(String.format("Deleted cognito-user | username '%s'", user.getName()));
+        logger.info(String.format("Initiating DELETE cognito-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
+        cognitoClient.adminDeleteUser(new AdminDeleteUserRequest().withUserPoolId(userPoolId).withUsername(user.getUsername()));
+        logger.info(String.format("Deleted cognito-user | username '%s'", user.getUsername()));
     }
 
     public void enableUser(User user){
@@ -148,9 +148,9 @@ public class CognitoIdpService {
             logger.info("Skipping Cognito ENABLE in dev mode...");
             return;
         }
-        logger.info(String.format("Initiating ENABLE cognito-user request | username '%s' | uuid '%s'", user.getName(), user.getUuid()));
-        cognitoClient.adminEnableUser(new AdminEnableUserRequest().withUserPoolId(userPoolId).withUsername(user.getName()));
-        logger.info(String.format("Enabled cognito-user | username '%s'", user.getName()));
+        logger.info(String.format("Initiating ENABLE cognito-user request | username '%s' | uuid '%s'", user.getUsername(), user.getUuid()));
+        cognitoClient.adminEnableUser(new AdminEnableUserRequest().withUserPoolId(userPoolId).withUsername(user.getUsername()));
+        logger.info(String.format("Enabled cognito-user | username '%s'", user.getUsername()));
     }
 
 }

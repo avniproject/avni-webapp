@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(collectionResourceRel = "user", path = "user")
 @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
-    User findByName(String username);
+    User findByUsername(String username);
     User findByUuid(String uuid);
     User findById(Long id);
 

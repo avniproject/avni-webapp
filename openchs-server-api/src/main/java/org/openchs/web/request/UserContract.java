@@ -9,6 +9,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserContract extends ReferenceDataContract {
+    private String username;
     private long catchmentId;
     private List<UserFacilityMappingContract> facilities;
     private String phoneNumber;
@@ -17,6 +18,10 @@ public class UserContract extends ReferenceDataContract {
     private boolean admin = false;
     private String operatingIndividualScope = OperatingIndividualScope.None.toString();
     private JsonObject settings;
+
+    public String getUsername() { return username; }
+
+    public void setUsername(String username) { this.username = username; }
 
     public long getCatchmentId() { return catchmentId; }
 

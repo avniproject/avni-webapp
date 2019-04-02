@@ -13,6 +13,9 @@ import java.util.*;
 public class User {
     @Column
     @NotNull
+    private String username;
+
+    @Column
     private String name;
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,6 +84,10 @@ public class User {
     public static final String USER = "user";
     public static final String ORGANISATION_ADMIN = "organisation_admin";
     public static final String ADMIN = "admin";
+
+    public String getUsername() { return username; }
+
+    public void setUsername(String username) { this.username = username; }
 
     public String getName() {
         return name;

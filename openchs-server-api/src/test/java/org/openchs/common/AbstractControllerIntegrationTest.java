@@ -78,7 +78,7 @@ public abstract class AbstractControllerIntegrationTest {
 
         setRoles(ADMIN_AUTHORITY);
 
-        User user = userRepository.findByName(name);
+        User user = userRepository.findByUsername(name);
         UserContext userContext = new UserContext();
         userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
         userContext.setUser(user);

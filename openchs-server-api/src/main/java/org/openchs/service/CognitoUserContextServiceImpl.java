@@ -81,7 +81,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         logConfiguration();
         if (isDev) {
             String username = StringUtils.isEmpty(becomeUserName) ? defaultUserName : becomeUserName;
-            User user = userRepository.findByName(username);
+            User user = userRepository.findByUsername(username);
             if (user == null) {
                 throw new RuntimeException(String.format("Not found: User{name='%s'}", username));
             }
@@ -105,7 +105,7 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         String username = getValueInToken(jwt, "cognito:username");
         String userUUID = getValueInToken(jwt, "custom:userUUID");
         User user = Strings.isNullOrEmpty(userUUID) ?
-                userRepository.findByName(username) : userRepository.findByUuid(userUUID);
+                userRepository.findByUsername(username) : userRepository.findByUuid(userUUID);
         userContext.setUser(user);
         userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
         return userContext;

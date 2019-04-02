@@ -59,7 +59,7 @@ public class UserController {
     }
 
     private Boolean usernameExists(String name) {
-        return (userRepository.findByName(name) != null);
+        return (userRepository.findByUsername(name) != null);
     }
 
     @RequestMapping(value = "/user", method = RequestMethod.POST)
@@ -67,20 +67,20 @@ public class UserController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity createUser(@RequestBody UserContract userContract) {
         try {
-            if (usernameExists(userContract.getName()))
-                throw new ValidationException(String.format("Username %s already exists", userContract.getName()));
+            if (usernameExists(userContract.getUsername()))
+                throw new ValidationException(String.format("Username %s already exists", userContract.getUsername()));
 
             User user = new User();
             user.setUuid(UUID.randomUUID().toString());
-            logger.info(String.format("Creating user with username '%s' and UUID '%s'", userContract.getName(), user.getUuid()));
+            logger.info(String.format("Creating user with username '%s' and UUID '%s'", userContract.getUsername(), user.getUuid()));
 
-            user.setName(userContract.getName());
+            user.setUsername(userContract.getUsername());
             user = setUserAttributes(user, userContract);
 
             cognitoService.createUser(user);
             userService.save(user);
 
-            logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getName(), user.getUuid()));
+            logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException | UsernameExistsException ex) {
             logger.error(ex.getMessage());
@@ -96,17 +96,17 @@ public class UserController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable("id") Long id) {
         try {
-            User user = userRepository.findByName(userContract.getName());
+            User user = userRepository.findByUsername(userContract.getUsername());
             if (user == null)
                 return ResponseEntity.badRequest()
-                        .body(String.format("User with username '%s' not found", userContract.getName()));
+                        .body(String.format("User with username '%s' not found", userContract.getUsername()));
 
             user = setUserAttributes(user, userContract);
 
             cognitoService.updateUser(user);
             userService.save(user);
 
-            logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getName(), user.getUuid()));
+            logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException ex) {
             logger.error(ex.getMessage());
@@ -116,54 +116,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
-
-    @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
-    @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity deleteUser(@PathVariable("id") Long id) {
-        try {
-            User user = userRepository.findById(id);
-            cognitoService.deleteUser(user);
-            user.setVoided(true);
-            user.setDisabledInCognito(true);
-            userRepository.save(user);
-            logger.info(String.format("Deleted user '%s', UUID '%s'", user.getName(), user.getUuid()));
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
-        } catch (AWSCognitoIdentityProviderException ex) {
-            logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-        }
-    }
-
-    @RequestMapping(value = "/user/{id}/disable", method = RequestMethod.PUT)
-    @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity disableUser(@PathVariable("id") Long id,
-                                      @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable) {
-        try {
-            User user = userRepository.findById(id);
-            if (disable) {
-                cognitoService.disableUser(user);
-                user.setDisabledInCognito(true);
-                userRepository.save(user);
-                logger.info(String.format("Disabled user '%s', UUID '%s'", user.getName(), user.getUuid()));
-            } else {
-                if (user.isDisabledInCognito()) {
-                    cognitoService.enableUser(user);
-                    user.setDisabledInCognito(false);
-                    userRepository.save(user);
-                    logger.info(String.format("Enabled previously disabled user '%s', UUID '%s'", user.getName(), user.getUuid()));
-                } else {
-                    logger.info(String.format("User '%s', UUID '%s' already enabled", user.getName(), user.getUuid()));
-                }
-            }
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
-        } catch (AWSCognitoIdentityProviderException ex) {
-            logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-        }
-    }
-
 
     private Boolean emailIsValid(String email) {
         return EmailValidator.getInstance().isValid(email);
@@ -182,6 +134,7 @@ public class UserController {
             throw new ValidationException(String.format("Invalid phone number %s", userContract.getPhoneNumber()));
         user.setPhoneNumber(userContract.getPhoneNumber());
 
+        user.setName(userContract.getName());
         user.setCatchment(catchmentRepository.findOne(userContract.getCatchmentId()));
 
         List<UserFacilityMapping> userFacilityMappings = userContract.getFacilities().stream().map(
@@ -205,5 +158,52 @@ public class UserController {
         user.setOrganisationId(currentUser.getOrganisationId());
         user.setAuditInfo(currentUser);
         return user;
+    }
+
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity deleteUser(@PathVariable("id") Long id) {
+        try {
+            User user = userRepository.findById(id);
+            cognitoService.deleteUser(user);
+            user.setVoided(true);
+            user.setDisabledInCognito(true);
+            userRepository.save(user);
+            logger.info(String.format("Deleted user '%s', UUID '%s'", user.getUsername(), user.getUuid()));
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (AWSCognitoIdentityProviderException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/user/{id}/disable", method = RequestMethod.PUT)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity disableUser(@PathVariable("id") Long id,
+                                      @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable) {
+        try {
+            User user = userRepository.findById(id);
+            if (disable) {
+                cognitoService.disableUser(user);
+                user.setDisabledInCognito(true);
+                userRepository.save(user);
+                logger.info(String.format("Disabled user '%s', UUID '%s'", user.getUsername(), user.getUuid()));
+            } else {
+                if (user.isDisabledInCognito()) {
+                    cognitoService.enableUser(user);
+                    user.setDisabledInCognito(false);
+                    userRepository.save(user);
+                    logger.info(String.format("Enabled previously disabled user '%s', UUID '%s'", user.getUsername(), user.getUuid()));
+                } else {
+                    logger.info(String.format("User '%s', UUID '%s' already enabled", user.getUsername(), user.getUuid()));
+                }
+            }
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (AWSCognitoIdentityProviderException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
     }
 }

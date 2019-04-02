@@ -189,7 +189,7 @@ public abstract class Importer<T extends CHSRequest> {
     }
 
     protected void setUser(ImportSheetHeader header, ImportSheetMetaData importSheetMetaData, Row row, ImportField importField) {
-        User user = userRepository.findByName(importField.getTextValue(row, header, importSheetMetaData));
+        User user = userRepository.findByUsername(importField.getTextValue(row, header, importSheetMetaData));
         if (user != null)
             UserContextHolder.getUserContext().setUser(user);
     }

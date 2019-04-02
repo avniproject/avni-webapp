@@ -63,7 +63,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         }
 
         UserInfo userInfo = new UserInfo(
-                user.getName(),
+                user.getUsername(),
                 organisation.getName(),
                 organisation.getId(),
                 user.getRoles(),
@@ -83,7 +83,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         UserContext userContext = UserContextHolder.getUserContext();
         User user = userContext.getUser();
         Organisation organisation = userContext.getOrganisation();
-        UserInfo userInfo = new UserInfo(user.getName(), organisation.getName(), organisation.getId(), user.getRoles(), user.getSettings());
+        UserInfo userInfo = new UserInfo(user.getUsername(), organisation.getName(), organisation.getId(), user.getRoles(), user.getSettings());
         return wrap(new PageImpl<>(Arrays.asList(userInfo)));
     }
 
@@ -104,7 +104,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
     public void save(@RequestBody UserBulkUploadContract[] userContracts) {
         Arrays.stream(userContracts).forEach(userContract -> {
             logger.info(String.format("Saving user with UUID/Name %s/%s", userContract.getUuid(), userContract.getName()));
-            User user = userContract.getUuid() == null ? userRepository.findByName(userContract.getName()) : userRepository.findByUuid(userContract.getUuid());
+            User user = userContract.getUuid() == null ? userRepository.findByUsername(userContract.getName()) : userRepository.findByUuid(userContract.getUuid());
             if (user == null) {
                 user = new User();
                 user.setUuid(userContract.getUuid() == null ? UUID.randomUUID().toString() : userContract.getUuid());

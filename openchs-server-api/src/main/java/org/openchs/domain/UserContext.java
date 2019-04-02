@@ -15,7 +15,7 @@ public class UserContext {
 
     public String getUserName() {
         User user = this.getUser();
-        return user == null ? null : user.getName();
+        return user == null ? null : user.getUsername();
     }
 
     public void setUser(User user) {
