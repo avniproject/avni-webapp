@@ -10,6 +10,7 @@ import {
 } from 'react-admin';
 import {withStyles} from '@material-ui/core/styles';
 import CardActions from '@material-ui/core/CardActions';
+import { countryPhonePrefix } from "../common/constants";
 import EnableDisableButton from './EnableDisableButton';
 
 
@@ -61,6 +62,9 @@ export const UserEdit = props => (
     </Edit>
 );
 
+const mobileNumberFormatter = (v='') => v.substring(countryPhonePrefix.length);
+const mobileNumberParser = v => v.startsWith(countryPhonePrefix) ? v : countryPhonePrefix.concat(v);
+
 const formStyle = {
     verticalMargin: { marginTop: '3em', marginBottom: '1em' },
 };
@@ -73,7 +77,9 @@ const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
         {!edit && <PasswordTextField/> }
         <TextInput source="name" label="Name of the person" />
         <TextInput source="email" />
-        <TextInput source="phoneNumber" />
+        <TextInput source="phoneNumber" label="10 digit mobile number"
+                   format={mobileNumberFormatter}
+                   parse={mobileNumberParser} />
         <SelectInput source="operatingIndividualScope"
                      label="Operating Scope"
                      choices={operatingScopeChoices}/>
