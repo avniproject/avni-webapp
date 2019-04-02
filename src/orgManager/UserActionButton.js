@@ -20,7 +20,7 @@ class UserActionButton extends Component {
     handleConfirm = () => {
         const {basePath, crudUpdate, record, resource} = this.props;
         //dirty hack: passing request param appended in id.
-        crudUpdate(`${resource}`, `${record.id}/disable${this.props.pathParam}`, record, record, basePath);
+        crudUpdate(`${resource}`, `${record.id}/disable${this.props.pathParam}`, record, record, basePath, basePath);
         this.setState({isOpen: true});
     };
 

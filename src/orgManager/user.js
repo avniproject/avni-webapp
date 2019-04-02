@@ -5,12 +5,12 @@ import {
     TextField, FunctionField, Show, SimpleShowLayout,
     SimpleForm, TextInput, ReferenceInput, SelectInput,
     BooleanInput, DisabledInput, Toolbar, FormDataConsumer,
-    SaveButton,DeleteButton
+    SaveButton,DeleteButton, EditButton
 
 } from 'react-admin';
 import {withStyles} from '@material-ui/core/styles';
 import UserActionButton from './UserActionButton';
-
+import CardActions from '@material-ui/core/CardActions';
 const formatRoles = roles =>
     !isEmpty(roles) &&  // check required thanks to optimistic rendering shenanigans
     roles.map(role =>
@@ -44,7 +44,7 @@ const UserTitle = ({record, titlePrefix}) => {
 };
 
 export const UserDetail = props => (
-    <Show title={<UserTitle/>} {...props}>
+    <Show title={<UserTitle/>} actions={<CustomShowActions/>} {...props}>
         <SimpleShowLayout>
             <TextField source="name" label="Username" />
             <TextField source="email" />
@@ -79,18 +79,28 @@ const toolbarStyles = {
     }
 };
 
-const CustomToolbar = withStyles(toolbarStyles)(({edit, ...props}) => (
+const cardActionStyle = {
+    zIndex: 2,
+    display: 'inline-block',
+    float: 'right',
+};
+
+const CustomShowActions = ({basePath, data, resource}) => {
+    return(
+        <CardActions style={cardActionStyle}>
+            {data.disabledInCognito ?
+                <UserActionButton basePath={basePath} record={data} resource={resource} label="Enable User" pathParam={"?disable=false"}/>
+                :
+                <UserActionButton basePath={basePath} record={data} resource={resource} label="Disable User" pathParam={"?disable=true"}/>}
+            <DeleteButton basePath={basePath} record={data} label="Delete User" undoable={false} redirect={basePath} resource={resource}/>
+            <EditButton basePath={basePath} record={data} />
+        </CardActions>
+    )};
+
+//To remove delete button from the toolbar
+const CustomToolbar = withStyles(toolbarStyles)(({...props}) => (
     <Toolbar {...props}>
         <SaveButton/>
-        {edit &&
-        <div>
-            {props.record.disabledInCognito ?
-                <UserActionButton {...props} label="Enable User" pathParam={"?disable=false"}/>
-                :
-                <UserActionButton {...props} label="Disable User" pathParam={"?disable=true"}/>}
-            <DeleteButton {...props} label="Delete User" undoable={false} redirect={'/user'}/>
-        </div>
-        }
     </Toolbar>
 ));
 
@@ -102,7 +112,7 @@ const catchmentChangeMessage = `Please ensure that the user has already synced a
 data for their previous catchment, and has deleted all local data from their app`;
 
 const UserForm = withStyles(formStyle)(({classes, ...props}) => (
-    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar edit={props.edit}/>}>
+    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
         {props.edit && <DisabledInput source="id"/>}
         {props.edit ?
             <DisabledInput source="name" label="Username" />
