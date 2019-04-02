@@ -4,7 +4,7 @@ import {
     ReferenceField, Datagrid, List, Create, Edit,
     TextField, FunctionField, Show, SimpleShowLayout,
     SimpleForm, TextInput, ReferenceInput, SelectInput,
-    BooleanInput, DisabledInput, Toolbar,
+    BooleanInput, DisabledInput, Toolbar, FormDataConsumer,
     SaveButton,
 } from 'react-admin';
 import {withStyles} from '@material-ui/core/styles';
@@ -92,23 +92,27 @@ const CustomToolbar = withStyles(toolbarStyles)(props => (
     </Toolbar>
 ));
 
-
 const UserForm = withStyles(formStyle)(({classes, ...props}) => (
     <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
         {props.edit && <DisabledInput source="id"/>}
         {props.edit ?
             <DisabledInput source="name" label="Username" />
-            : <TextInput source="name" label="Username" />}
+                : <TextInput source="name" label="Username" />}
         <TextInput source="email" />
         <TextInput source="phoneNumber" />
-        <ReferenceInput source="catchmentId" reference="catchment">
-            <CatchmentSelectInput source="name"/>
-        </ReferenceInput>
-        <BooleanInput source="orgAdmin" formClassName={classes.verticalMargin}
-                      label="Admin privileges (User will be able to make organisation wide changes)"/>
         <SelectInput source="operatingIndividualScope"
                      label="Operating Scope"
                      choices={operatingScopeChoices}/>
+        <FormDataConsumer>
+            {({ formData, ...rest }) =>
+                formData.operatingIndividualScope === 'ByCatchment' &&
+                    <ReferenceInput source="catchmentId" reference="catchment">
+                        <CatchmentSelectInput source="name" />
+                    </ReferenceInput>
+            }
+        </FormDataConsumer>
+        <BooleanInput source="orgAdmin" formClassName={classes.verticalMargin}
+                      label="Admin privileges (User will be able to make organisation wide changes)"/>
     </SimpleForm>
 ));
 
