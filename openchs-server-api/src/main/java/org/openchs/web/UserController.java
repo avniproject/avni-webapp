@@ -1,7 +1,6 @@
 package org.openchs.web;
 
 import com.amazonaws.services.cognitoidp.model.AWSCognitoIdentityProviderException;
-import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
 import org.openchs.dao.*;
 import org.openchs.domain.OperatingIndividualScope;
@@ -15,13 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.transaction.Transactional;
@@ -29,7 +26,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@RestController
+@RepositoryRestController
 public class UserController {
     private final CatchmentRepository catchmentRepository;
     private final Logger logger;
@@ -65,7 +62,7 @@ public class UserController {
         return (userRepository.findByName(name) != null);
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.POST)
+    @RequestMapping(value = "/user", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity createUser(@RequestBody UserContract userContract) {
@@ -85,21 +82,19 @@ public class UserController {
 
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getName(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
-        }
-        catch (ValidationException | UsernameExistsException ex) {
+        } catch (ValidationException | UsernameExistsException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-        catch (AWSCognitoIdentityProviderException ex) {
+        } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
 
-    @RequestMapping(value = "/users", method = RequestMethod.PUT)
+    @PutMapping(value = "/user/{id}")
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity updateUser(@RequestBody UserContract userContract) {
+    public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable("id") Long id) {
         try {
             User user = userRepository.findByName(userContract.getName());
             if (user == null)
@@ -113,16 +108,62 @@ public class UserController {
 
             logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getName(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
-        }
-        catch (ValidationException ex) {
+        } catch (ValidationException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-        catch (AWSCognitoIdentityProviderException ex) {
+        } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
     }
+
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity deleteUser(@PathVariable("id") Long id) {
+        try {
+            User user = userRepository.findById(id);
+            cognitoService.deleteUser(user);
+            user.setVoided(true);
+            user.setDisabledInCognito(true);
+            userRepository.save(user);
+            logger.info(String.format("Deleted user '%s', UUID '%s'", user.getName(), user.getUuid()));
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (AWSCognitoIdentityProviderException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/user/{id}/disable", method = RequestMethod.PUT)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity disableUser(@PathVariable("id") Long id,
+                                      @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable) {
+        try {
+            User user = userRepository.findById(id);
+            if (disable) {
+                cognitoService.disableUser(user);
+                user.setDisabledInCognito(true);
+                userRepository.save(user);
+                logger.info(String.format("Disabled user '%s', UUID '%s'", user.getName(), user.getUuid()));
+            } else {
+                if (user.isDisabledInCognito()) {
+                    cognitoService.enableUser(user);
+                    user.setDisabledInCognito(false);
+                    userRepository.save(user);
+                    logger.info(String.format("Enabled previously disabled user '%s', UUID '%s'", user.getName(), user.getUuid()));
+                } else {
+                    logger.info(String.format("User '%s', UUID '%s' already enabled", user.getName(), user.getUuid()));
+                }
+            }
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (AWSCognitoIdentityProviderException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
+
 
     private Boolean emailIsValid(String email) {
         return EmailValidator.getInstance().isValid(email);

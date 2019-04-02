@@ -7,20 +7,21 @@ import org.springframework.hateoas.core.Relation;
 @Relation(collectionRelation = "userInfo")
 public class UserInfo {
 
-    public UserInfo() {
-
-    }
+    public UserInfo() { }
 
     private String username;
     private String organisationName;
     private Long organisationId;
+
     private JsonObject settings;
     private DateTime lastModifiedDateTime;
+    private String[] roles;
 
-    public UserInfo(String username, String orgName, Long orgId, JsonObject settings) {
+    public UserInfo(String username, String orgName, Long orgId, String[] roles, JsonObject settings) {
         this.username = username;
         this.organisationName = orgName;
         this.organisationId = orgId;
+        this.roles = roles;
         this.settings = settings;
         this.lastModifiedDateTime = DateTime.now();
     }
@@ -44,6 +45,10 @@ public class UserInfo {
     public Long getOrganisationId() { return organisationId; }
 
     public void setOrganisationId(Long organisationId) { this.organisationId = organisationId; }
+
+    public String[] getRoles() { return roles; }
+
+    public void setRoles(String[] roles) { this.roles = roles; }
 
     public JsonObject getSettings() {
         return settings;

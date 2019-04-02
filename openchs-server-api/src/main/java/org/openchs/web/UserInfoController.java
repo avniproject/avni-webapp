@@ -55,14 +55,19 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
 
         if (catchment == null) {
             logger.info(String.format("Catchment not found for ID: %s", catchmentId));
-            return new ResponseEntity<>(new UserInfo(null, null, null, null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new UserInfo(null, null, null, null, null), HttpStatus.NOT_FOUND);
         }
         if (organisation == null) {
             logger.info(String.format("Organisation not found for catchment ID: %s", catchmentId));
-            return new ResponseEntity<>(new UserInfo(null, null, null, null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new UserInfo(null, null, null, null, null), HttpStatus.NOT_FOUND);
         }
 
-        UserInfo userInfo = new UserInfo(user.getName(), organisation.getName(), organisation.getId(), user.getSettings());
+        UserInfo userInfo = new UserInfo(
+                user.getName(),
+                organisation.getName(),
+                organisation.getId(),
+                user.getRoles(),
+                user.getSettings());
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
@@ -78,7 +83,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         UserContext userContext = UserContextHolder.getUserContext();
         User user = userContext.getUser();
         Organisation organisation = userContext.getOrganisation();
-        UserInfo userInfo = new UserInfo(user.getName(), organisation.getName(), organisation.getId(), user.getSettings());
+        UserInfo userInfo = new UserInfo(user.getName(), organisation.getName(), organisation.getId(), user.getRoles(), user.getSettings());
         return wrap(new PageImpl<>(Arrays.asList(userInfo)));
     }
 
@@ -93,7 +98,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         userRepository.save(user);
     }
 
-    @RequestMapping(value = "/users/bulkUpload", method = RequestMethod.POST)
+    @RequestMapping(value = "/users", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public void save(@RequestBody UserBulkUploadContract[] userContracts) {
