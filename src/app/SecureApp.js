@@ -30,7 +30,7 @@ class SecureApp extends Component {
             this.props.user.authState === 'signedIn' ?
                 <App />
                 :
-                <div className="authContainer">
+                <div className="centerContainer">
                   <img src={logo} alt="OpenCHS" />
                   <Authenticator
                       hide={[Greetings, SignUp]}

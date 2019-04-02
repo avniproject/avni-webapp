@@ -4,8 +4,9 @@ import {
     ReferenceField, Datagrid, List, Create, Edit,
     TextField, FunctionField, Show, SimpleShowLayout,
     SimpleForm, TextInput, ReferenceInput, SelectInput,
-    BooleanInput, DisabledInput, Toolbar,
+    BooleanInput, DisabledInput, Toolbar, FormDataConsumer,
     SaveButton,DeleteButton
+
 } from 'react-admin';
 import {withStyles} from '@material-ui/core/styles';
 import UserActionButton from './UserActionButton';
@@ -71,10 +72,6 @@ export const UserEdit = props => (
     </Edit>
 );
 
-const formStyle = {
-    verticalMargin: { marginTop: '3em', marginBottom: '1em' },
-};
-
 const toolbarStyles = {
     toolbar: {
         display: 'flex',
@@ -82,9 +79,10 @@ const toolbarStyles = {
     }
 };
 
-const CustomToolbar = withStyles(toolbarStyles)(props => (
+const CustomToolbar = withStyles(toolbarStyles)(({edit, ...props}) => (
     <Toolbar {...props}>
         <SaveButton/>
+        {edit &&
         <div>
             {props.record.disabledInCognito ?
                 <UserActionButton {...props} label="Enable User" pathParam={"?disable=false"}/>
@@ -92,26 +90,44 @@ const CustomToolbar = withStyles(toolbarStyles)(props => (
                 <UserActionButton {...props} label="Disable User" pathParam={"?disable=true"}/>}
             <DeleteButton {...props} label="Delete User" undoable={false} redirect={'/user'}/>
         </div>
+        }
     </Toolbar>
 ));
 
+const formStyle = {
+    verticalMargin: { marginTop: '3em', marginBottom: '1em' },
+};
+
+const catchmentChangeMessage = `Please ensure that the user has already synced all 
+data for their previous catchment, and has deleted all local data from their app`;
 
 const UserForm = withStyles(formStyle)(({classes, ...props}) => (
-    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
+    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar edit={props.edit}/>}>
         {props.edit && <DisabledInput source="id"/>}
         {props.edit ?
             <DisabledInput source="name" label="Username" />
-            : <TextInput source="name" label="Username" />}
+                : <TextInput source="name" label="Username" />}
+        {!props.edit &&
+        <sub>
+          <br/>Default temporary password is "password". User will
+          <br/>be prompted to set their own password on first login
+        </sub>}
         <TextInput source="email" />
         <TextInput source="phoneNumber" />
-        <ReferenceInput source="catchmentId" reference="catchment">
-            <CatchmentSelectInput source="name"/>
-        </ReferenceInput>
-        <BooleanInput source="orgAdmin" formClassName={classes.verticalMargin}
-                      label="Admin privileges (User will be able to make organisation wide changes)"/>
         <SelectInput source="operatingIndividualScope"
                      label="Operating Scope"
                      choices={operatingScopeChoices}/>
+        <FormDataConsumer>
+            {({ formData, ...rest }) =>
+                formData.operatingIndividualScope === 'ByCatchment' &&
+                    <ReferenceInput source="catchmentId" reference="catchment"
+                                    onChange={() => props.edit && alert(catchmentChangeMessage)}>
+                        <CatchmentSelectInput source="name" />
+                    </ReferenceInput>
+            }
+        </FormDataConsumer>
+        <BooleanInput source="orgAdmin" formClassName={classes.verticalMargin}
+                      label="Admin privileges (User will be able to make organisation wide changes)"/>
     </SimpleForm>
 ));
 
