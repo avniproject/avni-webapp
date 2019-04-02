@@ -9,15 +9,8 @@ import {
 
 } from 'react-admin';
 import {withStyles} from '@material-ui/core/styles';
-import UserActionButton from './UserActionButton';
+import EnableDisableButton from './EnableDisableButton';
 import CardActions from '@material-ui/core/CardActions';
-const formatRoles = roles =>
-    !isEmpty(roles) &&  // check required thanks to optimistic rendering shenanigans
-    roles.map(role =>
-        role.split('_').map(word =>
-            word.replace(word[0], word[0].toUpperCase())).join(' ')
-    ).join(', ');
-
 
 export const UserList = props => (
     <List {...props} filter={{organisationId: props.organisation.id}}>
@@ -35,13 +28,6 @@ export const UserList = props => (
         </Datagrid>
     </List>
 );
-
-const formatOpScope = opScope =>
-    opScope && opScope.replace(/^By/, '');
-
-const UserTitle = ({record, titlePrefix}) => {
-    return record && <span>{titlePrefix} user: <b>{record.name}</b></span>;
-};
 
 export const UserDetail = props => (
     <Show title={<UserTitle/>} actions={<CustomShowActions/>} {...props}>
@@ -72,11 +58,37 @@ export const UserEdit = props => (
     </Edit>
 );
 
-const toolbarStyles = {
-    toolbar: {
-        display: 'flex',
-        justifyContent: 'space-between',
-    }
+const formStyle = {
+    verticalMargin: { marginTop: '3em', marginBottom: '1em' },
+};
+
+const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
+    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
+        {edit ?
+            <DisabledInput source="name" label="Username" />
+            : <TextInput source="name" label="Username" />}
+        {edit && <PasswordTextField/> }
+        <TextInput source="email" />
+        <TextInput source="phoneNumber" />
+        <SelectInput source="operatingIndividualScope"
+                     label="Operating Scope"
+                     choices={operatingScopeChoices}/>
+        <FormDataConsumer>
+            {({ formData, ...rest }) =>
+                formData.operatingIndividualScope === 'ByCatchment' &&
+                <ReferenceInput source="catchmentId" reference="catchment" {...rest}
+                                onChange={() => edit && alert(catchmentChangeMessage)}>
+                    <CatchmentSelectInput source="name" />
+                </ReferenceInput>
+            }
+        </FormDataConsumer>
+        <BooleanInput source="orgAdmin" formClassName={classes.verticalMargin}
+                      label="Admin privileges (User will be able to make organisation wide changes)"/>
+    </SimpleForm>
+));
+
+const UserTitle = ({record, titlePrefix}) => {
+    return record && <span>{titlePrefix} user: <b>{record.name}</b></span>;
 };
 
 const cardActionStyle = {
@@ -86,68 +98,57 @@ const cardActionStyle = {
 };
 
 const CustomShowActions = ({basePath, data, resource}) => {
-    return(
+    return (data &&
         <CardActions style={cardActionStyle}>
-            {data.disabledInCognito ?
-                <UserActionButton basePath={basePath} record={data} resource={resource} label="Enable User" pathParam={"?disable=false"}/>
-                :
-                <UserActionButton basePath={basePath} record={data} resource={resource} label="Disable User" pathParam={"?disable=true"}/>}
-            <DeleteButton basePath={basePath} record={data} label="Delete User" undoable={false} redirect={basePath} resource={resource}/>
+            <EnableDisableButton disabled={data.disabledInCognito}
+                                 basePath={basePath} record={data}
+                                 resource={resource}/>
+            <DeleteButton basePath={basePath} record={data}
+                          label="Delete User" undoable={false}
+                          redirect={basePath} resource={resource}/>
             <EditButton basePath={basePath} record={data} />
-        </CardActions>
-    )};
+        </CardActions>)
+        || null
+    };
 
 //To remove delete button from the toolbar
-const CustomToolbar = withStyles(toolbarStyles)(({...props}) => (
+const CustomToolbar = props =>
     <Toolbar {...props}>
         <SaveButton/>
-    </Toolbar>
-));
+    </Toolbar>;
 
-const formStyle = {
-    verticalMargin: { marginTop: '3em', marginBottom: '1em' },
-};
-
-const catchmentChangeMessage = `Please ensure that the user has already synced all 
-data for their previous catchment, and has deleted all local data from their app`;
-
-const UserForm = withStyles(formStyle)(({classes, ...props}) => (
-    <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
-        {props.edit && <DisabledInput source="id"/>}
-        {props.edit ?
-            <DisabledInput source="name" label="Username" />
-                : <TextInput source="name" label="Username" />}
-        {!props.edit &&
-        <sub>
-          <br/>Default temporary password is "password". User will
-          <br/>be prompted to set their own password on first login
-        </sub>}
-        <TextInput source="email" />
-        <TextInput source="phoneNumber" />
-        <SelectInput source="operatingIndividualScope"
-                     label="Operating Scope"
-                     choices={operatingScopeChoices}/>
-        <FormDataConsumer>
-            {({ formData, ...rest }) =>
-                formData.operatingIndividualScope === 'ByCatchment' &&
-                    <ReferenceInput source="catchmentId" reference="catchment"
-                                    onChange={() => props.edit && alert(catchmentChangeMessage)}>
-                        <CatchmentSelectInput source="name" />
-                    </ReferenceInput>
-            }
-        </FormDataConsumer>
-        <BooleanInput source="orgAdmin" formClassName={classes.verticalMargin}
-                      label="Admin privileges (User will be able to make organisation wide changes)"/>
-    </SimpleForm>
-));
 
 const CatchmentSelectInput = props => {
     const choices = props.choices.filter(choice => !choice.name.endsWith('Master Catchment'));
     return <SelectInput {...props} choices={choices}/>
 };
 
+
+const PasswordTextField = props =>
+    <sub>
+        <br/>Default temporary password is "password". User will
+        <br/>be prompted to set their own password on first login
+    </sub>;
+
+
 const operatingScopeChoices = [
     { id: "None", name: "None" },
     { id: "ByFacility", name: "Facility" },
     { id: "ByCatchment", name: "Catchment" },
 ];
+
+
+const formatRoles = roles =>
+    !isEmpty(roles) &&  // check required thanks to optimistic rendering shenanigans
+    roles.map(role =>
+        role.split('_').map(word =>
+            word.replace(word[0], word[0].toUpperCase())).join(' ')
+    ).join(', ');
+
+
+const formatOpScope = opScope =>
+    opScope && opScope.replace(/^By/, '');
+
+
+const catchmentChangeMessage = `Please ensure that the user has already synced all 
+data for their previous catchment, and has deleted all local data from their app`;
