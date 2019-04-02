@@ -39,7 +39,7 @@ class EnableDisableButton extends Component {
                 </Button>
                 <Confirm
                     isOpen={this.state.isOpen}
-                    title={`${buttonLabel} ${this.props.record.name}`}
+                    title={`${buttonLabel} ${this.props.record.username}`}
                     content={`Are you sure you want to ${buttonLabel} ?`}
                     onConfirm={this.handleConfirm}
                     onClose={this.handleDialogClose}

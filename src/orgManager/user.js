@@ -15,7 +15,7 @@ import CardActions from '@material-ui/core/CardActions';
 export const UserList = props => (
     <List {...props} filter={{organisationId: props.organisation.id}}>
         <Datagrid rowClick="show">
-            <TextField label="Username" source="name"/>
+            <TextField label="Username" source="username"/>
             <ReferenceField label="Catchment" source="catchmentId" reference="catchment"
                             linkType="show" allowEmpty>
                 <TextField source="name"/>
@@ -32,7 +32,7 @@ export const UserList = props => (
 export const UserDetail = props => (
     <Show title={<UserTitle/>} actions={<CustomShowActions/>} {...props}>
         <SimpleShowLayout>
-            <TextField source="name" label="Username" />
+            <TextField source="username" label="Username" />
             <TextField source="email" />
             <TextField source="phoneNumber" />
             <ReferenceField label="Catchment" source="catchmentId" reference="catchment"
@@ -65,8 +65,8 @@ const formStyle = {
 const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
     <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
         {edit ?
-            <DisabledInput source="name" label="Username" />
-            : <TextInput source="name" label="Username" />}
+            <DisabledInput source="username" label="Username" />
+                : <TextInput source="username" label="Username" />}
         {edit && <PasswordTextField/> }
         <TextInput source="email" />
         <TextInput source="phoneNumber" />
@@ -88,7 +88,7 @@ const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
 ));
 
 const UserTitle = ({record, titlePrefix}) => {
-    return record && <span>{titlePrefix} user: <b>{record.name}</b></span>;
+    return record && <span>{titlePrefix} user: <b>{record.username}</b></span>;
 };
 
 const cardActionStyle = {
