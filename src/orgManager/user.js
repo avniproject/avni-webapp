@@ -71,10 +71,6 @@ export const UserEdit = props => (
     </Edit>
 );
 
-const formStyle = {
-    verticalMargin: { marginTop: '3em', marginBottom: '1em' },
-};
-
 const toolbarStyles = {
     toolbar: {
         display: 'flex',
@@ -92,6 +88,13 @@ const CustomToolbar = withStyles(toolbarStyles)(props => (
     </Toolbar>
 ));
 
+const formStyle = {
+    verticalMargin: { marginTop: '3em', marginBottom: '1em' },
+};
+
+const catchmentChangeMessage = `Please ensure that the user has already synced all 
+data for their previous catchment, and has deleted all local data from their app`;
+
 const UserForm = withStyles(formStyle)(({classes, ...props}) => (
     <SimpleForm {...props} redirect="show" toolbar={<CustomToolbar/>}>
         {props.edit && <DisabledInput source="id"/>}
@@ -106,7 +109,8 @@ const UserForm = withStyles(formStyle)(({classes, ...props}) => (
         <FormDataConsumer>
             {({ formData, ...rest }) =>
                 formData.operatingIndividualScope === 'ByCatchment' &&
-                    <ReferenceInput source="catchmentId" reference="catchment">
+                    <ReferenceInput source="catchmentId" reference="catchment"
+                                    onChange={() => alert(catchmentChangeMessage)}>
                         <CatchmentSelectInput source="name" />
                     </ReferenceInput>
             }
