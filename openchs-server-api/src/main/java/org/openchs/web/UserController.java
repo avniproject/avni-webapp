@@ -125,27 +125,37 @@ public class UserController {
                                      @RequestParam(value = "enable", required = false, defaultValue = "false") boolean enable) {
         try {
             User user = userRepository.findById(id);
+            cognitoService.deleteUser(user);
+            user.setVoided(true);
+            user.setDisabledInCognito(true);
+            userRepository.save(user);
+            logger.info(String.format("Deleted user '%s', UUID '%s'", user.getName(), user.getUuid()));
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (AWSCognitoIdentityProviderException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
+
+    @RequestMapping(value = "/user/{id}/disable", method = RequestMethod.PUT)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity disableUser(@PathVariable("id") Long id,
+                                      @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable) {
+        try {
+            User user = userRepository.findById(id);
             if (disable) {
                 cognitoService.disableUser(user);
                 user.setDisabledInCognito(true);
                 userRepository.save(user);
                 logger.info(String.format("Disabled User '%s', UUID '%s'", user.getName(), user.getUuid()));
-            } else if (enable) {
+            } else {
                 cognitoService.enableUser(user);
                 user.setDisabledInCognito(false);
                 userRepository.save(user);
                 logger.info(String.format("Enabled User '%s', UUID '%s'", user.getName(), user.getUuid()));
-            } else {
-                cognitoService.deleteUser(user);
-                user.setVoided(true);
-                user.setDisabledInCognito(true);
-                userRepository.save(user);
-                logger.info(String.format("Deleted user '%s', UUID '%s'", user.getName(), user.getUuid()));
             }
             return new ResponseEntity<>(user, HttpStatus.CREATED);
-        } catch (ValidationException ex) {
-            logger.error(ex.getMessage());
-            return ResponseEntity.badRequest().body(ex.getMessage());
         } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
