@@ -120,9 +120,7 @@ public class UserController {
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity deleteUser(@PathVariable("id") Long id,
-                                     @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable,
-                                     @RequestParam(value = "enable", required = false, defaultValue = "false") boolean enable) {
+    public ResponseEntity deleteUser(@PathVariable("id") Long id) {
         try {
             User user = userRepository.findById(id);
             cognitoService.deleteUser(user);
