@@ -47,18 +47,13 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
 
     @RequestMapping(value = "/userInfo", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
-    public ResponseEntity<UserInfo> getUserInfo(@RequestParam(value = "catchmentId", required = true) Integer catchmentId) {
-        Catchment catchment = this.catchmentRepository.findOne(Long.valueOf(catchmentId));
+    public ResponseEntity<UserInfo> getUserInfo() {
         UserContext userContext = UserContextHolder.getUserContext();
         User user = userContext.getUser();
         Organisation organisation = userContext.getOrganisation();
 
-        if (catchment == null) {
-            logger.info(String.format("Catchment not found for ID: %s", catchmentId));
-            return new ResponseEntity<>(new UserInfo(null, null, null, null, null), HttpStatus.NOT_FOUND);
-        }
         if (organisation == null) {
-            logger.info(String.format("Organisation not found for catchment ID: %s", catchmentId));
+            logger.info(String.format("Organisation not found for user ID: %s", user.getId()));
             return new ResponseEntity<>(new UserInfo(null, null, null, null, null), HttpStatus.NOT_FOUND);
         }
 
@@ -73,8 +68,8 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
 
     @RequestMapping(value = "/me", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
-    public ResponseEntity<UserInfo> getMyProfile(@RequestParam(value = "catchmentId", required = true) Integer catchmentId) {
-        return getUserInfo(catchmentId);
+    public ResponseEntity<UserInfo> getMyProfileOld() {
+        return getUserInfo();
     }
 
     @RequestMapping(value = "/v2/me", method = RequestMethod.GET)
@@ -108,7 +103,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             if (user == null) {
                 user = new User();
                 user.setUuid(userContract.getUuid() == null ? UUID.randomUUID().toString() : userContract.getUuid());
-                user.setName(userContract.getName());
+                user.setUsername(userContract.getName());
             }
             Catchment catchment = userContract.getCatchmentUUID() == null ? catchmentRepository.findOne(userContract.getCatchmentId()) : catchmentRepository.findByUuid(userContract.getCatchmentUUID());
             user.setCatchment(catchment);
