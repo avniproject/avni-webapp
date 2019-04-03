@@ -21,6 +21,7 @@ jobs:
 
       - run: yarn test
 
+
   app_build:
     docker:
       - image: circleci/node:8.14.0
@@ -42,15 +43,77 @@ jobs:
 
         - run: yarn run build
 
+        - run: zip -r build.zip build
+
+        - run: mkdir -p ~/artifacts
+
+        - run: cp minor_version ~/artifacts/minor_version
+
+        - run: cp major_version ~/artifacts/major_version
+
+        - run: cp ~/openchs-webapp/build.zip ~/artifacts/
+
+        - persist_to_workspace:
+            root: ~/artifacts
+            paths:
+              - minor_version
+              - major_version
+
+        - store_artifacts:
+            path: ~/artifacts
+
+
+  deploy:
+    docker:
+      - image: circleci/node:8.14.0
+
+    working_directory: ~/
+
+    steps:
+      - attach_workspace:
+          at: ~/artifacts
+
+      - run: sudo apt-get install make openssl
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install python3-pip
+            sudo pip3 install awscli --upgrade
+
+      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
+
+      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
+
+      - run: cp -f ~/artifacts/major_version ~/infra/server/webapp/version/major_version
+
+      - run: cp -f ~/artifacts/minor_version ~/infra/server/webapp/version/minor_version
+
+      - run: cd ~/infra; make install; make staging-create;
+
+
+
 
 workflows:
   version: 2
   test_and_build:
     jobs:
       - app_test
-      - app_build:
+      - approve-build:
+          type: approval
           requires:
             - app_test
+      - app_build:
+          requires:
+            - approve-build
+      - approve-deployment:
+          type: approval
+          requires:
+            - app_build
+      - deploy:
+          requires:
+            - approve-deployment
 
 
 notify:
