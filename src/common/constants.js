@@ -17,4 +17,4 @@ export const ROLES = {
     USER: 'user'
 };
 
-export const countryPhonePrefix = process.env.REACT_APP_COUNTRY_PHONE_PREFIX || '+91';
+export const phoneCountryPrefix = process.env.REACT_APP_PHONE_COUNTRY_PREFIX || '+91';

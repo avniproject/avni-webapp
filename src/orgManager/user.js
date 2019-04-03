@@ -10,7 +10,8 @@ import {
 } from 'react-admin';
 import {withStyles} from '@material-ui/core/styles';
 import CardActions from '@material-ui/core/CardActions';
-import { countryPhonePrefix } from "../common/constants";
+import { CatchmentSelectInput } from "../common/adminComponents";
+import { phoneCountryPrefix } from "../common/constants";
 import EnableDisableButton from './EnableDisableButton';
 
 
@@ -24,10 +25,12 @@ export const UserList = props => (
                 <TextField source="name"/>
             </ReferenceField>
             <FunctionField label="Role" render={user => formatRoles(user.roles)}/>
-            <TextField source="email"/>
+            <TextField source="email" label="Email address"/>
             <TextField source="phoneNumber"/>
             <FunctionField label="Status"
-                           render={user => user.voided === false ? (user.disabledInCognito === true ? 'Disabled' : 'Active') : 'Deleted'}/>
+                           render={user => user.voided === true ?
+                                            'Deleted'
+                                                : (user.disabledInCognito === true ? 'Disabled' : 'Active')}/>
         </Datagrid>
     </List>
 );
@@ -37,7 +40,7 @@ export const UserDetail = props => (
         <SimpleShowLayout>
             <TextField source="username" label="Login ID (username)" />
             <TextField source="name" label="Name of the person" />
-            <TextField source="email" />
+            <TextField source="email" label="Email address" />
             <TextField source="phoneNumber" />
             <ReferenceField label="Catchment" source="catchmentId" reference="catchment"
                             linkType="show" allowEmpty>
@@ -45,7 +48,7 @@ export const UserDetail = props => (
             </ReferenceField>
             <FunctionField label="Role" render={user => formatRoles(user.roles)} />
             <FunctionField label="Operating Scope"
-                           render={user => formatOpScope(user.operatingIndividualScope)}/>
+                           render={user => formatOperatingScope(user.operatingIndividualScope)}/>
         </SimpleShowLayout>
     </Show>
 );
@@ -62,9 +65,6 @@ export const UserEdit = props => (
     </Edit>
 );
 
-const mobileNumberFormatter = (v='') => v.substring(countryPhonePrefix.length);
-const mobileNumberParser = v => v.startsWith(countryPhonePrefix) ? v : countryPhonePrefix.concat(v);
-
 const formStyle = {
     verticalMargin: { marginTop: '3em', marginBottom: '1em' },
 };
@@ -76,7 +76,7 @@ const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
                 : <TextInput source="username" label="Login ID (username)" />}
         {!edit && <PasswordTextField/> }
         <TextInput source="name" label="Name of the person" />
-        <TextInput source="email" />
+        <TextInput source="email" label="Email address" />
         <TextInput source="phoneNumber" label="10 digit mobile number"
                    format={mobileNumberFormatter}
                    parse={mobileNumberParser} />
@@ -97,9 +97,30 @@ const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
     </SimpleForm>
 ));
 
+
+const formatRoles = roles =>
+    !isEmpty(roles) &&  // check required thanks to optimistic rendering shenanigans
+    roles.map(role =>
+        role.split('_').map(word =>
+            word.replace(word[0], word[0].toUpperCase())).join(' ')
+    ).join(', ');
+
+
+const operatingScopeChoices = [
+    { id: "None", name: "None" },
+    { id: "ByFacility", name: "Facility" },
+    { id: "ByCatchment", name: "Catchment" },
+];
+
+
+const formatOperatingScope = opScope =>
+    opScope && opScope.replace(/^By/, '');
+
+
 const UserTitle = ({record, titlePrefix}) => {
     return record && <span>{titlePrefix} user: <b>{record.username}</b></span>;
 };
+
 
 const cardActionStyle = {
     zIndex: 2,
@@ -110,13 +131,13 @@ const cardActionStyle = {
 const CustomShowActions = ({basePath, data, resource}) => {
     return (data &&
         <CardActions style={cardActionStyle}>
+            <EditButton label="Edit User" basePath={basePath} record={data} />
             <EnableDisableButton disabled={data.disabledInCognito}
                                  basePath={basePath} record={data}
                                  resource={resource}/>
             <DeleteButton basePath={basePath} record={data}
                           label="Delete User" undoable={false}
                           redirect={basePath} resource={resource}/>
-            <EditButton basePath={basePath} record={data} />
         </CardActions>)
         || null
     };
@@ -128,12 +149,6 @@ const CustomToolbar = props =>
     </Toolbar>;
 
 
-const CatchmentSelectInput = props => {
-    const choices = props.choices.filter(choice => !choice.name.endsWith('Master Catchment'));
-    return <SelectInput {...props} choices={choices}/>
-};
-
-
 const PasswordTextField = props =>
     <sub>
         <br/>Default temporary password is "password". User will
@@ -141,24 +156,9 @@ const PasswordTextField = props =>
     </sub>;
 
 
-const operatingScopeChoices = [
-    { id: "None", name: "None" },
-    { id: "ByFacility", name: "Facility" },
-    { id: "ByCatchment", name: "Catchment" },
-];
-
-
-const formatRoles = roles =>
-    !isEmpty(roles) &&  // check required thanks to optimistic rendering shenanigans
-    roles.map(role =>
-        role.split('_').map(word =>
-            word.replace(word[0], word[0].toUpperCase())).join(' ')
-    ).join(', ');
-
-
-const formatOpScope = opScope =>
-    opScope && opScope.replace(/^By/, '');
-
-
 const catchmentChangeMessage = `Please ensure that the user has already synced all 
 data for their previous catchment, and has deleted all local data from their app`;
+
+
+const mobileNumberFormatter = (v='') => v.substring(phoneCountryPrefix.length);
+const mobileNumberParser = v => v.startsWith(phoneCountryPrefix) ? v : phoneCountryPrefix.concat(v);
