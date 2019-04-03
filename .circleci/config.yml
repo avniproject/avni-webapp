@@ -40,7 +40,7 @@ jobs:
             paths:
               - ./node_modules
 
-        - build: yarn run build
+        - run: yarn run build
 
 
 workflows:
