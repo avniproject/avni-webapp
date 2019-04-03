@@ -80,6 +80,8 @@ const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
         <TextInput source="phoneNumber" label="10 digit mobile number"
                    format={mobileNumberFormatter}
                    parse={mobileNumberParser} />
+        <BooleanInput source="orgAdmin" formClassName={classes.verticalMargin}
+                      label="Make this user an administrator? (user will be able to make organisation wide changes)"/>
         <SelectInput source="operatingIndividualScope"
                      label="Operating Scope"
                      choices={operatingScopeChoices}/>
@@ -92,8 +94,14 @@ const UserForm = withStyles(formStyle)(({classes, edit, ...props}) => (
                 </ReferenceInput>
             }
         </FormDataConsumer>
-        <BooleanInput source="orgAdmin" formClassName={classes.verticalMargin}
-                      label="Admin privileges (User will be able to make organisation wide changes)"/>
+        <FormDataConsumer>
+            {({ formData, ...rest }) =>
+                formData.operatingIndividualScope === 'ByFacility' &&
+                <ReferenceInput source="facilityId" reference="facility" {...rest}>
+                    <SelectInput source="name" />
+                </ReferenceInput>
+            }
+        </FormDataConsumer>
     </SimpleForm>
 ));
 

@@ -24,6 +24,7 @@ class OrgManager extends Component {
             <Admin authProvider={authProvider} history={adminHistory} title="Manage Organisation">
                 <Resource name="user" list={_UserList} show={UserDetail} create={UserCreate} edit={UserEdit} />
                 <Resource name="catchment" show={CatchmentDetail} />
+                <Resource name="facility" />
             </Admin>
         );
     }
