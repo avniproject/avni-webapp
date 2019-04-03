@@ -4,7 +4,7 @@ import { Admin, Resource } from "react-admin";
 import { withRouter } from 'react-router-dom';
 import { connect } from "react-redux";
 
-import { authProvider } from "../admin";
+import { authProvider, LogoutButton } from "../admin";
 import { store, adminHistory } from "../store";
 import { UserList, UserDetail, UserCreate, UserEdit } from './user';
 import { CatchmentDetail } from "./catchment";
@@ -21,7 +21,10 @@ class OrgManager extends Component {
     render() {
         const _UserList = props => <UserList {...props} organisation={this.props.organisation} />;
         return (
-            <Admin authProvider={authProvider} history={adminHistory} title="Manage Organisation">
+            <Admin title="Manage Organisation"
+                   authProvider={authProvider}
+                   history={adminHistory}
+                   logoutButton={LogoutButton}>
                 <Resource name="user" list={_UserList} show={UserDetail} create={UserCreate} edit={UserEdit} />
                 <Resource name="catchment" show={CatchmentDetail} />
             </Admin>
