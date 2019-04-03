@@ -1,0 +1,48 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/node:8.14.0
+    working_directory: ~/openchs-webapp
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: yarn install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - test: yarn test
+
+  build:
+    docker:
+      - image: circleci/node:8.14.0
+      working_directory: ~/openchs-webapp
+      steps:
+        - checkout
+        - restore_cache:
+            key: dependency-cache-{{ checksum "package.json" }}
+        - run: yarn install
+        - save_cache:
+            key: dependency-cache-{{ checksum "package.json" }}
+            paths:
+              - ./node_modules
+        - build: yarn run build
+
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      -test
+      -build:
+        requires:
+          -test
+
+
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
+
+
