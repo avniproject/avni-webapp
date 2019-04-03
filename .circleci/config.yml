@@ -49,8 +49,8 @@ workflows:
     jobs:
       - app_test
       - app_build:
-        requires:
-          - app_test
+          requires:
+            - app_test
 
 
 notify:
