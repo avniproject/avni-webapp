@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  test:
+  app_test:
     docker:
       - image: circleci/node:8.14.0
 
@@ -21,13 +21,13 @@ jobs:
 
       - run: yarn test
 
-  build:
+  app_build:
     docker:
       - image: circleci/node:8.14.0
 
-      working_directory: ~/openchs-webapp
+    working_directory: ~/openchs-webapp
 
-      steps:
+    steps:
         - checkout
 
         - restore_cache:
@@ -47,10 +47,10 @@ workflows:
   version: 2
   test_and_build:
     jobs:
-      -test
-      -build:
+      - app_test
+      - app_build:
         requires:
-          -test
+          - app_test
 
 
 notify:
