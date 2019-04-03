@@ -46,10 +46,10 @@ jobs:
         - run: zip -r build.zip build
 
         - run: mkdir -p ~/artifacts
+        # need a way to generate versions for app that will be used in infra code
+        #- run: cp minor_version ~/artifacts/minor_version
 
-        - run: cp minor_version ~/artifacts/minor_version
-
-        - run: cp major_version ~/artifacts/major_version
+        #- run: cp major_version ~/artifacts/major_version
 
         - run: cp ~/openchs-webapp/build.zip ~/artifacts/
 
