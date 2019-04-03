@@ -6,9 +6,7 @@ import org.openchs.application.FormType;
 import org.openchs.dao.OperationalEncounterTypeRepository;
 import org.openchs.dao.OperationalProgramRepository;
 import org.openchs.dao.application.FormMappingRepository;
-import org.openchs.domain.ConceptDataType;
-import org.openchs.domain.OperationalEncounterType;
-import org.openchs.domain.OperationalProgram;
+import org.openchs.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -108,54 +106,38 @@ public class SqlGenerationService {
     }
 
     private String buildObservationSelection(String entity, List<FormElement> elements, String columnPrefix, Boolean forCancelled) {
+        Boolean multiSelectInOneColumn = true;//get it from web request param. Default value is true.
         String obsColumn = entity + (forCancelled ? ".cancel_observations" : ".observations");
         return elements.parallelStream().map(formElement -> {
-            StringBuilder stringBuilder = new StringBuilder();
-            switch (ConceptDataType.valueOf(formElement.getConcept().getDataType())) {
+            Concept concept = formElement.getConcept();
+            String conceptUUID = concept.getUuid();
+            String conceptName = concept.getName();
+            switch (ConceptDataType.valueOf(concept.getDataType())) {
                 case Coded: {
                     if (formElement.isSingleSelect()) {
-                        stringBuilder.append("single_select_coded(")
-                                .append(obsColumn)
-                                .append("->>'")
-                                .append(formElement.getConcept().getUuid())
-                                .append("')");
-                    } else {
-                        stringBuilder.append("multi_select_coded(")
-                                .append(obsColumn)
-                                .append("->'")
-                                .append(formElement.getConcept().getUuid())
-                                .append("')");
+                        return String.format("single_select_coded(%s->>'%s')::TEXT as \"%s.%s\"",
+                                obsColumn, conceptUUID, columnPrefix, conceptName);
                     }
-                    break;
+                    if (multiSelectInOneColumn) {
+                        return String.format("multi_select_coded(%s->'%s')::TEXT as \"%s.%s\"",
+                                obsColumn, conceptUUID, columnPrefix, conceptName);
+                    }
+                    return spreadMultiSelectSQL(obsColumn, concept, columnPrefix);
                 }
                 case Duration: {
-                    String obsColumnConcept = "((" +
-                            obsColumn +
-                            "->>'" +
-                            formElement.getConcept().getUuid() +
-                            "'";
-
-                     stringBuilder
-                            .append("(")
-                            .append(obsColumnConcept)
-                            .append(")::JSONB#>> '{durations,0,_durationValue}') || ' ' ||")
-                            .append(obsColumnConcept)
-                            .append(")::JSONB#>>'{durations,0,durationUnit}'))");
-                    break;
+                    String valueSQL = String.format("((%s->>'%s')::JSONB#>> '{durations,0,_durationValue}')", obsColumn, conceptUUID);
+                    String unitSQL = String.format("((%s->>'%s')::JSONB#>>'{durations,0,durationUnit}')", obsColumn, conceptUUID);
+                    return String.format("( %s || ' ' || %s )::TEXT as \"%s.%s\"", valueSQL, unitSQL, columnPrefix, conceptName);
                 }
-
-                default:
-                    stringBuilder
-                            .append(obsColumn)
-                            .append("->>'")
-                            .append(formElement.getConcept().getUuid())
-                            .append("'");
-                    break;
-
+                default: {
+                    return String.format("(%s->>'%s')::TEXT as \"%s.%s\"", obsColumn, conceptUUID, columnPrefix, conceptName);
+                }
             }
-            stringBuilder.append("::TEXT as \"").append(columnPrefix).append(".").append(formElement.getConcept().getName()).append("\"");
-            return stringBuilder.toString();
         }).collect(Collectors.joining(","));
     }
 
+    private String spreadMultiSelectSQL(String obsColumn, Concept concept, String columnPrefix) {
+        //TOBEDONE
+        return null;
+    }
 }
