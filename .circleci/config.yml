@@ -43,21 +43,18 @@ jobs:
 
         - run: yarn run build
 
-        - run: zip -r build.zip build
+        - run: cd build; zip -r ../build.zip *
 
         - run: mkdir -p ~/artifacts
-        # need a way to generate versions for app that will be used in infra code
-        #- run: cp minor_version ~/artifacts/minor_version
 
-        #- run: cp major_version ~/artifacts/major_version
+        - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
 
         - run: cp ~/openchs-webapp/build.zip ~/artifacts/
 
         - persist_to_workspace:
             root: ~/artifacts
             paths:
-              - minor_version
-              - major_version
+              - build_version
 
         - store_artifacts:
             path: ~/artifacts
@@ -85,10 +82,8 @@ jobs:
       - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
 
       - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
-      # need a way to generate versions for app that will be used in infra code
-      #- run: cp -f ~/artifacts/major_version ~/infra/server/webapp/version/major_version
 
-      #- run: cp -f ~/artifacts/minor_version ~/infra/server/webapp/version/minor_version
+      - run: cp -f ~/artifacts/build_version ~/infra/server/webapp/version/build_version
 
       - run: cd ~/infra; make install; make staging-create;
 
