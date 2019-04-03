@@ -85,10 +85,10 @@ jobs:
       - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
 
       - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
+      # need a way to generate versions for app that will be used in infra code
+      #- run: cp -f ~/artifacts/major_version ~/infra/server/webapp/version/major_version
 
-      - run: cp -f ~/artifacts/major_version ~/infra/server/webapp/version/major_version
-
-      - run: cp -f ~/artifacts/minor_version ~/infra/server/webapp/version/minor_version
+      #- run: cp -f ~/artifacts/minor_version ~/infra/server/webapp/version/minor_version
 
       - run: cd ~/infra; make install; make staging-create;
 
