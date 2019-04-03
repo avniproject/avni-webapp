@@ -10,6 +10,8 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "facility", path = "facility")
 public interface FacilityRepository extends ReferenceDataRepository<Facility> {
@@ -25,4 +27,7 @@ public interface FacilityRepository extends ReferenceDataRepository<Facility> {
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
+
+    @RestResource(path = "findAllById", rel = "findAllById")
+    List<Facility> findByIdIn(@Param("ids") Long[] ids);
 }
