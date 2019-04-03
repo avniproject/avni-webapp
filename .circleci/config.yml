@@ -3,31 +3,43 @@ jobs:
   test:
     docker:
       - image: circleci/node:8.14.0
+
     working_directory: ~/openchs-webapp
+
     steps:
       - checkout
+
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
+
       - run: yarn install
+
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      - test: yarn test
+
+      - run: yarn test
 
   build:
     docker:
       - image: circleci/node:8.14.0
+
       working_directory: ~/openchs-webapp
+
       steps:
         - checkout
+
         - restore_cache:
             key: dependency-cache-{{ checksum "package.json" }}
+
         - run: yarn install
+
         - save_cache:
             key: dependency-cache-{{ checksum "package.json" }}
             paths:
               - ./node_modules
+
         - build: yarn run build
 
 
