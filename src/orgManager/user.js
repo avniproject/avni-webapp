@@ -3,10 +3,10 @@ import React from 'react';
 import {
     ReferenceField, Datagrid, List, Create, Edit,
     TextField, FunctionField, Show, SimpleShowLayout,
-    SimpleForm, TextInput, ReferenceInput, BooleanInput,
+    TabbedForm, TextInput, ReferenceInput, BooleanInput,
     DisabledInput, Toolbar, FormDataConsumer, SaveButton,
     DeleteButton, EditButton, required, email, regex,
-    REDUX_FORM_NAME
+    REDUX_FORM_NAME, FormTab
 } from 'react-admin';
 import { change } from 'redux-form';
 import CardActions from '@material-ui/core/CardActions';
@@ -127,57 +127,67 @@ const isRequired = required("This field is required");
 const validateEmail = [isRequired, email("Please enter a valid email address")];
 const validatePhone = [isRequired, regex(/[0-9]{12}/, "Enter a 10 digit number (eg. 9820324567)")];
 
-const UserForm = ({classes, edit, ...props}) => (
-    <SimpleForm redirect="show" toolbar={<CustomToolbar/>} {...props}>
-        {edit ?
-            <DisabledInput source="username" label="Login ID (username)" />
-            :
-            <TextInput source="username" label="Login ID (username)" validate={isRequired} />}
-        {!edit && <PasswordTextField/> }
-        <TextInput source="name" label="Name of the Person" validate={isRequired} />
-        <TextInput source="email" label="Email Address" validate={validateEmail} />
-        <TextInput source="phoneNumber" label="10 digit mobile number"
-                   validate={validatePhone}
-                   format={mobileNumberFormatter}
-                   parse={mobileNumberParser} />
-        <FormDataConsumer>
-            {({ formData, dispatch, ...rest }) =>
-                <BooleanInput source="orgAdmin" style={{marginTop: '3em', marginBottom: '2em'}}
-                              label="Make this user an administrator (user will be able to make organisation wide changes)"
-                              onChange={(e, newVal) => {
-                                  if (newVal) {
-                                      dispatch(change(REDUX_FORM_NAME, 'catchmentId', null));
-                                      dispatch(change(
-                                          REDUX_FORM_NAME,
-                                          'operatingIndividualScope',
-                                          operatingScopes.NONE
-                                      ));
-                                  }
-                              }}
-                              {...rest} />
-            }
-        </FormDataConsumer>
-        <FormDataConsumer>
-            {({ formData, dispatch, ...rest }) =>
-                !formData.orgAdmin &&
-                <ReferenceInput source="catchmentId" reference="catchment"
-                                label="Which catchment?"
-                                validate={required("Please select a catchment")}
-                                onChange={(e, newVal) => {
-                                    if(edit) alert(catchmentChangeMessage);
-                                    dispatch(change(
-                                        REDUX_FORM_NAME,
-                                        'operatingIndividualScope',
-                                        isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
-                                    ))
-                                }}
-                                {...rest}>
-                    <CatchmentSelectInput source="name" resettable />
-                </ReferenceInput>
-            }
-        </FormDataConsumer>
-        <DisabledInput source="operatingIndividualScope"
-                       defaultValue={operatingScopes.NONE}
-                       style={{display: 'none'}} />
-    </SimpleForm>
-);
+const UserForm = ({edit, ...props}) => {
+    const sanitizeProps = _props => ({ record:_props.record, resource:_props.resource, save:_props.save });
+    return (
+        <TabbedForm toolbar={<CustomToolbar/>} {...sanitizeProps(props)} redirect="show">
+            <FormTab label="User Info">
+                {edit ?
+                    <DisabledInput source="username" label="Login ID (username)" />
+                    :
+                    <TextInput source="username" label="Login ID (username)" validate={isRequired} />}
+                {!edit && <PasswordTextField/> }
+                <TextInput source="name" label="Name of the Person" validate={isRequired} />
+                <TextInput source="email" label="Email Address" validate={validateEmail} />
+                <TextInput source="phoneNumber" label="10 digit mobile number"
+                           validate={validatePhone}
+                           format={mobileNumberFormatter}
+                           parse={mobileNumberParser} />
+                <FormDataConsumer>
+                    {({ formData, dispatch, ...rest }) =>
+                        <BooleanInput source="orgAdmin" style={{marginTop: '3em', marginBottom: '2em'}}
+                                      label="Make this user an administrator (user will be able to make organisation wide changes)"
+                                      onChange={(e, newVal) => {
+                                          if (newVal) {
+                                              dispatch(change(REDUX_FORM_NAME, 'catchmentId', null));
+                                              dispatch(change(
+                                                  REDUX_FORM_NAME,
+                                                  'operatingIndividualScope',
+                                                  operatingScopes.NONE
+                                              ));
+                                          }
+                                      }}
+                                      {...rest} />
+                    }
+                </FormDataConsumer>
+            </FormTab>
+            <FormTab label="Catchment Info">
+                <FormDataConsumer>
+                    {({ formData, dispatch, ...rest }) =>
+                        !formData.orgAdmin &&
+                        <ReferenceInput source="catchmentId" reference="catchment"
+                                        label="Which catchment?"
+                                        validate={required("Please select a catchment")}
+                                        onChange={(e, newVal) => {
+                                            if(edit) alert(catchmentChangeMessage);
+                                            dispatch(change(
+                                                REDUX_FORM_NAME,
+                                                'operatingIndividualScope',
+                                                isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
+                                            ))
+                                        }}
+                                        {...rest}>
+                            <CatchmentSelectInput source="name" resettable />
+                        </ReferenceInput>
+                    }
+                </FormDataConsumer>
+                <DisabledInput source="operatingIndividualScope"
+                               defaultValue={operatingScopes.NONE}
+                               style={{display: 'none'}} />
+            </FormTab>
+            <FormTab label="Settings">
+                <BooleanInput source="settings.trackLocation" label="Track location" />
+            </FormTab>
+        </TabbedForm>
+    );
+};
