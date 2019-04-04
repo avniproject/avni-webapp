@@ -6,7 +6,7 @@ import {
     TabbedForm, TextInput, ReferenceInput, BooleanInput,
     DisabledInput, Toolbar, FormDataConsumer, SaveButton,
     DeleteButton, EditButton, required, email, regex,
-    REDUX_FORM_NAME, FormTab
+    REDUX_FORM_NAME, FormTab, Filter
 } from 'react-admin';
 import { change } from 'redux-form';
 import CardActions from '@material-ui/core/CardActions';
@@ -41,8 +41,20 @@ const formatRoles = roles =>
     ).join(', ');
 
 
-export const UserList = props => (
-    <List {...props} filter={{organisationId: props.organisation.id}}>
+const UserFilter = props => (
+    <Filter {...props} style={{marginBottom: '2em'}}>
+        <TextInput label="Login ID" source="username" resettable alwaysOn />
+        <TextInput label="Name" source="name" resettable alwaysOn />
+        <TextInput label="Email Address" source="email" resettable alwaysOn />
+        <TextInput label="Phone Number" source="phoneNumber" resettable alwaysOn />
+    </Filter>
+);
+
+export const UserList = ({ organisation, ...props }) => (
+    <List {...props}
+          filter={{organisationId: organisation.id}}
+          filters={<UserFilter/>}
+          title={`${organisation.name} Users`}>
         <Datagrid rowClick="show">
             <TextField label="Login ID" source="username"/>
             <TextField source="name" label="Name of the Person" />
@@ -56,7 +68,7 @@ export const UserList = props => (
             <FunctionField label="Status"
                            render={user => user.voided === true ?
                                             'Deleted'
-                                                : (user.disabledInCognito === true ? 'Disabled' : 'Active')}/>
+                                            : (user.disabledInCognito === true ? 'Disabled' : 'Active')}/>
         </Datagrid>
     </List>
 );
