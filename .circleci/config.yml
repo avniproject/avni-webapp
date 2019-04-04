@@ -83,7 +83,7 @@ jobs:
 
       - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
 
-      - run: cp -f ~/artifacts/build_version ~/infra/server/webapp/version/build_version
+      - run: cp -f ~/artifacts/build_version ~/infra/webapp/version/build_version
 
       #- run: export TF_VAR_circle_build_num=$CIRCLE_BUILD_NUM
 
