@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RepositoryRestController
+//@RestController
 public class UserController {
     private final CatchmentRepository catchmentRepository;
     private final Logger logger;
@@ -205,5 +208,31 @@ public class UserController {
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
+    }
+
+    @GetMapping(value = "/user/search/find")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @ResponseBody
+    public Page<User> find(@RequestParam(value = "username", required = false) String username,
+                           @RequestParam(value = "name", required = false) String name,
+                           @RequestParam(value = "email", required = false) String email,
+                           @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+                           Pageable pageable) {
+        User currentUser = userService.getCurrentUser();
+        Long organisationId = currentUser.getOrganisationId();
+
+        if (username != null) {
+            return userRepository.findByOrganisationIdAndIsVoidedFalseAndUsername(organisationId, username, pageable);
+        }
+        if (name != null) {
+            return userRepository.findByOrganisationIdAndIsVoidedFalseAndNameIgnoreCaseContaining(organisationId, name, pageable);
+        }
+        if (email != null) {
+            return userRepository.findByOrganisationIdAndIsVoidedFalseAndEmail(organisationId, email, pageable);
+        }
+        if (phoneNumber != null) {
+            return userRepository.findByOrganisationIdAndIsVoidedFalseAndPhoneNumberContaining(organisationId, phoneNumber, pageable);
+        }
+        return userRepository.findByOrganisationIdAndIsVoidedFalse(organisationId, pageable);
     }
 }
