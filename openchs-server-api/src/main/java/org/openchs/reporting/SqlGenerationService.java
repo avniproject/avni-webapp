@@ -133,11 +133,14 @@ public class SqlGenerationService {
                     return String.format("(%s->>'%s')::TEXT as \"%s.%s\"", obsColumn, conceptUUID, columnPrefix, conceptName);
                 }
             }
-        }).collect(Collectors.joining(","));
+        }).collect(Collectors.joining(",\n"));
     }
 
     private String spreadMultiSelectSQL(String obsColumn, Concept concept, String columnPrefix) {
-        //TOBEDONE
-        return null;
+        String subColumnPrefix = String.format("%s.%s", columnPrefix, concept.getName());
+        String obsSubColumn = String.format("(%s->'%s')", obsColumn, concept.getUuid());
+        return concept.getConceptAnswers().stream().map(ConceptAnswer::getAnswerConcept)
+                .map(aConcept -> String.format("boolean_txt(%s ? '%s') as \"%s.%s\"", obsSubColumn, aConcept.getUuid(), subColumnPrefix, aConcept.getName()))
+                .collect(Collectors.joining(",\n"));
     }
 }
