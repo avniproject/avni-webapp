@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.singletonList;
 
 @Service
-public class SqlGenerationService {
+public class ViewGenService {
     private final String ENCOUNTER_TEMPLATE;
     private final String REGISTRATION_TEMPLATE;
 
@@ -33,7 +34,7 @@ public class SqlGenerationService {
     private final String PLACE_HOLDER_FOR_COUNSELLING_FORM_ELEMENT = "b4e5a662-97bf-4846-b9b7-9baeab4d89c4";
 
     @Autowired
-    public SqlGenerationService(OperationalProgramRepository operationalProgramRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, FormMappingRepository formMappingRepository) throws IOException {
+    public ViewGenService(OperationalProgramRepository operationalProgramRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, FormMappingRepository formMappingRepository) throws IOException {
         this.operationalProgramRepository = operationalProgramRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
@@ -46,31 +47,34 @@ public class SqlGenerationService {
                 .collect(Collectors.joining("\n"));
     }
 
-    public String registrationReport() {
+    public Map<String, String> registrationReport(boolean spreadMultiSelectObs) {
         List<FormElement> registrationFormElements = getRegistrationFormElements();
 
-        return REGISTRATION_TEMPLATE.replace("${selections}",
-                buildObservationSelection("individual", registrationFormElements, "Ind"));
+        String sql = REGISTRATION_TEMPLATE.replace("${selections}",
+                buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs));
+        return new HashMap<String, String>() {{
+            put("Registration", sql);
+        }};
     }
 
-    public Map<String, String> getSqlsFor(String operationalProgramName, String operationalEncounterTypeName) {
+    public Map<String, String> getSqlsFor(String operationalProgramName, String operationalEncounterTypeName, boolean spreadMultiSelectObs) {
         OperationalProgram operationalProgram = operationalProgramRepository.findByNameIgnoreCase(operationalProgramName);
         List<OperationalEncounterType> operationalEncounterTypes = operationalEncounterTypeName == null ?
                 operationalEncounterTypeRepository.findAll() :
                 singletonList(operationalEncounterTypeRepository.findByNameIgnoreCase(operationalEncounterTypeName));
         if (operationalProgram != null && operationalProgram.getProgram() != null) {
-            return getSqlsFor(operationalProgram, operationalEncounterTypes);
+            return getSqlsFor(operationalProgram, operationalEncounterTypes, spreadMultiSelectObs);
         }
         throw new IllegalArgumentException(String.format("Not found OperationalProgram{name='%s'}", operationalProgramName));
     }
 
-    private Map<String, String> getSqlsFor(OperationalProgram operationalProgram, List<OperationalEncounterType> types) {
+    private Map<String, String> getSqlsFor(OperationalProgram operationalProgram, List<OperationalEncounterType> types, boolean spreadMultiSelectObs) {
         List<FormElement> registrationFormElements = getRegistrationFormElements();
         List<FormElement> enrolmentFormElements = getProgramEnrolmentFormElements(operationalProgram);
 
         String mainViewQuery = ENCOUNTER_TEMPLATE.replace("${operationalProgramUuid}", operationalProgram.getUuid())
-                .replace("${individual}", buildObservationSelection("individual", registrationFormElements, "Ind"))
-                .replace("${programEnrolment}", buildObservationSelection("programEnrolment", enrolmentFormElements, "Enl"));
+                .replace("${individual}", buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs))
+                .replace("${programEnrolment}", buildObservationSelection("programEnrolment", enrolmentFormElements, "Enl", spreadMultiSelectObs));
 
         return types.stream()
                 .map(type -> new SimpleEntry<>(type, getProgramEncounterFormElements(operationalProgram, type)))
@@ -79,14 +83,14 @@ public class SqlGenerationService {
                     OperationalEncounterType type = pair.getKey();
                     List<FormElement> formElements = pair.getValue();
                     List<FormElement> cancelFormElements = getProgramEncounterCancelFormElements(operationalProgram, type);
-                    return new SimpleEntry<>(type.getName(), getSqlForProgramEncounter(mainViewQuery, type, formElements, cancelFormElements));
+                    return new SimpleEntry<>(type.getName(), getSqlForProgramEncounter(mainViewQuery, type, spreadMultiSelectObs,  formElements, cancelFormElements));
                 }).collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
     }
 
-    private String getSqlForProgramEncounter(String mainViewQuery, OperationalEncounterType operationalEncounterType, List<FormElement> formElements, List<FormElement> cancelFormElements) {
+    private String getSqlForProgramEncounter(String mainViewQuery, OperationalEncounterType operationalEncounterType, boolean spreadMultiSelectObs, List<FormElement> formElements, List<FormElement> cancelFormElements) {
         return mainViewQuery
                 .replace("${operationalEncounterTypeUuid}", operationalEncounterType.getUuid())
-                .replace("${programEncounter}", buildObservationSelection("programEncounter", formElements, "Enc"))
+                .replace("${programEncounter}", buildObservationSelection("programEncounter", formElements, "Enc", spreadMultiSelectObs))
                 .replace("${programEncounterCancellation}", buildObservationSelection("programEncounter", cancelFormElements, "EncCancel", true));
     }
 
@@ -112,12 +116,11 @@ public class SqlGenerationService {
         return formElements.stream().filter(fe -> !PLACE_HOLDER_FOR_COUNSELLING_FORM_ELEMENT.equals(fe.getConcept().getUuid())).collect(Collectors.toList());
     }
 
-    private String buildObservationSelection(String entity, List<FormElement> elements, String columnPrefix) {
-        return buildObservationSelection(entity, elements, columnPrefix, false);
+    private String buildObservationSelection(String entity, List<FormElement> elements, String columnPrefix, boolean spreadMultiSelectObs) {
+        return buildObservationSelection(entity, elements, columnPrefix, spreadMultiSelectObs, false);
     }
 
-    private String buildObservationSelection(String entity, List<FormElement> elements, String columnPrefix, Boolean forCancelled) {
-        Boolean multiSelectInOneColumn = true;//get it from web request param. Default value is true.
+    private String buildObservationSelection(String entity, List<FormElement> elements, String columnPrefix, Boolean spreadMultiSelectObs, Boolean forCancelled) {
         String obsColumn = entity + (forCancelled ? ".cancel_observations" : ".observations");
         return elements.parallelStream().map(formElement -> {
             Concept concept = formElement.getConcept();
@@ -129,11 +132,11 @@ public class SqlGenerationService {
                         return String.format("single_select_coded(%s->>'%s')::TEXT as \"%s.%s\"",
                                 obsColumn, conceptUUID, columnPrefix, conceptName);
                     }
-                    if (multiSelectInOneColumn) {
-                        return String.format("multi_select_coded(%s->'%s')::TEXT as \"%s.%s\"",
-                                obsColumn, conceptUUID, columnPrefix, conceptName);
+                    if (spreadMultiSelectObs) {
+                        return spreadMultiSelectSQL(obsColumn, concept, columnPrefix);
                     }
-                    return spreadMultiSelectSQL(obsColumn, concept, columnPrefix);
+                    return String.format("multi_select_coded(%s->'%s')::TEXT as \"%s.%s\"",
+                            obsColumn, conceptUUID, columnPrefix, conceptName);
                 }
                 case Duration: {
                     String valueSQL = String.format("((%s->>'%s')::JSONB#>> '{durations,0,_durationValue}')", obsColumn, conceptUUID);

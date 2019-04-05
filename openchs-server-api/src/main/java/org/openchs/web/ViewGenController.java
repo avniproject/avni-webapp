@@ -1,37 +1,35 @@
 package org.openchs.web;
 
-import org.openchs.reporting.SqlGenerationService;
+import org.openchs.reporting.ViewGenService;
+import org.openchs.web.request.ViewConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import static org.openchs.web.request.ViewConfig.Type.*;
 
 @RestController
 public class ViewGenController {
     @Autowired
-    SqlGenerationService sqlGenerationService;
+    ViewGenService viewGenService;
 
-    @RequestMapping(value = "/query/program/{programName}", method = RequestMethod.GET)
+    @PostMapping(value = "/query")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    public Map<String, String> query(@PathVariable("programName") String programName) {
-        return sqlGenerationService.getSqlsFor(programName, null);
+    public Map<String, String> query(@RequestBody ViewConfig viewConfig) {
+        if (Registration.equals(viewConfig.getType())) {
+            return viewGenService.registrationReport(viewConfig.getSpreadMultiSelectObs());
+        }
+        if (ProgramEncounter.equals(viewConfig.getType())) {
+            return viewGenService.getSqlsFor(viewConfig.getProgram(), viewConfig.getEncounterType(), viewConfig.getSpreadMultiSelectObs());
+        }
+        if (AllProgramEncounters.equals(viewConfig.getType())) {
+            return viewGenService.getSqlsFor(viewConfig.getProgram(), null, viewConfig.getSpreadMultiSelectObs());
+        }
+        return new HashMap<>();
     }
-
-    @RequestMapping(value = "/query/program/{programName}/encounter/{encounterType}", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    public Map<String, String> query(@PathVariable("programName") String programName,
-                                     @PathVariable("encounterType") String encounterType) {
-        return sqlGenerationService.getSqlsFor(programName, encounterType);
-    }
-
-    @RequestMapping(value = "/query/registration", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    public String query() {
-        return sqlGenerationService.registrationReport();
-    }
-
 }
