@@ -27,9 +27,6 @@ public class ViewGenController {
         if (ProgramEncounter.equals(viewConfig.getType())) {
             return viewGenService.getSqlsFor(viewConfig.getProgram(), viewConfig.getEncounterType(), viewConfig.getSpreadMultiSelectObs());
         }
-        if (AllProgramEncounters.equals(viewConfig.getType())) {
-            return viewGenService.getSqlsFor(viewConfig.getProgram(), null, viewConfig.getSpreadMultiSelectObs());
-        }
         return new HashMap<>();
     }
 }

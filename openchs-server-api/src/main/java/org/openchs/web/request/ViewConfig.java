@@ -41,7 +41,7 @@ public class ViewConfig {
     }
 
     public enum Type {
-        Registration, ProgramEncounter, AllProgramEncounters;
+        Registration, ProgramEncounter
     }
 }
 
