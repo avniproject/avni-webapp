@@ -1,15 +1,15 @@
 package org.openchs.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Lists;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.Normalizer;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "form")
@@ -67,9 +67,13 @@ public class Form extends OrganisationAwareEntity {
 
     @JsonIgnore
     public List<FormElement> getAllFormElements() {
-        ArrayList<FormElement> formElements = new ArrayList<>();
-        formElementGroups.forEach(formElementGroup -> formElements.addAll(formElementGroup.getFormElements()));
-        return formElements;
+        return formElementGroups.stream()
+                .sorted(Comparator.comparing(FormElementGroup::getDisplayOrder))
+                .map(FormElementGroup::getFormElements)
+                .map(x -> x.stream().sorted(Comparator.comparing(FormElement::getDisplayOrder)))
+                .map(x -> x.collect(Collectors.toList()))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
     @JsonIgnore

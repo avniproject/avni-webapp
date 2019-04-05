@@ -24,7 +24,8 @@ import static java.util.Collections.singletonList;
 
 @Service
 public class SqlGenerationService {
-    private final String VIEW_TEMPLATE;
+    private final String ENCOUNTER_TEMPLATE;
+    private final String REGISTRATION_TEMPLATE;
 
     private final OperationalProgramRepository operationalProgramRepository;
     private final OperationalEncounterTypeRepository operationalEncounterTypeRepository;
@@ -37,9 +38,19 @@ public class SqlGenerationService {
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
 
-        VIEW_TEMPLATE = new BufferedReader(new InputStreamReader(new ClassPathResource("/pivot/pivot.sql").getInputStream()))
+        ENCOUNTER_TEMPLATE = new BufferedReader(new InputStreamReader(new ClassPathResource("/pivot/pivot.sql").getInputStream()))
                 .lines()
                 .collect(Collectors.joining("\n"));
+        REGISTRATION_TEMPLATE = new BufferedReader(new InputStreamReader(new ClassPathResource("/pivot/registration.sql").getInputStream()))
+                .lines()
+                .collect(Collectors.joining("\n"));
+    }
+
+    public String registrationReport() {
+        List<FormElement> registrationFormElements = getRegistrationFormElements();
+
+        return REGISTRATION_TEMPLATE.replace("${selections}",
+                buildObservationSelection("individual", registrationFormElements, "Ind"));
     }
 
     public Map<String, String> getSqlsFor(String operationalProgramName, String operationalEncounterTypeName) {
@@ -57,7 +68,7 @@ public class SqlGenerationService {
         List<FormElement> registrationFormElements = getRegistrationFormElements();
         List<FormElement> enrolmentFormElements = getProgramEnrolmentFormElements(operationalProgram);
 
-        String mainViewQuery = VIEW_TEMPLATE.replace("${operationalProgramUuid}", operationalProgram.getUuid())
+        String mainViewQuery = ENCOUNTER_TEMPLATE.replace("${operationalProgramUuid}", operationalProgram.getUuid())
                 .replace("${individual}", buildObservationSelection("individual", registrationFormElements, "Ind"))
                 .replace("${programEnrolment}", buildObservationSelection("programEnrolment", enrolmentFormElements, "Enl"));
 
@@ -137,10 +148,11 @@ public class SqlGenerationService {
     }
 
     private String spreadMultiSelectSQL(String obsColumn, Concept concept, String columnPrefix) {
-        String subColumnPrefix = String.format("%s.%s", columnPrefix, concept.getName());
         String obsSubColumn = String.format("(%s->'%s')", obsColumn, concept.getUuid());
         return concept.getConceptAnswers().stream().map(ConceptAnswer::getAnswerConcept)
-                .map(aConcept -> String.format("boolean_txt(%s ? '%s') as \"%s.%s\"", obsSubColumn, aConcept.getUuid(), subColumnPrefix, aConcept.getName()))
+                .map(aConcept -> String.format("boolean_txt(%s ? '%s') as \"%s.%s(%s)\"",
+                        obsSubColumn, aConcept.getUuid(), columnPrefix, aConcept.getName(), concept.getName()))
                 .collect(Collectors.joining(",\n"));
     }
+
 }

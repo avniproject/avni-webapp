@@ -28,4 +28,10 @@ public class ViewGenController {
         return sqlGenerationService.getSqlsFor(programName, encounterType);
     }
 
+    @RequestMapping(value = "/query/registration", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public String query() {
+        return sqlGenerationService.registrationReport();
+    }
+
 }
