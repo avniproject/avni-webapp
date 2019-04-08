@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.IdentifierAssignmentRepository;
 import org.openchs.dao.IdentifierSourceRepository;
+import org.openchs.domain.Encounter;
 import org.openchs.domain.IdentifierAssignment;
 import org.openchs.domain.User;
 import org.openchs.service.IdentifierAssignmentService;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +25,7 @@ import javax.transaction.Transactional;
 
 @RestController
 @Transactional
-public class IdentifierAssignmentPoolController extends AbstractController<IdentifierAssignment> implements RestControllerResourceProcessor<IdentifierAssignment> {
+public class IdentifierAssignmentController extends AbstractController<IdentifierAssignment> implements RestControllerResourceProcessor<IdentifierAssignment> {
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private IdentifierAssignmentRepository identifierAssignmentRepository;
@@ -31,7 +33,7 @@ public class IdentifierAssignmentPoolController extends AbstractController<Ident
     private IdentifierAssignmentService identifierAssignmentService;
 
     @Autowired
-    public IdentifierAssignmentPoolController(IdentifierAssignmentRepository identifierAssignmentRepository, IdentifierSourceRepository identifierSourceRepository, UserService userService, IdentifierAssignmentService identifierAssignmentService) {
+    public IdentifierAssignmentController(IdentifierAssignmentRepository identifierAssignmentRepository, IdentifierSourceRepository identifierSourceRepository, UserService userService, IdentifierAssignmentService identifierAssignmentService) {
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.userService = userService;
         this.identifierAssignmentService = identifierAssignmentService;
@@ -48,7 +50,7 @@ public class IdentifierAssignmentPoolController extends AbstractController<Ident
      * @param pageable
      * @return
      */
-    @RequestMapping(value = "/identifierAssignmentPool", method = RequestMethod.GET)
+    @RequestMapping(value = "/identifierAssignment", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     public PagedResources<Resource<IdentifierAssignment>> get(
@@ -58,5 +60,19 @@ public class IdentifierAssignmentPoolController extends AbstractController<Ident
         identifierAssignmentService.generateIdentifiersIfNecessary(currentUser);
 
         return wrap(identifierAssignmentRepository.findByAssignedToAndAuditLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNullOrderByAssignmentOrderAsc(currentUser, lastModifiedDateTime, pageable));
+    }
+
+    @Override
+    public Resource<IdentifierAssignment> process(Resource<IdentifierAssignment> resource) {
+        IdentifierAssignment identifierAssignment = resource.getContent();
+        resource.removeLinks();
+        if (identifierAssignment.getProgramEnrolment() != null) {
+            resource.add(new Link(identifierAssignment.getProgramEnrolment().getUuid(), "programEnrolmentUUID"));
+        }
+        if (identifierAssignment.getIndividual() != null) {
+            resource.add(new Link(identifierAssignment.getIndividual().getUuid(), "individualUUID"));
+        }
+        resource.add(new Link(identifierAssignment.getIdentifierSource().getUuid(), "identifierSourceUUIDd"));
+        return resource;
     }
 }

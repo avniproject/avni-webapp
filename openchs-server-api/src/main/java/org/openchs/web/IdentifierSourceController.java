@@ -26,7 +26,7 @@ public class IdentifierSourceController extends AbstractController<IdentifierSou
         this.userService = userService;
     }
 
-    @RequestMapping(value = "/identifierSource", method = RequestMethod.GET)
+    @RequestMapping(value = "/identifierSource/search/lastModified", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<IdentifierSource>> get(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
