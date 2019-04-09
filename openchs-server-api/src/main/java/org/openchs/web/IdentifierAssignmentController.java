@@ -72,7 +72,7 @@ public class IdentifierAssignmentController extends AbstractController<Identifie
         if (identifierAssignment.getIndividual() != null) {
             resource.add(new Link(identifierAssignment.getIndividual().getUuid(), "individualUUID"));
         }
-        resource.add(new Link(identifierAssignment.getIdentifierSource().getUuid(), "identifierSourceUUIDd"));
+        resource.add(new Link(identifierAssignment.getIdentifierSource().getUuid(), "identifierSourceUUID"));
         return resource;
     }
 }

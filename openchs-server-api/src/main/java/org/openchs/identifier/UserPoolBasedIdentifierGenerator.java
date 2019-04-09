@@ -75,24 +75,19 @@ public class UserPoolBasedIdentifierGenerator implements IdentifierGenerator {
     }
 
     class NextIdentifierUserAssignment {
-        private Iterator<IdentifierUserAssignment> identifierUserAssignments;
-        private IdentifierUserAssignment identifierUserAssignment;
+        private Iterator<IdentifierUserAssignment> allAssignments;
+        private IdentifierUserAssignment currentAssignment;
 
         NextIdentifierUserAssignment(List<IdentifierUserAssignment> identifierUserAssignments) {
-            this.identifierUserAssignments = identifierUserAssignments.iterator();
-            identifierUserAssignment = this.identifierUserAssignments.next();
+            allAssignments = identifierUserAssignments.iterator();
+            currentAssignment = allAssignments.next();
         }
 
         IdentifierUserAssignment availableIdentifierUserAssignment() {
-            if (identifierUserAssignment.isExhausted()) {
-                identifierUserAssignment = null;
+            if (!currentAssignment.isExhausted()) {
+                return currentAssignment;
             }
-
-            if (identifierUserAssignment.isExhausted() && identifierUserAssignments.hasNext()) {
-                identifierUserAssignment = identifierUserAssignments.next();
-            }
-
-            return identifierUserAssignment;
+            return currentAssignment = allAssignments.hasNext()? allAssignments.next(): null;
         }
     }
 }
