@@ -1,5 +1,5 @@
 package org.openchs.application;
 
 public enum KeyType {
-    Select, TrueValue, FalseValue, editable
+    Select, TrueValue, FalseValue, editable, idSourceUUID
 }
