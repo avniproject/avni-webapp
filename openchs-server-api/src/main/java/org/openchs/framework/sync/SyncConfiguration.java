@@ -8,15 +8,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.MappedInterceptor;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SyncConfiguration extends WebMvcConfigurerAdapter {
     private final TransactionalResourceInterceptor transactionalResourceInterceptor;
 
-    public static final List<String> RESOURCES = Arrays.asList("addressLevel",
+    private final String[] paths = Stream.of("addressLevel",
             "locations",
             "locationMapping",
             "catchment",
@@ -56,14 +55,12 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "subjectType",
             "operationalSubjectType",
             "identifierSource",
-            "identifierAssignmentPool");
-
-    private final String[] paths;
+            "identifierAssignmentPool"
+    ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     @Autowired
     public SyncConfiguration(TransactionalResourceInterceptor transactionalResourceInterceptor) {
         this.transactionalResourceInterceptor = transactionalResourceInterceptor;
-        paths = RESOURCES.stream().map(path-> "/" + path + "/**").toArray(String[]::new);
     }
 
     @Bean("mappedTransactionalResourceInterceptor")

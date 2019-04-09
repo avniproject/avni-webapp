@@ -12,5 +12,5 @@ public interface ReferenceDataRepository<T extends CHSEntity> extends CHSReposit
     T findByNameIgnoreCase(String name);
 
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
-    <S extends T> S save(S concept);
+    <S extends T> S save(S entity);
 }
