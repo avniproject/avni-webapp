@@ -37,13 +37,12 @@ public class UserPoolBasedIdentifierGenerator implements IdentifierGenerator {
     public void generateIdentifiers(IdentifierSource identifierSource, User user) {
         List<IdentifierUserAssignment> identifierUserAssignments = identifierUserAssignmentRepository.getAllNonExhaustedUserAssignments(user, identifierSource);
         Long batchGenerationSize = identifierSource.getBatchGenerationSize();
-        NextIdentifierUserAssignment nextIdentifierUserAssignment = new NextIdentifierUserAssignment(identifierUserAssignments);
+        NextIdentifierUserAssignment nextIdentifierUserAssignment = new NextIdentifierUserAssignment(identifierUserAssignments, batchGenerationSize);
         List<IdentifierAssignment> generatedIdentifiers = new ArrayList<>();
 
-        while(nextIdentifierUserAssignment.availableIdentifierUserAssignment() != null && batchGenerationSize != 0) {
-            IdentifierUserAssignment identifierUserAssignment = nextIdentifierUserAssignment.availableIdentifierUserAssignment();
+        while(nextIdentifierUserAssignment.hasNext()) {
+            IdentifierUserAssignment identifierUserAssignment = nextIdentifierUserAssignment.next();
             generatedIdentifiers.add(assignNextIdentifier(identifierUserAssignment));
-            batchGenerationSize--;
         }
 
         identifierUserAssignmentRepository.save(identifierUserAssignments);
@@ -75,19 +74,26 @@ public class UserPoolBasedIdentifierGenerator implements IdentifierGenerator {
     }
 
     class NextIdentifierUserAssignment {
-        private Iterator<IdentifierUserAssignment> allAssignments;
-        private IdentifierUserAssignment currentAssignment;
+        private Long batchSize;
+        private final Iterator<IdentifierUserAssignment> allAssignments;
+        private IdentifierUserAssignment cursor;
 
-        NextIdentifierUserAssignment(List<IdentifierUserAssignment> identifierUserAssignments) {
+        NextIdentifierUserAssignment(List<IdentifierUserAssignment> identifierUserAssignments, Long initialBatchSize) {
+            batchSize = initialBatchSize;
             allAssignments = identifierUserAssignments.iterator();
-            currentAssignment = allAssignments.next();
+            cursor = next();
         }
 
-        IdentifierUserAssignment availableIdentifierUserAssignment() {
-            if (!currentAssignment.isExhausted()) {
-                return currentAssignment;
+        IdentifierUserAssignment next() {
+            batchSize--;
+            if (cursor != null && !cursor.isExhausted()) {
+                return cursor;
             }
-            return currentAssignment = allAssignments.hasNext()? allAssignments.next(): null;
+            return cursor = allAssignments.hasNext() ? allAssignments.next() : null;
+        }
+
+        boolean hasNext() {
+            return batchSize > 0 && next() != null;
         }
     }
 }

@@ -1,10 +1,13 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "identifier_assignment")
+@JsonIgnoreProperties({"identifierSource", "assignedTo", "individual", "programEnrolment"})
 public class IdentifierAssignment extends OrganisationAwareEntity {
     @NotNull
     @ManyToOne(fetch= FetchType.LAZY)
