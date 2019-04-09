@@ -10,7 +10,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "identifierAssignmentPool", path = "identifierAssignmentPool")
+@RepositoryRestResource(collectionResourceRel = "identifierAssignment", path = "identifierAssignment")
 public interface IdentifierAssignmentRepository extends TransactionalDataRepository<IdentifierAssignment>, FindByLastModifiedDateTime<IdentifierAssignment> {
     Page<IdentifierAssignment> findByAssignedToAndAuditLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNullOrderByAssignmentOrderAsc(User currentUser, DateTime lastModifiedDateTime, Pageable pageable);
 
