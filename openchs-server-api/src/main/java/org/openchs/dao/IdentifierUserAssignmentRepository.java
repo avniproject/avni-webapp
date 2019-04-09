@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "identifierUserAssignment", path = "identifierUserAssignment")
-public interface IdentifierUserAssignmentRepository extends TransactionalDataRepository<IdentifierUserAssignment>, FindByLastModifiedDateTime<IdentifierUserAssignment> {
+public interface IdentifierUserAssignmentRepository extends ReferenceDataRepository<IdentifierUserAssignment>, FindByLastModifiedDateTime<IdentifierUserAssignment> {
 
     @Query("select iua " +
             "from IdentifierUserAssignment iua " +
@@ -22,4 +22,12 @@ public interface IdentifierUserAssignmentRepository extends TransactionalDataRep
     List<IdentifierUserAssignment> getAllNonExhaustedUserAssignments(
             @Param("user") User user,
             @Param("identifierSource") IdentifierSource identifierSource);
+
+    default IdentifierUserAssignment findByName(String name) {
+        throw new UnsupportedOperationException("No field 'name' in IdentifierUserAssignment");
+    }
+
+    default IdentifierUserAssignment findByNameIgnoreCase(String name) {
+        throw new UnsupportedOperationException("No field 'name' in IdentifierUserAssignment");
+    }
 }
