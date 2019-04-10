@@ -51,7 +51,7 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
             DateTime nowMinus10Seconds = now.minusSeconds(nowMap.getOrDefault(environment.getActiveProfiles()[0], 0));
             ((MutableRequestWrapper) request).addParameter("now", nowMinus10Seconds.toString(ISODateTimeFormat.dateTime()));
             Long catchmentId = getCatchmentId();
-            ((MutableRequestWrapper) request).addParameter("catchmentId", catchmentId.toString());
+            ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(catchmentId));
         }
         return true;
     }
@@ -59,7 +59,13 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
     private Long getCatchmentId() {
         UserContext userContext = UserContextHolder.getUserContext();
         Catchment catchment = userContext.getUser().getCatchment();
-        return (isDev() && catchment == null) ? DEFAULT_CATCHMENT_ID_FOR_DEV : catchment.getId();
+        if (catchment == null && isDev()) {
+            return (long) DEFAULT_CATCHMENT_ID_FOR_DEV;
+        } else if (catchment == null) {
+            return null;
+        } else {
+            return catchment.getId();
+        }
     }
 
     private boolean isDev() {
