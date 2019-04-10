@@ -17,7 +17,7 @@ describe('httpClient', () => {
             accept: 'application/json',
             'content-type': 'application/json',
             'user-name': 'abcd',
-            authorization: idToken })
+            'auth-token': idToken })
         );
     });
 
