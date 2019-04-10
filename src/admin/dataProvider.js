@@ -22,10 +22,10 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
 
     const appendAuthParams = options => {
         const authParams = authContext.get();
-        if (authParams.token)
-            options.user = { authenticated: true, token: authParams.token };
         options.headers = options.headers || new Headers({ Accept: 'application/json' });
         options.headers.set('user-name', authParams.username);
+        if (authParams.token)
+            options.headers.set('AUTH-TOKEN', authParams.token);
     };
 
     /**

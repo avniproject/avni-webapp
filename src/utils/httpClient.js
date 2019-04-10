@@ -29,7 +29,7 @@ class HttpClient {
         if (!isEmpty(authParams)) {
             params.headers.set('user-name', authParams.username);
             if (authParams.token)
-                params.headers.set('Authorization', authParams.token);
+                params.headers.set('AUTH-TOKEN', authParams.token);
         }
     }
 
