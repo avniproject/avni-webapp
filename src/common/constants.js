@@ -11,10 +11,17 @@ export const cognitoConfig = {
     clientId: process.env.REACT_APP_COGNITO_APP_CLIENT_ID,
 };
 
-export const ROLES = {
+export const ROLES = Object.freeze({
     ADMIN: 'admin',
     ORG_ADMIN: 'organisation_admin',
     USER: 'user'
-};
+});
+
+export const LOCALES = Object.freeze({
+    ENGLISH: 'en',
+    HINDI: 'hi_IN',
+    MARATHI: 'mr_IN',
+    GUJARATI: 'gu_IN'
+});
 
 export const phoneCountryPrefix = process.env.REACT_APP_PHONE_COUNTRY_PREFIX || '+91';

@@ -1,17 +1,19 @@
 import {isEmpty, isFinite} from 'lodash';
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
     ReferenceField, Datagrid, List, Create, Edit,
     TextField, FunctionField, Show, SimpleShowLayout,
-    TabbedForm, TextInput, ReferenceInput, BooleanInput,
+    SimpleForm, TextInput, ReferenceInput, BooleanInput,
     DisabledInput, Toolbar, FormDataConsumer, SaveButton,
     DeleteButton, EditButton, required, email, regex,
-    REDUX_FORM_NAME, FormTab, Filter
+    REDUX_FORM_NAME, Filter, RadioButtonGroupInput
 } from 'react-admin';
-import { change } from 'redux-form';
+import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
+import { change } from 'redux-form';
 import { CatchmentSelectInput } from "../common/adminComponents";
-import { phoneCountryPrefix } from "../common/constants";
+import { LineBreak } from "../common/components";
+import { phoneCountryPrefix, LOCALES } from "../common/constants";
 import EnableDisableButton from './EnableDisableButton';
 
 
@@ -139,11 +141,17 @@ const isRequired = required("This field is required");
 const validateEmail = [isRequired, email("Please enter a valid email address")];
 const validatePhone = [isRequired, regex(/[0-9]{12}/, "Enter a 10 digit number (eg. 9820324567)")];
 
+const localeChoices = [
+    { id: LOCALES.ENGLISH, name: 'English' },
+    { id: LOCALES.HINDI, name: 'Hindi' },
+    { id: LOCALES.MARATHI, name: 'Marathi' },
+    { id: LOCALES.GUJARATI, name: 'Gujarati' }
+];
+
 const UserForm = ({edit, ...props}) => {
-    const sanitizeProps = _props => ({ record:_props.record, resource:_props.resource, save:_props.save });
+    const sanitizeProps = ({ record, resource, save }) => ({ record, resource, save });
     return (
-        <TabbedForm toolbar={<CustomToolbar/>} {...sanitizeProps(props)} redirect="show">
-            <FormTab label="User Info">
+        <SimpleForm toolbar={<CustomToolbar/>} {...sanitizeProps(props)} redirect="show">
                 {edit ?
                     <DisabledInput source="username" label="Login ID (username)" />
                     :
@@ -172,34 +180,39 @@ const UserForm = ({edit, ...props}) => {
                                       {...rest} />
                     }
                 </FormDataConsumer>
-            </FormTab>
-            <FormTab label="Catchment Info">
+                <LineBreak />
                 <FormDataConsumer>
                     {({ formData, dispatch, ...rest }) =>
                         !formData.orgAdmin &&
-                        <ReferenceInput source="catchmentId" reference="catchment"
-                                        label="Which catchment?"
-                                        validate={required("Please select a catchment")}
-                                        onChange={(e, newVal) => {
-                                            if(edit) alert(catchmentChangeMessage);
-                                            dispatch(change(
-                                                REDUX_FORM_NAME,
-                                                'operatingIndividualScope',
-                                                isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
-                                            ))
-                                        }}
-                                        {...rest}>
-                            <CatchmentSelectInput source="name" resettable />
-                        </ReferenceInput>
+                        <Fragment>
+                            <Typography variant="title" component="h3">Catchment</Typography>
+                            <ReferenceInput source="catchmentId" reference="catchment"
+                                            label="Which catchment?"
+                                            validate={required("Please select a catchment")}
+                                            onChange={(e, newVal) => {
+                                                if(edit) alert(catchmentChangeMessage);
+                                                dispatch(change(
+                                                    REDUX_FORM_NAME, 'operatingIndividualScope',
+                                                    isFinite(newVal) ?
+                                                        operatingScopes.CATCHMENT
+                                                        : operatingScopes.NONE
+                                                ))
+                                            }}
+                                            {...rest}>
+                                <CatchmentSelectInput source="name" resettable />
+                            </ReferenceInput>
+                            <LineBreak num={3} />
+                        </Fragment>
                     }
                 </FormDataConsumer>
                 <DisabledInput source="operatingIndividualScope"
                                defaultValue={operatingScopes.NONE}
                                style={{display: 'none'}} />
-            </FormTab>
-            <FormTab label="Settings">
+            <Fragment>
+                <Typography variant="title" component="h3">Settings</Typography>
+                <RadioButtonGroupInput source="settings.locale" label="Language" choices={localeChoices} />
                 <BooleanInput source="settings.trackLocation" label="Track location" />
-            </FormTab>
-        </TabbedForm>
+            </Fragment>
+        </SimpleForm>
     );
 };
