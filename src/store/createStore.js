@@ -4,6 +4,7 @@ import { formMiddleware } from 'react-admin';
 import { routerMiddleware } from 'react-router-redux';
 import { createHashHistory } from 'history';
 
+import { isDevEnv } from "../common/constants";
 import rootReducer from "../rootReducer";
 import rootSaga from "../rootSaga";
 
@@ -12,7 +13,7 @@ export const adminHistory = createHashHistory();
 const configureStore = initialState => {
     const sagaMiddleware = createSagaMiddleware();
 
-    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    const composeEnhancers = (isDevEnv && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
     const store = createStore(rootReducer,
         initialState,
