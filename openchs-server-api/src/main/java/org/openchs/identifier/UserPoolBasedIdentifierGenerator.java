@@ -86,6 +86,10 @@ public class UserPoolBasedIdentifierGenerator implements IdentifierGenerator {
 
         IdentifierUserAssignment next() {
             batchSize--;
+            return updateCursor();
+        }
+
+        private IdentifierUserAssignment updateCursor() {
             if (cursor != null && !cursor.isExhausted()) {
                 return cursor;
             }
@@ -93,7 +97,7 @@ public class UserPoolBasedIdentifierGenerator implements IdentifierGenerator {
         }
 
         boolean hasNext() {
-            return batchSize > 0 && next() != null;
+            return batchSize >= 0 && updateCursor() != null;
         }
     }
 }
