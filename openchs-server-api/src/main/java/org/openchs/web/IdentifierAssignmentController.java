@@ -3,11 +3,13 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.IdentifierAssignmentRepository;
 import org.openchs.dao.IdentifierSourceRepository;
-import org.openchs.domain.Encounter;
+import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.IdentifierAssignment;
 import org.openchs.domain.User;
 import org.openchs.service.IdentifierAssignmentService;
 import org.openchs.service.UserService;
+import org.openchs.web.request.IdentifierAssignmentRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +18,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 
@@ -31,12 +30,16 @@ public class IdentifierAssignmentController extends AbstractController<Identifie
     private IdentifierAssignmentRepository identifierAssignmentRepository;
     private UserService userService;
     private IdentifierAssignmentService identifierAssignmentService;
+    private IndividualRepository individualRepository;
+    private ProgramEnrolmentRepository programEnrolmentRepository;
 
     @Autowired
-    public IdentifierAssignmentController(IdentifierAssignmentRepository identifierAssignmentRepository, IdentifierSourceRepository identifierSourceRepository, UserService userService, IdentifierAssignmentService identifierAssignmentService) {
+    public IdentifierAssignmentController(IdentifierAssignmentRepository identifierAssignmentRepository, IdentifierSourceRepository identifierSourceRepository, UserService userService, IdentifierAssignmentService identifierAssignmentService, IndividualRepository individualRepository, ProgramEnrolmentRepository programEnrolmentRepository) {
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.userService = userService;
         this.identifierAssignmentService = identifierAssignmentService;
+        this.individualRepository = individualRepository;
+        this.programEnrolmentRepository = programEnrolmentRepository;
     }
 
     /**
@@ -60,6 +63,31 @@ public class IdentifierAssignmentController extends AbstractController<Identifie
         identifierAssignmentService.generateIdentifiersIfNecessary(currentUser);
 
         return wrap(identifierAssignmentRepository.findByAssignedToAndAuditLastModifiedDateTimeGreaterThanAndIsVoidedFalseAndIndividualIsNullAndProgramEnrolmentIsNullOrderByAssignmentOrderAsc(currentUser, lastModifiedDateTime, pageable));
+    }
+
+    @RequestMapping(value = "/identifierAssignments", method = RequestMethod.POST)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public void save(@RequestBody IdentifierAssignmentRequest identifierAssignmentRequest) {
+        logger.info(String.format("Saving identifierAssignment with UUID %s", identifierAssignmentRequest.getUuid()));
+
+        IdentifierAssignment identifierAssignment = createIdentifierAssignment(identifierAssignmentRequest);
+
+        identifierAssignmentRepository.save(identifierAssignment);
+        logger.info(String.format("Saved identifierAssignment with UUID %s", identifierAssignmentRequest.getUuid()));
+    }
+
+    private IdentifierAssignment createIdentifierAssignment(IdentifierAssignmentRequest identifierAssignmentRequest) {
+        IdentifierAssignment identifierAssignment = identifierAssignmentRepository.findByUuid(identifierAssignmentRequest.getUuid());
+        if (identifierAssignmentRequest.getIndividualUUID() != null) {
+            identifierAssignment.setIndividual(individualRepository.findByUuid(identifierAssignmentRequest.getIndividualUUID()));
+        }
+
+        if (identifierAssignmentRequest.getProgramEnrolmentUUID() != null) {
+            identifierAssignment.setProgramEnrolment(programEnrolmentRepository.findByUuid(identifierAssignmentRequest.getProgramEnrolmentUUID()));
+        }
+
+        return identifierAssignment;
     }
 
     @Override
