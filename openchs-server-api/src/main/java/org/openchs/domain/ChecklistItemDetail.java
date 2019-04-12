@@ -40,6 +40,12 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
     @Column
     private Integer minDaysFromStartDate;
 
+    @Column
+    private Integer minDaysFromDependent;
+
+    @Column
+    private Integer expiresAfter;
+
     public Concept getConcept() {
         return concept;
     }
@@ -94,5 +100,21 @@ public class ChecklistItemDetail extends OrganisationAwareEntity {
 
     public void setMinDaysFromStartDate(Integer minDaysFromStartDate) {
         this.minDaysFromStartDate = minDaysFromStartDate;
+    }
+
+    public Integer getMinDaysFromDependent() {
+        return minDaysFromDependent;
+    }
+
+    public void setMinDaysFromDependent(Integer minDaysFromDependent) {
+        this.minDaysFromDependent = minDaysFromDependent;
+    }
+
+    public Integer getExpiresAfter() {
+        return expiresAfter;
+    }
+
+    public void setExpiresAfter(Integer expiresAfter) {
+        this.expiresAfter = expiresAfter;
     }
 }

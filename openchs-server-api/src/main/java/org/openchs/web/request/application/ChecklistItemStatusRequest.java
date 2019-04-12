@@ -8,6 +8,8 @@ public class ChecklistItemStatusRequest implements Serializable {
     private String color;
     private String state;
     private Double displayOrder;
+    private Integer start;
+    private Integer end;
 
 
     public Object getFrom() {
@@ -48,5 +50,21 @@ public class ChecklistItemStatusRequest implements Serializable {
 
     public void setDisplayOrder(Double displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public Integer getStart() {
+        return start;
+    }
+
+    public void setStart(Integer start) {
+        this.start = start;
+    }
+
+    public Integer getEnd() {
+        return end;
+    }
+
+    public void setEnd(Integer end) {
+        this.end = end;
     }
 }

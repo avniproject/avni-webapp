@@ -54,6 +54,8 @@ public class ChecklistDetailBuilder extends BaseBuilder<ChecklistDetail, Checkli
                     .withLeadItem(builtItems.get(item.getDependentOn()))
                     .withScheduleOnExpiryOfDependency(item.getScheduleOnExpiryOfDependency())
                     .withMinDaysFromStartDate(item.getMinDaysFromStartDate())
+                    .withMinDaysFromDependent(item.getMinDaysFromDependent())
+                    .withExpiresAfter(item.getExpiresAfter())
                     .build();
             builtItems.put(builtItemDetail.getUuid(), builtItemDetail);
         });

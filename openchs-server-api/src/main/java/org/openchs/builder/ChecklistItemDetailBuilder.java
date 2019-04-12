@@ -33,6 +33,8 @@ public class ChecklistItemDetailBuilder extends BaseBuilder<ChecklistItemDetail,
             dbState.put("color", state.getColor());
             dbState.put("from", state.getFrom());
             dbState.put("to", state.getTo());
+            dbState.put("start", state.getStart());
+            dbState.put("end", state.getEnd());
             checklistItemStatus.add(dbState);
         });
         return checklistItemStatus;
@@ -50,6 +52,16 @@ public class ChecklistItemDetailBuilder extends BaseBuilder<ChecklistItemDetail,
 
     public ChecklistItemDetailBuilder withMinDaysFromStartDate(Integer minDaysFromStartDate) {
         this.get().setMinDaysFromStartDate(minDaysFromStartDate);
+        return this;
+    }
+
+    public ChecklistItemDetailBuilder withMinDaysFromDependent(Integer minDaysFromDependent) {
+        this.get().setMinDaysFromDependent(minDaysFromDependent);
+        return this;
+    }
+
+    public ChecklistItemDetailBuilder withExpiresAfter(Integer expiresAfter) {
+        this.get().setExpiresAfter(expiresAfter);
         return this;
     }
 
