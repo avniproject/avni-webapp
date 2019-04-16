@@ -45,8 +45,11 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     public void save(@RequestBody ProgramEncounterRequest request) {
         logger.info(String.format("Saving programEncounter with uuid %s", request.getUuid()));
         EncounterType encounterType = (EncounterType) ReferenceDataRepositoryImpl.findReferenceEntity(encounterTypeRepository, request.getEncounterType(), request.getEncounterTypeUUID());
-
         ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());
+        //Planned visit can not overwrite completed encounter
+        if(encounter.isCompleted() && request.isPlanned())
+            return;
+
         encounter.setEncounterDateTime(request.getEncounterDateTime());
         encounter.setProgramEnrolment(programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID()));
         encounter.setEncounterType(encounterType);

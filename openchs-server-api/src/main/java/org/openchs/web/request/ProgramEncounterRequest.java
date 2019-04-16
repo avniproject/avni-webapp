@@ -115,4 +115,9 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
     public void setCancelLocation(PointRequest cancelLocation) {
         this.cancelLocation = cancelLocation;
     }
+
+    public boolean isPlanned() {
+        return getEncounterDateTime() == null
+                && getEarliestVisitDateTime() != null;
+    }
 }

@@ -149,4 +149,8 @@ public class ProgramEncounter extends OrganisationAwareEntity {
     public void setCancelLocation(Point cancelLocation) {
         this.cancelLocation = cancelLocation;
     }
+
+    public boolean isCompleted() {
+        return getEncounterDateTime() != null;
+    }
 }
