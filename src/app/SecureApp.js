@@ -7,6 +7,7 @@ import './SecureApp.css';
 import App from "./App";
 import logo from "../logo.png";
 import { initCognito, setCognitoUser } from './ducks';
+import { customAmplifyErrorMsgs } from "./utils";
 
 
 class SecureApp extends Component {
@@ -34,7 +35,8 @@ class SecureApp extends Component {
                   <img src={logo} alt="OpenCHS" />
                   <Authenticator
                       hide={[Greetings, SignUp]}
-                      onStateChange={this.setAuthState} />
+                      onStateChange={this.setAuthState}
+                      errorMessage={customAmplifyErrorMsgs} />
                 </div>
         );
     }
