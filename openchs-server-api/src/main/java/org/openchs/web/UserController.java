@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -65,6 +67,12 @@ public class UserController {
         return (userRepository.findByUsername(name) != null);
     }
 
+    private Map<String, String> generateJsonError(String errorMsg) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("message", errorMsg);
+        return errorMap;
+    }
+
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
@@ -87,10 +95,10 @@ public class UserController {
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException | UsernameExistsException ex) {
             logger.error(ex.getMessage());
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            return ResponseEntity.badRequest().body(generateJsonError(ex.getMessage()));
         } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateJsonError(ex.getMessage()));
         }
     }
 
@@ -113,10 +121,10 @@ public class UserController {
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException ex) {
             logger.error(ex.getMessage());
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            return ResponseEntity.badRequest().body(generateJsonError(ex.getMessage()));
         } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateJsonError(ex.getMessage()));
         }
     }
 
@@ -177,7 +185,7 @@ public class UserController {
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateJsonError(ex.getMessage()));
         }
     }
 
@@ -206,7 +214,7 @@ public class UserController {
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateJsonError(ex.getMessage()));
         }
     }
 
