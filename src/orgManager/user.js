@@ -55,7 +55,8 @@ const UserFilter = props => (
 export const UserList = ({ organisation, ...props }) => (
     <List {...props}
           filter={{organisationId: organisation.id}}
-          filters={<UserFilter/>}
+          //Commenting the filters as it does not work properly right now
+          /*filters={<UserFilter/>}*/
           title={`${organisation.name} Users`}>
         <Datagrid rowClick="show">
             <TextField label="Login ID" source="username"/>
