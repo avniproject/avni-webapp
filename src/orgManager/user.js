@@ -43,14 +43,14 @@ const formatRoles = roles =>
     ).join(', ');
 
 
-const UserFilter = props => (
+/*const UserFilter = props => (
     <Filter {...props} style={{marginBottom: '2em'}}>
         <TextInput label="Login ID" source="username" resettable alwaysOn />
         <TextInput label="Name" source="name" resettable alwaysOn />
         <TextInput label="Email Address" source="email" resettable alwaysOn />
         <TextInput label="Phone Number" source="phoneNumber" resettable alwaysOn />
     </Filter>
-);
+);*/
 
 export const UserList = ({ organisation, ...props }) => (
     <List {...props}
