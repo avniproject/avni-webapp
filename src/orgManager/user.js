@@ -6,7 +6,7 @@ import {
     SimpleForm, TextInput, ReferenceInput, BooleanInput,
     DisabledInput, Toolbar, FormDataConsumer, SaveButton,
     DeleteButton, EditButton, required, email, regex,
-    REDUX_FORM_NAME, Filter, RadioButtonGroupInput
+    REDUX_FORM_NAME, RadioButtonGroupInput
 } from 'react-admin';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
