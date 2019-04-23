@@ -66,6 +66,11 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 
+    /**
+     * @deprecated as of release 2.9, replaced by {@link #getMyProfile()}
+     * @return
+     */
+    @Deprecated
     @RequestMapping(value = "/me", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
     public ResponseEntity<UserInfo> getMyProfileOld() {
