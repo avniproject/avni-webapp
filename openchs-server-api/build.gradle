@@ -69,6 +69,7 @@ dependencies {
     compile 'com.amazonaws:aws-java-sdk-cognitoidp'
     compile 'commons-validator:commons-validator:1.4.1'
     dev "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
+    testCompile "org.mockito:mockito-core:+"
 }
 
 bootRun {
