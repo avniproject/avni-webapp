@@ -6,7 +6,7 @@ import {
     SimpleForm, TextInput, ReferenceInput, BooleanInput,
     DisabledInput, Toolbar, FormDataConsumer, SaveButton,
     DeleteButton, EditButton, required, email, regex,
-    REDUX_FORM_NAME, RadioButtonGroupInput
+    REDUX_FORM_NAME, RadioButtonGroupInput, Filter
 } from 'react-admin';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
@@ -43,20 +43,19 @@ const formatRoles = roles =>
     ).join(', ');
 
 
-/*const UserFilter = props => (
+const UserFilter = props => (
     <Filter {...props} style={{marginBottom: '2em'}}>
         <TextInput label="Login ID" source="username" resettable alwaysOn />
         <TextInput label="Name" source="name" resettable alwaysOn />
         <TextInput label="Email Address" source="email" resettable alwaysOn />
         <TextInput label="Phone Number" source="phoneNumber" resettable alwaysOn />
     </Filter>
-);*/
+);
 
 export const UserList = ({ organisation, ...props }) => (
     <List {...props}
           filter={{organisationId: organisation.id}}
-          //Commenting the filters as it does not work properly right now
-          /*filters={<UserFilter/>}*/
+          filters={<UserFilter/>}
           title={`${organisation.name} Users`}>
         <Datagrid rowClick="show">
             <TextField label="Login ID" source="username"/>
