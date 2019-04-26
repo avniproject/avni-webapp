@@ -19,6 +19,7 @@ cp -n /opt/openchs/config/openchs.conf /etc/openchs/openchs.conf 2>>/dev/null
 ln -s /opt/openchs/scripts/openchs /etc/init.d/openchs
 ln -s /opt/openchs/run /var/run/openchs
 ln -s /opt/openchs/log /var/log/openchs
+ln -s /opt/openchs-webapp /opt/openchs/static
 chmod a+x /opt/openchs/scripts/openchs
 chkconfig openchs on
 
