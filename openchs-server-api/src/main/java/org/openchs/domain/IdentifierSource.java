@@ -34,6 +34,12 @@ public class IdentifierSource extends OrganisationAwareEntity {
     @Type(type = "jsonObject")
     private JsonObject options;
 
+    @Column
+    private Integer minLength;
+
+    @Column
+    private Integer maxLength;
+
     public String getName() {
         return name;
     }
@@ -88,5 +94,21 @@ public class IdentifierSource extends OrganisationAwareEntity {
 
     public void setOptions(JsonObject options) {
         this.options = options;
+    }
+
+    public Integer getMinLength() {
+        return minLength;
+    }
+
+    public void setMinLength(Integer minLength) {
+        this.minLength = minLength;
+    }
+
+    public Integer getMaxLength() {
+        return maxLength;
+    }
+
+    public void setMaxLength(Integer maxLength) {
+        this.maxLength = maxLength;
     }
 }

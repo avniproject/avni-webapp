@@ -30,6 +30,7 @@ import java.util.List;
  */
 @Service
 public class PrefixedUserPoolBasedIdentifierGenerator {
+    private static final String PADDING_STRING = "0";
     private IdentifierAssignmentRepository identifierAssignmentRepository;
     private IdentifierUserAssignmentRepository identifierUserAssignmentRepository;
 
@@ -58,24 +59,35 @@ public class PrefixedUserPoolBasedIdentifierGenerator {
 
     private IdentifierAssignment assignNextIdentifier(IdentifierUserAssignment identifierUserAssignment, String prefix) {
         String lastAssignedIdentifier = identifierUserAssignment.getLastAssignedIdentifier();
-        long newIdentifierOrder; String newIdentifierStr;
+        IdentifierSource identifierSource = identifierUserAssignment.getIdentifierSource();
+        long newIdentifierOrder; String newIdentifierStr, newIdentifierStrWithPrefix;
 
         if (lastAssignedIdentifier != null) {
             String lastIdentifierStr = lastAssignedIdentifier.replaceFirst(prefix, "");
             long lastIdentifier = Long.parseLong(lastIdentifierStr);
             newIdentifierOrder = lastIdentifier + 1;
-            newIdentifierStr = prefix + Long.toString(newIdentifierOrder);
         } else {
             String lastIdentifierStr = identifierUserAssignment.getIdentifierStart().replaceFirst(prefix, "");
             newIdentifierOrder = Long.parseLong(lastIdentifierStr);
-            newIdentifierStr = prefix + Long.toString(newIdentifierOrder);
         }
+        newIdentifierStr = addPaddingIfNecessary(Long.toString(newIdentifierOrder), identifierSource);
+        newIdentifierStrWithPrefix = prefix + newIdentifierStr;
 
-        identifierUserAssignment.setLastAssignedIdentifier(newIdentifierStr);
+        identifierUserAssignment.setLastAssignedIdentifier(newIdentifierStrWithPrefix);
 
-        IdentifierAssignment identifierAssignment = new IdentifierAssignment(identifierUserAssignment.getIdentifierSource(), newIdentifierStr, newIdentifierOrder, identifierUserAssignment.getAssignedTo());
+        IdentifierAssignment identifierAssignment = new IdentifierAssignment(identifierSource, newIdentifierStrWithPrefix, newIdentifierOrder, identifierUserAssignment.getAssignedTo());
         identifierAssignment.assignUUID();
         return identifierAssignment;
+    }
+
+    private String addPaddingIfNecessary(String identifier, IdentifierSource identifierSource) {
+        int lengthOfIdentifier = identifier.length();
+        if(lengthOfIdentifier < identifierSource.getMinLength()) {
+            int paddingLength = identifierSource.getMinLength() - lengthOfIdentifier;
+            String padding = new String(new char[paddingLength]).replace("\0", PADDING_STRING);
+            identifier = padding + identifier;
+        }
+        return identifier;
     }
 
     class NextIdentifierUserAssignment {
