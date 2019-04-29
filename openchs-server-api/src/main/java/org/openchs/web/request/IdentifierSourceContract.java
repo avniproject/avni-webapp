@@ -10,6 +10,8 @@ public class IdentifierSourceContract extends CHSRequest {
     private String type;
     private String catchmentUUID;
     private String facilityUUID;
+    private Integer minLength;
+    private Integer maxLength;
 
     public Long getBatchGenerationSize() {
         return batchGenerationSize;
@@ -65,5 +67,21 @@ public class IdentifierSourceContract extends CHSRequest {
 
     public void setFacilityUUID(String facilityUUID) {
         this.facilityUUID = facilityUUID;
+    }
+
+    public Integer getMinLength() {
+        return minLength;
+    }
+
+    public void setMinLength(Integer minLength) {
+        this.minLength = minLength;
+    }
+
+    public Integer getMaxLength() {
+        return maxLength;
+    }
+
+    public void setMaxLength(Integer maxLength) {
+        this.maxLength = maxLength;
     }
 }

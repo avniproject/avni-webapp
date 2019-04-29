@@ -61,6 +61,8 @@ public class IdentifierSourceController extends AbstractController<IdentifierSou
         identifierSource.setOptions(identifierSourceContract.getOptions());
         identifierSource.setType(identifierSourceContract.getType());
         identifierSource.setVoided(identifierSourceContract.isVoided());
+        identifierSource.setMinLength(identifierSourceContract.getMinLength());
+        identifierSource.setMaxLength(identifierSourceContract.getMaxLength());
 
         identifierSourceRepository.save(identifierSource);
     }
