@@ -71,6 +71,8 @@ public class PrefixedUserPoolBasedIdentifierGenerator {
             newIdentifierOrder = Long.parseLong(lastIdentifierStr);
         }
         newIdentifierStr = addPaddingIfNecessary(Long.toString(newIdentifierOrder), identifierSource);
+        if(newIdentifierStr.length() > identifierSource.getMaxLength())
+            throw new RuntimeException(String.format("Identifier %s exceeds max length %d", newIdentifierStr, identifierSource.getMaxLength()));
         newIdentifierStrWithPrefix = prefix + newIdentifierStr;
 
         identifierUserAssignment.setLastAssignedIdentifier(newIdentifierStrWithPrefix);
