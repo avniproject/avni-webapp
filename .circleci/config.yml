@@ -117,13 +117,7 @@ workflows:
   test_and_publish_and_deploy:
     jobs:
       - test
-      - approve-publish:
-          type: approval
-          requires:
-            - test
-      - publish:
-          requires:
-            - approve-publish
+      - publish
       - approve-deployment:
           type: approval
           requires:
