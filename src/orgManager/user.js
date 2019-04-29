@@ -1,11 +1,11 @@
-import {isEmpty, isFinite} from 'lodash';
+import {isEmpty, isFinite, isNil} from 'lodash';
 import React, { Fragment } from 'react';
 import {
     ReferenceField, Datagrid, List, Create, Edit,
     TextField, FunctionField, Show, SimpleShowLayout,
     SimpleForm, TextInput, ReferenceInput, BooleanInput,
     DisabledInput, Toolbar, FormDataConsumer, SaveButton,
-    DeleteButton, EditButton, required, email, regex,
+    EditButton, required, email, regex,
     REDUX_FORM_NAME, RadioButtonGroupInput, Filter
 } from 'react-admin';
 import Typography from '@material-ui/core/Typography';
@@ -83,9 +83,10 @@ const CustomShowActions = ({basePath, data, resource}) => {
             <EnableDisableButton disabled={data.disabledInCognito}
                                  basePath={basePath} record={data}
                                  resource={resource}/>
+            {/*Commenting out delete user functionality as it is not required as of now
             <DeleteButton basePath={basePath} record={data}
                           label="Delete User" undoable={false}
-                          redirect={basePath} resource={resource}/>
+                          redirect={basePath} resource={resource}/>*/}
         </CardActions>)
         || null
 };
@@ -93,6 +94,7 @@ const CustomShowActions = ({basePath, data, resource}) => {
 const formatOperatingScope = opScope =>
     opScope && opScope.replace(/^By/, '');
 
+const formatLang = lang => localeChoices.filter((local)=> local.id === lang).map((lang)=> lang.name).join('');
 
 export const UserDetail = props => (
     <Show title={<UserTitle/>} actions={<CustomShowActions/>} {...props}>
@@ -108,6 +110,10 @@ export const UserDetail = props => (
             <FunctionField label="Role" render={user => formatRoles(user.roles)} />
             <FunctionField label="Operating Scope"
                            render={user => formatOperatingScope(user.operatingIndividualScope)}/>
+            <FunctionField label="Language"
+                           render={user => formatLang(user.settings.locale)}/>
+            <FunctionField label="Track Location"
+                           render={user => user.settings.trackLocation ? "True" : "False"}/>
         </SimpleShowLayout>
     </Show>
 );
@@ -134,7 +140,7 @@ const operatingScopes = Object.freeze({
 const catchmentChangeMessage = `Please ensure that the user has already synced all 
 data for their previous catchment, and has deleted all local data from their app`;
 
-const mobileNumberFormatter = (v='') => v.substring(phoneCountryPrefix.length);
+const mobileNumberFormatter = (v='') => isNil(v) ? v : v.substring(phoneCountryPrefix.length);
 const mobileNumberParser = v => v.startsWith(phoneCountryPrefix) ? v : phoneCountryPrefix.concat(v);
 
 const isRequired = required("This field is required");
