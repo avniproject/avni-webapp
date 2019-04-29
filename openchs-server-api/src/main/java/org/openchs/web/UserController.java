@@ -230,13 +230,13 @@ public class UserController {
         Long organisationId = currentUser.getOrganisationId();
 
         if (username != null) {
-            return userRepository.findByOrganisationIdAndIsVoidedFalseAndUsernameContaining(organisationId, username, pageable);
+            return userRepository.findByOrganisationIdAndIsVoidedFalseAndUsernameIgnoreCaseContaining(organisationId, username, pageable);
         }
         if (name != null) {
             return userRepository.findByOrganisationIdAndIsVoidedFalseAndNameIgnoreCaseContaining(organisationId, name, pageable);
         }
         if (email != null) {
-            return userRepository.findByOrganisationIdAndIsVoidedFalseAndEmailContaining(organisationId, email, pageable);
+            return userRepository.findByOrganisationIdAndIsVoidedFalseAndEmailIgnoreCaseContaining(organisationId, email, pageable);
         }
         if (phoneNumber != null) {
             return userRepository.findByOrganisationIdAndIsVoidedFalseAndPhoneNumberContaining(organisationId, phoneNumber, pageable);

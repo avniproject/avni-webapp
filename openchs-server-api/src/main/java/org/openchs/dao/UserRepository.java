@@ -26,7 +26,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
     Page<User> findByOrganisationIdAndIsVoidedFalse(@Param("organisationId") Long organisationId,
                                                     Pageable pageable);
 
-    Page<User> findByOrganisationIdAndIsVoidedFalseAndUsernameContaining(Long organisationId,
+    Page<User> findByOrganisationIdAndIsVoidedFalseAndUsernameIgnoreCaseContaining(Long organisationId,
                                                                String username,
                                                                Pageable pageable);
 
@@ -34,7 +34,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
                                                                                String name,
                                                                                Pageable pageable);
 
-    Page<User> findByOrganisationIdAndIsVoidedFalseAndEmailContaining(Long organisationId,
+    Page<User> findByOrganisationIdAndIsVoidedFalseAndEmailIgnoreCaseContaining(Long organisationId,
                                                             String email,
                                                             Pageable pageable);
 
