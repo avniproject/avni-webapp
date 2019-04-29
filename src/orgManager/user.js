@@ -111,9 +111,9 @@ export const UserDetail = props => (
             <FunctionField label="Operating Scope"
                            render={user => formatOperatingScope(user.operatingIndividualScope)}/>
             <FunctionField label="Language"
-                           render={user => formatLang(user.settings.locale)}/>
+                           render={user => !isNil(user.settings) ? formatLang(user.settings.locale) : ''} />
             <FunctionField label="Track Location"
-                           render={user => user.settings.trackLocation ? "True" : "False"}/>
+                           render={user => !isNil(user.settings) ? user.settings.trackLocation ? "True" : "False" : ''}/>
         </SimpleShowLayout>
     </Show>
 );
