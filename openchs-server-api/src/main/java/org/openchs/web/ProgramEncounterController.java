@@ -48,7 +48,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
                 && (request.getEarliestVisitDateTime() == null || request.getMaxVisitDateTime() == null)
         ) {
             //violating constraint so notify bugsnag
-            bugsnag.notify(new Exception(String.format("Encounter request violating scheduling constraint %s %s", request.getEarliestVisitDateTime(), request.getMaxVisitDateTime())));
+            bugsnag.notify(new Exception(String.format("ProgramEncounter violating scheduling constraint uuid %s earliest %s max %s", request.getUuid(), request.getEarliestVisitDateTime(), request.getMaxVisitDateTime())));
         }
 
     }
