@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import com.bugsnag.Bugsnag;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
@@ -31,6 +32,9 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
     @Autowired
+    Bugsnag bugsnag;
+
+    @Autowired
     public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
@@ -39,11 +43,22 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         this.userService = userService;
     }
 
+    private void checkForSchedulingCompleteConstraintViolation(ProgramEncounterRequest request) {
+        if ((request.getEarliestVisitDateTime() != null || request.getMaxVisitDateTime() != null)
+                && (request.getEarliestVisitDateTime() == null || request.getMaxVisitDateTime() == null)
+        ) {
+            //violating constraint so notify bugsnag
+            bugsnag.notify(new Exception(String.format("Encounter request violating scheduling constraint %s %s", request.getEarliestVisitDateTime(), request.getMaxVisitDateTime())));
+        }
+
+    }
+
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody ProgramEncounterRequest request) {
         logger.info(String.format("Saving programEncounter with uuid %s", request.getUuid()));
+        checkForSchedulingCompleteConstraintViolation(request);
         EncounterType encounterType = (EncounterType) ReferenceDataRepositoryImpl.findReferenceEntity(encounterTypeRepository, request.getEncounterType(), request.getEncounterTypeUUID());
         ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());
         //Planned visit can not overwrite completed encounter

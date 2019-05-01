@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import com.bugsnag.Report;
+import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,22 +24,17 @@ public class ErrorInterceptors {
     private final Bugsnag bugsnag;
 
     @Autowired
-    public ErrorInterceptors(Environment environment) {
+    public ErrorInterceptors(Bugsnag bugsnag) {
         this.logger = LoggerFactory.getLogger(this.getClass());
-        String bugsnagAPIKey = environment.getProperty("openchs.bugsnag.apiKey");
-        String bugsnagReleaseStage = environment.getProperty("openchs.bugsnag.releaseStage");
-        logger.info(String.format("bugsnagAPIKey is: %s", bugsnagAPIKey));
-        logger.info(String.format("bugsnagReleaseStage is: %s", bugsnagReleaseStage));
-        bugsnag = new Bugsnag(bugsnagAPIKey, false);
-        bugsnag.setReleaseStage(bugsnagReleaseStage);
-        bugsnag.setNotifyReleaseStages("prod", "staging");
+        this.bugsnag = bugsnag;
     }
 
     @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<String> unknownException(Exception e, WebRequest req, HttpServletResponse res) {
-        String username = UserContextHolder.getUserContext().getUserName();
-        String organisationName = UserContextHolder.getUserContext().getOrganisationName();
+    public ResponseEntity<String> unknownException(Exception e) {
+        UserContext userContext = UserContextHolder.getUserContext();
+        String username = userContext.getUserName();
+        String organisationName = userContext.getOrganisationName();
         Report report = bugsnag.buildReport(e).setUser(username, organisationName, username);
         bugsnag.notify(report);
         logger.error(e.getMessage(), e);
