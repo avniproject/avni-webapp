@@ -47,10 +47,7 @@ public class CatchmentController {
     ResponseEntity<?> save(@RequestBody CatchmentsContract catchmentsContract) {
         try {
             Organisation organisation = organisationRepository.findByName(catchmentsContract.getOrganisation());
-            List<Catchment> catchments = saveAll(catchmentsContract, organisation);
-            if (!catchments.isEmpty()) {
-                createMasterCatchment(catchments, organisation);
-            }
+            saveAll(catchmentsContract, organisation);
         } catch (BuilderException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -82,32 +79,6 @@ public class CatchmentController {
             catchments.add(catchmentRepository.save(catchment));
         }
         return catchments;
-    }
-
-    private void createMasterCatchment(List<Catchment> catchments, Organisation organisation) {
-        Catchment masterCatchment = saveOrUpdateMasterCatchment(catchments.get(0).getType(), organisation);
-
-        updateAddressLevelsOfMasterCatchment(catchments, masterCatchment);
-    }
-
-    private void updateAddressLevelsOfMasterCatchment(List<Catchment> catchments, Catchment masterCatchment) {
-        List<AddressLevel> allAddressLevels = catchments.stream()
-                .map(Catchment::getAddressLevels)
-                .flatMap(x -> x.stream())
-                .collect(Collectors.toList());
-        allAddressLevels.forEach(addressLevel -> masterCatchment.addAddressLevel(addressLevel));
-        locationRepository.save(allAddressLevels);
-    }
-
-    private Catchment saveOrUpdateMasterCatchment(String masterCatchmentType, Organisation organisation) {
-        String masterCatchmentName = String.format("%s Master Catchment", organisation.getName());
-        Catchment existingMasterCatchment = catchmentRepository.findByName(masterCatchmentName);
-        Catchment masterCatchment = existingMasterCatchment == null? new Catchment(): existingMasterCatchment;
-        masterCatchment.setName(masterCatchmentName);
-        masterCatchment.setType(masterCatchmentType);
-        masterCatchment.assignUUIDIfRequired();
-        catchmentRepository.save(masterCatchment);
-        return masterCatchment;
     }
 
     private void addAddressLevels(CatchmentContract catchmentRequest, Catchment catchment) throws BuilderException {
