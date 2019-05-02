@@ -44,11 +44,12 @@ public class OperationalProgramsController {
         });
     }
 
-    private OperationalProgram createOperationalProgram(OperationalProgramContract operationalProgramContract, Organisation organisation) {
+    private void createOperationalProgram(OperationalProgramContract operationalProgramContract, Organisation organisation) {
         String programUuid = operationalProgramContract.getProgram().getUuid();
         Program program = programRepository.findByUuid(programUuid);
         if (program == null) {
             logger.info(String.format("Program not found for uuid: '%s'", programUuid));
+            return;
         }
 
         OperationalProgram operationalProgram = operationalProgramRepository.findByUuid(operationalProgramContract.getUuid());
@@ -66,7 +67,7 @@ public class OperationalProgramsController {
         operationalProgram.setProgram(program);
         operationalProgram.setOrganisationId(organisation.getId());
         operationalProgram.setVoided(operationalProgramContract.isVoided());
+        operationalProgram.setBeneficiaryName(operationalProgramContract.getBeneficiaryName());
         operationalProgramRepository.save(operationalProgram);
-        return operationalProgram;
     }
 }

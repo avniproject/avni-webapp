@@ -16,6 +16,9 @@ public class OperationalProgram extends OrganisationAwareEntity {
     @Column
     private String name;
 
+    @Column
+    private String beneficiaryName;
+
     public Program getProgram() {
         return program;
     }
@@ -48,4 +51,11 @@ public class OperationalProgram extends OrganisationAwareEntity {
         return getProgram().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getProgram().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }
 
+    public void setBeneficiaryName(String beneficiaryName) {
+        this.beneficiaryName = beneficiaryName;
+    }
+
+    public String getBeneficiaryName() {
+        return beneficiaryName;
+    }
 }
