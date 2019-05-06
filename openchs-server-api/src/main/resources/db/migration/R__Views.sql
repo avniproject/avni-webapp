@@ -1,3 +1,8 @@
+-- Rerun this migration deliberately though there are no changes here. NEEDEDBY: V1_107
+--
+-- Repeatable migrations are run only when the checksum of the current file is changed.
+--
+
 CREATE OR REPLACE FUNCTION create_audit()
   RETURNS INTEGER AS $$
 DECLARE result INTEGER;

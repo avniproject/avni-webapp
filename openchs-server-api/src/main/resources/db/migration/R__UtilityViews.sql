@@ -1,3 +1,8 @@
+-- Rerun this migration deliberately though there are no changes here. NEEDEDBY: V1_107
+--
+-- Repeatable migrations are run only when the checksum of the current file is changed.
+--
+
 DROP VIEW IF EXISTS all_form_element_groups;
 DROP VIEW IF EXISTS all_form_elements;
 DROP VIEW IF EXISTS all_concepts;
