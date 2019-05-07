@@ -10,6 +10,16 @@ BEGIN
         WHERE table_schema = 'public'
           AND table_type = 'BASE TABLE'
     );
+
+    EXECUTE (
+        SELECT 'GRANT SELECT ON '
+                   || string_agg(format('%I.%I', schemaname, viewname), ',')
+                   || ' TO ' || quote_ident(rolename) || ''
+        FROM pg_catalog.pg_views
+        WHERE schemaname = 'public'
+          and viewowner in ('openchs')
+    );
+
     EXECUTE 'GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO ' || quote_ident(rolename) || '';
     EXECUTE 'GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO ' || quote_ident(rolename) || '';
     RETURN 'ALL PERMISSIONS GRANTED TO ' || quote_ident(rolename);
