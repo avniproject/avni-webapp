@@ -3,7 +3,7 @@ package org.openchs.web.request;
 public class OperationalProgramContract extends CHSRequest {
     private CHSRequest program;
     private String name; /* operationalProgram's Name or in other words alias for a program */
-    private String beneficiaryName;
+    private String programRegistrationLabel;
 
     public CHSRequest getProgram() {
         return program;
@@ -21,11 +21,11 @@ public class OperationalProgramContract extends CHSRequest {
         this.name = name;
     }
 
-    public void setBeneficiaryName(String beneficiaryName) {
-        this.beneficiaryName = beneficiaryName;
+    public void setProgramRegistrationLabel(String programRegistrationLabel) {
+        this.programRegistrationLabel = programRegistrationLabel;
     }
 
-    public String getBeneficiaryName() {
-        return beneficiaryName;
+    public String getProgramRegistrationLabel() {
+        return programRegistrationLabel;
     }
 }
