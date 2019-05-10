@@ -67,7 +67,7 @@ public class OperationalProgramsController {
         operationalProgram.setProgram(program);
         operationalProgram.setOrganisationId(organisation.getId());
         operationalProgram.setVoided(operationalProgramContract.isVoided());
-        operationalProgram.setProgramRegistrationLabel(operationalProgramContract.getProgramRegistrationLabel());
+        operationalProgram.setProgramSubjectLabel(operationalProgramContract.getProgramSubjectLabel());
         operationalProgramRepository.save(operationalProgram);
     }
 }

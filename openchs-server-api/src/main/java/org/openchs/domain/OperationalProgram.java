@@ -17,7 +17,7 @@ public class OperationalProgram extends OrganisationAwareEntity {
     private String name;
 
     @Column
-    private String programRegistrationLabel;
+    private String programSubjectLabel;
 
     public Program getProgram() {
         return program;
@@ -51,11 +51,11 @@ public class OperationalProgram extends OrganisationAwareEntity {
         return getProgram().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getProgram().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }
 
-    public void setProgramRegistrationLabel(String programRegistrationLabel) {
-        this.programRegistrationLabel = programRegistrationLabel;
+    public void setProgramSubjectLabel(String programSubjectLabel) {
+        this.programSubjectLabel = programSubjectLabel;
     }
 
-    public String getProgramRegistrationLabel() {
-        return programRegistrationLabel;
+    public String getProgramSubjectLabel() {
+        return programSubjectLabel;
     }
 }
