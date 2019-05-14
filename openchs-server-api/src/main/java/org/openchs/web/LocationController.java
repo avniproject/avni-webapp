@@ -1,24 +1,28 @@
 package org.openchs.web;
 
+import org.joda.time.DateTime;
 import org.openchs.builder.BuilderException;
 import org.openchs.builder.LocationBuilder;
 import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.dao.LocationRepository;
+import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Organisation;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.UserService;
 import org.openchs.web.request.LocationContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
@@ -28,20 +32,23 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-public class LocationController {
+public class LocationController implements OperatingIndividualScopeAwareController<AddressLevel>, RestControllerResourceProcessor<AddressLevel> {
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private OrganisationRepository organisationRepository;
     private LocationRepository locationRepository;
     private Logger logger;
+    private UserService userService;
 
     @Autowired
     public LocationController(OrganisationRepository organisationRepository,
                               LocationRepository locationRepository,
-                              AddressLevelTypeRepository addressLevelTypeRepository) {
+                              AddressLevelTypeRepository addressLevelTypeRepository,
+                              UserService userService) {
         this.organisationRepository = organisationRepository;
         this.locationRepository = locationRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
+        this.userService = userService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -61,6 +68,20 @@ public class LocationController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok(null);
+    }
+
+    @RequestMapping(value = "/locations/search/lastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
+    public PagedResources<Resource<AddressLevel>> getAddressLevelsByOperatingIndividualScope(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepository<AddressLevel> resourceRepository() {
+        return locationRepository;
     }
 
     private AddressLevelType saveType(String type) {

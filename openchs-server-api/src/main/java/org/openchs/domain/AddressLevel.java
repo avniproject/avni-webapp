@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Immutable;
 
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "address_level")
 @BatchSize(size = 100)
+@JsonIgnoreProperties({"parentLocationMappings", "type", "catchments", "virtualCatchments"})
 public class AddressLevel extends OrganisationAwareEntity {
     @Column
     @NotNull

@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-@RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
-public interface LocationRepository extends ReferenceDataRepository<AddressLevel> {
+@RepositoryRestResource(collectionResourceRel = "locations", path = "locations", exported = false)
+public interface LocationRepository extends ReferenceDataRepository<AddressLevel>, FindByLastModifiedDateTime<AddressLevel>, OperatingIndividualScopeAwareRepository<AddressLevel> {
     @RestResource(path = "byCatchmentAndLastModified", rel = "byCatchmentAndLastModified")
     Page<AddressLevel> findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             @Param("catchmentId") long catchmentId,
@@ -33,6 +33,16 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     AddressLevel findByTitleIgnoreCase(String title);
 
     List<AddressLevel> findByCatchments(Catchment catchment);
+
+    @Override
+    default Page<AddressLevel> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+        return findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default Page<AddressLevel> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
+        return findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+    }
 
     default AddressLevel findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in Location. Field 'title' not unique.");
