@@ -65,7 +65,6 @@ public class ChecklistController extends AbstractController<Checklist> implement
     @RequestMapping(value = "/txNewChecklistEntity", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Checklist>> getChecklistsByOperatingIndividualScope(
-            @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
