@@ -6,6 +6,7 @@ import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.ParentLocationMapping;
 import org.openchs.framework.ApplicationContextProvider;
 import org.openchs.web.request.LocationContract;
+import org.openchs.web.request.ReferenceDataContract;
 import org.openchs.web.validation.ValidationException;
 import org.springframework.util.StringUtils;
 
@@ -24,14 +25,29 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
     }
 
     public LocationBuilder copy(LocationContract locationRequest) throws BuilderException {
+        String location = cleanAddressTitle(locationRequest.getName());
         get().setUuid(locationRequest.getUuid());
         get().setTitle(locationRequest.getName());
         get().setType(type);
         get().setLevel(locationRequest.getLevel());
-        List<ParentLocationMapping> mappings = locationRequest.getParents().stream()
-                .map(parentLocationContract -> fetchOrCreateLocationMapping(get(), parentLocationContract))
-                .collect(Collectors.toList());
-        get().addAll(mappings);
+        if (locationRequest.getParents().size() > 0) {
+            List<ParentLocationMapping> mappings = locationRequest.getParents().stream()
+                    .map(parentLocationContract -> fetchOrCreateLocationMapping(get(), parentLocationContract))
+                    .collect(Collectors.toList());
+            get().addAll(mappings);
+            //Right now we have only one parent for child address in parents array object
+            AddressLevel parentAddressLevel = mappings.size() > 0 ? locationRepository.findByUuid(mappings.get(0).getParentLocation().getUuid()) : null;
+            String lineage = parentAddressLevel == null ? location : parentAddressLevel.getLineage() + "." + location;
+            get().setLineage(lineage);
+        } else {
+            ReferenceDataContract parentLocation = locationRequest.getParent();
+            if (parentLocation != null && parentLocation.getUuid() != null && locationRepository.findByUuid(parentLocation.getUuid()) == null) {
+                throw new ValidationException(String.format("Location not found for UUID:%s", locationRequest.getParent().getUuid()));
+            }
+            String lineage = parentLocation == null || parentLocation.getUuid() == null ? location :
+                    locationRepository.findByUuid(locationRequest.getParent().getUuid()).getLineage() + "." + location;
+            get().setLineage(lineage);
+        }
         return this;
     }
 
@@ -52,5 +68,9 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
         locationMapping.setParentLocation(parentLocation);
         locationMapping.setVoided(parentLocationContract.isVoided());
         return locationMapping;
+    }
+
+    private String cleanAddressTitle(String address) {
+        return address.replaceAll("\\s", "_").replaceAll("[^a-zA-Z0-9_]", "");
     }
 }

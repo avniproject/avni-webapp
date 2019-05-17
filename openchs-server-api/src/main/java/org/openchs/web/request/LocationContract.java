@@ -1,6 +1,5 @@
 package org.openchs.web.request;
 
-import org.openchs.domain.AddressLevelType;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -8,6 +7,8 @@ import java.util.List;
 
 public class LocationContract extends ReferenceDataContract {
     private Double level;
+    private ReferenceDataContract parent;
+    @Deprecated
     private List<LocationContract> parents;
     private String type;
     private String organisationUUID;
@@ -37,6 +38,14 @@ public class LocationContract extends ReferenceDataContract {
 
     public void setParents(List<LocationContract> parents) {
         this.parents = parents;
+    }
+
+    public ReferenceDataContract getParent() {
+        return parent;
+    }
+
+    public void setParent(ReferenceDataContract parent) {
+        this.parent = parent;
     }
 
     public String getOrganisationUUID() {

@@ -36,6 +36,7 @@ _build_db:
 	-psql -h localhost -U $(su) -d postgres -c "create user openchs with password 'password' createrole";
 	psql -h localhost -U $(su) -d postgres -c 'create database $(database) with owner openchs';
 	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "uuid-ossp"';
+	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "ltree"';
 	-psql -h localhost -U $(su) -d postgres  -c 'create role demo with NOINHERIT NOLOGIN';
 	-psql -h localhost -U $(su) -d postgres  -c 'grant demo to openchs';
 # </postgres>

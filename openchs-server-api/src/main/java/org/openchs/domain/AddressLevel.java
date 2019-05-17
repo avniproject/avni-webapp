@@ -3,6 +3,7 @@ package org.openchs.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -28,6 +29,11 @@ public class AddressLevel extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id")
     private AddressLevelType type;
+
+    @Column(unique=true)
+    @NotNull
+    @Type(type = "org.openchs.ltree.LTreeType")
+    private String lineage;
 
     @Transient
     private String typeString;
@@ -119,5 +125,13 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     public ParentLocationMapping findLocationMappingByParentLocationUUID(String uuid) {
         return parentLocationMappings.stream().filter(parentLocationMapping -> parentLocationMapping.getParentLocation().getUuid().equals(uuid)).findFirst().orElse(null);
+    }
+
+    public String getLineage() {
+        return lineage;
+    }
+
+    public void setLineage(String lineage) {
+        this.lineage = lineage;
     }
 }
