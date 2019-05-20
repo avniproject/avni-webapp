@@ -1,15 +1,16 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "address_level_type")
 @BatchSize(size = 100)
+@JsonIgnoreProperties({"addressLevels"})
 public class AddressLevelType extends OrganisationAwareEntity {
     @Column(name = "name", nullable = false)
     private String name;

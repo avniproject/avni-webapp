@@ -1,9 +1,6 @@
 package org.openchs.framework.rest;
 
-import org.openchs.domain.Catchment;
-import org.openchs.domain.Facility;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.User;
+import org.openchs.domain.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
@@ -16,5 +13,7 @@ public class RepositoryConfig extends RepositoryRestConfigurerAdapter {
         config.exposeIdsFor(Organisation.class);
         config.exposeIdsFor(Catchment.class);
         config.exposeIdsFor(Facility.class);
+        config.exposeIdsFor(AddressLevel.class);
+        config.exposeIdsFor(AddressLevelType.class);
     }
 }
