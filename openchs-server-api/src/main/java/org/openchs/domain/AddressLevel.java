@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Immutable;
@@ -122,10 +123,12 @@ public class AddressLevel extends OrganisationAwareEntity {
         }
     }
 
+    @JsonIgnore
     public ParentLocationMapping getParentLocationMapping() {
         return this.parentLocationMappings.stream().findFirst().orElse(null);
     }
 
+    @JsonIgnore
     public AddressLevel getParentLocation() {
         return getParentLocationMapping() != null ? getParentLocationMapping().getParentLocation() : null;
     }
