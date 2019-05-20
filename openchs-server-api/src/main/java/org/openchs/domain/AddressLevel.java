@@ -30,7 +30,7 @@ public class AddressLevel extends OrganisationAwareEntity {
     @JoinColumn(name = "type_id")
     private AddressLevelType type;
 
-    @Column(unique=true)
+    @Column(unique = true)
     @NotNull
     @Type(type = "org.openchs.ltree.LTreeType")
     private String lineage;
@@ -114,17 +114,20 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.virtualCatchments = virtualCatchments;
     }
 
-    public void addAll(List<ParentLocationMapping> parentLocationMappings) {
-        List<ParentLocationMapping> nonRepeatingNewOnes = parentLocationMappings.stream().filter(parentLocationMapping ->
-                this.getParentLocationMappings().stream().noneMatch(oldMapping ->
-                        oldMapping.getParentLocation().equals(parentLocationMapping.getParentLocation())
-                )).collect(Collectors.toList());
-        this.getParentLocationMappings().addAll(nonRepeatingNewOnes);
-        nonRepeatingNewOnes.forEach(locationMapping -> locationMapping.setLocation(this));
+    public void setParentLocationMapping(ParentLocationMapping parentLocationMapping) {
+        AddressLevel parentLocation = parentLocationMappings.stream().map(it -> it.getParentLocation()).findFirst().orElse(null);
+        if (!parentLocationMapping.getParentLocation().equals(parentLocation)) {
+            parentLocationMappings.add(parentLocationMapping);
+            parentLocationMapping.setLocation(this);
+        }
     }
 
-    public ParentLocationMapping findLocationMappingByParentLocationUUID(String uuid) {
-        return parentLocationMappings.stream().filter(parentLocationMapping -> parentLocationMapping.getParentLocation().getUuid().equals(uuid)).findFirst().orElse(null);
+    public ParentLocationMapping getParentLocationMapping() {
+        return this.parentLocationMappings.stream().findFirst().orElse(null);
+    }
+
+    public AddressLevel getParentLocation() {
+        return getParentLocationMapping() != null ? getParentLocationMapping().getParentLocation() : null;
     }
 
     public String getLineage() {

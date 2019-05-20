@@ -40,10 +40,6 @@ public class LocationContract extends ReferenceDataContract {
         this.parents = parents;
     }
 
-    public ReferenceDataContract getParent() {
-        return parent;
-    }
-
     public void setParent(ReferenceDataContract parent) {
         this.parent = parent;
     }
@@ -54,5 +50,13 @@ public class LocationContract extends ReferenceDataContract {
 
     public void setOrganisationUUID(String organisationUUID) {
         this.organisationUUID = organisationUUID;
+    }
+
+    public ReferenceDataContract getParent() {
+        if (null != parent) {
+            return parent;
+        } else {
+            return getParents().stream().findFirst().orElse(null);
+        }
     }
 }

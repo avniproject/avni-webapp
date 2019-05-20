@@ -10,9 +10,6 @@ import org.openchs.web.request.ReferenceDataContract;
 import org.openchs.web.validation.ValidationException;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> {
 
     private final AddressLevelType type;
@@ -25,37 +22,37 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
     }
 
     public LocationBuilder copy(LocationContract locationRequest) throws BuilderException {
-        String location = cleanAddressTitle(locationRequest.getName());
         get().setUuid(locationRequest.getUuid());
         get().setTitle(locationRequest.getName());
         get().setType(type);
         get().setLevel(locationRequest.getLevel());
-        if (locationRequest.getParents().size() > 0) {
-            List<ParentLocationMapping> mappings = locationRequest.getParents().stream()
-                    .map(parentLocationContract -> fetchOrCreateLocationMapping(get(), parentLocationContract))
-                    .collect(Collectors.toList());
-            get().addAll(mappings);
-            //Right now we have only one parent for child address in parents array object
-            AddressLevel parentAddressLevel = mappings.size() > 0 ? locationRepository.findByUuid(mappings.get(0).getParentLocation().getUuid()) : null;
-            String lineage = parentAddressLevel == null ? location : parentAddressLevel.getLineage() + "." + location;
-            get().setLineage(lineage);
-        } else {
-            ReferenceDataContract parentLocation = locationRequest.getParent();
-            if (parentLocation != null && parentLocation.getUuid() != null && locationRepository.findByUuid(parentLocation.getUuid()) == null) {
-                throw new ValidationException(String.format("Location not found for UUID:%s", locationRequest.getParent().getUuid()));
-            }
-            String lineage = parentLocation == null || parentLocation.getUuid() == null ? location :
-                    locationRepository.findByUuid(locationRequest.getParent().getUuid()).getLineage() + "." + location;
-            get().setLineage(lineage);
+        withParentLocation(locationRequest);
+        withLineage(locationRequest);
+        return this;
+    }
+
+    private LocationBuilder withParentLocation(LocationContract locationRequest) {
+        ReferenceDataContract parentLocation = locationRequest.getParent();
+        if (parentLocation != null && parentLocation.getUuid() != null) {
+            get().setParentLocationMapping(fetchOrCreateLocationMapping(get(), parentLocation));
         }
         return this;
     }
 
-    private ParentLocationMapping fetchOrCreateLocationMapping(AddressLevel existing, LocationContract parentLocationContract) {
+    private LocationBuilder withLineage(LocationContract locationRequest) {
+        ReferenceDataContract parentLocation = locationRequest.getParent();
+        String locationTitleNormalized = cleanAddressTitle(locationRequest.getName());
+        String parentLineage = parentLocation != null && parentLocation.getUuid() != null ?
+                locationRepository.findByUuid(parentLocation.getUuid()).getLineage() + "." : "";
+        get().setLineage(parentLineage + locationTitleNormalized);
+        return this;
+    }
+
+    private ParentLocationMapping fetchOrCreateLocationMapping(AddressLevel existing, ReferenceDataContract parentLocationContract) {
         if (StringUtils.isEmpty(parentLocationContract.getUuid())) {
             throw new ValidationException("UUID missing for answer");
         }
-        ParentLocationMapping locationMapping = existing.findLocationMappingByParentLocationUUID(parentLocationContract.getUuid());
+        ParentLocationMapping locationMapping = existing.getParentLocationMapping();
         if (locationMapping == null) {
             locationMapping = new ParentLocationMapping();
             locationMapping.assignUUID();
