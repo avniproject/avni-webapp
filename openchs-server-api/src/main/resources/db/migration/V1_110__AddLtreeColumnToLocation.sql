@@ -20,4 +20,4 @@ where line.id = al.id;
 
 ALTER TABLE address_level
   ALTER COLUMN lineage SET NOT NULL,
-  ADD CONSTRAINT address_level_lineage_unique UNIQUE (lineage);
+  ADD CONSTRAINT address_level_organisation_lineage_unique UNIQUE (organisation_id, lineage);
