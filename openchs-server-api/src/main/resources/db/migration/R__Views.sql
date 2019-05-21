@@ -56,7 +56,16 @@ CREATE OR REPLACE VIEW address_level_type_view AS
                                             FROM organisation o,
                                                  list_of_orgs log
                                             WHERE o.id = log.parent_organisation_id)
-  SELECT al.*, alt.name as "type"
+  SELECT al.id,
+    al.title,
+    al.uuid,
+    al.level,
+    al.version,
+    al.organisation_id,
+    al.audit_id,
+    al.is_voided,
+    al.type_id,
+    alt.name AS type
   from address_level al
          inner join address_level_type alt on al.type_id = alt.id
          inner join list_of_orgs loo on loo.id=al.organisation_id

@@ -68,6 +68,7 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
     }
 
     private String cleanAddressTitle(String address) {
-        return address.replaceAll("\\s", "_").replaceAll("[^a-zA-Z0-9_]", "");
+        String normalized = address.trim().replaceAll("\\s+", "_").replaceAll("[^a-zA-Z0-9_]", "");
+        return "".equals(normalized) ? "_" : normalized;
     }
 }
