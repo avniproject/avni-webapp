@@ -1,8 +1,8 @@
-import React , {Fragment} from "react";
+import React from "react";
 import {
      Datagrid, List,TextField, Show, SimpleShowLayout,
-     Filter,TextInput,Create,Edit,SimpleForm,Toolbar,
-     SaveButton,EditButton,ReferenceArrayField
+     Filter, TextInput, Create, Edit, SimpleForm, Toolbar,
+     SaveButton, EditButton
 } from 'react-admin';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
@@ -46,7 +46,7 @@ const CatchmentFilter = props => (
     </Filter>
 );
 
-export const CatchmentList = ({ organisation, ...props }) => (
+export const CatchmentList = props => (
     <List {...props}
     filters={<CatchmentFilter/>}>
         <Datagrid rowClick="show">

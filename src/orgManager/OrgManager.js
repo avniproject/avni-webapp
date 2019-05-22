@@ -13,9 +13,8 @@ class OrgManager extends Component {
     constructor(props) {
         super(props);
         this.userList = this.userList.bind(this);
-        this.catchmentList = this.catchmentList.bind(this);
     }
-    
+
     static childContextTypes = {
         store: PropTypes.object
     };
@@ -28,10 +27,6 @@ class OrgManager extends Component {
         return <UserList {...props} organisation={this.props.organisation}/>;
     }
 
-    catchmentList(props) {
-        return <CatchmentList {...props} organisation={this.props.organisation}/>;
-    }
-
     render() {
         return (
             <Admin title="Manage Organisation"
@@ -39,7 +34,7 @@ class OrgManager extends Component {
                    history={adminHistory}
                    logoutButton={LogoutButton}>
                 <Resource name="user" list={this.userList} show={UserDetail} create={UserCreate} edit={UserEdit} />
-                <Resource name="catchment" list={this.catchmentList} show={CatchmentDetail} create={CatchmentCreate} edit={CatchmentEdit}  />
+                <Resource name="catchment" list={CatchmentList} show={CatchmentDetail} create={CatchmentCreate} edit={CatchmentEdit}  />
            </Admin>
         );
     }
