@@ -47,7 +47,9 @@ CREATE OR REPLACE VIEW virtual_catchment_address_mapping_table AS (
     GROUP BY cid, aid
 );
 
-CREATE OR REPLACE VIEW address_level_type_view AS
+DROP VIEW if exists address_level_type_view;
+
+CREATE VIEW address_level_type_view AS
   WITH RECURSIVE list_of_orgs(id,
       parent_organisation_id) AS (SELECT id, parent_organisation_id
                                   FROM organisation
