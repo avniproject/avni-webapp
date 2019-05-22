@@ -30,6 +30,17 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
         this.environment = environment;
     }
 
+    @Override
+    public boolean preHandle(HttpServletRequest request,
+                             HttpServletResponse response, Object object) throws Exception {
+        if (request.getMethod().equals(RequestMethod.GET.name())) {
+            ((MutableRequestWrapper) request).addParameter("now", getNowMinus10Seconds().toString(ISODateTimeFormat.dateTime()));
+            Long catchmentId = getCatchmentId();
+            ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(catchmentId));
+        }
+        return true;
+    }
+
     /**
      * This is a hack to fix the problem of missing data when multiple users sync at the same time.
      * During sync, it is possible that the tables being sync GETted are also being updated concurrently.
@@ -37,23 +48,9 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
      * By retrieving data that is slightly old, we ensure that any data that was updated during the sync
      * is retrieved completely during the next sync process, and we do not miss any data.
      *
-     * @param request
-     * @param response
-     * @param object
-     * @return
-     * @throws Exception
      */
-    @Override
-    public boolean preHandle(HttpServletRequest request,
-                             HttpServletResponse response, Object object) throws Exception {
-        if (request.getMethod().equals(RequestMethod.GET.name())) {
-            DateTime now = new DateTime();
-            DateTime nowMinus10Seconds = now.minusSeconds(nowMap.getOrDefault(environment.getActiveProfiles()[0], 0));
-            ((MutableRequestWrapper) request).addParameter("now", nowMinus10Seconds.toString(ISODateTimeFormat.dateTime()));
-            Long catchmentId = getCatchmentId();
-            ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(catchmentId));
-        }
-        return true;
+    private DateTime getNowMinus10Seconds() {
+        return new DateTime().minusSeconds(nowMap.getOrDefault(environment.getActiveProfiles()[0], 0));
     }
 
     private Long getCatchmentId() {
