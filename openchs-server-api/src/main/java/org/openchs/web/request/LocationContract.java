@@ -12,6 +12,7 @@ public class LocationContract extends ReferenceDataContract {
     private List<LocationContract> parents;
     private String type;
     private String organisationUUID;
+    private String addressLevelTypeUUID;
 
     public Double getLevel() {
         return level;
@@ -58,5 +59,13 @@ public class LocationContract extends ReferenceDataContract {
         } else {
             return getParents().stream().findFirst().orElse(null);
         }
+    }
+
+    public String getAddressLevelTypeUUID() {
+        return addressLevelTypeUUID;
+    }
+
+    public void setAddressLevelTypeUUID(String addressLevelTypeUUID) {
+        this.addressLevelTypeUUID = addressLevelTypeUUID;
     }
 }

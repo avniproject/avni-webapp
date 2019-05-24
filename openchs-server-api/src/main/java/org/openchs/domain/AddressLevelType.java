@@ -15,6 +15,8 @@ public class AddressLevelType extends OrganisationAwareEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    private Double level;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "type")
     private Set<AddressLevel> addressLevels = new LinkedHashSet<>();
 
@@ -32,5 +34,13 @@ public class AddressLevelType extends OrganisationAwareEntity {
 
     public void setAddressLevels(Set<AddressLevel> addressLevels) {
         this.addressLevels = addressLevels;
+    }
+
+    public Double getLevel() {
+        return level;
+    }
+
+    public void setLevel(Double level) {
+        this.level = level;
     }
 }

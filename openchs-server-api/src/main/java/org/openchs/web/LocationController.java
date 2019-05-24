@@ -57,10 +57,9 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     @Transactional
     public ResponseEntity<?> save(@RequestBody List<LocationContract> locationContracts) {
         try {
-            Map<String, AddressLevelType> typeMap = new HashMap<>();
             for (LocationContract locationContract : locationContracts) {
                 logger.info(String.format("Processing location request: %s", locationContract.toString()));
-                AddressLevelType type = typeMap.compute(locationContract.getType(), (k, v) -> v == null ? saveType(k) : v);
+                AddressLevelType type = getType(locationContract);
                 saveLocation(locationContract, type);
             }
         } catch (BuilderException e) {
@@ -84,17 +83,34 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         return locationRepository;
     }
 
-    private AddressLevelType saveType(String type) {
-        if (type == null) return null;
-        AddressLevelType existingType = addressLevelTypeRepository.findByNameAndOrganisationId(type,
-                UserContextHolder.getUserContext().getOrganisation().getId());
-        if (existingType == null) {
-            AddressLevelType addressLevelType = new AddressLevelType();
-            addressLevelType.setName(type);
-            addressLevelType.setUuid(UUID.randomUUID().toString());
-            return addressLevelTypeRepository.save(addressLevelType);
+
+    private AddressLevelType getType(LocationContract locationContract) throws BuilderException {
+        if (locationContract.getAddressLevelTypeUUID() != null) {
+            AddressLevelType type = this.addressLevelTypeRepository.findByUuid(locationContract.getAddressLevelTypeUUID());
+            if (type == null) {
+                throw new BuilderException(
+                        String.format("Unable to create Location %s because AddressLevelType %s does not exist",
+                                locationContract.getUuid(),
+                                locationContract.getAddressLevelTypeUUID()
+                        )
+                );
+            }
+            return type;
+        } else {
+            AddressLevelType type = this.addressLevelTypeRepository.findByNameAndOrganisationId(
+                    locationContract.getType(),
+                    UserContextHolder.getUserContext().getOrganisation().getId()
+            );
+            if (type == null) {
+                throw new BuilderException(
+                        String.format("Unable to create Location %s because AddressLevelType %s does not exist",
+                                locationContract.getUuid(),
+                                locationContract.getType()
+                        )
+                );
+            }
+            return type;
         }
-        return existingType;
     }
 
     private void saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {
@@ -108,11 +124,6 @@ public class LocationController implements OperatingIndividualScopeAwareControll
             e.printStackTrace();
             throw new BuilderException(String.format("Unable to create Location{name='%s',level='%s',orgUUID='%s',..}: '%s'", contract.getName(), contract.getLevel(), contract.getOrganisationUUID(), e.getMessage()));
         }
-    }
-
-    private boolean possibleDuplicate(LocationContract locationRequest) {
-        List<AddressLevel> locations = locationRepository.findByTitleAndLevelAndUuidNot(locationRequest.getName(), locationRequest.getLevel(), locationRequest.getUuid());
-        return !locations.isEmpty();
     }
 
     private void updateOrganisationIfNeeded(AddressLevel location, @NotNull LocationContract contract) {
