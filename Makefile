@@ -122,6 +122,8 @@ debug_server_live: build_server
 
 ci-test:
 	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "uuid-ossp"';
+	-psql -h localhost -Uopenchs openchs_test -c 'create extension if not exists "ltree"';
+
 	./gradlew clean test --debug --stacktrace
 
 open_test_results:

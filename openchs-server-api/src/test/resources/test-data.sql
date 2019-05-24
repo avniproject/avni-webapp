@@ -195,10 +195,10 @@ VALUES ('Sample Encounter Type', '3a1535d0-81fd-48fc-85b5-dc9da81064a3', 1);
 INSERT INTO program (name, uuid, version)
 VALUES ('Diabetes', 'db62a322-0ec2-4bb0-ac24-296dc7216c9a', 1);
 
-INSERT INTO address_level (title, level, uuid, version)
-VALUES ('Nijhma', 1, 'ae35fe6d-910e-47bd-a0c7-0c10182a4085', 1);
-INSERT INTO address_level (title, level, uuid, version)
-VALUES ('Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1);
+INSERT INTO address_level (title, level, uuid, version, lineage)
+VALUES ('Nijhma', 1, 'ae35fe6d-910e-47bd-a0c7-0c10182a4085', 1, 'Nijhma');
+INSERT INTO address_level (title, level, uuid, version, lineage)
+VALUES ('Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1, 'Naya_Gaon');
 
 INSERT INTO catchment_address_mapping (catchment_id, addresslevel_id)
 VALUES (1, 1);
