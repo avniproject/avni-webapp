@@ -60,6 +60,9 @@ public class LocationController implements OperatingIndividualScopeAwareControll
             for (LocationContract locationContract : locationContracts) {
                 logger.info(String.format("Processing location request: %s", locationContract.toString()));
                 AddressLevelType type = getType(locationContract);
+                if (type == null) {
+                    type = saveType(locationContract.getType(), locationContract.getLevel());
+                }
                 saveLocation(locationContract, type);
             }
         } catch (BuilderException e) {
@@ -84,33 +87,19 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     }
 
 
-    private AddressLevelType getType(LocationContract locationContract) throws BuilderException {
-        if (locationContract.getAddressLevelTypeUUID() != null) {
-            AddressLevelType type = this.addressLevelTypeRepository.findByUuid(locationContract.getAddressLevelTypeUUID());
-            if (type == null) {
-                throw new BuilderException(
-                        String.format("Unable to create Location %s because AddressLevelType %s does not exist",
-                                locationContract.getUuid(),
-                                locationContract.getAddressLevelTypeUUID()
-                        )
-                );
-            }
-            return type;
-        } else {
-            AddressLevelType type = this.addressLevelTypeRepository.findByNameAndOrganisationId(
-                    locationContract.getType(),
-                    UserContextHolder.getUserContext().getOrganisation().getId()
-            );
-            if (type == null) {
-                throw new BuilderException(
-                        String.format("Unable to create Location %s because AddressLevelType %s does not exist",
-                                locationContract.getUuid(),
-                                locationContract.getType()
-                        )
-                );
-            }
-            return type;
-        }
+    private AddressLevelType getType(LocationContract locationContract) {
+        Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
+        return locationContract.getAddressLevelTypeUUID() != null
+                ? this.addressLevelTypeRepository.findByUuid(locationContract.getAddressLevelTypeUUID())
+                : this.addressLevelTypeRepository.findByNameAndOrganisationId(locationContract.getType(), orgId);
+    }
+
+    private AddressLevelType saveType(String type, Double level) {
+        AddressLevelType addressLevelType = new AddressLevelType();
+        addressLevelType.setUuid(UUID.randomUUID().toString());
+        addressLevelType.setName(type);
+        addressLevelType.setLevel(level);
+        return addressLevelTypeRepository.save(addressLevelType);
     }
 
     private void saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {

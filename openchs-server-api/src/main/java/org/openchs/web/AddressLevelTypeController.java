@@ -33,7 +33,7 @@ public class AddressLevelTypeController implements RestControllerResourceProcess
     @Transactional
     public ResponseEntity<?> createAddressLevelType(@RequestBody AddressLevelTypeContract addressLevelTypeContract) {
         AddressLevelTypeBuilder addressLevelTypeBuilder
-                = new AddressLevelTypeBuilder(addressLevelTypeRepository.findByNameIgnoreCase(addressLevelTypeContract.getName()));
+                = new AddressLevelTypeBuilder(addressLevelTypeRepository.findByUuid(addressLevelTypeContract.getUuid()));
         addressLevelTypeBuilder.copy(addressLevelTypeContract);
         AddressLevelType addressLevelType = addressLevelTypeBuilder.build();
         addressLevelTypeRepository.save(addressLevelType);

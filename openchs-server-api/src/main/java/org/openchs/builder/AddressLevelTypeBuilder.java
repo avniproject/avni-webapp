@@ -17,10 +17,10 @@ public class AddressLevelTypeBuilder extends BaseBuilder<AddressLevelType, Addre
 
     public AddressLevelTypeBuilder(AddressLevelType existingEntity) {
         super(existingEntity, new AddressLevelType());
-        this.newEntity.setUuid(UUID.randomUUID().toString());
     }
 
     public AddressLevelTypeBuilder copy(AddressLevelTypeContract addressLevelTypeContract) {
+        get().setUuid(addressLevelTypeContract.getUuid());
         get().setName(addressLevelTypeContract.getName());
         get().setLevel(addressLevelTypeContract.getLevel());
         return this;
