@@ -8,6 +8,8 @@ import { authProvider, LogoutButton } from "../admin";
 import { store, adminHistory } from "../store";
 import { UserList, UserDetail, UserCreate, UserEdit } from './user';
 import { CatchmentDetail, CatchmentList, CatchmentCreate, CatchmentEdit } from "./catchment";
+import { LocationTypeList, LocationTypeDetail, LocationTypeCreate, LocationTypeEdit } from "./addressLevelType";
+
 
 class OrgManager extends Component {
     constructor(props) {
@@ -35,6 +37,11 @@ class OrgManager extends Component {
                    logoutButton={LogoutButton}>
                 <Resource name="user" list={this.userList} show={UserDetail} create={UserCreate} edit={UserEdit} />
                 <Resource name="catchment" list={CatchmentList} show={CatchmentDetail} create={CatchmentCreate} edit={CatchmentEdit}  />
+                <Resource name="addressLevelType" options={{ label: "Location Types" }}
+                          list={LocationTypeList}
+                          show={LocationTypeDetail}
+                          create={LocationTypeCreate}
+                          edit={LocationTypeEdit} />
            </Admin>
         );
     }
