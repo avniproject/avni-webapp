@@ -21,7 +21,4 @@ public interface AddressLevelTypeRepository extends ReferenceDataRepository<Addr
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevelType> findByIdIn(@Param("ids") Long[] ids);
 
-    @Query(value = "SELECT DISTINCT alt from AddressLevelType as alt\n" +
-            "join alt.addressLevels as al join al.virtualCatchments as vc")
-    Page<AddressLevelType> findAll(Pageable pageable);
 }
