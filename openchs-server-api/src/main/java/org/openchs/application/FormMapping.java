@@ -1,8 +1,10 @@
 package org.openchs.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.openchs.domain.CHSEntity;
 import org.openchs.domain.OrganisationAwareEntity;
+import org.openchs.domain.SubjectType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,6 +24,10 @@ public class FormMapping extends OrganisationAwareEntity {
     //encounter type id
     @Column(name = "observations_type_entity_id")
     private Long observationsTypeEntityId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_type_id")
+    private SubjectType subjectType;
 
     public Form getForm() {
         return form;
@@ -47,5 +53,14 @@ public class FormMapping extends OrganisationAwareEntity {
 
     public void setObservationsTypeEntityId(Long observationsTypeEntityId) {
         this.observationsTypeEntityId = observationsTypeEntityId;
+    }
+
+    @JsonIgnore
+    public SubjectType getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(SubjectType subjectType) {
+        this.subjectType = subjectType;
     }
 }

@@ -2,6 +2,8 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -26,6 +28,7 @@ public class Audit {
     @JoinColumn(name = "created_by_id")
     @CreatedBy
     @ManyToOne(targetEntity = User.class)
+    @Fetch(FetchMode.JOIN)
     private User createdBy;
 
     @CreatedDate
@@ -35,6 +38,7 @@ public class Audit {
     @JoinColumn(name = "last_modified_by_id")
     @LastModifiedBy
     @ManyToOne(targetEntity = User.class)
+    @Fetch(FetchMode.JOIN)
     private User lastModifiedBy;
 
     @LastModifiedDate

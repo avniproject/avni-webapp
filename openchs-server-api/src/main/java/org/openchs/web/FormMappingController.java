@@ -2,17 +2,13 @@ package org.openchs.web;
 
 import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
-import org.openchs.application.FormType;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramRepository;
+import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
-import org.openchs.domain.EncounterType;
-import org.openchs.domain.Program;
-import org.openchs.service.ConceptService;
-import org.openchs.web.request.ConceptContract;
+import org.openchs.domain.SubjectType;
 import org.openchs.web.request.FormMappingContract;
-import org.openchs.web.request.application.FormContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,21 +20,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class FormMappingController extends AbstractController<FormMapping>{
     private final Logger logger;
     private final ProgramRepository programRepository;
+    private SubjectTypeRepository subjectTypeRepository;
     private FormMappingRepository formMappingRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private FormRepository formRepository;
 
     @Autowired
-    public FormMappingController(FormMappingRepository formMappingRepository, EncounterTypeRepository encounterTypeRepository, FormRepository formRepository, ProgramRepository programRepository) {
+    public FormMappingController(FormMappingRepository formMappingRepository,
+                                 EncounterTypeRepository encounterTypeRepository,
+                                 FormRepository formRepository,
+                                 ProgramRepository programRepository,
+                                 SubjectTypeRepository subjectTypeRepository
+    ) {
         this.formMappingRepository = formMappingRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.formRepository = formRepository;
         this.programRepository = programRepository;
+        this.subjectTypeRepository = subjectTypeRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -71,9 +75,17 @@ public class FormMappingController extends AbstractController<FormMapping>{
         if (formMappingRequest.getEncounterTypeUUID()!= null){
             formMapping.setObservationsTypeEntityId(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()).getId());
         }
+
+        if (formMappingRequest.getSubjectTypeUUID() != null) {
+            formMapping.setSubjectType(
+                    subjectTypeRepository.findByUuid(
+                            formMappingRequest.getSubjectTypeUUID()));
+        } else {
+            formMapping.setSubjectType(subjectTypeRepository.individualSubjectType());
+        }
+
         formMapping.setVoided(formMappingRequest.isVoided());
         formMappingRepository.save(formMapping);
-
     }
 
 

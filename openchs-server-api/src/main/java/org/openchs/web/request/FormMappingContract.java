@@ -10,6 +10,7 @@ public class FormMappingContract extends ReferenceDataContract {
     private String formUUID;
     private String programUUID;
     private String encounterTypeUUID;
+    private String subjectTypeUUID;
 
     public String getFormUUID() {
         return formUUID;
@@ -33,6 +34,14 @@ public class FormMappingContract extends ReferenceDataContract {
 
     public void setEncounterTypeUUID(String encounterTypeUUID) {
         this.encounterTypeUUID = encounterTypeUUID;
+    }
+
+    public String getSubjectTypeUUID() {
+        return subjectTypeUUID;
+    }
+
+    public void setSubjectTypeUUID(String subjectTypeUUID) {
+        this.subjectTypeUUID = subjectTypeUUID;
     }
 
     @Override

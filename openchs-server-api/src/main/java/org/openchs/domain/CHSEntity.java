@@ -1,6 +1,8 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ public class CHSEntity extends CHSBaseEntity {
     @JsonIgnore
     @JoinColumn(name = "audit_id")
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @Fetch(FetchMode.JOIN)
     private Audit audit = new Audit();
 
     //    @Version

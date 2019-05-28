@@ -134,6 +134,10 @@ public class OpenCHS {
                     resource.add(new Link(program.getUuid(), "entityUUID"));
                 }
 
+                if (formMapping.getSubjectType() != null) {
+                    resource.add(new Link(formMapping.getSubjectType().getUuid(), "subjectTypeUUID"));
+                }
+
                 Long observationsTypeEntityId = formMapping.getObservationsTypeEntityId();
                 if (observationsTypeEntityId != null) {
                     EncounterType encounterType = encounterTypeRepository.findOne(observationsTypeEntityId);

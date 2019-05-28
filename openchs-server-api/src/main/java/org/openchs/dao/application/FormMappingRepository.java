@@ -14,13 +14,10 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formMapping", path = "formMapping")
 public interface FormMappingRepository extends ReferenceDataRepository<FormMapping>, FindByLastModifiedDateTime<FormMapping> {
-    List<FormMapping> findByFormUuid(String uuid);
 
     FormMapping findByFormUuidAndObservationsTypeEntityId(String uuid, Long observationsTypeEntityId);
 
     Page<FormMapping> findByEntityId(Long entityId, Pageable pageable);
-
-    List<FormMapping> findByEntityIdAndOrganisationIdIsNotNull(Long entityId);
 
     List<FormMapping> findAllByEntityIdIsNotNull();
 

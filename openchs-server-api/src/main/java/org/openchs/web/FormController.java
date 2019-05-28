@@ -3,10 +3,7 @@ package org.openchs.web;
 import org.openchs.application.*;
 import org.openchs.builder.FormBuilder;
 import org.openchs.builder.FormBuilderException;
-import org.openchs.dao.EncounterTypeRepository;
-import org.openchs.dao.OperationalEncounterTypeRepository;
-import org.openchs.dao.OperationalProgramRepository;
-import org.openchs.dao.ProgramRepository;
+import org.openchs.dao.*;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
@@ -41,18 +38,18 @@ public class FormController {
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
     private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
-    private EncounterTypeRepository encounterTypeRepository;
     private final FormMappingRepository formMappingRepository;
     private RepositoryEntityLinks entityLinks;
 
     @Autowired
-    public FormController(FormRepository formRepository, ProgramRepository programRepository,
-                          EncounterTypeRepository encounterTypeRepository, FormMappingRepository formMappingRepository,
-                          OperationalProgramRepository operationalProgramRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository,
+    public FormController(FormRepository formRepository,
+                          ProgramRepository programRepository,
+                          FormMappingRepository formMappingRepository,
+                          OperationalProgramRepository operationalProgramRepository,
+                          OperationalEncounterTypeRepository operationalEncounterTypeRepository,
                           RepositoryEntityLinks entityLinks) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
-        this.encounterTypeRepository = encounterTypeRepository;
         this.formMappingRepository = formMappingRepository;
         this.operationalProgramRepository = operationalProgramRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
@@ -66,10 +63,7 @@ public class FormController {
     public ResponseEntity<?> save(@RequestBody FormContract formRequest) {
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
-            Form savedForm = saveForm(formRequest);
-            if(FormType.valueOf(formRequest.getFormType()).equals(FormType.IndividualProfile)){
-                createFormMappingIfNotPresent(savedForm);
-            }
+            saveForm(formRequest);
         } catch (FormBuilderException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -121,22 +115,11 @@ public class FormController {
         return ResponseEntity.ok(null);
     }
 
-    private void createFormMappingIfNotPresent(Form form) {
-        FormMapping formMapping = formMappingRepository.findByFormUuidAndObservationsTypeEntityId(form.getUuid(), null);
-        if (formMapping == null) {
-            formMapping = new FormMapping();
-            formMapping.assignUUID();
-            formMapping.setForm(form);
-            formMappingRepository.save(formMapping);
-        }
-    }
-
-
     @RequestMapping(value = "/forms/export", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public FormContract export(@RequestParam String formUUID) {
         Form form = formRepository.findByUuid(formUUID);
-        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+
         FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString());
         formContract.setOrganisationId(form.getOrganisationId());
 
