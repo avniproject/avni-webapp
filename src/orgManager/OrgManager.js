@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types';
-import { Admin, Resource } from "react-admin";
+import { Admin, Resource, ListGuesser } from "react-admin";
 import { withRouter } from 'react-router-dom';
 import { connect } from "react-redux";
 
@@ -9,6 +9,7 @@ import { store, adminHistory } from "../store";
 import { UserList, UserDetail, UserCreate, UserEdit } from './user';
 import { CatchmentDetail, CatchmentList, CatchmentCreate, CatchmentEdit } from "./catchment";
 import { LocationTypeList, LocationTypeDetail, LocationTypeCreate, LocationTypeEdit } from "./addressLevelType";
+import { LocationDetail, LocationList } from "./locations";
 
 
 class OrgManager extends Component {
@@ -42,6 +43,9 @@ class OrgManager extends Component {
                           show={LocationTypeDetail}
                           create={LocationTypeCreate}
                           edit={LocationTypeEdit} />
+                <Resource name="locations" options={{ label: "Locations" }}
+                          list={LocationList}
+                          show={LocationDetail}  />
            </Admin>
         );
     }
