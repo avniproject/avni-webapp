@@ -16,6 +16,7 @@ public interface AddressLevelTypeRepository extends ReferenceDataRepository<Addr
     AddressLevelType findById(Long id);
 
     AddressLevelType findByNameAndOrganisationId(String name, Long organisationId);
+    AddressLevelType findByNameIgnoreCaseAndOrganisationId(String name, Long organisationId);
 
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevelType> findByIdIn(@Param("ids") Long[] ids);

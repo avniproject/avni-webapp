@@ -2,8 +2,10 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -16,6 +18,8 @@ public class AddressLevelType extends OrganisationAwareEntity {
     private String name;
 
     private Double level;
+
+    private Long parentId;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "type")
     private Set<AddressLevel> addressLevels = new LinkedHashSet<>();
@@ -42,5 +46,13 @@ public class AddressLevelType extends OrganisationAwareEntity {
 
     public void setLevel(Double level) {
         this.level = level;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 }

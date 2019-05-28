@@ -13,6 +13,7 @@ import org.openchs.domain.Organisation;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.UserService;
 import org.openchs.web.request.LocationContract;
+import org.openchs.web.request.ReferenceDataContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RepositoryRestController
@@ -61,9 +60,9 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         try {
             for (LocationContract locationContract : locationContracts) {
                 logger.info(String.format("Processing location request: %s", locationContract.toString()));
-                AddressLevelType type = getType(locationContract);
+                AddressLevelType type = getTypeByUuidOrName(locationContract);
                 if (type == null) {
-                    type = saveType(locationContract.getType(), locationContract.getLevel());
+                    type = createType(locationContract);
                 }
                 saveLocation(locationContract, type);
             }
@@ -89,19 +88,31 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     }
 
 
-    private AddressLevelType getType(LocationContract locationContract) {
+    private AddressLevelType getTypeByUuidOrName(LocationContract locationContract) {
         Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
         return locationContract.getAddressLevelTypeUUID() != null
                 ? this.addressLevelTypeRepository.findByUuid(locationContract.getAddressLevelTypeUUID())
-                : this.addressLevelTypeRepository.findByNameAndOrganisationId(locationContract.getType(), orgId);
+                : this.addressLevelTypeRepository.findByNameIgnoreCaseAndOrganisationId(locationContract.getType(), orgId);
     }
 
-    private AddressLevelType saveType(String type, Double level) {
+    private AddressLevelType createType(LocationContract locationContract) {
         AddressLevelType addressLevelType = new AddressLevelType();
         addressLevelType.setUuid(UUID.randomUUID().toString());
-        addressLevelType.setName(type);
-        addressLevelType.setLevel(level);
-        return addressLevelTypeRepository.save(addressLevelType);
+        addressLevelType.setName(locationContract.getType());
+        addressLevelType.setLevel(locationContract.getLevel());
+        setParent(locationContract, addressLevelType);
+        addressLevelTypeRepository.save(addressLevelType);
+        return addressLevelType;
+    }
+
+    private void setParent(LocationContract locationContract, AddressLevelType addressLevelType) {
+        Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
+        ReferenceDataContract parentLocationContract = locationContract.getParent();
+        if (parentLocationContract != null) {
+            AddressLevel parentLocation = locationRepository.findByUuid(parentLocationContract.getUuid());
+            AddressLevelType parentAddressLevelType = addressLevelTypeRepository.findByNameIgnoreCaseAndOrganisationId(parentLocation.getType().getName(), orgId);
+            addressLevelType.setParentId(parentAddressLevelType.getId());
+        }
     }
 
     private void saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {

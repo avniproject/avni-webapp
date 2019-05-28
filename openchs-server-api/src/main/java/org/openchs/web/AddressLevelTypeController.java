@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 
-
-@RepositoryRestController
-public class AddressLevelTypeController implements RestControllerResourceProcessor<AddressLevelType> {
+@RestController
+public class AddressLevelTypeController extends AbstractController<AddressLevelType> {
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private Logger logger;
@@ -39,15 +39,24 @@ public class AddressLevelTypeController implements RestControllerResourceProcess
         return addressLevelTypeRepository.findByIsVoidedFalse(pageable);
     }
 
+    @GetMapping(value = "/addressLevelType/{id}")
+    public ResponseEntity<?> getSingle(@PathVariable Long id) {
+        return new ResponseEntity<>(addressLevelTypeRepository.findById(id), HttpStatus.OK);
+    }
 
     @PostMapping(value ="/addressLevelType")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
-    public ResponseEntity<?> createAddressLevelType(@RequestBody AddressLevelTypeContract addressLevelTypeContract) {
-        AddressLevelTypeBuilder addressLevelTypeBuilder
-                = new AddressLevelTypeBuilder(addressLevelTypeRepository.findByUuid(addressLevelTypeContract.getUuid()));
-        addressLevelTypeBuilder.copy(addressLevelTypeContract);
-        AddressLevelType addressLevelType = addressLevelTypeBuilder.build();
+    public ResponseEntity<?> createAddressLevelType(@RequestBody AddressLevelTypeContract contract) {
+        AddressLevelType addressLevelType = newOrExistingEntity(addressLevelTypeRepository, contract, new AddressLevelType());
+        if(contract.getUuid() == null)
+            addressLevelType.setUuid(UUID.randomUUID().toString());
+        addressLevelType.setName(contract.getName());
+        addressLevelType.setLevel(contract.getLevel());
+        if (contract.getParent() != null) {
+            AddressLevelType parent = addressLevelTypeRepository.findByUuid(contract.getParent().getUuid());
+            addressLevelType.setParentId(parent.getId());
+        }
         addressLevelTypeRepository.save(addressLevelType);
         return new ResponseEntity<>(addressLevelType, HttpStatus.CREATED);
     }
@@ -61,6 +70,17 @@ public class AddressLevelTypeController implements RestControllerResourceProcess
             createAddressLevelType(addressLevelTypeContract);
         }
         return ResponseEntity.ok(null);
+    }
+
+    @PutMapping(value ="/addressLevelType/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @Transactional
+    public ResponseEntity<?> updateAddressLevelType(@PathVariable("id") Long id, @RequestBody AddressLevelTypeContract contract) {
+        AddressLevelType addressLevelType = addressLevelTypeRepository.findByUuid(contract.getUuid());
+        addressLevelType.setName(contract.getName());
+        addressLevelType.setLevel(contract.getLevel());
+        addressLevelTypeRepository.save(addressLevelType);
+        return new ResponseEntity<>(addressLevelType, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value ="/addressLevelType/{id}")
