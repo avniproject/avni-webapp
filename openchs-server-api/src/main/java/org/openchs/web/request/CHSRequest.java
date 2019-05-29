@@ -7,6 +7,7 @@ import java.util.UUID;
 public class CHSRequest {
     private String uuid;
     private String userUUID;
+    private Long id;
     private boolean isVoided = false;
 
     public CHSRequest() {
@@ -16,6 +17,10 @@ public class CHSRequest {
         this.uuid = uuid;
         this.userUUID = userUUID;
     }
+
+    public Long getId() { return id; }
+
+    public void setId(Long id) { this.id = id; }
 
     public String getUuid() {
         return uuid == null ? null : uuid.trim();

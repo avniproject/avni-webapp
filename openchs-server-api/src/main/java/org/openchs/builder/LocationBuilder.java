@@ -27,24 +27,19 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
         get().setType(type);
         get().setLevel(locationRequest.getLevel());
         withParentLocation(locationRequest);
-        withLineage(locationRequest);
         return this;
     }
 
     private LocationBuilder withParentLocation(LocationContract locationRequest) {
         ReferenceDataContract parentLocation = locationRequest.getParent();
-        if (parentLocation != null && parentLocation.getUuid() != null) {
-            get().setParentLocationMapping(fetchOrCreateLocationMapping(get(), parentLocation));
+        if (parentLocation != null) {
+            if (parentLocation.getUuid() != null) {
+                get().setParentLocationMapping(fetchOrCreateLocationMapping(get(), parentLocation));
+                get().setParent(locationRepository.findByUuid(parentLocation.getUuid()));
+            } else if (parentLocation.getId() != null) {
+                get().setParent(locationRepository.findById(parentLocation.getId()));
+            }
         }
-        return this;
-    }
-
-    private LocationBuilder withLineage(LocationContract locationRequest) {
-        ReferenceDataContract parentLocation = locationRequest.getParent();
-        String locationTitleNormalized = cleanAddressTitle(locationRequest.getName());
-        String parentLineage = parentLocation != null && parentLocation.getUuid() != null ?
-                locationRepository.findByUuid(parentLocation.getUuid()).getLineage() + "." : "";
-        get().setLineage(parentLineage + locationTitleNormalized);
         return this;
     }
 

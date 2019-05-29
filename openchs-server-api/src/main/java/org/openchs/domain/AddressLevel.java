@@ -31,8 +31,14 @@ public class AddressLevel extends OrganisationAwareEntity {
     @JoinColumn(name = "type_id")
     private AddressLevelType type;
 
+    @ManyToOne(cascade={CascadeType.ALL})
+    @JoinColumn(name="parent_id")
+    private AddressLevel parent;
+
+    @OneToMany(mappedBy = "parent")
+    private Set<AddressLevel> subLocations = new HashSet<>();
+
     @Column(unique = true)
-    @NotNull
     @Type(type = "org.openchs.ltree.LTreeType")
     private String lineage;
 
@@ -66,6 +72,14 @@ public class AddressLevel extends OrganisationAwareEntity {
     public void setLevel(Double level) {
         this.level = level;
     }
+
+    public AddressLevel getParent() { return parent; }
+
+    public void setParent(AddressLevel parent) { this.parent = parent; }
+
+    public Set<AddressLevel> getSubLocations() { return subLocations; }
+
+    public void setSubLocations(Set<AddressLevel> subLocations) { this.subLocations = subLocations; }
 
     public Set<Catchment> getCatchments() {
         return catchments;

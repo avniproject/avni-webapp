@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Objects;
 
 //https://stackoverflow.com/a/41381946/5737375
 
@@ -28,7 +27,10 @@ public class LTreeType implements UserType {
 
     @Override
     public boolean equals(Object o, Object o1) throws HibernateException {
-        return Objects.equals(o, o1);
+        if (o == o1) return true;
+        if (o == null || o1 == null) return false;
+
+        return o.equals(o1);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class LTreeType implements UserType {
 
     @Override
     public Object deepCopy(Object o) throws HibernateException {
-        return o;
+        return o != null ? new String((String)o) : null;
     }
 
     @Override
