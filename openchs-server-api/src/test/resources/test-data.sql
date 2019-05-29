@@ -58,7 +58,7 @@ VALUES (2, 'demo', 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
 INSERT INTO organisation (id, name, db_user, media_directory, uuid)
 VALUES (3, 'a-demo', 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325');
 
-insert into subject_type(uuid, name, organisation_id, audit_id) VALUES ('9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3', 'Individual', 1, create_audit());
+insert into subject_type(id, uuid, name, organisation_id, audit_id) VALUES (1, '9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3', 'Individual', 1, create_audit());
 
 INSERT INTO users (id, username, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin)
 VALUES (1, 'admin', '5fed2907-df3a-4867-aef5-c87f4c78a31a', 1, 'None', false, true);
@@ -281,8 +281,8 @@ INSERT INTO form_element (name, display_order, is_mandatory, concept_id, form_el
 VALUES
   ('Paracheck', 3, TRUE, 19, 1, 'b6edbb87-22d8-4265-9231-aad499475d0c', 1, 1003);
 
-INSERT INTO form_mapping (form_id, entity_id, uuid, version)
-VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0);
+INSERT INTO form_mapping (form_id, entity_id, uuid, version, subject_type_id)
+VALUES (1, 1, '741cbb1f-f1bf-42f2-87f7-f5258aa91647', 0, 1);
 
 SELECT setval('non_applicable_form_element_id_seq', COALESCE((SELECT MAX(id) + 1
                                                        FROM non_applicable_form_element), 1), FALSE);
