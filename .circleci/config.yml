@@ -23,7 +23,7 @@ jobs:
           - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
           - v1-dependencies-
 
-      - run: apt-get update
+      - run: sudo apt-get update
 
       - run: sudo apt-get install make postgresql-client
 
