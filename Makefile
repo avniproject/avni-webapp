@@ -111,6 +111,7 @@ start_server_wo_gradle:
 
 # I have setup the environment variables in my bash_profile so that I can just run it whenever I want in live mode. You could do that too (Vivek).
 start_server_staging: build_server
+	-mkdir -p /tmp/openchs && sudo ln -s /tmp/openchs /var/log/openchs
 	OPENCHS_MODE=live OPENCHS_CLIENT_ID=93kp4dj29cfgnoerdg33iev0v OPENCHS_USER_POOL=ap-south-1_tuRfLFpm1 java -jar openchs-server-api/build/libs/openchs-server-0.0.1-SNAPSHOT.jar
 
 debug_server_staging: build_server
