@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "address_level")
 @BatchSize(size = 100)
-@JsonIgnoreProperties({"parentLocationMappings", "type", "catchments", "virtualCatchments"})
+@JsonIgnoreProperties({"subLocations", "parentLocationMappings", "type", "catchments", "virtualCatchments"})
 public class AddressLevel extends OrganisationAwareEntity {
     @Column
     @NotNull
