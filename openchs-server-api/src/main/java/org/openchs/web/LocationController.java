@@ -17,7 +17,9 @@ import org.openchs.web.request.ReferenceDataContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
@@ -30,7 +32,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
+@RepositoryRestController
 public class LocationController implements OperatingIndividualScopeAwareController<AddressLevel>, RestControllerResourceProcessor<AddressLevel> {
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
@@ -73,6 +75,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
 
     @RequestMapping(value = "/locations/search/lastModified", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
+    @ResponseBody
     public PagedResources<Resource<AddressLevel>> getAddressLevelsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -151,5 +154,16 @@ public class LocationController implements OperatingIndividualScopeAwareControll
             }
             location.setOrganisationId(organisation.getId());
         }
+    }
+
+    @GetMapping(value = "/locations/search/find")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @ResponseBody
+    public Page<AddressLevel> find(@RequestParam(value = "childrenOf", required = false) String childrenOf,
+                                   Pageable pageable) {
+        if (childrenOf != null && !childrenOf.equals("")) {
+            return locationRepository.getAddressLevelsByLquery(childrenOf+".*{1}", pageable);
+        }
+        return locationRepository.getAddressLevelsByLquery("*{1}", pageable);
     }
 }

@@ -1,7 +1,6 @@
 package org.openchs.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
@@ -9,14 +8,15 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "address_level")
 @BatchSize(size = 100)
-@JsonIgnoreProperties({"subLocations", "parentLocationMappings", "type", "catchments", "virtualCatchments"})
+@JsonIgnoreProperties({
+    "parentLocationMappings", "type", "catchments", "virtualCatchments",
+    "parent", "subLocations"
+})
 public class AddressLevel extends OrganisationAwareEntity {
     @Column
     @NotNull
@@ -74,6 +74,8 @@ public class AddressLevel extends OrganisationAwareEntity {
     }
 
     public AddressLevel getParent() { return parent; }
+
+    public Long getParentId() { return parent != null ? parent.getId() : null; }
 
     public void setParent(AddressLevel parent) { this.parent = parent; }
 
