@@ -1,10 +1,13 @@
+import LocationUtils from "../orgManager/LocationUtils";
 
 export const types = {
     INIT_COGNITO: 'app/INIT_COGNITO',
     SET_COGNITO_USER: 'app/SET_COGNITO_USER',
     GET_USER_INFO: 'app/GET_USER_INFO',
     SET_USER_INFO: 'app/SET_USER_INFO',
-    INIT_COMPLETE: 'app/INIT_COMPLETE'
+    INIT_COMPLETE: 'app/INIT_COMPLETE',
+    FETCH_ALL_LOCATIONS: 'app/FETCH_ALL_LOCATIONS',
+    FETCH_ALL_LOCATIONS_SUCCESS: 'app/FETCH_ALL_LOCATIONS_SUCCESS',
 };
 
 export const initCognito = () => ({
@@ -26,6 +29,15 @@ export const getUserInfo = () => ({
 export const setUserInfo = userInfo => ({
     type: types.SET_USER_INFO,
     payload: userInfo
+});
+
+export const fetchAllLocations = () => ({
+    type: types.FETCH_ALL_LOCATIONS
+});
+
+export const fetchAllLocationsSuccess = locationLevels => ({
+   type: types.FETCH_ALL_LOCATIONS_SUCCESS,
+   payload: locationLevels
 });
 
 export const sendInitComplete = () => ({
@@ -77,6 +89,12 @@ export default function(state=initialState, action) {
             return {
                 ...state,
                 appInitialised: true
+            }
+        }
+        case types.FETCH_ALL_LOCATIONS_SUCCESS: {
+            return {
+                ...state,
+                locations: action.payload._embedded.locations
             }
         }
         default:
