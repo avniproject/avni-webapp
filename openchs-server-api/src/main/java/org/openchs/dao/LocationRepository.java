@@ -22,7 +22,6 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevel> findByIdIn(@Param("ids") Long[] ids);
 
-    @RestResource(path = "", rel = "overriddenGET")
     Page<AddressLevel> findByIsVoidedFalse(Pageable pageable);
 
     Page<AddressLevel> findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
@@ -64,4 +63,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     @RestResource(path = "findByParent", rel = "findByParent")
     Page<AddressLevel> findByIsVoidedFalseAndParent_Id(@Param("parentId") Long parentId, Pageable pageable);
+
+    @RestResource(path = "autocompleteLocationsOfType", rel = "autocompleteLocationsOfType")
+    List<AddressLevel> findByTypeIdAndTitleIgnoreCaseStartingWithAndIsVoidedFalse(@Param("typeId") Long typeId,
+                                                                                  @Param("title") String title);
 }
