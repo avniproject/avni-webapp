@@ -7,6 +7,7 @@ import org.springframework.hateoas.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface RestControllerResourceProcessor<T> {
 
@@ -19,6 +20,10 @@ public interface RestControllerResourceProcessor<T> {
         List<Resource<T>> resources = new ArrayList<>();
         for (T it : page) resources.add(this.process(new Resource<>(it)));
         return new PagedResources<>(resources, pageMetadata);
+    }
+
+    default List<Resource<T>> wrap(List<T> list) {
+        return list.stream().map(t -> this.process(new Resource<>(t))).collect(Collectors.toList());
     }
 
     default PagedResources<Resource<T>> empty(Pageable pageable) {
