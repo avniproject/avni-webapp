@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { withRouter } from 'react-router-dom';
 
 import Routes from './Routes';
-import { getUserInfo } from "./ducks";
+import { getUserInfo, fetchAllLocations } from "./ducks";
 import { cognitoInDev, isDevEnv } from "../common/constants";
 
 class App extends Component {
@@ -11,6 +11,7 @@ class App extends Component {
         if (isDevEnv && !cognitoInDev) {
             this.props.getUserInfo();
         }
+        this.props.fetchAllLocations();
     }
 
     render() {
@@ -32,5 +33,5 @@ const mapStateToProps = state => ({
 });
 
 export default withRouter(
-    connect(mapStateToProps, { getUserInfo })(App)
+    connect(mapStateToProps, { getUserInfo, fetchAllLocations })(App)
 );

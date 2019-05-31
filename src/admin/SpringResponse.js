@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 class SpringResponse {
     static toReactAdminResourceListResponse(json, resource) {
         if (json["content"]) {
@@ -13,6 +15,11 @@ class SpringResponse {
                 data: resources,
                 total: totalElements
             };
+        } else if (_.get(json, ['page', 'totalElements']) === 0) {
+            return {
+                data: [],
+                total: 0
+            }
         } else {
             return {
                 data: json,

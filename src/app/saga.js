@@ -1,5 +1,5 @@
 import { call, put, take, takeLatest } from 'redux-saga/effects';
-import { types, getUserInfo, setUserInfo, sendInitComplete } from "./ducks";
+import {types, getUserInfo, setUserInfo, sendInitComplete, fetchAllLocationsSuccess} from "./ducks";
 import { cognitoInDev, isProdEnv, isDevEnv } from "../common/constants";
 import { httpClient } from "../utils/httpClient";
 import { cognitoConfig as cognitoConfigFromEnv } from '../common/constants';
@@ -8,6 +8,7 @@ import { configureAuth } from "./utils";
 const api = {
     fetchCognitoDetails: () => httpClient.fetchJson('/cognito-details'),
     fetchUserInfo: () => httpClient.fetchJson('/me'),
+    fetchAllLocations: () => httpClient.fetchJson('/locations?page=0&size=1000')
 };
 
 export function* initialiseCognito() {
@@ -41,4 +42,13 @@ function* setUserDetails() {
         yield call(httpClient.initAuthContext, { username: userDetails.username });
     }
     yield put(sendInitComplete());
+}
+
+export function* watchLocations() {
+    yield takeLatest(types.FETCH_ALL_LOCATIONS, fetchAllLocations);
+}
+
+function* fetchAllLocations() {
+    const allLocations = yield call(api.fetchAllLocations);
+    yield put(fetchAllLocationsSuccess(allLocations));
 }
