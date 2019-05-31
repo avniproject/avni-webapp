@@ -4,7 +4,8 @@
         @org.hibernate.annotations.TypeDef(name = "keyValues", typeClass = KeyValuesUserType.class),
         @org.hibernate.annotations.TypeDef(name = "visitSchedules", typeClass = VisitScheduleConfigUserType.class),
         @org.hibernate.annotations.TypeDef(name = "status", typeClass = ChecklistItemUserType.class),
-        @org.hibernate.annotations.TypeDef(name = "jsonObject", typeClass = JSONObjectUserType.class)
+        @org.hibernate.annotations.TypeDef(name = "jsonObject", typeClass = JSONObjectUserType.class),
+        @org.hibernate.annotations.TypeDef(name = "ruledEntity", typeClass = RuledEntityUserType.class)
 })
 
 package org.openchs.framework.hibernate;

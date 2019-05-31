@@ -155,10 +155,13 @@ public class OpenCHS {
             public Resource<Rule> process(Resource<Rule> resource) {
                 Rule rule = resource.getContent();
                 resource.removeLinks();
-                if (rule.appliesToForm())
-                    resource.add(new Link(rule.getForm().getUuid(), "formUUID"));
-                else if (rule.appliesToProgram())
-                    resource.add(new Link(rule.getProgramRule().getProgram().getUuid(), "programUUID"));
+                RuledEntityType entityType = rule.getEntity().getType();
+                String entityUUID = rule.getEntity().getUuid();
+                String key = RuledEntityType.isForm(entityType) ? "formUUID"
+                        : RuledEntityType.isProgram(entityType) ? "programUUID" : null;
+                if (entityUUID != null) {
+                    resource.add(new Link(entityUUID, key));
+                }
                 return resource;
             }
         };

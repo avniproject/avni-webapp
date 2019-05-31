@@ -1,7 +1,6 @@
 package org.openchs.domain;
 
 import org.hibernate.annotations.Type;
-import org.openchs.application.Form;
 import org.openchs.application.RuleType;
 
 import javax.persistence.*;
@@ -9,14 +8,11 @@ import javax.validation.constraints.NotNull;
 
 @Entity(name = "rule")
 public class Rule extends OrganisationAwareEntity {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "form_id")
-    private Form form;
 
-    @OneToOne(mappedBy = "rule",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private ProgramRule programRule;
+    @NotNull
+    @Column(name="entity")
+    @Type(type = "ruledEntity")
+    private RuledEntity entity;
 
     @NotNull
     @Column(name = "type")
@@ -42,28 +38,12 @@ public class Rule extends OrganisationAwareEntity {
     @Column(name = "execution_order", nullable = false)
     private Double executionOrder;
 
-    public boolean appliesToForm() {
-        return form != null;
+    public RuledEntity getEntity() {
+        return entity;
     }
 
-    public boolean appliesToProgram() {
-        return programRule != null;
-    }
-
-    public Form getForm() {
-        return form;
-    }
-
-    public void setForm(Form form) {
-        this.form = form;
-    }
-
-    public ProgramRule getProgramRule() {
-        return programRule;
-    }
-
-    public void setProgramRule(ProgramRule programRule) {
-        this.programRule = programRule;
+    public void setEntity(RuledEntity entity) {
+        this.entity = entity;
     }
 
     public RuleType getType() {

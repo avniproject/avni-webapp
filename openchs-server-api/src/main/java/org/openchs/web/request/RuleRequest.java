@@ -1,13 +1,14 @@
 package org.openchs.web.request;
 
-import org.openchs.application.RuleableEntity;
-import org.springframework.util.StringUtils;
+import org.openchs.domain.RuledEntity;
+import org.openchs.domain.RuledEntityType;
 
 import java.util.Map;
 
 public class RuleRequest {
     private String ruleDependencyUUID;
 
+    private RuledEntity entity;
     private String entityUUID;
     private String entityType;
 
@@ -21,30 +22,33 @@ public class RuleRequest {
     private String uuid;
     private String fnName;
 
+    public RuledEntity getEntity() {
+        if (entity == null) {
+            entity = new RuledEntity();
+            entity.setUuid(entityUUID);
+            entity.setType(entityType);
+        }
+        return entity;
+    }
+
+    public void setEntity(RuledEntity entity) {
+        this.entity = entity;
+    }
+
     public String getEntityUUID() {
-        return entityUUID;
+        return getEntity().getUuid();
     }
 
     public void setEntityUUID(String entityUUID) {
         this.entityUUID = entityUUID;
     }
 
-    public String getEntityType() {
-        return entityType;
+    public RuledEntityType getEntityType() {
+        return getEntity().getType();
     }
 
     public void setEntityType(String entityType) {
         this.entityType = entityType;
-    }
-
-    public boolean isFormType() {
-        return StringUtils.capitalize(this.getEntityType())
-                .equals(RuleableEntity.Form.name());
-    }
-
-    public boolean isProgramType() {
-        return StringUtils.capitalize(this.getEntityType())
-                .equals(RuleableEntity.Program.name());
     }
 
     public String getType() {
@@ -102,4 +106,5 @@ public class RuleRequest {
     public void setExecutionOrder(Double executionOrder) {
         this.executionOrder = executionOrder;
     }
+
 }

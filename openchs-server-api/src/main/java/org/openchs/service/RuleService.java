@@ -1,9 +1,7 @@
 package org.openchs.service;
 
-import org.openchs.application.Form;
 import org.openchs.application.RuleType;
 import org.openchs.dao.ProgramRepository;
-import org.openchs.dao.ProgramRuleRepository;
 import org.openchs.dao.RuleDependencyRepository;
 import org.openchs.dao.RuleRepository;
 import org.openchs.dao.application.FormRepository;
@@ -20,6 +18,7 @@ import org.springframework.util.StringUtils;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class RuleService {
@@ -28,21 +27,17 @@ public class RuleService {
     private final RuleRepository ruleRepository;
     private final FormRepository formRepository;
     private final ProgramRepository programRepository;
-    private final ProgramRuleRepository programRuleRepository;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
                        RuleRepository ruleRepository,
                        FormRepository formRepository,
-                       ProgramRepository programRepository,
-                       ProgramRuleRepository programRuleRepository)
-    {
+                       ProgramRepository programRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
         this.formRepository = formRepository;
         this.programRepository = programRepository;
-        this.programRuleRepository = programRuleRepository;
     }
 
     @Transactional
@@ -69,58 +64,47 @@ public class RuleService {
         return rule;
     }
 
-    private Rule _setVaryingAttributes(Rule rule, RuleRequest ruleRequest) {
-        if (ruleRequest.isFormType()) {
-            Form form = formRepository.findByUuid(ruleRequest.getEntityUUID());
-            if (form == null) {
-                throw new ValidationException(String.format("Form with uuid: %s not found for rule with uuid: %s", ruleRequest.getEntityUUID(), ruleRequest.getUuid()));
-            }
-            rule.setForm(form);
-        }
-        else if (ruleRequest.isProgramType()) {
-            Program program = programRepository.findByUuid(ruleRequest.getEntityUUID());
-            if (program == null) {
-                throw new ValidationException(String.format("Program with uuid: %s not found for rule with uuid: %s", ruleRequest.getEntityUUID(), ruleRequest.getUuid()));
-            }
-            ProgramRule programRule = programRuleRepository.findByRule_Uuid(rule.getUuid());
-            if (programRule == null) {
-                programRule = new ProgramRule(program, rule);
-                programRule.assignUUID();
-            }
-            rule.setProgramRule(programRule);
-        }
-        return rule;
-    }
-
     @Transactional
-    public Rule createRule(String ruleDependencyUUID, RuleRequest ruleRequest) {
+    public Rule createOrUpdate(RuleRequest ruleRequest) {
+        String ruleDependencyUUID = ruleRequest.getRuleDependencyUUID();
         RuleDependency ruleDependency = ruleDependencyRepository.findByUuid(ruleDependencyUUID);
-        Rule rule = ruleRepository.findByUuid(ruleRequest.getUuid());
+        String ruleUUID = ruleRequest.getUuid();
+        Rule rule = ruleRepository.findByUuid(ruleUUID);
         if (rule == null) rule = new Rule();
         rule.setRuleDependency(ruleDependency);
         rule = this._setCommonAttributes(rule, ruleRequest);
-        rule = this._setVaryingAttributes(rule, ruleRequest);
-        if (rule.appliesToForm())
-            logger.info(
-                String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', Form '%s'",
-                    rule.getUuid(), rule.getName(), rule.getType(), rule.getForm().getName()));
-        else if (rule.appliesToProgram())
-            logger.info(
-                String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', Program '%s'",
-                    rule.getUuid(), rule.getName(), rule.getType(), rule.getProgramRule().getProgram().getName()));
+        String entityUUID = ruleRequest.getEntityUUID();
+
+        checkEntityExists(ruleRequest);
+
+        rule.setEntity(ruleRequest.getEntity());
+
+        logger.info(String.format("Creating Rule with UUID '%s', Name '%s', Type '%s', Entity '%s'",
+                rule.getUuid(), rule.getName(), rule.getType(), ruleRequest.getEntityType()));
+
         return ruleRepository.save(rule);
     }
 
+    private void checkEntityExists(RuleRequest ruleRequest) {
+        String entityUUID = ruleRequest.getEntityUUID();
+        if (!RuledEntityType.isNone(ruleRequest.getEntityType())) {
+            if (null == formRepository.findByUuid(entityUUID) && null == programRepository.findByUuid(entityUUID)) {
+                throw new ValidationException(String.format("%s with uuid: %s not found for rule with uuid: %s",
+                        ruleRequest.getEntityType(), entityUUID, ruleRequest.getUuid()));
+            }
+        }
+    }
+
     @Transactional
-    public List<Rule> createRules(List<RuleRequest> rules) {
-        List<Rule> allRules = ruleRepository.findByOrganisationId(UserContextHolder.getUserContext().getOrganisation().getId());
-        List<Rule> createdRules = rules.stream().map(ruleRequest -> createRule(ruleRequest.getRuleDependencyUUID(), ruleRequest))
+    public void createOrUpdate(List<RuleRequest> rules) {
+        List<Rule> rulesFromDB = ruleRepository.findByOrganisationId(UserContextHolder.getUserContext().getOrganisation().getId());
+        List<String> newRuleUUIDs = rules.stream()
+                .map(this::createOrUpdate)
+                .map(Rule::getUuid)
                 .collect(Collectors.toList());
-        List<String> ruleUUIDs = createdRules.stream().map(Rule::getUuid).collect(Collectors.toList());
-        List<Rule> voidedRules = allRules.stream()
-                .filter(r -> !ruleUUIDs.contains(r.getUuid()))
-                .collect(Collectors.toList());
-        voidedRules.stream().peek(vr -> vr.setVoided(true)).forEach(ruleRepository::save);
-        return allRules;
+
+        Stream<Rule> deletedRules = rulesFromDB.stream().filter(r -> !newRuleUUIDs.contains(r.getUuid()));
+
+        deletedRules.peek(vr -> vr.setVoided(true)).forEach(ruleRepository::save);
     }
 }

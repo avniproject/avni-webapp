@@ -42,7 +42,7 @@ public class RuleController {
     public ResponseEntity<?> saveRules(@RequestBody List<RuleRequest> ruleRequests) {
         logger.info(String.format("Creating rules for: %s", UserContextHolder.getUserContext().getOrganisation().getName()));
         try {
-            ruleService.createRules(ruleRequests);
+            ruleService.createOrUpdate(ruleRequests);
         } catch (ValidationException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -54,7 +54,7 @@ public class RuleController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> saveRule(@RequestBody RuleRequest ruleRequest) {
         logger.info(String.format("Creating rules for: %s", UserContextHolder.getUserContext().getOrganisation().getName()));
-        ruleService.createRule(ruleRequest.getRuleDependencyUUID(), ruleRequest);
+        ruleService.createOrUpdate(ruleRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
