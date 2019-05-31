@@ -79,11 +79,11 @@ const validateCatchment = (values, allLocations) => {
 };
 
 const CatchmentFormView = ({edit, ...props}) => {
-    //const sanitizeProps = ({record, resource, save}) => ({record, resource, save});
+    const sanitizeProps = ({record, resource, save}) => ({record, resource, save});
     const optionRenderer = choice => `${choice.title} ( ${choice.typeString} )`;
     return (
         <SimpleForm validate={(values) => validateCatchment(values, props.locations)}
-                    toolbar={<CustomToolbar/>} {...props} redirect="show">
+                    toolbar={<CustomToolbar/>} {...sanitizeProps(props)} redirect="show">
             <Typography variant="title" component="h3">Catchment</Typography>
             <TextInput source="name" label="Name"/>
             <TextInput source="type" label="Type"/>
