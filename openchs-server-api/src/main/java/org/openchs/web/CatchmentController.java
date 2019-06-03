@@ -1,8 +1,8 @@
 package org.openchs.web;
 
 import org.openchs.builder.BuilderException;
-import org.openchs.dao.LocationRepository;
 import org.openchs.dao.CatchmentRepository;
+import org.openchs.dao.LocationRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Catchment;
@@ -13,21 +13,26 @@ import org.openchs.web.request.CatchmentsContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
 @RestController
-public class CatchmentController {
+public class CatchmentController implements RestControllerResourceProcessor<CatchmentContract> {
     private final Logger logger;
     private CatchmentRepository catchmentRepository;
     private LocationRepository locationRepository;
@@ -39,6 +44,63 @@ public class CatchmentController {
         this.locationRepository = locationRepository;
         this.organisationRepository = organisationRepository;
         logger = LoggerFactory.getLogger(this.getClass());
+    }
+
+    @GetMapping(value = "catchment")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public PagedResources<Resource<CatchmentContract>> get(Pageable pageable) {
+        Page<Catchment> all = catchmentRepository.findAll(pageable);
+        Page<CatchmentContract> catchmentContracts = all.map(catchment -> {
+            CatchmentContract catchmentContract = CatchmentContract.fromEntity(catchment);
+            return catchmentContract;
+        });
+        return wrap(catchmentContracts);
+    }
+
+    @GetMapping(value = "catchment/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public Resource<CatchmentContract> getById(@PathVariable Long id) {
+        Catchment catchment = catchmentRepository.findOne(id);
+        CatchmentContract catchmentContract = CatchmentContract.fromEntity(catchment);
+        return new Resource<>(catchmentContract);
+    }
+
+    @PostMapping(value = "/catchment")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @Transactional
+    ResponseEntity<?> createSingleCatchment(@RequestBody CatchmentContract catchmentContract) throws Exception {
+        Catchment catchment = new Catchment();
+        catchment.assignUUID();
+        catchment.setName(catchmentContract.getName());
+        catchment.setType(catchmentContract.getType());
+        for (Long locationId : catchmentContract.getLocationIds()) {
+            AddressLevel addressLevel = locationRepository.findById(locationId);
+            if(addressLevel == null)
+                throw new Exception(String.format("Location id %d not found", locationId));
+            catchment.addAddressLevel(addressLevel);
+        }
+        catchmentRepository.save(catchment);
+        return new ResponseEntity<>(catchment, HttpStatus.CREATED);
+    }
+
+    @PutMapping(value ="/catchment/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @Transactional
+    ResponseEntity<?> updateCatchment(@PathVariable("id") Long id, @RequestBody CatchmentContract catchmentContract) throws Exception {
+        Catchment catchment = catchmentRepository.findById(id);
+        catchment.setName(catchmentContract.getName());
+        catchment.setType(catchmentContract.getType());
+        Set<AddressLevel> addressLevels = new HashSet<>();
+        for (Long locationId : catchmentContract.getLocationIds()) {
+            AddressLevel addressLevel = locationRepository.findById(locationId);
+            if(addressLevel == null)
+                throw new Exception(String.format("Location id %d not found", locationId));
+            addressLevel.addCatchment(catchment);
+            addressLevels.add(addressLevel);
+        }
+        catchment.setAddressLevels(addressLevels);
+        catchmentRepository.save(catchment);
+        return new ResponseEntity<>(catchment, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/catchments", method = RequestMethod.POST)

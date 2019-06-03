@@ -15,4 +15,6 @@ import java.util.List;
 public interface CatchmentRepository extends ReferenceDataRepository<Catchment>, FindByLastModifiedDateTime<Catchment> {
     @RestResource(path = "findAllById", rel = "findAllById")
     List<Catchment> findByIdIn(@Param("ids") Long[] ids);
+
+    Catchment findById(Long id);
 }

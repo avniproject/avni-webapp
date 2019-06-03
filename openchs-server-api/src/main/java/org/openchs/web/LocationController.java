@@ -72,11 +72,11 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         return ResponseEntity.ok(null);
     }
 
-    @GetMapping(value = "locations")
+    @GetMapping(value = "/locations")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public PagedResources<Resource<AddressLevel>> getAll(Pageable pageable) {
-        return wrap(locationRepository.findAll(pageable));
+        return wrap(locationRepository.findByIsVoidedFalse(pageable));
     }
 
     @GetMapping(value = "locations/search/find")
