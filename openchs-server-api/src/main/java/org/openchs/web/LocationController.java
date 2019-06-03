@@ -22,6 +22,7 @@ import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +63,10 @@ public class LocationController implements OperatingIndividualScopeAwareControll
                 AddressLevelType type = getTypeByUuidOrName(locationContract);
                 if (type == null) {
                     type = createType(locationContract);
+                }
+                if (locationContracts.size() == 1) {
+                    AddressLevel newLocation = saveLocation(locationContract, type);
+                    return new ResponseEntity<>(newLocation, HttpStatus.CREATED);
                 }
                 saveLocation(locationContract, type);
             }
@@ -131,7 +136,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         }
     }
 
-    private void saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {
+    private AddressLevel saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {
         LocationBuilder locationBuilder = new LocationBuilder(locationRepository.findByUuid(contract.getUuid()), type);
         locationBuilder.copy(contract);
         AddressLevel location = locationBuilder.build();
@@ -149,6 +154,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
             e.printStackTrace();
             throw new BuilderException(String.format("Unable to update lineage for location with Id %s - %s", location.getId(), e.getMessage()));
         }
+        return location;
     }
 
     private void updateLineage(AddressLevel location) {

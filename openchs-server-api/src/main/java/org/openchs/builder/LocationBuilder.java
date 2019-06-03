@@ -10,6 +10,8 @@ import org.openchs.web.request.ReferenceDataContract;
 import org.openchs.web.validation.ValidationException;
 import org.springframework.util.StringUtils;
 
+import java.util.UUID;
+
 public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> {
 
     private final AddressLevelType type;
@@ -22,7 +24,7 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
     }
 
     public LocationBuilder copy(LocationContract locationRequest) throws BuilderException {
-        get().setUuid(locationRequest.getUuid());
+        get().setUuid(locationRequest.getUuid() == null ? UUID.randomUUID().toString() : locationRequest.getUuid());
         get().setTitle(locationRequest.getName());
         get().setType(type);
         get().setLevel(type.getLevel());
