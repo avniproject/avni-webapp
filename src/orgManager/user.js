@@ -14,7 +14,7 @@ import { change } from 'redux-form';
 import { CatchmentSelectInput } from "../common/adminComponents";
 import { LineBreak } from "../common/components";
 import { phoneCountryPrefix, LOCALES } from "../common/constants";
-import EnableDisableButton from './EnableDisableButton';
+import EnableDisableButton from './components/EnableDisableButton';
 
 
 export const UserCreate = props => (
@@ -125,7 +125,7 @@ const CustomToolbar = props =>
         <SaveButton/>
     </Toolbar>;
 
-const PasswordTextField = props =>
+const   PasswordTextField = props =>
     <sub>
         <br/>Default temporary password is "password". User will
         <br/>be prompted to set their own password on first login

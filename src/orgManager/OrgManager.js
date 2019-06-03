@@ -9,7 +9,7 @@ import { store, adminHistory } from "../store";
 import { UserList, UserDetail, UserCreate, UserEdit } from './user';
 import { CatchmentDetail, CatchmentList, CatchmentCreate, CatchmentEdit } from "./catchment";
 import { LocationTypeList, LocationTypeDetail, LocationTypeCreate, LocationTypeEdit } from "./addressLevelType";
-import { LocationDetail, LocationList } from "./locations";
+import { LocationDetail, LocationList, LocationCreate, LocationEdit } from "./locations";
 
 
 class OrgManager extends Component {
@@ -45,7 +45,8 @@ class OrgManager extends Component {
                           edit={LocationTypeEdit} />
                 <Resource name="locations" options={{ label: "Locations" }}
                           list={LocationList}
-                          show={LocationDetail}  />
+                          show={LocationDetail}
+                          create={LocationCreate} edit={LocationEdit} />
            </Admin>
         );
     }
