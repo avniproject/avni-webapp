@@ -4,7 +4,7 @@ import {
     Show, SimpleShowLayout, ReferenceManyField,
     ReferenceField, FunctionField, Create, Edit,
     SimpleForm, TextInput, DisabledInput, FormDataConsumer,
-    ReferenceInput, AutocompleteInput, SelectInput,
+    ReferenceInput, SelectInput,
     REDUX_FORM_NAME, Toolbar, DeleteButton, SaveButton
 } from 'react-admin';
 import { isEmpty, find, isNil } from 'lodash';
