@@ -50,12 +50,19 @@ public class Catchment extends OrganisationAwareEntity {
         this.type = type;
     }
 
+    public void clearAddressLevels() {
+        for (AddressLevel addressLevel : getAddressLevels()) {
+            addressLevel.removeCatchment(this);
+        }
+        getAddressLevels().clear();
+    }
+
     public void addAddressLevel(AddressLevel addressLevel) {
         getAddressLevels().add(addressLevel);
         addressLevel.addCatchment(this);
     }
 
-    public void remove(AddressLevel addressLevel) {
+    public void removeAddressLevel(AddressLevel addressLevel) {
         getAddressLevels().remove(addressLevel);
         addressLevel.removeCatchment(this);
     }

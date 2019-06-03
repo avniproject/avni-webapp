@@ -1,6 +1,5 @@
 package org.openchs.web;
 
-import org.openchs.builder.AddressLevelTypeBuilder;
 import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.util.ReactAdminUtil;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

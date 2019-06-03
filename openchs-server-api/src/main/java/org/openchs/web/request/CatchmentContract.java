@@ -39,6 +39,7 @@ public class CatchmentContract extends ReferenceDataContract {
         catchmentContract.setUuid(catchment.getUuid());
         catchmentContract.setType(catchment.getType());
         catchmentContract.setName(catchment.getName());
+        catchmentContract.setVoided(catchment.isVoided());
         catchmentContract.setLocationIds(catchment.getAddressLevels().stream().map(addressLevel -> addressLevel.getId()).collect(Collectors.toList()));
         return catchmentContract;
     }

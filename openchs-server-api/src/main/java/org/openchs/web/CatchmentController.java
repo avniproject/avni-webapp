@@ -7,6 +7,7 @@ import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Catchment;
 import org.openchs.domain.Organisation;
+import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.AddressLevelContract;
 import org.openchs.web.request.CatchmentContract;
 import org.openchs.web.request.CatchmentsContract;
@@ -49,7 +50,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @GetMapping(value = "catchment")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public PagedResources<Resource<CatchmentContract>> get(Pageable pageable) {
-        Page<Catchment> all = catchmentRepository.findAll(pageable);
+        Page<Catchment> all = catchmentRepository.findByIsVoidedFalse(pageable);
         Page<CatchmentContract> catchmentContracts = all.map(catchment -> {
             CatchmentContract catchmentContract = CatchmentContract.fromEntity(catchment);
             return catchmentContract;
@@ -86,21 +87,32 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @PutMapping(value ="/catchment/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
-    ResponseEntity<?> updateCatchment(@PathVariable("id") Long id, @RequestBody CatchmentContract catchmentContract) throws Exception {
+    public ResponseEntity<?> updateCatchment(@PathVariable("id") Long id, @RequestBody CatchmentContract catchmentContract) throws Exception {
         Catchment catchment = catchmentRepository.findById(id);
         catchment.setName(catchmentContract.getName());
         catchment.setType(catchmentContract.getType());
-        Set<AddressLevel> addressLevels = new HashSet<>();
+        catchment.clearAddressLevels();
         for (Long locationId : catchmentContract.getLocationIds()) {
             AddressLevel addressLevel = locationRepository.findById(locationId);
             if(addressLevel == null)
                 throw new Exception(String.format("Location id %d not found", locationId));
             addressLevel.addCatchment(catchment);
-            addressLevels.add(addressLevel);
         }
-        catchment.setAddressLevels(addressLevels);
         catchmentRepository.save(catchment);
         return new ResponseEntity<>(catchment, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value ="/catchment/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @Transactional
+    public ResponseEntity<?> voidCatchment(@PathVariable("id") Long id) {
+        Catchment catchment = catchmentRepository.findById(id);
+        if (catchment == null) {
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("AddressLevelType with id %d not found", id)));
+        }
+        catchment.setVoided(true);
+//        catchmentRepository.save(catchment);
+        return new ResponseEntity<>(CatchmentContract.fromEntity(catchment), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/catchments", method = RequestMethod.POST)
@@ -164,7 +176,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
         for (AddressLevel addressLevel : addressLevels) {
             if (!uuidsFromRequest.contains(addressLevel.getUuid())) {
                 logger.info("Removing AddressLevel " + addressLevel.getTitle() + " from catchment " + catchment.getName());
-                catchment.remove(addressLevel);
+                catchment.removeAddressLevel(addressLevel);
             }
         }
     }
