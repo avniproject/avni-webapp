@@ -97,13 +97,9 @@ workflows:
   test_and_build:
     jobs:
       - app_test
-      - approve-build:
-          type: approval
-          requires:
-            - app_test
       - app_build:
           requires:
-            - approve-build
+            - app_test
       - approve-deployment:
           type: approval
           requires:
