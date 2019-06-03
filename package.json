@@ -37,6 +37,7 @@
   ],
   "devDependencies": {
     "chai": "^4.2.0",
+    "prettier": "1.17.1",
     "redux-saga-test-plan": "^3.7.0"
   }
 }
