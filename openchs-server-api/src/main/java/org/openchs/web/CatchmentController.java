@@ -70,6 +70,8 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     ResponseEntity<?> createSingleCatchment(@RequestBody CatchmentContract catchmentContract) throws Exception {
+        if(catchmentRepository.findByName(catchmentContract.getName()) != null)
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Catchment with name %s already exists", catchmentContract.getName())));
         Catchment catchment = new Catchment();
         catchment.assignUUID();
         catchment.setName(catchmentContract.getName());
