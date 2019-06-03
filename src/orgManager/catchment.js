@@ -3,7 +3,7 @@ import {
     Datagrid, List, TextField, Show, SimpleShowLayout,
     Filter, TextInput, Create, Edit, SimpleForm, Toolbar,
     SaveButton, EditButton, ReferenceArrayInput,
-    SingleFieldList, ChipField, AutocompleteArrayInput, ArrayField
+    SingleFieldList, ChipField, AutocompleteArrayInput, ReferenceArrayField
 } from 'react-admin';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
@@ -33,11 +33,11 @@ export const CatchmentDetail = props => {
             <SimpleShowLayout>
                 <TextField label="Catchment" source="name"/>
                 <TextField label="Type" source="type"/>
-                <ArrayField source="addressLevels">
+                <ReferenceArrayField label="Locations" reference="locations" source="locationIds">
                     <SingleFieldList>
                         <ChipField source="title"/>
                     </SingleFieldList>
-                </ArrayField>
+                </ReferenceArrayField>
             </SimpleShowLayout>
         </Show>
     )
