@@ -3,13 +3,15 @@ import {
     Datagrid, List, TextField, Show, SimpleShowLayout,
     Filter, TextInput, Create, Edit, SimpleForm, Toolbar,
     SaveButton, EditButton, ReferenceArrayInput,
-    SingleFieldList, ChipField, AutocompleteArrayInput, ReferenceArrayField
+    SingleFieldList, AutocompleteArrayInput, ReferenceArrayField
 } from 'react-admin';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
+import Chip from '@material-ui/core/Chip';
 import {LineBreak} from "../common/components";
 import {connect} from 'react-redux';
 import LocationUtils from "./LocationUtils";
+import _ from "lodash";
 
 export const CatchmentCreate = props => (
     <Create {...props}>
@@ -27,6 +29,12 @@ const UserTitle = ({record, titlePrefix}) => {
     return record && <span>{titlePrefix} user <b>{record.username}</b></span>;
 };
 
+const TitleChip = props => {
+    return (
+        <Chip label={`${props.record.title} (${props.record.typeString})`} />
+    )
+}
+
 export const CatchmentDetail = props => {
     return (
         <Show actions={<CustomShowActions/>} {...props}>
@@ -35,7 +43,7 @@ export const CatchmentDetail = props => {
                 <TextField label="Type" source="type"/>
                 <ReferenceArrayField label="Locations" reference="locations" source="locationIds">
                     <SingleFieldList>
-                        <ChipField source="title"/>
+                        <TitleChip source="title"/>
                     </SingleFieldList>
                 </ReferenceArrayField>
             </SimpleShowLayout>
@@ -70,9 +78,10 @@ const CustomShowActions = ({basePath, data, resource}) => {
 
 const validateCatchment = (values, allLocations) => {
     const errors = {};
-    console.log(`validate ${JSON.stringify(values.locationIds)} ${JSON.stringify(allLocations)}`);
     if (!allLocations)
         return errors;
+    if(_.isEmpty(values.locationIds))
+        errors.locationIds = ["It can not be empty"];
     if (!LocationUtils.areAtTheSameLevel(values.locationIds, allLocations))
         errors.locationIds = ["All locations must be of same level"];
     return errors;
@@ -83,7 +92,9 @@ const CatchmentFormView = ({edit, ...props}) => {
     const optionRenderer = choice => `${choice.title} ( ${choice.typeString} )`;
     return (
         <SimpleForm validate={(values) => validateCatchment(values, props.locations)}
-                    toolbar={<CustomToolbar/>} {...sanitizeProps(props)} redirect="show">
+                    {...sanitizeProps(props)}
+                    redirect="show"
+        >
             <Typography variant="title" component="h3">Catchment</Typography>
             <TextInput source="name" label="Name"/>
             <TextInput source="type" label="Type"/>
@@ -104,8 +115,3 @@ const CatchmentFormView = ({edit, ...props}) => {
 };
 const mapStateToProps = state => ({locations: state.app.locations});
 const CatchmentForm = connect(mapStateToProps)(CatchmentFormView);
-
-const CustomToolbar = props =>
-    <Toolbar {...props}>
-        <SaveButton/>
-    </Toolbar>;

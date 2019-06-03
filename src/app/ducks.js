@@ -1,5 +1,3 @@
-import LocationUtils from "../orgManager/LocationUtils";
-
 export const types = {
     INIT_COGNITO: 'app/INIT_COGNITO',
     SET_COGNITO_USER: 'app/SET_COGNITO_USER',
