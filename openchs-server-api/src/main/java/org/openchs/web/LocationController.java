@@ -12,7 +12,9 @@ import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Organisation;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.UserService;
+import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.LocationContract;
+import org.openchs.web.request.LocationEditContract;
 import org.openchs.web.request.ReferenceDataContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +103,57 @@ public class LocationController implements OperatingIndividualScopeAwareControll
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
         return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+    }
+
+    @PutMapping(value = "/locations/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @Transactional
+    public ResponseEntity updateLocation(@RequestBody LocationEditContract locationEditContract,
+                                         @PathVariable("id") Long id) {
+        logger.info(String.format("Processing location update request: %s", locationEditContract.toString()));
+
+        AddressLevel location;
+
+        if (locationEditContract.getUuid() != null) {
+            location = locationRepository.findByUuid(locationEditContract.getUuid());
+        }
+        else {
+            if (!id.equals(locationEditContract.getId()))
+                return ResponseEntity.badRequest()
+                        .body(String.format("Invalid location id '%d'", locationEditContract.getId()));
+
+            location = locationRepository.findById(id);
+        }
+
+        if (location == null)
+            return ResponseEntity.badRequest()
+                    .body(String.format("Location with id '%d' uuid '%s' not found", locationEditContract.getId(), locationEditContract.getUuid()));
+
+        if (locationEditContract.getTitle().trim().equals(""))
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("Empty 'title' received"));
+
+        location.setTitle(locationEditContract.getTitle());
+        locationRepository.save(location);
+        return new ResponseEntity<>(location, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/locations/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @Transactional
+    public ResponseEntity voidLocation(@PathVariable("id") Long id) {
+        AddressLevel location = locationRepository.findById(id);
+        if (location == null)
+            return ResponseEntity.badRequest().body(String.format("Location with id '%d' not found", id));
+
+        if (location.getNonVoidedSubLocations().size() > 0)
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(
+                    String.format("Cannot delete location '%s' until all sub locations are deleted", location.getTitle()))
+            );
+
+        location.setVoided(true);
+        locationRepository.save(location);
+
+        return ResponseEntity.ok(null);
     }
 
     @Override

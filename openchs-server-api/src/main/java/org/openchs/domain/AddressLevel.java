@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "address_level")
@@ -80,6 +81,13 @@ public class AddressLevel extends OrganisationAwareEntity {
     public void setParent(AddressLevel parent) { this.parent = parent; }
 
     public Set<AddressLevel> getSubLocations() { return subLocations; }
+
+    @JsonIgnore
+    public Set<AddressLevel> getNonVoidedSubLocations() {
+        return subLocations.stream()
+                .filter(location -> !location.isVoided())
+                .collect(Collectors.toSet());
+    }
 
     public void setSubLocations(Set<AddressLevel> subLocations) { this.subLocations = subLocations; }
 
