@@ -2,6 +2,7 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.AddressLevel;
+import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Catchment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     Page<AddressLevel> findByTitleIgnoreCaseContaining(String title, Pageable pageable);
 
     AddressLevel findByTitleIgnoreCase(String title);
+
+    AddressLevel findByTitleIgnoreCaseAndTypeAndParentIsNull(String title, AddressLevelType addressLevelType);
 
     List<AddressLevel> findByCatchments(Catchment catchment);
 

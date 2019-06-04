@@ -73,8 +73,8 @@ public class LocationController implements OperatingIndividualScopeAwareControll
                 saveLocation(locationContract, type);
             }
         } catch (BuilderException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
+            logger.error(e.getMessage());
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(e.getMessage()));
         }
         return ResponseEntity.ok(null);
     }
@@ -132,8 +132,22 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         if (locationEditContract.getTitle().trim().equals(""))
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("Empty 'title' received"));
 
+        if (!titleIsValid(location, locationEditContract.getTitle().trim(), location.getType())) {
+            return ResponseEntity.badRequest().body(
+                    ReactAdminUtil.generateJsonError(
+                            String.format("Location with same name '%s' and type '%s' exists at this level",
+                                    locationEditContract.getTitle(),
+                                    location.getType().getName())));
+        }
+
         location.setTitle(locationEditContract.getTitle());
-        locationRepository.save(location);
+        try {
+            locationRepository.save(location);
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(e.getMessage()));
+        }
         return new ResponseEntity<>(location, HttpStatus.OK);
     }
 
@@ -150,6 +164,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
                     String.format("Cannot delete location '%s' until all sub locations are deleted", location.getTitle()))
             );
 
+        location.setTitle(String.format("%s (voided~%d)", location.getTitle(), location.getId()));
         location.setVoided(true);
         locationRepository.save(location);
 
@@ -189,22 +204,31 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         }
     }
 
+    private boolean titleIsValid(AddressLevel location, String title, AddressLevelType type) {
+        return (location.isTopLevel() && locationRepository.findByTitleIgnoreCaseAndTypeAndParentIsNull(title, type) == null)
+                || (!location.isTopLevel() && !location.getParent().containsSubLocation(title.trim(), type));
+    }
+
     private AddressLevel saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {
         LocationBuilder locationBuilder = new LocationBuilder(locationRepository.findByUuid(contract.getUuid()), type);
         locationBuilder.copy(contract);
         AddressLevel location = locationBuilder.build();
         updateOrganisationIfNeeded(location, contract);
+
+        if(!titleIsValid(location, contract.getName().trim(), type))
+            throw new BuilderException(String.format("Location with same name '%s' and type '%s' exists at this level", contract.getName(), type.getName()));
+
         try {
             locationRepository.save(location);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             throw new BuilderException(String.format("Unable to create Location{name='%s',level='%s',orgUUID='%s',..}: '%s'", contract.getName(), contract.getLevel(), contract.getOrganisationUUID(), e.getMessage()));
         }
         try {
             updateLineage(location);
             locationRepository.save(location);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             throw new BuilderException(String.format("Unable to update lineage for location with Id %s - %s", location.getId(), e.getMessage()));
         }
         return location;

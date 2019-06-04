@@ -80,6 +80,10 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     public void setParent(AddressLevel parent) { this.parent = parent; }
 
+    public boolean isTopLevel() {
+        return parent == null;
+    }
+
     public Set<AddressLevel> getSubLocations() { return subLocations; }
 
     @JsonIgnore
@@ -90,6 +94,16 @@ public class AddressLevel extends OrganisationAwareEntity {
     }
 
     public void setSubLocations(Set<AddressLevel> subLocations) { this.subLocations = subLocations; }
+
+    public boolean containsSubLocation(String title, AddressLevelType type) {
+        return null !=
+                subLocations
+                        .stream()
+                        .filter(location -> location.getTitle().equals(title) &&
+                                location.getType().equals(type)
+                        ).findFirst()
+                        .orElse(null);
+    }
 
     public Set<Catchment> getCatchments() {
         return catchments;
