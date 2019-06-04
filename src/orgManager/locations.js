@@ -4,8 +4,8 @@ import {
     Show, SimpleShowLayout, ReferenceManyField,
     ReferenceField, FunctionField, Create, Edit,
     SimpleForm, TextInput, DisabledInput, FormDataConsumer,
-    ReferenceInput, SelectInput,
-    REDUX_FORM_NAME, Toolbar, DeleteButton, SaveButton
+    ReferenceInput, SelectInput, REDUX_FORM_NAME, Toolbar,
+    DeleteWithConfirmButton, SaveButton, required
 } from 'react-admin';
 import { isEmpty, find, isNil } from 'lodash';
 import { change } from 'redux-form';
@@ -67,6 +67,16 @@ export const LocationDetail = props =>{
 )};
 
 
+class LocationDeleteButton extends DeleteWithConfirmButton {
+    handleDelete() {
+        super.handleDelete();
+        this.setState({ isOpen: false});
+    }
+
+    render() {
+        return super.render()
+    }
+}
 
 const LocationCreateEditToolbar = ({ edit, ...props }) => {
     return (
@@ -78,7 +88,7 @@ const LocationCreateEditToolbar = ({ edit, ...props }) => {
                     <LocationSaveButton submitOnEnter={false} redirect="show"/>
             }
             {
-                edit && <DeleteButton undoable={false}/>
+                edit && <LocationDeleteButton undoable={false} redirect="list" />
             }
         </Toolbar>);
 };
@@ -89,6 +99,8 @@ const LocationTypeSelectInput = props => {
     addressLevelTypes = props.choices;
     return <SelectInput {...props} />
 };
+
+const isRequired = required("This field is required");
 
 export class LocationForm extends React.Component {
 
@@ -117,7 +129,7 @@ export class LocationForm extends React.Component {
 
         return (
             <SimpleForm toolbar={<LocationCreateEditToolbar edit={edit}/>} {...restProps} redirect="show">
-                <TextInput label="Name of new location" source="title"/>
+                <TextInput label="Name of new location" source="title" validate={isRequired} />
                 {
                     edit ?
                         <TextField label="Type" source="typeString"/>
@@ -127,6 +139,7 @@ export class LocationForm extends React.Component {
                                 <ReferenceInput label="Type"
                                                 source="name"
                                                 reference="addressLevelType"
+                                                validate={isRequired}
                                                 sort={{ field: 'id', order: 'ASC' }}
                                                 onChange={() => {
                                                     this.changed = true
@@ -165,6 +178,7 @@ export class LocationForm extends React.Component {
                                                     title: ''
                                                 }}
                                                 filterToQuery={searchText => ({ title: searchText })}
+                                                validate={isRequired}
                                                 {...rest}>
                                     <SelectInput
                                         optionText={record => record && `${record.title} (${record.typeString})`}/>
