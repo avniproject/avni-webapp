@@ -206,7 +206,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
 
     private boolean titleIsValid(AddressLevel location, String title, AddressLevelType type) {
         return (location.isTopLevel() && locationRepository.findByTitleIgnoreCaseAndTypeAndParentIsNull(title, type) == null)
-                || (!location.isTopLevel() && !location.getParent().containsSubLocation(title.trim(), type));
+                || (!location.isTopLevel() && !location.getParent().containsSubLocation(title, type));
     }
 
     private AddressLevel saveLocation(LocationContract contract, AddressLevelType type) throws BuilderException {
@@ -215,7 +215,8 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         AddressLevel location = locationBuilder.build();
         updateOrganisationIfNeeded(location, contract);
 
-        if(!titleIsValid(location, contract.getName().trim(), type))
+        // Validate location title/name is unique only if new AddressLevel
+        if(location.getId() == null && !titleIsValid(location, contract.getName().trim(), type))
             throw new BuilderException(String.format("Location with same name '%s' and type '%s' exists at this level", contract.getName(), type.getName()));
 
         try {
