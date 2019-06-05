@@ -159,7 +159,7 @@ public class OpenCHS {
                 String entityUUID = rule.getEntity().getUuid();
                 String key = RuledEntityType.isForm(entityType) ? "formUUID"
                         : RuledEntityType.isProgram(entityType) ? "programUUID" : null;
-                if (entityUUID != null) {
+                if (entityUUID != null && key != null) {
                     resource.add(new Link(entityUUID, key));
                 }
                 return resource;

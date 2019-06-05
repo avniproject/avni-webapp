@@ -3,7 +3,7 @@ package org.openchs.domain;
 import org.springframework.util.StringUtils;
 
 public enum RuledEntityType {
-    Form, Program, None;
+    Form, Program, EncounterType, None;
 
     public static RuledEntityType parse(String entityType) {
         return entityType != null ? RuledEntityType.valueOf(StringUtils.capitalize(entityType)) : null;

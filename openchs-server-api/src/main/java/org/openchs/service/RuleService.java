@@ -1,9 +1,7 @@
 package org.openchs.service;
 
 import org.openchs.application.RuleType;
-import org.openchs.dao.ProgramRepository;
-import org.openchs.dao.RuleDependencyRepository;
-import org.openchs.dao.RuleRepository;
+import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
@@ -16,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,19 +25,22 @@ public class RuleService {
     private final Logger logger;
     private final RuleDependencyRepository ruleDependencyRepository;
     private final RuleRepository ruleRepository;
-    private final FormRepository formRepository;
-    private final ProgramRepository programRepository;
+    private final Map<RuledEntityType, CHSRepository> ruledEntityRepositories;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
                        RuleRepository ruleRepository,
                        FormRepository formRepository,
-                       ProgramRepository programRepository) {
+                       ProgramRepository programRepository,
+                       EncounterTypeRepository encounterTypeRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
-        this.formRepository = formRepository;
-        this.programRepository = programRepository;
+        this.ruledEntityRepositories = new HashMap<RuledEntityType, CHSRepository>(){{
+            put(RuledEntityType.Form, formRepository);
+            put(RuledEntityType.Program, programRepository);
+            put(RuledEntityType.EncounterType, encounterTypeRepository);
+        }};
     }
 
     @Transactional
@@ -88,7 +91,8 @@ public class RuleService {
     private void checkEntityExists(RuleRequest ruleRequest) {
         String entityUUID = ruleRequest.getEntityUUID();
         if (!RuledEntityType.isNone(ruleRequest.getEntityType())) {
-            if (null == formRepository.findByUuid(entityUUID) && null == programRepository.findByUuid(entityUUID)) {
+            CHSRepository chsRepository = ruledEntityRepositories.get(ruleRequest.getEntityType());
+            if (chsRepository.findByUuid(entityUUID) == null) {
                 throw new ValidationException(String.format("%s with uuid: %s not found for rule with uuid: %s",
                         ruleRequest.getEntityType(), entityUUID, ruleRequest.getUuid()));
             }
