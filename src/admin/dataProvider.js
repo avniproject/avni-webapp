@@ -1,9 +1,10 @@
 import _ from 'lodash';
-import {CREATE, UPDATE, DELETE_MANY, fetchUtils, GET_LIST, GET_MANY,
+import {CREATE, UPDATE, DELETE_MANY, GET_LIST, GET_MANY,
     GET_MANY_REFERENCE, GET_ONE, UPDATE_MANY, DELETE} from 'react-admin';
 import { UrlPartsGenerator } from './requestUtils';
 import SpringResponse from "./SpringResponse";
-import { authContext } from "../app/authContext";
+import { httpClient } from "../utils/httpClient";
+
 
 /**
  * Maps react-admin queries to a simple REST API
@@ -18,16 +19,7 @@ import { authContext } from "../app/authContext";
  * CREATE       => POST http://my.api.url/posts
  * DELETE       => DELETE http://my.api.url/posts/123
  */
-export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
-
-    const appendAuthParams = options => {
-        const authParams = authContext.get();
-        options.headers = options.headers || new Headers({ Accept: 'application/json' });
-        options.headers.set('user-name', authParams.username);
-        if (authParams.token)
-            options.headers.set('AUTH-TOKEN', authParams.token);
-    };
-
+export default (apiUrl) => {
     /**
      * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
      * @param {String} resource Name of the resource to fetch, e.g. 'posts'
@@ -68,7 +60,6 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
                 throw new Error(`Unsupported fetch action type ${type}`);
         }
         console.log(`Data Provider Action ${type} | Url ${url} | Resource ${resource} | Params ${JSON.stringify(params)}`);
-        appendAuthParams(options);
         return {url, options};
     };
 
@@ -107,7 +98,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
         if (type === UPDATE_MANY) {
             return Promise.all(
                 params.ids.map(id =>
-                    httpClient(`${apiUrl}/${resource}/${id}`, {
+                    httpClient.fetchJson(`${apiUrl}/${resource}/${id}`, {
                         method: 'PUT',
                         body: JSON.stringify(params.data),
                     })
@@ -120,7 +111,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
         if (type === DELETE_MANY) {
             return Promise.all(
                 params.ids.map(id =>
-                    httpClient(`${apiUrl}/${resource}/${id}`, {
+                    httpClient.fetchJson(`${apiUrl}/${resource}/${id}`, {
                         method: 'DELETE',
                     })
                 )
@@ -134,7 +125,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             resource,
             params
         );
-        return httpClient(url, options).then(response =>
+        return httpClient.fetchJson(url, options).then(response =>
             convertHTTPResponse(response, type, resource, params)
         );
     };
