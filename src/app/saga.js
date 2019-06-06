@@ -6,9 +6,9 @@ import { cognitoConfig as cognitoConfigFromEnv } from '../common/constants';
 import { configureAuth } from "./utils";
 
 const api = {
-    fetchCognitoDetails: () => httpClient.fetchJson('/cognito-details'),
-    fetchUserInfo: () => httpClient.fetchJson('/me'),
-    fetchAllLocations: () => httpClient.fetchJson('/locations?page=0&size=1000')
+    fetchCognitoDetails: () => httpClient.fetchJson('/cognito-details').then(response => response.json),
+    fetchUserInfo: () => httpClient.fetchJson('/me').then(response => response.json),
+    fetchAllLocations: () => httpClient.fetchJson('/locations?page=0&size=1000').then(response => response.json)
 };
 
 export function* initialiseCognito() {
