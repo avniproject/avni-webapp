@@ -5,7 +5,6 @@ import {
   TextField,
   Show,
   SimpleShowLayout,
-  Filter,
   TextInput,
   Create,
   Edit,
@@ -31,28 +30,22 @@ export const CatchmentCreate = props => (
 );
 
 export const CatchmentEdit = props => (
-  <Edit {...props} title={<UserTitle titlePrefix="Edit" />} undoable={false}>
+  <Edit {...props} title="Edit Catchment" undoable={false}>
     <CatchmentForm edit />
   </Edit>
 );
-
-const UserTitle = ({ record, titlePrefix }) => {
-  return (
-    record && (
-      <span>
-        {titlePrefix} user <b>{record.username}</b>
-      </span>
-    )
-  );
-};
 
 const TitleChip = props => {
   return <Chip label={`${props.record.title} (${props.record.typeString})`} />;
 };
 
+const Title = ({record}) => {
+  return record && <span>Catchment: <b>{record.name}</b></span>;
+};
+
 export const CatchmentDetail = props => {
   return (
-    <Show actions={<CustomShowActions />} {...props}>
+    <Show title={<Title/>} actions={<CustomShowActions />} {...props}>
       <SimpleShowLayout>
         <TextField label="Catchment" source="name" />
         <TextField label="Type" source="type" />
@@ -70,15 +63,8 @@ export const CatchmentDetail = props => {
   );
 };
 
-const CatchmentFilter = props => (
-  <Filter {...props} style={{ marginBottom: "2em" }}>
-    <TextInput label="Catchment" source="name" resettable alwaysOn />
-    <TextInput label="Type" source="type" resettable alwaysOn />
-  </Filter>
-);
-
 export const CatchmentList = props => (
-  <List {...props} filters={<CatchmentFilter />}>
+  <List {...props}>
     <Datagrid rowClick="show">
       <TextField label="Catchment" source="name" />
       <TextField label="Type" source="type" />
