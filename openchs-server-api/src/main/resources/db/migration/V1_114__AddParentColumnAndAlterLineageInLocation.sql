@@ -1,5 +1,5 @@
 ALTER TABLE address_level
-  ALTER COLUMN lineage DROP NOT NULL;
+  ADD COLUMN lineage ltree;
 
 ALTER TABLE address_level
   ADD COLUMN parent_id INTEGER REFERENCES address_level;
@@ -8,9 +8,6 @@ UPDATE address_level
   SET parent_id=location_location_mapping.parent_location_id
     FROM location_location_mapping
       WHERE location_location_mapping.location_id=address_level.id;
-
-UPDATE address_level
-  SET lineage=NULL;
 
 ALTER TABLE address_level
   ADD CONSTRAINT lineage_parent_consistency
