@@ -60,7 +60,7 @@ jobs:
             path: ~/artifacts
 
 
-  deploy:
+  deploy-staging:
     docker:
       - image: circleci/node:8.14.0
 
@@ -89,6 +89,34 @@ jobs:
 
       - run: cd ~/infra; make install; make staging-webapp-create;
 
+  deploy-prerelease:
+    docker:
+      - image: circleci/node:8.14.0
+
+    working_directory: ~/
+
+    steps:
+      - attach_workspace:
+          at: ~/artifacts
+
+      - run: sudo apt-get install make openssl
+
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install python3-pip
+            sudo pip3 install awscli --upgrade
+
+      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
+
+      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
+
+      - run: cp -f ~/artifacts/build_version ~/infra/webapp/version/build_version
+
+      #- run: export TF_VAR_circle_build_num=$CIRCLE_BUILD_NUM
+
+      - run: cd ~/infra; make install; make prerelease-webapp-create;
 
 
 
@@ -104,7 +132,10 @@ workflows:
           type: approval
           requires:
             - app_build
-      - deploy:
+      - deploy-staging:
+          requires:
+            - approve-deployment
+      - deploy-prerelease:
           requires:
             - approve-deployment
 
