@@ -33,7 +33,7 @@ public class LocationMappingController implements OperatingIndividualScopeAwareC
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    @RequestMapping(value = "/locationMapping/search/lastModified", method = RequestMethod.GET)
+    @RequestMapping(value = {"/locationMapping/search/lastModified", "/locationMapping/search/byCatchmentAndLastModified"}, method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
     public PagedResources<Resource<ParentLocationMapping>> getParentLocationMappingsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,

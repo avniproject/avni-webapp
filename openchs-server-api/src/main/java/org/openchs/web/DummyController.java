@@ -32,16 +32,6 @@ public class DummyController {
         return getEmptyMap("addressLevel");
     }
 
-    @RequestMapping("/locations/search/byCatchmentAndLastModified")
-    public Map<Object, Object> locations() {
-        return getEmptyMap("locations");
-    }
-
-    @RequestMapping("/locationMapping/search/byCatchmentAndLastModified")
-    public Map<Object, Object> locationMapping() {
-        return getEmptyMap("locationMapping");
-    }
-
     @RequestMapping("/checklistItem/search/byIndividualsOfCatchmentAndLastModified")
     public Map<Object, Object> checklistItems() {
         return getEmptyMap("checklistItem");

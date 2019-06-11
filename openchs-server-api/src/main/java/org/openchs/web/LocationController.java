@@ -95,7 +95,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         return wrap(locationRepository.findByTitleIgnoreCaseContaining(title, pageable));
     }
 
-    @RequestMapping(value = "/locations/search/lastModified", method = RequestMethod.GET)
+    @RequestMapping(value = {"/locations/search/lastModified", "/locations/search/byCatchmentAndLastModified"}, method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
     @ResponseBody
     public PagedResources<Resource<AddressLevel>> getAddressLevelsByOperatingIndividualScope(
@@ -116,8 +116,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
 
         if (locationEditContract.getUuid() != null) {
             location = locationRepository.findByUuid(locationEditContract.getUuid());
-        }
-        else {
+        } else {
             if (!id.equals(locationEditContract.getId()))
                 return ResponseEntity.badRequest()
                         .body(String.format("Invalid location id '%d'", locationEditContract.getId()));
@@ -143,8 +142,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         location.setTitle(locationEditContract.getTitle());
         try {
             locationRepository.save(location);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(e.getMessage()));
         }
@@ -216,7 +214,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         updateOrganisationIfNeeded(location, contract);
 
         // Validate location title/name is unique only if new AddressLevel
-        if(location.getId() == null && !titleIsValid(location, contract.getName().trim(), type))
+        if (location.getId() == null && !titleIsValid(location, contract.getName().trim(), type))
             throw new BuilderException(String.format("Location with same name '%s' and type '%s' exists at this level", contract.getName(), type.getName()));
 
         try {
