@@ -19,7 +19,6 @@ import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import Chip from "@material-ui/core/Chip";
 import { LineBreak } from "../common/components";
-import { connect } from "react-redux";
 import LocationUtils from "./LocationUtils";
 import _ from "lodash";
 
@@ -95,11 +94,18 @@ const validateCatchment = (values, allLocations) => {
   return errors;
 };
 
-const CatchmentFormView = ({ edit, ...props }) => {
+let LOCATIONS;
+
+const LocationAutocomplete = props => {
+  LOCATIONS = props.choices;
+  return <AutocompleteArrayInput {...props}/>
+};
+
+const CatchmentForm = ({ edit, ...props }) => {
   const optionRenderer = choice => `${choice.title} ( ${choice.typeString} )`;
   return (
     <SimpleForm
-      validate={values => validateCatchment(values, props.locations)}
+      validate={values => validateCatchment(values, LOCATIONS)}
       {...props}
       redirect="show"
     >
@@ -116,12 +122,10 @@ const CatchmentFormView = ({ edit, ...props }) => {
         label="Locations"
         filterToQuery={searchText => ({ title: searchText })}
       >
-        <AutocompleteArrayInput optionText={optionRenderer} />
+        <LocationAutocomplete optionText={optionRenderer} />
       </ReferenceArrayInput>
 
       <LineBreak num={1} />
     </SimpleForm>
   );
 };
-const mapStateToProps = state => ({ locations: state.app.locations });
-const CatchmentForm = connect(mapStateToProps)(CatchmentFormView);

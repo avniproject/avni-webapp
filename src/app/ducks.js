@@ -29,15 +29,6 @@ export const setUserInfo = userInfo => ({
     payload: userInfo
 });
 
-export const fetchAllLocations = () => ({
-    type: types.FETCH_ALL_LOCATIONS
-});
-
-export const fetchAllLocationsSuccess = locationLevels => ({
-   type: types.FETCH_ALL_LOCATIONS_SUCCESS,
-   payload: locationLevels
-});
-
 export const sendInitComplete = () => ({
     type: types.INIT_COMPLETE
 });
@@ -87,12 +78,6 @@ export default function(state=initialState, action) {
             return {
                 ...state,
                 appInitialised: true
-            }
-        }
-        case types.FETCH_ALL_LOCATIONS_SUCCESS: {
-            return {
-                ...state,
-                locations: action.payload._embedded.locations
             }
         }
         default:
