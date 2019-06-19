@@ -128,16 +128,27 @@ workflows:
       - app_build:
           requires:
             - app_test
-      - approve-deployment:
+      - approve-staging-deployment:
+          type: approval
+          requires:
+            - app_build
+      - approve-uat-deployment:
+          type: approval
+          requires:
+            - app_build
+      - approve-prerelease-deployment:
           type: approval
           requires:
             - app_build
       - deploy-staging:
           requires:
-            - approve-deployment
+            - approve-staging-deployment
       - deploy-prerelease:
           requires:
-            - approve-deployment
+            - approve-prerelease-deployment
+      - deploy-uat:
+          requires:
+            - approve-uat-deployment
 
 
 notify:
