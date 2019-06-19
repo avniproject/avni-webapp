@@ -55,6 +55,9 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
             AddressLevelType parent = addressLevelTypeRepository.findByUuid(contract.getParent().getUuid());
             addressLevelType.setParentId(parent.getId());
         }
+        if (contract.getParentId() != null) {
+            addressLevelType.setParentId(contract.getParentId());
+        }
         addressLevelTypeRepository.save(addressLevelType);
         return new ResponseEntity<>(addressLevelType, HttpStatus.CREATED);
     }
