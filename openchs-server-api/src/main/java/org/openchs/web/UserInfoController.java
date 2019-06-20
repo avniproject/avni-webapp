@@ -132,6 +132,8 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             user.setAdmin(userContract.isAdmin());
             user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
             user.setSettings(userContract.getSettings());
+            user.setPhoneNumber(userContract.getPhoneNumber());
+            user.setEmail(userContract.getEmail());
             user.setAuditInfo(userService.getCurrentUser());
             User savedUser = userService.save(user);
             logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));

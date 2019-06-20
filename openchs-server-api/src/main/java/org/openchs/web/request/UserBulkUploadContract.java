@@ -17,6 +17,8 @@ public class UserBulkUploadContract extends ReferenceDataContract {
     private boolean admin;
     private String operatingIndividualScope;
     private JsonObject settings;
+    private String phoneNumber;
+    private String email;
 
     public String getOrganisationUUID() {
         return organisationUUID;
@@ -88,5 +90,21 @@ public class UserBulkUploadContract extends ReferenceDataContract {
 
     public void setSettings(JsonObject settings) {
         this.settings = settings;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
