@@ -65,14 +65,16 @@ export const LocationTypeDetail = props => (
     </Show>
 );
 
-const LocationTypeForm = props => {
+const LocationTypeForm = ({edit, ...props}) => {
     return (
         <SimpleForm {...props} redirect="show">
             <TextInput source="name" label="Name"/>
             <TextInput source="level" label="Level"/>
-            <ReferenceInput source="parentId" reference="addressLevelType" label="Parent">
-                <SelectInput optionText="name" resettable/>
-            </ReferenceInput>
+            {edit ? <ParentReferenceField label="Parent Type"/> :
+                <ReferenceInput source="parentId" reference="addressLevelType" label="Parent">
+                    <SelectInput optionText="name" resettable/>
+                </ReferenceInput>
+            }
         </SimpleForm>
     );
 };
