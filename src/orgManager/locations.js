@@ -15,7 +15,7 @@ import { store } from "../store";
 
 
 export const LocationList = props => (
-    <List {...props} sort={{ field: 'id', order: 'ASC'}} filter={{ searchURI: "findByParent"}}>
+    <List {...props} bulkActions={false} sort={{field: 'id', order: 'ASC'}} filter={{searchURI: "findByParent"}}>
         <Datagrid rowClick="show">
             <TextField label="Name" source="title"/>
             <TextField label="Type" source="typeString" />
