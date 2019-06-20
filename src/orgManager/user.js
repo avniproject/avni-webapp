@@ -54,6 +54,7 @@ const UserFilter = props => (
 
 export const UserList = ({ organisation, ...props }) => (
     <List {...props}
+          bulkActions={false}
           filter={{organisationId: organisation.id}}
           filters={<UserFilter/>}
           title={`${organisation.name} Users`}>

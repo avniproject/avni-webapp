@@ -63,7 +63,7 @@ export const CatchmentDetail = props => {
 };
 
 export const CatchmentList = props => (
-  <List {...props}>
+  <List {...props} bulkActions={false}>
     <Datagrid rowClick="show">
       <TextField label="Catchment" source="name" />
       <TextField label="Type" source="type" />

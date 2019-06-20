@@ -19,6 +19,7 @@ import {isNil} from 'lodash';
 
 export const LocationTypeList = props => (
     <List {...props}
+          bulkActions={false}
           title="Location Types"
           sort={{field: 'level', order: 'DESC'}}>
         <Datagrid rowClick="show">
