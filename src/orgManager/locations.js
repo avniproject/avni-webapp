@@ -50,9 +50,13 @@ ParentLocationReferenceField.defaultProps = {
     addLabel: true,
 };
 
+const Title = ({record}) => {
+    return record && <span>Location: <b>{record.title}</b></span>;
+};
+
 export const LocationDetail = props =>{
     return (
-        <Show {...props}>
+        <Show title={<Title/>} {...props}>
             <SimpleShowLayout>
                 <TextField source="title" label="Name" />
                 <TextField source="typeString" label="Type" />
@@ -200,6 +204,6 @@ export const LocationCreate = props =>
     </Create>;
 
 export const LocationEdit = props =>
-    <Edit {...props} undoable={false}>
+    <Edit title="Edit Location" {...props} undoable={false}>
         <LocationForm edit />
     </Edit>;
