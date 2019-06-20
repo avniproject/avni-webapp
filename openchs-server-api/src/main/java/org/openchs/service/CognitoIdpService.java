@@ -89,6 +89,19 @@ public class CognitoIdpService {
                 .withTemporaryPassword(TEMPORARY_PASSWORD);
     }
 
+    public Boolean exists(User user) {
+        if (isDev && !cognitoInDev()) {
+            logger.info("Skipping Cognito EXISTS in dev mode...");
+            return true;
+        }
+        try {
+            cognitoClient.adminGetUser(new AdminGetUserRequest().withUserPoolId(userPoolId).withUsername(user.getUsername()));
+            return true;
+        } catch (UserNotFoundException e) {
+            return false;
+        }
+    }
+
     public UserType createUser(User user) {
         if (isDev && !cognitoInDev()) {
             logger.info("Skipping Cognito CREATE in dev mode...");
@@ -99,6 +112,12 @@ public class CognitoIdpService {
         AdminCreateUserResult createUserResult =  cognitoClient.adminCreateUser(createUserRequest);
         logger.info(String.format("Created cognito-user | username '%s' | '%s'", user.getUsername(), createUserResult.toString()));
         return createUserResult.getUser();
+    }
+
+    public void createUserIfNotExists(User user) {
+        if(!this.exists(user)) {
+            this.createUser(user);
+        }
     }
 
     private AdminUpdateUserAttributesRequest prepareUpdateUserRequest(User user) {

@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.CognitoIdpService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.UserBulkUploadContract;
 import org.openchs.web.request.UserInfo;
@@ -33,15 +34,17 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
     private OrganisationRepository organisationRepository;
     private UserService userService;
     private FacilityRepository facilityRepository;
+    private CognitoIdpService cognitoService;
 
     @Autowired
-    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, UserFacilityMappingRepository userFacilityMappingRepository, OrganisationRepository organisationRepository, UserService userService, FacilityRepository facilityRepository) {
+    public UserInfoController(CatchmentRepository catchmentRepository, UserRepository userRepository, UserFacilityMappingRepository userFacilityMappingRepository, OrganisationRepository organisationRepository, UserService userService, FacilityRepository facilityRepository, CognitoIdpService cognitoService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.userFacilityMappingRepository = userFacilityMappingRepository;
         this.organisationRepository = organisationRepository;
         this.userService = userService;
         this.facilityRepository = facilityRepository;
+        this.cognitoService = cognitoService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -130,8 +133,9 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
             user.setSettings(userContract.getSettings());
             user.setAuditInfo(userService.getCurrentUser());
-            userService.save(user);
+            User savedUser = userService.save(user);
             logger.info(String.format("Saved User with UUID %s", userContract.getUuid()));
+            cognitoService.createUserIfNotExists(savedUser);
         });
     }
 
