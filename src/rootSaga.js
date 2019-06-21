@@ -10,8 +10,8 @@ const i18nProvider = defaultI18nProvider;
 
 export default function* rootSaga() {
     yield all([
-        adminSaga(dataProvider, authProvider, i18nProvider),
         initialiseCognito,
+        adminSaga(dataProvider, authProvider, i18nProvider),
         onSetCognitoUser,
         userInfoWatcher,
     ].map(fork));
