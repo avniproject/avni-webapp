@@ -1,9 +1,12 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "location_location_mapping")
+@BatchSize(size = 100)
 public class ParentLocationMapping extends OrganisationAwareEntity {
 //    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
