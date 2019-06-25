@@ -5,7 +5,7 @@ import {
     ReferenceField, FunctionField, Create, Edit,
     SimpleForm, TextInput, DisabledInput, FormDataConsumer,
     ReferenceInput, SelectInput, REDUX_FORM_NAME, Toolbar,
-    DeleteWithConfirmButton, SaveButton, required, DeleteButton
+    SaveButton, required, DeleteButton
 } from 'react-admin';
 import { isEmpty, find, isNil } from 'lodash';
 import { change } from 'redux-form';
@@ -69,18 +69,6 @@ export const LocationDetail = props =>{
             </SimpleShowLayout>
         </Show>
 )};
-
-
-class LocationDeleteButton extends DeleteWithConfirmButton {
-    handleDelete() {
-        super.handleDelete();
-        this.setState({ isOpen: false});
-    }
-
-    render() {
-        return super.render()
-    }
-}
 
 const LocationCreateEditToolbar = ({ edit, ...props }) => {
     return (
