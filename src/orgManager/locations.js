@@ -5,7 +5,7 @@ import {
     ReferenceField, FunctionField, Create, Edit,
     SimpleForm, TextInput, DisabledInput, FormDataConsumer,
     ReferenceInput, SelectInput, REDUX_FORM_NAME, Toolbar,
-    DeleteWithConfirmButton, SaveButton, required
+    DeleteWithConfirmButton, SaveButton, required, DeleteButton
 } from 'react-admin';
 import { isEmpty, find, isNil } from 'lodash';
 import { change } from 'redux-form';
@@ -92,7 +92,7 @@ const LocationCreateEditToolbar = ({ edit, ...props }) => {
                     <LocationSaveButton submitOnEnter={false} redirect="show"/>
             }
             {
-                edit && <LocationDeleteButton undoable={false} redirect="list" />
+                edit && <DeleteButton redirect="list" />
             }
         </Toolbar>);
 };
