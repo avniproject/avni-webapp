@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.search.annotations.*;
 import org.hibernate.search.annotations.Index;
 import org.openchs.web.request.ConceptContract;
@@ -26,6 +27,7 @@ import org.hibernate.search.annotations.Parameter;
       @Parameter(name = "language", value = "English")
     })
   })
+@BatchSize(size = 100)
 public class Concept extends OrganisationAwareEntity {
     @Field
     @Analyzer(definition = "customanalyzer")
@@ -36,7 +38,7 @@ public class Concept extends OrganisationAwareEntity {
     @NotNull
     private String dataType;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "concept")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "concept")
     private Set<ConceptAnswer> conceptAnswers = new HashSet<>();
 
     private Double lowAbsolute;

@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -10,15 +11,16 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "concept_answer")
+@BatchSize(size = 100)
 public class ConceptAnswer extends OrganisationAwareEntity {
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concept_id")
     @Fetch(FetchMode.JOIN)
     private Concept concept;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_concept_id")
     @Fetch(FetchMode.JOIN)
     private Concept answerConcept;

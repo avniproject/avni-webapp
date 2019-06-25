@@ -1,5 +1,6 @@
 package org.openchs.application;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.openchs.common.ValidationResult;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "form_element")
+@BatchSize(size = 100)
 public class FormElement extends OrganisationAwareEntity {
     public static final String SINGLE_SELECT = "SingleSelect";
 
@@ -45,7 +47,7 @@ public class FormElement extends OrganisationAwareEntity {
     @Column(name = "type", nullable = true)
     private String type;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "formElement")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "formElement")
     private Set<NonApplicableFormElement> nonApplicableFormElements = null;
 
     @Embedded

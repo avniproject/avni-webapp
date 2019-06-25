@@ -1,5 +1,6 @@
 package org.openchs.application;
 
+import org.hibernate.annotations.BatchSize;
 import org.openchs.domain.OrganisationAwareEntity;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "form_element_group")
+@BatchSize(size = 100)
 public class FormElementGroup extends OrganisationAwareEntity {
     @NotNull
     private String name;

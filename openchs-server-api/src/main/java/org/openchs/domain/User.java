@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
@@ -10,6 +11,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "users")
+@BatchSize(size = 100)
 public class User {
     @Column
     @NotNull

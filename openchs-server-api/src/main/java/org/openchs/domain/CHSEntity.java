@@ -12,8 +12,7 @@ public class CHSEntity extends CHSBaseEntity {
 
     @JsonIgnore
     @JoinColumn(name = "audit_id")
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Fetch(FetchMode.JOIN)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Audit audit = new Audit();
 
     //    @Version

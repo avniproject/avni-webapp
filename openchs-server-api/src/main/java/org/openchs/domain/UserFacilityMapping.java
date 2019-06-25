@@ -1,9 +1,12 @@
 package org.openchs.domain;
 
+import org.hibernate.annotations.BatchSize;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user_facility_mapping")
+@BatchSize(size = 100)
 public class UserFacilityMapping extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "facility_id")
