@@ -20,7 +20,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
           - v1-dependencies-
 
       - run: sudo apt-get update
@@ -34,7 +34,7 @@ jobs:
             - ~/.m2
             - ~/.gradle
             - ~/openchs-server/.gradle
-          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
 
       - store_artifacts:
           path: openchs-server-api/build/reports/tests/test
@@ -53,7 +53,7 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
           - v1-dependencies-
 
       - run: sudo apt-get install make openssl
@@ -65,7 +65,7 @@ jobs:
             - ~/.m2
             - ~/.gradle
             - ~/openchs-server/.gradle
-          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}-{{ checksum "openchs-excel-import/build.gradle" }}
+          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
 
       - run: mkdir -p ~/artifacts;
 
