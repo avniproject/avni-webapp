@@ -30,13 +30,17 @@ class OrgManager extends Component {
         return <UserList {...props} organisation={this.props.organisation}/>;
     }
 
+    userDetail = (props) => <UserDetail {...props} user={this.props.user}/>;
+
+    userEdit = (props) => <UserEdit {...props} user={this.props.user}/>;
+
     render() {
         return (
             <Admin title="Manage Organisation"
                    authProvider={authProvider}
                    history={adminHistory}
                    logoutButton={LogoutButton}>
-                <Resource name="user" list={this.userList} show={UserDetail} create={UserCreate} edit={UserEdit} />
+                <Resource name="user" list={this.userList} show={this.userDetail} create={UserCreate} edit={this.userEdit} />
                 <Resource name="catchment" list={CatchmentList} show={CatchmentDetail} create={CatchmentCreate} edit={CatchmentEdit}  />
                 <Resource name="addressLevelType" options={{ label: "Location Types" }}
                           list={LocationTypeList}
@@ -54,6 +58,7 @@ class OrgManager extends Component {
 
 const mapStateToProps = state => ({
     organisation: state.app.organisation,
+    user: state.app.user
 });
 
 export default withRouter(

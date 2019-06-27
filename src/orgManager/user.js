@@ -28,9 +28,9 @@ const UserTitle = ({record, titlePrefix}) => {
 };
 
 
-export const UserEdit = props => (
+export const UserEdit = ({user, ...props}) => (
     <Edit {...props} title={<UserTitle titlePrefix="Edit"/>} undoable={false}>
-        <UserForm edit />
+        <UserForm edit user={user} />
     </Edit>
 );
 
@@ -76,14 +76,16 @@ export const UserList = ({ organisation, ...props }) => (
     </List>
 );
 
+const isAdminAndLoggedIn = (loggedInUser, selectedUser) => loggedInUser && loggedInUser.orgAdmin &&  loggedInUser.username === selectedUser.username;
 
-const CustomShowActions = ({basePath, data, resource}) => {
+const CustomShowActions = ({user, basePath, data, resource}) => {
     return (data &&
         <CardActions style={{ zIndex: 2, display: 'inline-block', float: 'right' }}>
             <EditButton label="Edit User" basePath={basePath} record={data} />
+            {isAdminAndLoggedIn(data, user) ? null :
             <EnableDisableButton disabled={data.disabledInCognito}
                                  basePath={basePath} record={data}
-                                 resource={resource}/>
+                                 resource={resource}/>}
             {/*Commenting out delete user functionality as it is not required as of now
             <DeleteButton basePath={basePath} record={data}
                           label="Delete User" undoable={false}
@@ -97,8 +99,8 @@ const formatOperatingScope = opScope =>
 
 const formatLang = lang => localeChoices.filter((local)=> local.id === lang).map((lang)=> lang.name).join('');
 
-export const UserDetail = props => (
-    <Show title={<UserTitle/>} actions={<CustomShowActions/>} {...props}>
+export const UserDetail = ({user, ...props}) => (
+    <Show title={<UserTitle/>} actions={<CustomShowActions user={user}/>} {...props}>
         <SimpleShowLayout>
             <TextField source="username" label="Login ID (username)" />
             <TextField source="name" label="Name of the Person" />
@@ -155,7 +157,7 @@ const localeChoices = [
     { id: LOCALES.GUJARATI, name: 'Gujarati' }
 ];
 
-const UserForm = ({edit, ...props}) => {
+const UserForm = ({edit, user, ...props}) => {
     const sanitizeProps = ({ record, resource, save }) => ({ record, resource, save });
     return (
         <SimpleForm toolbar={<CustomToolbar/>} {...sanitizeProps(props)} redirect="show">
@@ -171,7 +173,7 @@ const UserForm = ({edit, ...props}) => {
                            format={mobileNumberFormatter}
                            parse={mobileNumberParser} />
                 <FormDataConsumer>
-                    {({ formData, dispatch, ...rest }) =>
+                    {({ formData, dispatch, ...rest }) => isAdminAndLoggedIn(props.record, user) ? null :
                         <BooleanInput source="orgAdmin" style={{marginTop: '3em', marginBottom: '2em'}}
                                       label="Make this user an administrator (user will be able to make organisation wide changes)"
                                       onChange={(e, newVal) => {
