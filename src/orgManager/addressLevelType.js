@@ -2,17 +2,20 @@ import React from "react";
 import {
     Create,
     Datagrid,
+    DeleteButton,
     Edit,
     FunctionField,
     List,
     ReferenceField,
     ReferenceInput,
+    SaveButton,
     SelectInput,
     Show,
     SimpleForm,
     SimpleShowLayout,
     TextField,
     TextInput,
+    Toolbar,
 } from 'react-admin';
 import {None} from "../common/components";
 import {isNil} from 'lodash';
@@ -65,9 +68,16 @@ export const LocationTypeDetail = props => (
     </Show>
 );
 
+const CreateEditToolbar = ({edit, ...props}) => (
+    <Toolbar {...props}>
+        <SaveButton/>
+        {edit && <DeleteButton undoable={false} disabled={!props.record.voidable}/>}
+    </Toolbar>
+);
+
 const LocationTypeForm = ({edit, ...props}) => {
     return (
-        <SimpleForm {...props} redirect="show">
+        <SimpleForm toolbar={<CreateEditToolbar edit={edit}/>} {...props} redirect="show">
             <TextInput source="name" label="Name"/>
             <TextInput source="level" label="Level"/>
             {edit ? <ParentReferenceField label="Parent Type"/> :
