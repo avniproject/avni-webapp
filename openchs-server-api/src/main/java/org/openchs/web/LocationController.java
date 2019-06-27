@@ -198,7 +198,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         if (parentLocationContract != null) {
             AddressLevel parentLocation = locationRepository.findByUuid(parentLocationContract.getUuid());
             AddressLevelType parentAddressLevelType = addressLevelTypeRepository.findByNameIgnoreCaseAndOrganisationId(parentLocation.getType().getName(), orgId);
-            addressLevelType.setParentId(parentAddressLevelType.getId());
+            addressLevelType.setParent(parentAddressLevelType);
         }
     }
 

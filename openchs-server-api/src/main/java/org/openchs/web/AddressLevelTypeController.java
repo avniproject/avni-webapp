@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -30,7 +31,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    @GetMapping(value ="/addressLevelType")
+    @GetMapping(value = "/addressLevelType")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @ResponseBody
     public Page<AddressLevelType> getAllNonVoidedAddressLevelType(Pageable pageable) {
@@ -42,27 +43,28 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
         return new ResponseEntity<>(addressLevelTypeRepository.findById(id), HttpStatus.OK);
     }
 
-    @PostMapping(value ="/addressLevelType")
+    @PostMapping(value = "/addressLevelType")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> createAddressLevelType(@RequestBody AddressLevelTypeContract contract) {
         AddressLevelType addressLevelType = newOrExistingEntity(addressLevelTypeRepository, contract, new AddressLevelType());
-        if(contract.getUuid() == null)
+        if (contract.getUuid() == null)
             addressLevelType.setUuid(UUID.randomUUID().toString());
         addressLevelType.setName(contract.getName());
         addressLevelType.setLevel(contract.getLevel());
+        AddressLevelType parent = null;
         if (contract.getParent() != null) {
-            AddressLevelType parent = addressLevelTypeRepository.findByUuid(contract.getParent().getUuid());
-            addressLevelType.setParentId(parent.getId());
+            parent = addressLevelTypeRepository.findByUuid(contract.getParent().getUuid());
         }
         if (contract.getParentId() != null) {
-            addressLevelType.setParentId(contract.getParentId());
+            parent = addressLevelTypeRepository.findById(contract.getParentId());
         }
+        addressLevelType.setParent(parent);
         addressLevelTypeRepository.save(addressLevelType);
         return new ResponseEntity<>(addressLevelType, HttpStatus.CREATED);
     }
 
-    @PostMapping(value ="/addressLevelTypes")
+    @PostMapping(value = "/addressLevelTypes")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> save(@RequestBody List<AddressLevelTypeContract> addressLevelTypeContracts) {
@@ -73,7 +75,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
         return ResponseEntity.ok(null);
     }
 
-    @PutMapping(value ="/addressLevelType/{id}")
+    @PutMapping(value = "/addressLevelType/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> updateAddressLevelType(@PathVariable("id") Long id, @RequestBody AddressLevelTypeContract contract) {
@@ -84,13 +86,17 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
         return new ResponseEntity<>(addressLevelType, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value ="/addressLevelType/{id}")
+    @DeleteMapping(value = "/addressLevelType/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> voidAddressLevelType(@PathVariable("id") Long id) {
         AddressLevelType addressLevelType = addressLevelTypeRepository.findById(id);
         if (addressLevelType == null) {
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("AddressLevelType with id %d not found", id)));
+        }
+        if (!addressLevelType.isVoidable()) {
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(
+                    String.format("Cannot delete Type '%s' until all SubTypes are deleted", addressLevelType.getName())));
         }
         addressLevelType.setVoided(true);
         return new ResponseEntity<>(addressLevelType, HttpStatus.OK);

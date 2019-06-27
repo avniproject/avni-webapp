@@ -2,27 +2,26 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "address_level_type")
 @BatchSize(size = 100)
-@JsonIgnoreProperties({"addressLevels"})
+@JsonIgnoreProperties({"subTypes"})
 public class AddressLevelType extends OrganisationAwareEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
     private Double level;
 
-    private Long parentId;
+    @ManyToOne(cascade = {CascadeType.ALL})
+    private AddressLevelType parent;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "type")
-    private Set<AddressLevel> addressLevels = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "parent")
+    private Set<AddressLevelType> subTypes = new HashSet<>();
 
     public String getName() {
         return name;
@@ -30,14 +29,6 @@ public class AddressLevelType extends OrganisationAwareEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<AddressLevel> getAddressLevels() {
-        return addressLevels;
-    }
-
-    public void setAddressLevels(Set<AddressLevel> addressLevels) {
-        this.addressLevels = addressLevels;
     }
 
     public Double getLevel() {
@@ -48,11 +39,27 @@ public class AddressLevelType extends OrganisationAwareEntity {
         this.level = level;
     }
 
-    public Long getParentId() {
-        return parentId;
+    public AddressLevelType getParent() {
+        return parent;
     }
 
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    public void setParent(AddressLevelType parent) {
+        this.parent = parent;
+    }
+
+    public Long getParentId() {
+        return parent == null ? null : parent.getId();
+    }
+
+    public Set<AddressLevelType> getSubTypes() {
+        return subTypes;
+    }
+
+    public void setSubTypes(Set<AddressLevelType> subTypes) {
+        this.subTypes = subTypes;
+    }
+
+    public Boolean isVoidable() {
+        return subTypes.stream().allMatch(CHSEntity::isVoided);
     }
 }
