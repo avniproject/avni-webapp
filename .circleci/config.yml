@@ -1,158 +1,151 @@
-version: 2
+version: 2.1
+commands:
+  deploy:
+    description: "Deployment of webapp"
+    parameters:
+      to:
+        type: string
+        default: "staging"
+    steps:
+    - attach_workspace:
+        at: ~/artifacts
+
+    - run: sudo apt-get install make openssl
+
+    - run:
+        name: Install dependencies
+        command: |
+          sudo apt-get -y -qq update
+          sudo apt-get -y -qq install python3-pip
+          sudo pip3 install awscli --upgrade
+
+    - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
+
+    - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
+
+    - run: cp -f ~/artifacts/build_version ~/infra/webapp/version/build_version
+
+    #- run: export TF_VAR_circle_build_num=$CIRCLE_BUILD_NUM
+
+    - run: cd ~/infra; make install; make << parameters.to >>-webapp-create;
+
 jobs:
   app_test:
     docker:
-      - image: circleci/node:8.14.0
+    - image: circleci/node:8.14.0
 
     working_directory: ~/openchs-webapp
 
     steps:
-      - checkout
+    - checkout
 
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+    - restore_cache:
+        key: dependency-cache-{{ checksum "package.json" }}
 
-      - run: yarn install
+    - run: yarn install
 
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
+    - save_cache:
+        key: dependency-cache-{{ checksum "package.json" }}
+        paths:
+        - ./node_modules
 
-      - run: yarn test
+    - run: yarn test
 
 
   app_build:
     docker:
-      - image: circleci/node:8.14.0
+    - image: circleci/node:8.14.0
 
     working_directory: ~/openchs-webapp
 
     steps:
-        - checkout
+    - checkout
 
-        - restore_cache:
-            key: dependency-cache-{{ checksum "package.json" }}
+    - restore_cache:
+        key: dependency-cache-{{ checksum "package.json" }}
 
-        - run: yarn install
+    - run: yarn install
 
-        - save_cache:
-            key: dependency-cache-{{ checksum "package.json" }}
-            paths:
-              - ./node_modules
+    - save_cache:
+        key: dependency-cache-{{ checksum "package.json" }}
+        paths:
+        - ./node_modules
 
-        - run: yarn run build
+    - run: yarn run build
 
-        - run: cd build; zip -r ../build.zip *
+    - run: cd build; zip -r ../build.zip *
 
-        - run: mkdir -p ~/artifacts
+    - run: mkdir -p ~/artifacts
 
-        - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
+    - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
 
-        - run: cp ~/openchs-webapp/build.zip ~/artifacts/
+    - run: cp ~/openchs-webapp/build.zip ~/artifacts/
 
-        - persist_to_workspace:
-            root: ~/artifacts
-            paths:
-              - build_version
+    - persist_to_workspace:
+        root: ~/artifacts
+        paths:
+        - build_version
 
-        - store_artifacts:
-            path: ~/artifacts
+    - store_artifacts:
+        path: ~/artifacts
 
-
-  deploy-staging:
+  STAGING_deploy:
     docker:
-      - image: circleci/node:8.14.0
-
+    - image: circleci/node:8.14.0
     working_directory: ~/
-
     steps:
-      - attach_workspace:
-          at: ~/artifacts
+    - deploy:
+        to: staging
 
-      - run: sudo apt-get install make openssl
-
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3-pip
-            sudo pip3 install awscli --upgrade
-
-      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
-
-      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
-
-      - run: cp -f ~/artifacts/build_version ~/infra/webapp/version/build_version
-
-      #- run: export TF_VAR_circle_build_num=$CIRCLE_BUILD_NUM
-
-      - run: cd ~/infra; make install; make staging-webapp-create;
-
-  deploy-prerelease:
+  UAT_deploy:
     docker:
-      - image: circleci/node:8.14.0
-
+    - image: circleci/node:8.14.0
     working_directory: ~/
-
     steps:
-      - attach_workspace:
-          at: ~/artifacts
+    - deploy:
+        to: uat
 
-      - run: sudo apt-get install make openssl
-
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3-pip
-            sudo pip3 install awscli --upgrade
-
-      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
-
-      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
-
-      - run: cp -f ~/artifacts/build_version ~/infra/webapp/version/build_version
-
-      #- run: export TF_VAR_circle_build_num=$CIRCLE_BUILD_NUM
-
-      - run: cd ~/infra; make install; make prerelease-webapp-create;
-
-
+  PRERELEASE_deploy:
+    docker:
+    - image: circleci/node:8.14.0
+    working_directory: ~/
+    steps:
+    - deploy:
+        to: prerelease
 
 workflows:
   version: 2
   test_and_build:
     jobs:
-      - app_test
-      - app_build:
-          requires:
-            - app_test
-      - approve-staging-deployment:
-          type: approval
-          requires:
-            - app_build
-      - approve-uat-deployment:
-          type: approval
-          requires:
-            - app_build
-      - approve-prerelease-deployment:
-          type: approval
-          requires:
-            - app_build
-      - deploy-staging:
-          requires:
-            - approve-staging-deployment
-      - deploy-prerelease:
-          requires:
-            - approve-prerelease-deployment
-      - deploy-uat:
-          requires:
-            - approve-uat-deployment
+    - app_test
+    - app_build:
+        requires:
+        - app_test
+    - STAGING_approve:
+        type: approval
+        requires:
+        - app_build
+    - STAGING_deploy:
+        requires:
+        - STAGING_approve
+    - UAT_approve:
+        type: approval
+        requires:
+        - app_build
+    - UAT_deploy:
+        requires:
+        - UAT_approve
+    - PRERELEASE_approve:
+        type: approval
+        requires:
+        - app_build
+    - PRERELEASE_deploy:
+        requires:
+        - PRERELEASE_approve
 
 
 notify:
   webhooks:
-    - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
+  - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
 
 

@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { Authenticator, Greetings, SignUp } from "aws-amplify-react";
-import { connect } from "react-redux";
-import { withRouter } from 'react-router-dom';
+import React, {Component} from "react";
+import {Authenticator, Greetings, SignUp} from "aws-amplify-react";
+import {connect} from "react-redux";
+import {withRouter} from 'react-router-dom';
 
 import './SecureApp.css';
 import App from "./App";
 import logo from "../logo.png";
-import { initCognito, setCognitoUser } from './ducks';
-import { customAmplifyErrorMsgs } from "./utils";
+import {initCognito, setCognitoUser} from './ducks';
+import {customAmplifyErrorMsgs} from "./utils";
 
 
 class SecureApp extends Component {
@@ -23,20 +23,22 @@ class SecureApp extends Component {
     }
 
     componentDidMount() {
-        this.props.initCognito();
+        if (this.props.user.authState !== 'signedIn') {
+            this.props.initCognito();
+        }
     }
 
     render() {
         return (
             this.props.user.authState === 'signedIn' ?
-                <App />
+                <App/>
                 :
                 <div className="centerContainer">
-                  <img src={logo} alt="OpenCHS" />
-                  <Authenticator
-                      hide={[Greetings, SignUp]}
-                      onStateChange={this.setAuthState}
-                      errorMessage={customAmplifyErrorMsgs} />
+                    <img src={logo} alt="OpenCHS"/>
+                    <Authenticator
+                        hide={[Greetings, SignUp]}
+                        onStateChange={this.setAuthState}
+                        errorMessage={customAmplifyErrorMsgs}/>
                 </div>
         );
     }
@@ -48,5 +50,5 @@ const mapStateToProps = state => ({
 
 
 export default withRouter(
-    connect(mapStateToProps, { initCognito, setCognitoUser })(SecureApp)
+    connect(mapStateToProps, {initCognito, setCognitoUser})(SecureApp)
 );
