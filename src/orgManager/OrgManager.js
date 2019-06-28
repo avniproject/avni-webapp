@@ -13,9 +13,6 @@ import {LocationCreate, LocationDetail, LocationEdit, LocationList} from "./loca
 
 
 class OrgManager extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     static childContextTypes = {
         store: PropTypes.object
