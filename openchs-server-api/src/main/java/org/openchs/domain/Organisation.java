@@ -31,6 +31,9 @@ public class Organisation {
     @NotNull
     private String uuid;
 
+    @Column
+    private String usernameSuffix;
+
     public Organisation() {
     }
 
@@ -88,6 +91,14 @@ public class Organisation {
 
     public void setParentOrganisationId(Long parentOrganisationId) {
         this.parentOrganisationId = parentOrganisationId;
+    }
+
+    public String getUsernameSuffix() {
+        return usernameSuffix;
+    }
+
+    public void setUsernameSuffix(String usernameSuffix) {
+        this.usernameSuffix = usernameSuffix;
     }
 
     @Override

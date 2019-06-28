@@ -17,7 +17,10 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
@@ -57,13 +60,15 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
 
         if (organisation == null) {
             logger.info(String.format("Organisation not found for user ID: %s", user.getId()));
-            return new ResponseEntity<>(new UserInfo(null, null, null, null, null), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new UserInfo(), HttpStatus.NOT_FOUND);
         }
-
+        String usernameSuffix = organisation.getUsernameSuffix() != null
+                ? organisation.getUsernameSuffix() : organisation.getDbUser();
         UserInfo userInfo = new UserInfo(
                 user.getUsername(),
                 organisation.getName(),
                 organisation.getId(),
+                usernameSuffix,
                 user.getRoles(),
                 user.getSettings());
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
@@ -86,7 +91,14 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         UserContext userContext = UserContextHolder.getUserContext();
         User user = userContext.getUser();
         Organisation organisation = userContext.getOrganisation();
-        UserInfo userInfo = new UserInfo(user.getUsername(), organisation.getName(), organisation.getId(), user.getRoles(), user.getSettings());
+        String usernameSuffix = organisation.getUsernameSuffix() != null
+                ? organisation.getUsernameSuffix() : organisation.getDbUser();
+        UserInfo userInfo = new UserInfo(user.getUsername(),
+                organisation.getName(),
+                organisation.getId(),
+                usernameSuffix,
+                user.getRoles(),
+                user.getSettings());
         return wrap(new PageImpl<>(Arrays.asList(userInfo)));
     }
 
