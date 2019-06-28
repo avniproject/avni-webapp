@@ -28,7 +28,7 @@ class OrgManager extends Component {
             <Admin title="Manage Organisation"
                    authProvider={authProvider}
                    history={adminHistory}
-                   logoutButton={LogoutButton}>
+                   logoutButton={With({user}, LogoutButton)}>
                 <Resource name="user"
                           list={With({organisation}, UserList)}
                           create={With({organisation}, UserCreate)}
