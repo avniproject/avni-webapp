@@ -1,6 +1,8 @@
 package org.openchs.web;
 
 import org.openchs.dao.AddressLevelTypeRepository;
+import org.openchs.dao.LocationRepository;
+import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.AddressLevelTypeContract;
@@ -23,11 +25,13 @@ import java.util.UUID;
 public class AddressLevelTypeController extends AbstractController<AddressLevelType> {
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
+    private LocationRepository locationRepository;
     private Logger logger;
 
     @Autowired
-    public AddressLevelTypeController(AddressLevelTypeRepository addressLevelTypeRepository) {
+    public AddressLevelTypeController(AddressLevelTypeRepository addressLevelTypeRepository, LocationRepository locationRepository) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
+        this.locationRepository = locationRepository;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -96,7 +100,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
         }
         if (!addressLevelType.isVoidable()) {
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(
-                    String.format("Cannot delete Type '%s' until all SubTypes are deleted", addressLevelType.getName())));
+                    String.format("Cannot delete Type '%s' until all SubTypes are deleted or there are non-voided addresses depending on it", addressLevelType.getName())));
         }
         addressLevelType.setVoided(true);
         return new ResponseEntity<>(addressLevelType, HttpStatus.OK);

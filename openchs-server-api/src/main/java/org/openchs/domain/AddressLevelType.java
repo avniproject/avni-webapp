@@ -5,12 +5,13 @@ import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "address_level_type")
 @BatchSize(size = 100)
-@JsonIgnoreProperties({"subTypes"})
+@JsonIgnoreProperties({"subTypes", "addressLevels"})
 public class AddressLevelType extends OrganisationAwareEntity {
     @Column(name = "name", nullable = false)
     private String name;
@@ -22,6 +23,9 @@ public class AddressLevelType extends OrganisationAwareEntity {
 
     @OneToMany(mappedBy = "parent")
     private Set<AddressLevelType> subTypes = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "type")
+    private Set<AddressLevel> addressLevels = new LinkedHashSet<>();
 
     public String getName() {
         return name;
@@ -59,7 +63,15 @@ public class AddressLevelType extends OrganisationAwareEntity {
         this.subTypes = subTypes;
     }
 
+    public Set<AddressLevel> getAddressLevels() {
+        return addressLevels;
+    }
+
+    public void setAddressLevels(Set<AddressLevel> addressLevels) {
+        this.addressLevels = addressLevels;
+    }
+
     public Boolean isVoidable() {
-        return subTypes.stream().allMatch(CHSEntity::isVoided);
+        return subTypes.stream().allMatch(CHSEntity::isVoided) && addressLevels.stream().allMatch(CHSEntity::isVoided);
     }
 }
