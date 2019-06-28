@@ -35,9 +35,9 @@ import {LOCALES, phoneCountryPrefix} from "../common/constants";
 import EnableDisableButton from './components/EnableDisableButton';
 
 
-export const UserCreate = props => (
+export const UserCreate = ({user, organisation, ...props}) => (
     <Create {...props}>
-        <UserForm/>
+        <UserForm user={user} nameSuffix={organisation.usernameSuffix}/>
     </Create>
 );
 
@@ -175,14 +175,27 @@ const localeChoices = [
     {id: LOCALES.GUJARATI, name: 'Gujarati'}
 ];
 
-const UserForm = ({edit, user, ...props}) => {
+const UserForm = ({edit, user, nameSuffix, ...props}) => {
     const sanitizeProps = ({record, resource, save}) => ({record, resource, save});
     return (
         <SimpleForm toolbar={<CustomToolbar/>} {...sanitizeProps(props)} redirect="show">
             {edit ?
                 <DisabledInput source="username" label="Login ID (username)"/>
                 :
-                <TextInput source="username" label="Login ID (username)" validate={isRequired}/>}
+                <FormDataConsumer>
+                    {({formData, dispatch, ...rest}) =>
+                        <Fragment>
+                            <TextInput source="ignored" validate={isRequired}
+                                       label={'Login ID (username)'}
+                                       onChange={(e, newVal) =>
+                                           !isEmpty(newVal) && dispatch(change(REDUX_FORM_NAME, 'username', newVal + '@' + nameSuffix))
+                                       }
+                                       {...rest} />
+                            <span>@{nameSuffix}</span>
+                        </Fragment>
+                    }
+                </FormDataConsumer>
+            }
             {!edit && <PasswordTextField/>}
             <TextInput source="name" label="Name of the Person" validate={isRequired}/>
             <TextInput source="email" label="Email Address" validate={validateEmail}/>

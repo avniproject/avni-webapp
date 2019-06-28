@@ -1,21 +1,20 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import { Admin, Resource } from "react-admin";
-import { withRouter } from 'react-router-dom';
-import { connect } from "react-redux";
+import {Admin, Resource} from "react-admin";
+import {withRouter} from 'react-router-dom';
+import {connect} from "react-redux";
 
-import { authProvider, LogoutButton } from "../admin";
-import { store, adminHistory } from "../store";
-import { UserList, UserDetail, UserCreate, UserEdit } from './user';
-import { CatchmentDetail, CatchmentList, CatchmentCreate, CatchmentEdit } from "./catchment";
-import { LocationTypeList, LocationTypeDetail, LocationTypeCreate, LocationTypeEdit } from "./addressLevelType";
-import { LocationDetail, LocationList, LocationCreate, LocationEdit } from "./locations";
+import {authProvider, LogoutButton} from "../admin";
+import {adminHistory, store} from "../store";
+import {UserCreate, UserDetail, UserEdit, UserList} from './user';
+import {CatchmentCreate, CatchmentDetail, CatchmentEdit, CatchmentList} from "./catchment";
+import {LocationTypeCreate, LocationTypeDetail, LocationTypeEdit, LocationTypeList} from "./addressLevelType";
+import {LocationCreate, LocationDetail, LocationEdit, LocationList} from "./locations";
 
 
 class OrgManager extends Component {
     constructor(props) {
         super(props);
-        this.userList = this.userList.bind(this);
     }
 
     static childContextTypes = {
@@ -26,21 +25,18 @@ class OrgManager extends Component {
         return { store }
     }
 
-    userList(props) {
-        return <UserList {...props} organisation={this.props.organisation}/>;
-    }
-
-    userDetail = (props) => <UserDetail {...props} user={this.props.user}/>;
-
-    userEdit = (props) => <UserEdit {...props} user={this.props.user}/>;
-
     render() {
+        const { organisation, user } = this.props;
         return (
             <Admin title="Manage Organisation"
                    authProvider={authProvider}
                    history={adminHistory}
                    logoutButton={LogoutButton}>
-                <Resource name="user" list={this.userList} show={this.userDetail} create={UserCreate} edit={this.userEdit} />
+                <Resource name="user"
+                          list={With({organisation}, UserList)}
+                          create={With({organisation}, UserCreate)}
+                          show={With({user}, UserDetail)}
+                          edit={With({user}, UserEdit)}/>
                 <Resource name="catchment" list={CatchmentList} show={CatchmentDetail} create={CatchmentCreate} edit={CatchmentEdit}  />
                 <Resource name="addressLevelType" options={{ label: "Location Types" }}
                           list={LocationTypeList}
@@ -55,6 +51,8 @@ class OrgManager extends Component {
         );
     }
 }
+
+const With = (extras, Compnent) => props => <Compnent {...extras} {...props}/>;
 
 const mapStateToProps = state => ({
     organisation: state.app.organisation,

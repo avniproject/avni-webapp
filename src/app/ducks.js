@@ -70,7 +70,8 @@ export default function(state=initialState, action) {
                 },
                 organisation: {
                     id: action.payload.organisationId,
-                    name: action.payload.organisationName
+                    name: action.payload.organisationName,
+                    usernameSuffix: action.payload.usernameSuffix,
                 }
             }
         }
