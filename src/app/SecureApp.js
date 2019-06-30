@@ -35,17 +35,18 @@ class SecureApp extends Component {
                 :
                 <div className="centerContainer">
                     <img src={logo} alt="OpenCHS"/>
-                    <Authenticator
+                    {this.props.authConfigured && <Authenticator
                         hide={[Greetings, SignUp]}
                         onStateChange={this.setAuthState}
-                        errorMessage={customAmplifyErrorMsgs}/>
+                        errorMessage={customAmplifyErrorMsgs}/>}
                 </div>
         );
     }
 }
 
 const mapStateToProps = state => ({
-    user: state.app.user
+    user: state.app.user,
+    authConfigured: state.app.authConfigured,
 });
 
 

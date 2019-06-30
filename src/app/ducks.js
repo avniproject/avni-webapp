@@ -6,6 +6,7 @@ export const types = {
     INIT_COMPLETE: 'app/INIT_COMPLETE',
     FETCH_ALL_LOCATIONS: 'app/FETCH_ALL_LOCATIONS',
     FETCH_ALL_LOCATIONS_SUCCESS: 'app/FETCH_ALL_LOCATIONS_SUCCESS',
+    AUTH_CONFIGURED: 'app/AUTH_CONFIGURED',
 };
 
 export const initCognito = () => ({
@@ -33,7 +34,12 @@ export const sendInitComplete = () => ({
     type: types.INIT_COMPLETE
 });
 
+export const sendAuthConfigured = () => ({
+    type: types.AUTH_CONFIGURED
+});
+
 const initialState = {
+    authConfigured: false,
     user: {
         authState: undefined,
         cognito: undefined,
@@ -79,6 +85,12 @@ export default function(state=initialState, action) {
             return {
                 ...state,
                 appInitialised: true
+            }
+        }
+        case types.AUTH_CONFIGURED: {
+            return {
+                ...state,
+                authConfigured: true,
             }
         }
         default:

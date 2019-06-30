@@ -1,8 +1,7 @@
 import { call, put, take, takeLatest } from 'redux-saga/effects';
-import { types, getUserInfo, setUserInfo, sendInitComplete } from "./ducks";
+import {types, getUserInfo, setUserInfo, sendInitComplete, sendAuthConfigured} from "./ducks";
 import { cognitoInDev, isProdEnv, isDevEnv } from "../common/constants";
 import { httpClient } from "../utils/httpClient";
-import { cognitoConfig as cognitoConfigFromEnv } from '../common/constants';
 import { configureAuth } from "./utils";
 
 const api = {
@@ -16,6 +15,7 @@ export function* initialiseCognito() {
     try {
         const cognitoDetails = cognitoInDev ? cognitoConfigFromEnv : yield call(api.fetchCognitoDetails);
         yield call(configureAuth, cognitoDetails);
+        yield put(sendAuthConfigured());
     } catch (e) {
         yield call(alert, e);
     }
