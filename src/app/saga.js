@@ -3,6 +3,7 @@ import {types, getUserInfo, setUserInfo, sendInitComplete, sendAuthConfigured} f
 import { cognitoInDev, isProdEnv, isDevEnv } from "../common/constants";
 import { httpClient } from "../utils/httpClient";
 import { configureAuth } from "./utils";
+import { cognitoConfig as cognitoConfigFromEnv } from '../common/constants';
 
 const api = {
     fetchCognitoDetails: () => httpClient.fetchJson('/cognito-details').then(response => response.json),
