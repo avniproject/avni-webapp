@@ -2,6 +2,7 @@ package org.openchs.web;
 
 import com.amazonaws.services.cognitoidp.model.AWSCognitoIdentityProviderException;
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.openchs.dao.*;
 import org.openchs.domain.OperatingIndividualScope;
 import org.openchs.domain.User;
@@ -21,8 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.apache.commons.validator.routines.EmailValidator;
 
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
@@ -226,21 +227,22 @@ public class UserController {
                            @RequestParam(value = "email", required = false) String email,
                            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
                            Pageable pageable) {
-        User currentUser = userService.getCurrentUser();
-        Long organisationId = currentUser.getOrganisationId();
-
-        if (username != null) {
-            return userRepository.findByOrganisationIdAndIsVoidedFalseAndUsernameIgnoreCaseContaining(organisationId, username, pageable);
-        }
-        if (name != null) {
-            return userRepository.findByOrganisationIdAndIsVoidedFalseAndNameIgnoreCaseContaining(organisationId, name, pageable);
-        }
-        if (email != null) {
-            return userRepository.findByOrganisationIdAndIsVoidedFalseAndEmailIgnoreCaseContaining(organisationId, email, pageable);
-        }
-        if (phoneNumber != null) {
-            return userRepository.findByOrganisationIdAndIsVoidedFalseAndPhoneNumberContaining(organisationId, phoneNumber, pageable);
-        }
-        return userRepository.findByOrganisationIdAndIsVoidedFalse(organisationId, pageable);
+        Long organisationId = userService.getCurrentUser().getOrganisationId();
+        return userRepository.findAll((root, query, builder) -> {
+            Predicate predicate = builder.equal(root.get("organisationId"), organisationId);
+            if (username != null) {
+                predicate = builder.and(predicate, builder.like(builder.upper(root.get("username")), "%" + username.toUpperCase() + "%"));
+            }
+            if (name != null) {
+                predicate = builder.and(predicate, builder.like(builder.upper(root.get("name")), "%" + name.toUpperCase() + "%"));
+            }
+            if (email != null) {
+                predicate = builder.and(predicate, builder.like(builder.upper(root.get("email")), "%" + email.toUpperCase() + "%"));
+            }
+            if (phoneNumber != null) {
+                predicate = builder.and(predicate, builder.like(root.get("phoneNumber"), "%" + phoneNumber + "%"));
+            }
+            return predicate;
+        }, pageable);
     }
 }
