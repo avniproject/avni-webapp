@@ -12,3 +12,11 @@ $BODY$
     RETURN 1;
   END
 $BODY$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION jsonb_object_values_contain(obs JSONB, pattern TEXT)
+  RETURNS BOOLEAN AS $$
+BEGIN
+  return EXISTS (select true from jsonb_each_text(obs) where value ilike pattern);
+END;
+$$
+LANGUAGE plpgsql IMMUTABLE;

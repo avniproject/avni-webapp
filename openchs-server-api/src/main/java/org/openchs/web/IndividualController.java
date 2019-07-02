@@ -5,14 +5,15 @@ import org.openchs.dao.*;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
-import org.openchs.geo.Point;
 import org.openchs.domain.SubjectType;
+import org.openchs.geo.Point;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.PointRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -22,18 +23,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Objects;
+
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 @RestController
 public class IndividualController extends AbstractController<Individual> implements RestControllerResourceProcessor<Individual>, OperatingIndividualScopeAwareController<Individual> {
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final IndividualRepository individualRepository;
     private final LocationRepository locationRepository;
     private final GenderRepository genderRepository;
     private final ObservationService observationService;
     private final UserService userService;
     private SubjectTypeRepository subjectTypeRepository;
-
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
     @Autowired
     public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository) {
@@ -57,34 +60,31 @@ public class IndividualController extends AbstractController<Individual> impleme
         logger.info(String.format("Saved individual with UUID %s", individualRequest.getUuid()));
     }
 
-    @Deprecated
-    @RequestMapping(value = "/individual/search/byCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public PagedResources<Resource<Individual>> getIndividualsByCatchmentAndLastModified(
-            @RequestParam("catchmentId") long catchmentId,
-            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            Pageable pageable) {
-        return wrap(individualRepository.findByAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
-    }
-
-    @Deprecated
-    @RequestMapping(value = "/individual/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public PagedResources<Resource<Individual>> getIndividualsByLastModified(
-            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            Pageable pageable) {
-        return wrap(individualRepository.findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
-    }
-
-    @RequestMapping(value = "/individual", method = RequestMethod.GET)
+    @GetMapping(value = {"/individual", /*-->Both are Deprecated */ "/individual/search/byCatchmentAndLastModified", "/individual/search/lastModified"})
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<Individual>> getIndividualsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
         return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+    }
+
+    @GetMapping(value = "/individual/search")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public Page<Individual> search(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "includeVoided", defaultValue = "false") Boolean includeVoided,
+            @RequestParam(value = "obs", required = false) String obs,
+            @RequestParam(value = "locationIds", required = false) List<Long> locationIds,
+            Pageable pageable) {
+        IndividualRepository repo = this.individualRepository;
+        return repo.findAll(
+                where(repo.getFilterSpecForVoid(includeVoided))
+                        .and(repo.getFilterSpecForName(name))
+                        .and(repo.getFilterSpecForObs(obs))
+                        .and(repo.getFilterSpecForLocationIds(locationIds))
+                , pageable);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         if (individual.getGender() != null) {
             resource.add(new Link(individual.getGender().getUuid(), "genderUUID"));
         }
-        if (individual.getSubjectType()!= null) {
+        if (individual.getSubjectType() != null) {
             resource.add(new Link(individual.getSubjectType().getUuid(), "subjectTypeUUID"));
         }
         return resource;
@@ -123,7 +123,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         individual.setVoided(individualRequest.isVoided());
         individual.setFacility(userService.getUserFacility());
         PointRequest pointRequest = individualRequest.getRegistrationLocation();
-        if(pointRequest != null)
+        if (pointRequest != null)
             individual.setRegistrationLocation(new Point(pointRequest.getX(), pointRequest.getY()));
         return individual;
     }
