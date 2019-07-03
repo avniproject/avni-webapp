@@ -52,7 +52,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 value == null ? cb.and() : cb.or(
                         cb.like(cb.upper(root.get("firstName")), "%" + value.toUpperCase() + "%"),
-                        cb.like(cb.upper(root.get("firstName")), "%" + value.toUpperCase() + "%"));
+                        cb.like(cb.upper(root.get("lastName")), "%" + value.toUpperCase() + "%"));
     }
 
     default Specification<Individual> getFilterSpecForObs(String value) {
