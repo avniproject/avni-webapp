@@ -79,7 +79,7 @@ public class IndividualController extends AbstractController<Individual> impleme
             @RequestParam(value = "locationIds", required = false) List<Long> locationIds,
             Pageable pageable) {
         IndividualRepository repo = this.individualRepository;
-        return repo.findAll(
+        return findAllByUserAndSpec(userService.getCurrentUser(),
                 where(repo.getFilterSpecForVoid(includeVoided))
                         .and(repo.getFilterSpecForName(name))
                         .and(repo.getFilterSpecForObs(obs))

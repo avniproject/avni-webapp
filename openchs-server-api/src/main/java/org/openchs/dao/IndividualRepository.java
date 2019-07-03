@@ -66,4 +66,20 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 locationIds == null ? cb.and() : root.get("addressLevel").get("id").in(locationIds);
     }
+
+    @Override
+    default Specification<Individual> getFilterSpecForCatchment(Long catchmentId) {
+        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            return catchmentId == null ? cb.and() :
+                    root.join("addressLevel").joinSet("virtualCatchments").get("id").in(catchmentId);
+        };
+    }
+
+    @Override
+    default Specification<Individual> getFilterSpecForFacility(Long facilityId) {
+        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            return facilityId == null ? cb.and() :
+                    root.join("facility").get("id").in(facilityId);
+        };
+    }
 }
