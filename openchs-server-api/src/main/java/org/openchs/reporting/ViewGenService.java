@@ -143,6 +143,9 @@ public class ViewGenService {
                     String unitSQL = String.format("((%s->>'%s')::JSONB#>>'{durations,0,durationUnit}')", obsColumn, conceptUUID);
                     return String.format("( %s || ' ' || %s )::TEXT as \"%s.%s\"", valueSQL, unitSQL, columnPrefix, conceptName);
                 }
+                case Date: case DateTime: {
+                    return String.format("(%s->>'%s')::DATE as \"%s.%s\"", obsColumn, conceptUUID, columnPrefix, conceptName);
+                }
                 default: {
                     return String.format("(%s->>'%s')::TEXT as \"%s.%s\"", obsColumn, conceptUUID, columnPrefix, conceptName);
                 }
