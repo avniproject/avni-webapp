@@ -6,11 +6,13 @@ import org.junit.Test;
 import org.openchs.common.AbstractControllerIntegrationTest;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Individual;
+import org.openchs.domain.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -91,6 +93,18 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
         } catch (IOException e) {
             Assert.fail();
         }
+    }
+
+    @Test
+    public void shouldSearchWithinOperatingIndividualScope() {
+        setUser("demo-user");
+        String url = "/individual/search?size=10&page=0";
+        ResponseEntity<JsonObject> catchment2 = template.getForEntity(base.toString() + url, JsonObject.class);
+        Assert.assertEquals(1, ((List) catchment2.getBody().get("content")).size());
+
+        setUser("demo-user-2");
+        ResponseEntity<JsonObject> catchment1 = template.getForEntity(base.toString() + url, JsonObject.class);
+        Assert.assertEquals(4, ((List) catchment1.getBody().get("content")).size());
     }
 
 }

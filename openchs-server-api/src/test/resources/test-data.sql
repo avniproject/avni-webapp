@@ -76,6 +76,9 @@ VALUES  (2, 'CatchmentY', 'b95cf900-6740-4696-95a1-219db2a8bdcb', 0, 2, 'TypeY')
 INSERT INTO users (id, username, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin, catchment_id)
 VALUES (4, 'demo-user', 'f10b5e79-30ef-45ce-a1f5-f1a5101d7c7f', 2, 'ByCatchment', false, false, 2);
 
+INSERT INTO users (id, username, uuid, organisation_id, operating_individual_scope, is_org_admin, is_admin, catchment_id)
+VALUES (5, 'demo-user-2', '55ef8e34-d1a3-44c9-b750-a791b09bb369', 2, 'ByCatchment', false, false, 1);
+
 INSERT INTO gender (id, name, uuid, version, organisation_id)
 VALUES (1, 'Female', 'ad7d1d14-54fd-45a2-86b7-ea329b744484', 1, 1);
 INSERT INTO gender (id, name, uuid, version, organisation_id)
@@ -201,7 +204,7 @@ INSERT INTO address_level (id, title, level, uuid, version, lineage, parent_id)
 VALUES (2, 'Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1, '2', NULL);
 
 INSERT INTO catchment_address_mapping (catchment_id, addresslevel_id)
-VALUES (1, 1);
+VALUES (1, 1), (1, 2), (2, 2);
 
 INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id,
  subject_type_id)
@@ -245,6 +248,11 @@ VALUES (2, 2, current_timestamp, '529aa9ed-46bc-4530-9768-6ec941c0e2e0', 1);
 INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, uuid, version,
   subject_type_id)
 VALUES (1, '1955-01-05', FALSE, 'Ram', 'Kumari', 1, 'c415ef96-8ff9-4cbb-8407-e7618c90a055', 1,
+  (select id from subject_type where name = 'Individual'));
+
+INSERT INTO individual (address_id, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, uuid, version,
+  subject_type_id)
+VALUES (2, '1955-01-05', FALSE, 'Ram', 'Kumari', 1, 'bb312ece-5e2e-490f-ae1d-2896089da81e', 1,
   (select id from subject_type where name = 'Individual'));
 
 INSERT INTO form (NAME, form_type, uuid, version)

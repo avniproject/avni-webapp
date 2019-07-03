@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "individual")
-@JsonIgnoreProperties({"programEnrolments", "encounters"})
+@JsonIgnoreProperties({"programEnrolments", "encounters", "subjectType", "gender", "addressLevel"})
 @BatchSize(size = 100)
 public class Individual extends OrganisationAwareEntity {
 
@@ -188,5 +188,17 @@ public class Individual extends OrganisationAwareEntity {
     public List<Long> getActivePrograms() {
         return programEnrolments.stream().filter(x -> !x.isVoided()).filter(x -> x.getProgramExitDateTime() == null)
                 .map(x -> x.getProgram().getId()).collect(Collectors.toList());
+    }
+
+    public Long getSubjectTypeId() {
+        return subjectType.getId();
+    }
+
+    public Long getGenderId() {
+        return gender.getId();
+    }
+
+    public Long getAddressLevelId() {
+        return addressLevel.getId();
     }
 }
