@@ -1,47 +1,45 @@
-version: 2
+version: 2.1
+
+commands:
+  deploy:
+    description: Deployment of server
+    parameters:
+      to:
+        type: string
+        default: staging
+    steps:
+    - attach_workspace:
+        at: ~/artifacts
+
+    - run: sudo apt-get install make openssl
+
+    - run:
+        name: Install dependencies
+        command: |
+          sudo apt-get -y -qq update
+          sudo apt-get -y -qq install python3-pip
+          sudo pip3 install awscli --upgrade
+
+    - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
+
+    - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
+
+    - run: cp -f ~/artifacts/major_version ~/infra/server/version/major_version
+
+    - run: cp -f ~/artifacts/minor_version ~/infra/server/version/minor_version
+
+    - run: cd ~/infra; make install; make << parameters.to >>-create;
+
 jobs:
   test:
     docker:
-      - image: circleci/openjdk:8-jdk
+    - image: circleci/openjdk:8-jdk
 
-      - image: circleci/postgres:9.6
-        environment:
-        - POSTGRES_USER: openchs
-        - POSTGRES_DB: openchs_test
-        - POSTGRES_PASSWORD: password
-
-    working_directory: ~/openchs-server
-
-    environment:
-      MAVEN_OPTS: -Xmx3200m
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
-          - v1-dependencies-
-
-      - run: sudo apt-get update
-
-      - run: sudo apt-get install make postgresql-client
-
-      - run: make ci-test
-
-      - save_cache:
-          paths:
-            - ~/.m2
-            - ~/.gradle
-            - ~/openchs-server/.gradle
-          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
-
-      - store_artifacts:
-          path: openchs-server-api/build/reports/tests/test
-          destination: testReports
-  publish:
-    docker:
-      - image: circleci/openjdk:8-jdk
+    - image: circleci/postgres:9.6
+      environment:
+      - POSTGRES_USER: openchs
+      - POSTGRES_DB: openchs_test
+      - POSTGRES_PASSWORD: password
 
     working_directory: ~/openchs-server
 
@@ -49,84 +47,124 @@ jobs:
       MAVEN_OPTS: -Xmx3200m
 
     steps:
-      - checkout
+    - checkout
 
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
-          - v1-dependencies-
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
+        - v1-dependencies-
 
-      - run: sudo apt-get install make openssl
+    - run: sudo apt-get update
 
-      - run: make upload-rpm
+    - run: sudo apt-get install make postgresql-client
 
-      - save_cache:
-          paths:
-            - ~/.m2
-            - ~/.gradle
-            - ~/openchs-server/.gradle
-          key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
+    - run: make ci-test
 
-      - run: mkdir -p ~/artifacts;
+    - save_cache:
+        paths:
+        - ~/.m2
+        - ~/.gradle
+        - ~/openchs-server/.gradle
+        key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
 
-      - run: cp minor_version ~/artifacts/minor_version;
-
-      - run: cp major_version ~/artifacts/major_version;
-
-      - run: cp ~/openchs-server/openchs-server-api/build/distributions/openchs-server-*.noarch.rpm ~/artifacts/;
-
-      - persist_to_workspace:
-          root: ~/artifacts
-          paths:
-           - minor_version
-           - major_version
-      - store_artifacts:
-          path: ~/artifacts
-
-
-  deploy:
+    - store_artifacts:
+        path: openchs-server-api/build/reports/tests/test
+        destination: testReports
+  build:
     docker:
-      - image: circleci/openjdk:8-jdk
+    - image: circleci/openjdk:8-jdk
 
+    working_directory: ~/openchs-server
+
+    environment:
+      MAVEN_OPTS: -Xmx3200m
+
+    steps:
+    - checkout
+
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
+        - v1-dependencies-
+
+    - run: sudo apt-get install make openssl
+
+    - run: make upload-rpm
+
+    - save_cache:
+        paths:
+        - ~/.m2
+        - ~/.gradle
+        - ~/openchs-server/.gradle
+        key: v1-dependencies--{{ checksum "build.gradle" }}-{{ checksum "openchs-server-api/build.gradle" }}
+
+    - run: mkdir -p ~/artifacts;
+
+    - run: cp minor_version ~/artifacts/minor_version;
+
+    - run: cp major_version ~/artifacts/major_version;
+
+    - run: cp ~/openchs-server/openchs-server-api/build/distributions/openchs-server-*.noarch.rpm ~/artifacts/;
+
+    - persist_to_workspace:
+        root: ~/artifacts
+        paths:
+        - minor_version
+        - major_version
+    - store_artifacts:
+        path: ~/artifacts
+
+  STAGING_deploy:
+    docker:
+    - image: circleci/openjdk:8-jdk
     working_directory: ~/
-
     steps:
-      - attach_workspace:
-          at: ~/artifacts
+    - deploy:
+        to: staging
 
-      - run: sudo apt-get install make openssl
+  UAT_deploy:
+    docker:
+    - image: circleci/openjdk:8-jdk
+    working_directory: ~/
+    steps:
+    - deploy:
+        to: uat
 
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3-pip
-            sudo pip3 install awscli --upgrade
-
-      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
-
-      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
-
-      - run: cp -f ~/artifacts/major_version ~/infra/server/version/major_version
-
-      - run: cp -f ~/artifacts/minor_version ~/infra/server/version/minor_version
-
-      - run: cd ~/infra; make install; make staging-create;
-
+  PRERELEASE_deploy:
+    docker:
+    - image: circleci/openjdk:8-jdk
+    working_directory: ~/
+    steps:
+    - deploy:
+        to: prerelease
 
 workflows:
   version: 2
-  test_and_publish_and_deploy:
+  test_and_build_and_deploy:
     jobs:
-      - test
-      - publish
-      - approve-deployment:
-          type: approval
-          requires:
-            - publish
-      - deploy:
-          requires:
-            - approve-deployment
+    - test
+    - build
+    - STAGING_approve:
+        type: approval
+        requires:
+        - build
+    - STAGING_deploy:
+        requires:
+        - STAGING_approve
+    - UAT_approve:
+        type: approval
+        requires:
+        - build
+    - UAT_deploy:
+        requires:
+        - UAT_approve
+    - PRERELEASE_approve:
+        type: approval
+        requires:
+        - build
+    - PRERELEASE_deploy:
+        requires:
+        - PRERELEASE_approve
 notify:
   webhooks:
-    - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
+  - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
