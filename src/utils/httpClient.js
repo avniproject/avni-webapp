@@ -1,6 +1,7 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, forEach } from 'lodash';
 import { fetchUtils } from 'react-admin';
 import { authContext as _authContext } from "../app/authContext";
+import { stringify } from 'query-string';
 
 class HttpClient {
     static instance;
@@ -36,6 +37,10 @@ class HttpClient {
     fetchJson(url, options = {}) {
         this.setHeaders(options);
         return fetchUtils.fetchJson(url, options);
+    }
+
+    withParams(url, params) {
+        return url + '?' + stringify(params);
     }
 }
 

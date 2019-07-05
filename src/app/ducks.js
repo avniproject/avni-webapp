@@ -7,6 +7,9 @@ export const types = {
     FETCH_ALL_LOCATIONS: 'app/FETCH_ALL_LOCATIONS',
     FETCH_ALL_LOCATIONS_SUCCESS: 'app/FETCH_ALL_LOCATIONS_SUCCESS',
     AUTH_CONFIGURED: 'app/AUTH_CONFIGURED',
+    SET_SUBJECTS: 'app/SET_SUBJECTS',
+    SEARCH_SUBJECTS: 'app/SEARCH_SUBJECTS',
+    SET_SUBJECT_SEARCH_PARAMS: 'app/SET_SUBJECT_SEARCH_PARAMS',
 };
 
 export const initCognito = () => ({
@@ -38,6 +41,20 @@ export const sendAuthConfigured = () => ({
     type: types.AUTH_CONFIGURED
 });
 
+export const setSubjects = (subjects) => ({
+    type: types.SET_SUBJECTS,
+    subjects,
+});
+
+export const searchSubjects = () => ({
+    type: types.SEARCH_SUBJECTS,
+});
+
+export const setSubjectSearchParams = (params) => ({
+    type: types.SET_SUBJECT_SEARCH_PARAMS,
+    params
+});
+
 const initialState = {
     authConfigured: false,
     user: {
@@ -50,12 +67,14 @@ const initialState = {
         id: undefined,
         name: undefined
     },
-    appInitialised: false
+    appInitialised: false,
+    subjects: [],
+    subjectSearchParams: {}
 };
 
 // reducer
-export default function(state=initialState, action) {
-    switch(action.type) {
+export default function (state = initialState, action) {
+    switch (action.type) {
         case types.SET_COGNITO_USER: {
             return {
                 ...state,
@@ -91,6 +110,22 @@ export default function(state=initialState, action) {
             return {
                 ...state,
                 authConfigured: true,
+            }
+        }
+        case types.SET_SUBJECTS: {
+            debugger;
+            return {
+                ...state,
+                subjects: action.subjects,
+            }
+        }
+        case types.SET_SUBJECT_SEARCH_PARAMS: {
+            return {
+                ...state,
+                subjectSearchParams: {
+                    ...state.subjectSearchParams,
+                    ...action.params,
+                }
             }
         }
         default:

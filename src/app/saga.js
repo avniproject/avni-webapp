@@ -1,9 +1,9 @@
-import { call, put, take, takeLatest } from 'redux-saga/effects';
-import {types, getUserInfo, setUserInfo, sendInitComplete, sendAuthConfigured} from "./ducks";
-import { cognitoInDev, isProdEnv, isDevEnv } from "../common/constants";
-import { httpClient } from "../utils/httpClient";
-import { configureAuth } from "./utils";
-import { cognitoConfig as cognitoConfigFromEnv } from '../common/constants';
+import {call, put, select, take, takeLatest} from 'redux-saga/effects';
+import {getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, setSubjects, types} from "./ducks";
+import {cognitoConfig as cognitoConfigFromEnv, cognitoInDev, isDevEnv, isProdEnv} from "../common/constants";
+import {httpClient} from "../utils/httpClient";
+import {configureAuth} from "./utils";
+import SubjectService from "../dataEntry/services/SubjectService";
 
 const api = {
     fetchCognitoDetails: () => httpClient.fetchJson('/cognito-details').then(response => response.json),
@@ -42,4 +42,14 @@ function* setUserDetails() {
         yield call(httpClient.initAuthContext, { username: userDetails.username });
     }
     yield put(sendInitComplete());
+}
+
+export function* dataEntrySearchWatcher() {
+    yield takeLatest(types.SEARCH_SUBJECTS, dataEntrySearchWorker);
+}
+
+function* dataEntrySearchWorker() {
+    const params = yield select(state => state.app.subjectSearchParams);
+    const subjects = yield call(SubjectService.search, params);
+    yield put(setSubjects(subjects));
 }

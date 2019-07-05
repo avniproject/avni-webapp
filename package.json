@@ -4,6 +4,9 @@
   "private": true,
   "proxy": "http://localhost:8021",
   "dependencies": {
+    "@material-ui/core": "^4.2.0",
+    "@material-ui/icons": "^4.2.1",
+    "@material-ui/styles": "^4.2.0",
     "aws-amplify": "^1.1.19",
     "aws-amplify-react": "^2.3.0",
     "lodash": "^4.17.11",
