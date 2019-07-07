@@ -1,5 +1,6 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.BatchSize;
@@ -12,6 +13,8 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @Entity
@@ -60,7 +63,7 @@ public class Individual extends OrganisationAwareEntity {
     @JoinColumn(name = "facility_id")
     private Facility facility;
 
-    @Type(type="org.openchs.geo.PointType")
+    @Type(type = "org.openchs.geo.PointType")
     @Column
     private Point registrationLocation;
 
@@ -200,5 +203,13 @@ public class Individual extends OrganisationAwareEntity {
 
     public Long getAddressLevelId() {
         return addressLevel.getId();
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getEncounterInfo() {
+        List<EncounterInfo> encounterInfos = this.encounters.stream().map(EncounterInfo::new).collect(Collectors.toList());
+        return new HashMap<String, Object>() {{
+            put("encounters", encounterInfos);
+        }};
     }
 }

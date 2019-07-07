@@ -2,11 +2,9 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.AddressLevel;
-import org.openchs.domain.Gender;
-import org.openchs.domain.Individual;
-import org.openchs.domain.SubjectType;
+import org.openchs.domain.*;
 import org.openchs.geo.Point;
+import org.openchs.projection.IndividualInfoProjection;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
@@ -15,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
@@ -37,15 +36,17 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final ObservationService observationService;
     private final UserService userService;
     private SubjectTypeRepository subjectTypeRepository;
+    private ProjectionFactory projectionFactory;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
         this.observationService = observationService;
         this.userService = userService;
         this.subjectTypeRepository = subjectTypeRepository;
+        this.projectionFactory = projectionFactory;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -85,6 +86,13 @@ public class IndividualController extends AbstractController<Individual> impleme
                         .and(repo.getFilterSpecForObs(obs))
                         .and(repo.getFilterSpecForLocationIds(locationIds))
                 , pageable);
+    }
+
+    @GetMapping(value = "/web/individual/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public IndividualInfoProjection getIndividualInfo(@PathVariable String uuid) {
+        return projectionFactory.createProjection(IndividualInfoProjection.class, individualRepository.findByUuid(uuid));
     }
 
     @Override
