@@ -11,6 +11,7 @@ import UserIcon from '@material-ui/icons/AccountCircle';
 const useStyle = makeStyles(theme => ({
     root: {
         flexGrow: 1,
+        marginBottom: theme.spacing(5),
     },
     title: {
         flex: 1,
@@ -46,7 +47,7 @@ export default (props) => {
     }
 
     return <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position="fixed">
             <Toolbar className={classes.toolbar}>
                 <div className={classes.title}>
                     <Typography variant="headline" className={classes.titlet}>

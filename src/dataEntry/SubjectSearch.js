@@ -56,10 +56,18 @@ const SubjectsTable = ({subjects}) => {
                         <TableCell component="th" scope="row">
                             {row.firstName + ' ' + row.lastName}
                         </TableCell>
-                        <TableCell align="right">{row.genderId}</TableCell>
+                        <TableCell align="right">{row.gender.name}</TableCell>
                         <TableCell align="right">{row.dateOfBirth}</TableCell>
-                        <TableCell align="right">{row.addressLevelId}</TableCell>
-                        <TableCell align="right">{row.activePrograms}</TableCell>
+                        <TableCell align="right">{row.addressLevel.title}</TableCell>
+                        <TableCell align="right">
+                            {row.activePrograms.map((p, key) => (
+                                <Button key={key} size="small"
+                                        style={{height: 20, padding: 0, backgroundColor: p.colour, color: 'white'}}
+                                        disabled>
+                                    {p.operationalProgramName}
+                                </Button>
+                            ))}
+                        </TableCell>
                     </TableRow>
                 ))}
             </TableBody>
@@ -100,7 +108,7 @@ const SubjectSearch = (props) => {
                             />
                         </FormControl>
                         <FormControl className={classes.searchFormItem}>
-                            <Button variant="contained" color="primary" onClick={handleSubmit}>
+                            <Button variant="contained" size="small" color="primary" onClick={handleSubmit}>
                                 Search
                             </Button>
                         </FormControl>
