@@ -1,4 +1,5 @@
 import React from 'react';
+import {Auth} from 'aws-amplify';
 import {connect} from 'react-redux';
 import {userLogout} from 'react-admin';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -14,12 +15,12 @@ const styles = {
     }
 };
 
-const LogoutButton = ({logout, user, ...rest}) => {
+const LogoutButton = ({logout, username, ...rest}) => {
     return (
         <div>
             <span style={styles.userIcon}>
                 <UserIcon color={'primary'}/>
-                {user.username}
+                {username}
             </span>
             <MenuItem onClick={logout} {...rest}>
                 <ExitIcon/> Logout
@@ -29,7 +30,11 @@ const LogoutButton = ({logout, user, ...rest}) => {
     );
 };
 
-const redirectTo = '/';
-const customUserLogout = () => userLogout(redirectTo);
+const mapStateToProps = state => ({
+    username: state.app.user.username,
+});
+const mapDispatchToProps = dispatch => ({
+    logout: () => userLogout() && Auth.signOut().then(() => document.location.href = '/'),
+});
 
-export default connect(null, {logout: customUserLogout})(LogoutButton);
+export default connect(mapStateToProps, mapDispatchToProps)(LogoutButton);
