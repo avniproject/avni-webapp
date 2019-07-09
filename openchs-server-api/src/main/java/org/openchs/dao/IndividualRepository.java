@@ -1,7 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
-import org.openchs.domain.Individual;
+import org.openchs.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,6 +12,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+
+import static org.openchs.domain.OperatingIndividualScope.ByCatchment;
+import static org.openchs.domain.OperatingIndividualScope.ByFacility;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
@@ -68,18 +71,18 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     @Override
-    default Specification<Individual> getFilterSpecForCatchment(Long catchmentId) {
-        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            return catchmentId == null ? cb.and() :
-                    root.join("addressLevel").joinSet("virtualCatchments").get("id").in(catchmentId);
-        };
-    }
-
-    @Override
-    default Specification<Individual> getFilterSpecForFacility(Long facilityId) {
-        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            return facilityId == null ? cb.and() :
-                    root.join("facility").get("id").in(facilityId);
-        };
+    default Specification<Individual> getFilterSpecForOperatingSubjectScope(User user) {
+        OperatingIndividualScope scope = user.getOperatingIndividualScope();
+        Facility facility = user.getFacility();
+        Catchment catchment = user.getCatchment();
+        if (ByCatchment.equals(scope)) {
+            return (root, query, cb) ->
+                    root.join("addressLevel")
+                            .joinSet("virtualCatchments").get("id").in(catchment.getId());
+        }
+        if (ByFacility.equals(scope)) {
+            return (root, query, cb) -> root.join("facility").get("id").in(facility.getId());
+        }
+        return (r, q, cb) -> cb.and();
     }
 }

@@ -2,9 +2,12 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.*;
+import org.openchs.domain.AddressLevel;
+import org.openchs.domain.Gender;
+import org.openchs.domain.Individual;
+import org.openchs.domain.SubjectType;
 import org.openchs.geo.Point;
-import org.openchs.projection.IndividualInfoProjection;
+import org.openchs.projection.IndividualProjection;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
@@ -73,26 +76,28 @@ public class IndividualController extends AbstractController<Individual> impleme
     @GetMapping(value = "/individual/search")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public Page<Individual> search(
+    public Page<IndividualProjection> search(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "includeVoided", defaultValue = "false") Boolean includeVoided,
             @RequestParam(value = "obs", required = false) String obs,
             @RequestParam(value = "locationIds", required = false) List<Long> locationIds,
             Pageable pageable) {
         IndividualRepository repo = this.individualRepository;
-        return findAllByUserAndSpec(userService.getCurrentUser(),
-                where(repo.getFilterSpecForVoid(includeVoided))
+        return repo.findAll(
+                where(repo.getFilterSpecForOperatingSubjectScope(userService.getCurrentUser()))
+                        .and(repo.getFilterSpecForVoid(includeVoided))
                         .and(repo.getFilterSpecForName(name))
                         .and(repo.getFilterSpecForObs(obs))
                         .and(repo.getFilterSpecForLocationIds(locationIds))
-                , pageable);
+                , pageable)
+                .map(t -> projectionFactory.createProjection(IndividualProjection.class, t));
     }
 
     @GetMapping(value = "/web/individual/{uuid}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public IndividualInfoProjection getIndividualInfo(@PathVariable String uuid) {
-        return projectionFactory.createProjection(IndividualInfoProjection.class, individualRepository.findByUuid(uuid));
+    public IndividualProjection getOneForWeb(@PathVariable String uuid) {
+        return projectionFactory.createProjection(IndividualProjection.class, individualRepository.findByUuid(uuid));
     }
 
     @Override

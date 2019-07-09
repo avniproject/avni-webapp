@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.BatchSize;
@@ -10,11 +11,7 @@ import org.openchs.geo.Point;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -66,6 +63,18 @@ public class Individual extends OrganisationAwareEntity {
     @Type(type = "org.openchs.geo.PointType")
     @Column
     private Point registrationLocation;
+
+    public static Individual create(String firstName, String lastName, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
+        Individual individual = new Individual();
+        individual.firstName = firstName;
+        individual.lastName = lastName;
+        individual.dateOfBirth = dateOfBirth;
+        individual.dateOfBirthVerified = dateOfBirthVerified;
+        individual.gender = gender;
+        individual.addressLevel = address;
+        individual.registrationDate = registrationDate;
+        return individual;
+    }
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
@@ -131,18 +140,6 @@ public class Individual extends OrganisationAwareEntity {
         this.registrationDate = registrationDate;
     }
 
-    public static Individual create(String firstName, String lastName, LocalDate dateOfBirth, boolean dateOfBirthVerified, Gender gender, AddressLevel address, LocalDate registrationDate) {
-        Individual individual = new Individual();
-        individual.firstName = firstName;
-        individual.lastName = lastName;
-        individual.dateOfBirth = dateOfBirth;
-        individual.dateOfBirthVerified = dateOfBirthVerified;
-        individual.gender = gender;
-        individual.addressLevel = address;
-        individual.registrationDate = registrationDate;
-        return individual;
-    }
-
     public void addEnrolment(ProgramEnrolment programEnrolment) {
         this.programEnrolments.add(programEnrolment);
     }
@@ -187,10 +184,10 @@ public class Individual extends OrganisationAwareEntity {
         this.subjectType = subjectType;
     }
 
-    @JsonInclude
-    public List<Long> getActivePrograms() {
+    @JsonIgnore
+    public List<Program> getActivePrograms() {
         return programEnrolments.stream().filter(x -> !x.isVoided()).filter(x -> x.getProgramExitDateTime() == null)
-                .map(x -> x.getProgram().getId()).collect(Collectors.toList());
+                .map(x -> x.getProgram()).collect(Collectors.toList());
     }
 
     public Long getSubjectTypeId() {

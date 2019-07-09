@@ -1,6 +1,11 @@
 package org.openchs.domain;
 
-import javax.persistence.*;
+import org.openchs.application.projections.BaseProjection;
+import org.springframework.data.rest.core.config.Projection;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -28,4 +33,8 @@ public class Program extends OrganisationAwareEntity {
         this.colour = colour;
     }
 
+    @Projection(name = "ProgramProjection", types = {Program.class})
+    public interface ProgramProjection extends BaseProjection {
+        String getName();
+    }
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
+import org.openchs.application.projections.BaseProjection;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -177,5 +179,10 @@ public class AddressLevel extends OrganisationAwareEntity {
 
     public void setLineage(String lineage) {
         this.lineage = lineage;
+    }
+
+    @Projection(name = "AddressLevelProjection", types = {AddressLevel.class})
+    public interface AddressLevelProjection extends BaseProjection {
+        String getTitle();
     }
 }

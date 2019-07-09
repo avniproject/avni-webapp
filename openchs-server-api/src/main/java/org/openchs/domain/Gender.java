@@ -1,5 +1,8 @@
 package org.openchs.domain;
 
+import org.openchs.application.projections.BaseProjection;
+import org.springframework.data.rest.core.config.Projection;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -33,5 +36,10 @@ public class Gender extends CHSEntity {
         Gender gender = new Gender();
         gender.name = name;
         return gender;
+    }
+
+    @Projection(name = "GenderProjection", types = {Gender.class})
+    public interface GenderProjection extends BaseProjection {
+        String getName();
     }
 }
