@@ -36,6 +36,13 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
+const getFullAddress = (location) => {
+    if(location.parentLocation) {
+        return getFullAddress(location.parentLocation) + ', ' + location.title;
+    }
+    return location.title;
+};
+
 const SubjectsTable = ({subjects}) => {
     const classes = useStyle();
 
@@ -44,10 +51,10 @@ const SubjectsTable = ({subjects}) => {
             <TableHead>
                 <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell align="right">Gender</TableCell>
-                    <TableCell align="right">Date of birth(Age)</TableCell>
-                    <TableCell align="right">Location</TableCell>
-                    <TableCell align="right">Active programs</TableCell>
+                    <TableCell align="center">Gender</TableCell>
+                    <TableCell align="center">Date of birth(Age)</TableCell>
+                    <TableCell align="center">Location</TableCell>
+                    <TableCell align="center">Active programs</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
@@ -56,10 +63,10 @@ const SubjectsTable = ({subjects}) => {
                         <TableCell component="th" scope="row">
                             {row.firstName + ' ' + row.lastName}
                         </TableCell>
-                        <TableCell align="right">{row.gender.name}</TableCell>
-                        <TableCell align="right">{row.dateOfBirth}</TableCell>
-                        <TableCell align="right">{row.addressLevel.title}</TableCell>
-                        <TableCell align="right">
+                        <TableCell align="center">{row.gender.name}</TableCell>
+                        <TableCell align="center">{row.dateOfBirth}</TableCell>
+                        <TableCell align="center">{getFullAddress(row.addressLevel)}</TableCell>
+                        <TableCell align="center">
                             {row.activePrograms.map((p, key) => (
                                 <Button key={key} size="small"
                                         style={{height: 20, padding: 0, backgroundColor: p.colour, color: 'white'}}
@@ -100,11 +107,11 @@ const SubjectSearch = (props) => {
                 <Paper className={classes.root}>
                     <form onSubmit={handleSubmit} className={classes.searchForm}>
                         <FormControl className={classes.searchFormItem}>
-                            <InputLabel htmlFor="name-field">Name</InputLabel>
-                            <Input id="name-field"
+                            <InputLabel htmlFor="search-field">{''}</InputLabel>
+                            <Input id="search-field"
                                    type="text"
-                                   value={props.searchParams.name}
-                                   onChange={e => props.setSearchParams({name: e.target.value})}
+                                   value={props.searchParams.query}
+                                   onChange={e => props.setSearchParams({query: e.target.value})}
                             />
                         </FormControl>
                         <FormControl className={classes.searchFormItem}>
