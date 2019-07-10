@@ -82,26 +82,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
     }
 
-    @RequestMapping(value = "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public PagedResources<Resource<ProgramEnrolment>> getByIndividualsOfCatchmentAndLastModified(
-            @RequestParam("catchmentId") long catchmentId,
-            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            Pageable pageable) {
-        return wrap(programEnrolmentRepository.findByIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
-    }
-
-    @RequestMapping(value = "/programEnrolment/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
-    public PagedResources<Resource<ProgramEnrolment>> getByLastModified(
-            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            Pageable pageable) {
-        return wrap(programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable));
-    }
-
-    @RequestMapping(value = "/programEnrolment", method = RequestMethod.GET)
+    @GetMapping(value = {"/programEnrolment", /* Deprecated -> */ "/programEnrolment/search/lastModified", "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified"})
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEnrolment>> getProgramEnrolmentsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
