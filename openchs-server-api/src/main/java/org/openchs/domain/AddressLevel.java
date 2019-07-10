@@ -9,7 +9,9 @@ import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,8 +19,8 @@ import java.util.stream.Collectors;
 @Table(name = "address_level")
 @BatchSize(size = 100)
 @JsonIgnoreProperties({
-    "parentLocationMappings", "type", "catchments", "virtualCatchments",
-    "parent", "subLocations"
+        "parentLocationMappings", "type", "catchments", "virtualCatchments",
+        "parent", "subLocations", "ancestorLocations"
 })
 public class AddressLevel extends OrganisationAwareEntity {
     @Column
@@ -34,8 +36,8 @@ public class AddressLevel extends OrganisationAwareEntity {
     @JoinColumn(name = "type_id")
     private AddressLevelType type;
 
-    @ManyToOne(cascade={CascadeType.ALL})
-    @JoinColumn(name="parent_id")
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "parent_id")
     private AddressLevel parent;
 
     @OneToMany(mappedBy = "parent")
@@ -60,6 +62,13 @@ public class AddressLevel extends OrganisationAwareEntity {
     @JoinTable(name = "virtual_catchment_address_mapping_table", joinColumns = {@JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
     private Set<Catchment> virtualCatchments = new HashSet<>();
 
+    @ManyToMany()
+    @Immutable
+    @JoinTable(name = "ancestor_locations_view",
+            joinColumns = {@JoinColumn(name = "lowestpoint_id")},
+            inverseJoinColumns = {@JoinColumn(name = "point_id")})
+    private List<AddressLevel> ancestorLocations = new ArrayList<>();
+
     public String getTitle() {
         return title;
     }
@@ -76,17 +85,25 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.level = level;
     }
 
-    public AddressLevel getParent() { return parent; }
+    public AddressLevel getParent() {
+        return parent;
+    }
 
-    public Long getParentId() { return parent != null ? parent.getId() : null; }
+    public Long getParentId() {
+        return parent != null ? parent.getId() : null;
+    }
 
-    public void setParent(AddressLevel parent) { this.parent = parent; }
+    public void setParent(AddressLevel parent) {
+        this.parent = parent;
+    }
 
     public boolean isTopLevel() {
         return parent == null;
     }
 
-    public Set<AddressLevel> getSubLocations() { return subLocations; }
+    public Set<AddressLevel> getSubLocations() {
+        return subLocations;
+    }
 
     @JsonIgnore
     public Set<AddressLevel> getNonVoidedSubLocations() {
@@ -95,7 +112,9 @@ public class AddressLevel extends OrganisationAwareEntity {
                 .collect(Collectors.toSet());
     }
 
-    public void setSubLocations(Set<AddressLevel> subLocations) { this.subLocations = subLocations; }
+    public void setSubLocations(Set<AddressLevel> subLocations) {
+        this.subLocations = subLocations;
+    }
 
     public boolean containsSubLocation(String title, AddressLevelType type) {
         return null !=
@@ -181,8 +200,18 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.lineage = lineage;
     }
 
+    public List<AddressLevel> getAncestorLocations() {
+        return ancestorLocations;
+    }
+
+    public void setAncestorLocations(List<AddressLevel> ancestorLocations) {
+        this.ancestorLocations = ancestorLocations;
+    }
+
     @Projection(name = "AddressLevelProjection", types = {AddressLevel.class})
     public interface AddressLevelProjection extends BaseProjection {
         String getTitle();
+
+        AddressLevelProjection getParentLocation();
     }
 }

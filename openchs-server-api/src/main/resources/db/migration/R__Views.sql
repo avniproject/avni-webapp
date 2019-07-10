@@ -72,3 +72,9 @@ CREATE VIEW address_level_type_view AS
          inner join address_level_type alt on al.type_id = alt.id
          inner join list_of_orgs loo on loo.id=al.organisation_id
   where alt.is_voided is not true;
+
+CREATE OR REPLACE VIEW ancestor_locations_view AS
+  select al.id lowestpoint_id, lineage.level, lineage.point_id :: bigint
+  from address_level al
+         join regexp_split_to_table(al.lineage :: text, '[.]') with ordinality lineage (point_id, level) ON al.id <> lineage.point_id :: bigint
+  order by lineage.level;

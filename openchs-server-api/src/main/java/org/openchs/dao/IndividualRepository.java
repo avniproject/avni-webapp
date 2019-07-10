@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
@@ -62,12 +63,21 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 value == null ? cb.and() : cb.or(
                         jsonContains(root.get("observations"), "%" + value + "%", cb),
-                        jsonContains(root.join("programEnrolments").get("observations"), "%" + value + "%", cb));
+                        jsonContains(root.join("programEnrolments", JoinType.LEFT).get("observations"), "%" + value + "%", cb));
     }
 
     default Specification<Individual> getFilterSpecForLocationIds(List<Long> locationIds) {
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 locationIds == null ? cb.and() : root.get("addressLevel").get("id").in(locationIds);
+    }
+
+    default Specification<Individual> getFilterSpecForAddress(String locationName) {
+        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                locationName == null ? cb.and() : cb.or(
+                        cb.like(cb.upper(root.get("addressLevel").get("title")),
+                                "%" + locationName.toUpperCase() + "%"),
+                        cb.like(cb.upper(root.join("addressLevel").joinList("ancestorLocations").get("title"))
+                                , "%" + locationName.toUpperCase() + "%"));
     }
 
     @Override

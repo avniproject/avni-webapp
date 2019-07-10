@@ -77,12 +77,22 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public Page<IndividualProjection> search(
+            @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "includeVoided", defaultValue = "false") Boolean includeVoided,
             @RequestParam(value = "obs", required = false) String obs,
             @RequestParam(value = "locationIds", required = false) List<Long> locationIds,
             Pageable pageable) {
         IndividualRepository repo = this.individualRepository;
+        if (query != null && !"".equals(query.trim())) {
+            return repo.findAll(
+                    where(repo.getFilterSpecForOperatingSubjectScope(userService.getCurrentUser())).and(
+                            where(repo.getFilterSpecForAddress(query))
+                                    .or(repo.getFilterSpecForObs(query))
+                                    .or(repo.getFilterSpecForName(query))
+                    ), pageable)
+                    .map(t -> projectionFactory.createProjection(IndividualProjection.class, t));
+        }
         return repo.findAll(
                 where(repo.getFilterSpecForOperatingSubjectScope(userService.getCurrentUser()))
                         .and(repo.getFilterSpecForVoid(includeVoided))
