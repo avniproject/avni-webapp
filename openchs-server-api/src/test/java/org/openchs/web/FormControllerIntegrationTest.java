@@ -346,7 +346,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         setUser("demo-user");
         String formUuid = "0c444bf3-54c3-41e4-8ca9-f0deb8760831";
         String firstFormElementGroup = "$.formElementGroups[?(@.name == 'School Going Details')]";
-        String formElement = String.format("%s.formElements[?(@.name == 'Have you started going to school once again')]", firstFormElementGroup);
+        String formElement = String.format("%s.applicableFormElements[?(@.name == 'Have you started going to school once again')]", firstFormElementGroup);
         String concept = String.format("%s.concept", formElement);
         String conceptAnswer = String.format("%s.conceptAnswers[?(@.answerConcept.name == 'No')].answerConcept", concept);
 
