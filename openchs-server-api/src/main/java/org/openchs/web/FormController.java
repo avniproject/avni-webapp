@@ -8,6 +8,7 @@ import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.projection.FormWebProjection;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormatContract;
 import org.openchs.web.request.application.*;
@@ -18,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +42,8 @@ public class FormController {
     private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private final FormMappingRepository formMappingRepository;
     private RepositoryEntityLinks entityLinks;
+    private ProjectionFactory projectionFactory;
+
 
     @Autowired
     public FormController(FormRepository formRepository,
@@ -47,13 +51,15 @@ public class FormController {
                           FormMappingRepository formMappingRepository,
                           OperationalProgramRepository operationalProgramRepository,
                           OperationalEncounterTypeRepository operationalEncounterTypeRepository,
-                          RepositoryEntityLinks entityLinks) {
+                          RepositoryEntityLinks entityLinks,
+                          ProjectionFactory projectionFactory) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.formMappingRepository = formMappingRepository;
         this.operationalProgramRepository = operationalProgramRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.entityLinks = entityLinks;
+        this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -293,5 +299,12 @@ public class FormController {
         }
 
         return categorisedForms;
+    }
+
+    @GetMapping(value = "/web/form/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public FormWebProjection getFormForWeb(@PathVariable String uuid) {
+        return projectionFactory.createProjection(FormWebProjection.class, formRepository.findByUuid(uuid));
     }
 }

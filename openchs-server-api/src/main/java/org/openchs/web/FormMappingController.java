@@ -87,7 +87,4 @@ public class FormMappingController extends AbstractController<FormMapping>{
         formMapping.setVoided(formMappingRequest.isVoided());
         formMappingRepository.save(formMapping);
     }
-
-
-
 }

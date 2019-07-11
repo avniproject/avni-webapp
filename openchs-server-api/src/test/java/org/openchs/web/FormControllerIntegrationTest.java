@@ -22,9 +22,12 @@ import org.openchs.web.request.application.FormContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -34,6 +37,12 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Sql({"/test-data.sql"})
 public class FormControllerIntegrationTest extends AbstractControllerIntegrationTest {
@@ -322,5 +331,69 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
         assertThat(updatedFormElement).isNotNull();
         assertThat(updatedFormElement.getLastModifiedDateTime()).isEqualByComparingTo(originalFormElement.getLastModifiedDateTime());
 
+    }
+
+    @Test
+    public void shouldRetrieveFormForWeb() throws Exception {
+        setUser("demo-user");
+        String formUuid = "0c444bf3-54c3-41e4-8ca9-f0deb8760831";
+        mockMvc.perform(get("/web/form/{formUuid}", formUuid))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldHaveAllRelevantFieldsInResponse() throws Exception {
+        setUser("demo-user");
+        String formUuid = "0c444bf3-54c3-41e4-8ca9-f0deb8760831";
+        String firstFormElementGroup = "$.formElementGroups[?(@.name == 'School Going Details')]";
+        String formElement = String.format("%s.formElements[?(@.name == 'Have you started going to school once again')]", firstFormElementGroup);
+        String concept = String.format("%s.concept", formElement);
+        String conceptAnswer = String.format("%s.conceptAnswers[?(@.answerConcept.name == 'No')].answerConcept", concept);
+
+        mockMvc.perform(get("/web/form/{formUuid}", formUuid)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+
+//                .andDo(print())
+
+                .andExpect(jsonPath("$.name").exists())
+                .andExpect(jsonPath("$.uuid").exists())
+                .andExpect(jsonPath("$.formType").exists())
+                .andExpect(jsonPath("$.formElementGroups").isArray())
+                .andExpect(jsonPath(firstFormElementGroup).exists())
+
+                .andExpect(jsonPath(formElement).exists())
+                .andExpect(jsonPath(String.format("%s.name", formElement)).exists())
+                .andExpect(jsonPath(String.format("%s.uuid", formElement)).exists())
+                .andExpect(jsonPath(String.format("%s.keyValues", formElement)).exists())
+                .andExpect(jsonPath(String.format("%s.type", formElement)).exists())
+
+                .andExpect(jsonPath(concept).exists())
+                .andExpect(jsonPath(String.format("%s.dataType", concept)).exists())
+                .andExpect(jsonPath(String.format("%s.lowAbsolute", concept)).exists())
+                .andExpect(jsonPath(String.format("%s.highAbsolute", concept)).exists())
+                .andExpect(jsonPath(String.format("%s.lowNormal", concept)).exists())
+                .andExpect(jsonPath(String.format("%s.highNormal", concept)).exists())
+                .andExpect(jsonPath(String.format("%s.conceptAnswers", concept)).isArray())
+
+                .andExpect(jsonPath(conceptAnswer).exists())
+                .andExpect(jsonPath(String.format("%s.name", conceptAnswer)).exists());
+    }
+
+    @Test
+    public void shouldNotIncludeNonApplicableFormElementsInResponse() throws Exception {
+        setUser("demo-admin");
+        String content = mapper.writeValueAsString(getJson("/ref/forms/formWithANonApplicableElement.json"));
+        mockMvc.perform(request(HttpMethod.DELETE, "/forms").contentType(MediaType.APPLICATION_JSON).content(content))
+        .andExpect(status().isOk());
+
+        setUser("demo-user");
+        String formUuid = "0c444bf3-54c3-41e4-8ca9-f0deb8760831";
+        mockMvc.perform(get("/web/form/{formUuid}", formUuid)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..[?(@.name == 'Another random numeric question')]").doesNotExist());
     }
 }

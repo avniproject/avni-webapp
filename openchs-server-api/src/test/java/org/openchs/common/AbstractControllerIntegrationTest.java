@@ -18,6 +18,9 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,6 +43,11 @@ public abstract class AbstractControllerIntegrationTest {
     public TestRestTemplate template;
 
     @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    protected MockMvc mockMvc;
+
+    @Autowired
     public UserRepository userRepository;
 
     @Autowired
@@ -52,6 +60,7 @@ public abstract class AbstractControllerIntegrationTest {
         this.base = new URL("http://localhost:" + port + "/");
         UserContextHolder.clear();
         template.getRestTemplate().setInterceptors(new ArrayList<>());
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
         setRoles();
     }
 

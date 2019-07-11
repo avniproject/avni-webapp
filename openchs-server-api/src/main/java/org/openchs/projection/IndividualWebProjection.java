@@ -20,8 +20,8 @@ import java.util.Set;
 
 import static org.openchs.domain.AddressLevel.AddressLevelProjection;
 
-@Projection(name = "IndividualProjection", types = {Individual.class})
-public interface IndividualProjection extends BaseProjection {
+@Projection(name = "IndividualWebProjection", types = {Individual.class})
+public interface IndividualWebProjection extends BaseProjection {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate getDateOfBirth();

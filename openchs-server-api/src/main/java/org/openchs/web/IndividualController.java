@@ -7,7 +7,7 @@ import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
 import org.openchs.domain.SubjectType;
 import org.openchs.geo.Point;
-import org.openchs.projection.IndividualProjection;
+import org.openchs.projection.IndividualWebProjection;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRequest;
@@ -76,8 +76,12 @@ public class IndividualController extends AbstractController<Individual> impleme
     @GetMapping(value = "/individual/search")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
+<<<<<<< HEAD
     public Page<IndividualProjection> search(
             @RequestParam(value = "query", required = false) String query,
+=======
+    public Page<IndividualWebProjection> search(
+>>>>>>> #6 | Add api to fetch form for web
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "includeVoided", defaultValue = "false") Boolean includeVoided,
             @RequestParam(value = "obs", required = false) String obs,
@@ -100,14 +104,14 @@ public class IndividualController extends AbstractController<Individual> impleme
                         .and(repo.getFilterSpecForObs(obs))
                         .and(repo.getFilterSpecForLocationIds(locationIds))
                 , pageable)
-                .map(t -> projectionFactory.createProjection(IndividualProjection.class, t));
+                .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
     }
 
     @GetMapping(value = "/web/individual/{uuid}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public IndividualProjection getOneForWeb(@PathVariable String uuid) {
-        return projectionFactory.createProjection(IndividualProjection.class, individualRepository.findByUuid(uuid));
+    public IndividualWebProjection getOneForWeb(@PathVariable String uuid) {
+        return projectionFactory.createProjection(IndividualWebProjection.class, individualRepository.findByUuid(uuid));
     }
 
     @Override

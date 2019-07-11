@@ -172,4 +172,8 @@ public class FormElement extends OrganisationAwareEntity {
                 "uuid='" + this.getUuid() + '\'' +
                 '}';
     }
+
+    public boolean isApplicable() {
+        return this.getNonApplicableFormElements().isEmpty();
+    }
 }

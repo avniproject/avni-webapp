@@ -6,7 +6,9 @@ import org.openchs.domain.OrganisationAwareEntity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "form_element_group")
@@ -85,5 +87,9 @@ public class FormElementGroup extends OrganisationAwareEntity {
 
     public void addFormElement(FormElement formElement) {
         this.formElements.add(formElement);
+    }
+
+    public List<FormElement> getApplicableFormElements() {
+        return this.getFormElements().stream().filter(formElement -> formElement.isApplicable()).collect(Collectors.toList());
     }
 }
