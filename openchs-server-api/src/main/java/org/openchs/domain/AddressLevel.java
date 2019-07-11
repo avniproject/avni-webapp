@@ -9,9 +9,7 @@ import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,8 +18,10 @@ import java.util.stream.Collectors;
 @BatchSize(size = 100)
 @JsonIgnoreProperties({
         "parentLocationMappings", "type", "catchments", "virtualCatchments",
-        "parent", "subLocations", "ancestorLocations"
+        "parent", "subLocations", "titleLineage"
 })
+@SecondaryTable(name="title_lineage_locations_view",
+    pkJoinColumns = @PrimaryKeyJoinColumn(name = "lowestpoint_id", referencedColumnName = "id"))
 public class AddressLevel extends OrganisationAwareEntity {
     @Column
     @NotNull
@@ -62,12 +62,8 @@ public class AddressLevel extends OrganisationAwareEntity {
     @JoinTable(name = "virtual_catchment_address_mapping_table", joinColumns = {@JoinColumn(name = "addresslevel_id")}, inverseJoinColumns = {@JoinColumn(name = "catchment_id")})
     private Set<Catchment> virtualCatchments = new HashSet<>();
 
-    @ManyToMany()
-    @Immutable
-    @JoinTable(name = "ancestor_locations_view",
-            joinColumns = {@JoinColumn(name = "lowestpoint_id")},
-            inverseJoinColumns = {@JoinColumn(name = "point_id")})
-    private List<AddressLevel> ancestorLocations = new ArrayList<>();
+    @Column(table = "title_lineage_locations_view", name = "title_lineage")
+    private String titleLineage;
 
     public String getTitle() {
         return title;
@@ -200,12 +196,12 @@ public class AddressLevel extends OrganisationAwareEntity {
         this.lineage = lineage;
     }
 
-    public List<AddressLevel> getAncestorLocations() {
-        return ancestorLocations;
+    public String getTitleLineage() {
+        return titleLineage;
     }
 
-    public void setAncestorLocations(List<AddressLevel> ancestorLocations) {
-        this.ancestorLocations = ancestorLocations;
+    public void setTitleLineage(String titleLineage) {
+        this.titleLineage = titleLineage;
     }
 
     @Projection(name = "AddressLevelProjection", types = {AddressLevel.class})
@@ -213,5 +209,7 @@ public class AddressLevel extends OrganisationAwareEntity {
         String getTitle();
 
         AddressLevelProjection getParentLocation();
+
+        String getTitleLineage();
     }
 }

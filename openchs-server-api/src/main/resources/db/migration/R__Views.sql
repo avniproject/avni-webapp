@@ -63,8 +63,9 @@ CREATE VIEW address_level_type_view AS
          inner join list_of_orgs loo on loo.id=al.organisation_id
   where alt.is_voided is not true;
 
-CREATE OR REPLACE VIEW ancestor_locations_view AS
-  select al.id lowestpoint_id, lineage.level, lineage.point_id :: bigint
+CREATE OR REPLACE VIEW title_lineage_locations_view AS
+  select al.id lowestpoint_id, string_agg(alevel_in_lineage.title, ', ' order by lineage.level) title_lineage
   from address_level al
-         join regexp_split_to_table(al.lineage :: text, '[.]') with ordinality lineage (point_id, level) ON al.id <> lineage.point_id :: bigint
-  order by lineage.level;
+         join regexp_split_to_table(al.lineage :: text, '[.]') with ordinality lineage (point_id, level) ON TRUE
+         join address_level alevel_in_lineage on alevel_in_lineage.id = lineage.point_id :: int
+  group by al.id;

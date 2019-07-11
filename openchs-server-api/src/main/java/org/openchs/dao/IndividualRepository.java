@@ -8,10 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 import static org.openchs.domain.OperatingIndividualScope.ByCatchment;
@@ -73,11 +70,8 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     default Specification<Individual> getFilterSpecForAddress(String locationName) {
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
-                locationName == null ? cb.and() : cb.or(
-                        cb.like(cb.upper(root.get("addressLevel").get("title")),
-                                "%" + locationName.toUpperCase() + "%"),
-                        cb.like(cb.upper(root.join("addressLevel").joinList("ancestorLocations").get("title"))
-                                , "%" + locationName.toUpperCase() + "%"));
+                locationName == null ? cb.and() :
+                        cb.like(cb.upper(root.get("addressLevel").get("titleLineage")), "%" + locationName.toUpperCase() + "%");
     }
 
     @Override
