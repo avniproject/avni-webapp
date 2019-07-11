@@ -3,7 +3,9 @@ package org.openchs.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.application.projections.BaseProjection;
 import org.openchs.geo.Point;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -71,5 +73,12 @@ public class Encounter extends OrganisationAwareEntity {
 
     public void setEncounterLocation(Point encounterLocation) {
         this.encounterLocation = encounterLocation;
+    }
+
+    @Projection(name = "EncounterProjectionMinimal", types = {Encounter.class})
+    public interface EncounterProjectionMinimal extends BaseProjection {
+        EncounterType getEncounterType();
+
+        DateTime getEncounterDateTime();
     }
 }

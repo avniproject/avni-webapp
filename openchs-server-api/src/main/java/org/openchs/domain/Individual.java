@@ -202,11 +202,4 @@ public class Individual extends OrganisationAwareEntity {
         return addressLevel.getId();
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getEncounterInfo() {
-        List<EncounterInfo> encounterInfos = this.encounters.stream().map(EncounterInfo::new).collect(Collectors.toList());
-        return new HashMap<String, Object>() {{
-            put("encounters", encounterInfos);
-        }};
-    }
 }
