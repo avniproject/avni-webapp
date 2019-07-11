@@ -76,12 +76,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     @GetMapping(value = "/individual/search")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-<<<<<<< HEAD
-    public Page<IndividualProjection> search(
-            @RequestParam(value = "query", required = false) String query,
-=======
     public Page<IndividualWebProjection> search(
->>>>>>> #6 | Add api to fetch form for web
+            @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "includeVoided", defaultValue = "false") Boolean includeVoided,
             @RequestParam(value = "obs", required = false) String obs,
@@ -95,7 +91,7 @@ public class IndividualController extends AbstractController<Individual> impleme
                                     .or(repo.getFilterSpecForObs(query))
                                     .or(repo.getFilterSpecForName(query))
                     ), pageable)
-                    .map(t -> projectionFactory.createProjection(IndividualProjection.class, t));
+                    .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
         }
         return repo.findAll(
                 where(repo.getFilterSpecForOperatingSubjectScope(userService.getCurrentUser()))
