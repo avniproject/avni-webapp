@@ -7,6 +7,7 @@ import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.domain.ProgramOutcome;
 import org.openchs.geo.Point;
+import org.openchs.projection.ProgramEnrolmentProjection;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.PointRequest;
@@ -14,6 +15,7 @@ import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
@@ -25,23 +27,24 @@ import javax.transaction.Transactional;
 
 @RestController
 public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment>, OperatingIndividualScopeAwareController<ProgramEnrolment> {
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private final ProgramRepository programRepository;
     private final IndividualRepository individualRepository;
     private final ProgramOutcomeRepository programOutcomeRepository;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final ObservationService observationService;
     private final UserService userService;
-
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
+    private final ProjectionFactory projectionFactory;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ProjectionFactory projectionFactory) {
         this.programRepository = programRepository;
         this.individualRepository = individualRepository;
         this.programOutcomeRepository = programOutcomeRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationService = observationService;
         this.userService = userService;
+        this.projectionFactory = projectionFactory;
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
@@ -63,10 +66,10 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         programEnrolment.setEnrolmentDateTime(request.getEnrolmentDateTime());
         programEnrolment.setProgramExitDateTime(request.getProgramExitDateTime());
         PointRequest enrolmentLocation = request.getEnrolmentLocation();
-        if(enrolmentLocation != null)
+        if (enrolmentLocation != null)
             programEnrolment.setEnrolmentLocation(new Point(enrolmentLocation.getX(), enrolmentLocation.getY()));
         PointRequest exitLocation = request.getExitLocation();
-        if(exitLocation != null)
+        if (exitLocation != null)
             programEnrolment.setExitLocation(new Point(exitLocation.getX(), exitLocation.getY()));
         programEnrolment.setObservations(observationService.createObservations(request.getObservations()));
         programEnrolment.setProgramExitObservations(observationService.createObservations(request.getProgramExitObservations()));
@@ -89,6 +92,13 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
         return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+    }
+
+    @GetMapping("/web/programEnrolment/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ProgramEnrolmentProjection getOneForWeb(@PathVariable String uuid) {
+        return projectionFactory.createProjection(ProgramEnrolmentProjection.class, programEnrolmentRepository.findByUuid(uuid));
     }
 
     @Override

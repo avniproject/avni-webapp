@@ -1,10 +1,18 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.openchs.application.projections.BaseProjection;
+import org.springframework.data.rest.core.config.Projection;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "encounter_type")
+@JsonIgnoreProperties({"operationalEncounterTypes"})
 public class EncounterType extends OrganisationAwareEntity {
     @NotNull
     @Column
@@ -13,6 +21,9 @@ public class EncounterType extends OrganisationAwareEntity {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="concept_id")
     private Concept concept;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "encounterType")
+    private Set<OperationalEncounterType> operationalEncounterTypes = new HashSet<>();
 
     public String getName() {
         return name;
@@ -34,5 +45,25 @@ public class EncounterType extends OrganisationAwareEntity {
         EncounterType encounterType = new EncounterType();
         encounterType.setName(name);
         return encounterType;
+    }
+
+    public Set<OperationalEncounterType> getOperationalEncounterTypes() {
+        return operationalEncounterTypes;
+    }
+
+    public void setOperationalEncounterTypes(Set<OperationalEncounterType> operationalEncounterTypes) {
+        this.operationalEncounterTypes = operationalEncounterTypes;
+    }
+
+    @JsonIgnore
+    public String getOperationalEncounterTypeName() {
+        return operationalEncounterTypes.stream().map(OperationalEncounterType::getName).findFirst().orElse(null);
+    }
+
+    @Projection(name = "EncounterTypeProjection", types = {EncounterType.class})
+    public interface EncounterTypeProjection extends BaseProjection {
+        String getName();
+
+        String getOperationalEncounterTypeName();
     }
 }

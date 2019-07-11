@@ -25,7 +25,7 @@ public interface IndividualWebProjection extends BaseProjection {
 
     Set<EncounterProjectionMinimal> getEncounters();
 
-    Set<ProgramEnrolment> getProgramEnrolments();
+    Set<ProgramEnrolmentProjection> getProgramEnrolments();
 
     ObservationCollection getObservations();
 

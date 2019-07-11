@@ -3,7 +3,10 @@ package org.openchs.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.application.projections.BaseProjection;
+import org.openchs.domain.EncounterType.EncounterTypeProjection;
 import org.openchs.geo.Point;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -46,11 +49,11 @@ public class ProgramEncounter extends OrganisationAwareEntity {
     @JoinColumn(name = "program_enrolment_id")
     private ProgramEnrolment programEnrolment;
 
-    @Type(type="org.openchs.geo.PointType")
+    @Type(type = "org.openchs.geo.PointType")
     @Column
     private Point encounterLocation;
 
-    @Type(type="org.openchs.geo.PointType")
+    @Type(type = "org.openchs.geo.PointType")
     @Column
     private Point cancelLocation;
 
@@ -152,5 +155,20 @@ public class ProgramEncounter extends OrganisationAwareEntity {
 
     public boolean isCompleted() {
         return getEncounterDateTime() != null;
+    }
+
+    @Projection(name = "ProgramEncounterProjectionMinimal", types = {ProgramEncounter.class})
+    public interface ProgramEncounterProjectionMinimal extends BaseProjection {
+        EncounterTypeProjection getEncounterType();
+
+        String getName();
+
+        DateTime getEncounterDateTime();
+
+        DateTime getEarliestVisitDateTime();
+
+        DateTime getMaxVisitDateTime();
+
+        DateTime getCancelDateTime();
     }
 }

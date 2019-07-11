@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.openchs.application.projections.BaseProjection;
+import org.openchs.domain.EncounterType.EncounterTypeProjection;
 import org.openchs.geo.Point;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -77,7 +78,7 @@ public class Encounter extends OrganisationAwareEntity {
 
     @Projection(name = "EncounterProjectionMinimal", types = {Encounter.class})
     public interface EncounterProjectionMinimal extends BaseProjection {
-        EncounterType getEncounterType();
+        EncounterTypeProjection getEncounterType();
 
         DateTime getEncounterDateTime();
     }
