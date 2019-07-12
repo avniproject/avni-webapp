@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import {AccessDenied} from "../common/components";
 import {OrgManager} from "../orgManager";
 import {DataEntry} from "../dataEntry";
-import {ROLES} from "../common/constants";
+import {ROLES, withoutDataEntry} from "../common/constants";
 import './SecureApp.css';
 
 const RestrictedRoute = ({component: C, allowedRoles, currentUserRoles, ...rest}) =>
@@ -34,6 +34,16 @@ const Routes = (props) =>
         </Route>
     </Switch>;
 
+const RoutesWithoutDataEntry = (props) =>
+    <Switch>
+        <RestrictedRoute exact path="/admin"
+                         allowedRoles={[ROLES.ORG_ADMIN,]}
+                         currentUserRoles={props.userRoles}
+                         component={OrgManager}/>
+        <Route exact path="/">
+            <Redirect to="/admin"/>
+        </Route>
+    </Switch>;
 
 const mapStateToProps = state => ({
     userRoles: state.app.user.roles
@@ -41,5 +51,5 @@ const mapStateToProps = state => ({
 
 
 export default withRouter(
-    connect(mapStateToProps, null)(Routes)
+    connect(mapStateToProps, null)(withoutDataEntry? RoutesWithoutDataEntry: Routes)
 );

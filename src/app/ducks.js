@@ -113,7 +113,6 @@ export default function (state = initialState, action) {
             }
         }
         case types.SET_SUBJECTS: {
-            debugger;
             return {
                 ...state,
                 subjects: action.subjects,
