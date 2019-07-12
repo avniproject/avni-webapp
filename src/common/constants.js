@@ -26,4 +26,4 @@ export const LOCALES = Object.freeze({
 
 export const phoneCountryPrefix = process.env.REACT_APP_PHONE_COUNTRY_PREFIX || '+91';
 
-export const withoutDataEntry = false;
+export const withoutDataEntry = true;
