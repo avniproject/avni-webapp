@@ -34,6 +34,16 @@ const Routes = (props) =>
         </Route>
     </Switch>;
 
+const RoutesWithoutDataEntry = (props) =>
+    <Switch>
+        <RestrictedRoute exact path="/admin"
+                         allowedRoles={[ROLES.ORG_ADMIN,]}
+                         currentUserRoles={props.userRoles}
+                         component={OrgManager}/>
+        <Route exact path="/">
+            <Redirect to="/admin"/>
+        </Route>
+    </Switch>;
 
 const mapStateToProps = state => ({
     userRoles: state.app.user.roles
@@ -41,5 +51,5 @@ const mapStateToProps = state => ({
 
 
 export default withRouter(
-    connect(mapStateToProps, null)(Routes)
+    connect(mapStateToProps, null)(RoutesWithoutDataEntry)
 );
