@@ -9,6 +9,7 @@ import org.springframework.data.rest.core.config.Projection;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -50,7 +51,21 @@ public class Program extends OrganisationAwareEntity {
 
     @JsonIgnore
     public String getOperationalProgramName() {
-        return operationalPrograms.stream().map(OperationalProgram::getName).findFirst().orElse(null);
+        return operationalPrograms.stream()
+                .map(OperationalProgram::getName)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(name);
+    }
+
+    @JsonIgnore
+    public String getProgramSubjectLabel() {
+        return operationalPrograms
+                .stream()
+                .map(OperationalProgram::getProgramSubjectLabel)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(getOperationalProgramName());
     }
 
     @Projection(name = "ProgramProjection", types = {Program.class})
@@ -60,5 +75,7 @@ public class Program extends OrganisationAwareEntity {
         String getColour();
 
         String getOperationalProgramName();
+
+        String getProgramSubjectLabel();
     }
 }

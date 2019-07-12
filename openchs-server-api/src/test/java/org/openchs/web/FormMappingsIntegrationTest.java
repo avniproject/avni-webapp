@@ -42,8 +42,8 @@ public class FormMappingsIntegrationTest extends AbstractControllerIntegrationTe
         FormMapping formMapping = formMappingRepository.findByUuid("bc253834-9e6f-4bc5-ac1e-73aca27d4c53");
         assertThat(formMapping).isNotNull();
         assertEquals(formMapping.getForm().getName(), "Adolescent School Dropout Followup");
-        assertThat(formMapping.getEntityId()).isEqualTo(1);
-        assertThat(formMapping.getObservationsTypeEntityId()).isEqualTo(1);
+        assertThat(formMapping.getProgramId()).isEqualTo(1);
+        assertThat(formMapping.getEncounterTypeId()).isEqualTo(1);
     }
 
     @Test

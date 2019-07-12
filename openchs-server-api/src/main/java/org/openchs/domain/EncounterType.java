@@ -8,6 +8,7 @@ import org.springframework.data.rest.core.config.Projection;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -57,7 +58,11 @@ public class EncounterType extends OrganisationAwareEntity {
 
     @JsonIgnore
     public String getOperationalEncounterTypeName() {
-        return operationalEncounterTypes.stream().map(OperationalEncounterType::getName).findFirst().orElse(null);
+        return operationalEncounterTypes.stream()
+                .map(OperationalEncounterType::getName)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     @Projection(name = "EncounterTypeProjection", types = {EncounterType.class})

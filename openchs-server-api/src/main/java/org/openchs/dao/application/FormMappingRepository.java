@@ -1,11 +1,13 @@
 package org.openchs.dao.application;
 
 import org.openchs.application.FormMapping;
+import org.openchs.application.FormMapping.FormMappingProjection;
 import org.openchs.application.FormType;
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ReferenceDataRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
@@ -15,17 +17,18 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "formMapping", path = "formMapping")
 public interface FormMappingRepository extends ReferenceDataRepository<FormMapping>, FindByLastModifiedDateTime<FormMapping> {
 
-    FormMapping findByFormUuidAndObservationsTypeEntityId(String uuid, Long observationsTypeEntityId);
+    Page<FormMapping> findByProgramId(Long programId, Pageable pageable);
 
-    Page<FormMapping> findByEntityId(Long entityId, Pageable pageable);
+    List<FormMapping> findAllByProgramIdIsNotNull();
 
-    List<FormMapping> findAllByEntityIdIsNotNull();
+    List<FormMapping> findAllByProgramIdIsNullAndEncounterTypeIdIsNotNull();
 
-    List<FormMapping> findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNotNull();
+    List<FormMapping> findAllByProgramIdIsNullAndEncounterTypeIdIsNull();
 
-    List<FormMapping> findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNull();
+    FormMapping findByProgramIdAndEncounterTypeIdAndFormFormTypeAndIsVoidedFalse(Long programId, Long encounterTypeId, FormType formType);
 
-    FormMapping findByEntityIdAndObservationsTypeEntityIdAndFormFormTypeAndIsVoidedFalse(Long entityId, Long observationsTypeEntityId, FormType formType);
+    @Query("select m from FormMapping m")
+    List<FormMappingProjection> findAllOperational();
 
     default FormMapping findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in FormMapping");

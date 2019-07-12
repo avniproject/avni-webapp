@@ -10,6 +10,7 @@ import org.springframework.data.rest.core.config.Projection;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -171,7 +172,10 @@ public class AddressLevel extends OrganisationAwareEntity {
     }
 
     public void setParentLocationMapping(ParentLocationMapping parentLocationMapping) {
-        AddressLevel parentLocation = parentLocationMappings.stream().map(it -> it.getParentLocation()).findFirst().orElse(null);
+        AddressLevel parentLocation = parentLocationMappings.stream()
+                .map(it -> it.getParentLocation())
+                .filter(Objects::nonNull)
+                .findFirst().orElse(null);
         if (!parentLocationMapping.getParentLocation().equals(parentLocation)) {
             parentLocationMappings.add(parentLocationMapping);
             parentLocationMapping.setLocation(this);

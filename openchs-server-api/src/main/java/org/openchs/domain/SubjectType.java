@@ -8,6 +8,7 @@ import org.springframework.data.rest.core.config.Projection;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -39,7 +40,11 @@ public class SubjectType extends OrganisationAwareEntity {
 
     @JsonIgnore
     public String getOperationalSubjectTypeName() {
-        return operationalSubjectTypes.stream().map(OperationalSubjectType::getName).findFirst().orElse(null);
+        return operationalSubjectTypes.stream()
+                .map(OperationalSubjectType::getName)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})

@@ -198,7 +198,7 @@ public class FormController {
 
     private List<BasicFormDetails> getFormsByProgram(Program program, Pageable pageable) {
         Long programId = program.getId();
-        Page<FormMapping> fmPage = formMappingRepository.findByEntityId(programId, pageable);
+        Page<FormMapping> fmPage = formMappingRepository.findByProgramId(programId, pageable);
         return fmPage.getContent().stream().map(fm -> {
             Form form = fm.getForm();
             BasicFormDetails formDetail = new BasicFormDetails(form, program.getName());
@@ -257,19 +257,19 @@ public class FormController {
         Map<String, List<BasicFormMetadata>> categorisedForms = new HashMap<>();
 
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        List<FormMapping> programFormMappings = formMappingRepository.findAllByEntityIdIsNotNull();
-        List<FormMapping> encounterFormMappings = formMappingRepository.findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNotNull();
-        List<FormMapping> otherFormMappings = formMappingRepository.findAllByEntityIdIsNullAndObservationsTypeEntityIdIsNull();
+        List<FormMapping> programFormMappings = formMappingRepository.findAllByProgramIdIsNotNull();
+        List<FormMapping> encounterFormMappings = formMappingRepository.findAllByProgramIdIsNullAndEncounterTypeIdIsNotNull();
+        List<FormMapping> otherFormMappings = formMappingRepository.findAllByProgramIdIsNullAndEncounterTypeIdIsNull();
 
         if (organisation.getId() != 1) { // filter by operational_modules
             programFormMappings = programFormMappings.stream().filter(x ->
-                    operationalProgramRepository.findByProgramIdAndOrganisationId(x.getEntityId(), organisation.getId()) != null &&
-                            operationalProgramRepository.findByProgramIdAndOrganisationId(x.getEntityId(), organisation.getId()).getProgram().getId().equals(x.getEntityId())
+                    operationalProgramRepository.findByProgramIdAndOrganisationId(x.getProgramId(), organisation.getId()) != null &&
+                            operationalProgramRepository.findByProgramIdAndOrganisationId(x.getProgramId(), organisation.getId()).getProgram().getId().equals(x.getProgramId())
             ).collect(Collectors.toList());
 
             encounterFormMappings = encounterFormMappings.stream().filter(x ->
-                    operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getObservationsTypeEntityId(), organisation.getId()) != null &&
-                            operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getObservationsTypeEntityId(), organisation.getId()).getEncounterType().getId().equals(x.getObservationsTypeEntityId())
+                    operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getEncounterTypeId(), organisation.getId()) != null &&
+                            operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getEncounterTypeId(), organisation.getId()).getEncounterType().getId().equals(x.getEncounterTypeId())
             ).collect(Collectors.toList());
         } else { // if organisation is OpenCHS, filter out other organisation forms
             encounterFormMappings = encounterFormMappings.stream().filter(x -> x.getOrganisationId() == 1).collect(Collectors.toList());
@@ -278,7 +278,7 @@ public class FormController {
 
         // Group by programId
         Map<Long, List<FormMapping>> prgmIdFormMappingsMap = programFormMappings.stream()
-                .collect(Collectors.groupingBy(FormMapping::getEntityId));
+                .collect(Collectors.groupingBy(FormMapping::getProgramId));
         for (Map.Entry<Long, List<FormMapping>> entry: prgmIdFormMappingsMap.entrySet()) {
             String programName = programRepository.findById(entry.getKey()).getName();
             List<BasicFormMetadata> forms = entry.getValue().stream().map(fm -> {

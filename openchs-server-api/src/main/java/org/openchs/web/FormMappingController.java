@@ -7,7 +7,6 @@ import org.openchs.dao.ProgramRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
-import org.openchs.domain.SubjectType;
 import org.openchs.web.request.FormMappingContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class FormMappingController extends AbstractController<FormMapping>{
@@ -69,11 +67,11 @@ public class FormMappingController extends AbstractController<FormMapping>{
         formMapping.setForm(form);
 
         if (formMappingRequest.getProgramUUID()!= null){
-            formMapping.setEntityId(programRepository.findByUuid(formMappingRequest.getProgramUUID()).getId());
+            formMapping.setProgramId(programRepository.findByUuid(formMappingRequest.getProgramUUID()).getId());
         }
 
         if (formMappingRequest.getEncounterTypeUUID()!= null){
-            formMapping.setObservationsTypeEntityId(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()).getId());
+            formMapping.setEncounterTypeId(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()).getId());
         }
 
         if (formMappingRequest.getSubjectTypeUUID() != null) {

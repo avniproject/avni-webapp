@@ -27,7 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -77,7 +76,7 @@ public class FormControllerIntegrationTest extends AbstractControllerIntegration
 
     @Test
     public void findByEntityId() {
-        Page<FormMapping> fmPage = formMappingRepository.findByEntityId(1L, new PageRequest(0, 1));
+        Page<FormMapping> fmPage = formMappingRepository.findByProgramId(1L, new PageRequest(0, 1));
         assertEquals(1, fmPage.getContent().size());
     }
 

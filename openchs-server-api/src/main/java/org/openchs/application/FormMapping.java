@@ -1,29 +1,29 @@
 package org.openchs.application;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.openchs.domain.CHSEntity;
+import org.openchs.application.projections.BaseProjection;
 import org.openchs.domain.OrganisationAwareEntity;
 import org.openchs.domain.SubjectType;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "form_mapping")
+@JsonIgnoreProperties({"form", "programId", "encounterTypeId", "subjectType"})
 public class FormMapping extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "form_id")
     private Form form;
 
-    //program id
     @Column(name = "entity_id")
-    private Long entityId;
+    private Long programId;
 
-    //encounter type id
     @Column(name = "observations_type_entity_id")
-    private Long observationsTypeEntityId;
+    private Long encounterTypeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_type_id")
@@ -37,30 +37,40 @@ public class FormMapping extends OrganisationAwareEntity {
         this.form = form;
     }
 
-    @JsonIgnore
-    public Long getEntityId() {
-        return entityId;
+    public Long getProgramId() {
+        return programId;
     }
 
-    public void setEntityId(Long entityId) {
-        this.entityId = entityId;
+    public void setProgramId(Long programId) {
+        this.programId = programId;
     }
 
-    @JsonIgnore
-    public Long getObservationsTypeEntityId() {
-        return observationsTypeEntityId;
+    public Long getEncounterTypeId() {
+        return encounterTypeId;
     }
 
-    public void setObservationsTypeEntityId(Long observationsTypeEntityId) {
-        this.observationsTypeEntityId = observationsTypeEntityId;
+    public void setEncounterTypeId(Long encounterTypeId) {
+        this.encounterTypeId = encounterTypeId;
     }
 
-    @JsonIgnore
     public SubjectType getSubjectType() {
         return subjectType;
     }
 
     public void setSubjectType(SubjectType subjectType) {
         this.subjectType = subjectType;
+    }
+
+    @Projection(name = "FormMappingProjection", types = {FormMapping.class})
+    public interface FormMappingProjection extends BaseProjection {
+        @Value("#{target.subjectType.id}")
+        Long getSubjectTypeId();
+
+        @Value("#{target.form.id}")
+        Long getFormId();
+
+        Long getEncounterTypeId();
+
+        Long getProgramId();
     }
 }
