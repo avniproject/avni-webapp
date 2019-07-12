@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import {AccessDenied} from "../common/components";
 import {OrgManager} from "../orgManager";
 import {DataEntry} from "../dataEntry";
-import {ROLES} from "../common/constants";
+import {ROLES, withoutDataEntry} from "../common/constants";
 import './SecureApp.css';
 
 const RestrictedRoute = ({component: C, allowedRoles, currentUserRoles, ...rest}) =>
@@ -51,5 +51,5 @@ const mapStateToProps = state => ({
 
 
 export default withRouter(
-    connect(mapStateToProps, null)(RoutesWithoutDataEntry)
+    connect(mapStateToProps, null)(withoutDataEntry? RoutesWithoutDataEntry: Routes)
 );
