@@ -4,9 +4,9 @@ import { formMiddleware } from 'react-admin';
 import { routerMiddleware } from 'react-router-redux';
 import { createHashHistory } from 'history';
 
-import { isDevEnv } from "../common/constants";
-import rootReducer from "../rootReducer";
-import rootSaga from "../rootSaga";
+import { isDevEnv } from "../constants";
+import rootReducer from "../../rootApp/rootReducer";
+import rootSaga from "../../rootApp/rootSaga";
 
 export const adminHistory = createHashHistory();
 

@@ -5,9 +5,9 @@ import {BrowserRouter} from 'react-router-dom';
 
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import {store} from './store';
+import {store} from './common/store';
 import {cognitoInDev, isProdEnv} from './common/constants';
-import {App, SecureApp} from './app';
+import {App, SecureApp} from './rootApp';
 
 import {ThemeProvider} from '@material-ui/styles';
 import {createMuiTheme} from '@material-ui/core/styles';

@@ -3,8 +3,8 @@ import {includes, intersection, isEmpty} from 'lodash';
 import {Route, Redirect, Switch, withRouter} from "react-router-dom";
 import {connect} from "react-redux";
 import {AccessDenied} from "../common/components";
-import {OrgManager} from "../orgManager";
-import {DataEntry} from "../dataEntry";
+import {OrgManager} from "../adminApp";
+import {DataEntry} from "../dataEntryApp";
 import {ROLES, withoutDataEntry} from "../common/constants";
 import './SecureApp.css';
 

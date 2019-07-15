@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 import { fetchUtils } from 'react-admin';
-import { authContext as _authContext } from "../app/authContext";
+import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from 'query-string';
 
 class HttpClient {

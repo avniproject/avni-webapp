@@ -1,7 +1,7 @@
 import { testSaga } from 'redux-saga-test-plan';
 import { onSetCognitoUser } from "./saga";
 import { types, getUserInfo } from "./ducks";
-import { httpClient } from "../utils/httpClient";
+import { httpClient } from "../common/utils/httpClient";
 
 const setCognitoAction = {
     type: types.SET_COGNITO_USER,

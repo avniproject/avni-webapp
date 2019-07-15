@@ -1,9 +1,9 @@
 import {call, put, select, take, takeLatest} from 'redux-saga/effects';
 import {getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, setSubjects, types} from "./ducks";
 import {cognitoConfig as cognitoConfigFromEnv, cognitoInDev, isDevEnv, isProdEnv} from "../common/constants";
-import {httpClient} from "../utils/httpClient";
+import {httpClient} from "../common/utils/httpClient";
 import {configureAuth} from "./utils";
-import SubjectService from "../dataEntry/services/SubjectService";
+import SubjectService from "../dataEntryApp/services/SubjectService";
 
 const api = {
     fetchCognitoDetails: () => httpClient.fetchJson('/cognito-details').then(response => response.json),

@@ -29,7 +29,7 @@ import {
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
 import {change} from 'redux-form';
-import {CatchmentSelectInput} from "../common/adminComponents";
+import {CatchmentSelectInput} from "./components/CatchmentSelectInput";
 import {LineBreak} from "../common/components";
 import {LOCALES, phoneCountryPrefix} from "../common/constants";
 import EnableDisableButton from './components/EnableDisableButton';

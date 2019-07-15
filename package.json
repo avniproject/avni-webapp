@@ -27,7 +27,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postinstall": "bash src/patches/apply-patches.sh"
+    "postinstall": "bash src/adminApp/patches/apply-patches.sh"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -1,5 +1,5 @@
 import React from "react";
-import LogoutButton from '../admin/LogoutButton';
+import LogoutButton from '../adminApp/react-admin-config/LogoutButton';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';

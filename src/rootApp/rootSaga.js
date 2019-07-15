@@ -1,8 +1,8 @@
 import { all, call, fork } from 'redux-saga/effects';
 import { adminSaga, defaultI18nProvider } from 'react-admin';
 
-import { authProvider, dataProvider as springDataProvider } from './admin';
-import { initialiseCognito, onSetCognitoUser, userInfoWatcher, dataEntrySearchWatcher } from "./app/saga";
+import { authProvider, dataProvider as springDataProvider } from '../adminApp/react-admin-config/index';
+import { initialiseCognito, onSetCognitoUser, userInfoWatcher, dataEntrySearchWatcher } from "./saga";
 
 const dataProvider = springDataProvider('');
 const i18nProvider = defaultI18nProvider;

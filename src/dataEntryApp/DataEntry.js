@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {connect} from "react-redux";
 import SubjectSearch from './SubjectSearch';
-import {store} from "../store";
+import {store} from "../common/store";
 
 class DataEntry extends Component {
 

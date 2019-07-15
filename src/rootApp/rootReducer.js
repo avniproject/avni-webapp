@@ -3,7 +3,7 @@ import { reducer as formReducer } from 'redux-form';
 import { routerReducer } from 'react-router-redux';
 import { adminReducer, defaultI18nProvider, i18nReducer } from 'react-admin';
 
-import app from './app/ducks';
+import app from './ducks';
 
 
 const LOCALE = 'en';

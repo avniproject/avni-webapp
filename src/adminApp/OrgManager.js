@@ -4,8 +4,8 @@ import {Admin, Resource} from "react-admin";
 import {withRouter} from 'react-router-dom';
 import {connect} from "react-redux";
 
-import {authProvider, LogoutButton} from "../admin";
-import {adminHistory, store} from "../store";
+import {authProvider, LogoutButton} from "./react-admin-config";
+import {adminHistory, store} from "../common/store";
 import {UserCreate, UserDetail, UserEdit, UserList} from './user';
 import {CatchmentCreate, CatchmentDetail, CatchmentEdit, CatchmentList} from "./catchment";
 import {LocationTypeCreate, LocationTypeDetail, LocationTypeEdit, LocationTypeList} from "./addressLevelType";

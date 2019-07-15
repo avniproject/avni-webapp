@@ -3,7 +3,7 @@ import {CREATE, UPDATE, DELETE_MANY, GET_LIST, GET_MANY,
     GET_MANY_REFERENCE, GET_ONE, UPDATE_MANY, DELETE} from 'react-admin';
 import { UrlPartsGenerator } from './requestUtils';
 import SpringResponse from "./SpringResponse";
-import { httpClient } from "../utils/httpClient";
+import { httpClient } from "../../common/utils/httpClient";
 
 
 /**

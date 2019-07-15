@@ -14,7 +14,7 @@ import {withRouter} from 'react-router-dom';
 import {connect} from "react-redux";
 import AppBar from './AppBar';
 import {makeStyles} from '@material-ui/core/styles';
-import {searchSubjects, setSubjectSearchParams} from '../app/ducks';
+import {searchSubjects, setSubjectSearchParams} from '../rootApp/ducks';
 
 const useStyle = makeStyles(theme => ({
     root: {

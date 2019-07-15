@@ -11,7 +11,7 @@ import { isEmpty, find, isNil } from 'lodash';
 import { change } from 'redux-form';
 import { None } from "../common/components";
 import { LocationSaveButton } from "./components/LocationSaveButton";
-import { store } from "../store";
+import { store } from "../common/store";
 
 
 export const LocationList = props => (
