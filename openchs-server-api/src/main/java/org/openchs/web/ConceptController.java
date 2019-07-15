@@ -2,17 +2,22 @@ package org.openchs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.projection.ConceptProjection;
 import org.openchs.service.ConceptService;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ExportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
 import java.io.File;
@@ -25,11 +30,13 @@ public class ConceptController {
     private final Logger logger;
     private ConceptRepository conceptRepository;
     private ConceptService conceptService;
+    private ProjectionFactory projectionFactory;
 
     @Autowired
-    public ConceptController(ConceptRepository conceptRepository, ConceptService conceptService) {
+    public ConceptController(ConceptRepository conceptRepository, ConceptService conceptService, ProjectionFactory projectionFactory) {
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
+        this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -54,5 +61,12 @@ public class ConceptController {
         }
         logger.info("Concepts size: " + conceptContracts.size());
         logger.info(String.format("Exporting conceptContracts to : %s", exportRequest.getFileName()));
+    }
+
+    @GetMapping(value = "/web/concept/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ConceptProjection getOneForWeb(@PathVariable String uuid) {
+        return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
     }
 }

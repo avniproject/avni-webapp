@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.openchs.application.projections.BaseProjection;
+import org.openchs.projection.ConceptProjection;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -101,5 +104,13 @@ public class ConceptAnswer extends OrganisationAwareEntity {
 
     public boolean editableBy(Long orgId) {
         return getOrganisationId() == null || Objects.equals(getOrganisationId(), orgId);
+    }
+
+    @Projection(name = "ConceptAnswerProjection", types = {ConceptAnswer.class})
+    public interface ConceptAnswerProjection extends BaseProjection {
+        double getOrder();
+        boolean isAbnormal();
+        boolean isUnique();
+        ConceptProjection getAnswerConcept();
     }
 }
