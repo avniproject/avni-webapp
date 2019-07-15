@@ -1,7 +1,20 @@
 import React from "react";
 import _ from 'lodash';
-import { Link } from "react-router-dom";
+import {Link as RouterLink} from "react-router-dom";
+import Link from '@material-ui/core/Link';
+import SvgIcon from '@material-ui/core/SvgIcon';
 
+export const AddIcon = (props) =>
+    <SvgIcon {...props}>
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+    </SvgIcon>;
+
+export const InternalLink = ({children, ...props}) =>
+    <Link
+        component={React.forwardRef((props, ref) => (<RouterLink innerRef={ref} {...props} />))}
+        {...props}>
+        {children}
+    </Link>;
 
 export const Home = () => (
     <div>

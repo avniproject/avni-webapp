@@ -10,6 +10,8 @@ export const types = {
     SET_SUBJECTS: 'app/SET_SUBJECTS',
     SEARCH_SUBJECTS: 'app/SEARCH_SUBJECTS',
     SET_SUBJECT_SEARCH_PARAMS: 'app/SET_SUBJECT_SEARCH_PARAMS',
+    SET_REGISTRATION_SUBJECT_TYPE: 'app/SET_REGISTRATION_SUBJECT_TYPE',
+    SET_OPERATIONAL_MODULES: 'app/SET_OPERATIONAL_MODULES',
 };
 
 export const initCognito = () => ({
@@ -55,6 +57,16 @@ export const setSubjectSearchParams = (params) => ({
     params
 });
 
+export const setRegistrationSubjectType = (subjectType) => ({
+    type: types.SET_REGISTRATION_SUBJECT_TYPE,
+    subjectType
+});
+
+export const setOperationalModules = (operationalModules) => ({
+    type: types.SET_OPERATIONAL_MODULES,
+    operationalModules
+});
+
 const initialState = {
     authConfigured: false,
     user: {
@@ -69,7 +81,11 @@ const initialState = {
     },
     appInitialised: false,
     subjects: [],
-    subjectSearchParams: {}
+    subjectSearchParams: {},
+    registrationSubjectType: 'Individual',
+    operationalModules: {
+        subjectTypes: []
+    }
 };
 
 // reducer
@@ -125,6 +141,18 @@ export default function (state = initialState, action) {
                     ...state.subjectSearchParams,
                     ...action.params,
                 }
+            }
+        }
+        case types.SET_REGISTRATION_SUBJECT_TYPE: {
+            return {
+                ...state,
+                registrationSubjectType: action.subjectType
+            }
+        }
+        case types.SET_OPERATIONAL_MODULES: {
+            return {
+                ...state,
+                operationalModules: action.operationalModules
             }
         }
         default:

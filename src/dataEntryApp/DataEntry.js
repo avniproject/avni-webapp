@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import {connect} from "react-redux";
 import SubjectSearch from './SubjectSearch';
+import SubjectRegister from './SubjectRegister';
 import {store} from "../common/store";
 
 class DataEntry extends Component {
@@ -17,6 +18,7 @@ class DataEntry extends Component {
 
     render() {
         if(this.props.match.params.page === 'search') return <SubjectSearch />;
+        if(this.props.match.params.page === 'register') return <SubjectRegister />;
         return  <div><p>Page Not Found</p></div>
     }
 }

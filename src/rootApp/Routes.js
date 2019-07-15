@@ -32,6 +32,7 @@ const Routes = (props) =>
         <Route exact path="/">
             <Redirect to={includes(props.userRoles, ROLES.ORG_ADMIN) ? "/admin" : "/app"}/>
         </Route>
+        <Route component={()=><div><span>Page Not found</span></div>} />
     </Switch>;
 
 const RoutesWithoutDataEntry = (props) =>

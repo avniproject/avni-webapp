@@ -1,5 +1,5 @@
 import {call, put, select, take, takeLatest} from 'redux-saga/effects';
-import {getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, setSubjects, types} from "./ducks";
+import {setOperationalModules, getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, setSubjects, types} from "./ducks";
 import {cognitoConfig as cognitoConfigFromEnv, cognitoInDev, isDevEnv, isProdEnv} from "../common/constants";
 import {httpClient} from "../common/utils/httpClient";
 import {configureAuth} from "./utils";
@@ -8,6 +8,7 @@ import SubjectService from "../dataEntryApp/services/SubjectService";
 const api = {
     fetchCognitoDetails: () => httpClient.fetchJson('/cognito-details').then(response => response.json),
     fetchUserInfo: () => httpClient.fetchJson('/me').then(response => response.json),
+    fetchOperationalModules: () => httpClient.fetchJson('/web/operationalModules/').then(response => response.json),
 };
 
 export function* initialiseCognito() {
@@ -52,4 +53,9 @@ function* dataEntrySearchWorker() {
     const params = yield select(state => state.app.subjectSearchParams);
     const subjects = yield call(SubjectService.search, params);
     yield put(setSubjects(subjects));
+}
+
+export function* dataEntryLoadOperationalModules() {
+    const operationalModules = yield call(api.fetchOperationalModules);
+    yield put(setOperationalModules(operationalModules));
 }

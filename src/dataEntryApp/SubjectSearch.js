@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import Table from '@material-ui/core/Table';
 import Grid from '@material-ui/core/Grid';
+import {withRouter} from 'react-router-dom';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
@@ -10,11 +11,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import {withRouter} from 'react-router-dom';
 import {connect} from "react-redux";
 import AppBar from './AppBar';
 import {makeStyles} from '@material-ui/core/styles';
 import {searchSubjects, setSubjectSearchParams} from '../rootApp/ducks';
+import RegistrationMenu from './RegistrationMenu';
 
 const useStyle = makeStyles(theme => ({
     root: {
@@ -25,23 +26,23 @@ const useStyle = makeStyles(theme => ({
     table: {
         minWidth: 1000,
     },
+    searchCreateToolbar: {
+        display: 'flex',
+    },
     searchForm: {
         marginLeft: theme.spacing(3),
         marginBottom: theme.spacing(8),
         display: 'flex',
         alignItems: 'flex-end',
+        flex: 8,
     },
     searchFormItem: {
         margin: theme.spacing(1),
-    }
+    },
+    createButtonHolder: {
+        flex: 1,
+    },
 }));
-
-const getFullAddress = (location) => {
-    if(location.parentLocation) {
-        return getFullAddress(location.parentLocation) + ', ' + location.title;
-    }
-    return location.title;
-};
 
 const SubjectsTable = ({subjects}) => {
     const classes = useStyle();
@@ -65,7 +66,7 @@ const SubjectsTable = ({subjects}) => {
                         </TableCell>
                         <TableCell align="center">{row.gender.name}</TableCell>
                         <TableCell align="center">{row.dateOfBirth}</TableCell>
-                        <TableCell align="center">{getFullAddress(row.addressLevel)}</TableCell>
+                        <TableCell align="center">{row.addressLevel.titleLineage}</TableCell>
                         <TableCell align="center">
                             {row.activePrograms.map((p, key) => (
                                 <Button key={key} size="small"
@@ -105,21 +106,24 @@ const SubjectSearch = (props) => {
 
             <Grid item>
                 <Paper className={classes.root}>
-                    <form onSubmit={handleSubmit} className={classes.searchForm}>
-                        <FormControl className={classes.searchFormItem}>
-                            <InputLabel htmlFor="search-field">{''}</InputLabel>
-                            <Input id="search-field"
-                                   type="text"
-                                   value={props.searchParams.query}
-                                   onChange={e => props.setSearchParams({query: e.target.value})}
-                            />
-                        </FormControl>
-                        <FormControl className={classes.searchFormItem}>
-                            <Button variant="contained" size="small" color="primary" onClick={handleSubmit}>
-                                Search
-                            </Button>
-                        </FormControl>
-                    </form>
+                    <div className={classes.searchCreateToolbar}>
+                        <form onSubmit={handleSubmit} className={classes.searchForm}>
+                            <FormControl className={classes.searchFormItem}>
+                                <InputLabel htmlFor="search-field">{''}</InputLabel>
+                                <Input id="search-field"
+                                       type="text"
+                                       value={props.searchParams.query}
+                                       onChange={e => props.setSearchParams({query: e.target.value})}
+                                />
+                            </FormControl>
+                            <FormControl className={classes.searchFormItem}>
+                                <Button variant="contained" size="small" color="primary" onClick={handleSubmit}>
+                                    Search
+                                </Button>
+                            </FormControl>
+                        </form>
+                        <RegistrationMenu className={classes.createButtonHolder}/>
+                    </div>
                     <SubjectsTable subjects={props.subjects}/>
                 </Paper>
             </Grid>
