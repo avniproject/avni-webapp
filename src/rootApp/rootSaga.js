@@ -6,11 +6,12 @@ import {
   dataProvider as springDataProvider
 } from "../adminApp/react-admin-config/index";
 import {
+  dataEntryLoadOperationalModules,
+  dataEntryLoadRegistrationFormWatcher,
+  dataEntrySearchWatcher,
   initialiseCognito,
   onSetCognitoUser,
-  userInfoWatcher,
-  dataEntrySearchWatcher,
-  dataEntryLoadOperationalModules
+  userInfoWatcher
 } from "./saga";
 
 const dataProvider = springDataProvider("");
@@ -23,6 +24,7 @@ export default function* rootSaga() {
     fork(onSetCognitoUser),
     fork(userInfoWatcher),
     fork(dataEntrySearchWatcher),
-    fork(dataEntryLoadOperationalModules)
+    fork(dataEntryLoadOperationalModules),
+    fork(dataEntryLoadRegistrationFormWatcher)
   ]);
 }

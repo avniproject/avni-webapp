@@ -1,11 +1,14 @@
 import { call, put, select, take, takeLatest } from "redux-saga/effects";
+//import {Form} from 'openchs-models';
 import {
-  setOperationalModules,
   getUserInfo,
   sendAuthConfigured,
   sendInitComplete,
-  setUserInfo,
+  setOperationalModules,
+  setRegistrationForm,
+  setRegistrationSubjectType,
   setSubjects,
+  setUserInfo,
   types
 } from "./ducks";
 import {
@@ -17,6 +20,7 @@ import {
 import { httpClient } from "../common/utils/httpClient";
 import { configureAuth } from "./utils";
 import SubjectService from "../dataEntryApp/services/SubjectService";
+import { isNil } from "lodash";
 
 const api = {
   fetchCognitoDetails: () =>
@@ -26,7 +30,9 @@ const api = {
   fetchOperationalModules: () =>
     httpClient
       .fetchJson("/web/operationalModules/")
-      .then(response => response.json)
+      .then(response => response.json),
+  fetchForm: uuid =>
+    httpClient.fetchJson(`/web/form/${uuid}`).then(response => response.json)
 };
 
 export function* initialiseCognito() {
@@ -78,4 +84,28 @@ function* dataEntrySearchWorker() {
 export function* dataEntryLoadOperationalModules() {
   const operationalModules = yield call(api.fetchOperationalModules);
   yield put(setOperationalModules(operationalModules));
+  yield put(setRegistrationSubjectType(operationalModules.subjectTypes[0]));
+}
+
+export function* dataEntryLoadRegistrationFormWatcher() {
+  yield takeLatest(
+    types.GET_REGISTRATION_FORM,
+    dataEntryLoadRegistrationFormWorker
+  );
+}
+
+function* dataEntryLoadRegistrationFormWorker() {
+  const formUuid = yield select(state => {
+    const { registrationSubjectType, operationalModules } = state.app;
+    const registrationFormMapping = operationalModules.formMappings.find(
+      fm =>
+        isNil(fm.programId) &&
+        isNil(fm.encounterTypeId) &&
+        fm.subjectTypeId === registrationSubjectType.id
+    );
+    return registrationFormMapping.formUuid;
+  });
+  const registrationForm = yield call(api.fetchForm, formUuid);
+  // const form = Form.fromResource(registrationForm);
+  yield put(setRegistrationForm(registrationForm));
 }

@@ -14,49 +14,34 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const RegistrationMenu = ({ types, setRegistrationSubjectType }) => {
-  const classes = useStyle();
+const RegistrationMenu = ({types, setRegistrationSubjectType}) => {
+    const classes = useStyle();
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClick = type => event => {
-    setAnchorEl(event.currentTarget);
-    type && setRegistrationSubjectType(type);
-  };
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const handleClick = (type) => (event) => {
+        setAnchorEl(event.currentTarget);
+        type && setRegistrationSubjectType(type);
+    };
 
-  const handleClose = () => setAnchorEl(null);
+    const handleClose = () => setAnchorEl(null);
 
-  return (
-    <div>
-      <Button
-        size="medium"
-        className={classes.createButton}
-        color={"primary"}
-        onClick={handleClick()}
-      >
-        <AddIcon /> Create
-      </Button>
-      <Menu
-        id="create-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={!!anchorEl}
-        onClose={handleClose}
-      >
-        {types.map((type, key) => (
-          <InternalLink
-            key={key}
-            to={"/app/register"}
-            onClick={handleClick(type.uuid)}
-          >
-            <MenuItem>
-              {" "}
-              <AddIcon /> {type.name}{" "}
-            </MenuItem>
-          </InternalLink>
-        ))}
-      </Menu>
-    </div>
-  );
+    return <div>
+        <Button size="medium" className={classes.createButton} color={"primary"} onClick={handleClick()}>
+            <AddIcon/> Create
+        </Button>
+        <Menu
+            id="create-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={!!anchorEl}
+            onClose={handleClose}>
+            {types.map((type, key) =>
+                <InternalLink key={key} to={"/app/register"} onClick={handleClick(type)}>
+                    <MenuItem> <AddIcon/> {type.name} </MenuItem>
+                </InternalLink>
+            )}
+        </Menu>
+    </div>;
 };
 
 const mapStateToProps = state => ({

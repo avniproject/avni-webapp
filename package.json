@@ -59,6 +59,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "husky": "^3.0.1",
+    "openchs-models": "0.0.13",
     "prettier": "1.17.1",
     "pretty-quick": "^1.11.1",
     "redux-saga-test-plan": "^3.7.0",

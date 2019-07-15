@@ -11,7 +11,9 @@ export const types = {
   SEARCH_SUBJECTS: "app/SEARCH_SUBJECTS",
   SET_SUBJECT_SEARCH_PARAMS: "app/SET_SUBJECT_SEARCH_PARAMS",
   SET_REGISTRATION_SUBJECT_TYPE: "app/SET_REGISTRATION_SUBJECT_TYPE",
-  SET_OPERATIONAL_MODULES: "app/SET_OPERATIONAL_MODULES"
+  SET_OPERATIONAL_MODULES: "app/SET_OPERATIONAL_MODULES",
+  GET_REGISTRATION_FORM: "app/GET_REGISTRATION_FORM",
+  SET_REGISTRATION_FORM: "app/SET_REGISTRATION_FORM"
 };
 
 export const initCognito = () => ({
@@ -67,6 +69,13 @@ export const setOperationalModules = operationalModules => ({
   operationalModules
 });
 
+export const getRegistrationForm = () => ({
+  type: types.GET_REGISTRATION_FORM
+});
+export const setRegistrationForm = form => ({
+  type: types.SET_REGISTRATION_FORM,
+  form
+});
 const initialState = {
   authConfigured: false,
   user: {
@@ -82,9 +91,13 @@ const initialState = {
   appInitialised: false,
   subjects: [],
   subjectSearchParams: {},
-  registrationSubjectType: "Individual",
+  registrationSubjectType: {
+    name: "Individual",
+    uuid: undefined
+  },
   operationalModules: {
-    subjectTypes: []
+    subjectTypes: [],
+    forms: []
   }
 };
 
@@ -116,6 +129,14 @@ export default function(state = initialState, action) {
         }
       };
     }
+    case types.SET_REGISTRATION_SUBJECT_TYPE: {
+      return {
+        ...state,
+        registrationSubjectType: {
+          ...action.subjectType
+        }
+      };
+    }
     case types.INIT_COMPLETE: {
       return {
         ...state,
@@ -143,16 +164,16 @@ export default function(state = initialState, action) {
         }
       };
     }
-    case types.SET_REGISTRATION_SUBJECT_TYPE: {
-      return {
-        ...state,
-        registrationSubjectType: action.subjectType
-      };
-    }
     case types.SET_OPERATIONAL_MODULES: {
       return {
         ...state,
         operationalModules: action.operationalModules
+      };
+    }
+    case types.SET_REGISTRATION_FORM: {
+      return {
+        ...state,
+        registrationForm: action.form
       };
     }
     default:
