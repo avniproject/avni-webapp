@@ -69,6 +69,9 @@ public class FormMapping extends OrganisationAwareEntity {
         @Value("#{target.form.id}")
         Long getFormId();
 
+        @Value("#{target.form.uuid}")
+        String getFormUuid();
+
         Long getEncounterTypeId();
 
         Long getProgramId();
