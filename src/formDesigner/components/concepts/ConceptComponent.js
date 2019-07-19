@@ -49,6 +49,9 @@ class ConceptComponent extends React.Component {
         <CardHeader className="py-2" id={headerId}>
           <Row>
             <Col sm="7">
+              {
+                //eslint-disable-next-line jsx-a11y/anchor-is-valid
+              }
               <a
                 style={{ cursor: "pointer" }}
                 className={config.orgClassName(field.organisationId)}
