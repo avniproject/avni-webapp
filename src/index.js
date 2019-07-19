@@ -4,6 +4,10 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
+import "jquery";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap";
+import "./formDesigner/App.css";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./common/store";
 import { cognitoInDev, isProdEnv } from "./common/constants";
