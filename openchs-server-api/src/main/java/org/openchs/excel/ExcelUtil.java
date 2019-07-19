@@ -111,10 +111,11 @@ public class ExcelUtil {
 
     public static Double getNumber(Row row, int cellNum) {
         Cell cell = row.getCell(cellNum);
+        DecimalFormat df = new DecimalFormat("#.##");
         try {
             if (cell == null) return null;
             if (StringUtils.isEmpty(cell.toString())) return null;
-            return cell.getNumericCellValue();
+            return Double.valueOf(df.format(cell.getNumericCellValue()));
         } catch (RuntimeException e) {
             if (NAN.equalsIgnoreCase(ExcelUtil.getFatText(row, cellNum))) {
                 return null;
