@@ -1,34 +1,34 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {Provider} from 'react-redux';
-import {BrowserRouter} from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 
-import './index.css';
-import * as serviceWorker from './serviceWorker';
-import {store} from './common/store';
-import {cognitoInDev, isProdEnv} from './common/constants';
-import {App, SecureApp} from './rootApp';
+import "./index.css";
+import * as serviceWorker from "./serviceWorker";
+import { store } from "./common/store";
+import { cognitoInDev, isProdEnv } from "./common/constants";
+import { App, SecureApp } from "./rootApp";
 
-import {ThemeProvider} from '@material-ui/styles';
-import {createMuiTheme} from '@material-ui/core/styles';
-import * as Colors from '@material-ui/core/colors';
+import { ThemeProvider } from "@material-ui/styles";
+import { createMuiTheme } from "@material-ui/core/styles";
+import * as Colors from "@material-ui/core/colors";
 
 const theme = createMuiTheme({
-    palette: {
-        primary: Colors.blue,
-        secondary: Colors.grey,
-    },
+  palette: {
+    primary: Colors.blue,
+    secondary: Colors.grey
+  }
 });
 
 ReactDOM.render(
-    <ThemeProvider theme={theme}>
-        <Provider store={store}>
-            <BrowserRouter>
-                {(isProdEnv || cognitoInDev) ? <SecureApp/> : <App/>}
-            </BrowserRouter>
-        </Provider>
-    </ThemeProvider>,
-    document.getElementById('root')
+  <ThemeProvider theme={theme}>
+    <Provider store={store}>
+      <BrowserRouter>
+        {isProdEnv || cognitoInDev ? <SecureApp /> : <App />}
+      </BrowserRouter>
+    </Provider>
+  </ThemeProvider>,
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

@@ -1,4 +1,4 @@
-import App from './App';
-import SecureApp from './SecureApp';
+import App from "./App";
+import SecureApp from "./SecureApp";
 
-export {App, SecureApp};
+export { App, SecureApp };

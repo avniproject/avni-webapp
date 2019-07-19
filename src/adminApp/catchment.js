@@ -38,13 +38,19 @@ const TitleChip = props => {
   return <Chip label={`${props.record.title} (${props.record.typeString})`} />;
 };
 
-const Title = ({record}) => {
-  return record && <span>Catchment: <b>{record.name}</b></span>;
+const Title = ({ record }) => {
+  return (
+    record && (
+      <span>
+        Catchment: <b>{record.name}</b>
+      </span>
+    )
+  );
 };
 
 export const CatchmentDetail = props => {
   return (
-    <Show title={<Title/>} actions={<CustomShowActions />} {...props}>
+    <Show title={<Title />} actions={<CustomShowActions />} {...props}>
       <SimpleShowLayout>
         <TextField label="Catchment" source="name" />
         <TextField label="Type" source="type" />
@@ -98,7 +104,7 @@ let LOCATIONS;
 
 const LocationAutocomplete = props => {
   LOCATIONS = props.choices;
-  return <AutocompleteArrayInput {...props}/>
+  return <AutocompleteArrayInput {...props} />;
 };
 
 const CatchmentForm = ({ edit, ...props }) => {

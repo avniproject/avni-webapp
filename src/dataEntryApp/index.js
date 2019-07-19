@@ -1,4 +1,4 @@
-import './index.css';
+import "./index.css";
 import DataEntry from "./DataEntry";
 
-export {DataEntry};
+export { DataEntry };
