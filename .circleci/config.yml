@@ -113,6 +113,14 @@ jobs:
     - deploy:
         to: prerelease
 
+  PRODUCTION_deploy:
+    docker:
+    - image: circleci/node:8.14.0
+    working_directory: ~/
+    steps:
+    - deploy:
+        to: production
+
 workflows:
   version: 2
   test_and_build:
@@ -142,6 +150,13 @@ workflows:
     - PRERELEASE_deploy:
         requires:
         - PRERELEASE_approve
+    - PRODUCTION_approve:
+        type: approval
+        requires:
+        - app_build
+    - PRODUCTION_deploy:
+        requires:
+        - PRODUCTION_approve
 
 
 notify:
