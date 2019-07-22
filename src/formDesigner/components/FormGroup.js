@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import fieldsMetadata from "./configFields";
 import PropTypes from "prop-types";
 import _ from "lodash";
-import { Row, Col, UncontrolledTooltip, Collapse } from "reactstrap";
+import { Row, Col, UncontrolledTooltip, Collapse, Button } from "reactstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import ConceptComponent from "./concepts/ConceptComponent";
@@ -34,18 +34,15 @@ class FormGroup extends Component {
         <div className="card-header py-2" id={headerId}>
           <Row>
             <Col sm="7">
-              {
-                //eslint-disable-next-line jsx-a11y/anchor-is-valid
-              }
-              <a
-                style={{ cursor: "pointer" }}
+              <Button
+                color="link"
                 className={config.orgClassName(group.organisationId)}
                 onClick={() =>
                   handleGroupChange("collapse", !group.collapse, group.uuid)
                 }
               >
                 <strong>{formHeader}</strong>
-              </a>
+              </Button>
             </Col>
             <Col>
               <CopyToClipboard text={group.uuid}>

@@ -9,7 +9,7 @@ import {
   UncontrolledTooltip
 } from "reactstrap";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { FormGroup, Label, Input, Collapse } from "reactstrap";
+import { FormGroup, Label, Input, Collapse, Button } from "reactstrap";
 
 import config from "../../config";
 import ChooseConcept from "../ChooseConcept";
@@ -49,18 +49,15 @@ class ConceptComponent extends React.Component {
         <CardHeader className="py-2" id={headerId}>
           <Row>
             <Col sm="7">
-              {
-                //eslint-disable-next-line jsx-a11y/anchor-is-valid
-              }
-              <a
-                style={{ cursor: "pointer" }}
+              <Button
+                color="link"
                 className={config.orgClassName(field.organisationId)}
                 onClick={() =>
                   handleFieldChange("collapse", !field.collapse, field.uuid)
                 }
               >
                 {field.name}
-              </a>
+              </Button>
             </Col>
             <Col>
               <CopyToClipboard text={field.uuid}>
