@@ -1,7 +1,9 @@
 ## Run app
 
-### Install dependencies
+You will need yarn package mananger to be installed globally to run this project. Follow the instructions on https://yarnpkg.com/en/docs/install to install yarn if it is not already installed on your machine.
 
+### Install dependencies
+Once yarn is installed run the following:
 ```
 yarn install
 ```
