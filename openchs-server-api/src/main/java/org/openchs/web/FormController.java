@@ -190,18 +190,19 @@ public class FormController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public List<BasicFormDetails> getForms(@PathVariable("programId") Long programId, Pageable pageable) {
         Program program = programRepository.findOne(programId);
+        OperationalProgram operationalProgram = operationalProgramRepository.findOne(program.getId());
         if (program == null) {
             throw new ValidationException(String.format("No program found for ID %s", programId));
         }
-        return getFormsByProgram(program, pageable);
+        return getFormsByProgram(operationalProgram, pageable);
     }
 
-    private List<BasicFormDetails> getFormsByProgram(Program program, Pageable pageable) {
-        Long programId = program.getId();
+    private List<BasicFormDetails> getFormsByProgram(OperationalProgram operationalProgram, Pageable pageable) {
+        Long programId = operationalProgram.getProgram().getId();
         Page<FormMapping> fmPage = formMappingRepository.findByProgramId(programId, pageable);
         return fmPage.getContent().stream().map(fm -> {
             Form form = fm.getForm();
-            BasicFormDetails formDetail = new BasicFormDetails(form, program.getName());
+            BasicFormDetails formDetail = new BasicFormDetails(form, operationalProgram.getName());
             formDetail.add(linkTo(methodOn(FormController.class).getForms(programId, pageable)).withSelfRel());
             Link formLink = entityLinks.linkToSingleResource(Form.class, form.getId());
             formDetail.add(formLink);
@@ -233,7 +234,8 @@ public class FormController {
     @RequestMapping(value = "/forms", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public List<Map<String, Object>> getForms(Pageable pageable) {
-        Iterable<Program> programItr = programRepository.findAll();
+
+        Iterable<OperationalProgram> programItr = operationalProgramRepository.findAll();
         List<Map<String, Object>> response = new ArrayList<>();
         programItr.forEach(program -> {
             Map<String, Object> formsByProgram = new HashMap<>();
