@@ -80,7 +80,7 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                 case "Registration Date":
                     individualRequest.setRegistrationDate(new LocalDate(importField.getDateValue(row, header, importSheetMetaData)));
                     break;
-                case "Address":
+                case "Address Level":
                     String userAddressValue = importField.getTextValue(row, header, importSheetMetaData);
                     individualRequest.setAddressLevel(answerMetaDataList.getSystemAnswer(userAddressValue, ALIAS_CONCEPT_NAME_ADDRESS_TITLE));
                     break;
