@@ -28,7 +28,7 @@ public class OperationalModulesController {
     }
 
     @GetMapping("/web/operationalModules")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public JsonObject getModules() {
         return new JsonObject()
