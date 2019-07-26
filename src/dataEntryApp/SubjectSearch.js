@@ -123,6 +123,7 @@ const SubjectSearch = props => {
                   <InputLabel htmlFor="search-field">{""}</InputLabel>
                   <Input
                     id="search-field"
+                    autoFocus
                     type="text"
                     value={props.searchParams.query}
                     onChange={e =>
@@ -132,6 +133,7 @@ const SubjectSearch = props => {
                 </FormControl>
                 <FormControl className={classes.searchFormItem}>
                   <Button
+                    type="submit"
                     variant="contained"
                     size="small"
                     color="primary"
