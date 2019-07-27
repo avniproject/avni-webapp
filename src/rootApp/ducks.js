@@ -7,14 +7,6 @@ export const types = {
   FETCH_ALL_LOCATIONS: "app/FETCH_ALL_LOCATIONS",
   FETCH_ALL_LOCATIONS_SUCCESS: "app/FETCH_ALL_LOCATIONS_SUCCESS",
   AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
-  SET_SUBJECTS: "app/SET_SUBJECTS",
-  SEARCH_SUBJECTS: "app/SEARCH_SUBJECTS",
-  SET_SUBJECT_SEARCH_PARAMS: "app/SET_SUBJECT_SEARCH_PARAMS",
-  SET_REGISTRATION_SUBJECT_TYPE: "app/SET_REGISTRATION_SUBJECT_TYPE",
-  GET_OPERATIONAL_MODULES: "app/GET_OPERATIONAL_MODULES",
-  SET_OPERATIONAL_MODULES: "app/SET_OPERATIONAL_MODULES",
-  GET_REGISTRATION_FORM: "app/GET_REGISTRATION_FORM",
-  SET_REGISTRATION_FORM: "app/SET_REGISTRATION_FORM"
 };
 
 export const initCognito = () => ({
@@ -46,40 +38,6 @@ export const sendAuthConfigured = () => ({
   type: types.AUTH_CONFIGURED
 });
 
-export const setSubjects = subjects => ({
-  type: types.SET_SUBJECTS,
-  subjects
-});
-
-export const searchSubjects = () => ({
-  type: types.SEARCH_SUBJECTS
-});
-
-export const setSubjectSearchParams = params => ({
-  type: types.SET_SUBJECT_SEARCH_PARAMS,
-  params
-});
-
-export const setRegistrationSubjectType = subjectType => ({
-  type: types.SET_REGISTRATION_SUBJECT_TYPE,
-  subjectType
-});
-
-export const getOperationalModules = () => ({
-  type: types.GET_OPERATIONAL_MODULES
-});
-export const setOperationalModules = operationalModules => ({
-  type: types.SET_OPERATIONAL_MODULES,
-  operationalModules
-});
-
-export const getRegistrationForm = () => ({
-  type: types.GET_REGISTRATION_FORM
-});
-export const setRegistrationForm = form => ({
-  type: types.SET_REGISTRATION_FORM,
-  form
-});
 const initialState = {
   authConfigured: false,
   user: {
@@ -93,16 +51,6 @@ const initialState = {
     name: undefined
   },
   appInitialised: false,
-  subjects: [],
-  subjectSearchParams: {},
-  registrationSubjectType: {
-    name: "Individual",
-    uuid: undefined
-  },
-  operationalModules: {
-    subjectTypes: [{ operationalSubjectTypeName: "", name: "" }],
-    forms: []
-  }
 };
 
 // reducer
@@ -133,14 +81,6 @@ export default function(state = initialState, action) {
         }
       };
     }
-    case types.SET_REGISTRATION_SUBJECT_TYPE: {
-      return {
-        ...state,
-        registrationSubjectType: {
-          ...action.subjectType
-        }
-      };
-    }
     case types.INIT_COMPLETE: {
       return {
         ...state,
@@ -151,33 +91,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         authConfigured: true
-      };
-    }
-    case types.SET_SUBJECTS: {
-      return {
-        ...state,
-        subjects: action.subjects
-      };
-    }
-    case types.SET_SUBJECT_SEARCH_PARAMS: {
-      return {
-        ...state,
-        subjectSearchParams: {
-          ...state.subjectSearchParams,
-          ...action.params
-        }
-      };
-    }
-    case types.SET_OPERATIONAL_MODULES: {
-      return {
-        ...state,
-        operationalModules: action.operationalModules
-      };
-    }
-    case types.SET_REGISTRATION_FORM: {
-      return {
-        ...state,
-        registrationForm: action.form
       };
     }
     default:

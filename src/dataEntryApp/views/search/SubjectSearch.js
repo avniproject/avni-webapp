@@ -1,7 +1,6 @@
-import React, { useEffect } from "react";
+import React, {useEffect} from "react";
 import Table from "@material-ui/core/Table";
-import Grid from "@material-ui/core/Grid";
-import { withRouter } from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
@@ -10,17 +9,18 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
-import { connect } from "react-redux";
-import AppBar from "./AppBar";
-import { makeStyles } from "@material-ui/core/styles";
+import {connect} from "react-redux";
+import {makeStyles} from "@material-ui/core/styles";
+import {first} from "lodash";
 import {
-  getOperationalModules,
-  searchSubjects,
-  setSubjectSearchParams
-} from "../rootApp/ducks";
+  setSubjectSearchParams,
+  searchSubjects
+} from "../../reducers/searchReducer";
+import {
+  getOperationalModules
+} from '../../reducers/metadataReducer';
 import RegistrationMenu from "./RegistrationMenu";
-import { first } from "lodash";
+import ScreenWithAppBar from "../../components/ScreenWithAppBar";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -49,7 +49,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({ type, subjects }) => {
+const SubjectsTable = ({type, subjects}) => {
   const classes = useStyle();
 
   return (
@@ -120,67 +120,52 @@ const SubjectSearch = props => {
   }, []);
 
   return (
-    <div>
-      <AppBar
-        title={`Search ${props.subjectType.operationalSubjectTypeName}`}
-      />
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justify="center"
-      >
-        <Grid item>
-          <Paper className={classes.root}>
-            <div className={classes.searchCreateToolbar}>
-              <form onSubmit={handleSubmit} className={classes.searchForm}>
-                <FormControl className={classes.searchFormItem}>
-                  <InputLabel htmlFor="search-field">{""}</InputLabel>
-                  <Input
-                    id="search-field"
-                    autoFocus
-                    type="text"
-                    value={props.searchParams.query}
-                    onChange={e =>
-                      props.setSearchParams({ query: e.target.value })
-                    }
-                  />
-                </FormControl>
-                <FormControl className={classes.searchFormItem}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    size="small"
-                    color="primary"
-                    onClick={handleSubmit}
-                  >
-                    Search
-                  </Button>
-                </FormControl>
-              </form>
-              <RegistrationMenu className={classes.createButtonHolder} />
-            </div>
-            <SubjectsTable subjects={props.subjects} type={props.subjectType} />
-          </Paper>
-        </Grid>
-      </Grid>
-    </div>
+    <ScreenWithAppBar appbarTitle={`Search ${props.subjectType.operationalSubjectTypeName}`}>
+      <div className={classes.searchCreateToolbar}>
+        <form onSubmit={handleSubmit} className={classes.searchForm}>
+          <FormControl className={classes.searchFormItem}>
+            <InputLabel htmlFor="search-field">{""}</InputLabel>
+            <Input
+              id="search-field"
+              autoFocus
+              type="text"
+              value={props.searchParams.query}
+              onChange={e => props.setSearchParams({query: e.target.value})}
+            />
+          </FormControl>
+          <FormControl className={classes.searchFormItem}>
+            <Button
+              type="submit"
+              variant="contained"
+              size="small"
+              color="primary"
+              onClick={handleSubmit}
+            >
+              Search
+            </Button>
+          </FormControl>
+        </form>
+        <RegistrationMenu className={classes.createButtonHolder}/>
+      </div>
+      <SubjectsTable subjects={props.subjects} type={props.subjectType}/>
+    </ScreenWithAppBar>
   );
 };
 
-const mapStateToProps = state => ({
-  user: state.app.user,
-  subjects: state.app.subjects,
-  searchParams: state.app.subjectSearchParams,
-  subjectType: first(state.app.operationalModules.subjectTypes)
-});
+const mapStateToProps = state => {
+  return {
+    user: state.app.user,
+    subjects: state.dataEntry.search.subjects,
+    searchParams: state.dataEntry.search.subjectSearchParams,
+    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes),
+  };
+};
 
-const mapDispatchToProps = dispatch => ({
-  getOperationModules: () => dispatch(getOperationalModules()),
-  search: () => dispatch(searchSubjects()),
-  setSearchParams: params => dispatch(setSubjectSearchParams(params))
-});
+const mapDispatchToProps = {
+  getOperationModules: getOperationalModules,
+  search: searchSubjects,
+  setSearchParams: setSubjectSearchParams,
+};
 
 export default withRouter(
   connect(

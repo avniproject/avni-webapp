@@ -11,8 +11,8 @@ import NewConcept from "../formDesigner/components/NewConcept";
 import Concept from "../formDesigner/components/Concept";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
-import SubjectSearch from "../dataEntryApp/SubjectSearch";
-import SubjectRegister from "../dataEntryApp/SubjectRegister";
+import SubjectSearch from "../dataEntryApp/views/search/SubjectSearch";
+import SubjectRegister from "../dataEntryApp/views/registration/SubjectRegister";
 
 const RestrictedRoute = ({
   component: C,
