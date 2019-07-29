@@ -10,13 +10,11 @@ commands:
       - attach_workspace:
           at: ~/artifacts
 
-      - run: sudo apt-get install make openssl
-
       - run:
           name: Install dependencies
           command: |
             sudo apt-get -y -qq update
-            sudo apt-get -y -qq install python3-pip
+            sudo apt-get -y -qq install make openssl python3-pip
             sudo pip3 install awscli --upgrade
 
       - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
