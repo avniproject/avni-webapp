@@ -7,160 +7,156 @@ commands:
         type: string
         default: "staging"
     steps:
-    - attach_workspace:
-        at: ~/artifacts
+      - attach_workspace:
+          at: ~/artifacts
 
-    - run: sudo apt-get install make openssl
+      - run: sudo apt-get install make openssl
 
-    - run:
-        name: Install dependencies
-        command: |
-          sudo apt-get -y -qq update
-          sudo apt-get -y -qq install python3-pip
-          sudo pip3 install awscli --upgrade
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install python3-pip
+            sudo pip3 install awscli --upgrade
 
-    - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
+      - run: curl -L https://github.com/OpenCHS/infra/archive/master.zip >> infra.zip
 
-    - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
+      - run: unzip infra.zip; mv infra-master infra; rm -rf infra.zip; cd ~/
 
-    - run: cp -f ~/artifacts/build_version ~/infra/webapp/version/build_version
+      - run: cp -f ~/artifacts/build_version ~/infra/webapp/version/build_version
 
-    #- run: export TF_VAR_circle_build_num=$CIRCLE_BUILD_NUM
+      #- run: export TF_VAR_circle_build_num=$CIRCLE_BUILD_NUM
 
-    - run: cd ~/infra; make install; make << parameters.to >>-webapp-create;
+      - run: cd ~/infra; make install; make << parameters.to >>-webapp-create;
 
 jobs:
   app_test:
     docker:
-    - image: circleci/node:8.14.0
+      - image: circleci/node:8.14.0
 
     working_directory: ~/openchs-webapp
 
     steps:
-    - checkout
+      - checkout
 
-    - restore_cache:
-        key: dependency-cache-{{ checksum "package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
 
-    - run: yarn install
+      - run: yarn install
 
-    - save_cache:
-        key: dependency-cache-{{ checksum "package.json" }}
-        paths:
-        - ./node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
 
-    - run: yarn test
-
+      - run: yarn test
 
   app_build:
     docker:
-    - image: circleci/node:8.14.0
+      - image: circleci/node:8.14.0
 
     working_directory: ~/openchs-webapp
 
     steps:
-    - checkout
+      - checkout
 
-    - restore_cache:
-        key: dependency-cache-{{ checksum "package.json" }}
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
 
-    - run: yarn install
+      - run: yarn install
 
-    - save_cache:
-        key: dependency-cache-{{ checksum "package.json" }}
-        paths:
-        - ./node_modules
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
 
-    - run: yarn run build
+      - run: yarn run build
 
-    - run: cd build; zip -r ../build.zip *
+      - run: cd build; zip -r ../build.zip *
 
-    - run: mkdir -p ~/artifacts
+      - run: mkdir -p ~/artifacts
 
-    - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
+      - run: echo $CIRCLE_BUILD_NUM > ~/artifacts/build_version
 
-    - run: cp ~/openchs-webapp/build.zip ~/artifacts/
+      - run: cp ~/openchs-webapp/build.zip ~/artifacts/
 
-    - persist_to_workspace:
-        root: ~/artifacts
-        paths:
-        - build_version
+      - persist_to_workspace:
+          root: ~/artifacts
+          paths:
+            - build_version
 
-    - store_artifacts:
-        path: ~/artifacts
+      - store_artifacts:
+          path: ~/artifacts
 
   STAGING_deploy:
     docker:
-    - image: circleci/node:8.14.0
+      - image: circleci/node:8.14.0
     working_directory: ~/
     steps:
-    - deploy:
-        to: staging
+      - deploy:
+          to: staging
 
   UAT_deploy:
     docker:
-    - image: circleci/node:8.14.0
+      - image: circleci/node:8.14.0
     working_directory: ~/
     steps:
-    - deploy:
-        to: uat
+      - deploy:
+          to: uat
 
   PRERELEASE_deploy:
     docker:
-    - image: circleci/node:8.14.0
+      - image: circleci/node:8.14.0
     working_directory: ~/
     steps:
-    - deploy:
-        to: prerelease
+      - deploy:
+          to: prerelease
 
   PRODUCTION_deploy:
     docker:
-    - image: circleci/node:8.14.0
+      - image: circleci/node:8.14.0
     working_directory: ~/
     steps:
-    - deploy:
-        to: production
+      - deploy:
+          to: production
 
 workflows:
   version: 2
   test_and_build:
     jobs:
-    - app_test
-    - app_build:
-        requires:
-        - app_test
-    - STAGING_approve:
-        type: approval
-        requires:
-        - app_build
-    - STAGING_deploy:
-        requires:
-        - STAGING_approve
-    - UAT_approve:
-        type: approval
-        requires:
-        - app_build
-    - UAT_deploy:
-        requires:
-        - UAT_approve
-    - PRERELEASE_approve:
-        type: approval
-        requires:
-        - app_build
-    - PRERELEASE_deploy:
-        requires:
-        - PRERELEASE_approve
-    - PRODUCTION_approve:
-        type: approval
-        requires:
-        - app_build
-    - PRODUCTION_deploy:
-        requires:
-        - PRODUCTION_approve
-
+      - app_test
+      - app_build:
+          requires:
+            - app_test
+      - STAGING_approve:
+          type: approval
+          requires:
+            - app_build
+      - STAGING_deploy:
+          requires:
+            - STAGING_approve
+      - UAT_approve:
+          type: approval
+          requires:
+            - app_build
+      - UAT_deploy:
+          requires:
+            - UAT_approve
+      - PRERELEASE_approve:
+          type: approval
+          requires:
+            - app_build
+      - PRERELEASE_deploy:
+          requires:
+            - PRERELEASE_approve
+      - PRODUCTION_approve:
+          type: approval
+          requires:
+            - app_build
+      - PRODUCTION_deploy:
+          requires:
+            - PRODUCTION_approve
 
 notify:
   webhooks:
-  - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
-
-
+    - url: https://webhooks.gitter.im/e/0fdffde721194986f2a0
