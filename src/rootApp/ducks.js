@@ -11,6 +11,7 @@ export const types = {
   SEARCH_SUBJECTS: "app/SEARCH_SUBJECTS",
   SET_SUBJECT_SEARCH_PARAMS: "app/SET_SUBJECT_SEARCH_PARAMS",
   SET_REGISTRATION_SUBJECT_TYPE: "app/SET_REGISTRATION_SUBJECT_TYPE",
+  GET_OPERATIONAL_MODULES: "app/GET_OPERATIONAL_MODULES",
   SET_OPERATIONAL_MODULES: "app/SET_OPERATIONAL_MODULES",
   GET_REGISTRATION_FORM: "app/GET_REGISTRATION_FORM",
   SET_REGISTRATION_FORM: "app/SET_REGISTRATION_FORM"
@@ -64,6 +65,9 @@ export const setRegistrationSubjectType = subjectType => ({
   subjectType
 });
 
+export const getOperationalModules = () => ({
+  type: types.GET_OPERATIONAL_MODULES
+});
 export const setOperationalModules = operationalModules => ({
   type: types.SET_OPERATIONAL_MODULES,
   operationalModules

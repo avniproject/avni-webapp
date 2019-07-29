@@ -81,7 +81,14 @@ function* dataEntrySearchWorker() {
   yield put(setSubjects(subjects));
 }
 
-export function* dataEntryLoadOperationalModules() {
+export function* dataEntryLoadOperationalModulesWatcher() {
+  yield takeLatest(
+    types.GET_OPERATIONAL_MODULES,
+    dataEntryLoadOperationalModulesWorker
+  );
+}
+
+export function* dataEntryLoadOperationalModulesWorker() {
   const operationalModules = yield call(api.fetchOperationalModules);
   yield put(setOperationalModules(operationalModules));
   yield put(setRegistrationSubjectType(operationalModules.subjectTypes[0]));

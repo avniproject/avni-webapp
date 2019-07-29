@@ -1,6 +1,9 @@
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { setRegistrationSubjectType } from "../rootApp/ducks";
+import {
+  getOperationalModules,
+  setRegistrationSubjectType
+} from "../rootApp/ducks";
 import { AddIcon, InternalLink } from "../common/components";
 import React from "react";
 import Menu from "@material-ui/core/Menu";
@@ -14,34 +17,57 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const RegistrationMenu = ({types, setRegistrationSubjectType}) => {
-    const classes = useStyle();
+const RegistrationMenu = ({
+  types,
+  setRegistrationSubjectType,
+  getOperationModules
+}) => {
+  const classes = useStyle();
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const handleClick = (type) => (event) => {
-        setAnchorEl(event.currentTarget);
-        type && setRegistrationSubjectType(type);
-    };
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleClick = type => event => {
+    setAnchorEl(event.currentTarget);
+    type && setRegistrationSubjectType(type);
+  };
 
-    const handleClose = () => setAnchorEl(null);
+  const handleClose = () => setAnchorEl(null);
 
-    return <div>
-        <Button size="medium" className={classes.createButton} color={"primary"} onClick={handleClick()}>
-            <AddIcon/> Create
-        </Button>
-        <Menu
-            id="create-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={!!anchorEl}
-            onClose={handleClose}>
-            {types.map((type, key) =>
-                <InternalLink key={key} to={"/app/register"} onClick={handleClick(type)}>
-                    <MenuItem> <AddIcon/> {type.name} </MenuItem>
-                </InternalLink>
-            )}
-        </Menu>
-    </div>;
+  React.useEffect(() => {
+    getOperationModules();
+  }, []);
+
+  return (
+    <div>
+      <Button
+        size="medium"
+        className={classes.createButton}
+        color={"primary"}
+        onClick={handleClick()}
+      >
+        <AddIcon /> Create
+      </Button>
+      <Menu
+        id="create-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={!!anchorEl}
+        onClose={handleClose}
+      >
+        {types.map((type, key) => (
+          <InternalLink
+            key={key}
+            to={"/app/register"}
+            onClick={handleClick(type)}
+          >
+            <MenuItem>
+              {" "}
+              <AddIcon /> {type.name}{" "}
+            </MenuItem>
+          </InternalLink>
+        ))}
+      </Menu>
+    </div>
+  );
 };
 
 const mapStateToProps = state => ({
@@ -49,6 +75,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+  getOperationModules: () => dispatch(getOperationalModules()),
   setRegistrationSubjectType: params =>
     dispatch(setRegistrationSubjectType(params))
 });
