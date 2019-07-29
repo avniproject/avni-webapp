@@ -8,7 +8,7 @@ import { isDevEnv } from "../constants";
 import rootReducer from "../../rootApp/rootReducer";
 import rootSaga from "../../rootApp/rootSaga";
 
-export const adminHistory = createHashHistory();
+export const adminHistory = createHashHistory({ basename: "/admin" });
 
 const configureStore = initialState => {
   const sagaMiddleware = createSagaMiddleware();

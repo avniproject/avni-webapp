@@ -1,10 +1,9 @@
 import React from "react";
 import { includes, intersection, isEmpty } from "lodash";
-import { Route, Redirect, Switch, withRouter } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied } from "../common/components";
 import { OrgManager } from "../adminApp";
-import { DataEntry } from "../dataEntryApp";
 import Forms from "../formDesigner/components/Forms";
 import FormDetails from "../formDesigner/components/FormDetails";
 import Concepts from "../formDesigner/components/Concepts";
@@ -12,6 +11,8 @@ import NewConcept from "../formDesigner/components/NewConcept";
 import Concept from "../formDesigner/components/Concept";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
+import SubjectSearch from "../dataEntryApp/SubjectSearch";
+import SubjectRegister from "../dataEntryApp/SubjectRegister";
 
 const RestrictedRoute = ({
   component: C,
@@ -34,18 +35,25 @@ const RestrictedRoute = ({
 
 const Routes = props => (
   <Switch>
+    <Route path="/admin">
+      <RestrictedRoute
+        path="/"
+        allowedRoles={[ROLES.ORG_ADMIN]}
+        currentUserRoles={props.userRoles}
+        component={OrgManager}
+      />
+    </Route>
     <RestrictedRoute
-      exact
-      path="/admin"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
-      component={OrgManager}
-    />
-    <RestrictedRoute
-      path="/app/:page"
+      path="/app/search"
       allowedRoles={[ROLES.USER]}
       currentUserRoles={props.userRoles}
-      component={DataEntry}
+      component={SubjectSearch}
+    />
+    <RestrictedRoute
+      path="/app/register"
+      allowedRoles={[ROLES.USER]}
+      currentUserRoles={props.userRoles}
+      component={SubjectRegister}
     />
     <RestrictedRoute
       exact
@@ -102,13 +110,14 @@ const Routes = props => (
 
 const RoutesWithoutDataEntry = props => (
   <Switch>
-    <RestrictedRoute
-      exact
-      path="/admin"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
-      component={OrgManager}
-    />
+    <Route path="/admin">
+      <RestrictedRoute
+        path="/"
+        allowedRoles={[ROLES.ORG_ADMIN]}
+        currentUserRoles={props.userRoles}
+        component={OrgManager}
+      />
+    </Route>
     <Route exact path="/">
       <Redirect to="/admin" />
     </Route>
@@ -119,9 +128,7 @@ const mapStateToProps = state => ({
   userRoles: state.app.user.roles
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(withoutDataEntry ? RoutesWithoutDataEntry : Routes)
-);
+export default connect(
+  mapStateToProps,
+  null
+)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);

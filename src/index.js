@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
 import "jquery";
@@ -27,9 +26,7 @@ const theme = createMuiTheme({
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <Provider store={store}>
-      <BrowserRouter>
-        {isProdEnv || cognitoInDev ? <SecureApp /> : <App />}
-      </BrowserRouter>
+      {isProdEnv || cognitoInDev ? <SecureApp /> : <App />}
     </Provider>
   </ThemeProvider>,
   document.getElementById("root")
