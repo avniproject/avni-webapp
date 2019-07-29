@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import { HashRouter } from "react-router-dom";
 
 import "./index.css";
 import "jquery";
@@ -26,7 +27,9 @@ const theme = createMuiTheme({
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <Provider store={store}>
-      {isProdEnv || cognitoInDev ? <SecureApp /> : <App />}
+      <HashRouter>
+        {isProdEnv || cognitoInDev ? <SecureApp /> : <App />}
+      </HashRouter>
     </Provider>
   </ThemeProvider>,
   document.getElementById("root")

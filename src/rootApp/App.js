@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { HashRouter } from "react-router-dom";
 
 import Routes from "./Routes";
 import { getUserInfo } from "./ducks";
@@ -21,9 +20,7 @@ class App extends Component {
              components further down the tree (like Admin) are loaded
             **/
         <div>
-          <HashRouter>
-            <Routes />
-          </HashRouter>
+          <Routes />
         </div>
       )
     );
