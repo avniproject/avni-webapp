@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ProgramCard from "./ProgramCard";
-import NewFormModal, { NewFormButton } from "./NewFormModal";
+import NewFormModal from "./NewFormModal";
 import Breadcrumb from "./Breadcrumb";
 import axios from "axios";
 
@@ -30,7 +30,6 @@ class Forms extends Component {
       <div className="container">
         <Breadcrumb location={this.props.location} />
         <div>
-          <NewFormButton />
           <NewFormModal {...this.props} />
           <ProgramCard data={this.state.data} {...this.props} />
         </div>
