@@ -100,7 +100,7 @@ const initialState = {
     uuid: undefined
   },
   operationalModules: {
-    subjectTypes: [],
+    subjectTypes: [{ operationalSubjectTypeName: "", name: "" }],
     forms: []
   }
 };

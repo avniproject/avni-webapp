@@ -14,8 +14,13 @@ import Paper from "@material-ui/core/Paper";
 import { connect } from "react-redux";
 import AppBar from "./AppBar";
 import { makeStyles } from "@material-ui/core/styles";
-import { searchSubjects, setSubjectSearchParams } from "../rootApp/ducks";
+import {
+  getOperationalModules,
+  searchSubjects,
+  setSubjectSearchParams
+} from "../rootApp/ducks";
 import RegistrationMenu from "./RegistrationMenu";
+import { first } from "lodash";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -44,7 +49,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({ subjects }) => {
+const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
 
   return (
@@ -52,8 +57,12 @@ const SubjectsTable = ({ subjects }) => {
       <TableHead>
         <TableRow>
           <TableCell>Name</TableCell>
-          <TableCell align="center">Gender</TableCell>
-          <TableCell align="center">Date of birth(Age)</TableCell>
+          {type.name === "Individual" && (
+            <TableCell align="center">Gender</TableCell>
+          )}
+          {type.name === "Individual" && (
+            <TableCell align="center">Date of birth(Age)</TableCell>
+          )}
           <TableCell align="center">Location</TableCell>
           <TableCell align="center">Active programs</TableCell>
         </TableRow>
@@ -62,10 +71,14 @@ const SubjectsTable = ({ subjects }) => {
         {subjects.map((row, id) => (
           <TableRow key={id}>
             <TableCell component="th" scope="row">
-              {row.firstName + " " + row.lastName}
+              {row.fullName}
             </TableCell>
-            <TableCell align="center">{row.gender.name}</TableCell>
-            <TableCell align="center">{row.dateOfBirth}</TableCell>
+            {type.name === "Individual" && (
+              <TableCell align="center">{row.gender.name}</TableCell>
+            )}
+            {type.name === "Individual" && (
+              <TableCell align="center">{row.dateOfBirth}</TableCell>
+            )}
             <TableCell align="center">
               {row.addressLevel.titleLineage}
             </TableCell>
@@ -103,11 +116,14 @@ const SubjectSearch = props => {
 
   useEffect(() => {
     props.search();
+    props.getOperationModules();
   }, []);
 
   return (
     <div>
-      <AppBar title="Search" />
+      <AppBar
+        title={`Search ${props.subjectType.operationalSubjectTypeName}`}
+      />
       <Grid
         container
         spacing={0}
@@ -145,7 +161,7 @@ const SubjectSearch = props => {
               </form>
               <RegistrationMenu className={classes.createButtonHolder} />
             </div>
-            <SubjectsTable subjects={props.subjects} />
+            <SubjectsTable subjects={props.subjects} type={props.subjectType} />
           </Paper>
         </Grid>
       </Grid>
@@ -156,10 +172,12 @@ const SubjectSearch = props => {
 const mapStateToProps = state => ({
   user: state.app.user,
   subjects: state.app.subjects,
-  searchParams: state.app.subjectSearchParams
+  searchParams: state.app.subjectSearchParams,
+  subjectType: first(state.app.operationalModules.subjectTypes)
 });
 
 const mapDispatchToProps = dispatch => ({
+  getOperationModules: () => dispatch(getOperationalModules()),
   search: () => dispatch(searchSubjects()),
   setSearchParams: params => dispatch(setSubjectSearchParams(params))
 });
