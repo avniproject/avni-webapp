@@ -20,16 +20,12 @@ class Concepts extends Component {
     axios
     .get("/concept?size=1000") //Need to change API here to get user specific concepts
     .then((response)=>{
-        const result = response.data._embedded.concept;
-        const data1 = [];
-       for(var i=0;i<result.length;i++){
-         if(!result[i].voided){
-           data1.push(result[i])
-         }
-       }
+      console.log(response)
+        const concepts = response.data._embedded.concept;
+        const nonVoidedConcepts = concepts.filter((concept)=> !concept['voided'])
 
         this.setState({
-          data:data1,
+          data:nonVoidedConcepts,
         })
     })
     .catch((error) =>{
