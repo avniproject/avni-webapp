@@ -8,12 +8,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
-import { FormControl } from "@material-ui/core";
-import { Input } from "@material-ui/core";
-import { InputLabel } from "@material-ui/core";
-import { Select } from "@material-ui/core";
-import { Chip } from "@material-ui/core";
-import NoSsr from "@material-ui/core/NoSsr";
+import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
+import axios from "axios";
 
 class NewFormModal extends Component {
   constructor(props) {
@@ -41,6 +37,17 @@ class NewFormModal extends Component {
     this.props.history.push("/forms/addFields");
   }
 
+  componentDidMount() {
+    axios
+      .get("/web/operationalModules")
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
   onChangeField(event) {
     this.setState(
       Object.assign({}, this.state, { [event.target.name]: event.target.value })
@@ -55,6 +62,7 @@ class NewFormModal extends Component {
 
   handleClickOpen() {
     this.setState({
+      formType: "",
       open: true
     });
   }
@@ -97,18 +105,35 @@ class NewFormModal extends Component {
     );
   }
 
+  subjectTypeElement() {
+    return (
+      <FormControl fullWidth>
+        <InputLabel>Subject Type</InputLabel>
+        <Select
+          native
+          id="subjectTypeSelect"
+          name="subjectType"
+          onChange={this.onChangeField.bind(this)}
+        >
+          <option value="" />
+          <option>Operational modules</option>
+          <option>Modules</option>
+          <option>Operational</option>
+        </Select>
+      </FormControl>
+    );
+  }
+
   encounterTypesElement() {
     return (
       <FormControl fullWidth>
         <InputLabel>Encounter Type</InputLabel>
-        <NoSsr>
-          <Select
-            options={this.state.encounterTypes || ["h1", "h2", "h3", "h4"]}
-            onChange={this.onChangeEncounterField.bind(this)}
-            id="encounterTypes"
-            isMulti
-          />
-        </NoSsr>
+        <Select
+          options={this.state.encounterTypes || ["h1", "h2", "h3", "h4"]}
+          onChange={this.onChangeEncounterField.bind(this)}
+          id="encounterTypes"
+          isMulti
+        />
       </FormControl>
     );
   }
@@ -126,7 +151,7 @@ class NewFormModal extends Component {
         {true && this.NewFormButton()}
         <Dialog
           fullWidth="true"
-          maxWidth="sm"
+          maxWidth="xs"
           onClose={this.handleClose}
           aria-labelledby="customized-dialog-title"
           open={this.state.open}
@@ -139,17 +164,6 @@ class NewFormModal extends Component {
           </DialogTitle>
           <form>
             <DialogContent dividers>
-              <FormControl fullWidth>
-                <InputLabel>Name</InputLabel>
-                <Input
-                  type="text"
-                  id="formName"
-                  name="name"
-                  onChange={this.onChangeField.bind(this)}
-                  required
-                  fullWidth
-                />
-              </FormControl>
               <FormControl fullWidth>
                 <InputLabel>Form Type</InputLabel>
                 <Select
@@ -166,12 +180,27 @@ class NewFormModal extends Component {
                   <option>ProgramExit</option>
                 </Select>
               </FormControl>
-
+              <FormControl fullWidth>
+                <InputLabel>Name</InputLabel>
+                <Input
+                  type="text"
+                  id="formName"
+                  name="name"
+                  onChange={this.onChangeField.bind(this)}
+                  required
+                  fullWidth
+                />
+              </FormControl>
+              {this.subjectTypeElement()}
               {programBased && this.programNameElement()}
               {encounterTypes && this.encounterTypesElement()}
             </DialogContent>
             <DialogActions>
-              <Button color="primary" onClick={this.addFields.bind(this)}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.addFields.bind(this)}
+              >
                 Add
               </Button>
             </DialogActions>
