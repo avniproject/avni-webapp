@@ -14,6 +14,7 @@ import Forms from "./components/Forms";
 import Concepts from "./components/Concepts";
 import config from "./config";
 import { __DEV__ } from "./constants";
+import CreateConcept from "./components/CreateConcept";
 
 const __USE_LOCALHOST_BACKEND__ =
   process.env.REACT_APP_API_URL.indexOf("localhost") >= 0;
@@ -59,11 +60,16 @@ class Routes extends Component {
       return <Shell content={FormDetails} />;
     };
 
+    const CreateConcepts = () => {
+      return <Shell content={CreateConcept} />;
+    };
+
     return (
       <Switch>
         <Route exact path="/" component={Default} />
         <Route exact path="/forms" component={FormList} />
         <Route exact path="/concepts" component={ConceptsList} />
+        <Route exact path="/createconcept" component={CreateConcepts} />
         <Route path="/concepts/addConcept" component={AddConcept} />
         <Route path="/concepts/:conceptId" component={ViewConcept} />
         <Route path="/forms/:formUUID" component={AddFields} />
