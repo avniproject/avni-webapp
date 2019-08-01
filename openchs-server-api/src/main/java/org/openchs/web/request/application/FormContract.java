@@ -2,10 +2,11 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.openchs.application.Format;
 import org.openchs.web.request.ReferenceDataContract;
 
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -58,5 +59,20 @@ public class FormContract extends ReferenceDataContract {
 
     public Long getOrganisationId() {
         return organisationId;
+    }
+
+    public void validate() throws InvalidObjectException {
+        HashSet<String> uniqueConcepts = new HashSet<>();
+        for (FormElementGroupContract formElementGroup : getFormElementGroups()) {
+            for (FormElementContract formElement : formElementGroup.getFormElements()) {
+                String conceptUuid = formElement.getConcept().getUuid();
+                if (!uniqueConcepts.add(conceptUuid)) {
+                    throw new InvalidObjectException(String.format(
+                            "Cannot use same concept twice. Form{uuid='%s',..} uses Concept{uuid='%s',..} twice",
+                            getUuid(),
+                            conceptUuid));
+                }
+            }
+        }
     }
 }

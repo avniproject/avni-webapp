@@ -27,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.io.InvalidObjectException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -69,8 +70,9 @@ public class FormController {
     public ResponseEntity<?> save(@RequestBody FormContract formRequest) {
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
+            formRequest.validate();
             saveForm(formRequest);
-        } catch (FormBuilderException e) {
+        } catch (InvalidObjectException | FormBuilderException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
