@@ -1,52 +1,53 @@
-import React, { Component } from 'react';
-import MaterialTable from 'material-table';
-import ButtonAppBar from './CommonHeader';
-import axios from 'axios';
+import React, { Component } from "react";
+import MaterialTable from "material-table";
+import ButtonAppBar from "./CommonHeader";
+import axios from "axios";
 
 class Concepts extends Component {
-  constructor(){
+  constructor() {
     super();
-    this.state={
+    this.state = {
       columns: [
-        { title: 'Name', field: 'name' },
-        { title: 'DataType', field: 'dataType' },
-        { title: 'UUID', field: 'uuid', type: 'numeric' },
+        { title: "Name", field: "name" },
+        { title: "DataType", field: "dataType" },
+        { title: "UUID", field: "uuid", type: "numeric" }
       ],
-      data : []
-    }
+      data: []
+    };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     axios
-    .get("/concept?size=1000") //Need to change API here to get user specific concepts
-    .then((response)=>{
-      console.log(response)
+      .get("/concept?size=1000") //Need to change API here to get user specific concepts
+      .then(response => {
+        console.log(response);
         const concepts = response.data._embedded.concept;
-        const nonVoidedConcepts = concepts.filter((concept)=> !concept['voided'])
+        const nonVoidedConcepts = concepts.filter(
+          concept => !concept["voided"]
+        );
 
         this.setState({
-          data:nonVoidedConcepts,
-        })
-    })
-    .catch((error) =>{
-        console.log(error)
-    });
+          data: nonVoidedConcepts
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   render() {
-    return (      
+    return (
       <div>
-        <ButtonAppBar title="Concepts List"/>
+        <ButtonAppBar title="Concepts List" />
         <MaterialTable
-          title=''
+          title=""
           columns={this.state.columns}
           data={this.state.data}
-          options ={{
-            pageSize : 10,
-            pageSizeOptions :[10, 15, 20],
-            addRowPosition : 'first',
-            }}           
-          
+          options={{
+            pageSize: 10,
+            pageSizeOptions: [10, 15, 20],
+            addRowPosition: "first"
+          }}
           editable={{
             // onRowAdd: newData =>
             //   new Promise(resolve => {
@@ -71,22 +72,23 @@ class Concepts extends Component {
                 setTimeout(() => {
                   resolve();
                   axios
-                  .post('/concepts',[{
-                    uuid: oldData.uuid,
-                    voided: true,
-                    }
+                    .post("/concepts", [
+                      {
+                        uuid: oldData.uuid,
+                        voided: true
+                      }
                     ])
-                  .then((response)=> {
-                    console.log(response);
-                    if(response.status===200){
-                      const data = [...this.state.data];
-                      data.splice(data.indexOf(oldData), 1);
-                      this.setState({ ...this.state, data });
-                    }             
-                }, 600);
+                    .then(response => {
+                      console.log(response);
+                      if (response.status === 200) {
+                        const data = [...this.state.data];
+                        data.splice(data.indexOf(oldData), 1);
+                        this.setState({ ...this.state, data });
+                      }
+                    }, 600);
+                });
               })
-            })
-        }}
+          }}
         />
       </div>
     );
