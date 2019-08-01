@@ -1,3 +1,5 @@
+CI [![CircleCI](https://circleci.com/gh/OpenCHS/openchs-webapp.svg?style=svg)](https://circleci.com/gh/OpenCHS/openchs-webapp)
+
 ## Run app
 
 You will need yarn package mananger to be installed globally to run this project. Follow the instructions on https://yarnpkg.com/en/docs/install to install yarn if it is not already installed on your machine.
