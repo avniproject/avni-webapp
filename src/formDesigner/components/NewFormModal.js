@@ -9,7 +9,9 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
+import DownshiftMultiple from "./AutoComplete";
 
 class NewFormModal extends Component {
   constructor(props) {
@@ -20,7 +22,8 @@ class NewFormModal extends Component {
       formType: "IndividualProfile",
       programName: "Mother",
       open: false,
-      onClose: false
+      onClose: false,
+      data: {}
     };
     this.handleClickOpen = this.handleClickOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
@@ -31,7 +34,8 @@ class NewFormModal extends Component {
       this.state.name,
       this.state.formType,
       this.state.programName,
-      this.state.encounterTypes
+      this.state.subjectType,
+      this.state.encounterType
     );
     this.props.initGroups();
     this.props.history.push("/forms/addFields");
@@ -41,7 +45,11 @@ class NewFormModal extends Component {
     axios
       .get("/web/operationalModules")
       .then(response => {
-        console.log(response);
+        let data = Object.assign({}, response.data);
+        delete data["formMappings"];
+        this.setState({
+          data: data
+        });
       })
       .catch(error => {
         console.log(error);
@@ -73,7 +81,7 @@ class NewFormModal extends Component {
 
   NewFormButton() {
     return (
-      <div style={{ "text-align": "right" }}>
+      <div style={{ textAlign: "right" }}>
         <Button
           variant="outlined"
           color="secondary"
@@ -86,20 +94,25 @@ class NewFormModal extends Component {
     );
   }
 
+  getDownshiftValue(encounterTypeValue) {
+    this.setState({ encounterType: encounterTypeValue });
+  }
+
   programNameElement() {
     return (
-      <FormControl fullWidth>
-        <InputLabel>Program Name</InputLabel>
+      <FormControl fullWidth margin="dense">
+        <InputLabel htmlFor="programNameSelect">Program Name</InputLabel>
         <Select
           native
           id="programNameSelect"
           name="programName"
           onChange={this.onChangeField.bind(this)}
         >
-          <option value="" />
-          <option>Mother</option>
-          <option>Child</option>
-          <option>Diabetes</option>
+          {this.state.data.programs.map(program => (
+            <option key={program.uuid} value={program.uuid}>
+              {program.operationalProgramName}
+            </option>
+          ))}
         </Select>
       </FormControl>
     );
@@ -107,32 +120,38 @@ class NewFormModal extends Component {
 
   subjectTypeElement() {
     return (
-      <FormControl fullWidth>
-        <InputLabel>Subject Type</InputLabel>
+      <FormControl fullWidth margin="dense">
+        <InputLabel htmlFor="subjectTypeSelect">Subject Type</InputLabel>
         <Select
           native
           id="subjectTypeSelect"
           name="subjectType"
           onChange={this.onChangeField.bind(this)}
         >
-          <option value="" />
-          <option>Operational modules</option>
-          <option>Modules</option>
-          <option>Operational</option>
+          {this.state.data.subjectTypes != null &&
+            this.state.data.subjectTypes.map(subjectType => (
+              <option key={subjectType.uuid} value={subjectType.uuid}>
+                {subjectType.operationalSubjectTypeName}
+              </option>
+            ))}
         </Select>
       </FormControl>
     );
   }
 
   encounterTypesElement() {
+    let encounterTypesValues =
+      this.state.data.encounterTypes != null
+        ? this.state.data.encounterTypes.map(encounterType => ({
+            label: encounterType.operationalEncounterTypeName
+          }))
+        : [];
     return (
-      <FormControl fullWidth>
-        <InputLabel>Encounter Type</InputLabel>
-        <Select
-          options={this.state.encounterTypes || ["h1", "h2", "h3", "h4"]}
-          onChange={this.onChangeEncounterField.bind(this)}
-          id="encounterTypes"
-          isMulti
+      <FormControl fullWidth margin="dense">
+        <DownshiftMultiple
+          id="ecounterTypes"
+          suggestions={encounterTypesValues}
+          OnGetSelectedValue={this.getDownshiftValue.bind(this)}
         />
       </FormControl>
     );
@@ -150,7 +169,7 @@ class NewFormModal extends Component {
       <div>
         {true && this.NewFormButton()}
         <Dialog
-          fullWidth="true"
+          fullWidth
           maxWidth="xs"
           onClose={this.handleClose}
           aria-labelledby="customized-dialog-title"
@@ -164,15 +183,14 @@ class NewFormModal extends Component {
           </DialogTitle>
           <form>
             <DialogContent dividers>
-              <FormControl fullWidth>
-                <InputLabel>Form Type</InputLabel>
+              <FormControl fullWidth margin="dense">
+                <InputLabel htmlFor="formTypeSelect">Form Type</InputLabel>
                 <Select
                   native
                   id="formTypeSelect"
                   name="formType"
                   onChange={this.onChangeField.bind(this)}
                 >
-                  <option value="" />
                   <option>IndividualProfile</option>
                   <option>Encounter</option>
                   <option>ProgramEncounter</option>
@@ -180,8 +198,8 @@ class NewFormModal extends Component {
                   <option>ProgramExit</option>
                 </Select>
               </FormControl>
-              <FormControl fullWidth>
-                <InputLabel>Name</InputLabel>
+              <FormControl fullWidth margin="dense">
+                <InputLabel htmlFor="formName">Name</InputLabel>
                 <Input
                   type="text"
                   id="formName"
