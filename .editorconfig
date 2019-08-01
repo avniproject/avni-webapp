@@ -1,0 +1,11 @@
+root = true
+
+[*.{js,json}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+
+[*.js]
+spaces_around_brackets = both
