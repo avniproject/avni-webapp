@@ -37,7 +37,7 @@ public class HibernateSearchService {
     }
 
     @Transactional
-    public List<ConceptContract> searchConcepts(String searchTerm) {
+    public List<ConceptContract> searchConcepts(String searchTerm, String dataType) {
         FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
 
         QueryBuilder qb = fullTextEntityManager.getSearchFactory()
@@ -53,7 +53,17 @@ public class HibernateSearchService {
 
         List resultList = jpaQuery.getResultList();
         List<ConceptContract> searchResult = new ArrayList<>();
-        resultList.forEach(o -> searchResult.add(((Concept)o).toConceptContract()));
+        resultList.forEach(o -> {
+            if(dataType == null) {
+                searchResult.add(((Concept) o).toConceptContract());
+            }
+            else {
+                Concept concept = (Concept) o;
+                if(concept.getDataType().equals(dataType)) {
+                    searchResult.add(((Concept) o).toConceptContract());
+                }
+            }
+        });
 
         return searchResult;
     }

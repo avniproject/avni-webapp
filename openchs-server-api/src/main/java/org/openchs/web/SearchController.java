@@ -27,7 +27,7 @@ public class SearchController {
 
     @RequestMapping(value = "/search/concept", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
-    public List<ConceptContract> searchConcept(@RequestParam(value = "name") String query) {
-        return searchService.searchConcepts(query);
+    public List<ConceptContract> searchConcept(@RequestParam(value = "name") String query, @RequestParam(value = "dataType") String dataType) {
+        return searchService.searchConcepts(query, dataType);
     }
 }

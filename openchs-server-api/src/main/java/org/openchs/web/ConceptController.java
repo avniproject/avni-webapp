@@ -2,6 +2,7 @@ package org.openchs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.domain.ConceptDataType;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.service.ConceptService;
 import org.openchs.web.request.ConceptContract;
@@ -9,6 +10,7 @@ import org.openchs.web.request.ExportRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class ConceptController {
@@ -69,4 +73,14 @@ public class ConceptController {
     public ConceptProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
     }
+
+    @GetMapping(value = "/concept/dataTypes")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @ResponseBody
+    public List<String> getDataTypes() {
+        return Stream.of(ConceptDataType.values())
+                .map(ConceptDataType::name)
+                .collect(Collectors.toList());
+    }
+
 }
