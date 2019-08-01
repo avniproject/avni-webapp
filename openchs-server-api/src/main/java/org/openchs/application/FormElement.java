@@ -20,6 +20,7 @@ import java.util.Set;
 @BatchSize(size = 100)
 public class FormElement extends OrganisationAwareEntity {
     public static final String SINGLE_SELECT = "SingleSelect";
+    public static final String PLACEHOLDER_CONCEPT_UUID = "b4e5a662-97bf-4846-b9b7-9baeab4d89c4";
 
     @NotNull
     private String name;

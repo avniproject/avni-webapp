@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.openchs.application.FormElement.PLACEHOLDER_CONCEPT_UUID;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"name", "uuid", "formType", "userUUID", "formElementGroups"})
 public class FormContract extends ReferenceDataContract {
@@ -66,7 +68,7 @@ public class FormContract extends ReferenceDataContract {
         for (FormElementGroupContract formElementGroup : getFormElementGroups()) {
             for (FormElementContract formElement : formElementGroup.getFormElements()) {
                 String conceptUuid = formElement.getConcept().getUuid();
-                if (!uniqueConcepts.add(conceptUuid)) {
+                if (!conceptUuid.equals(PLACEHOLDER_CONCEPT_UUID) && !uniqueConcepts.add(conceptUuid)) {
                     throw new InvalidObjectException(String.format(
                             "Cannot use same concept twice. Form{uuid='%s',..} uses Concept{uuid='%s',..} twice",
                             getUuid(),
