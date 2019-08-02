@@ -1,8 +1,9 @@
-import {setRegistrationSubjectType} from "../reducers/subjectReducer";
-import {setOperationalModules} from "../reducers/metadataReducer";
-import {all, call, fork, put, takeLatest} from "redux-saga/effects";
+import { setRegistrationSubjectType } from "../reducers/subjectReducer";
+import { setOperationalModules, setGenders } from "../reducers/metadataReducer";
+import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import api from "../api";
-import {types} from '../reducers/metadataReducer';
+import { types } from "../reducers/metadataReducer";
+import { Gender } from "openchs-models";
 
 export function* dataEntryLoadOperationalModulesWatcher() {
   yield takeLatest(
@@ -17,6 +18,17 @@ export function* dataEntryLoadOperationalModulesWorker() {
   yield put(setRegistrationSubjectType(operationalModules.subjectTypes[0]));
 }
 
+export function* getGendersWatcher() {
+  yield takeLatest(types.GET_GENDERS, getGendersWorker);
+}
+
+export function* getGendersWorker() {
+  const genders = yield call(api.fetchGenders);
+  yield put(setGenders(genders.content.map(Gender.fromJson)));
+}
+
 export default function* referenceDataSaga() {
-  yield all([fork(dataEntryLoadOperationalModulesWatcher)]);
+  yield all(
+    [dataEntryLoadOperationalModulesWatcher, getGendersWatcher].map(fork)
+  );
 }

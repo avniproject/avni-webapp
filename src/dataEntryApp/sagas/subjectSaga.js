@@ -7,7 +7,7 @@ import SubjectService from "../services/SubjectService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import api from "../api";
-import { Form } from "openchs-models";
+import { Form, Individual } from "openchs-models";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -32,8 +32,7 @@ function* dataEntryLoadRegistrationFormWorker() {
     return registrationFormMapping.formUuid;
   });
   const registrationForm = yield call(api.fetchForm, formUuid);
-  // const form = Form.fromResource(registrationForm);
-  yield put(setRegistrationForm(registrationForm));
+  yield put(setRegistrationForm(Form.fromJson(registrationForm)));
 }
 
 function* dataEntrySearchWorker() {
