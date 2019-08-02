@@ -1,11 +1,13 @@
-import { isNil } from "lodash";
-import { setRegistrationForm } from "../reducers/subjectReducer";
+import { first, isNil } from "lodash";
+import {
+  setRegistrationForm,
+  types as subjectTypes
+} from "../reducers/subjectReducer";
 import SubjectService from "../services/SubjectService";
-import { setSubjects } from "../reducers/searchReducer";
-import { all, call, fork, put, takeLatest, select } from "redux-saga/effects";
+import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
+import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import api from "../api";
-import { types as searchTypes } from "../reducers/searchReducer";
-import { types as subjectTypes } from "../reducers/subjectReducer";
+import { Form } from "openchs-models";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -16,7 +18,9 @@ function* dataEntryLoadRegistrationFormWorker() {
     const {
       dataEntry: {
         metadata: { operationalModules },
-        subject: { registrationSubjectType }
+        subject: {
+          registrationSubjectType = first(operationalModules.subjectTypes)
+        }
       }
     } = state;
     const registrationFormMapping = operationalModules.formMappings.find(

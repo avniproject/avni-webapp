@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { TextField } from "@material-ui/core";
 import { getRegistrationForm } from "../../reducers/subjectReducer";
 import ScreenWithAppBar from "../../components/ScreenWithAppBar";
+import { first } from "lodash";
 
 const SubjectRegister = props => {
   React.useEffect(() => {
@@ -22,14 +23,17 @@ const SubjectRegister = props => {
           shrink: true
         }}
       />
+      <p> {JSON.stringify(props.form, null, 2)} </p>
     </ScreenWithAppBar>
   );
 };
 
 const mapStateToProps = state => ({
   user: state.app.user,
-  subjectType: state.dataEntry.subject.registrationSubjectType,
-  registrationForm: state.dataEntry.subject.registrationForm
+  subjectType:
+    state.dataEntry.subject.registrationSubjectType ||
+    first(state.dataEntry.metadata.operationalModules.subjectTypes),
+  form: state.dataEntry.subject.registrationForm
 });
 
 const mapDispatchToProps = {

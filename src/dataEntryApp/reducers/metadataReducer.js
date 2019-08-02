@@ -14,12 +14,7 @@ export const getOperationalModules = () => ({
   type: types.GET_OPERATIONAL_MODULES
 });
 
-const initialState = {
-  operationalModules: {
-    subjectTypes: [{ operationalSubjectTypeName: "" }],
-    forms: []
-  }
-};
+const initialState = {};
 
 // reducer
 export default function(state = initialState, action) {
