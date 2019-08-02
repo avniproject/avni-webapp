@@ -2,6 +2,7 @@ package org.openchs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.service.ConceptService;
@@ -12,14 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.io.File;
@@ -30,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
-public class ConceptController {
+public class ConceptController implements RestControllerResourceProcessor<Concept> {
     private final Logger logger;
     private ConceptRepository conceptRepository;
     private ConceptService conceptService;
@@ -73,6 +70,18 @@ public class ConceptController {
     public ConceptProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
     }
+
+    @GetMapping(value = "/web/concept")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @ResponseBody
+    public PagedResources<Resource<Concept>> getAll(@RequestParam(value = "name", required = false) String name, Pageable pageable) {
+        if (name == null) {
+            return wrap(conceptRepository.findAll(pageable));
+        } else {
+            return wrap(conceptRepository.findByNameIgnoreCaseContaining(name, pageable));
+        }
+    }
+
 
     @GetMapping(value = "/concept/dataTypes")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
