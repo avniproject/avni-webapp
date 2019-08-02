@@ -10,6 +10,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import MenuItem from "@material-ui/core/MenuItem";
 import axios from "axios";
 import DownshiftMultiple from "./AutoComplete";
 
@@ -19,8 +20,9 @@ class NewFormModal extends Component {
 
     this.state = {
       name: "",
-      formType: "IndividualProfile",
-      programName: "Mother",
+      formType: "",
+      programName: "",
+      subjectType: "",
       open: false,
       onClose: false,
       data: {}
@@ -71,6 +73,9 @@ class NewFormModal extends Component {
   handleClickOpen() {
     this.setState({
       formType: "",
+      subjectType: "",
+      programName: "",
+      encounterType: "",
       open: true
     });
   }
@@ -101,17 +106,17 @@ class NewFormModal extends Component {
   programNameElement() {
     return (
       <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="programNameSelect">Program Name</InputLabel>
+        <InputLabel htmlFor="programName">Program Name</InputLabel>
         <Select
-          native
-          id="programNameSelect"
+          id="programName"
           name="programName"
+          value={this.state.programName}
           onChange={this.onChangeField.bind(this)}
         >
           {this.state.data.programs.map(program => (
-            <option key={program.uuid} value={program.uuid}>
+            <MenuItem key={program.uuid} value={program.uuid}>
               {program.operationalProgramName}
-            </option>
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
@@ -121,18 +126,18 @@ class NewFormModal extends Component {
   subjectTypeElement() {
     return (
       <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="subjectTypeSelect">Subject Type</InputLabel>
+        <InputLabel htmlFor="subjectType">Subject Type</InputLabel>
         <Select
-          native
-          id="subjectTypeSelect"
+          id="subjectType"
           name="subjectType"
+          value={this.state.subjectType}
           onChange={this.onChangeField.bind(this)}
         >
           {this.state.data.subjectTypes != null &&
             this.state.data.subjectTypes.map(subjectType => (
-              <option key={subjectType.uuid} value={subjectType.uuid}>
+              <MenuItem key={subjectType.uuid} value={subjectType.uuid}>
                 {subjectType.operationalSubjectTypeName}
-              </option>
+              </MenuItem>
             ))}
         </Select>
       </FormControl>
@@ -184,18 +189,26 @@ class NewFormModal extends Component {
           <form>
             <DialogContent dividers>
               <FormControl fullWidth margin="dense">
-                <InputLabel htmlFor="formTypeSelect">Form Type</InputLabel>
+                <InputLabel htmlFor="formType">Form Type</InputLabel>
                 <Select
-                  native
-                  id="formTypeSelect"
+                  id="formType"
                   name="formType"
+                  value={this.state.formType}
                   onChange={this.onChangeField.bind(this)}
                 >
-                  <option>IndividualProfile</option>
-                  <option>Encounter</option>
-                  <option>ProgramEncounter</option>
-                  <option>ProgramEnrolment</option>
-                  <option>ProgramExit</option>
+                  <MenuItem value="IndividualProfile">
+                    IndividualProfile
+                  </MenuItem>
+                  <MenuItem value="Encounter">Encounter</MenuItem>
+                  <MenuItem value="ProgramEncounter">ProgramEncounter</MenuItem>
+                  <MenuItem value="ProgramEnrolment">
+                    ProgramEnrollment
+                  </MenuItem>
+                  <MenuItem value="ProgramExit">ProgramExit</MenuItem>
+                  <MenuItem value="ProgramEnrolmentCancellation">
+                    ProgramEnrollmentCancellation
+                  </MenuItem>
+                  <MenuItem value="ChecklistItem">ChecklistItem</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth margin="dense">
