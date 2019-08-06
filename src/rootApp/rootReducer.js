@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import { reducer as formReducer } from "redux-form";
 import { routerReducer } from "react-router-redux";
 import { adminReducer, defaultI18nProvider, i18nReducer } from "react-admin";
+import dataEntry from "../dataEntryApp/reducers/dataEntryReducer";
 
 import app from "./ducks";
 
@@ -12,5 +13,6 @@ export default combineReducers({
   i18n: i18nReducer(LOCALE, defaultI18nProvider(LOCALE)),
   form: formReducer,
   router: routerReducer,
-  app
+  app,
+  dataEntry
 });

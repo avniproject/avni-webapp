@@ -1,98 +1,77 @@
-import React, { Component } from "react";
+import React from "react";
 import MaterialTable from "material-table";
 import ButtonAppBar from "./CommonHeader";
 import axios from "axios";
+import _ from "lodash";
 
-class Concepts extends Component {
-  constructor() {
-    super();
-    this.state = {
-      columns: [
-        { title: "Name", field: "name" },
-        { title: "DataType", field: "dataType" },
-        { title: "UUID", field: "uuid", type: "numeric" }
-      ],
-      data: []
-    };
-  }
-
-  componentDidMount() {
-    axios
-      .get("/concept?size=1000") //Need to change API here to get user specific concepts
-      .then(response => {
-        console.log(response);
-        const concepts = response.data._embedded.concept;
-        const nonVoidedConcepts = concepts.filter(
-          concept => !concept["voided"]
-        );
-
-        this.setState({
-          data: nonVoidedConcepts
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-  render() {
-    return (
-      <div>
-        <ButtonAppBar title="Concepts List" />
-        <MaterialTable
-          title=""
-          columns={this.state.columns}
-          data={this.state.data}
-          options={{
-            pageSize: 10,
-            pageSizeOptions: [10, 15, 20],
-            addRowPosition: "first"
-          }}
-          editable={{
-            // onRowAdd: newData =>
-            //   new Promise(resolve => {
-            //     setTimeout(() => {
-            //       resolve();
-            //       const data = [...this.state.data];
-            //       data.push(newData);
-            //       this.setState({ ...this.state, data });
-            //     }, 600);
-            //   }),
-            // onRowUpdate: (newData, oldData) =>
-            //   new Promise(resolve => {
-            //     setTimeout(() => {
-            //       resolve();
-            //       const data = [...this.state.data];
-            //       data[data.indexOf(oldData)] = newData;
-            //       this.setState({ ...this.state, data });
-            //     }, 600);
-            //   }),
-            onRowDelete: oldData =>
-              new Promise(resolve => {
-                setTimeout(() => {
-                  resolve();
-                  axios
-                    .post("/concepts", [
-                      {
-                        uuid: oldData.uuid,
-                        voided: true
-                      }
-                    ])
-                    .then(response => {
-                      console.log(response);
-                      if (response.status === 200) {
-                        const data = [...this.state.data];
-                        data.splice(data.indexOf(oldData), 1);
-                        this.setState({ ...this.state, data });
-                      }
-                    }, 600);
+function Concepts() {
+  const columns = [
+    { title: "Name", field: "name", defaultSort: "asc" },
+    { title: "DataType", field: "dataType" },
+    { title: "OrganisationId", field: "organisationId", type: "numeric" }
+  ];
+  const tableRef = React.createRef();
+  return (
+    <div>
+      <ButtonAppBar title="Concepts List" />
+      <MaterialTable
+        title=""
+        tableRef={tableRef}
+        columns={columns}
+        data={query =>
+          new Promise(resolve => {
+            let url = "/web/concept?";
+            url += "size=" + query.pageSize;
+            url += "&page=" + query.page;
+            if (!_.isEmpty(query.search)) url += "&name=" + query.search;
+            if (!_.isEmpty(query.orderBy.field))
+              url += `&sort=${query.orderBy.field},${query.orderDirection}`;
+            fetch(url)
+              .then(response => response.json())
+              .then(result => {
+                resolve({
+                  data: result._embedded ? result._embedded.concept : [],
+                  page: result.page.number,
+                  totalCount: result.page.totalElements
                 });
-              })
-          }}
-        />
-      </div>
-    );
-  }
+              });
+          })
+        }
+        options={{
+          pageSize: 10,
+          pageSizeOptions: [10, 15, 20],
+          addRowPosition: "first",
+          sorting: true
+        }}
+        actions={[
+          rowData => ({
+            icon: rowData.voided ? "restore_from_trash" : "delete_outline",
+            tooltip:
+              rowData.organisationId === 1
+                ? "Can not void core concepts"
+                : rowData.voided
+                ? "Unvoid Concept"
+                : "Void Concept",
+            onClick: (event, rowData) => {
+              axios
+                .post("/concepts", [
+                  {
+                    uuid: rowData.uuid,
+                    voided: !rowData.voided
+                  }
+                ])
+                .then(response => {
+                  if (response.status === 200) {
+                    tableRef.current && tableRef.current.onQueryChange();
+                  }
+                });
+            },
+            disabled: rowData.organisationId === 1
+          })
+        ]}
+      />
+    </div>
+  );
 }
 
 export default Concepts;
