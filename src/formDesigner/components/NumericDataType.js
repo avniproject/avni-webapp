@@ -42,6 +42,7 @@ class NumericDataType extends Component {
           onChange={this.handleChange}
         />
         <TextField
+          required
           type="string"
           id="unit"
           label="unit"
