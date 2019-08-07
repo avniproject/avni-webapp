@@ -2,6 +2,7 @@ import { isEmpty } from "lodash";
 import { fetchUtils } from "react-admin";
 import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
+import axios from "axios";
 
 class HttpClient {
   static instance;
@@ -16,6 +17,9 @@ class HttpClient {
 
   initAuthContext(userInfo) {
     this.authContext.init(userInfo);
+    const authParams = this.authContext.get();
+    if (authParams.token)
+      axios.defaults.headers.common["AUTH-TOKEN"] = authParams.token;
   }
 
   setHeaders(options) {

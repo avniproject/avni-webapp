@@ -20,14 +20,15 @@ function Concepts() {
         columns={columns}
         data={query =>
           new Promise(resolve => {
-            let url = "/web/concept?";
-            url += "size=" + query.pageSize;
-            url += "&page=" + query.page;
-            if (!_.isEmpty(query.search)) url += "&name=" + query.search;
+            let apiUrl = "/web/concept?";
+            apiUrl += "size=" + query.pageSize;
+            apiUrl += "&page=" + query.page;
+            if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
             if (!_.isEmpty(query.orderBy.field))
-              url += `&sort=${query.orderBy.field},${query.orderDirection}`;
-            fetch(url)
-              .then(response => response.json())
+              apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+            axios
+              .get(apiUrl)
+              .then(response => response.data)
               .then(result => {
                 resolve({
                   data: result._embedded ? result._embedded.concept : [],
