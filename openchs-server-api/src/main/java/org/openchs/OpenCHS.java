@@ -128,21 +128,20 @@ public class OpenCHS {
                 FormMapping formMapping = resource.getContent();
                 resource.removeLinks();
                 resource.add(new Link(formMapping.getForm().getUuid(), "formUUID"));
-                Long programId = formMapping.getProgramId();
-                if (programId != null) {
-                    Program program = programRepository.findOne(programId);
-                    resource.add(new Link(program.getUuid(), "entityUUID"));
+                String programUuid = formMapping.getProgramUuid();
+                if (programUuid != null) {
+                    resource.add(new Link(programUuid, "entityUUID"));
                 }
 
                 if (formMapping.getSubjectType() != null) {
                     resource.add(new Link(formMapping.getSubjectType().getUuid(), "subjectTypeUUID"));
                 }
 
-                Long encounterTypeId = formMapping.getEncounterTypeId();
-                if (encounterTypeId != null) {
-                    EncounterType encounterType = encounterTypeRepository.findOne(encounterTypeId);
-                    resource.add(new Link(encounterType.getUuid(), "observationsTypeEntityUUID"));
+                String encounterTypeUuid = formMapping.getEncounterTypeUuid();
+                if (encounterTypeUuid != null) {
+                    resource.add(new Link(encounterTypeUuid, "observationsTypeEntityUUID"));
                 }
+
                 return resource;
             }
         };

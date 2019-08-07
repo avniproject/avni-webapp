@@ -2,7 +2,9 @@ package org.openchs.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.openchs.application.projections.BaseProjection;
+import org.openchs.domain.EncounterType;
 import org.openchs.domain.OrganisationAwareEntity;
+import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
@@ -12,18 +14,20 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "form_mapping")
-@JsonIgnoreProperties({"form", "programId", "encounterTypeId", "subjectType"})
+@JsonIgnoreProperties({"form", "program", "encounterType", "subjectType"})
 public class FormMapping extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "form_id")
     private Form form;
 
-    @Column(name = "entity_id")
-    private Long programId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entity_id")
+    private Program program;
 
-    @Column(name = "observations_type_entity_id")
-    private Long encounterTypeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "observations_type_entity_id")
+    private EncounterType encounterType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_type_id")
@@ -37,20 +41,28 @@ public class FormMapping extends OrganisationAwareEntity {
         this.form = form;
     }
 
-    public Long getProgramId() {
-        return programId;
+    public Program getProgram() {
+        return program;
     }
 
-    public void setProgramId(Long programId) {
-        this.programId = programId;
+    public String getProgramUuid() {
+        return this.getProgram() != null? this.getProgram().getUuid(): null;
     }
 
-    public Long getEncounterTypeId() {
-        return encounterTypeId;
+    public String getEncounterTypeUuid() {
+        return this.getEncounterType() != null? this.getEncounterType().getUuid(): null;
     }
 
-    public void setEncounterTypeId(Long encounterTypeId) {
-        this.encounterTypeId = encounterTypeId;
+    public void setProgram(Program program) {
+        this.program = program;
+    }
+
+    public EncounterType getEncounterType() {
+        return encounterType;
+    }
+
+    public void setEncounterType(EncounterType encounterType) {
+        this.encounterType = encounterType;
     }
 
     public SubjectType getSubjectType() {
@@ -63,17 +75,14 @@ public class FormMapping extends OrganisationAwareEntity {
 
     @Projection(name = "FormMappingProjection", types = {FormMapping.class})
     public interface FormMappingProjection extends BaseProjection {
-        @Value("#{target.subjectType.id}")
-        Long getSubjectTypeId();
-
-        @Value("#{target.form.id}")
-        Long getFormId();
+        @Value("#{target.subjectType.uuid}")
+        String getSubjectTypeUuid();
 
         @Value("#{target.form.uuid}")
         String getFormUuid();
 
-        Long getEncounterTypeId();
+        String getEncounterTypeUuid();
 
-        Long getProgramId();
+        String getProgramUuid();
     }
 }

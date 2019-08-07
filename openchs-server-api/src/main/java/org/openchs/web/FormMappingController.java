@@ -67,11 +67,11 @@ public class FormMappingController extends AbstractController<FormMapping>{
         formMapping.setForm(form);
 
         if (formMappingRequest.getProgramUUID()!= null){
-            formMapping.setProgramId(programRepository.findByUuid(formMappingRequest.getProgramUUID()).getId());
+            formMapping.setProgram(programRepository.findByUuid(formMappingRequest.getProgramUUID()));
         }
 
         if (formMappingRequest.getEncounterTypeUUID()!= null){
-            formMapping.setEncounterTypeId(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()).getId());
+            formMapping.setEncounterType(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()));
         }
 
         if (formMappingRequest.getSubjectTypeUUID() != null) {
