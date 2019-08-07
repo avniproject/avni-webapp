@@ -18,7 +18,7 @@ const DataEntry = ({
   return operationalModules ? (
     <div>
       <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
-      <Route exact path={`${path}/register`} component={SubjectRegister} />
+      <Route path={`${path}/register`} component={SubjectRegister} />
     </div>
   ) : (
     <Loading />
