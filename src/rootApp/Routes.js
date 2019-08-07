@@ -12,6 +12,7 @@ import Concept from "../formDesigner/components/Concept";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
+import CreateConcept from "../formDesigner/components/CreateConcept";
 
 const RestrictedRoute = ({
   component: C,
@@ -75,6 +76,13 @@ const Routes = props => (
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
       component={NewConcept}
+    />
+    <RestrictedRoute
+      exact
+      path="/createconcept"
+      allowedRoles={[ROLES.ORG_ADMIN]}
+      currentUserRoles={props.userRoles}
+      component={CreateConcept}
     />
     <RestrictedRoute
       exact
