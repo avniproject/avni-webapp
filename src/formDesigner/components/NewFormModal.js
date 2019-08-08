@@ -23,6 +23,7 @@ class NewFormModal extends Component {
       formType: "",
       programName: "",
       subjectType: "",
+      encounterType: [],
       open: false,
       onClose: false,
       data: {}
@@ -32,15 +33,26 @@ class NewFormModal extends Component {
   }
 
   addFields() {
-    this.props.addNewForm(
-      this.state.name,
-      this.state.formType,
-      this.state.programName,
-      this.state.subjectType,
-      this.state.encounterType
-    );
-    this.props.initGroups();
-    this.props.history.push("/forms/addFields");
+    let dataSend = {
+      name: this.state.name,
+      formType: this.state.formType,
+      subjectType: this.state.subjectType
+    };
+    if (this.state.programBased) {
+      dataSend["programName"] = this.state.programName;
+    }
+    if (this.state.encounterTypes) {
+      dataSend["encounterType"] = this.state.encounterType;
+    }
+
+    axios
+      .post("/forms", dataSend)
+      .then(response => {
+        this.props.history.push("/forms");
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   componentDidMount() {
