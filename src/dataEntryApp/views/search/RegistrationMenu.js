@@ -1,6 +1,5 @@
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { setRegistrationSubjectType } from "../../reducers/subjectReducer";
 import { AddIcon, InternalLink } from "../../../common/components";
 import React from "react";
 import Menu from "@material-ui/core/Menu";
@@ -14,13 +13,12 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const RegistrationMenu = ({ types, setRegistrationSubjectType }) => {
+const RegistrationMenu = ({ types }) => {
   const classes = useStyle();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClick = type => event => {
+  const handleClick = () => event => {
     setAnchorEl(event.currentTarget);
-    type && setRegistrationSubjectType(type);
   };
 
   const handleClose = () => setAnchorEl(null);
@@ -45,7 +43,7 @@ const RegistrationMenu = ({ types, setRegistrationSubjectType }) => {
         {types.map((type, key) => (
           <InternalLink
             key={key}
-            to={"/app/register"}
+            to={`/app/register?type=${type.name}`}
             onClick={handleClick(type)}
           >
             <MenuItem>
@@ -63,13 +61,4 @@ const mapStateToProps = state => ({
   types: state.dataEntry.metadata.operationalModules.subjectTypes
 });
 
-const mapDispatchToProps = {
-  setRegistrationSubjectType
-};
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(RegistrationMenu)
-);
+export default withRouter(connect(mapStateToProps)(RegistrationMenu));

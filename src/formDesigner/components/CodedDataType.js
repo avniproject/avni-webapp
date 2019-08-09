@@ -8,8 +8,6 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
-import Downshift from "downshift";
-import Paper from "@material-ui/core/Paper";
 import deburr from "lodash/deburr";
 import MenuItem from "@material-ui/core/MenuItem";
 
@@ -76,10 +74,7 @@ class CodedDataType extends Component {
 
   addCodedAnswer = () => {
     this.setState({
-      answers: [
-        ...this.state.answers,
-        { answer: "", uuid: "", unique: false, abnormal: false }
-      ]
+      answers: [...this.state.answers, { answer: "", uuid: "", unique: false, abnormal: false }]
     });
   };
   removeCodedAnswer = index => {
@@ -119,8 +114,7 @@ class CodedDataType extends Component {
       ? []
       : this.state.suggestions.filter(suggestion => {
           const keep =
-            count < 5 &&
-            suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
+            count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
 
           if (keep) {
             count += 1;
@@ -131,13 +125,7 @@ class CodedDataType extends Component {
   };
 
   renderSuggestion = suggestionProps => {
-    const {
-      suggestion,
-      index,
-      itemProps,
-      highlightedIndex,
-      selectedItem
-    } = suggestionProps;
+    const { suggestion, index, itemProps, highlightedIndex, selectedItem } = suggestionProps;
     const isHighlighted = highlightedIndex === index;
     const isSelected = (selectedItem || "").indexOf(suggestion.label) > -1;
 

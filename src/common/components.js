@@ -1,8 +1,10 @@
 import React from "react";
-import _ from "lodash";
-import { Link as RouterLink } from "react-router-dom";
+import _, { get, merge } from "lodash";
+import { Link as RouterLink, withRouter } from "react-router-dom";
 import Link from "@material-ui/core/Link";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import qs from "query-string";
+import { join } from "path";
 
 export const AddIcon = props => (
   <SvgIcon {...props}>
@@ -19,6 +21,19 @@ export const InternalLink = ({ children, ...props }) => (
   >
     {children}
   </Link>
+);
+
+export const RelativeLink = withRouter(
+  ({ location, children, to = "./", params, noParams }) => {
+    const updatedParams = noParams
+      ? ""
+      : qs.stringify(merge(qs.parse(location.search), params));
+    return (
+      <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`}>
+        {children}
+      </InternalLink>
+    );
+  }
 );
 
 export const Home = () => (
@@ -52,3 +67,8 @@ export const NoneWithLabel = ({ noneText = "None", labelText }) => (
     <None displayText={noneText} />
   </div>
 );
+
+export const withParams = Comp => ({ match, ...props }) => {
+  const queryParams = qs.parse(get(props, "location.search"));
+  return <Comp match={merge({}, match, { queryParams })} {...props} />;
+};

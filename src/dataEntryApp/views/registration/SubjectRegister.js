@@ -1,147 +1,169 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
+import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import { Box, TextField } from "@material-ui/core";
+import { ObservationsHolder } from "openchs-models";
 import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField
-} from "@material-ui/core";
-import {
-  createSubject,
   getRegistrationForm,
+  onLoad,
+  saveSubject,
+  updateObs,
   updateSubject
-} from "../../reducers/subjectReducer";
+} from "../../reducers/registrationReducer";
 import { getGenders } from "../../reducers/metadataReducer";
 import ScreenWithAppBar from "../../components/ScreenWithAppBar";
-import { first, sortBy } from "lodash";
-import Loading from "../../components/Loading";
-import { LineBreak } from "../../../common/components";
+import { get, sortBy } from "lodash";
+import { LineBreak, RelativeLink, withParams } from "../../../common/components";
+import Form from "../../components/Form";
+import { DateOfBirth } from "../../components/DateOfBirth";
+import { CodedFormElement } from "../../components/CodedFormElement";
+import PrimaryButton from "../../components/PrimaryButton";
 
-const SubjectRegister = props => {
+const DefaultPage = props => {
   React.useEffect(() => {
-    props.getRegistrationForm();
-    props.getGenders();
-    props.createSubject();
+    props.onLoad(props.match.queryParams.type);
   }, []);
 
-  if (!(props.newSubject && props.genders)) {
-    return <Loading />;
-  }
-
   return (
-    <ScreenWithAppBar appbarTitle={`${props.subjectType.name} Registration`}>
-      <TextField
-        label="Date of Registration"
-        type="date"
-        required
-        name="registrationDate"
-        defaultValue={new Date()}
-        InputLabelProps={{
-          shrink: true
-        }}
-      />
-      <LineBreak num={2} />
-      <TextField
-        label="First Name"
-        type="text"
-        required
-        name="firstName"
-        value={props.newSubject.firstName}
-        onChange={e => {
-          props.updateSubject("firstName", e.target.value);
-        }}
-      />
-      <TextField
-        label="Last Name"
-        type="text"
-        required
-        name="lastName"
-        value={props.newSubject.lastName}
-        onChange={e => {
-          props.updateSubject("lastName", e.target.value);
-        }}
-      />
-      <LineBreak num={2} />
-      <TextField
-        label="Date of Birth"
-        type="date"
-        required
-        name="dateOfBirth"
-        defaultValue={new Date()}
-        value={props.newSubject.dateOfBirth}
-        onChange={e => {
-          props.updateSubject("dateOfBirth", e.target.value);
-        }}
-      />
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={props.newSubject.dateOfBirthVerified}
+    <ScreenWithAppBar appbarTitle={`${get(props, "subject.subjectType.name")} Registration`}>
+      {props.subject && (
+        <div>
+          <TextField
+            label="Date of Registration"
+            type="date"
+            required
+            name="registrationDate"
+            value={props.subject.registrationDate.toISOString().substr(0, 10)}
             onChange={e => {
-              props.updateSubject("dateOfBirthVerified", e.target.checked);
+              props.updateSubject("registrationDate", new Date(e.target.value));
             }}
-            value="checkedB"
-            color="primary"
           />
-        }
-        label="Date of Birth Verified"
-      />
-      <LineBreak num={2} />
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Gender</FormLabel>
-        <RadioGroup
-          aria-label="gender"
-          name="gender"
-          value={props.newSubject.gender.uuid}
-          onChange={e => {
-            props.updateSubject(
-              "gender",
-              props.genders.find(g => g.uuid === e.target.value)
-            );
-          }}
-        >
-          {sortBy(props.genders, "name").map((g, key) => (
-            <FormControlLabel
-              key={key}
-              value={g.uuid}
-              control={<Radio />}
-              label={g.name}
-            />
-          ))}
-        </RadioGroup>
-      </FormControl>
-      <LineBreak num={4} />
-      {`sample text: ${props.newSubject.firstName} ${
-        props.newSubject.lastName
-      }, ${props.newSubject.gender.name} - ${props.newSubject.dateOfBirth}`}
+          <LineBreak num={2} />
+          {get(props, "subject.subjectType.name") === "Individual" && (
+            <React.Fragment>
+              <TextField
+                label="First Name"
+                type="text"
+                required
+                name="firstName"
+                value={props.subject.firstName}
+                onChange={e => {
+                  props.updateSubject("firstName", e.target.value);
+                }}
+              />
+              <TextField
+                label="Last Name"
+                type="text"
+                required
+                name="lastName"
+                value={props.subject.lastName}
+                onChange={e => {
+                  props.updateSubject("lastName", e.target.value);
+                }}
+              />
+              <LineBreak num={2} />
+              <DateOfBirth
+                dateOfBirth={props.subject.dateOfBirth}
+                dateOfBirthVerified={props.subject.dateOfBirthVerified}
+                onChange={date => props.updateSubject("dateOfBirth", date)}
+                markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
+              />
+              <LineBreak num={2} />
+              <CodedFormElement
+                groupName="Gender"
+                items={sortBy(props.genders, "name")}
+                isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
+                onChange={selected => props.updateSubject("gender", selected)}
+              />
+            </React.Fragment>
+          )}
+
+          {get(props, "subject.subjectType.name") !== "Individual" && (
+            <React.Fragment>
+              <TextField
+                label="Name"
+                type="text"
+                required
+                name="firstName"
+                value={props.subject.firstName}
+                onChange={e => {
+                  props.updateSubject("firstName", e.target.value);
+                }}
+              />
+            </React.Fragment>
+          )}
+          <LineBreak num={4} />
+          <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-end">
+            <Box>
+              <RelativeLink
+                to="form"
+                params={{
+                  type: props.subject.subjectType.name,
+                  from: props.location.pathname + props.location.search
+                }}
+              >
+                <PrimaryButton>Next</PrimaryButton>
+              </RelativeLink>
+            </Box>
+          </Box>
+        </div>
+      )}
     </ScreenWithAppBar>
   );
 };
 
 const mapStateToProps = state => ({
   user: state.app.user,
-  subjectType:
-    state.dataEntry.subject.registrationSubjectType ||
-    first(state.dataEntry.metadata.operationalModules.subjectTypes),
   genders: state.dataEntry.metadata.genders,
-  form: state.dataEntry.subject.registrationForm,
-  newSubject: state.dataEntry.subject.newSubject
+  form: state.dataEntry.registration.registrationForm,
+  subject: state.dataEntry.registration.subject,
+  loaded: state.dataEntry.registration.loaded
 });
 
 const mapDispatchToProps = {
   getRegistrationForm,
-  createSubject,
   updateSubject,
-  getGenders
+  getGenders,
+  saveSubject,
+  onLoad
 };
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(SubjectRegister)
+const ConnectedDefaultPage = withRouter(
+  withParams(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(DefaultPage)
+  )
 );
+
+const mapFormStateToProps = state => ({
+  form: state.dataEntry.registration.registrationForm,
+  obs: new ObservationsHolder(state.dataEntry.registration.subject.observations),
+  title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
+  saved: state.dataEntry.registration.saved,
+  onSaveGoto: "/app/search"
+});
+
+const mapFormDispatchToProps = {
+  updateObs,
+  onSave: saveSubject
+};
+
+const RegistrationForm = withRouter(
+  connect(
+    mapFormStateToProps,
+    mapFormDispatchToProps
+  )(Form)
+);
+
+const SubjectRegister = ({ match: { path } }) => {
+  return (
+    <div>
+      <Route exact path={`${path}`} component={ConnectedDefaultPage} />
+      <Route path={`${path}/form`} component={RegistrationForm} />
+    </div>
+  );
+};
+
+export default withRouter(SubjectRegister);
