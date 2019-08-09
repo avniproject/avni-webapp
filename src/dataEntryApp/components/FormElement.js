@@ -1,24 +1,27 @@
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import TextFormElement from "./TextFormElement";
+import NotesFormElement from "./NotesFormElement";
 import SingleSelectFormElement from "./SingleSelectFormElement";
 import MultiSelectFormElement from "./MultiSelectFormElement";
 import NumericFormElement from "./NumericFormElement";
-import DateFormElement from "./DateFormElement";
+import { DateFormElement, DateTimeFormElement } from "./DateFormElement";
+import TimeFormElement from "./TimeFormElement";
+import DurationFormElement from "./DurationFormElement";
 
 const div = () => <div />;
 
 const elements = {
   Date: DateFormElement,
-  DateTime: div,
-  Time: div,
-  Duration: div,
+  DateTime: DateTimeFormElement,
+  Time: TimeFormElement,
+  Duration: DurationFormElement,
   SingleSelect: SingleSelectFormElement,
   MultiSelect: MultiSelectFormElement,
   Numeric: NumericFormElement,
   Boolean: div,
   Text: TextFormElement,
-  Notes: div,
+  Notes: NotesFormElement,
   NA: div,
   Image: div,
   Video: div,

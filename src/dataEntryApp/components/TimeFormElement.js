@@ -2,16 +2,18 @@ import React, { Fragment } from "react";
 import { TextField } from "@material-ui/core";
 import { isEmpty } from "lodash";
 
-const SimpleDateFormElement = ({ formElement: fe, type, value, update }) => {
-  const [date, setDate] = React.useState(value ? value.toISOString() : "");
+const MIN = 60;
+
+const TimeFormElement = ({ formElement: fe, value, update }) => {
+  const [time, setTime] = React.useState(value ? value : "");
 
   /*TODO:
-   * DateFormElement cannot be auto-calculated as of now.
+   * TimeFormElement cannot be auto-calculated through rules, as of now.
    * Because the two way binding is not implemented.
    *
    * React.useEffect( fun {
    *   if current element not focused {
-   *     setDate(value ? value.toISOString() : "")
+   *     setTime(value ? value : "")
    *   }
    * }, [value]);
    *
@@ -21,25 +23,23 @@ const SimpleDateFormElement = ({ formElement: fe, type, value, update }) => {
     <Fragment>
       <TextField
         label={fe.display || fe.name}
-        type={type}
         required={fe.mandatory}
         name={fe.name}
         fullWidth
         InputLabelProps={{
           shrink: true
         }}
-        value={date}
+        value={time}
         onChange={e => {
           const value = e.target.value;
-          isEmpty(value) ? setDate("") : setDate(value);
+          isEmpty(value) ? setTime("") : setTime(value);
           isEmpty(value) ? update() : update(value);
         }}
+        type="time"
+        inputProps={{ step: 5 * MIN }}
       />
     </Fragment>
   );
 };
 
-export const DateFormElement = props => <SimpleDateFormElement type="date" {...props} />;
-export const DateTimeFormElement = props => (
-  <SimpleDateFormElement type="datetime-local" {...props} />
-);
+export default TimeFormElement;

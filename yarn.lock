@@ -6789,9 +6789,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-openchs-models@0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.0.16.tgz#360269d0ee8a8c3f0b6ee655e01c649c469b7492"
+openchs-models@0.0.21:
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.0.21.tgz#ac73621b106391c29fc9af6eac9e106d2ad8a9c1"
+  integrity sha512-YSJ3eelVILqBURxtqxWaOOKDWcJZ6lQ08Jghb6dtbm/tPGIeEUdmLx2RbOAPvep3mgzAk6PscSQb9heuHpzykw==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"

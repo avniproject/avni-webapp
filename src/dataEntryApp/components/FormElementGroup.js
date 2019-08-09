@@ -8,7 +8,7 @@ export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
     <div>
       <h4>{feg.name}</h4>
       <LineBreak num={1} />
-      {feg.formElements.map(fe => (
+      {feg.getFormElements().map(fe => (
         <FormElement
           key={fe.uuid}
           concept={fe.concept}
