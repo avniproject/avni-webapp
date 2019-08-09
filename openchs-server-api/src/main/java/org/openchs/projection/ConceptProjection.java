@@ -26,6 +26,8 @@ public interface ConceptProjection extends BaseProjection {
 
     Double getHighNormal();
 
+    String getUnit();
+
     @JsonInclude(Include.NON_EMPTY)
     Set<ConceptAnswerProjection> getConceptAnswers();
 
