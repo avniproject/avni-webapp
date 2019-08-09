@@ -8,14 +8,14 @@ import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.RuleFailureTelemetryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 
@@ -35,8 +35,29 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
         return empty(pageable);
     }
 
+    @RequestMapping(value = "/web/ruleFailureTelemetry", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public Page<RuleFailureTelemetry> getByStatus(@RequestParam(value = "status") String status,
+                                                  Pageable pageable) {
+        return ruleFailureTelemetryRepository.findByStatus(Status.valueOf(status), pageable);
+    }
 
-    @RequestMapping(value = "ruleFailureTelemetry", method = RequestMethod.POST)
+    @RequestMapping(value = "/web/ruleFailureTelemetry/{id}", method = RequestMethod.PUT)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @Transactional
+    public ResponseEntity updateStatus(@PathVariable("id") Long id,
+                                       @RequestParam(value = "status") String status) {
+        RuleFailureTelemetry ruleFailureTelemetry = ruleFailureTelemetryRepository.findById(id);
+        if (ruleFailureTelemetry == null) {
+            return ResponseEntity.badRequest().body(String.format("No entry found with id %d", id));
+        }
+        ruleFailureTelemetry.setStatus(Status.valueOf(status));
+        ruleFailureTelemetryRepository.save(ruleFailureTelemetry);
+        return new ResponseEntity<>(ruleFailureTelemetry, HttpStatus.CREATED);
+    }
+
+
+    @RequestMapping(value = "/ruleFailureTelemetry", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody RuleFailureTelemetryRequest request) {
