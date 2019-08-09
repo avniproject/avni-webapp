@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.openchs.dao.RuleFailureTelemetryRepository;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.RuleFailureTelemetry;
+import org.openchs.domain.Status;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.RuleFailureTelemetryRequest;
@@ -49,7 +50,7 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
         ruleFailureTelemetry.setIndividualUuid(request.getIndividualUuid());
         ruleFailureTelemetry.setStacktrace(request.getStacktrace());
         ruleFailureTelemetry.setRuleUuid(request.getRuleUuid());
-        ruleFailureTelemetry.setStatus(request.getStatus());
+        ruleFailureTelemetry.setStatus(Status.valueOf(request.getStatus()));
         ruleFailureTelemetryRepository.save(ruleFailureTelemetry);
     }
 

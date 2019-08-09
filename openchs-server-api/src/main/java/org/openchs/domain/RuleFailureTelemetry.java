@@ -45,7 +45,8 @@ public class RuleFailureTelemetry {
     private String stacktrace;
 
     @Column
-    private String status;
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
 
     public Long getId() {
         return id;
@@ -103,11 +104,12 @@ public class RuleFailureTelemetry {
         this.stacktrace = stacktrace;
     }
 
-    public String getStatus() {
+    @NotNull
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(@NotNull Status status) {
         this.status = status;
     }
 }
