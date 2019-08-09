@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { TextField } from "@material-ui/core";
-import { isNil, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 
 export default ({ formElement: fe, value, update }) => {
   const [date, setDate] = React.useState(value ? value.toISOString().substr(0, 10) : "");

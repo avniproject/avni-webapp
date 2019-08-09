@@ -93,13 +93,11 @@ class CreateConcept extends Component {
       const tempAnswers = this.state.answers;
       const len = tempAnswers.length;
 
-      tempAnswers.map((name, index) => {
+      tempAnswers.forEach((name, index) => {
         axios
           .get("/search/concept?name=" + name.answer + "&dataType=NA")
           .then(response => {
-            const result = response.data.filter(
-              item => item.name === name.answer
-            );
+            const result = response.data.filter(item => item.name === name.answer);
             if (result.length === 1) {
               name.uuid = result[0].uuid;
               if (len - 1 === index) {
@@ -122,10 +120,7 @@ class CreateConcept extends Component {
                 ])
                 .then(response => {
                   if (response.status === 200) {
-                    console.log(
-                      "Dynamic concept added through Coded",
-                      response
-                    );
+                    console.log("Dynamic concept added through Coded", response);
                     if (len - 1 === index) {
                       this.postCodedData(tempAnswers);
                     }
@@ -240,10 +235,7 @@ class CreateConcept extends Component {
               />
             </FormControl>
             <FormControl>
-              <InputLabel
-                htmlFor="age-helper"
-                style={{ marginTop: 10, marginLeft: 14 }}
-              >
+              <InputLabel htmlFor="age-helper" style={{ marginTop: 10, marginLeft: 14 }}>
                 Datatype
               </InputLabel>
               <Select
@@ -266,18 +258,11 @@ class CreateConcept extends Component {
             {dataType}
           </Grid>
           <Grid container justify="center">
-            <Button
-              type="submit"
-              variant="outlined"
-              color="primary"
-              style={classes.button}
-            >
+            <Button type="submit" variant="outlined" color="primary" style={classes.button}>
               Submit
             </Button>
           </Grid>
-          {this.state.conceptCreationAlert && (
-            <CustomizedDialogs sendValue={this.getDialogFlag} />
-          )}
+          {this.state.conceptCreationAlert && <CustomizedDialogs sendValue={this.getDialogFlag} />}
         </form>
       </>
     );

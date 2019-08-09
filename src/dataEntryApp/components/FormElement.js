@@ -1,4 +1,3 @@
-import { get, includes, map } from "lodash";
 import React from "react";
 import { LineBreak } from "../../common/components";
 import TextFormElement from "./TextFormElement";
