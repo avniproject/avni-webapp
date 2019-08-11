@@ -12,6 +12,7 @@ import CodedDataType from "./CodedDataType";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import CustomizedDialogs from "./CustomizedDialogs";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 class CreateConcept extends Component {
   constructor(props) {
@@ -25,8 +26,11 @@ class CreateConcept extends Component {
       lowNormal: null,
       highNormal: null,
       unit: null,
-      answers: [],
-      conceptCreationAlert: false
+      answers: [
+        { name: "", uuid: "", unique: false, abnormal: false, editable: true }
+      ],
+      conceptCreationAlert: false,
+      dataTypeSelectionAlert: false
     };
   }
 
@@ -43,16 +47,50 @@ class CreateConcept extends Component {
       });
   }
 
+  onDeleteAnswer = index => {
+    const answers = [...this.state.answers];
+    answers.splice(index, 1);
+    answers.indexOf(answers[index], 1);
+    this.setState({
+      answers
+    });
+  };
+
+  onAddAnswer = () => {
+    this.setState({
+      answers: [
+        ...this.state.answers,
+        { name: "", uuid: "", unique: false, abnormal: false, editable: true }
+      ]
+    });
+  };
+
+  onChangeAnswerName = (answerName, index) => {
+    const answers = [...this.state.answers];
+    answers[index].name = answerName;
+    this.setState({
+      answers
+    });
+  };
+
+  onToggleAnswerField = (event, index) => {
+    const answers = [...this.state.answers];
+    answers[index][event.target.id] = !answers[index][event.target.id];
+    this.setState({
+      answers
+    });
+  };
+
   handleChange = stateHandler => e => {
     this.setState({
       [stateHandler]: e.target.value
     });
   };
 
-  postCodedData(tempAnswers) {
+  postCodedData(answers) {
     this.setState(
       {
-        answers: tempAnswers
+        answers: answers
       },
       () => {
         axios
@@ -81,7 +119,7 @@ class CreateConcept extends Component {
             }
           })
           .catch(error => {
-            console.log("Error::", error);
+            console.log(error);
           });
       }
     );
@@ -89,120 +127,138 @@ class CreateConcept extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    if (this.state.dataType === "Coded") {
-      const tempAnswers = this.state.answers;
-      const len = tempAnswers.length;
+    if (this.state.dataType === "") {
+      this.setState({
+        dataTypeSelectionAlert: true
+      });
+    } else {
+      if (this.state.dataType === "Coded") {
+        const answers = this.state.answers;
+        const length = answers.length;
 
-      tempAnswers.map((name, index) => {
-        axios
-          .get("/search/concept?name=" + name.answer + "&dataType=NA")
-          .then(response => {
-            const result = response.data.filter(
-              item => item.name === name.answer
-            );
-            if (result.length === 1) {
-              name.uuid = result[0].uuid;
-              if (len - 1 === index) {
-                this.postCodedData(tempAnswers);
-              }
-            } else {
-              name.uuid = UUID.v4();
-              axios
-                .post("/concepts", [
-                  {
-                    name: name.answer,
-                    uuid: name.uuid,
-                    dataType: "NA",
-                    lowAbsolute: null,
-                    highAbsolute: null,
-                    lowNormal: null,
-                    highNormal: null,
-                    unit: null
-                  }
-                ])
-                .then(response => {
-                  if (response.status === 200) {
-                    console.log(
-                      "Dynamic concept added through Coded",
-                      response
-                    );
-                    if (len - 1 === index) {
-                      this.postCodedData(tempAnswers);
+        let index = 0;
+        answers.map(answer => {
+          axios
+            .get("/search/concept?name=" + answer.name + "&dataType=NA")
+            .then(response => {
+              console.log("Response", response.data);
+              const result = response.data.filter(
+                item =>
+                  item.name.toLowerCase().trim() ===
+                  answer.name.toLowerCase().trim()
+              );
+
+              if (result.length !== 0) {
+                answer.uuid = result[0].uuid;
+
+                index = index + 1;
+                if (index == length) {
+                  this.postCodedData(answers);
+                }
+              } else {
+                answer.uuid = UUID.v4();
+                axios
+                  .post("/concepts", [
+                    {
+                      name: answer.name,
+                      uuid: answer.uuid,
+                      dataType: "NA",
+                      lowAbsolute: null,
+                      highAbsolute: null,
+                      lowNormal: null,
+                      highNormal: null,
+                      unit: null
                     }
-                  }
-                });
+                  ])
+                  .then(response => {
+                    if (response.status === 200) {
+                      console.log(
+                        "Dynamic concept added through Coded",
+                        response
+                      );
+
+                      index = index + 1;
+                      if (index == length) {
+                        this.postCodedData(answers);
+                      }
+                    }
+                  });
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        });
+      } else {
+        axios
+          .post("/concepts", [
+            {
+              name: this.state.name,
+              uuid: UUID.v4(),
+              dataType: this.state.dataType,
+              lowAbsolute: this.state.lowAbsolute,
+              highAbsolute: this.state.highAbsolute,
+              lowNormal: this.state.lowNormal,
+              highNormal: this.state.highNormal,
+              unit: this.state.unit
+            }
+          ])
+          .then(response => {
+            if (response.status === 200) {
+              console.log(response);
+              this.setState({
+                name: "",
+                dataType: "",
+                lowAbsolute: null,
+                highAbsolute: null,
+                lowNormal: null,
+                highNormal: null,
+                unit: null,
+                answers: [],
+                conceptCreationAlert: true
+              });
             }
           })
           .catch(error => {
-            console.log("CAT", error);
+            console.log(error);
           });
-      });
-    } else {
-      axios
-        .post("/concepts", [
-          {
-            name: this.state.name,
-            uuid: UUID.v4(),
-            dataType: this.state.dataType,
-            lowAbsolute: this.state.lowAbsolute,
-            highAbsolute: this.state.highAbsolute,
-            lowNormal: this.state.lowNormal,
-            highNormal: this.state.highNormal,
-            unit: this.state.unit
-          }
-        ])
-        .then(response => {
-          if (response.status === 200) {
-            console.log("Response:::", response);
-            this.setState({
-              name: "",
-              dataType: "",
-              lowAbsolute: null,
-              highAbsolute: null,
-              lowNormal: null,
-              highNormal: null,
-              unit: null,
-              answers: [],
-              conceptCreationAlert: true
-            });
-          }
-        })
-        .catch(err => {
-          console.log("ERRRR:::::", err);
-        });
+      }
     }
   };
 
-  getValue = (id, value) => {
+  onNumericDataType = event => {
     this.setState({
-      [id]: value
-    });
-  };
-
-  getCodedValue = value => {
-    this.setState({
-      answers: value
+      [event.target.id]: event.target.value
     });
   };
 
   getDialogFlag = value => {
-    this.setState(
-      {
-        conceptCreationAlert: !value
-      },
-      () => {
-        console.log(this.state.conceptCreationAlert);
-      }
-    );
+    this.setState({
+      conceptCreationAlert: !value
+    });
   };
 
   render() {
     let dataType;
     if (this.state.dataType === "Numeric") {
-      dataType = <NumericDataType sendValue={this.getValue} />;
+      dataType = (
+        <NumericDataType
+          onNumericDataType={this.onNumericDataType}
+          numericDataTypeProperties={this.state}
+        />
+      );
     }
     if (this.state.dataType === "Coded") {
-      dataType = <CodedDataType sendValue={this.getCodedValue} />;
+      dataType = (
+        <CodedDataType
+          answers={this.state.answers}
+          onDeleteAnswer={this.onDeleteAnswer}
+          onAddAnswer={this.onAddAnswer}
+          onChangeAnswerName={this.onChangeAnswerName}
+          onToggleAnswerField={this.onToggleAnswerField}
+          // onAutoSuggestChange={this.onAutoSuggestChange}
+        />
+      );
     }
 
     const classes = {
@@ -219,6 +275,9 @@ class CreateConcept extends Component {
         justifyContent: "center",
         variant: "contained",
         marginTop: 15
+      },
+      helperText: {
+        marginLeft: 15
       }
     };
 
@@ -251,7 +310,6 @@ class CreateConcept extends Component {
                 label="DataType"
                 value={this.state.dataType}
                 onChange={this.handleChange("dataType")}
-                // input={<OutlinedInput />}
                 style={classes.select}
               >
                 {this.state.dataTypes.map(datatype => {
@@ -262,6 +320,11 @@ class CreateConcept extends Component {
                   );
                 })}
               </Select>
+              {this.state.dataTypeSelectionAlert && (
+                <FormHelperText error style={classes.helperText}>
+                  *Required
+                </FormHelperText>
+              )}
             </FormControl>
             {dataType}
           </Grid>
@@ -276,7 +339,10 @@ class CreateConcept extends Component {
             </Button>
           </Grid>
           {this.state.conceptCreationAlert && (
-            <CustomizedDialogs sendValue={this.getDialogFlag} />
+            <CustomizedDialogs
+              sendValue={this.getDialogFlag}
+              message="Concept created successfully."
+            />
           )}
         </form>
       </>
