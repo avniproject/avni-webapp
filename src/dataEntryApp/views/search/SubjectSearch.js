@@ -12,12 +12,10 @@ import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
-import {
-  setSubjectSearchParams,
-  searchSubjects
-} from "../../reducers/searchReducer";
+import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import ScreenWithAppBar from "../../components/ScreenWithAppBar";
+import PrimaryButton from "../../components/PrimaryButton";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -54,12 +52,8 @@ const SubjectsTable = ({ type, subjects }) => {
       <TableHead>
         <TableRow>
           <TableCell>Name</TableCell>
-          {type.name === "Individual" && (
-            <TableCell align="center">Gender</TableCell>
-          )}
-          {type.name === "Individual" && (
-            <TableCell align="center">Date of birth(Age)</TableCell>
-          )}
+          {type.name === "Individual" && <TableCell align="center">Gender</TableCell>}
+          {type.name === "Individual" && <TableCell align="center">Date of birth(Age)</TableCell>}
           <TableCell align="center">Location</TableCell>
           <TableCell align="center">Active programs</TableCell>
         </TableRow>
@@ -70,15 +64,9 @@ const SubjectsTable = ({ type, subjects }) => {
             <TableCell component="th" scope="row">
               {row.fullName}
             </TableCell>
-            {type.name === "Individual" && (
-              <TableCell align="center">{row.gender.name}</TableCell>
-            )}
-            {type.name === "Individual" && (
-              <TableCell align="center">{row.dateOfBirth}</TableCell>
-            )}
-            <TableCell align="center">
-              {row.addressLevel.titleLineage}
-            </TableCell>
+            {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}
+            {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
+            <TableCell align="center">{row.addressLevel.titleLineage}</TableCell>
             <TableCell align="center">
               {row.activePrograms.map((p, key) => (
                 <Button
@@ -116,9 +104,7 @@ const SubjectSearch = props => {
   }, []);
 
   return (
-    <ScreenWithAppBar
-      appbarTitle={`Search ${props.subjectType.operationalSubjectTypeName}`}
-    >
+    <ScreenWithAppBar appbarTitle={`Search ${props.subjectType.name}`}>
       <div className={classes.searchCreateToolbar}>
         <form onSubmit={handleSubmit} className={classes.searchForm}>
           <FormControl className={classes.searchFormItem}>
@@ -132,15 +118,9 @@ const SubjectSearch = props => {
             />
           </FormControl>
           <FormControl className={classes.searchFormItem}>
-            <Button
-              type="submit"
-              variant="contained"
-              size="small"
-              color="primary"
-              onClick={handleSubmit}
-            >
+            <PrimaryButton type={"submit"} onClick={handleSubmit}>
               Search
-            </Button>
+            </PrimaryButton>
           </FormControl>
         </form>
         <RegistrationMenu className={classes.createButtonHolder} />

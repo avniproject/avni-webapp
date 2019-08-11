@@ -26,9 +26,7 @@ class CreateConcept extends Component {
       lowNormal: null,
       highNormal: null,
       unit: null,
-      answers: [
-        { name: "", uuid: "", unique: false, abnormal: false, editable: true }
-      ],
+      answers: [{ name: "", uuid: "", unique: false, abnormal: false, editable: true }],
       conceptCreationAlert: false,
       dataTypeSelectionAlert: false
     };
@@ -143,9 +141,7 @@ class CreateConcept extends Component {
             .then(response => {
               console.log("Response", response.data);
               const result = response.data.filter(
-                item =>
-                  item.name.toLowerCase().trim() ===
-                  answer.name.toLowerCase().trim()
+                item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
               );
 
               if (result.length !== 0) {
@@ -172,10 +168,7 @@ class CreateConcept extends Component {
                   ])
                   .then(response => {
                     if (response.status === 200) {
-                      console.log(
-                        "Dynamic concept added through Coded",
-                        response
-                      );
+                      console.log("Dynamic concept added through Coded", response);
 
                       index = index + 1;
                       if (index == length) {
@@ -299,10 +292,7 @@ class CreateConcept extends Component {
               />
             </FormControl>
             <FormControl>
-              <InputLabel
-                htmlFor="age-helper"
-                style={{ marginTop: 10, marginLeft: 14 }}
-              >
+              <InputLabel htmlFor="age-helper" style={{ marginTop: 10, marginLeft: 14 }}>
                 Datatype
               </InputLabel>
               <Select
@@ -329,15 +319,11 @@ class CreateConcept extends Component {
             {dataType}
           </Grid>
           <Grid container justify="center">
-            <Button
-              type="submit"
-              variant="outlined"
-              color="primary"
-              style={classes.button}
-            >
+            <Button type="submit" variant="outlined" color="primary" style={classes.button}>
               Submit
             </Button>
           </Grid>
+
           {this.state.conceptCreationAlert && (
             <CustomizedDialogs
               sendValue={this.getDialogFlag}

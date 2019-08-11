@@ -8,8 +8,6 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
-import Downshift from "downshift";
-import Paper from "@material-ui/core/Paper";
 import deburr from "lodash/deburr";
 import MenuItem from "@material-ui/core/MenuItem";
 import Autosuggest from "react-autosuggest";
