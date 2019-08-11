@@ -9,7 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import CustomizedDialogs from "./CustomizedDialogs";
 import CodedDataType from "./CodedDataType";
-import EditCodedDataType from "./EditCodedDataType";
+
 class EditConcept extends Component {
   constructor(props) {
     super(props);
@@ -176,9 +176,7 @@ class EditConcept extends Component {
           .get("/search/concept?name=" + answer.name + "&dataType=NA")
           .then(response => {
             const result = response.data.filter(
-              item =>
-                item.name.toLowerCase().trim() ===
-                answer.name.toLowerCase().trim()
+              item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
             );
             if (result.length != 0) {
               answer.uuid = result[0].uuid;
@@ -203,10 +201,7 @@ class EditConcept extends Component {
                 ])
                 .then(response => {
                   if (response.status === 200) {
-                    console.log(
-                      "Dynamic concept added through Coded",
-                      response
-                    );
+                    console.log("Dynamic concept added through Coded", response);
                     index = index + 1;
                     if (length == index) {
                       this.postCodedData(answers);
@@ -343,12 +338,7 @@ class EditConcept extends Component {
             {dataType}
           </Grid>
           <Grid container justify="center">
-            <Button
-              type="submit"
-              variant="outlined"
-              color="primary"
-              style={classes.button}
-            >
+            <Button type="submit" variant="outlined" color="primary" style={classes.button}>
               Submit
             </Button>
           </Grid>
