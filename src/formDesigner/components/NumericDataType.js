@@ -4,11 +4,16 @@ import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 
 class NumericDataType extends Component {
-  handleChange = event => {
-    this.props.sendValue(event.target.id, event.target.value);
-  };
   render() {
     const classes = { width: 228 };
+    const {
+      lowAbsolute,
+      highAbsolute,
+      lowNormal,
+      highNormal,
+      unit
+    } = this.props.numericDataTypeProperties;
+
     return (
       <>
         <Grid container justify="center">
@@ -20,8 +25,9 @@ class NumericDataType extends Component {
               placeholder="Enter Low Absolute"
               margin="normal"
               style={{ width: 223, marginRight: 10 }}
-              onChange={this.handleChange}
+              onChange={event => this.props.onNumericDataType(event)}
               InputProps={{ inputProps: { min: 0 } }}
+              defaultValue={lowAbsolute}
             />
           </FormControl>
           <FormControl>
@@ -32,8 +38,9 @@ class NumericDataType extends Component {
               placeholder="Enter High Absolute"
               margin="normal"
               style={classes}
-              onChange={this.handleChange}
+              onChange={event => this.props.onNumericDataType(event)}
               InputProps={{ inputProps: { min: 0 } }}
+              defaultValue={highAbsolute}
             />
           </FormControl>
         </Grid>
@@ -46,8 +53,9 @@ class NumericDataType extends Component {
               placeholder="Enter Low Normal"
               margin="normal"
               style={{ width: 223, marginRight: 10 }}
-              onChange={this.handleChange}
+              onChange={event => this.props.onNumericDataType(event)}
               InputProps={{ inputProps: { min: 0 } }}
+              defaultValue={lowNormal}
             />
           </FormControl>
           <FormControl>
@@ -58,21 +66,22 @@ class NumericDataType extends Component {
               placeholder="Enter High Normal"
               margin="normal"
               style={classes}
-              onChange={this.handleChange}
+              onChange={event => this.props.onNumericDataType(event)}
               InputProps={{ inputProps: { min: 0 } }}
+              defaultValue={highNormal}
             />
           </FormControl>
         </Grid>
         <Grid container justify="center">
           <FormControl>
             <TextField
-              required
               type="string"
-              id="Unit"
+              id="unit"
               label="Unit"
               placeholder="Enter unit"
               margin="normal"
-              onChange={this.handleChange}
+              onChange={event => this.props.onNumericDataType(event)}
+              defaultValue={unit}
             />
           </FormControl>
         </Grid>
