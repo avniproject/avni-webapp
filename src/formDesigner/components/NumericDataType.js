@@ -5,7 +5,7 @@ import FormControl from "@material-ui/core/FormControl";
 
 class NumericDataType extends Component {
   render() {
-    const classes = { width: 228 };
+    const classes = { width: 195, marginRight: 10 };
     const {
       lowAbsolute,
       highAbsolute,
@@ -16,63 +16,63 @@ class NumericDataType extends Component {
 
     return (
       <>
-        <Grid container justify="center">
-          <FormControl>
-            <TextField
-              type="number"
-              id="lowAbsolute"
-              label="Low Absolute"
-              placeholder="Enter Low Absolute"
-              margin="normal"
-              style={{ width: 223, marginRight: 10 }}
-              onChange={event => this.props.onNumericDataType(event)}
-              InputProps={{ inputProps: { min: 0 } }}
-              defaultValue={lowAbsolute}
-            />
-          </FormControl>
-          <FormControl>
-            <TextField
-              type="number"
-              id="highAbsolute"
-              label="High Absolute"
-              placeholder="Enter High Absolute"
-              margin="normal"
-              style={classes}
-              onChange={event => this.props.onNumericDataType(event)}
-              InputProps={{ inputProps: { min: 0 } }}
-              defaultValue={highAbsolute}
-            />
-          </FormControl>
-        </Grid>
-        <Grid container justify="center">
-          <FormControl>
-            <TextField
-              type="number"
-              id="lowNormal"
-              label="Low Normal"
-              placeholder="Enter Low Normal"
-              margin="normal"
-              style={{ width: 223, marginRight: 10 }}
-              onChange={event => this.props.onNumericDataType(event)}
-              InputProps={{ inputProps: { min: 0 } }}
-              defaultValue={lowNormal}
-            />
-          </FormControl>
-          <FormControl>
-            <TextField
-              type="number"
-              id="highNormal"
-              label="High Normal"
-              placeholder="Enter High Normal"
-              margin="normal"
-              style={classes}
-              onChange={event => this.props.onNumericDataType(event)}
-              InputProps={{ inputProps: { min: 0 } }}
-              defaultValue={highNormal}
-            />
-          </FormControl>
-        </Grid>
-        <Grid container justify="center">
+        <Grid container justify="left">
+          <Grid sm={12}>
+            <FormControl>
+              <TextField
+                type="number"
+                id="lowAbsolute"
+                label="Low Absolute"
+                placeholder="Enter Low Absolute"
+                margin="normal"
+                style={classes}
+                onChange={event => this.props.onNumericDataType(event)}
+                InputProps={{ inputProps: { min: 0 } }}
+                defaultValue={lowAbsolute}
+              />
+            </FormControl>
+            <FormControl>
+              <TextField
+                type="number"
+                id="highAbsolute"
+                label="High Absolute"
+                placeholder="Enter High Absolute"
+                margin="normal"
+                style={classes}
+                onChange={event => this.props.onNumericDataType(event)}
+                InputProps={{ inputProps: { min: 0 } }}
+                defaultValue={highAbsolute}
+              />
+            </FormControl>
+          </Grid>
+          <Grid sm={12}>
+            <FormControl>
+              <TextField
+                type="number"
+                id="lowNormal"
+                label="Low Normal"
+                placeholder="Enter Low Normal"
+                margin="normal"
+                style={classes}
+                onChange={event => this.props.onNumericDataType(event)}
+                InputProps={{ inputProps: { min: 0 } }}
+                defaultValue={lowNormal}
+              />
+            </FormControl>
+            <FormControl>
+              <TextField
+                type="number"
+                id="highNormal"
+                label="High Normal"
+                placeholder="Enter High Normal"
+                margin="normal"
+                style={classes}
+                onChange={event => this.props.onNumericDataType(event)}
+                InputProps={{ inputProps: { min: 0 } }}
+                defaultValue={highNormal}
+              />
+            </FormControl>
+          </Grid>
           <FormControl>
             <TextField
               type="string"
@@ -82,6 +82,7 @@ class NumericDataType extends Component {
               margin="normal"
               onChange={event => this.props.onNumericDataType(event)}
               defaultValue={unit}
+              style={classes}
             />
           </FormControl>
         </Grid>
