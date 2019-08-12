@@ -274,18 +274,18 @@ class EditConcept extends Component {
     let dataType;
     const classes = {
       textField: {
-        width: 300
+        width: 400,
+        marginRight: 10
       },
       select: {
-        width: 150,
+        width: 400,
         height: 40,
-        marginTop: 24,
-        marginLeft: 10
+        marginTop: 24
       },
       button: {
-        justifyContent: "center",
+        // justifyContent: "center",
         variant: "contained",
-        marginTop: 15
+        marginTop: 40
       }
     };
 
@@ -314,8 +314,8 @@ class EditConcept extends Component {
         <ButtonAppBar title="Edit a Concept" />
 
         <form onSubmit={this.handleSubmit}>
-          <Grid container justify="center">
-            <FormControl>
+          <Grid container justify="flex-start">
+            <Grid sm={12}>
               <TextField
                 required
                 id="name"
@@ -325,8 +325,8 @@ class EditConcept extends Component {
                 style={classes.textField}
                 margin="normal"
               />
-            </FormControl>
-            <FormControl>
+            </Grid>
+            <Grid>
               <TextField
                 id="dataType"
                 label="DataType"
@@ -334,14 +334,16 @@ class EditConcept extends Component {
                 style={classes.select}
                 disabled={true}
               />
-            </FormControl>
+            </Grid>
             {dataType}
+
+            <Grid sm={12}>
+              <Button type="submit" color="primary" style={classes.button}>
+                Submit
+              </Button>
+            </Grid>
           </Grid>
-          <Grid container justify="center">
-            <Button type="submit" variant="outlined" color="primary" style={classes.button}>
-              Submit
-            </Button>
-          </Grid>
+
           {this.state.conceptCreationAlert && (
             <CustomizedDialogs
               sendValue={this.getDialogFlag}
