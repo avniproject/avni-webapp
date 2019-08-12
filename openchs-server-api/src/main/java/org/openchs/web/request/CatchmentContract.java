@@ -3,6 +3,7 @@ package org.openchs.web.request;
 import org.openchs.domain.Catchment;
 import org.springframework.hateoas.core.Relation;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ public class CatchmentContract extends ReferenceDataContract {
 
     private List<Long> locationIds;
 
+    @NotNull
     private String type;
 
     private List<AddressLevelContract> locations = new ArrayList<>();

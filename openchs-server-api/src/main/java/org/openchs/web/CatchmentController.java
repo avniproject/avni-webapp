@@ -24,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +70,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @PostMapping(value = "/catchment")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
-    ResponseEntity<?> createSingleCatchment(@RequestBody CatchmentContract catchmentContract) throws Exception {
+    ResponseEntity<?> createSingleCatchment(@RequestBody @Valid CatchmentContract catchmentContract) throws Exception {
         if(catchmentRepository.findByName(catchmentContract.getName()) != null)
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Catchment with name %s already exists", catchmentContract.getName())));
         Catchment catchment = new Catchment();
