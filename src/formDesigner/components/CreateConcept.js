@@ -13,6 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import CustomizedDialogs from "./CustomizedDialogs";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import { LineBreak } from "../../common/components";
 
 class CreateConcept extends Component {
   constructor(props) {
@@ -104,15 +105,11 @@ class CreateConcept extends Component {
             if (response.status === 200) {
               console.log(response);
               this.setState({
-                conceptCreationAlert: true,
-                name: "",
-                dataType: "",
-                lowAbsolute: null,
-                highAbsolute: null,
-                lowNormal: null,
-                highNormal: null,
-                unit: null,
-                answers: []
+                conceptCreationAlert: true
+              });
+            } else {
+              this.setState({
+                errorAlert: true
               });
             }
           })
@@ -200,15 +197,11 @@ class CreateConcept extends Component {
             if (response.status === 200) {
               console.log(response);
               this.setState({
-                name: "",
-                dataType: "",
-                lowAbsolute: null,
-                highAbsolute: null,
-                lowNormal: null,
-                highNormal: null,
-                unit: null,
-                answers: [],
                 conceptCreationAlert: true
+              });
+            } else {
+              this.setState({
+                errorAlert: true
               });
             }
           })
@@ -228,6 +221,7 @@ class CreateConcept extends Component {
   getDialogFlag = value => {
     this.setState({
       conceptCreationAlert: !value
+      // errorAlert: !value
     });
   };
 
@@ -256,21 +250,21 @@ class CreateConcept extends Component {
 
     const classes = {
       textField: {
-        width: 300
+        width: 400,
+        marginRight: 10
       },
       select: {
-        width: 150,
+        width: 400,
         height: 40,
-        marginTop: 24,
-        marginLeft: 10
+        marginTop: 24
       },
       button: {
-        justifyContent: "center",
+        // justifyContent: "center",
         variant: "contained",
-        marginTop: 15
+        marginTop: 40
       },
-      helperText: {
-        marginLeft: 15
+      inputLabel: {
+        marginTop: 15
       }
     };
 
@@ -279,8 +273,8 @@ class CreateConcept extends Component {
         <ButtonAppBar title="Create a Concept" />
 
         <form onSubmit={this.handleSubmit}>
-          <Grid container justify="center">
-            <FormControl>
+          <Grid container justify="flex-start">
+            <Grid sm={12}>
               <TextField
                 required
                 id="name"
@@ -290,36 +284,37 @@ class CreateConcept extends Component {
                 style={classes.textField}
                 margin="normal"
               />
-            </FormControl>
-            <FormControl>
-              <InputLabel htmlFor="age-helper" style={{ marginTop: 10, marginLeft: 14 }}>
-                Datatype
-              </InputLabel>
-              <Select
-                id="dataType"
-                label="DataType"
-                value={this.state.dataType}
-                onChange={this.handleChange("dataType")}
-                style={classes.select}
-              >
-                {this.state.dataTypes.map(datatype => {
-                  return (
-                    <MenuItem value={datatype} key={datatype}>
-                      {datatype}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-              {this.state.dataTypeSelectionAlert && (
-                <FormHelperText error style={classes.helperText}>
-                  *Required
-                </FormHelperText>
-              )}
-            </FormControl>
+            </Grid>
+
+            <Grid>
+              <FormControl>
+                <InputLabel htmlFor="age-helper" style={classes.inputLabel}>
+                  Datatype *
+                </InputLabel>
+                <Select
+                  id="dataType"
+                  label="DataType"
+                  value={this.state.dataType}
+                  onChange={this.handleChange("dataType")}
+                  style={classes.select}
+                >
+                  {this.state.dataTypes.map(datatype => {
+                    return (
+                      <MenuItem value={datatype} key={datatype}>
+                        {datatype}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+                {this.state.dataTypeSelectionAlert && (
+                  <FormHelperText error>*Required</FormHelperText>
+                )}
+              </FormControl>
+            </Grid>
             {dataType}
           </Grid>
-          <Grid container justify="center">
-            <Button type="submit" variant="outlined" color="primary" style={classes.button}>
+          <Grid>
+            <Button type="submit" color="primary" style={classes.button}>
               Submit
             </Button>
           </Grid>
