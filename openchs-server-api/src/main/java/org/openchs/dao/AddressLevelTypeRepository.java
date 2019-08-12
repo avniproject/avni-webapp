@@ -13,7 +13,6 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "addressLevelType", path = "addressLevelType")
 public interface AddressLevelTypeRepository extends ReferenceDataRepository<AddressLevelType> {
-    AddressLevelType findById(Long id);
 
     AddressLevelType findByNameAndOrganisationId(String name, Long organisationId);
     AddressLevelType findByNameIgnoreCaseAndOrganisationId(String name, Long organisationId);

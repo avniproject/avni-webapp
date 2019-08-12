@@ -13,4 +13,6 @@ public interface ReferenceDataRepository<T extends CHSEntity> extends CHSReposit
 
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
     <S extends T> S save(S entity);
+
+    T findById(long id);
 }

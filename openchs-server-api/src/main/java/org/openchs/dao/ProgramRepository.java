@@ -11,8 +11,6 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "program", path = "program")
 public interface ProgramRepository extends ReferenceDataRepository<Program>, FindByLastModifiedDateTime<Program> {
-    Program findById(long programId);
-
     @Query("select o from Program o where o.operationalPrograms is not empty")
     List<ProgramProjection> findAllOperational();
 }

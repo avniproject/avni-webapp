@@ -18,7 +18,6 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
 public interface LocationRepository extends ReferenceDataRepository<AddressLevel>, FindByLastModifiedDateTime<AddressLevel>, OperatingIndividualScopeAwareRepository<AddressLevel> {
 
-    AddressLevel findById(Long id);
 
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevel> findByIdIn(@Param("ids") Long[] ids);
