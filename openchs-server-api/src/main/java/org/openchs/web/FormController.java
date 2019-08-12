@@ -9,9 +9,11 @@ import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.FormWebProjection;
+import org.openchs.service.FormMappingService;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormatContract;
 import org.openchs.web.request.application.*;
+import org.openchs.web.request.webapp.CreateFormRequest;
 import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +47,9 @@ public class FormController {
     private final FormMappingRepository formMappingRepository;
     private RepositoryEntityLinks entityLinks;
     private ProjectionFactory projectionFactory;
+    private final FormMappingService formMappingService;
+
+    private final static String FORM_ALREADY_EXISTS = "Form with name %s already exists";
 
 
     @Autowired
@@ -53,7 +59,8 @@ public class FormController {
                           OperationalProgramRepository operationalProgramRepository,
                           OperationalEncounterTypeRepository operationalEncounterTypeRepository,
                           RepositoryEntityLinks entityLinks,
-                          ProjectionFactory projectionFactory) {
+                          ProjectionFactory projectionFactory,
+                          FormMappingService formMappingService) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.formMappingRepository = formMappingRepository;
@@ -61,6 +68,7 @@ public class FormController {
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.entityLinks = entityLinks;
         this.projectionFactory = projectionFactory;
+        this.formMappingService = formMappingService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -77,6 +85,30 @@ public class FormController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok(null);
+    }
+
+    @PostMapping(value = "/web/forms")
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity createWeb(@RequestBody CreateFormRequest formRequest) {
+        String formName = formRequest.getName().trim();
+        Form existingForm = formRepository.findByNameIgnoreCase(formName);
+        if (existingForm != null) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(String.format(FORM_ALREADY_EXISTS, formName));
+        }
+
+        FormBuilder formBuilder = new FormBuilder(null);
+        Form form = formBuilder
+                .withName(formRequest.getName())
+                .withType(formRequest.getFormType())
+                .withUUID(UUID.randomUUID().toString())
+                .build();
+        formRepository.save(form);
+        formMappingService.createFormMapping(formRequest, form);
+
+        return ResponseEntity.ok(form);
     }
 
     private Form saveForm(@RequestBody FormContract formRequest) throws FormBuilderException {

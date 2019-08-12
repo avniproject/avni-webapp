@@ -5,14 +5,14 @@ import java.util.Arrays;
 public enum FormType {
     IndividualProfile, Encounter, ProgramEncounter, ProgramEnrolment, ProgramExit, ProgramEncounterCancellation, ChecklistItem, IndividualRelationship;
 
-    static FormType[] formTypesWithEncounterTypes = {FormType.Encounter, FormType.ProgramEncounter, FormType.ProgramEncounterCancellation};
-    static FormType[] formTypesLinkedToProgram = {FormType.ProgramEncounter, FormType.ProgramExit, FormType.ProgramEnrolment};
+    static FormType[] linkedToEncounterType = {FormType.Encounter, FormType.ProgramEncounter, FormType.ProgramEncounterCancellation};
+    static FormType[] linkedToProgram = {FormType.ProgramEncounter, FormType.ProgramExit, FormType.ProgramEnrolment, FormType.ProgramEncounterCancellation};
 
-    public boolean hasEncounterType() {
-        return Arrays.asList(formTypesWithEncounterTypes).contains(this);
+    public boolean isLinkedToEncounterType() {
+        return Arrays.asList(linkedToEncounterType).contains(this);
     }
 
     public boolean isLinkedToProgram() {
-        return Arrays.asList(formTypesLinkedToProgram).contains(this);
+        return Arrays.asList(linkedToProgram).contains(this);
     }
 }
