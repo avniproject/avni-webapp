@@ -30,10 +30,10 @@ class CodedDataType extends Component {
     }));
     return (
       <>
-        <Grid container>
+        <Grid container style={{ marginTop: 20 }}>
           {this.props.answers.map((answer, index) => {
             return (
-              <Grid container justify="center" key={index}>
+              <Grid container key={index}>
                 <FormControl>
                   <AutoSuggestSingleSelection
                     visibility={!answer.editable}
