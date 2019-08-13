@@ -14,6 +14,7 @@ import FormControl from "@material-ui/core/FormControl";
 import CustomizedDialogs from "./CustomizedDialogs";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { LineBreak } from "../../common/components/utils";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 class CreateConcept extends Component {
   constructor(props) {
@@ -269,9 +270,7 @@ class CreateConcept extends Component {
     };
 
     return (
-      <>
-        <ButtonAppBar title="Create a Concept" />
-
+      <ScreenWithAppBar appbarTitle={"Create a Concept"}>
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
             <Grid sm={12}>
@@ -326,7 +325,7 @@ class CreateConcept extends Component {
             />
           )}
         </form>
-      </>
+      </ScreenWithAppBar>
     );
   }
 }

@@ -9,6 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import CustomizedDialogs from "./CustomizedDialogs";
 import CodedDataType from "./CodedDataType";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 class EditConcept extends Component {
   constructor(props) {
@@ -310,9 +311,7 @@ class EditConcept extends Component {
     }
 
     return (
-      <>
-        <ButtonAppBar title="Edit a Concept" />
-
+      <ScreenWithAppBar appbarTitle={"Edit a Concept"}>
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
             <Grid sm={12}>
@@ -351,7 +350,7 @@ class EditConcept extends Component {
             />
           )}
         </form>
-      </>
+      </ScreenWithAppBar>
     );
   }
 }
