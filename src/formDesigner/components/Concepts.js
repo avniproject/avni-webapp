@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Fragment } from "react";
 import MaterialTable from "material-table";
-import ButtonAppBar from "./CommonHeader";
 import axios from "axios";
 import _ from "lodash";
+import { withRouter } from "react-router-dom";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
-function Concepts() {
+const Concepts = ({ history }) => {
   const columns = [
     { title: "Name", field: "name", defaultSort: "asc" },
     { title: "DataType", field: "dataType" },
@@ -12,10 +13,12 @@ function Concepts() {
   ];
   const tableRef = React.createRef();
   return (
-    <div>
-      <ButtonAppBar title="Concepts List" />
+    <ScreenWithAppBar appbarTitle="Concepts List">
       <MaterialTable
         title=""
+        components={{
+          Container: props => <Fragment>{props.children}</Fragment>
+        }}
         tableRef={tableRef}
         columns={columns}
         data={query =>
@@ -68,11 +71,16 @@ function Concepts() {
                 });
             },
             disabled: rowData.organisationId === 1
-          })
+          }),
+          {
+            icon: "edit",
+            tooltip: "Edit Concept",
+            onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`)
+          }
         ]}
       />
-    </div>
+    </ScreenWithAppBar>
   );
-}
+};
 
-export default Concepts;
+export default withRouter(Concepts);
