@@ -101,6 +101,7 @@ const DefaultPage = props => {
                   type: props.subject.subjectType.name,
                   from: props.location.pathname + props.location.search
                 }}
+                noUnderline
               >
                 <PrimaryButton>Next</PrimaryButton>
               </RelativeLink>

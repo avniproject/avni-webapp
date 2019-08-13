@@ -5,7 +5,7 @@ import PrimaryButton from "./PrimaryButton";
 
 const PaginationButton = ({ page, title }) =>
   page && (
-    <RelativeLink params={{ page }}>
+    <RelativeLink params={{ page }} noUnderline>
       <PrimaryButton>{title}</PrimaryButton>
     </RelativeLink>
   );
@@ -16,7 +16,7 @@ const Paginator = props => {
       <Box component={"span"}>
         <PaginationButton page={props.pageDetails.previousPageNumber} title={"Previous"} />
         {!props.pageDetails.previousPageNumber && (
-          <InternalLink to={props.pageDetails.from} params={{ page: "" }}>
+          <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
             <PrimaryButton>Previous</PrimaryButton>
           </InternalLink>
         )}

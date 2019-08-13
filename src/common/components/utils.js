@@ -6,29 +6,46 @@ import SvgIcon from "@material-ui/core/SvgIcon";
 import qs from "query-string";
 import { join } from "path";
 
+import { makeStyles } from "@material-ui/core/styles";
+
+const createStyles = makeStyles(theme => ({
+  noUnderline: {
+    "&:hover, &:focus": {
+      textDecoration: "none"
+    }
+  }
+}));
+
 export const AddIcon = props => (
   <SvgIcon {...props}>
     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
   </SvgIcon>
 );
 
-export const InternalLink = ({ children, ...props }) => (
-  <Link
-    component={React.forwardRef((props, ref) => (
-      <RouterLink innerRef={ref} {...props} />
-    ))}
-    {...props}
-  >
-    {children}
-  </Link>
-);
-
-export const RelativeLink = withRouter(({ location, children, to = "./", params, noParams }) => {
-  const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
+export const InternalLink = ({ children, noUnderline, ...props }) => {
+  const classes = createStyles();
   return (
-    <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`}>{children}</InternalLink>
+    <Link
+      component={React.forwardRef((props, ref) => (
+        <RouterLink innerRef={ref} {...props} className={noUnderline ? classes.noUnderline : ""} />
+      ))}
+      {...props}
+    >
+      {children}
+    </Link>
   );
-});
+};
+
+export const RelativeLink = withRouter(
+  ({ location, children, to = "./", params, noParams, ...props }) => {
+    const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
+    return (
+      <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`} {...props}>
+        {children}
+      </InternalLink>
+    );
+  }
+);
 
 export const Home = () => (
   <div>
