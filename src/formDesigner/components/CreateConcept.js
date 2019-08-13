@@ -13,7 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import CustomizedDialogs from "./CustomizedDialogs";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import { LineBreak } from "../../common/components";
+import { LineBreak } from "../../common/components/utils";
 
 class CreateConcept extends Component {
   constructor(props) {

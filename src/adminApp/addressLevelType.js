@@ -17,7 +17,7 @@ import {
   TextInput,
   Toolbar
 } from "react-admin";
-import { None } from "../common/components";
+import { None } from "../common/components/utils";
 import { isNil } from "lodash";
 
 export const LocationTypeList = props => (
@@ -86,29 +86,19 @@ export const LocationTypeDetail = props => (
 const CreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
     <SaveButton />
-    {edit && (
-      <DeleteButton undoable={false} disabled={!props.record.voidable} />
-    )}
+    {edit && <DeleteButton undoable={false} disabled={!props.record.voidable} />}
   </Toolbar>
 );
 
 const LocationTypeForm = ({ edit, ...props }) => {
   return (
-    <SimpleForm
-      toolbar={<CreateEditToolbar edit={edit} />}
-      {...props}
-      redirect="show"
-    >
+    <SimpleForm toolbar={<CreateEditToolbar edit={edit} />} {...props} redirect="show">
       <TextInput source="name" label="Name" />
       <TextInput source="level" label="Level" />
       {edit ? (
         <ParentReferenceField label="Parent Type" />
       ) : (
-        <ReferenceInput
-          source="parentId"
-          reference="addressLevelType"
-          label="Parent"
-        >
+        <ReferenceInput source="parentId" reference="addressLevelType" label="Parent">
           <SelectInput optionText="name" resettable />
         </ReferenceInput>
       )}

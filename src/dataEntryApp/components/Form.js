@@ -1,10 +1,10 @@
 import React from "react";
 import { isNaN } from "lodash";
-import { withParams } from "../../common/components";
+import { withParams } from "../../common/components/utils";
 import { FormElementGroup } from "./FormElementGroup";
 import Paginator from "./Paginator";
 import { withRouter, Redirect } from "react-router-dom";
-import ScreenWithAppBar from "./ScreenWithAppBar";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 const Form = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave }) => {
   const page = +match.queryParams.page;

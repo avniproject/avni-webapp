@@ -18,7 +18,7 @@ import {
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import Chip from "@material-ui/core/Chip";
-import { LineBreak } from "../common/components";
+import { LineBreak } from "../common/components/utils";
 import LocationUtils from "./LocationUtils";
 import _ from "lodash";
 
@@ -54,11 +54,7 @@ export const CatchmentDetail = props => {
       <SimpleShowLayout>
         <TextField label="Catchment" source="name" />
         <TextField label="Type" source="type" />
-        <ReferenceArrayField
-          label="Locations"
-          reference="locations"
-          source="locationIds"
-        >
+        <ReferenceArrayField label="Locations" reference="locations" source="locationIds">
           <SingleFieldList>
             <TitleChip source="title" />
           </SingleFieldList>
@@ -80,9 +76,7 @@ export const CatchmentList = props => (
 const CustomShowActions = ({ basePath, data, resource }) => {
   return (
     (data && (
-      <CardActions
-        style={{ zIndex: 2, display: "inline-block", float: "right" }}
-      >
+      <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
         <EditButton label="Edit Catchment" basePath={basePath} record={data} />
       </CardActions>
     )) ||
@@ -93,8 +87,7 @@ const CustomShowActions = ({ basePath, data, resource }) => {
 const validateCatchment = (values, allLocations) => {
   const errors = {};
   if (!allLocations) return errors;
-  if (_.isEmpty(values.locationIds))
-    errors.locationIds = ["It can not be empty"];
+  if (_.isEmpty(values.locationIds)) errors.locationIds = ["It can not be empty"];
   if (!LocationUtils.areAtTheSameLevel(values.locationIds, allLocations))
     errors.locationIds = ["All locations must be of same level"];
   return errors;

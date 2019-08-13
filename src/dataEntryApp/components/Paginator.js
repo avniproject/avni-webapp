@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@material-ui/core";
-import { InternalLink, RelativeLink } from "../../common/components";
+import { InternalLink, RelativeLink } from "../../common/components/utils";
 import PrimaryButton from "./PrimaryButton";
 
 const PaginationButton = ({ page, title }) =>

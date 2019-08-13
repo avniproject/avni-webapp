@@ -2,7 +2,7 @@ import React from "react";
 import { includes, intersection, isEmpty } from "lodash";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
-import { AccessDenied } from "../common/components";
+import { AccessDenied } from "../common/components/utils";
 import { OrgManager } from "../adminApp";
 import Forms from "../formDesigner/components/Forms";
 import FormDetails from "../formDesigner/components/FormDetails";
@@ -15,17 +15,11 @@ import DataEntry from "../dataEntryApp/DataEntry";
 import CreateConcept from "../formDesigner/components/CreateConcept";
 import EditConcept from "../formDesigner/components/EditConcept";
 
-const RestrictedRoute = ({
-  component: C,
-  allowedRoles,
-  currentUserRoles,
-  ...rest
-}) => (
+const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
     {...rest}
     render={routerProps =>
-      isEmpty(allowedRoles) ||
-      !isEmpty(intersection(allowedRoles, currentUserRoles)) ? (
+      isEmpty(allowedRoles) || !isEmpty(intersection(allowedRoles, currentUserRoles)) ? (
         <C {...routerProps} />
       ) : (
         <AccessDenied />
@@ -100,9 +94,7 @@ const Routes = props => (
       component={Concept}
     />
     <Route exact path="/">
-      <Redirect
-        to={includes(props.userRoles, ROLES.ORG_ADMIN) ? "/admin" : "/app"}
-      />
+      <Redirect to={includes(props.userRoles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
     </Route>
     <Route
       component={() => (

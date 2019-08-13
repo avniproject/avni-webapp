@@ -23,18 +23,12 @@ export const InternalLink = ({ children, ...props }) => (
   </Link>
 );
 
-export const RelativeLink = withRouter(
-  ({ location, children, to = "./", params, noParams }) => {
-    const updatedParams = noParams
-      ? ""
-      : qs.stringify(merge(qs.parse(location.search), params));
-    return (
-      <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`}>
-        {children}
-      </InternalLink>
-    );
-  }
-);
+export const RelativeLink = withRouter(({ location, children, to = "./", params, noParams }) => {
+  const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
+  return (
+    <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`}>{children}</InternalLink>
+  );
+});
 
 export const Home = () => (
   <div>

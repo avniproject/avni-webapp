@@ -14,7 +14,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
-import ScreenWithAppBar from "../../components/ScreenWithAppBar";
+import ScreenWithAppBar from "../../../common/components/ScreenWithAppBar";
 import PrimaryButton from "../../components/PrimaryButton";
 
 const useStyle = makeStyles(theme => ({

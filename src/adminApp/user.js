@@ -30,7 +30,7 @@ import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
-import { LineBreak } from "../common/components";
+import { LineBreak } from "../common/components/utils";
 import { LOCALES, phoneCountryPrefix } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
 
@@ -102,11 +102,7 @@ export const UserList = ({ organisation, ...props }) => (
       <FunctionField
         label="Status"
         render={user =>
-          user.voided === true
-            ? "Deleted"
-            : user.disabledInCognito === true
-            ? "Disabled"
-            : "Active"
+          user.voided === true ? "Deleted" : user.disabledInCognito === true ? "Disabled" : "Active"
         }
       />
     </Datagrid>
@@ -114,16 +110,12 @@ export const UserList = ({ organisation, ...props }) => (
 );
 
 const isAdminAndLoggedIn = (loggedInUser, selectedUser) =>
-  loggedInUser &&
-  loggedInUser.orgAdmin &&
-  loggedInUser.username === selectedUser.username;
+  loggedInUser && loggedInUser.orgAdmin && loggedInUser.username === selectedUser.username;
 
 const CustomShowActions = ({ user, basePath, data, resource }) => {
   return (
     (data && (
-      <CardActions
-        style={{ zIndex: 2, display: "inline-block", float: "right" }}
-      >
+      <CardActions style={{ zIndex: 2, display: "inline-block", float: "right" }}>
         <EditButton label="Edit User" basePath={basePath} record={data} />
         {isAdminAndLoggedIn(data, user) ? null : (
           <EnableDisableButton
@@ -152,11 +144,7 @@ const formatLang = lang =>
     .join("");
 
 export const UserDetail = ({ user, ...props }) => (
-  <Show
-    title={<UserTitle />}
-    actions={<CustomShowActions user={user} />}
-    {...props}
-  >
+  <Show title={<UserTitle />} actions={<CustomShowActions user={user} />} {...props}>
     <SimpleShowLayout>
       <TextField source="username" label="Login ID (username)" />
       <TextField source="name" label="Name of the Person" />
@@ -178,18 +166,12 @@ export const UserDetail = ({ user, ...props }) => (
       />
       <FunctionField
         label="Language"
-        render={user =>
-          !isNil(user.settings) ? formatLang(user.settings.locale) : ""
-        }
+        render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")}
       />
       <FunctionField
         label="Track Location"
         render={user =>
-          !isNil(user.settings)
-            ? user.settings.trackLocation
-              ? "True"
-              : "False"
-            : ""
+          !isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : ""
         }
       />
     </SimpleShowLayout>
@@ -221,17 +203,13 @@ const operatingScopes = Object.freeze({
 const catchmentChangeMessage = `Please ensure that the user has already synced all 
 data for their previous catchment, and has deleted all local data from their app`;
 
-const mobileNumberFormatter = (v = "") =>
-  isNil(v) ? v : v.substring(phoneCountryPrefix.length);
+const mobileNumberFormatter = (v = "") => (isNil(v) ? v : v.substring(phoneCountryPrefix.length));
 const mobileNumberParser = v =>
   v.startsWith(phoneCountryPrefix) ? v : phoneCountryPrefix.concat(v);
 
 const isRequired = required("This field is required");
 const validateEmail = [isRequired, email("Please enter a valid email address")];
-const validatePhone = [
-  isRequired,
-  regex(/[0-9]{12}/, "Enter a 10 digit number (eg. 9820324567)")
-];
+const validatePhone = [isRequired, regex(/[0-9]{12}/, "Enter a 10 digit number (eg. 9820324567)")];
 
 const localeChoices = [
   { id: LOCALES.ENGLISH, name: "English" },
@@ -247,11 +225,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
     save
   });
   return (
-    <SimpleForm
-      toolbar={<CustomToolbar />}
-      {...sanitizeProps(props)}
-      redirect="show"
-    >
+    <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="show">
       {edit ? (
         <DisabledInput source="username" label="Login ID (username)" />
       ) : (
@@ -264,13 +238,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
                 label={"Login ID (username)"}
                 onChange={(e, newVal) =>
                   !isEmpty(newVal) &&
-                  dispatch(
-                    change(
-                      REDUX_FORM_NAME,
-                      "username",
-                      newVal + "@" + nameSuffix
-                    )
-                  )
+                  dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))
                 }
                 {...rest}
               />
@@ -280,16 +248,8 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         </FormDataConsumer>
       )}
       {!edit && <PasswordTextField />}
-      <TextInput
-        source="name"
-        label="Name of the Person"
-        validate={isRequired}
-      />
-      <TextInput
-        source="email"
-        label="Email Address"
-        validate={validateEmail}
-      />
+      <TextInput source="name" label="Name of the Person" validate={isRequired} />
+      <TextInput source="email" label="Email Address" validate={validateEmail} />
       <TextInput
         source="phoneNumber"
         label="10 digit mobile number"
@@ -308,11 +268,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
                 if (newVal) {
                   dispatch(change(REDUX_FORM_NAME, "catchmentId", null));
                   dispatch(
-                    change(
-                      REDUX_FORM_NAME,
-                      "operatingIndividualScope",
-                      operatingScopes.NONE
-                    )
+                    change(REDUX_FORM_NAME, "operatingIndividualScope", operatingScopes.NONE)
                   );
                 }
               }}
@@ -340,9 +296,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
                     change(
                       REDUX_FORM_NAME,
                       "operatingIndividualScope",
-                      isFinite(newVal)
-                        ? operatingScopes.CATCHMENT
-                        : operatingScopes.NONE
+                      isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
                     )
                   );
                 }}
@@ -364,11 +318,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         <Typography variant="title" component="h3">
           Settings
         </Typography>
-        <RadioButtonGroupInput
-          source="settings.locale"
-          label="Language"
-          choices={localeChoices}
-        />
+        <RadioButtonGroupInput source="settings.locale" label="Language" choices={localeChoices} />
         <BooleanInput source="settings.trackLocation" label="Track location" />
       </Fragment>
     </SimpleForm>

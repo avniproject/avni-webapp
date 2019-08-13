@@ -1,6 +1,6 @@
 import React from "react";
 import Body from "./Body";
-import AppBar from "../AppBar";
+import AppBar from "./AppBar";
 import { Container } from "@material-ui/core";
 
 /**

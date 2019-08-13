@@ -1,4 +1,4 @@
 import React from "react";
-import ScreenWithAppBar from "./ScreenWithAppBar";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 export default () => <ScreenWithAppBar appbarTitle="Loading" />;

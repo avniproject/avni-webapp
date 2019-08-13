@@ -1,5 +1,5 @@
 import React from "react";
-import { LineBreak } from "../../common/components";
+import { LineBreak } from "../../common/components/utils";
 import TextFormElement from "./TextFormElement";
 import SingleSelectFormElement from "./SingleSelectFormElement";
 import MultiSelectFormElement from "./MultiSelectFormElement";

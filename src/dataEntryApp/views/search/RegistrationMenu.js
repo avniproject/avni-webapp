@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { AddIcon, InternalLink } from "../../../common/components";
+import { AddIcon, InternalLink } from "../../../common/components/utils";
 import React from "react";
 import Menu from "@material-ui/core/Menu";
 import { withRouter } from "react-router-dom";

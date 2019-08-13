@@ -1,6 +1,6 @@
 import { invoke } from "lodash";
 import React from "react";
-import { LineBreak } from "../../common/components";
+import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
 
 export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
