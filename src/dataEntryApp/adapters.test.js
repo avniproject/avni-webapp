@@ -3,13 +3,21 @@ import {
   mapConceptAnswer,
   mapForm,
   mapFormElement,
-  mapFormElementGroup
+  mapFormElementGroup,
+  mapOperationalModules
 } from "./adapters";
 import { assert } from "chai";
-import { ConceptAnswer, Concept, FormElementGroup } from "openchs-models";
+import {
+  Concept,
+  ConceptAnswer,
+  EncounterType,
+  FormElementGroup,
+  Program,
+  SubjectType
+} from "openchs-models";
 
 describe("adapters", () => {
-  it("can create concept from json", () => {
+  it("can map concept", () => {
     const concept = mapConcept(sampleConcept);
     assert.equal(concept.name, "Caste Category");
     assert.equal(concept.uuid, "61ab6413-5c6a-4512-ab6e-7d5cd1439569");
@@ -28,17 +36,14 @@ describe("adapters", () => {
     const conceptAnswer = mapConceptAnswer(sampleConcept.conceptAnswers[0]);
 
     assert.equal(conceptAnswer.uuid, "fe41d8ec-ae5e-4054-963b-f7a1768fb629");
-    assert.equal(
-      conceptAnswer.concept.uuid,
-      "cae99772-b389-4baf-849b-9c7c2b06c951"
-    );
+    assert.equal(conceptAnswer.concept.uuid, "cae99772-b389-4baf-849b-9c7c2b06c951");
     assert.equal(conceptAnswer.answerOrder, 4);
     assert.equal(conceptAnswer.abnormal, false);
     assert.equal(conceptAnswer.unique, false);
     assert.equal(conceptAnswer.voided, false);
   });
 
-  it("can create from json", () => {
+  it("can map form element group", () => {
     const form = {};
     const feg = mapFormElementGroup(sampleFormElementGroup, form);
 
@@ -49,7 +54,7 @@ describe("adapters", () => {
     assert.equal(feg.formElements.length, 3);
   });
 
-  it("can create from json", () => {
+  it("can map form element", () => {
     const feg = {};
     const fe = mapFormElement(sampleFormElement, feg);
 
@@ -66,7 +71,7 @@ describe("adapters", () => {
     assert.equal(fe.concept.constructor, Concept);
   });
 
-  it("can create from json", () => {
+  it("can map form", () => {
     const form = mapForm(sampleForm);
 
     assert.equal(form.name, "IHMP Registration Form");
@@ -75,10 +80,32 @@ describe("adapters", () => {
     assert.equal(form.formElementGroups.length, 2);
     assert.equal(form.formElementGroups[0].constructor, FormElementGroup);
     assert.equal(form.formElementGroups[0].name, "Individual details");
-    assert.equal(
-      form.formElementGroups[1].uuid,
-      "0ef62f9b-e52e-4fd9-be85-4c3f08c9a973"
-    );
+    assert.equal(form.formElementGroups[1].uuid, "0ef62f9b-e52e-4fd9-be85-4c3f08c9a973");
+  });
+
+  it("can map operational modules", () => {
+    const json = {
+      formMappings: [{}],
+      encounterTypes: [{ uuid: "abc" }],
+      programs: [{ uuid: "xyz" }],
+      subjectTypes: [{ uuid: "123" }]
+    };
+    const operationalModules = mapOperationalModules(json);
+
+    assert.equal(operationalModules.formMappings.length, 1);
+    assert.equal(operationalModules.encounterTypes.length, 1);
+    assert.equal(operationalModules.programs.length, 1);
+    assert.equal(operationalModules.subjectTypes.length, 1);
+
+    assert.equal(operationalModules.formMappings[0].constructor, Object);
+    assert.equal(operationalModules.encounterTypes[0].constructor, EncounterType);
+    assert.equal(operationalModules.programs[0].constructor, Program);
+    assert.equal(operationalModules.subjectTypes[0].constructor, SubjectType);
+
+    assert.equal(operationalModules.formMappings[0], json.formMappings[0]);
+    assert.equal(operationalModules.encounterTypes[0].uuid, "abc");
+    assert.equal(operationalModules.programs[0].uuid, "xyz");
+    assert.equal(operationalModules.subjectTypes[0].uuid, "123");
   });
 });
 

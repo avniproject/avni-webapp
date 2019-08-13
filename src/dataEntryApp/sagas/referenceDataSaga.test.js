@@ -3,7 +3,6 @@ import { assert } from "chai";
 import { call, put } from "redux-saga/effects";
 import api from "../api";
 import { setOperationalModules } from "../reducers/metadataReducer";
-import { mapOperationalModules } from "../adapters";
 
 describe("dataEntryLoadOperationalModulesWorker", () => {
   it("runs only once", () => {
@@ -16,10 +15,7 @@ describe("dataEntryLoadOperationalModulesWorker", () => {
 
     const workerWithOperationalModules = dataEntryLoadOperationalModulesWorker();
     workerWithOperationalModules.next();
-    assert.deepEqual(
-      workerWithOperationalModules.next("OPERATIONAL_MODULES").value,
-      undefined
-    );
+    assert.deepEqual(workerWithOperationalModules.next("OPERATIONAL_MODULES").value, undefined);
   });
 
   it("puts operational modules in state", () => {
