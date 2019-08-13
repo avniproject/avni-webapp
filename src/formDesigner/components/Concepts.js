@@ -45,7 +45,8 @@ const Concepts = ({ history }) => {
           pageSize: 10,
           pageSizeOptions: [10, 15, 20],
           addRowPosition: "first",
-          sorting: true
+          sorting: true,
+          debounceInterval: 500
         }}
         actions={[
           rowData => ({
@@ -76,6 +77,12 @@ const Concepts = ({ history }) => {
             icon: "edit",
             tooltip: "Edit Concept",
             onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`)
+          },
+          {
+            icon: "add",
+            tooltip: "Create Concept",
+            isFreeAction: true,
+            onClick: event => history.push(`/createconcept`)
           }
         ]}
       />
