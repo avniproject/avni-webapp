@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import TextField from "@material-ui/core/TextField";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -8,17 +7,9 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
-import deburr from "lodash/deburr";
-import MenuItem from "@material-ui/core/MenuItem";
-import Autosuggest from "react-autosuggest";
-import axios from "axios";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 
 class CodedDataType extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const useStyles = makeStyles(theme => ({
       button: {

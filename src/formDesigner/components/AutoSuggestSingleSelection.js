@@ -62,9 +62,10 @@ const useStyles = theme => ({
   suggestionsContainerOpen: {
     position: "absolute",
     zIndex: 1,
-    // marginTop: theme.spacing(1),
     left: 0,
-    right: 0
+    right: 0,
+    overflow: "auto",
+    height: "400%"
   },
   suggestion: {
     display: "block"
@@ -73,9 +74,6 @@ const useStyles = theme => ({
     margin: 0,
     padding: 0,
     listStyleType: "none"
-  },
-  divider: {
-    // height: theme.spacing(2)
   }
 });
 
@@ -98,9 +96,7 @@ export default function AutoSuggestSingleSelection(props) {
       .then(response => {
         console.log(response.data);
         response.data.map((answer, index) => {
-          if (answer.name.toLowerCase().startsWith(inputValue)) {
-            suggestions.push(answer.name);
-          }
+          return answer.name.toLowerCase().startsWith(inputValue) && suggestions.push(answer.name);
         });
         setSuggestions(suggestions);
         console.log(suggestions);

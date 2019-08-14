@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 class NumericDataType extends Component {
   render() {
@@ -11,13 +12,15 @@ class NumericDataType extends Component {
       highAbsolute,
       lowNormal,
       highNormal,
-      unit
+      unit,
+      absoluteValidation,
+      normalValidation
     } = this.props.numericDataTypeProperties;
 
     return (
       <>
-        <Grid container justify="left">
-          <Grid sm={12}>
+        <Grid container justify="flex-start">
+          <Grid item sm={12}>
             <FormControl>
               <TextField
                 type="number"
@@ -43,9 +46,14 @@ class NumericDataType extends Component {
                 InputProps={{ inputProps: { min: 0 } }}
                 defaultValue={highAbsolute}
               />
+              {absoluteValidation && (
+                <FormHelperText error>
+                  High absolute must be greater than low absolute
+                </FormHelperText>
+              )}
             </FormControl>
           </Grid>
-          <Grid sm={12}>
+          <Grid item sm={12}>
             <FormControl>
               <TextField
                 type="number"
@@ -71,6 +79,9 @@ class NumericDataType extends Component {
                 InputProps={{ inputProps: { min: 0 } }}
                 defaultValue={highNormal}
               />
+              {normalValidation && (
+                <FormHelperText error>High normal must be greater than low normal</FormHelperText>
+              )}
             </FormControl>
           </Grid>
           <FormControl>

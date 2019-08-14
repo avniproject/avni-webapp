@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ButtonAppBar from "./CommonHeader";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
@@ -13,7 +12,6 @@ import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import CustomizedDialogs from "./CustomizedDialogs";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import { LineBreak } from "../../common/components/utils";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 class CreateConcept extends Component {
@@ -30,7 +28,9 @@ class CreateConcept extends Component {
       unit: null,
       answers: [{ name: "", uuid: "", unique: false, abnormal: false, editable: true }],
       conceptCreationAlert: false,
-      dataTypeSelectionAlert: false
+      dataTypeSelectionAlert: false,
+      absoluteValidation: false,
+      normalValidation: false
     };
   }
 
@@ -134,7 +134,7 @@ class CreateConcept extends Component {
 
         let index = 0;
         answers.map(answer => {
-          axios
+          return axios
             .get("/search/concept?name=" + answer.name + "&dataType=NA")
             .then(response => {
               console.log("Response", response.data);
@@ -146,7 +146,7 @@ class CreateConcept extends Component {
                 answer.uuid = result[0].uuid;
 
                 index = index + 1;
-                if (index == length) {
+                if (index === length) {
                   this.postCodedData(answers);
                 }
               } else {
@@ -169,7 +169,7 @@ class CreateConcept extends Component {
                       console.log("Dynamic concept added through Coded", response);
 
                       index = index + 1;
-                      if (index == length) {
+                      if (index === length) {
                         this.postCodedData(answers);
                       }
                     }
@@ -181,34 +181,46 @@ class CreateConcept extends Component {
             });
         });
       } else {
-        axios
-          .post("/concepts", [
-            {
-              name: this.state.name,
-              uuid: UUID.v4(),
-              dataType: this.state.dataType,
-              lowAbsolute: this.state.lowAbsolute,
-              highAbsolute: this.state.highAbsolute,
-              lowNormal: this.state.lowNormal,
-              highNormal: this.state.highNormal,
-              unit: this.state.unit
-            }
-          ])
-          .then(response => {
-            if (response.status === 200) {
-              console.log(response);
-              this.setState({
-                conceptCreationAlert: true
-              });
-            } else {
-              this.setState({
-                errorAlert: true
-              });
-            }
-          })
-          .catch(error => {
-            console.log(error);
+        const absoluteValidation =
+          parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute);
+        const normalValidation = parseInt(this.state.lowNormal) > parseInt(this.state.highNormal);
+        if (absoluteValidation || normalValidation) {
+          this.setState({
+            normalValidation: normalValidation,
+            absoluteValidation: absoluteValidation
           });
+        } else {
+          axios
+            .post("/concepts", [
+              {
+                name: this.state.name,
+                uuid: UUID.v4(),
+                dataType: this.state.dataType,
+                lowAbsolute: this.state.lowAbsolute,
+                highAbsolute: this.state.highAbsolute,
+                lowNormal: this.state.lowNormal,
+                highNormal: this.state.highNormal,
+                unit: this.state.unit,
+                absoluteValidation: false,
+                normalValidation: false
+              }
+            ])
+            .then(response => {
+              if (response.status === 200) {
+                console.log(response);
+                this.setState({
+                  conceptCreationAlert: true
+                });
+              } else {
+                this.setState({
+                  errorAlert: true
+                });
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        }
       }
     }
   };
@@ -222,7 +234,6 @@ class CreateConcept extends Component {
   getDialogFlag = value => {
     this.setState({
       conceptCreationAlert: !value
-      // errorAlert: !value
     });
   };
 
@@ -244,7 +255,6 @@ class CreateConcept extends Component {
           onAddAnswer={this.onAddAnswer}
           onChangeAnswerName={this.onChangeAnswerName}
           onToggleAnswerField={this.onToggleAnswerField}
-          // onAutoSuggestChange={this.onAutoSuggestChange}
         />
       );
     }
@@ -260,8 +270,6 @@ class CreateConcept extends Component {
         marginTop: 24
       },
       button: {
-        // justifyContent: "center",
-        variant: "contained",
         marginTop: 40
       },
       inputLabel: {
@@ -273,7 +281,7 @@ class CreateConcept extends Component {
       <ScreenWithAppBar appbarTitle={"Create a Concept"}>
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
-            <Grid sm={12}>
+            <Grid item sm={12}>
               <TextField
                 required
                 id="name"
@@ -313,7 +321,7 @@ class CreateConcept extends Component {
             {dataType}
           </Grid>
           <Grid>
-            <Button type="submit" color="primary" style={classes.button}>
+            <Button type="submit" color="primary" variant="contained" style={classes.button}>
               Submit
             </Button>
           </Grid>

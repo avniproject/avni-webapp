@@ -1,12 +1,10 @@
 import React, { Component } from "react";
-import ButtonAppBar from "./CommonHeader";
 import TextField from "@material-ui/core/TextField";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 import { default as UUID } from "uuid";
 import NumericDataType from "./NumericDataType";
 import Grid from "@material-ui/core/Grid";
-import FormControl from "@material-ui/core/FormControl";
 import CustomizedDialogs from "./CustomizedDialogs";
 import CodedDataType from "./CodedDataType";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
@@ -25,7 +23,9 @@ class EditConcept extends Component {
       unit: "",
       answers: [],
       conceptCreationAlert: false,
-      flag: false
+      flag: false,
+      absoluteValidation: false,
+      normalValidation: false
     };
   }
 
@@ -130,39 +130,49 @@ class EditConcept extends Component {
   }
 
   postEditedData() {
-    axios
-      .post("/concepts", [
-        {
-          name: this.state.name,
-          uuid: this.state.uuid,
-          dataType: this.state.dataType,
-          lowAbsolute: this.state.lowAbsolute,
-          highAbsolute: this.state.highAbsolute,
-          lowNormal: this.state.lowNormal,
-          highNormal: this.state.highNormal,
-          unit: this.state.unit,
-          answers: []
-        }
-      ])
-      .then(response => {
-        if (response.status === 200) {
-          console.log(response);
-          this.setState({
-            name: "",
-            dataType: "",
-            lowAbsolute: null,
-            highAbsolute: null,
-            lowNormal: null,
-            highNormal: null,
-            unit: null,
-            answers: [],
-            conceptCreationAlert: true
-          });
-        }
-      })
-      .catch(err => {
-        console.log(err);
+    const absoluteValidation = parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute);
+    const normalValidation = parseInt(this.state.lowNormal) > parseInt(this.state.highNormal);
+
+    if (absoluteValidation || normalValidation) {
+      this.setState({
+        absoluteValidation: absoluteValidation,
+        normalValidation: normalValidation
       });
+    } else {
+      axios
+        .post("/concepts", [
+          {
+            name: this.state.name,
+            uuid: this.state.uuid,
+            dataType: this.state.dataType,
+            lowAbsolute: this.state.lowAbsolute,
+            highAbsolute: this.state.highAbsolute,
+            lowNormal: this.state.lowNormal,
+            highNormal: this.state.highNormal,
+            unit: this.state.unit,
+            answers: []
+          }
+        ])
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response);
+            this.setState({
+              name: "",
+              dataType: "",
+              lowAbsolute: null,
+              highAbsolute: null,
+              lowNormal: null,
+              highNormal: null,
+              unit: null,
+              answers: [],
+              conceptCreationAlert: true
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   }
 
   handleSubmit = e => {
@@ -173,16 +183,16 @@ class EditConcept extends Component {
       let index = 0;
 
       answers.map(answer => {
-        axios
+        return axios
           .get("/search/concept?name=" + answer.name + "&dataType=NA")
           .then(response => {
             const result = response.data.filter(
               item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
             );
-            if (result.length != 0) {
+            if (result.length !== 0) {
               answer.uuid = result[0].uuid;
               index = index + 1;
-              if (index == length) {
+              if (index === length) {
                 this.postCodedData(answers);
               }
             } else {
@@ -204,7 +214,7 @@ class EditConcept extends Component {
                   if (response.status === 200) {
                     console.log("Dynamic concept added through Coded", response);
                     index = index + 1;
-                    if (length == index) {
+                    if (length === index) {
                       this.postCodedData(answers);
                     }
                   }
@@ -284,8 +294,6 @@ class EditConcept extends Component {
         marginTop: 24
       },
       button: {
-        // justifyContent: "center",
-        variant: "contained",
         marginTop: 40
       }
     };
@@ -314,7 +322,7 @@ class EditConcept extends Component {
       <ScreenWithAppBar appbarTitle={"Edit a Concept"}>
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
-            <Grid sm={12}>
+            <Grid item sm={12}>
               <TextField
                 required
                 id="name"
@@ -336,8 +344,8 @@ class EditConcept extends Component {
             </Grid>
             {dataType}
 
-            <Grid sm={12}>
-              <Button type="submit" color="primary" style={classes.button}>
+            <Grid item sm={12}>
+              <Button type="submit" variant="contained" color="primary" style={classes.button}>
                 Submit
               </Button>
             </Grid>
