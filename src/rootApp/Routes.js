@@ -14,7 +14,7 @@ import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import CreateConcept from "../formDesigner/components/CreateConcept";
 import EditConcept from "../formDesigner/components/EditConcept";
-
+import Homepage from "../formDesigner/components/Homepage";
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
     {...rest}
@@ -92,6 +92,13 @@ const Routes = props => (
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
       component={Concept}
+    />
+    <RestrictedRoute
+      exact
+      path="/homepage"
+      allowedRoles={[ROLES.ORG_ADMIN]}
+      currentUserRoles={props.userRoles}
+      component={Homepage}
     />
     <Route exact path="/">
       <Redirect to={includes(props.userRoles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
