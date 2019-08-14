@@ -1,6 +1,6 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import Table from "@material-ui/core/Table";
-import {withRouter} from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
@@ -9,18 +9,13 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
-import {connect} from "react-redux";
-import {makeStyles} from "@material-ui/core/styles";
-import {first} from "lodash";
-import {
-  setSubjectSearchParams,
-  searchSubjects
-} from "../../reducers/searchReducer";
-import {
-  getOperationalModules
-} from '../../reducers/metadataReducer';
+import { connect } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
+import { first } from "lodash";
+import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
-import ScreenWithAppBar from "../../components/ScreenWithAppBar";
+import ScreenWithAppBar from "../../../common/components/ScreenWithAppBar";
+import PrimaryButton from "../../components/PrimaryButton";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -49,7 +44,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({type, subjects}) => {
+const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
 
   return (
@@ -57,12 +52,8 @@ const SubjectsTable = ({type, subjects}) => {
       <TableHead>
         <TableRow>
           <TableCell>Name</TableCell>
-          {type.name === "Individual" && (
-            <TableCell align="center">Gender</TableCell>
-          )}
-          {type.name === "Individual" && (
-            <TableCell align="center">Date of birth(Age)</TableCell>
-          )}
+          {type.name === "Individual" && <TableCell align="center">Gender</TableCell>}
+          {type.name === "Individual" && <TableCell align="center">Date of birth(Age)</TableCell>}
           <TableCell align="center">Location</TableCell>
           <TableCell align="center">Active programs</TableCell>
         </TableRow>
@@ -73,15 +64,9 @@ const SubjectsTable = ({type, subjects}) => {
             <TableCell component="th" scope="row">
               {row.fullName}
             </TableCell>
-            {type.name === "Individual" && (
-              <TableCell align="center">{row.gender.name}</TableCell>
-            )}
-            {type.name === "Individual" && (
-              <TableCell align="center">{row.dateOfBirth}</TableCell>
-            )}
-            <TableCell align="center">
-              {row.addressLevel.titleLineage}
-            </TableCell>
+            {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}
+            {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
+            <TableCell align="center">{row.addressLevel.titleLineage}</TableCell>
             <TableCell align="center">
               {row.activePrograms.map((p, key) => (
                 <Button
@@ -116,11 +101,10 @@ const SubjectSearch = props => {
 
   useEffect(() => {
     props.search();
-    props.getOperationModules();
   }, []);
 
   return (
-    <ScreenWithAppBar appbarTitle={`Search ${props.subjectType.operationalSubjectTypeName}`}>
+    <ScreenWithAppBar appbarTitle={`Search ${props.subjectType.name}`}>
       <div className={classes.searchCreateToolbar}>
         <form onSubmit={handleSubmit} className={classes.searchForm}>
           <FormControl className={classes.searchFormItem}>
@@ -130,24 +114,18 @@ const SubjectSearch = props => {
               autoFocus
               type="text"
               value={props.searchParams.query}
-              onChange={e => props.setSearchParams({query: e.target.value})}
+              onChange={e => props.setSearchParams({ query: e.target.value })}
             />
           </FormControl>
           <FormControl className={classes.searchFormItem}>
-            <Button
-              type="submit"
-              variant="contained"
-              size="small"
-              color="primary"
-              onClick={handleSubmit}
-            >
+            <PrimaryButton type={"submit"} onClick={handleSubmit}>
               Search
-            </Button>
+            </PrimaryButton>
           </FormControl>
         </form>
-        <RegistrationMenu className={classes.createButtonHolder}/>
+        <RegistrationMenu className={classes.createButtonHolder} />
       </div>
-      <SubjectsTable subjects={props.subjects} type={props.subjectType}/>
+      <SubjectsTable subjects={props.subjects} type={props.subjectType} />
     </ScreenWithAppBar>
   );
 };
@@ -157,14 +135,13 @@ const mapStateToProps = state => {
     user: state.app.user,
     subjects: state.dataEntry.search.subjects,
     searchParams: state.dataEntry.search.subjectSearchParams,
-    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes),
+    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes)
   };
 };
 
 const mapDispatchToProps = {
-  getOperationModules: getOperationalModules,
   search: searchSubjects,
-  setSearchParams: setSubjectSearchParams,
+  setSearchParams: setSubjectSearchParams
 };
 
 export default withRouter(

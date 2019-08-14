@@ -68,7 +68,7 @@ jobs:
           paths:
             - ./node_modules
 
-      - run: yarn run build
+      - run: CI=false yarn run build
 
       - run: cd build; zip -r ../build.zip *
 
@@ -126,13 +126,9 @@ workflows:
       - app_build:
           requires:
             - app_test
-      - STAGING_approve:
-          type: approval
-          requires:
-            - app_build
       - STAGING_deploy:
           requires:
-            - STAGING_approve
+            - app_build
       - UAT_approve:
           type: approval
           requires:

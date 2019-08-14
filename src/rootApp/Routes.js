@@ -2,7 +2,7 @@ import React from "react";
 import { includes, intersection, isEmpty } from "lodash";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
-import { AccessDenied } from "../common/components";
+import { AccessDenied } from "../common/components/utils";
 import { OrgManager } from "../adminApp";
 import Forms from "../formDesigner/components/Forms";
 import FormDetails from "../formDesigner/components/FormDetails";
@@ -11,20 +11,15 @@ import NewConcept from "../formDesigner/components/NewConcept";
 import Concept from "../formDesigner/components/Concept";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
-import SubjectSearch from "../dataEntryApp/views/search/SubjectSearch";
-import SubjectRegister from "../dataEntryApp/views/registration/SubjectRegister";
+import DataEntry from "../dataEntryApp/DataEntry";
+import CreateConcept from "../formDesigner/components/CreateConcept";
+import EditConcept from "../formDesigner/components/EditConcept";
 
-const RestrictedRoute = ({
-  component: C,
-  allowedRoles,
-  currentUserRoles,
-  ...rest
-}) => (
+const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
     {...rest}
     render={routerProps =>
-      isEmpty(allowedRoles) ||
-      !isEmpty(intersection(allowedRoles, currentUserRoles)) ? (
+      isEmpty(allowedRoles) || !isEmpty(intersection(allowedRoles, currentUserRoles)) ? (
         <C {...routerProps} />
       ) : (
         <AccessDenied />
@@ -44,16 +39,10 @@ const Routes = props => (
       />
     </Route>
     <RestrictedRoute
-      path="/app/search"
+      path="/app"
       allowedRoles={[ROLES.USER]}
       currentUserRoles={props.userRoles}
-      component={SubjectSearch}
-    />
-    <RestrictedRoute
-      path="/app/register"
-      allowedRoles={[ROLES.USER]}
-      currentUserRoles={props.userRoles}
-      component={SubjectRegister}
+      component={DataEntry}
     />
     <RestrictedRoute
       exact
@@ -85,18 +74,27 @@ const Routes = props => (
     />
     <RestrictedRoute
       exact
+      path="/createconcept"
+      allowedRoles={[ROLES.ORG_ADMIN]}
+      currentUserRoles={props.userRoles}
+      component={CreateConcept}
+    />
+    <RestrictedRoute
+      exact
+      path="/concept/:uuid/edit"
+      allowedRoles={[ROLES.ORG_ADMIN]}
+      currentUserRoles={props.userRoles}
+      component={EditConcept}
+    />
+    <RestrictedRoute
+      exact
       path="/concepts/:conceptId"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
       component={Concept}
     />
-    <Route exact path="/app">
-      <Redirect to="/app/search" />
-    </Route>
     <Route exact path="/">
-      <Redirect
-        to={includes(props.userRoles, ROLES.ORG_ADMIN) ? "/admin" : "/app"}
-      />
+      <Redirect to={includes(props.userRoles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
     </Route>
     <Route
       component={() => (

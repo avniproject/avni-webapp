@@ -30,3 +30,7 @@ This requires the following env variables to be set as well:
 * Folders per route/feature
   (See https://marmelab.com/blog/2015/12/17/react-directory-structure.html)
 * Reducers and actions in 'ducks' structure (See https://github.com/erikras/ducks-modular-redux)
+
+### Code Style
+
+- We use Prettier for javascript/jsx formatting. You can use your IDE/Editor specific Plugin to format code using Prettier. Alternatively there is also a command `yarn prettier-all` that will format all files in src folder using Prettier. And there also is a git precommit hook that formats staged files using prettier before commiting.

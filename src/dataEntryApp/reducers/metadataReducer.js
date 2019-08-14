@@ -2,7 +2,9 @@ const prefix = "app/dataEntry/reducer/metadata/";
 
 export const types = {
   SET_OPERATIONAL_MODULES: `${prefix}SET_OPERATIONAL_MODULES`,
-  GET_OPERATIONAL_MODULES: `${prefix}GET_OPERATIONAL_MODULES`
+  GET_OPERATIONAL_MODULES: `${prefix}GET_OPERATIONAL_MODULES`,
+  GET_GENDERS: `${prefix}GET_GENDERS`,
+  SET_GENDERS: `${prefix}SET_GENDERS`
 };
 
 export const setOperationalModules = operationalModules => ({
@@ -14,12 +16,16 @@ export const getOperationalModules = () => ({
   type: types.GET_OPERATIONAL_MODULES
 });
 
-const initialState = {
-  operationalModules: {
-    subjectTypes: [{ operationalSubjectTypeName: "" }],
-    forms: []
-  }
-};
+export const getGenders = () => ({
+  type: types.GET_GENDERS
+});
+
+export const setGenders = genders => ({
+  type: types.SET_GENDERS,
+  genders
+});
+
+const initialState = {};
 
 // reducer
 export default function(state = initialState, action) {
@@ -28,6 +34,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         operationalModules: action.operationalModules
+      };
+    }
+    case types.SET_GENDERS: {
+      return {
+        ...state,
+        genders: action.genders
       };
     }
     default:

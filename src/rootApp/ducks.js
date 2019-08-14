@@ -6,7 +6,7 @@ export const types = {
   INIT_COMPLETE: "app/INIT_COMPLETE",
   FETCH_ALL_LOCATIONS: "app/FETCH_ALL_LOCATIONS",
   FETCH_ALL_LOCATIONS_SUCCESS: "app/FETCH_ALL_LOCATIONS_SUCCESS",
-  AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
+  AUTH_CONFIGURED: "app/AUTH_CONFIGURED"
 };
 
 export const initCognito = () => ({
@@ -50,7 +50,7 @@ const initialState = {
     id: undefined,
     name: undefined
   },
-  appInitialised: false,
+  appInitialised: false
 };
 
 // reducer

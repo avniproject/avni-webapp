@@ -1,39 +1,37 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { withRouter } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
-import { store } from "../common/store";
+import { getOperationalModules } from "./reducers/metadataReducer";
+import Loading from "./components/Loading";
 
-class DataEntry extends Component {
-  static childContextTypes = {
-    store: PropTypes.object
-  };
+const DataEntry = ({
+  match: { path },
+  getOperationalModules,
+  operationalModules
+}) => {
+  useEffect(() => {
+    getOperationalModules();
+  }, []);
 
-  getChildContext() {
-    return { store };
-  }
-
-  render() {
-    if (this.props.match.params.page === "search") return <SubjectSearch />;
-    if (this.props.match.params.page === "register") return <SubjectRegister />;
-    return (
-      <div>
-        <p>Page Not Found</p>
-      </div>
-    );
-  }
-}
+  return operationalModules ? (
+    <div>
+      <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
+      <Route path={`${path}/register`} component={SubjectRegister} />
+    </div>
+  ) : (
+    <Loading />
+  );
+};
 
 const mapStateToProps = state => ({
-  organisation: state.app.organisation,
-  user: state.app.user
+  operationalModules: state.dataEntry.metadata.operationalModules
 });
 
 export default withRouter(
   connect(
     mapStateToProps,
-    null
+    { getOperationalModules }
   )(DataEntry)
 );

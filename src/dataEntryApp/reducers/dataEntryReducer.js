@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
 import search from "./searchReducer";
-import subject from "./subjectReducer";
+import registration from "./registrationReducer";
 import metadata from "./metadataReducer";
 
 export default combineReducers({
   search,
-  subject,
+  registration,
   metadata
 });

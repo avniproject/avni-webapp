@@ -24,7 +24,7 @@ import {
 } from "react-admin";
 import { isEmpty, find, isNil } from "lodash";
 import { change } from "redux-form";
-import { None } from "../common/components";
+import { None } from "../common/components/utils";
 import { LocationSaveButton } from "./components/LocationSaveButton";
 import { store } from "../common/store";
 
@@ -64,9 +64,7 @@ const ParentLocationReferenceField = props => {
       reference="locations"
       allowEmpty
     >
-      <FunctionField
-        render={record => `${record.title} (${record.typeString})`}
-      />
+      <FunctionField render={record => `${record.title} (${record.typeString})`} />
     </ReferenceField>
   );
 };
@@ -92,11 +90,7 @@ export const LocationDetail = props => {
         <TextField source="title" label="Name" />
         <TextField source="typeString" label="Type" />
         <ParentLocationReferenceField label="Part of (location)" />
-        <ReferenceManyField
-          label="Contains locations"
-          reference="locations"
-          target="parentId"
-        >
+        <ReferenceManyField label="Contains locations" reference="locations" target="parentId">
           <SubLocationsGrid />
         </ReferenceManyField>
       </SimpleShowLayout>
@@ -154,11 +148,7 @@ export class LocationForm extends React.Component {
         {...restProps}
         redirect="show"
       >
-        <TextInput
-          label="Name of new location"
-          source="title"
-          validate={isRequired}
-        />
+        <TextInput label="Name of new location" source="title" validate={isRequired} />
         {edit ? (
           <TextField label="Type" source="typeString" />
         ) : (
@@ -213,20 +203,14 @@ export class LocationForm extends React.Component {
                   {...rest}
                 >
                   <SelectInput
-                    optionText={record =>
-                      record && `${record.title} (${record.typeString})`
-                    }
+                    optionText={record => record && `${record.title} (${record.typeString})`}
                   />
                 </ReferenceInput>
               )
             }
           </FormDataConsumer>
         )}
-        <DisabledInput
-          source="level"
-          defaultValue={1}
-          style={{ display: "none" }}
-        />
+        <DisabledInput source="level" defaultValue={1} style={{ display: "none" }} />
       </SimpleForm>
     );
   }

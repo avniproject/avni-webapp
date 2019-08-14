@@ -18,6 +18,6 @@ export default function* rootSaga() {
     fork(adminSaga(dataProvider, authProvider, i18nProvider)),
     fork(onSetCognitoUser),
     fork(userInfoWatcher),
-    fork(dataEntrySaga),
+    fork(dataEntrySaga)
   ]);
 }
