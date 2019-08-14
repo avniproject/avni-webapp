@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import TagsInput from "react-tagsinput";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -7,12 +6,11 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import Typography from "@material-ui/core/Typography";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import MenuItem from "@material-ui/core/MenuItem";
 import axios from "axios";
 import DownshiftMultiple from "./AutoComplete";
+import { Redirect } from "react-router-dom";
 
 class NewFormModal extends Component {
   constructor(props) {
@@ -26,7 +24,8 @@ class NewFormModal extends Component {
       encounterType: [],
       open: false,
       onClose: false,
-      data: {}
+      data: {},
+      toFormDetails: ""
     };
     this.handleClickOpen = this.handleClickOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
@@ -38,17 +37,15 @@ class NewFormModal extends Component {
       formType: this.state.formType,
       subjectType: this.state.subjectType
     };
-    if (this.state.programBased) {
-      dataSend["programName"] = this.state.programName;
-    }
-    if (this.state.encounterTypes) {
-      dataSend["encounterType"] = this.state.encounterType;
-    }
-
+    dataSend["programName"] = this.state.programName;
+    dataSend["encounterTypes"] = this.state.encounterType;
     axios
-      .post("/forms", dataSend)
+      .post("/web/forms", dataSend)
       .then(response => {
-        this.props.history.push("/forms");
+        console.log(response);
+        this.setState({
+          toFormDetails: response.data.uuid
+        });
       })
       .catch(error => {
         console.log(error);
@@ -126,7 +123,10 @@ class NewFormModal extends Component {
           onChange={this.onChangeField.bind(this)}
         >
           {this.state.data.programs.map(program => (
-            <MenuItem key={program.uuid} value={program.uuid}>
+            <MenuItem
+              key={program.operationalProgramName}
+              value={program.operationalProgramName}
+            >
               {program.operationalProgramName}
             </MenuItem>
           ))}
@@ -147,7 +147,10 @@ class NewFormModal extends Component {
         >
           {this.state.data.subjectTypes != null &&
             this.state.data.subjectTypes.map(subjectType => (
-              <MenuItem key={subjectType.uuid} value={subjectType.uuid}>
+              <MenuItem
+                key={subjectType.operationalSubjectTypeName}
+                value={subjectType.operationalSubjectTypeName}
+              >
                 {subjectType.operationalSubjectTypeName}
               </MenuItem>
             ))}
@@ -175,6 +178,9 @@ class NewFormModal extends Component {
   }
 
   render() {
+    if (this.state.toFormDetails !== "") {
+      return <Redirect to={"/forms/" + this.state.toFormDetails} />;
+    }
     const encounterTypes =
       this.state.formType === "Encounter" ||
       this.state.formType === "ProgramEncounter";
