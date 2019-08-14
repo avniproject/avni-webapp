@@ -65,7 +65,7 @@ const useStyles = theme => ({
     left: 0,
     right: 0,
     overflow: "auto",
-    height: "400%"
+    maxHeight: "400%"
   },
   suggestion: {
     display: "block"
