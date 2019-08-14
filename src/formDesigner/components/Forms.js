@@ -3,6 +3,7 @@ import ProgramCard from "./ProgramCard";
 import NewFormModal from "./NewFormModal";
 import Breadcrumb from "./Breadcrumb";
 import axios from "axios";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 class Forms extends Component {
   constructor(props) {
@@ -12,9 +13,7 @@ class Forms extends Component {
   }
 
   componentDidMount() {
-    console.log(
-      `axios header in forms = ${JSON.stringify(axios.defaults.headers.common)}`
-    );
+    console.log(`axios header in forms = ${JSON.stringify(axios.defaults.headers.common)}`);
     axios
       .get("/forms")
       .then(response => {
@@ -27,13 +26,15 @@ class Forms extends Component {
 
   render() {
     return (
-      <div className="container">
-        <Breadcrumb location={this.props.location} />
-        <div>
-          <NewFormModal {...this.props} />
-          <ProgramCard data={this.state.data} {...this.props} />
+      <ScreenWithAppBar appbarTitle={"Form list"}>
+        <div className="container">
+          <Breadcrumb location={this.props.location} />
+          <div>
+            <NewFormModal {...this.props} />
+            <ProgramCard data={this.state.data} {...this.props} />
+          </div>
         </div>
-      </div>
+      </ScreenWithAppBar>
     );
   }
 }
