@@ -11,6 +11,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import axios from "axios";
 import DownshiftMultiple from "./AutoComplete";
 import { Redirect } from "react-router-dom";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 class NewFormModal extends Component {
   constructor(props) {
@@ -25,31 +26,59 @@ class NewFormModal extends Component {
       open: false,
       onClose: false,
       data: {},
-      toFormDetails: ""
+      toFormDetails: "",
+      errors: { name: "", formType: "", programName: "", subjectType: "", encounterType: "" }
     };
     this.handleClickOpen = this.handleClickOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
   }
 
+  validateForm() {
+    let errorsList = {};
+    if (this.state.name === "") errorsList["name"] = "Please enter form name.";
+    if (this.state.formType === "") errorsList["formType"] = "Please select form type.";
+    if (this.state.subjectType === "") errorsList["subjectType"] = "Please select subject type.";
+    if (
+      (this.state.formType === "ProgramEncounter" ||
+        this.state.formType === "ProgramExit" ||
+        this.state.formType === "ProgramEnrolment") &&
+      this.state.programName === ""
+    )
+      errorsList["programName"] = "Please select program name.";
+    if (
+      (this.state.formType === "Encounter" || this.state.formType === "ProgramEncounter") &&
+      this.state.encounterType.length === 0
+    )
+      errorsList["encounterType"] = "Please select atleast one encounter type.";
+
+    this.setState({
+      errors: errorsList
+    });
+
+    let errorFlag = true;
+    if (Object.keys(errorsList).length > 0) errorFlag = false;
+    return errorFlag;
+  }
   addFields() {
-    let dataSend = {
-      name: this.state.name,
-      formType: this.state.formType,
-      subjectType: this.state.subjectType
-    };
-    dataSend["programName"] = this.state.programName;
-    dataSend["encounterTypes"] = this.state.encounterType;
-    axios
-      .post("/web/forms", dataSend)
-      .then(response => {
-        console.log(response);
-        this.setState({
-          toFormDetails: response.data.uuid
+    if (this.validateForm()) {
+      let dataSend = {
+        name: this.state.name,
+        formType: this.state.formType,
+        subjectType: this.state.subjectType
+      };
+      dataSend["programName"] = this.state.programName;
+      dataSend["encounterTypes"] = this.state.encounterType;
+      axios
+        .post("/web/forms", dataSend)
+        .then(response => {
+          this.setState({
+            toFormDetails: response.data.uuid
+          });
+        })
+        .catch(error => {
+          this.setState({ errorMsg: error.response.data });
         });
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    }
   }
 
   componentDidMount() {
@@ -68,15 +97,11 @@ class NewFormModal extends Component {
   }
 
   onChangeField(event) {
-    this.setState(
-      Object.assign({}, this.state, { [event.target.name]: event.target.value })
-    );
+    this.setState(Object.assign({}, this.state, { [event.target.name]: event.target.value }));
   }
 
   onChangeEncounterField(encounterTypes) {
-    this.setState(
-      Object.assign({}, this.state, { encounterTypes: encounterTypes })
-    );
+    this.setState(Object.assign({}, this.state, { encounterTypes: encounterTypes }));
   }
 
   handleClickOpen() {
@@ -96,11 +121,7 @@ class NewFormModal extends Component {
   NewFormButton() {
     return (
       <div style={{ textAlign: "right" }}>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={this.handleClickOpen}
-        >
+        <Button variant="outlined" color="secondary" onClick={this.handleClickOpen}>
           {" "}
           New Form{" "}
         </Button>
@@ -123,14 +144,14 @@ class NewFormModal extends Component {
           onChange={this.onChangeField.bind(this)}
         >
           {this.state.data.programs.map(program => (
-            <MenuItem
-              key={program.operationalProgramName}
-              value={program.operationalProgramName}
-            >
+            <MenuItem key={program.operationalProgramName} value={program.operationalProgramName}>
               {program.operationalProgramName}
             </MenuItem>
           ))}
         </Select>
+        {this.state.errors.programName && (
+          <FormHelperText error>{this.state.errors.programName}</FormHelperText>
+        )}
       </FormControl>
     );
   }
@@ -155,6 +176,9 @@ class NewFormModal extends Component {
               </MenuItem>
             ))}
         </Select>
+        {this.state.errors.subjectType && (
+          <FormHelperText error>{this.state.errors.subjectType}</FormHelperText>
+        )}
       </FormControl>
     );
   }
@@ -173,6 +197,9 @@ class NewFormModal extends Component {
           suggestions={encounterTypesValues}
           OnGetSelectedValue={this.getDownshiftValue.bind(this)}
         />
+        {this.state.errors.ecounterType && (
+          <FormHelperText error>{this.state.errors.ecounterType}</FormHelperText>
+        )}
       </FormControl>
     );
   }
@@ -182,8 +209,7 @@ class NewFormModal extends Component {
       return <Redirect to={"/forms/" + this.state.toFormDetails} />;
     }
     const encounterTypes =
-      this.state.formType === "Encounter" ||
-      this.state.formType === "ProgramEncounter";
+      this.state.formType === "Encounter" || this.state.formType === "ProgramEncounter";
     const programBased =
       this.state.formType === "ProgramEncounter" ||
       this.state.formType === "ProgramExit" ||
@@ -206,6 +232,11 @@ class NewFormModal extends Component {
           </DialogTitle>
           <form>
             <DialogContent dividers>
+              {this.state.errorMsg && (
+                <FormControl fullWidth margin="dense">
+                  <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+                </FormControl>
+              )}
               <FormControl fullWidth margin="dense">
                 <InputLabel htmlFor="formType">Form Type</InputLabel>
                 <Select
@@ -213,43 +244,41 @@ class NewFormModal extends Component {
                   name="formType"
                   value={this.state.formType}
                   onChange={this.onChangeField.bind(this)}
+                  required
                 >
-                  <MenuItem value="IndividualProfile">
-                    IndividualProfile
-                  </MenuItem>
+                  <MenuItem value="IndividualProfile">IndividualProfile</MenuItem>
                   <MenuItem value="Encounter">Encounter</MenuItem>
                   <MenuItem value="ProgramEncounter">ProgramEncounter</MenuItem>
-                  <MenuItem value="ProgramEnrolment">
-                    ProgramEnrollment
-                  </MenuItem>
+                  <MenuItem value="ProgramEnrolment">ProgramEnrollment</MenuItem>
                   <MenuItem value="ProgramExit">ProgramExit</MenuItem>
                   <MenuItem value="ProgramEnrolmentCancellation">
                     ProgramEnrollmentCancellation
                   </MenuItem>
                   <MenuItem value="ChecklistItem">ChecklistItem</MenuItem>
                 </Select>
+                {this.state.errors.formType && (
+                  <FormHelperText error>{this.state.errors.formType}</FormHelperText>
+                )}
               </FormControl>
               <FormControl fullWidth margin="dense">
-                <InputLabel htmlFor="formName">Name</InputLabel>
+                <InputLabel htmlFor="name">Name</InputLabel>
                 <Input
                   type="text"
                   id="formName"
                   name="name"
                   onChange={this.onChangeField.bind(this)}
-                  required
                   fullWidth
                 />
+                {this.state.errors.name && (
+                  <FormHelperText error>{this.state.errors.name}</FormHelperText>
+                )}
               </FormControl>
               {this.subjectTypeElement()}
               {programBased && this.programNameElement()}
               {encounterTypes && this.encounterTypesElement()}
             </DialogContent>
             <DialogActions>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={this.addFields.bind(this)}
-              >
+              <Button variant="contained" color="primary" onClick={this.addFields.bind(this)}>
                 Add
               </Button>
             </DialogActions>
