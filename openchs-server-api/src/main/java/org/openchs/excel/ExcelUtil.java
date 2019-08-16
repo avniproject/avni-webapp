@@ -114,8 +114,11 @@ public class ExcelUtil {
         DecimalFormat df = new DecimalFormat("#.##");
         try {
             if (cell == null) return null;
-            if (StringUtils.isEmpty(cell.toString())) return null;
-            return Double.valueOf(df.format(cell.getNumericCellValue()));
+            String content = CellType.STRING.equals(cell.getCellTypeEnum())
+                    ? cell.getStringCellValue()
+                    : df.format(cell.getNumericCellValue());
+            if (StringUtils.isEmpty(content)) return null;
+            return Double.valueOf(content);
         } catch (RuntimeException e) {
             if (NAN.equalsIgnoreCase(ExcelUtil.getFatText(row, cellNum))) {
                 return null;
