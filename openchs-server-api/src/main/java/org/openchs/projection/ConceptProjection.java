@@ -28,6 +28,8 @@ public interface ConceptProjection extends BaseProjection {
 
     String getUnit();
 
+    Boolean getVoided();
+
     @JsonInclude(Include.NON_EMPTY)
     Set<ConceptAnswerProjection> getConceptAnswers();
 

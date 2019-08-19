@@ -112,5 +112,6 @@ public class ConceptAnswer extends OrganisationAwareEntity {
         boolean isAbnormal();
         boolean isUnique();
         ConceptProjection getAnswerConcept();
+        Boolean getVoided();
     }
 }
