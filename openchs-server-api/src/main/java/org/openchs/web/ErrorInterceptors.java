@@ -8,6 +8,7 @@ import org.openchs.util.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +76,8 @@ public class ErrorInterceptors extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> unknownException(Exception e) {
         if (e instanceof ApiException) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } else if (e instanceof ResourceNotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } else {
             reportToBugsnag(e);
             log(e);
