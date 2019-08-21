@@ -169,7 +169,7 @@ export default function FormElementGroup(props) {
             <Grid item sm={4}>
               <Typography className={classes.heading}>
                 <FormControl fullWidth>
-                  <InputLabel htmlFor={"name" + panel}>Enter Name</InputLabel>
+                  <InputLabel htmlFor={"name" + panel}>Name</InputLabel>
                   <Input
                     type="text"
                     disableUnderline={true}
@@ -189,7 +189,7 @@ export default function FormElementGroup(props) {
             <Grid item sm={4}>
               <Typography className={classes.secondaryHeading}>
                 <FormControl fullWidth>
-                  <InputLabel htmlFor={"display" + panel}>Enter Display Name</InputLabel>
+                  <InputLabel htmlFor={"display" + panel}>Display Name</InputLabel>
                   <Input
                     type="text"
                     disableUnderline={true}

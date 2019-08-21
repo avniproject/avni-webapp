@@ -145,7 +145,7 @@ export default function FormElement(props) {
             <Grid item sm={4}>
               <Typography className={classes.heading}>
                 <FormControl fullWidth>
-                  <InputLabel htmlFor={"name" + panel}>Enter Name</InputLabel>
+                  <InputLabel htmlFor={"name" + panel}>Name</InputLabel>
                   <Input
                     type="text"
                     disableUnderline={true}
