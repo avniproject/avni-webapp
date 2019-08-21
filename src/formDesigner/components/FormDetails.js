@@ -1,41 +1,23 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import _ from "lodash";
-import produce from "immer";
-import uuidv4 from "uuid/v4";
 import axios from "axios";
-
-import FormGroup from "./FormGroup";
-import UpdateForm from "./UpdateForm";
-import FieldsPanel from "./FieldsPanel";
-
-import { FormElementContract, FormElementGroupContract } from "../contracts";
+import Grid from "@material-ui/core/Grid";
+import FormElementGroup from "./FormElementGroup";
+import Button from "@material-ui/core/Button";
 import Breadcrumb from "./Breadcrumb";
-
-const formElementDisplayOrder = group => {
-  let displayOrder = 1;
-  if (group.formElements && group.formElements.length) {
-    displayOrder = _.last(group.formElements).displayOrder + 1;
-  }
-  return displayOrder;
-};
-
-const groupDisplayOrder = form => {
-  let displayOrder = 1;
-  if (form.formElementGroups && form.formElementGroups.length) {
-    displayOrder = _.last(form.formElementGroups).displayOrder + 1;
-  }
-  return displayOrder;
-};
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 class FormDetails extends Component {
   constructor(props) {
     super(props);
-
-    this.state = { form: {}, showFields: true, currentGroup: {} };
-
-    this.onSelectField = this.onSelectField.bind(this);
-    this.addGroupField = this.addGroupField.bind(this);
+    this.state = {
+      form: [],
+      createFlag: true
+    };
+    this.btnGroupClick = this.btnGroupClick.bind(this);
+    this.deleteGroup = this.deleteGroup.bind(this);
+    this.btnGroupAdd = this.btnGroupAdd.bind(this);
+    this.handleGroupElementChange = this.handleGroupElementChange.bind(this);
   }
 
   componentDidMount() {
@@ -44,307 +26,137 @@ class FormDetails extends Component {
       .then(response => response.data)
       .then(form => {
         _.forEach(form.formElementGroups, group => {
-          group.groupId = (group.groupId || group.name).replace(
-            /[^a-zA-Z0-9]/g,
-            "_"
-          );
+          group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
           group.collapse = true;
           group.formElements.forEach(fe => (fe.collapse = true));
         });
-        this.setState({ form: form });
+        let dataGroupFlag = this.countGroupElements(form);
+        this.setState({ form: form, createFlag: dataGroupFlag });
+        if (dataGroupFlag) {
+          this.btnGroupClick();
+        }
       })
       .catch(error => {
         console.log(error);
       });
   }
 
-  renderForm() {
-    return (
-      <div className="col-9">
-        <form>
-          {this.renderGroups()}
-          <button
-            type="button"
-            className="btn btn-success pull-right"
-            onClick={() => {
-              this.saveForm();
-              this.props.history.push("/forms");
-            }}
-          >
-            <i className={`glyphicon glyphicon-save`} />
-            Save your form
-          </button>
-        </form>
-      </div>
-    );
-  }
-
-  saveForm() {
-    const formToBeSaved = produce(this.state.form, draftState => {
-      for (const group of draftState.formElementGroups) {
-        group.formElements = _.filter(
-          group.formElements,
-          e => e.name !== "" && e.concept.dataType !== ""
-        );
+  countGroupElements(form) {
+    let groupFlag = true;
+    _.forEach(form.formElementGroups, (groupElement, index) => {
+      if (groupElement.voided === false) {
+        groupFlag = false;
       }
     });
-
-    axios
-      .post("/forms", formToBeSaved)
-      .then(response => {
-        console.log(response);
-      })
-      .catch(err => {
-        console.log(err);
+    return groupFlag;
+  }
+  // Group level events
+  deleteGroup(index, elementIndex = -1) {
+    if (elementIndex === -1) {
+      this.setState(state => {
+        const form = this.state.form;
+        if (form.formElementGroups[index].newFlag === "true")
+          form.formElementGroups.splice(index, 1);
+        else form.formElementGroups[index].voided = true;
+        this.setState({ createFlag: this.countGroupElements(form) });
+        return form;
       });
-  }
+    } else {
+      this.setState(state => {
+        const form = this.state.form;
+        if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true")
+          form.formElementGroups[index].formElements.splice(elementIndex, 1);
+        else form.formElementGroups[index].formElements[elementIndex].voided = true;
 
-  onSelectField(field, groupId) {
-    let currentGroup;
-
-    this.setState(
-      produce(draft => {
-        //collapse all form elements and groups while adding a new field
-        draft.form.formElementGroups.forEach(feg => {
-          feg.collapse = true;
-          feg.formElements.forEach(fe => (fe.collapse = true));
-        });
-
-        if (field === "Group") {
-          const newGroupId =
-            "group_" + (draft.form.formElementGroups.length + 1);
-          currentGroup = new FormElementGroupContract(
-            uuidv4(),
-            newGroupId,
-            "",
-            groupDisplayOrder(draft.form),
-            "",
-            [],
-            false
-          );
-          draft.form.formElementGroups.push(currentGroup);
-          draft.showFields = true;
-        } else {
-          const group = _.find(draft.form.formElementGroups, g => {
-            return g.groupId === groupId;
-          });
-          const formElements = group.formElements;
-          const newElement = new FormElementContract(
-            uuidv4(),
-            "",
-            formElementDisplayOrder(group),
-            { dataType: "", name: "" },
-            [],
-            false
-          );
-
-          formElements.push(newElement);
-          draft.showFields = false;
-        }
-      })
-    );
-  }
-
-  handleKeyValuesChange = (key, value, checked, field) => {
-    this.setState(
-      produce(draft => {
-        for (const group of draft.form.formElementGroups) {
-          for (const element of group.formElements) {
-            if (element.uuid === field.uuid) {
-              if (key === "duration") {
-                let foundMatchingKeyValue = false;
-                for (const keyValue of element.keyValues) {
-                  if (keyValue.key === key) {
-                    foundMatchingKeyValue = true;
-                    if (checked) {
-                      keyValue.value.push(value);
-                      keyValue.value = _.uniq(keyValue.value);
-                    } else {
-                      keyValue.value = keyValue.value.filter(v => v !== value);
-                    }
-                    break;
-                  }
-                }
-                if (!foundMatchingKeyValue) {
-                  element.keyValues.push({
-                    key: key,
-                    value: checked ? [value] : []
-                  });
-                }
-              } else if (key === "editable") {
-                let foundMatchingKeyValue = false;
-                for (const keyValue of element.keyValues) {
-                  if (keyValue.key === key) {
-                    foundMatchingKeyValue = true;
-                    keyValue.value = checked;
-                    break;
-                  }
-                }
-                if (!foundMatchingKeyValue) {
-                  element.keyValues.push({ key: key, value: checked });
-                }
-              } else if (key === "ExcludedAnswers") {
-                let foundMatchingKeyValue = false;
-                for (const keyValue of element.keyValues) {
-                  if (keyValue.key === key) {
-                    foundMatchingKeyValue = true;
-                    keyValue.value = _.uniq(value);
-                    break;
-                  }
-                }
-                if (!foundMatchingKeyValue) {
-                  element.keyValues.push({ key: key, value: _.uniq(value) });
-                }
-              }
-            }
-          }
-        }
-      })
-    );
-  };
-
-  handleFieldChange = (name, value, fieldUuid) => {
-    this.setState(
-      produce(draft => {
-        for (const group of draft.form.formElementGroups) {
-          for (const element of group.formElements) {
-            if (element.uuid === fieldUuid) {
-              element[name] = value;
-              break;
-            }
-          }
-        }
-      })
-    );
-  };
-
-  handleGroupChange = (name, value, groupUuid) => {
-    this.setState(
-      produce(draft => {
-        for (const group of draft.form.formElementGroups) {
-          if (group.uuid === groupUuid) {
-            group[name] = value;
-            break;
-          }
-        }
-      })
-    );
-  };
-
-  /**
-   * single group, no fields added show the fields panel
-   * single group, selected a field, add field component and 'Add field' button. Except last field, all other fields
-   * are collapsed.
-   * single group, click on 'Add field'. Collapse all field, show fields panel
-   * click on group in fields panel, a new group should be added, all other group fields collapsed. just the new group
-   * will have the fields panel
-   * @returns {Array}
-   */
-  renderGroups() {
-    const formElements = [];
-    let i = 0;
-    _.forEach(this.state.form.formElementGroups, group => {
-      const subElements = [];
-      const isCurrentGroup =
-        (this.state.currentGroup &&
-          group.groupId === this.state.currentGroup.groupId) ||
-        false;
-      subElements.push(
-        <FormGroup
-          group={group}
-          fields={group.formElements}
-          key={group.groupId + i++}
-          handleFieldChange={this.handleFieldChange}
-          handleGroupChange={this.handleGroupChange}
-          handleKeyValuesChange={this.handleKeyValuesChange}
-          collapse={this.state.showFields || !isCurrentGroup}
-        />
-      );
-      if (this.state.showFields && isCurrentGroup) {
-        subElements.push(this.showFields(group));
-      } else {
-        subElements.push(
-          <button
-            type="button"
-            className="btn btn-secondary btn-block"
-            onClick={() => this.addGroupField(group)}
-            key={group.groupId + "_bt"}
-          >
-            Add a field
-          </button>
-        );
-      }
-
-      formElements.push(
-        <div
-          key={group.groupId + "_border"}
-          className="border border-secondary rounded mb-4"
-        >
-          {subElements}
-        </div>
-      );
-    });
-    return formElements;
-  }
-
-  componentDidUpdate() {
-    if (this.state.anchor) {
-      this.refs[this.state.anchor].scrollIntoView();
-      delete this.state.anchor;
+        return form;
+      });
     }
   }
 
-  addGroupField(currentGroup) {
-    // return;
+  renderGroups() {
+    const formElements = [];
+
+    _.forEach(this.state.form.formElementGroups, (group, index) => {
+      if (group.voided === false)
+        formElements.push(
+          <FormElementGroup
+            groupData={group}
+            index={index}
+            deleteGroup={this.deleteGroup}
+            btnGroupAdd={this.btnGroupAdd}
+            updateGroupData={this.handleGroupElementChange}
+          />
+        );
+    });
+    return formElements;
+  }
+  handleGroupElementChange(index, propertyName, value, elementIndex = -1) {
+    const form = this.state.form;
+    if (elementIndex === -1) {
+      form.formElementGroups[index][propertyName] = value;
+    } else {
+      form.formElementGroups[index].formElements[elementIndex][propertyName] = value;
+    }
+    this.setState({ form });
+  }
+
+  btnGroupAdd(index, elementIndex = -1) {
+    const form = this.state.form;
+    if (elementIndex === -1) {
+      form.formElementGroups.splice(index + 1, 0, {
+        newFlag: "true",
+        name: "",
+        display: "",
+        displayOrder: index + 1,
+        voided: false,
+        formElements: [
+          { newFlag: "true", name: "", type: "", mandatory: "", voided: false, concept: {} }
+        ]
+      });
+    } else {
+      form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, {
+        newFlag: "true",
+        name: "",
+        type: "",
+        voided: false,
+        mandatory: "",
+        concept: {}
+      });
+    }
     this.setState({
-      currentGroup,
-      showFields: true,
-      anchor: currentGroup.groupId + "_FieldsPanel"
+      form
     });
   }
 
-  showFields(group) {
-    return (
-      <div
-        ref={group.groupId + "_FieldsPanel"}
-        key={group.groupId + "_FieldsPanel"}
-      >
-        <FieldsPanel
-          onClick={this.onSelectField.bind(this)}
-          groupId={group.groupId}
-          groupName={group.name}
-        />
-      </div>
-    );
+  btnGroupClick() {
+    this.btnGroupAdd(0);
+    this.setState({ createFlag: false });
   }
+  // END Group level Events
 
   render() {
     return (
-      <div className="container">
-        <Breadcrumb location={this.props.location} />
-        <div className="row">
-          {this.renderForm()}
-          <div className="col-3">
-            <UpdateForm form={this.state.form} />
-          </div>
-        </div>
-      </div>
+      <ScreenWithAppBar appbarTitle={"Form Details"}>
+        <Grid container justify="center">
+          <Grid item sm={12}>
+            <Breadcrumb location={this.props.location} />
+            <div name="divGroup">
+              {this.state.createFlag && (
+                <Button variant="contained" color="primary" onClick={this.btnGroupClick.bind(this)}>
+                  Add Group
+                </Button>
+              )
+              //            <Fab color="primary" aria-label="add" onClick={this.btnGroupClick.bind(this)} size="small">
+              //              <AddIcon />
+              //            </Fab>
+              }
+              {this.renderGroups()}
+            </div>
+          </Grid>
+        </Grid>
+      </ScreenWithAppBar>
     );
   }
-}
-
-FormDetails.defaultProps = {
-  formGroups: [createGroup("group_1")]
-};
-
-FormDetails.propTypes = {
-  formGroups: PropTypes.array,
-  currentGroup: PropTypes.object,
-  showFields: PropTypes.bool
-};
-
-function createGroup(id) {
-  return { groupId: id, name: "", display: "", formElements: [] };
 }
 
 export default FormDetails;
