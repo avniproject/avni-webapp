@@ -13,7 +13,7 @@ const Concepts = ({ history }) => {
   ];
   const tableRef = React.createRef();
   return (
-    <ScreenWithAppBar appbarTitle="Concepts List">
+    <ScreenWithAppBar appbarTitle="Concepts List" enableLeftMenuButton={true}>
       <MaterialTable
         title=""
         components={{
@@ -73,11 +73,12 @@ const Concepts = ({ history }) => {
             },
             disabled: rowData.organisationId === 1
           }),
-          {
+          rowData => ({
             icon: "edit",
-            tooltip: "Edit Concept",
-            onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`)
-          },
+            tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
+            onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`),
+            disabled: rowData.organisationId === 1
+          }),
           {
             icon: "add",
             tooltip: "Create Concept",

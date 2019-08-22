@@ -92,7 +92,7 @@ export default function AutoSuggestSingleSelection(props) {
     let suggestions = [];
 
     axios
-      .get("/search/concept?name=" + value + "&dataType=NA")
+      .get("/search/concept?name=" + value)
       .then(response => {
         console.log(response.data);
         response.data.map((answer, index) => {

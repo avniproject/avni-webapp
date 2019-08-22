@@ -10,9 +10,9 @@ import NumericDataType from "./NumericDataType";
 import CodedDataType from "./CodedDataType";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
-import CustomizedDialogs from "./CustomizedDialogs";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
+import CustomizedSnackbar from "./CustomizedSnackbar";
 
 class CreateConcept extends Component {
   constructor(props) {
@@ -26,11 +26,13 @@ class CreateConcept extends Component {
       lowNormal: null,
       highNormal: null,
       unit: null,
-      answers: [{ name: "", uuid: "", unique: false, abnormal: false, editable: true }],
+      answers: [
+        { name: "", uuid: "", unique: false, abnormal: false, editable: true, voided: false }
+      ],
       conceptCreationAlert: false,
-      dataTypeSelectionAlert: false,
       absoluteValidation: false,
-      normalValidation: false
+      normalValidation: false,
+      error: {}
     };
   }
 
@@ -49,8 +51,7 @@ class CreateConcept extends Component {
 
   onDeleteAnswer = index => {
     const answers = [...this.state.answers];
-    answers.splice(index, 1);
-    answers.indexOf(answers[index], 1);
+    answers[index].voided = true;
     this.setState({
       answers
     });
@@ -60,7 +61,7 @@ class CreateConcept extends Component {
     this.setState({
       answers: [
         ...this.state.answers,
-        { name: "", uuid: "", unique: false, abnormal: false, editable: true }
+        { name: "", uuid: "", unique: false, abnormal: false, editable: true, voided: false }
       ]
     });
   };
@@ -121,110 +122,132 @@ class CreateConcept extends Component {
     );
   }
 
+  formValidation = () => {
+    const conceptName = this.state.name;
+    let error = {};
+    axios
+      .get("/search/concept?name=" + conceptName)
+      .then(response => {
+        const conceptExist = response.data.filter(
+          item => item.name.toLowerCase().trim() === conceptName.toLowerCase().trim()
+        );
+        if (conceptExist.length !== 0) {
+          error["nameError"] = true;
+        }
+        if (this.state.dataType === "") {
+          error["dataTypeSelectionAlert"] = true;
+        }
+        this.setState({
+          error: error
+        });
+        Object.keys(error).length === 0 && this.afterSuccessfullValidation();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   handleSubmit = e => {
     e.preventDefault();
-    if (this.state.dataType === "") {
-      this.setState({
-        dataTypeSelectionAlert: true
+    this.formValidation();
+  };
+
+  afterSuccessfullValidation = e => {
+    if (this.state.dataType === "Coded") {
+      const answers = this.state.answers;
+      const length = answers.length;
+
+      let index = 0;
+      answers.map(answer => {
+        return axios
+          .get("/search/concept?name=" + answer.name)
+          .then(response => {
+            console.log("Response", response.data);
+            const result = response.data.filter(
+              item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
+            );
+
+            if (result.length !== 0) {
+              answer.uuid = result[0].uuid;
+
+              index = index + 1;
+              if (index === length) {
+                this.postCodedData(answers);
+              }
+            } else {
+              answer.uuid = UUID.v4();
+              axios
+                .post("/concepts", [
+                  {
+                    name: answer.name,
+                    uuid: answer.uuid,
+                    dataType: "NA",
+                    lowAbsolute: null,
+                    highAbsolute: null,
+                    lowNormal: null,
+                    highNormal: null,
+                    unit: null
+                  }
+                ])
+                .then(response => {
+                  if (response.status === 200) {
+                    console.log("Dynamic concept added through Coded", response);
+
+                    index = index + 1;
+                    if (index === length) {
+                      this.postCodedData(answers);
+                    }
+                  }
+                });
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
       });
     } else {
-      if (this.state.dataType === "Coded") {
-        const answers = this.state.answers;
-        const length = answers.length;
-
-        let index = 0;
-        answers.map(answer => {
-          return axios
-            .get("/search/concept?name=" + answer.name + "&dataType=NA")
-            .then(response => {
-              console.log("Response", response.data);
-              const result = response.data.filter(
-                item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
-              );
-
-              if (result.length !== 0) {
-                answer.uuid = result[0].uuid;
-
-                index = index + 1;
-                if (index === length) {
-                  this.postCodedData(answers);
-                }
-              } else {
-                answer.uuid = UUID.v4();
-                axios
-                  .post("/concepts", [
-                    {
-                      name: answer.name,
-                      uuid: answer.uuid,
-                      dataType: "NA",
-                      lowAbsolute: null,
-                      highAbsolute: null,
-                      lowNormal: null,
-                      highNormal: null,
-                      unit: null
-                    }
-                  ])
-                  .then(response => {
-                    if (response.status === 200) {
-                      console.log("Dynamic concept added through Coded", response);
-
-                      index = index + 1;
-                      if (index === length) {
-                        this.postCodedData(answers);
-                      }
-                    }
-                  });
-              }
-            })
-            .catch(error => {
-              console.log(error);
-            });
+      const absoluteValidation =
+        parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute);
+      const normalValidation = parseInt(this.state.lowNormal) > parseInt(this.state.highNormal);
+      if (absoluteValidation || normalValidation) {
+        this.setState({
+          normalValidation: normalValidation,
+          absoluteValidation: absoluteValidation
         });
       } else {
-        const absoluteValidation =
-          parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute);
-        const normalValidation = parseInt(this.state.lowNormal) > parseInt(this.state.highNormal);
-        if (absoluteValidation || normalValidation) {
-          this.setState({
-            normalValidation: normalValidation,
-            absoluteValidation: absoluteValidation
+        axios
+          .post("/concepts", [
+            {
+              name: this.state.name,
+              uuid: UUID.v4(),
+              dataType: this.state.dataType,
+              lowAbsolute: this.state.lowAbsolute,
+              highAbsolute: this.state.highAbsolute,
+              lowNormal: this.state.lowNormal,
+              highNormal: this.state.highNormal,
+              unit: this.state.unit,
+              absoluteValidation: false,
+              normalValidation: false
+            }
+          ])
+          .then(response => {
+            if (response.status === 200) {
+              console.log(response);
+              this.setState({
+                conceptCreationAlert: true
+              });
+            } else {
+              this.setState({
+                errorAlert: true
+              });
+            }
+          })
+          .catch(error => {
+            console.log(error);
           });
-        } else {
-          axios
-            .post("/concepts", [
-              {
-                name: this.state.name,
-                uuid: UUID.v4(),
-                dataType: this.state.dataType,
-                lowAbsolute: this.state.lowAbsolute,
-                highAbsolute: this.state.highAbsolute,
-                lowNormal: this.state.lowNormal,
-                highNormal: this.state.highNormal,
-                unit: this.state.unit,
-                absoluteValidation: false,
-                normalValidation: false
-              }
-            ])
-            .then(response => {
-              if (response.status === 200) {
-                console.log(response);
-                this.setState({
-                  conceptCreationAlert: true
-                });
-              } else {
-                this.setState({
-                  errorAlert: true
-                });
-              }
-            })
-            .catch(error => {
-              console.log(error);
-            });
-        }
       }
     }
   };
-
   onNumericDataType = event => {
     this.setState({
       [event.target.id]: event.target.value
@@ -278,62 +301,64 @@ class CreateConcept extends Component {
     };
 
     return (
-      <ScreenWithAppBar appbarTitle={"Create a Concept"}>
-        <form onSubmit={this.handleSubmit}>
-          <Grid container justify="flex-start">
-            <Grid item sm={12}>
-              <TextField
-                required
-                id="name"
-                label="Name"
-                value={this.state.name}
-                onChange={this.handleChange("name")}
-                style={classes.textField}
-                margin="normal"
-              />
-            </Grid>
-
-            <Grid>
-              <FormControl>
-                <InputLabel htmlFor="age-helper" style={classes.inputLabel}>
-                  Datatype *
-                </InputLabel>
-                <Select
-                  id="dataType"
-                  label="DataType"
-                  value={this.state.dataType}
-                  onChange={this.handleChange("dataType")}
-                  style={classes.select}
-                >
-                  {this.state.dataTypes.map(datatype => {
-                    return (
-                      <MenuItem value={datatype} key={datatype}>
-                        {datatype}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-                {this.state.dataTypeSelectionAlert && (
-                  <FormHelperText error>*Required</FormHelperText>
+      <div>
+        <ScreenWithAppBar appbarTitle={"Create a Concept"} enableLeftMenuButton={true}>
+          <form onSubmit={this.handleSubmit}>
+            <Grid container justify="flex-start">
+              <Grid item sm={12}>
+                <TextField
+                  required
+                  id="name"
+                  label="Name"
+                  value={this.state.name}
+                  onChange={this.handleChange("name")}
+                  style={classes.textField}
+                  margin="normal"
+                />
+                {this.state.error.nameError && (
+                  <FormHelperText error>Same name concept already exist.</FormHelperText>
                 )}
-              </FormControl>
-            </Grid>
-            {dataType}
-          </Grid>
-          <Grid>
-            <Button type="submit" color="primary" variant="contained" style={classes.button}>
-              Submit
-            </Button>
-          </Grid>
+              </Grid>
 
-          {this.state.conceptCreationAlert && (
-            <CustomizedDialogs
-              sendValue={this.getDialogFlag}
-              message="Concept created successfully."
-            />
-          )}
-        </form>
-      </ScreenWithAppBar>
+              <Grid>
+                <FormControl>
+                  <InputLabel htmlFor="age-helper" style={classes.inputLabel}>
+                    Datatype *
+                  </InputLabel>
+                  <Select
+                    id="dataType"
+                    label="DataType"
+                    value={this.state.dataType}
+                    onChange={this.handleChange("dataType")}
+                    style={classes.select}
+                  >
+                    {this.state.dataTypes.map(datatype => {
+                      return (
+                        <MenuItem value={datatype} key={datatype}>
+                          {datatype}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                  {this.state.error.dataTypeSelectionAlert && (
+                    <FormHelperText error>*Required</FormHelperText>
+                  )}
+                </FormControl>
+              </Grid>
+              {dataType}
+            </Grid>
+            <Grid>
+              <Button type="submit" color="primary" variant="contained" style={classes.button}>
+                Submit
+              </Button>
+            </Grid>
+
+            {this.state.conceptCreationAlert && (
+              <CustomizedSnackbar message="Concept created successfully." />
+            )}
+          </form>
+        </ScreenWithAppBar>
+      </div>
     );
   }
 }

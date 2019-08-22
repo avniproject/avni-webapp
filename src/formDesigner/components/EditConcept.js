@@ -5,9 +5,10 @@ import Button from "@material-ui/core/Button";
 import { default as UUID } from "uuid";
 import NumericDataType from "./NumericDataType";
 import Grid from "@material-ui/core/Grid";
-import CustomizedDialogs from "./CustomizedDialogs";
 import CodedDataType from "./CodedDataType";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import CustomizedSnackbar from "./CustomizedSnackbar";
 
 class EditConcept extends Component {
   constructor(props) {
@@ -25,49 +26,32 @@ class EditConcept extends Component {
       conceptCreationAlert: false,
       flag: false,
       absoluteValidation: false,
-      normalValidation: false
+      normalValidation: false,
+      error: {}
     };
   }
 
-  onAutoSuggestChange = (event, { newValue, method }) => {
-    this.setState({ autoSuggestValue: newValue });
-  };
-  onSuggestionsFetchRequested = ({ value }) => {
-    axios
-      .get(`/search/concept?name=${value}`)
-      .then(response => response.data)
-      .then(concepts => this.setState({ suggestions: concepts }))
-      .catch(err => {
-        console.log(err);
-      });
-  };
-  onSuggestionsClearRequested = () => {
-    this.setState({
-      suggestions: []
-    });
-  };
-
-  onSuggestionSelected = (event, { suggestion }) => {
-    this.setState({
-      autoSuggestValue: "",
-      modal: false
-    });
-
-    this.props.onConceptSelected(suggestion);
-  };
   componentDidMount() {
     axios
       .get("/web/concept/" + this.props.match.params.uuid)
       .then(response => {
+        console.log("Response", response);
         let answers;
         if (response.data.dataType === "Coded") {
           answers = response.data.conceptAnswers.map(conceptAnswer => ({
             name: conceptAnswer.answerConcept.name,
             uuid: conceptAnswer.answerConcept.uuid,
             unique: conceptAnswer.unique,
-            abnormal: conceptAnswer.abnormal
+            abnormal: conceptAnswer.abnormal,
+            order: conceptAnswer.order,
+            voided: conceptAnswer.voided
           }));
+          answers.sort(function(conceptOrder1, conceptOrder2) {
+            return conceptOrder1.order - conceptOrder2.order;
+          });
         }
+
+        console.log(answers);
         this.setState({
           name: response.data.name,
           uuid: response.data.uuid,
@@ -175,8 +159,30 @@ class EditConcept extends Component {
     }
   }
 
-  handleSubmit = e => {
-    e.preventDefault();
+  formValidation = () => {
+    const conceptName = this.state.name;
+    let error = {};
+    axios
+      .get("/search/concept?name=" + conceptName)
+      .then(response => {
+        const conceptExist = response.data.filter(
+          item => item.name.toLowerCase().trim() === conceptName.toLowerCase().trim()
+        );
+        if (conceptExist.length !== 0 && conceptExist[0].uuid !== this.state.uuid) {
+          error["nameError"] = true;
+        }
+
+        this.setState({
+          error: error
+        });
+        Object.keys(error).length === 0 && this.afterSuccessfullValidation();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  afterSuccessfullValidation = () => {
     if (this.state.dataType === "Coded") {
       const answers = this.state.answers;
       const length = answers.length;
@@ -184,7 +190,7 @@ class EditConcept extends Component {
 
       answers.map(answer => {
         return axios
-          .get("/search/concept?name=" + answer.name + "&dataType=NA")
+          .get("/search/concept?name=" + answer.name)
           .then(response => {
             const result = response.data.filter(
               item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
@@ -230,6 +236,11 @@ class EditConcept extends Component {
     }
   };
 
+  handleSubmit = e => {
+    e.preventDefault();
+    this.formValidation();
+  };
+
   onNumericDataType = event => {
     this.setState({
       [event.target.id]: event.target.value
@@ -265,8 +276,7 @@ class EditConcept extends Component {
 
   onDeleteAnswer = index => {
     const answers = [...this.state.answers];
-    answers.splice(index, 1);
-    answers.indexOf(answers[index], 1);
+    answers[index].voided = true;
     this.setState({
       answers
     });
@@ -276,7 +286,7 @@ class EditConcept extends Component {
     this.setState({
       answers: [
         ...this.state.answers,
-        { name: "", uuid: "", unique: false, abnormal: false, editable: true }
+        { name: "", uuid: "", unique: false, abnormal: false, editable: true, voided: false }
       ]
     });
   };
@@ -319,7 +329,7 @@ class EditConcept extends Component {
     }
 
     return (
-      <ScreenWithAppBar appbarTitle={"Edit a Concept"}>
+      <ScreenWithAppBar appbarTitle={"Edit a Concept"} enableLeftMenuButton={true}>
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
             <Grid item sm={12}>
@@ -332,6 +342,9 @@ class EditConcept extends Component {
                 style={classes.textField}
                 margin="normal"
               />
+              {this.state.error.nameError && (
+                <FormHelperText error>Same name concept already exist.</FormHelperText>
+              )}
             </Grid>
             <Grid>
               <TextField
@@ -352,10 +365,7 @@ class EditConcept extends Component {
           </Grid>
 
           {this.state.conceptCreationAlert && (
-            <CustomizedDialogs
-              sendValue={this.getDialogFlag}
-              message="Concept updated successfully."
-            />
+            <CustomizedSnackbar message="Concept updated successfully." />
           )}
         </form>
       </ScreenWithAppBar>

@@ -24,57 +24,59 @@ class CodedDataType extends Component {
         <Grid container style={{ marginTop: 20 }}>
           {this.props.answers.map((answer, index) => {
             return (
-              <Grid container key={index}>
-                <FormControl>
-                  <AutoSuggestSingleSelection
-                    visibility={!answer.editable}
-                    showAnswer={answer.name}
-                    onChangeAnswerName={this.props.onChangeAnswerName}
-                    index={index}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={answer.abnormal}
-                        onChange={e => this.props.onToggleAnswerField(e, index)}
-                        value={answer.abnormal}
-                        color="primary"
-                        id="abnormal"
-                      />
-                    }
-                    label="abnormal"
-                    style={{ marginTop: 15, marginLeft: 2 }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={answer.unique}
-                        onChange={e => this.props.onToggleAnswerField(e, index)}
-                        value={answer.unique}
-                        color="primary"
-                        id="unique"
-                      />
-                    }
-                    label="unique"
-                    style={{ marginTop: 15 }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => {
-                      this.props.onDeleteAnswer(index);
-                    }}
-                    style={{ marginTop: 10 }}
-                  >
-                    <DeleteIcon fontSize="inherit" />
-                  </IconButton>
-                </FormControl>
-              </Grid>
+              !answer.voided && (
+                <Grid container key={index}>
+                  <FormControl>
+                    <AutoSuggestSingleSelection
+                      visibility={!answer.editable}
+                      showAnswer={answer.name}
+                      onChangeAnswerName={this.props.onChangeAnswerName}
+                      index={index}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={answer.abnormal}
+                          onChange={e => this.props.onToggleAnswerField(e, index)}
+                          value={answer.abnormal}
+                          color="primary"
+                          id="abnormal"
+                        />
+                      }
+                      label="abnormal"
+                      style={{ marginTop: 15, marginLeft: 2 }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={answer.unique}
+                          onChange={e => this.props.onToggleAnswerField(e, index)}
+                          value={answer.unique}
+                          color="primary"
+                          id="unique"
+                        />
+                      }
+                      label="unique"
+                      style={{ marginTop: 15 }}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => {
+                        this.props.onDeleteAnswer(index);
+                      }}
+                      style={{ marginTop: 10 }}
+                    >
+                      <DeleteIcon fontSize="inherit" />
+                    </IconButton>
+                  </FormControl>
+                </Grid>
+              )
             );
           })}
         </Grid>
