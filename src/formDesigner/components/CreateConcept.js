@@ -51,10 +51,17 @@ class CreateConcept extends Component {
 
   onDeleteAnswer = index => {
     const answers = [...this.state.answers];
-    answers[index].voided = true;
-    this.setState({
-      answers
-    });
+    if (answers[index].name !== "") {
+      answers[index].voided = true;
+      this.setState({
+        answers
+      });
+    } else {
+      answers.splice(index, 1);
+      this.setState({
+        answers
+      });
+    }
   };
 
   onAddAnswer = () => {
@@ -137,6 +144,7 @@ class CreateConcept extends Component {
         if (this.state.dataType === "") {
           error["dataTypeSelectionAlert"] = true;
         }
+
         this.setState({
           error: error
         });
@@ -158,53 +166,57 @@ class CreateConcept extends Component {
       const length = answers.length;
 
       let index = 0;
-      answers.map(answer => {
-        return axios
-          .get("/search/concept?name=" + answer.name)
-          .then(response => {
-            console.log("Response", response.data);
-            const result = response.data.filter(
-              item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
-            );
+      if (length !== 0) {
+        answers.map(answer => {
+          return axios
+            .get("/search/concept?name=" + answer.name)
+            .then(response => {
+              console.log("Response", response.data);
+              const result = response.data.filter(
+                item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
+              );
 
-            if (result.length !== 0) {
-              answer.uuid = result[0].uuid;
+              if (result.length !== 0) {
+                answer.uuid = result[0].uuid;
 
-              index = index + 1;
-              if (index === length) {
-                this.postCodedData(answers);
-              }
-            } else {
-              answer.uuid = UUID.v4();
-              axios
-                .post("/concepts", [
-                  {
-                    name: answer.name,
-                    uuid: answer.uuid,
-                    dataType: "NA",
-                    lowAbsolute: null,
-                    highAbsolute: null,
-                    lowNormal: null,
-                    highNormal: null,
-                    unit: null
-                  }
-                ])
-                .then(response => {
-                  if (response.status === 200) {
-                    console.log("Dynamic concept added through Coded", response);
-
-                    index = index + 1;
-                    if (index === length) {
-                      this.postCodedData(answers);
+                index = index + 1;
+                if (index === length) {
+                  this.postCodedData(answers);
+                }
+              } else {
+                answer.uuid = UUID.v4();
+                axios
+                  .post("/concepts", [
+                    {
+                      name: answer.name,
+                      uuid: answer.uuid,
+                      dataType: "NA",
+                      lowAbsolute: null,
+                      highAbsolute: null,
+                      lowNormal: null,
+                      highNormal: null,
+                      unit: null
                     }
-                  }
-                });
-            }
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      });
+                  ])
+                  .then(response => {
+                    if (response.status === 200) {
+                      console.log("Dynamic concept added through Coded", response);
+
+                      index = index + 1;
+                      if (index === length) {
+                        this.postCodedData(answers);
+                      }
+                    }
+                  });
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        });
+      } else {
+        this.postCodedData(answers);
+      }
     } else {
       const absoluteValidation =
         parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute);
@@ -347,6 +359,7 @@ class CreateConcept extends Component {
               </Grid>
               {dataType}
             </Grid>
+
             <Grid>
               <Button type="submit" color="primary" variant="contained" style={classes.button}>
                 Submit

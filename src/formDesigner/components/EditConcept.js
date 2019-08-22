@@ -36,8 +36,8 @@ class EditConcept extends Component {
       .get("/web/concept/" + this.props.match.params.uuid)
       .then(response => {
         console.log("Response", response);
-        let answers;
-        if (response.data.dataType === "Coded") {
+        let answers = [];
+        if (response.data.dataType === "Coded" && response.data.conceptAnswers) {
           answers = response.data.conceptAnswers.map(conceptAnswer => ({
             name: conceptAnswer.answerConcept.name,
             uuid: conceptAnswer.answerConcept.uuid,
@@ -187,50 +187,53 @@ class EditConcept extends Component {
       const answers = this.state.answers;
       const length = answers.length;
       let index = 0;
-
-      answers.map(answer => {
-        return axios
-          .get("/search/concept?name=" + answer.name)
-          .then(response => {
-            const result = response.data.filter(
-              item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
-            );
-            if (result.length !== 0) {
-              answer.uuid = result[0].uuid;
-              index = index + 1;
-              if (index === length) {
-                this.postCodedData(answers);
-              }
-            } else {
-              answer.uuid = UUID.v4();
-              axios
-                .post("/concepts", [
-                  {
-                    name: answer.name,
-                    uuid: answer.uuid,
-                    dataType: "NA",
-                    lowAbsolute: null,
-                    highAbsolute: null,
-                    lowNormal: null,
-                    highNormal: null,
-                    unit: null
-                  }
-                ])
-                .then(response => {
-                  if (response.status === 200) {
-                    console.log("Dynamic concept added through Coded", response);
-                    index = index + 1;
-                    if (length === index) {
-                      this.postCodedData(answers);
+      if (length !== 0) {
+        answers.map(answer => {
+          return axios
+            .get("/search/concept?name=" + answer.name)
+            .then(response => {
+              const result = response.data.filter(
+                item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
+              );
+              if (result.length !== 0) {
+                answer.uuid = result[0].uuid;
+                index = index + 1;
+                if (index === length) {
+                  this.postCodedData(answers);
+                }
+              } else {
+                answer.uuid = UUID.v4();
+                axios
+                  .post("/concepts", [
+                    {
+                      name: answer.name,
+                      uuid: answer.uuid,
+                      dataType: "NA",
+                      lowAbsolute: null,
+                      highAbsolute: null,
+                      lowNormal: null,
+                      highNormal: null,
+                      unit: null
                     }
-                  }
-                });
-            }
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      });
+                  ])
+                  .then(response => {
+                    if (response.status === 200) {
+                      console.log("Dynamic concept added through Coded", response);
+                      index = index + 1;
+                      if (length === index) {
+                        this.postCodedData(answers);
+                      }
+                    }
+                  });
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            });
+        });
+      } else {
+        this.postCodedData(answers);
+      }
     } else {
       this.postEditedData();
     }
@@ -276,10 +279,17 @@ class EditConcept extends Component {
 
   onDeleteAnswer = index => {
     const answers = [...this.state.answers];
-    answers[index].voided = true;
-    this.setState({
-      answers
-    });
+    if (answers[index].name !== "") {
+      answers[index].voided = true;
+      this.setState({
+        answers
+      });
+    } else {
+      answers.splice(index, 1);
+      this.setState({
+        answers
+      });
+    }
   };
 
   onAddAnswer = () => {
