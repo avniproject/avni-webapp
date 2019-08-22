@@ -1,5 +1,5 @@
 import React from "react";
-import deburr from "lodash/deburr";
+import { deburr } from "lodash";
 import Autosuggest from "react-autosuggest";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
@@ -79,6 +79,7 @@ const useStyles = theme => ({
 
 export default function AutoSuggestSingleSelection(props) {
   const classes = useStyles();
+  const MAX_NUMBER_OF_SUGGESTIONS = 20;
 
   const [state, setState] = React.useState({
     single: ""
@@ -89,17 +90,14 @@ export default function AutoSuggestSingleSelection(props) {
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
 
-    let suggestions = [];
-
     axios
-      .get("/search/concept?name=" + value + "&dataType=NA")
+      .get(`/search/concept?name=${inputValue}`)
       .then(response => {
-        console.log(response.data);
-        response.data.map((answer, index) => {
-          return answer.name.toLowerCase().startsWith(inputValue) && suggestions.push(answer.name);
-        });
+        const suggestions = response.data
+          .slice(0, MAX_NUMBER_OF_SUGGESTIONS)
+          .map(concept => concept.name)
+          .sort();
         setSuggestions(suggestions);
-        console.log(suggestions);
       })
       .catch(error => {
         console.log(error);
