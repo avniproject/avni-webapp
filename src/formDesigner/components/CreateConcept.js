@@ -132,6 +132,9 @@ class CreateConcept extends Component {
   formValidation = () => {
     const conceptName = this.state.name;
     let error = {};
+    if (this.state.dataType === "") {
+      error["dataTypeSelectionAlert"] = true;
+    }
     axios
       .get("/search/concept?name=" + conceptName)
       .then(response => {
@@ -140,9 +143,6 @@ class CreateConcept extends Component {
         );
         if (conceptExist.length !== 0) {
           error["nameError"] = true;
-        }
-        if (this.state.dataType === "") {
-          error["dataTypeSelectionAlert"] = true;
         }
 
         this.setState({

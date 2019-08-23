@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Menu from "@material-ui/core/Menu";
 import IconButton from "@material-ui/core/IconButton";
 import UserIcon from "@material-ui/icons/AccountCircle";
+import MenuIcon from "@material-ui/icons/Menu";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -50,11 +51,22 @@ export default props => {
     <div className={classes.root}>
       <AppBar position="fixed">
         <Toolbar className={classes.toolbar}>
+          {props.enableLeftMenuButton && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={props.handleDrawer}
+              edge="start"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <div className={classes.title}>
             <Typography variant="h5" className={classes.titlet}>
               {props.title}
             </Typography>
           </div>
+
           <div className={classes.profile}>
             <IconButton
               aria-label="Profile"

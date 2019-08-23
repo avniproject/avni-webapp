@@ -30,12 +30,10 @@ const Homepage = () => {
   return (
     <ScreenWithAppBar appbarTitle={"UI Designer"}>
       <Grid container justify="center">
-        <CardActionArea style={classes.cardArea} href="/#/admin/user">
+        <CardActionArea style={classes.cardArea} href="/#/admin">
           <Card style={classes.card} raised={true}>
             <CardContent>
-              <Typography align="center" color="primary">
-                User management
-              </Typography>
+              <Typography align="center" color="primary" />
             </CardContent>
             <Typography
               variant="h5"
@@ -48,13 +46,12 @@ const Homepage = () => {
             </Typography>
           </Card>
         </CardActionArea>
+
         <CardActionArea style={classes.cardArea} href="/#/forms">
           <Card style={classes.card} raised={true}>
             <CardContent>
               <Typography color="textSecondary" gutterBottom />
-              <Typography align="center" color="primary">
-                Form management
-              </Typography>
+              <Typography align="center" color="primary" />
             </CardContent>
             <Typography
               variant="h5"
@@ -63,26 +60,7 @@ const Homepage = () => {
               color="primary"
               style={{ marginTop: 30 }}
             >
-              Form
-            </Typography>
-          </Card>
-        </CardActionArea>
-        <CardActionArea style={classes.cardArea} href="/#/concepts">
-          <Card style={classes.card} raised={true}>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom />
-              <Typography align="center" color="primary">
-                Concept management
-              </Typography>
-            </CardContent>
-            <Typography
-              variant="h5"
-              component="h2"
-              align="center"
-              color="primary"
-              style={{ marginTop: 30 }}
-            >
-              Concept
+              UI Designer
             </Typography>
           </Card>
         </CardActionArea>

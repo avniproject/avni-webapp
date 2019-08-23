@@ -80,10 +80,10 @@ export default function CustomizedSnackbar(props) {
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "left"
+          horizontal: "center"
         }}
         open={open}
-        autoHideDuration={500}
+        autoHideDuration={1000}
         onClose={handleClose}
       >
         <MySnackbarContentWrapper onClose={handleClose} variant="success" message={props.message} />

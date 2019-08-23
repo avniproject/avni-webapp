@@ -32,7 +32,7 @@ const Routes = props => (
   <Switch>
     <Route path="/admin">
       <RestrictedRoute
-        path="/"
+        path="/admin"
         allowedRoles={[ROLES.ORG_ADMIN]}
         currentUserRoles={props.userRoles}
         component={OrgManager}
@@ -95,7 +95,7 @@ const Routes = props => (
     />
     <RestrictedRoute
       exact
-      path="/homepage"
+      path="/"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
       component={Homepage}
