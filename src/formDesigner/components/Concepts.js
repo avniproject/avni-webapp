@@ -83,7 +83,7 @@ const Concepts = ({ history }) => {
             icon: "add",
             tooltip: "Create Concept",
             isFreeAction: true,
-            onClick: event => history.push(`/createconcept`)
+            onClick: event => history.push(`/concept/create`)
           }
         ]}
       />

@@ -28,7 +28,7 @@ const Homepage = () => {
   };
 
   return (
-    <ScreenWithAppBar appbarTitle={"UI Designer"}>
+    <ScreenWithAppBar appbarTitle={"OpenCHS Web Console"}>
       <Grid container justify="center">
         <CardActionArea style={classes.cardArea} href="/#/admin">
           <Card style={classes.card} raised={true}>
