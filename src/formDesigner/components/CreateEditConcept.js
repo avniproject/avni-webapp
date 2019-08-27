@@ -13,8 +13,9 @@ import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import CustomizedSnackbar from "./CustomizedSnackbar";
+import PropTypes from "prop-types";
 
-class CreateConcept extends Component {
+class CreateEditConcept extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -32,12 +33,23 @@ class CreateConcept extends Component {
       ],
       conceptCreationAlert: false,
       error: {},
-      createPage: false
+      createPage: this.props.isCreate
     };
   }
 
   componentDidMount() {
-    if (this.props.match.params.uuid) {
+    if (this.state.createPage) {
+      axios
+        .get("/concept/dataTypes")
+        .then(response => {
+          this.setState({
+            dataTypes: response.data
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    } else {
       axios
         .get("/web/concept/" + this.props.match.params.uuid)
         .then(response => {
@@ -66,20 +78,6 @@ class CreateConcept extends Component {
             highNormal: response.data.highNormal,
             unit: response.data.unit,
             answers
-          });
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    } else {
-      this.setState({
-        createPage: true
-      });
-      axios
-        .get("/concept/dataTypes")
-        .then(response => {
-          this.setState({
-            dataTypes: response.data
           });
         })
         .catch(error => {
@@ -460,4 +458,6 @@ class CreateConcept extends Component {
   }
 }
 
-export default CreateConcept;
+CreateEditConcept.propTypes = { isCreate: PropTypes.bool };
+CreateEditConcept.defaultProps = { isCreate: false };
+export default CreateEditConcept;

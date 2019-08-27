@@ -15,6 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import PropTypes from "prop-types";
 
 /**
  * This is the typical view you will need for most of your screens.
@@ -199,5 +200,11 @@ const ScreenWithAppBar = props => {
     </Container>
   );
 };
+
+ScreenWithAppBar.propTypes = {
+  appbarTitle: PropTypes.string.isRequired,
+  enableLeftMenuButton: PropTypes.bool
+};
+ScreenWithAppBar.defaultProps = { enableLeftMenuButton: false };
 
 export default ScreenWithAppBar;

@@ -8,6 +8,8 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
+import PropTypes from "prop-types";
+
 const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1),
@@ -89,3 +91,11 @@ export default function CodedConcept(props) {
     </>
   );
 }
+
+CodedConcept.propTypes = {
+  answers: PropTypes.array.isRequired,
+  onDeleteAnswer: PropTypes.func.isRequired,
+  onAddAnswer: PropTypes.func.isRequired,
+  onChangeAnswerName: PropTypes.func.isRequired,
+  onToggleAnswerField: PropTypes.func.isRequired
+};

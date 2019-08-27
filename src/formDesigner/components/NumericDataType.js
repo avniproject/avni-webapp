@@ -3,6 +3,7 @@ import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import PropTypes from "prop-types";
 
 export default function NumericConcept(props) {
   const classes = { width: 195, marginRight: 10 };
@@ -87,3 +88,8 @@ export default function NumericConcept(props) {
     </>
   );
 }
+
+NumericConcept.propTypes = {
+  onNumericConceptAttributeAssignment: PropTypes.func.isRequired,
+  numericDataTypeAttributes: PropTypes.object.isRequired
+};
