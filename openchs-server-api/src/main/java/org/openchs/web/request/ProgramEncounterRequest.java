@@ -10,14 +10,6 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProgramEncounterRequest extends AbstractEncounterRequest {
     private String programEnrolmentUUID;
-    private String name;
-    private DateTime maxDateTime;
-    private DateTime earliestVisitDateTime;
-    private DateTime maxVisitDateTime;
-    private DateTime cancelDateTime;
-    private List<ObservationRequest> cancelObservations;
-    private PointRequest encounterLocation;
-    private PointRequest cancelLocation;
 
     public String getProgramEnrolmentUUID() {
         return programEnrolmentUUID;
@@ -27,97 +19,12 @@ public class ProgramEncounterRequest extends AbstractEncounterRequest {
         this.programEnrolmentUUID = programEnrolmentUUID;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public DateTime getMaxDateTime() {
-        return maxDateTime;
-    }
-
-    public void setMaxDateTime(DateTime maxDateTime) {
-        this.maxDateTime = maxDateTime;
-    }
-
-    public DateTime getEarliestVisitDateTime() {
-        return earliestVisitDateTime;
-    }
-
-    public void setEarliestVisitDateTime(DateTime earliestVisitDateTime) {
-        this.earliestVisitDateTime = earliestVisitDateTime;
-    }
-
-    public DateTime getCancelDateTime() {
-        return cancelDateTime;
-    }
-
-    public void setCancelDateTime(DateTime cancelDateTime) {
-        this.cancelDateTime = cancelDateTime;
-    }
-
-    public List<ObservationRequest> getCancelObservations() {
-        if (cancelObservations == null) return new ArrayList<>();
-        return cancelObservations;
-    }
-
-    public void setCancelObservations(List<ObservationRequest> cancelObservations) {
-        this.cancelObservations = cancelObservations;
-    }
-
-    public DateTime getMaxVisitDateTime() {
-        return maxVisitDateTime;
-    }
-
-    public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
-        this.maxVisitDateTime = maxVisitDateTime;
-    }
-
     public static ProgramEncounterRequest createSafeInstance() {
         ProgramEncounterRequest programEncounterRequest = new ProgramEncounterRequest();
         programEncounterRequest.setUuid(UUID.randomUUID().toString());
-        programEncounterRequest.observations = new ArrayList<>();
-        programEncounterRequest.cancelObservations = new ArrayList<>();
+        programEncounterRequest.setObservations(new ArrayList<>());
+        programEncounterRequest.setCancelObservations(new ArrayList<>());
         return programEncounterRequest;
     }
 
-    public ObservationRequest findObservation(String conceptName) {
-        return observations.stream().filter(observationRequest -> observationRequest.getConceptName().equals(conceptName)).findAny().orElse(null);
-    }
-
-    public void addObservation(ObservationRequest observationRequest) {
-        if (this.cancelDateTime != null && observationRequest != null) {
-            this.cancelObservations.add(observationRequest);
-        } else {
-            super.addObservation(observationRequest);
-        }
-    }
-
-    public Object getObservationValue(String conceptName) {
-        return findObservation(conceptName).getValue();
-    }
-
-    public PointRequest getEncounterLocation() {
-        return encounterLocation;
-    }
-
-    public void setEncounterLocation(PointRequest encounterLocation) {
-        this.encounterLocation = encounterLocation;
-    }
-
-    public PointRequest getCancelLocation() {
-        return cancelLocation;
-    }
-
-    public void setCancelLocation(PointRequest cancelLocation) {
-        this.cancelLocation = cancelLocation;
-    }
-
-    public boolean isPlanned() {
-        return getEncounterDateTime() == null
-                && getEarliestVisitDateTime() != null;
-    }
 }

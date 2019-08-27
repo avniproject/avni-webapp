@@ -122,4 +122,21 @@ public class EncounterControllerIntegrationTest extends AbstractControllerIntegr
             Assert.fail();
         }
     }
+
+    @Test
+    public void createScheduledVisit() {
+        try {
+            Object json = mapper.readValue(this.getClass().getResource("/ref/encounters/scheduled.json"), Object.class);
+            String x = postForBody("/encounters", json);
+
+            Encounter encounter = encounterRepository.findByUuid("c92d53cc-2a83-4e9f-93a2-0f3d46d99c34");
+
+            assertThat(encounter.getEarliestVisitDateTime().toString()).startsWith("3019-01-01");
+            assertThat(encounter.getMaxVisitDateTime().toString()).startsWith("4019-01-01");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
 }

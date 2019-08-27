@@ -1,0 +1,10 @@
+{
+  "uuid": "c92d53cc-2a83-4e9f-93a2-0f3d46d99c34",
+  "encounterTypeUUID": "3a1535d0-81fd-48fc-85b5-dc9da81064a3",
+  "individualUUID": "4378dce3-247e-4393-8dd5-032c6eb0a655",
+  "encounterDateTime": null,
+  "earliestVisitDateTime" : "3019-01-01T00:00:00.000Z",
+  "maxVisitDateTime" : "4019-01-01T00:00:00.000Z",
+  "observations": [
+  ]
+}
