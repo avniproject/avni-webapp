@@ -7,24 +7,15 @@ import { connect } from "react-redux";
 import { authProvider, LogoutButton } from "./react-admin-config";
 import { adminHistory, store } from "../common/store";
 import { UserCreate, UserDetail, UserEdit, UserList } from "./user";
-import {
-  CatchmentCreate,
-  CatchmentDetail,
-  CatchmentEdit,
-  CatchmentList
-} from "./catchment";
+import { CatchmentCreate, CatchmentDetail, CatchmentEdit, CatchmentList } from "./catchment";
 import {
   LocationTypeCreate,
   LocationTypeDetail,
   LocationTypeEdit,
   LocationTypeList
 } from "./addressLevelType";
-import {
-  LocationCreate,
-  LocationDetail,
-  LocationEdit,
-  LocationList
-} from "./locations";
+import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
+import { ProgramList, ProgramDetail, ProgramCreate, ProgramEdit } from "./programs";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -73,6 +64,14 @@ class OrgManager extends Component {
           show={LocationDetail}
           create={LocationCreate}
           edit={LocationEdit}
+        />
+        <Resource
+          name="program"
+          options={{ label: "Programs" }}
+          list={ProgramList}
+          show={ProgramDetail}
+          create={ProgramCreate}
+          edit={ProgramEdit}
         />
       </Admin>
     );
