@@ -5,28 +5,11 @@ import {
   TextField,
   Show,
   SimpleShowLayout,
-  ReferenceManyField,
-  ReferenceField,
-  FunctionField,
   Create,
   Edit,
   SimpleForm,
-  TextInput,
-  DisabledInput,
-  FormDataConsumer,
-  ReferenceInput,
-  SelectInput,
-  REDUX_FORM_NAME,
-  Toolbar,
-  SaveButton,
-  required,
-  DeleteButton
+  TextInput
 } from "react-admin";
-import { isEmpty, find, isNil } from "lodash";
-import { change } from "redux-form";
-import { None } from "../common/components/utils";
-
-import { store } from "../common/store";
 
 const Title = ({ record }) => {
   return (
@@ -41,8 +24,9 @@ const Title = ({ record }) => {
 export const ProgramList = props => (
   <List {...props} bulkActions={false}>
     <Datagrid rowClick="show">
-      <TextField label="Name" source="name" />
-      <TextField label="Colour" source="colour" />
+      <TextField source="name" label="Name" />
+      <TextField source="colour" label="Colour" />
+      <TextField source="programSubjectLabel" label="Program Subject Label" />
     </Datagrid>
   </List>
 );
@@ -53,6 +37,7 @@ export const ProgramDetail = props => {
       <SimpleShowLayout>
         <TextField source="name" label="Name" />
         <TextField source="colour" label="Colour" />
+        <TextField source="programSubjectLabel" label="Program Subject Label" />
       </SimpleShowLayout>
     </Show>
   );
@@ -64,8 +49,7 @@ export const ProgramCreate = props => {
       <SimpleForm>
         <TextInput source="name" />
         <TextInput source="colour" />
-        {/* <RichTextInput source="body" />
-        <DateInput label="Publication date" source="published_at" defaultValue={new Date()} /> */}
+        <TextInput source="programSubjectLabel" />
       </SimpleForm>
     </Create>
   );
@@ -77,8 +61,7 @@ export const ProgramEdit = props => {
       <SimpleForm>
         <TextInput source="name" />
         <TextInput source="colour" />
-        {/* <RichTextInput source="body" />
-        <DateInput label="Publication date" source="published_at" defaultValue={new Date()} /> */}
+        <TextInput source="programSubjectLabel" />
       </SimpleForm>
     </Edit>
   );
