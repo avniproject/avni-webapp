@@ -18,7 +18,7 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
     }
 
     public FormBuilder withType(String formType) {
-        this.set(FormType.class.getSimpleName(), formType == null ? null : FormType.valueOf(formType), FormType.class);
+        set(get()::setFormType, formType == null ? null : FormType.valueOf(formType));
         return this;
     }
 

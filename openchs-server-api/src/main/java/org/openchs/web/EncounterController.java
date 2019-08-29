@@ -1,10 +1,8 @@
 package org.openchs.web;
 
+import com.bugsnag.Bugsnag;
 import org.joda.time.DateTime;
-import org.openchs.dao.EncounterRepository;
-import org.openchs.dao.EncounterTypeRepository;
-import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepository;
+import org.openchs.dao.*;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
@@ -34,45 +32,65 @@ public class EncounterController extends AbstractController<Encounter> implement
     private final UserService userService;
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
+    private Bugsnag bugsnag;
 
     @Autowired
-    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService, UserService userService) {
+    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService, UserService userService, Bugsnag bugsnag) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.userService = userService;
+        this.bugsnag = bugsnag;
+    }
+
+    private void checkForSchedulingCompleteConstraintViolation(EncounterRequest request) {
+        if ((request.getEarliestVisitDateTime() != null || request.getMaxVisitDateTime() != null)
+                && (request.getEarliestVisitDateTime() == null || request.getMaxVisitDateTime() == null)
+        ) {
+            //violating constraint so notify bugsnag
+            bugsnag.notify(new Exception(String.format("ProgramEncounter violating scheduling constraint uuid %s earliest %s max %s", request.getUuid(), request.getEarliestVisitDateTime(), request.getMaxVisitDateTime())));
+        }
     }
 
     @RequestMapping(value = "/encounters", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public void save(@RequestBody EncounterRequest encounterRequest) {
-        logger.info("Saving encounter with uuid %s", encounterRequest.getUuid());
+    public void save(@RequestBody EncounterRequest request) {
+        logger.info("Saving encounter with uuid %s", request.getUuid());
 
-        EncounterType encounterType;
-        if (encounterRequest.getEncounterTypeUUID() == null) {
-            encounterType = encounterTypeRepository.findByName(encounterRequest.getEncounterType());
-        } else {
-            encounterType = encounterTypeRepository.findByUuid(encounterRequest.getEncounterTypeUUID());
-        }
-        Individual individual = individualRepository.findByUuid(encounterRequest.getIndividualUUID());
+        checkForSchedulingCompleteConstraintViolation(request);
+
+        EncounterType encounterType = encounterTypeRepository.findByUuidOrName(request.getEncounterType(), request.getEncounterTypeUUID());
+        Individual individual = individualRepository.findByUuid(request.getIndividualUUID());
         if (individual == null) {
-            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", encounterRequest.getIndividualUUID()));
+            throw new IllegalArgumentException(String.format("Individual not found with UUID '%s'", request.getIndividualUUID()));
         }
 
-        Encounter encounter = newOrExistingEntity(encounterRepository, encounterRequest, new Encounter());
-        encounter.setEncounterDateTime(encounterRequest.getEncounterDateTime());
+        Encounter encounter = newOrExistingEntity(encounterRepository, request, new Encounter());
+        //Planned visit can not overwrite completed encounter
+        if(encounter.isCompleted() && request.isPlanned())
+            return;
+
+        encounter.setEncounterDateTime(request.getEncounterDateTime());
         encounter.setIndividual(individual);
         encounter.setEncounterType(encounterType);
-        encounter.setObservations(observationService.createObservations(encounterRequest.getObservations()));
-        encounter.setVoided(encounterRequest.isVoided());
-        PointRequest encounterLocation = encounterRequest.getEncounterLocation();
+        encounter.setObservations(observationService.createObservations(request.getObservations()));
+        encounter.setName(request.getName());
+        encounter.setEarliestVisitDateTime(request.getEarliestVisitDateTime());
+        encounter.setMaxVisitDateTime(request.getMaxVisitDateTime());
+        encounter.setCancelDateTime(request.getCancelDateTime());
+        encounter.setCancelObservations(observationService.createObservations(request.getCancelObservations()));
+        encounter.setVoided(request.isVoided());
+        PointRequest encounterLocation = request.getEncounterLocation();
         if(encounterLocation != null)
             encounter.setEncounterLocation(new Point(encounterLocation.getX(), encounterLocation.getY()));
-        encounterRepository.save(encounter);
+        PointRequest cancelLocation = request.getCancelLocation();
+        if(cancelLocation != null)
+            encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
 
-        logger.info("Saved encounter with uuid %s", encounterRequest.getUuid());
+        encounterRepository.save(encounter);
+        logger.info(String.format("Saved encounter with uuid %s", request.getUuid()));
     }
 
     @RequestMapping(value = "/encounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)

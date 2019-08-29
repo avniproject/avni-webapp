@@ -1,11 +1,9 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 import org.openchs.application.projections.BaseProjection;
 import org.openchs.domain.EncounterType.EncounterTypeProjection;
-import org.openchs.geo.Point;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
@@ -14,43 +12,11 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "encounter")
 @JsonIgnoreProperties({"individual"})
-public class Encounter extends OrganisationAwareEntity {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
-    @JoinColumn(name = "encounter_type_id")
-    private EncounterType encounterType;
-
-    @Column
-    private DateTime encounterDateTime;
-
-    @Column
-    @Type(type = "observations")
-    private ObservationCollection observations;
-
+public class Encounter extends AbstractEncounter {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "individual_id")
     private Individual individual;
-
-    @Type(type="org.openchs.geo.PointType")
-    @Column
-    private Point encounterLocation;
-
-    public EncounterType getEncounterType() {
-        return encounterType;
-    }
-
-    public void setEncounterType(EncounterType encounterType) {
-        this.encounterType = encounterType;
-    }
-
-    public DateTime getEncounterDateTime() {
-        return encounterDateTime;
-    }
-
-    public void setEncounterDateTime(DateTime encounterDateTime) {
-        this.encounterDateTime = encounterDateTime;
-    }
 
     public Individual getIndividual() {
         return individual;
@@ -58,22 +24,6 @@ public class Encounter extends OrganisationAwareEntity {
 
     public void setIndividual(Individual individual) {
         this.individual = individual;
-    }
-
-    public ObservationCollection getObservations() {
-        return observations;
-    }
-
-    public void setObservations(ObservationCollection observations) {
-        this.observations = observations;
-    }
-
-    public Point getEncounterLocation() {
-        return encounterLocation;
-    }
-
-    public void setEncounterLocation(Point encounterLocation) {
-        this.encounterLocation = encounterLocation;
     }
 
     @Projection(name = "EncounterProjectionMinimal", types = {Encounter.class})
