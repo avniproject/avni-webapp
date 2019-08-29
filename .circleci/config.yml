@@ -127,9 +127,9 @@ workflows:
           requires:
             - app_test
       - STAGING_deploy:
-          branches:
-            only:
-              - master
+          filters:
+            branches:
+              only: master
           requires:
             - app_build
       - UAT_approve:
