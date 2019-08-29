@@ -8,7 +8,6 @@ import org.openchs.domain.Organisation;
 import org.openchs.domain.Program;
 import org.openchs.web.request.OperationalProgramContract;
 import org.openchs.web.request.OperationalProgramsContract;
-import org.openchs.web.request.webapp.CreateProgram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
