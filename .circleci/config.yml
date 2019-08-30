@@ -143,14 +143,15 @@ workflows:
   test_and_build_and_deploy:
     jobs:
     - test
-    - build
-    - STAGING_approve:
-        type: approval
+    - build:
         requires:
-        - build
+          - test
     - STAGING_deploy:
+        filters:
+          branches:
+            only: master
         requires:
-        - STAGING_approve
+          - build
     - UAT_approve:
         type: approval
         requires:
