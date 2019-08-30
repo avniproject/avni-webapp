@@ -16,6 +16,18 @@ import {
 } from "./addressLevelType";
 import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
 import { ProgramList, ProgramDetail, ProgramCreate, ProgramEdit } from "./programs";
+import {
+  SubjectTypeList,
+  SubjectTypeDetail,
+  SubjectTypeCreate,
+  SubjectTypeEdit
+} from "./SubjectTypes";
+import {
+  EncounterTypeList,
+  EncounterTypeDetail,
+  EncounterTypeCreate,
+  EncounterTypeEdit
+} from "./EncounterTypes";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -72,6 +84,22 @@ class OrgManager extends Component {
           show={ProgramDetail}
           create={ProgramCreate}
           edit={ProgramEdit}
+        />
+        <Resource
+          name="subjectType"
+          options={{ label: "Subject Types" }}
+          list={SubjectTypeList}
+          show={SubjectTypeDetail}
+          create={SubjectTypeCreate}
+          edit={SubjectTypeEdit}
+        />
+        <Resource
+          name="encounterType"
+          options={{ label: "Encounter Types" }}
+          list={EncounterTypeList}
+          show={EncounterTypeDetail}
+          create={EncounterTypeCreate}
+          edit={EncounterTypeEdit}
         />
       </Admin>
     );

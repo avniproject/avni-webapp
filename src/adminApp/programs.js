@@ -10,6 +10,7 @@ import {
   SimpleForm,
   TextInput
 } from "react-admin";
+import { ColorField, ColorInput } from "react-admin-color-input";
 
 const Title = ({ record }) => {
   return (
@@ -25,7 +26,7 @@ export const ProgramList = props => (
   <List {...props} bulkActions={false}>
     <Datagrid rowClick="show">
       <TextField source="name" label="Name" />
-      <TextField source="colour" label="Colour" />
+      <ColorField source="colour" label="Colour" />
       <TextField source="programSubjectLabel" label="Program Subject Label" />
     </Datagrid>
   </List>
@@ -36,7 +37,7 @@ export const ProgramDetail = props => {
     <Show title={<Title />} {...props}>
       <SimpleShowLayout>
         <TextField source="name" label="Name" />
-        <TextField source="colour" label="Colour" />
+        <ColorField source="colour" label="Colour" />
         <TextField source="programSubjectLabel" label="Program Subject Label" />
       </SimpleShowLayout>
     </Show>
@@ -48,7 +49,7 @@ export const ProgramCreate = props => {
     <Create title="Add a new Program" {...props}>
       <SimpleForm>
         <TextInput source="name" />
-        <TextInput source="colour" />
+        <ColorInput source="colour" />
         <TextInput source="programSubjectLabel" />
       </SimpleForm>
     </Create>
@@ -60,7 +61,7 @@ export const ProgramEdit = props => {
     <Edit title="Edit Program" {...props}>
       <SimpleForm>
         <TextInput source="name" />
-        <TextInput source="colour" />
+        <ColorInput source="colour" picker="Sketch" />
         <TextInput source="programSubjectLabel" />
       </SimpleForm>
     </Edit>

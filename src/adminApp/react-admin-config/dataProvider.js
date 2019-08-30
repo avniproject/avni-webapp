@@ -33,7 +33,9 @@ const urlMapping = {
   catchment: "catchment",
   addressLevelType: "addressLevelType",
   locations: "locations",
-  program: "web/program"
+  program: "web/program",
+  subjectType: "subjectType",
+  encounterType: "encounterType"
 };
 export default apiUrl => {
   /**
