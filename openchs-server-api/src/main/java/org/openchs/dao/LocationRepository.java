@@ -34,7 +34,7 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     List<AddressLevel> findByTitleAndLevelAndUuidNot(String title, Double level, String uuid);
 
-    Page<AddressLevel> findByTitleIgnoreCaseContaining(String title, Pageable pageable);
+    Page<AddressLevel> findByTitleIgnoreCaseStartingWithOrderByTitleAsc(String title, Pageable pageable);
 
     AddressLevel findByTitleIgnoreCase(String title);
 

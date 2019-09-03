@@ -92,7 +92,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     public PagedResources<Resource<AddressLevel>> find(
             @RequestParam(value = "title") String title,
             Pageable pageable) {
-        return wrap(locationRepository.findByTitleIgnoreCaseContaining(title, pageable));
+        return wrap(locationRepository.findByTitleIgnoreCaseStartingWithOrderByTitleAsc(title, pageable));
     }
 
     @RequestMapping(value = {"/locations/search/lastModified", "/locations/search/byCatchmentAndLastModified"}, method = RequestMethod.GET)
