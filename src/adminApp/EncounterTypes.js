@@ -5,29 +5,11 @@ import {
   TextField,
   Show,
   SimpleShowLayout,
-  ReferenceManyField,
-  ReferenceField,
-  FunctionField,
   Create,
   Edit,
   SimpleForm,
-  TextInput,
-  DisabledInput,
-  FormDataConsumer,
-  ReferenceInput,
-  SelectInput,
-  REDUX_FORM_NAME,
-  Toolbar,
-  SaveButton,
-  required,
-  DeleteButton
+  TextInput
 } from "react-admin";
-import { isEmpty, find, isNil } from "lodash";
-import { change } from "redux-form";
-import { None } from "../common/components/utils";
-import { ColorField, ColorInput } from "react-admin-color-input";
-
-import { store } from "../common/store";
 
 const Title = ({ record }) => {
   return (
