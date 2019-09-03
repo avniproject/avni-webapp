@@ -1,12 +1,14 @@
 package org.openchs.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.joda.time.DateTime;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "rule_failure_telemetry")
 public class RuleFailureTelemetry {
-
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     @Id
@@ -21,17 +23,6 @@ public class RuleFailureTelemetry {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Long getOrganisationId() {
-        return organisationId;
-    }
-
-    public void setOrganisationId(Long organisationId) {
-        this.organisationId = organisationId;
-    }
-
-    @Column
-    private Long organisationId;
-
     @Column
     private String ruleUuid;
 
@@ -45,8 +36,54 @@ public class RuleFailureTelemetry {
     private String stacktrace;
 
     @Column
-    @Enumerated(value = EnumType.STRING)
-    private Status status;
+    private DateTime closeDateTime;
+
+    @Column
+    private DateTime errorDateTime;
+
+    @Column
+    private Boolean isClosed;
+    @Column
+    private Long organisationId;
+
+    @JsonIgnore
+    @JoinColumn(name = "audit_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Audit audit = new Audit();
+
+    @Column(name = "version")
+    private int version;
+
+    public Audit getAudit() {
+        if (audit == null) {
+            audit = new Audit();
+        }
+        return audit;
+    }
+
+    public void setAudit(Audit audit) {
+        this.audit = audit;
+    }
+
+    public void updateLastModifiedDateTime() {
+        this.getAudit().setLastModifiedDateTime(new DateTime());
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public DateTime getLastModifiedDateTime() {
+        return getAudit().getLastModifiedDateTime();
+    }
+
+    public Long getAuditId() {
+        return getAudit().getId();
+    }
 
     public Long getId() {
         return id;
@@ -104,12 +141,35 @@ public class RuleFailureTelemetry {
         this.stacktrace = stacktrace;
     }
 
-    @NotNull
-    public Status getStatus() {
-        return status;
+    public DateTime getCloseDateTime() {
+        return closeDateTime;
     }
 
-    public void setStatus(@NotNull Status status) {
-        this.status = status;
+    public void setCloseDateTime(DateTime closeDateTime) {
+        this.closeDateTime = closeDateTime;
+    }
+
+    public DateTime getErrorDateTime() {
+        return errorDateTime;
+    }
+
+    public void setErrorDateTime(DateTime errorDateTime) {
+        this.errorDateTime = errorDateTime;
+    }
+
+    public Boolean getClosed() {
+        return isClosed;
+    }
+
+    public void setClosed(Boolean closed) {
+        isClosed = closed;
+    }
+
+    public Long getOrganisationId() {
+        return organisationId;
+    }
+
+    public void setOrganisationId(Long organisationId) {
+        this.organisationId = organisationId;
     }
 }

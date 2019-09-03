@@ -37,21 +37,21 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
 
     @RequestMapping(value = "/web/ruleFailureTelemetry", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
-    public Page<RuleFailureTelemetry> getByStatus(@RequestParam(value = "status") String status,
+    public Page<RuleFailureTelemetry> getByStatus(@RequestParam(value = "isClosed") Boolean isClosed,
                                                   Pageable pageable) {
-        return ruleFailureTelemetryRepository.findByStatus(Status.valueOf(status), pageable);
+        return ruleFailureTelemetryRepository.findByIsClosed(isClosed, pageable);
     }
 
     @RequestMapping(value = "/web/ruleFailureTelemetry/{id}", method = RequestMethod.PUT)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     public ResponseEntity updateStatus(@PathVariable("id") Long id,
-                                       @RequestParam(value = "status") String status) {
+                                       @RequestParam(value = "isClosed") Boolean isClosed) {
         RuleFailureTelemetry ruleFailureTelemetry = ruleFailureTelemetryRepository.findById(id);
         if (ruleFailureTelemetry == null) {
             return ResponseEntity.badRequest().body(String.format("No entry found with id %d", id));
         }
-        ruleFailureTelemetry.setStatus(Status.valueOf(status));
+        ruleFailureTelemetry.setClosed(isClosed);
         ruleFailureTelemetryRepository.save(ruleFailureTelemetry);
         return new ResponseEntity<>(ruleFailureTelemetry, HttpStatus.CREATED);
     }
@@ -71,7 +71,8 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
         ruleFailureTelemetry.setIndividualUuid(request.getIndividualUuid());
         ruleFailureTelemetry.setStacktrace(request.getStacktrace());
         ruleFailureTelemetry.setRuleUuid(request.getRuleUuid());
-        ruleFailureTelemetry.setStatus(Status.valueOf(request.getStatus()));
+        ruleFailureTelemetry.setErrorDateTime(request.getErrorDateTime());
+        ruleFailureTelemetry.setClosed(request.getClosed());
         ruleFailureTelemetryRepository.save(ruleFailureTelemetry);
     }
 

@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import org.joda.time.DateTime;
+
 public class RuleFailureTelemetryRequest {
 
     private String uuid;
@@ -7,8 +9,17 @@ public class RuleFailureTelemetryRequest {
     private String ruleUuid;
     private String errorMessage;
     private String stacktrace;
-    private String status;
+    private DateTime errorDateTime;
 
+    public Boolean getClosed() {
+        return closed;
+    }
+
+    public void setClosed(Boolean closed) {
+        this.closed = closed;
+    }
+
+    private Boolean closed;
 
     public String getUuid() {
         return uuid;
@@ -50,12 +61,11 @@ public class RuleFailureTelemetryRequest {
         this.stacktrace = stacktrace;
     }
 
-    public String getStatus() {
-        return status;
+    public DateTime getErrorDateTime() {
+        return errorDateTime;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setErrorDateTime(DateTime errorDateTime) {
+        this.errorDateTime = errorDateTime;
     }
-
 }

@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RuleFailureTelemetryRepository extends CrudRepository<RuleFailureTelemetry, Long> {
-    Page<RuleFailureTelemetry> findByStatus(Status status, Pageable pageable);
+    Page<RuleFailureTelemetry> findByIsClosed(Boolean isClosed, Pageable pageable);
     RuleFailureTelemetry findById(Long id);
 }
