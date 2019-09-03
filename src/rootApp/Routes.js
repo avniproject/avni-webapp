@@ -31,7 +31,7 @@ const Routes = props => (
   <Switch>
     <Route path="/admin">
       <RestrictedRoute
-        path="/admin"
+        path="/"
         allowedRoles={[ROLES.ORG_ADMIN]}
         currentUserRoles={props.userRoles}
         component={OrgManager}
