@@ -136,7 +136,7 @@ class FormDetails extends Component {
 
   render() {
     return (
-      <ScreenWithAppBar appbarTitle={"Form Details"}>
+      <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
         <Grid container justify="center">
           <Grid item sm={12}>
             <Breadcrumb location={this.props.location} />
