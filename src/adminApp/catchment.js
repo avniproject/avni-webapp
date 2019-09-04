@@ -101,7 +101,14 @@ const LocationAutocomplete = props => {
 };
 
 const CatchmentForm = ({ edit, ...props }) => {
-  const optionRenderer = choice => `${choice.title} ( ${choice.typeString} )`;
+  const optionRenderer = choice => {
+    let retVal = `${choice.title} (${choice.typeString})`;
+    let lineageParts = choice.titleLineage.split(", ");
+    if (lineageParts.length > 1)
+      retVal += ` in ${lineageParts.slice(0, lineageParts.length - 1).join(" > ")}`;
+    return retVal;
+  };
+
   return (
     <SimpleForm
       validate={values => validateCatchment(values, LOCATIONS)}
