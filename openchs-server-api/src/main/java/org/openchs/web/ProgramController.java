@@ -98,18 +98,49 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         return new ResponseEntity<>(program, HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/web/program/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @Transactional
+    public ResponseEntity voidLocation(@PathVariable("id") Long id) {
+        OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
+        if (operationalProgram == null)
+            return ResponseEntity.notFound().build();
+        Program program = operationalProgram.getProgram();
+        if (program == null)
+            return ResponseEntity.notFound().build();
+
+        operationalProgram.setName(getVoidedName(operationalProgram.getName(), operationalProgram.getId()));
+        program.setName(getVoidedName(program.getName(), program.getId()));
+        operationalProgram.setVoided(true);
+        program.setVoided(true);
+        operationalProgramRepository.save(operationalProgram);
+        programRepository.save(program);
+
+        return ResponseEntity.ok(null);
+    }
+
+    private String getVoidedName(String name, Long id) {
+        return String.format("%s (voided~%d)", name, id);
+    }
+
     @GetMapping(value = "/web/program")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public PagedResources<Resource<ProgramContract>> getAll(Pageable pageable) {
-        return wrap(operationalProgramRepository.findAll(pageable).map(ProgramContract::fromOperationalProgram));
+        return wrap(operationalProgramRepository
+                .findByIsVoidedFalse(pageable)
+                .map(ProgramContract::fromOperationalProgram));
     }
 
     @GetMapping(value = "/web/program/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
-    public ProgramContract getOne(@PathVariable("id") Long id) {
-        return ProgramContract.fromOperationalProgram(operationalProgramRepository.findById(id));
+    public ResponseEntity getOne(@PathVariable("id") Long id) {
+        OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
+        if (operationalProgram.isVoided())
+            return ResponseEntity.notFound().build();
+        ProgramContract programContract = ProgramContract.fromOperationalProgram(operationalProgram);
+        return new ResponseEntity<>(programContract, HttpStatus.OK);
     }
 
     private Program createProgram(ProgramRequest programRequest) {

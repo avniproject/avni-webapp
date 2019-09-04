@@ -22,4 +22,7 @@ public interface OperationalProgramRepository extends ImplReferenceDataRepositor
     OperationalProgram findByProgramAndOrganisationId(Program program, long organisationId);
 
     OperationalProgram findByProgramIdAndOrganisationId(long programId, long organisationId);
+
+    Page<OperationalProgram> findByIsVoidedFalse(Pageable pageable);
+
 }

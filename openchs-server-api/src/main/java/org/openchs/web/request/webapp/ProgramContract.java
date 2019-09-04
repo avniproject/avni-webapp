@@ -14,6 +14,7 @@ public class ProgramContract {
     private String colour;
     private Long id;
     private Long organisationId;
+    private boolean voided;
 
     public String getName() {
         return name;
@@ -63,9 +64,17 @@ public class ProgramContract {
         contract.setColour(operationalProgram.getProgram().getColour());
         contract.setProgramSubjectLabel(operationalProgram.getProgramSubjectLabel());
         contract.setOrganisationId(operationalProgram.getOrganisationId());
+        contract.setVoided(operationalProgram.isVoided());
 
         return contract;
     }
 
 
+    public boolean isVoided() {
+        return voided;
+    }
+
+    public void setVoided(boolean voided) {
+        this.voided = voided;
+    }
 }
