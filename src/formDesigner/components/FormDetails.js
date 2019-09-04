@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+
 import _ from "lodash";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
@@ -6,13 +8,29 @@ import FormElementGroup from "./FormElementGroup";
 import Button from "@material-ui/core/Button";
 import Breadcrumb from "./Breadcrumb";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Typography from "@material-ui/core/Typography";
+
+function TabContainer(props) {
+  return (
+    <Typography {...props} component="div" style={{ padding: 8 * 3 }}>
+      {props.children}
+    </Typography>
+  );
+}
+
+TabContainer.propTypes = {
+  children: PropTypes.node.isRequired
+};
 
 class FormDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
       form: [],
-      createFlag: true
+      createFlag: true,
+      activeTabIndex: 0
     };
     this.btnGroupClick = this.btnGroupClick.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
@@ -75,7 +93,6 @@ class FormDetails extends Component {
 
   renderGroups() {
     const formElements = [];
-
     _.forEach(this.state.form.formElementGroups, (group, index) => {
       if (group.voided === false)
         formElements.push(
@@ -102,6 +119,14 @@ class FormDetails extends Component {
 
   btnGroupAdd(index, elementIndex = -1) {
     const form = this.state.form;
+    const formElement_temp = {
+      newFlag: "true",
+      name: "",
+      type: "",
+      mandatory: false,
+      voided: false,
+      concept: {}
+    };
     if (elementIndex === -1) {
       form.formElementGroups.splice(index + 1, 0, {
         newFlag: "true",
@@ -109,19 +134,10 @@ class FormDetails extends Component {
         display: "",
         displayOrder: index + 1,
         voided: false,
-        formElements: [
-          { newFlag: "true", name: "", type: "", mandatory: "", voided: false, concept: {} }
-        ]
+        formElements: [formElement_temp]
       });
     } else {
-      form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, {
-        newFlag: "true",
-        name: "",
-        type: "",
-        voided: false,
-        mandatory: "",
-        concept: {}
-      });
+      form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, formElement_temp);
     }
     this.setState({
       form
@@ -134,24 +150,41 @@ class FormDetails extends Component {
   }
   // END Group level Events
 
+  handleChange = (event, value) => {
+    this.setState({ activeTabIndex: value });
+  };
+
   render() {
     return (
       <ScreenWithAppBar appbarTitle={"Form Details"}>
         <Grid container justify="center">
           <Grid item sm={12}>
             <Breadcrumb location={this.props.location} />
-            <div name="divGroup">
-              {this.state.createFlag && (
-                <Button variant="contained" color="primary" onClick={this.btnGroupClick.bind(this)}>
-                  Add Group
-                </Button>
-              )
-              //            <Fab color="primary" aria-label="add" onClick={this.btnGroupClick.bind(this)} size="small">
-              //              <AddIcon />
-              //            </Fab>
-              }
-              {this.renderGroups()}
-            </div>
+            <Tabs value={this.state.activeTabIndex} onChange={this.handleChange.bind(this)}>
+              <Tab label="Details" />
+              <Tab label="Settings" />
+            </Tabs>
+            {this.state.activeTabIndex === 0 && (
+              <TabContainer>
+                <div name="divGroup">
+                  {this.state.createFlag && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={this.btnGroupClick.bind(this)}
+                    >
+                      Add Group
+                    </Button>
+                  )
+                  //            <Fab color="primary" aria-label="add" onClick={this.btnGroupClick.bind(this)} size="small">
+                  //              <AddIcon />
+                  //            </Fab>
+                  }
+                  {this.renderGroups()}
+                </div>
+              </TabContainer>
+            )}
+            {this.state.activeTabIndex === 1 && <TabContainer>Settings</TabContainer>}
           </Grid>
         </Grid>
       </ScreenWithAppBar>
