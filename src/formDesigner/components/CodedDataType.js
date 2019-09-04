@@ -29,9 +29,11 @@ export default function CodedConcept(props) {
                 <FormControl>
                   <AutoSuggestSingleSelection
                     visibility={!answer.editable}
-                    showAnswer={answer.name}
+                    showAnswer={answer}
                     onChangeAnswerName={props.onChangeAnswerName}
                     index={index}
+                    placeholder="Enter answer"
+                    label="Answer"
                   />
                 </FormControl>
                 <FormControl>

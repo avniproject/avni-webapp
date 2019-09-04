@@ -1,5 +1,6 @@
 import React from "react";
 import { deburr } from "lodash";
+import _ from "lodash";
 import Autosuggest from "react-autosuggest";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
@@ -31,13 +32,14 @@ function renderInputComponent(inputProps) {
 function renderSuggestion(suggestion, { query, isHighlighted }) {
   const matches = match(suggestion, query);
   const parts = parse(suggestion, matches);
+  console.log(suggestion);
 
   return (
     <MenuItem selected={isHighlighted} component="div">
       <div>
         {parts.map(part => (
-          <span key={part.text} style={{ fontWeight: part.highlight ? 500 : 400 }}>
-            {part.text}
+          <span key={part.text.name} style={{ fontWeight: part.highlight ? 500 : 400 }}>
+            {part.text.name}
           </span>
         ))}
       </div>
@@ -80,12 +82,19 @@ const useStyles = theme => ({
 export default function AutoSuggestSingleSelection(props) {
   const classes = useStyles();
   const MAX_NUMBER_OF_SUGGESTIONS = 20;
-
   const [state, setState] = React.useState({
     single: ""
   });
-
   const [stateSuggestions, setSuggestions] = React.useState([]);
+
+  let defaultAnswer = "";
+  if (props.visibility) {
+    console.log("props.showAnswer.name", props.showAnswer.name);
+    defaultAnswer = props.showAnswer.name;
+  } else {
+    console.log("state.single", state.single);
+    defaultAnswer = state.single;
+  }
 
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
@@ -93,10 +102,11 @@ export default function AutoSuggestSingleSelection(props) {
     axios
       .get(`/search/concept?name=${inputValue}`)
       .then(response => {
-        const suggestions = response.data
-          .slice(0, MAX_NUMBER_OF_SUGGESTIONS)
-          .map(concept => concept.name)
-          .sort();
+        const suggestions = response.data.slice(0, MAX_NUMBER_OF_SUGGESTIONS);
+
+        _.sortBy(suggestions, function(concept) {
+          return concept.name;
+        });
         setSuggestions(suggestions);
       })
       .catch(error => {
@@ -109,12 +119,18 @@ export default function AutoSuggestSingleSelection(props) {
   };
 
   const handleChange = name => (event, { newValue }) => {
+    let autoSuggestedName = "";
+    const datatype = typeof newValue;
+    if (datatype === "string") {
+      autoSuggestedName = newValue;
+    } else {
+      autoSuggestedName = newValue.name;
+    }
     setState({
       ...state,
-      [name]: newValue
+      [name]: autoSuggestedName
     });
-    props.onChangeAnswerName(newValue, props.index);
-    console.log({ newValue });
+    props.onChangeAnswerName(autoSuggestedName, props.index);
   };
 
   const autosuggestProps = {
@@ -128,59 +144,30 @@ export default function AutoSuggestSingleSelection(props) {
 
   return (
     <div className={classes.root}>
-      {props.visibility && (
-        <Autosuggest
-          {...autosuggestProps}
-          inputProps={{
-            classes,
-            id: "answer",
-            required: true,
-            label: "Answer",
-            placeholder: "Enter answer",
-            value: props.showAnswer,
-            onChange: handleChange("single"),
-            disabled: props.visibility
-          }}
-          theme={{
-            container: classes.container,
-            suggestionsContainerOpen: classes.suggestionsContainerOpen,
-            suggestionsList: classes.suggestionsList,
-            suggestion: classes.suggestion
-          }}
-          renderSuggestionsContainer={options => (
-            <Paper {...options.containerProps} square>
-              {options.children}
-            </Paper>
-          )}
-        />
-      )}
-      {!props.visibility && (
-        <Autosuggest
-          {...autosuggestProps}
-          inputProps={{
-            classes,
-            id: "answer",
-            required: true,
-            label: "Answer",
-            placeholder: "Enter answer",
+      <Autosuggest
+        {...autosuggestProps}
+        inputProps={{
+          classes,
+          required: true,
+          label: props.label,
+          placeholder: props.placeholder,
+          value: defaultAnswer,
+          onChange: handleChange("single"),
+          disabled: props.visibility
+        }}
+        theme={{
+          container: classes.container,
+          suggestionsContainerOpen: classes.suggestionsContainerOpen,
+          suggestionsList: classes.suggestionsList,
+          suggestion: classes.suggestion
+        }}
+        renderSuggestionsContainer={options => (
+          <Paper {...options.containerProps} square>
+            {options.children}
+          </Paper>
+        )}
+      />
 
-            value: state.single,
-            onChange: handleChange("single"),
-            disabled: props.visibility
-          }}
-          theme={{
-            container: classes.container,
-            suggestionsContainerOpen: classes.suggestionsContainerOpen,
-            suggestionsList: classes.suggestionsList,
-            suggestion: classes.suggestion
-          }}
-          renderSuggestionsContainer={options => (
-            <Paper {...options.containerProps} square>
-              {options.children}
-            </Paper>
-          )}
-        />
-      )}
       <div className={classes.divider} />
     </div>
   );
