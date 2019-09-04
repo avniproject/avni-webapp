@@ -18,7 +18,6 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import Mandatory from "@material-ui/icons/CheckCircleOutline";
 import NonMandatory from "@material-ui/icons/HighlightOff";
-import FormElementTabs from "./FormElementTabs";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -198,9 +197,7 @@ export default function FormElement(props) {
             <DeleteIcon />
           </IconButton>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <FormElementTabs {...props} indexTab={props.groupIndex + "" + props.index} />
-        </ExpansionPanelDetails>
+        <ExpansionPanelDetails />
         {false && <Divider /> && <ExpansionPanelActions />}
       </ExpansionPanel>
       <div className={classes.absolute}>
