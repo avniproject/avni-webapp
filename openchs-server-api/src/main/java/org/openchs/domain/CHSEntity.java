@@ -15,7 +15,6 @@ public class CHSEntity extends CHSBaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Audit audit = new Audit();
 
-    //    @Version
     @Column(name = "version")
     private int version;
 
