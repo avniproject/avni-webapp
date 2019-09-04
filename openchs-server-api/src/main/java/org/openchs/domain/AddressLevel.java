@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @BatchSize(size = 100)
 @JsonIgnoreProperties({
         "parentLocationMappings", "type", "catchments", "virtualCatchments",
-        "parent", "subLocations", "titleLineage"
+        "parent", "subLocations"
 })
 @SecondaryTable(name="title_lineage_locations_view",
     pkJoinColumns = @PrimaryKeyJoinColumn(name = "lowestpoint_id", referencedColumnName = "id"))
