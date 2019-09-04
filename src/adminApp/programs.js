@@ -58,7 +58,7 @@ export const ProgramCreate = props => {
 
 export const ProgramEdit = props => {
   return (
-    <Edit title="Edit Program" {...props}>
+    <Edit undoable={false} title="Edit Program" {...props}>
       <SimpleForm>
         <TextInput source="name" />
         <ColorInput source="colour" picker="Sketch" />
