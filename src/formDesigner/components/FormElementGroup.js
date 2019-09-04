@@ -5,7 +5,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import MuiExpansionPanelActions from "@material-ui/core/ExpansionPanelActions";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -61,9 +60,6 @@ const ExpansionPanel = withStyles({
   },
   expanded: {}
 })(MuiExpansionPanel);
-const ExpansionPanelActions = withStyles({
-  root: {}
-})(MuiExpansionPanelActions);
 
 const ExpansionPanelDetails = withStyles({
   root: {

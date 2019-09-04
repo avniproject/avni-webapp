@@ -26,7 +26,7 @@ class Forms extends Component {
 
   render() {
     return (
-      <ScreenWithAppBar appbarTitle={"Form list"}>
+      <ScreenWithAppBar appbarTitle={"Form list"} enableLeftMenuButton={true}>
         <div className="container">
           <Breadcrumb location={this.props.location} />
           <div>

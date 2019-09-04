@@ -12,8 +12,7 @@ import Concept from "../formDesigner/components/Concept";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
-import CreateConcept from "../formDesigner/components/CreateConcept";
-import EditConcept from "../formDesigner/components/EditConcept";
+import CreateEditConcept from "../formDesigner/components/CreateEditConcept";
 import Homepage from "../formDesigner/components/Homepage";
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -74,17 +73,17 @@ const Routes = props => (
     />
     <RestrictedRoute
       exact
-      path="/createconcept"
+      path="/concept/create"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
-      component={CreateConcept}
+      component={() => <CreateEditConcept isCreate={true} />}
     />
     <RestrictedRoute
       exact
       path="/concept/:uuid/edit"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
-      component={EditConcept}
+      component={CreateEditConcept}
     />
     <RestrictedRoute
       exact
@@ -95,7 +94,7 @@ const Routes = props => (
     />
     <RestrictedRoute
       exact
-      path="/homepage"
+      path="/"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
       component={Homepage}

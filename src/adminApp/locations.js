@@ -20,7 +20,8 @@ import {
   Toolbar,
   SaveButton,
   required,
-  DeleteButton
+  DeleteButton,
+  Filter
 } from "react-admin";
 import { isEmpty, find, isNil } from "lodash";
 import { change } from "redux-form";
@@ -28,12 +29,18 @@ import { None } from "../common/components/utils";
 import { LocationSaveButton } from "./components/LocationSaveButton";
 import { store } from "../common/store";
 
+const LocationFilter = props => (
+  <Filter {...props}>
+    <TextInput label="Search location" source="title" resettable alwaysOn />
+  </Filter>
+);
+
 export const LocationList = props => (
   <List
     {...props}
     bulkActions={false}
     sort={{ field: "id", order: "ASC" }}
-    filter={{ searchURI: "findByParent" }}
+    filters={<LocationFilter />}
   >
     <Datagrid rowClick="show">
       <TextField label="Name" source="title" />

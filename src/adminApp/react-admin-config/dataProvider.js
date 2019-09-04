@@ -27,6 +27,16 @@ import { httpClient } from "../../common/utils/httpClient";
  * CREATE       => POST http://my.api.url/posts
  * DELETE       => DELETE http://my.api.url/posts/123
  */
+
+const urlMapping = {
+  user: "user",
+  catchment: "catchment",
+  addressLevelType: "addressLevelType",
+  locations: "locations",
+  program: "web/program",
+  subjectType: "subjectType",
+  encounterType: "encounterType"
+};
 export default apiUrl => {
   /**
    * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
@@ -35,7 +45,7 @@ export default apiUrl => {
    * @returns {Object} { url, options } The HTTP request parameters
    */
   const convertDataRequestToHTTP = (type, resource, params) => {
-    let url = `${apiUrl}/${resource}`;
+    let url = `${apiUrl}/${urlMapping[resource]}`;
     const options = {};
     switch (type) {
       case GET_LIST:
