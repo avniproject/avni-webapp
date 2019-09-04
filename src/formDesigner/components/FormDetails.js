@@ -6,7 +6,6 @@ import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "./FormElementGroup";
 import Button from "@material-ui/core/Button";
-import Breadcrumb from "./Breadcrumb";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -97,6 +96,7 @@ class FormDetails extends Component {
       if (group.voided === false)
         formElements.push(
           <FormElementGroup
+            key={index}
             groupData={group}
             index={index}
             deleteGroup={this.deleteGroup}
@@ -159,7 +159,6 @@ class FormDetails extends Component {
       <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
         <Grid container justify="center">
           <Grid item sm={12}>
-            <Breadcrumb location={this.props.location} />
             <Tabs value={this.state.activeTabIndex} onChange={this.handleChange.bind(this)}>
               <Tab label="Details" />
               <Tab label="Settings" />

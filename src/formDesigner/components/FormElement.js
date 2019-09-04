@@ -18,6 +18,7 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import Mandatory from "@material-ui/icons/CheckCircleOutline";
 import NonMandatory from "@material-ui/icons/HighlightOff";
+import FormElementTabs from "./FormElementTabs";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -141,9 +142,9 @@ export default function FormElement(props) {
           <div className={classes.iconlay}>
             {expanded === panel ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </div>
-          <Grid container sm={12}>
+          <Grid container item sm={12}>
             <Grid item sm={4}>
-              <Typography className={classes.heading}>
+              <Typography component={"span"} className={classes.heading}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor={"name" + panel}>Name</InputLabel>
                   <Input
@@ -168,7 +169,7 @@ export default function FormElement(props) {
               &nbsp;
             </Grid>
             <Grid item sm={2}>
-              <Typography className={classes.secondaryHeading}>
+              <Typography component={"span"} className={classes.secondaryHeading}>
                 <FormControl fullWidth>
                   Type <br />
                   {props.formElementData.concept.dataType}{" "}
@@ -181,7 +182,7 @@ export default function FormElement(props) {
               &nbsp;
             </Grid>
             <Grid item sm={2}>
-              <Typography className={classes.secondaryHeading}>
+              <Typography component={"span"} className={classes.secondaryHeading}>
                 <FormControl fullWidth>
                   Mandatory <br />
                   {props.formElementData.mandatory ? (
@@ -198,11 +199,7 @@ export default function FormElement(props) {
           </IconButton>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          Name : {props.formElementData.name} <br />
-          Concept Name : {props.formElementData.concept.name} <br />
-          Concept Type : {props.formElementData.concept.dataType} <br />
-          Mandatory : {props.formElementData.mandatory ? "Yes" : "No"} <br />
-          Voided : {props.formElementData.voided ? "Yes" : "No"} <br />
+          <FormElementTabs {...props} indexTab={props.groupIndex + "" + props.index} />
         </ExpansionPanelDetails>
         {false && <Divider /> && <ExpansionPanelActions />}
       </ExpansionPanel>

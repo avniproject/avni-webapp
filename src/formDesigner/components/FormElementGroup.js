@@ -129,6 +129,7 @@ export default function FormElementGroup(props) {
       if (formElement.voided === false)
         formElements.push(
           <FormElement
+            key={index}
             formElementData={formElement}
             groupIndex={props.index}
             index={index}
@@ -158,9 +159,9 @@ export default function FormElementGroup(props) {
           <div className={classes.iconlay}>
             {props.groupData.collapse === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </div>
-          <Grid container sm={12}>
+          <Grid container item sm={12}>
             <Grid item sm={4}>
-              <Typography className={classes.heading}>
+              <Typography component={"span"} className={classes.heading}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor={"name" + panel}>Name</InputLabel>
                   <Input
@@ -180,7 +181,7 @@ export default function FormElementGroup(props) {
               &nbsp;
             </Grid>
             <Grid item sm={4}>
-              <Typography className={classes.secondaryHeading}>
+              <Typography component={"span"} className={classes.secondaryHeading}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor={"display" + panel}>Display Name</InputLabel>
                   <Input
@@ -200,7 +201,7 @@ export default function FormElementGroup(props) {
               &nbsp;
             </Grid>
             <Grid item sm={2}>
-              <Typography className={classes.questionCount}>
+              <Typography component={"span"} className={classes.questionCount}>
                 No. of questions : {questionCount}
               </Typography>
             </Grid>
@@ -210,7 +211,7 @@ export default function FormElementGroup(props) {
           </IconButton>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Typography className={classes.root}>
+          <Typography component={"span"} className={classes.root}>
             {renderFormElements()}
 
             {questionCount === 0 && (
