@@ -56,6 +56,12 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     ResponseEntity saveProgramForWeb(@RequestBody ProgramContract request) {
+        Program existingProgram =
+                programRepository.findByNameIgnoreCase(request.getName());
+        OperationalProgram existingOperationalProgram =
+                operationalProgramRepository.findByNameIgnoreCase(request.getName());
+        if(existingProgram != null || existingOperationalProgram != null)
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Program %s already exists", request.getName())));
         Program program = new Program();
         program.assignUUIDIfRequired();
         program.setName(request.getName());
@@ -67,7 +73,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         operationalProgram.setProgramSubjectLabel(request.getProgramSubjectLabel());
         operationalProgram.setProgram(program);
         operationalProgramRepository.save(operationalProgram);
-        return new ResponseEntity<>(request, HttpStatus.OK);
+        return ResponseEntity.ok(request);
     }
 
     @PutMapping(value = "/web/program/{id}")
@@ -83,7 +89,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
 
         if (operationalProgramRepository == null)
             return ResponseEntity.badRequest()
-                    .body(String.format("Operational Program with id '%d' not found", id));
+                    .body(ReactAdminUtil.generateJsonError(String.format("Operational Program with id '%d' not found", id)));
 
         Program program = operationalProgram.getProgram();
 
