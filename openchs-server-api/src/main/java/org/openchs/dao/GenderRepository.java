@@ -8,5 +8,16 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "gender", path = "gender")
-public interface GenderRepository extends ReferenceDataRepository<Gender>, FindByLastModifiedDateTime<Gender> {
+public interface GenderRepository extends CHSRepository<Gender>, PagingAndSortingRepository<Gender, Long>, FindByLastModifiedDateTime<Gender> {
+    Gender findByName(String name);
+    Gender findByNameIgnoreCase(String name);
+
+    @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
+    Gender save(Gender gender);
+
+    Gender findById(long id);
+
+    default Gender findByUuidOrName(String name, String uuid) {
+        return uuid != null ? findByUuid(uuid) : findByName(name);
+    }
 }
