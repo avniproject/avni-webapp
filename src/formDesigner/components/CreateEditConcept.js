@@ -90,8 +90,7 @@ class CreateEditConcept extends Component {
     const answers = [...this.state.answers];
     if (answers[index].name !== "") {
       answers[index].voided = true;
-      const encodedURL =
-        "/concept/search/findByName?name=" + encodeURIComponent(answers[index].name);
+      const encodedURL = "/web/concept/name/" + encodeURIComponent(answers[index].name);
       axios
         .get(encodedURL)
         .then(response => {

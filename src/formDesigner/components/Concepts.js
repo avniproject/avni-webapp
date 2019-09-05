@@ -23,7 +23,7 @@ const Concepts = ({ history }) => {
         columns={columns}
         data={query =>
           new Promise(resolve => {
-            let apiUrl = "/web/concept?";
+            let apiUrl = "/web/concepts?";
             apiUrl += "size=" + query.pageSize;
             apiUrl += "&page=" + query.page;
             if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
