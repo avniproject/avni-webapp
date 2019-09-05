@@ -17,6 +17,9 @@ public class FormContract extends ReferenceDataContract {
     private String formType;
     private List<FormElementGroupContract> formElementGroups;
     private Long organisationId;
+    private String subjectType;
+    private String programName;
+    private List<String> encounterTypes;
 
     public FormContract() {
     }
@@ -76,5 +79,29 @@ public class FormContract extends ReferenceDataContract {
                 }
             }
         }
+    }
+
+    public String getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(String subjectType) {
+        this.subjectType = subjectType;
+    }
+
+    public String getProgramName() {
+        return programName;
+    }
+
+    public void setProgramName(String programName) {
+        this.programName = programName;
+    }
+
+    public List<String> getEncounterTypes() {
+        return encounterTypes;
+    }
+
+    public void setEncounterTypes(List<String> encounterTypes) {
+        this.encounterTypes = encounterTypes;
     }
 }

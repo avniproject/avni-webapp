@@ -19,6 +19,8 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
 
     Page<FormMapping> findByProgramId(Long programId, Pageable pageable);
 
+    List<FormMapping> findByFormId(Long formId);
+
     List<FormMapping> findAllByProgramIdIsNotNull();
 
     List<FormMapping> findAllByProgramIdIsNullAndEncounterTypeIdIsNotNull();
