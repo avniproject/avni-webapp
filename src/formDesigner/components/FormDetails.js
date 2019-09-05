@@ -10,6 +10,7 @@ import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
+import FormSettings from "./FormSettings";
 
 function TabContainer(props) {
   return (
@@ -183,7 +184,7 @@ class FormDetails extends Component {
                 </div>
               </TabContainer>
             )}
-            {this.state.activeTabIndex === 1 && <TabContainer>Settings</TabContainer>}
+            {this.state.activeTabIndex === 1 && <FormSettings formProperties={this.state.form} />}
           </Grid>
         </Grid>
       </ScreenWithAppBar>

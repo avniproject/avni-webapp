@@ -87,13 +87,13 @@ export default function AutoSuggestSingleSelection(props) {
   });
   const [stateSuggestions, setSuggestions] = React.useState([]);
 
-  let defaultAnswer = "";
+  let defaultConcept = "";
   if (props.visibility) {
     console.log("props.showAnswer.name", props.showAnswer.name);
-    defaultAnswer = props.showAnswer.name;
+    defaultConcept = props.showAnswer.name;
   } else {
     console.log("state.single", state.single);
-    defaultAnswer = state.single;
+    defaultConcept = state.single;
   }
 
   const handleSuggestionsFetchRequested = ({ value }) => {
@@ -151,7 +151,7 @@ export default function AutoSuggestSingleSelection(props) {
           required: true,
           label: props.label,
           placeholder: props.placeholder,
-          value: defaultAnswer,
+          value: defaultConcept,
           onChange: handleChange("single"),
           disabled: props.visibility
         }}
