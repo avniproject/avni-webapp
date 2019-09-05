@@ -11,8 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "concept", path = "concept")
 public interface ConceptRepository extends ReferenceDataRepository<Concept>, FindByLastModifiedDateTime<Concept> {
-
     Page<Concept> findByNameIgnoreCaseContaining(String name, Pageable pageable);
-
-    Concept findByNameIgnoreCase(@Param("name") String name);
 }

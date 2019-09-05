@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,7 +72,17 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
     }
 
-    @GetMapping(value = "/web/concept")
+    @GetMapping(value = "/web/concept/name/{name}")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @ResponseBody
+    public ResponseEntity<ConceptProjection> getOneForWebByName(@PathVariable String name) {
+        Concept concept = conceptRepository.findByNameIgnoreCase(name);
+        if (concept == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(projectionFactory.createProjection(ConceptProjection.class, concept));
+    }
+
+    @GetMapping(value = "/web/concepts")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @ResponseBody
     public PagedResources<Resource<Concept>> getAll(@RequestParam(value = "name", required = false) String name, Pageable pageable) {
@@ -81,7 +92,6 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
             return wrap(conceptRepository.findByNameIgnoreCaseContaining(name, pageable));
         }
     }
-
 
     @GetMapping(value = "/concept/dataTypes")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
