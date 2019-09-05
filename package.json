@@ -40,6 +40,7 @@
     "uuid": "^3.3.2"
   },
   "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -68,6 +69,7 @@
     "openchs-models": "0.0.21",
     "prettier": "1.17.1",
     "pretty-quick": "^1.11.1",
-    "redux-saga-test-plan": "^3.7.0"
+    "redux-saga-test-plan": "^3.7.0",
+    "source-map-explorer": "^2.0.1"
   }
 }
