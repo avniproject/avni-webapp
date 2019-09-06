@@ -32,7 +32,6 @@ function renderInputComponent(inputProps) {
 function renderSuggestion(suggestion, { query, isHighlighted }) {
   const matches = match(suggestion, query);
   const parts = parse(suggestion, matches);
-  console.log(suggestion);
 
   return (
     <MenuItem selected={isHighlighted} component="div">
@@ -81,7 +80,7 @@ const useStyles = theme => ({
 
 export default function AutoSuggestSingleSelection(props) {
   const classes = useStyles();
-  const MAX_NUMBER_OF_SUGGESTIONS = 20;
+
   const [state, setState] = React.useState({
     single: ""
   });
@@ -89,25 +88,30 @@ export default function AutoSuggestSingleSelection(props) {
 
   let defaultConcept = "";
   if (props.visibility) {
-    console.log("props.showAnswer.name", props.showAnswer.name);
     defaultConcept = props.showAnswer.name;
   } else {
-    console.log("state.single", state.single);
     defaultConcept = state.single;
   }
 
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
+    const inputLength = inputValue.length;
 
     axios
       .get(`/search/concept?name=${inputValue}`)
       .then(response => {
-        const suggestions = response.data.slice(0, MAX_NUMBER_OF_SUGGESTIONS);
-
+        const suggestions = response.data;
         _.sortBy(suggestions, function(concept) {
           return concept.name;
         });
-        setSuggestions(suggestions);
+        if (props.showSuggestionStartsWith) {
+          const filteredSuggestions = suggestions.filter(suggestion => {
+            return suggestion.name.slice(0, inputLength).toLowerCase() === inputValue;
+          });
+          setSuggestions(filteredSuggestions);
+        } else {
+          setSuggestions(suggestions);
+        }
       })
       .catch(error => {
         console.log(error);

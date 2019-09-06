@@ -32,6 +32,7 @@ export default function CodedConcept(props) {
                     showAnswer={answer}
                     onChangeAnswerName={props.onChangeAnswerName}
                     index={index}
+                    showSuggestionStartsWith={true}
                     placeholder="Enter answer"
                     label="Answer"
                   />

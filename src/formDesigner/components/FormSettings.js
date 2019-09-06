@@ -2,10 +2,6 @@ import React from "react";
 
 import { Input, InputLabel, Select } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
-import axios from "axios";
-import DownshiftMultiple from "./AutoComplete";
-import { Redirect } from "react-router-dom";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Grid from "@material-ui/core/Grid";
 
 const FormSettings = props => {

@@ -33,12 +33,12 @@ class CreateEditConcept extends Component {
       ],
       conceptCreationAlert: false,
       error: {},
-      createPage: this.props.isCreate
+      isCreatePage: this.props.isCreate
     };
   }
 
   componentDidMount() {
-    if (this.state.createPage) {
+    if (this.state.isCreatePage) {
       axios
         .get("/concept/dataTypes")
         .then(response => {
@@ -90,7 +90,8 @@ class CreateEditConcept extends Component {
     const answers = [...this.state.answers];
     if (answers[index].name !== "") {
       answers[index].voided = true;
-      const encodedURL = "/web/concept/name/" + encodeURIComponent(answers[index].name);
+      const encodedURL = "/web/concept/name/" + answers[index].name;
+
       axios
         .get(encodedURL)
         .then(response => {
@@ -186,18 +187,15 @@ class CreateEditConcept extends Component {
     let error = {};
     var promise = new Promise((resolve, reject) => {
       axios
-        .get("/search/concept?name=" + conceptName)
+        .get("/web/concept/name/" + conceptName)
         .then(response => {
-          const conceptExist = response.data.filter(
-            item => item.name.toLowerCase().trim() === conceptName.toLowerCase().trim()
-          );
-
-          if (conceptExist.length !== 0 && this.state.createPage === true) {
+          if (response.status === 200 && this.state.isCreatePage === true) {
             error["nameError"] = true;
-          } else if (
-            conceptExist.length !== 0 &&
-            conceptExist[0].uuid !== this.state.uuid &&
-            this.state.createPage === false
+          }
+          if (
+            response.status === 200 &&
+            response.data.uuid !== this.state.uuid &&
+            this.state.isCreatePage === false
           ) {
             error["nameError"] = true;
           }
@@ -205,8 +203,11 @@ class CreateEditConcept extends Component {
           resolve("Promise resolved ");
         })
         .catch(error => {
-          console.log(error);
-          reject(Error("Promise rejected"));
+          if (error.response.status === 404) {
+            resolve("Promise resolved ");
+          } else {
+            reject(Error("Promise rejected"));
+          }
         });
     });
 
@@ -249,20 +250,19 @@ class CreateEditConcept extends Component {
       if (length !== 0) {
         answers.map(answer => {
           return axios
-            .get("/search/concept?name=" + answer.name)
+            .get("/web/concept/name/" + answer.name)
             .then(response => {
-              const result = response.data.filter(
-                item => item.name.toLowerCase().trim() === answer.name.toLowerCase().trim()
-              );
-
-              if (result.length !== 0) {
-                answer.uuid = result[0].uuid;
+              if (response.status === 200) {
+                answer.uuid = response.data.uuid;
 
                 index = index + 1;
                 if (index === length) {
                   this.postCodedData(answers);
                 }
-              } else {
+              }
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
                 answer.uuid = UUID.v4();
                 axios
                   .post("/concepts", [
@@ -287,10 +287,9 @@ class CreateEditConcept extends Component {
                       }
                     }
                   });
+              } else {
+                console.log(error);
               }
-            })
-            .catch(error => {
-              console.log(error);
             });
         });
       } else {
@@ -313,7 +312,6 @@ class CreateEditConcept extends Component {
           ])
           .then(response => {
             if (response.status === 200) {
-              console.log(response);
               this.setState({
                 conceptCreationAlert: true
               });
@@ -332,14 +330,14 @@ class CreateEditConcept extends Component {
   };
 
   onAppbarTitle() {
-    if (this.state.createPage === true) {
+    if (this.state.isCreatePage === true) {
       return "Create a Concept";
     } else {
       return "Edit a Concept";
     }
   }
   onConceptCreationMessage() {
-    if (this.state.createPage === true) {
+    if (this.state.isCreatePage === true) {
       return "Concept created successfully.";
     } else {
       return "Concept updated successfully.";
@@ -406,7 +404,7 @@ class CreateEditConcept extends Component {
             </Grid>
 
             <Grid>
-              {this.state.createPage && (
+              {this.state.isCreatePage && (
                 <FormControl>
                   <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
                   <Select
@@ -429,7 +427,7 @@ class CreateEditConcept extends Component {
                   )}
                 </FormControl>
               )}
-              {!this.state.createPage && (
+              {!this.state.isCreatePage && (
                 <TextField
                   id="dataType"
                   label="DataType"
