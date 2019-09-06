@@ -18,6 +18,7 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import Mandatory from "@material-ui/icons/CheckCircleOutline";
 import NonMandatory from "@material-ui/icons/HighlightOff";
+import FormElementTabs from "./FormElementTabs";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -34,7 +35,8 @@ const useStyles = makeStyles(theme => ({
     paddingTop: "20px"
   },
   deleteicon: {
-    padding: "20px 20px 20px 20px"
+    padding: "20px 30px 20px 30px",
+    marginTop: "-10px"
   },
   absolute: {
     position: "absolute",
@@ -74,12 +76,14 @@ const ExpansionPanelActions = withStyles({
 const ExpansionPanelDetails = withStyles({
   root: {
     backgroundColor: "#fff",
-    border: "2px solid #bdc6cf"
+    border: "2px solid #bdc6cf",
+    padding: 10
   }
 })(MuiExpansionPanelDetails);
 
 const ExpansionPanelSummary = withStyles({
   root: {
+    paddingRight: 0,
     backgroundColor: "#fff",
     border: "2px solid #bdc6cf",
     minHeight: 56,
@@ -92,7 +96,8 @@ const ExpansionPanelSummary = withStyles({
   },
   focused: {},
   content: {
-    "&$expanded": {}
+    margin: "10px 0 0 0",
+    "&$expanded": { margin: "10px 0 0 0" }
   },
   expanded: {}
 })(MuiExpansionPanelSummary);
@@ -167,7 +172,7 @@ export default function FormElement(props) {
             <Grid item sm={1}>
               &nbsp;
             </Grid>
-            <Grid item sm={2}>
+            <Grid item sm={4}>
               <Typography component={"span"} className={classes.secondaryHeading}>
                 <FormControl fullWidth>
                   Type <br />
@@ -197,7 +202,9 @@ export default function FormElement(props) {
             <DeleteIcon />
           </IconButton>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails />
+        <ExpansionPanelDetails>
+          <FormElementTabs {...props} indexTab={props.groupIndex + "" + props.index} />
+        </ExpansionPanelDetails>
         {false && <Divider /> && <ExpansionPanelActions />}
       </ExpansionPanel>
       <div className={classes.absolute}>

@@ -34,7 +34,8 @@ const useStyles = makeStyles(theme => ({
     paddingTop: "20px"
   },
   deleteicon: {
-    padding: "20px 20px 20px 20px"
+    padding: "20px 30px 20px 30px",
+    marginTop: "-10px"
   },
   absolute: {
     position: "absolute",
@@ -70,6 +71,7 @@ const ExpansionPanelDetails = withStyles({
 
 const ExpansionPanelSummary = withStyles({
   root: {
+    paddingRight: 0,
     backgroundColor: "#fff",
     border: "1px solid #2196F3",
     minHeight: 56,
@@ -82,7 +84,8 @@ const ExpansionPanelSummary = withStyles({
   },
   focused: {},
   content: {
-    "&$expanded": {}
+    margin: "10px 0 0 0",
+    "&$expanded": { margin: "10px 0 0 0" }
   },
   expanded: {}
 })(MuiExpansionPanelSummary);
@@ -201,7 +204,7 @@ export default function FormElementGroup(props) {
               &nbsp;
             </Grid>
             <Grid item sm={2}>
-              <Typography component={"span"} className={classes.questionCount}>
+              <Typography component={"div"} className={classes.questionCount}>
                 No. of questions : {questionCount}
               </Typography>
             </Grid>
