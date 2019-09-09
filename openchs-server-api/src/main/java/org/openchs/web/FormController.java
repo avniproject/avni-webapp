@@ -285,7 +285,7 @@ public class FormController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public List<Map<String, Object>> getForms(Pageable pageable) {
 
-        Iterable<OperationalProgram> programItr = operationalProgramRepository.findAll();
+        Iterable<OperationalProgram> programItr = operationalProgramRepository.findAllByIsVoidedFalse();
         List<Map<String, Object>> response = new ArrayList<>();
         programItr.forEach(program -> {
             Map<String, Object> formsByProgram = new HashMap<>();

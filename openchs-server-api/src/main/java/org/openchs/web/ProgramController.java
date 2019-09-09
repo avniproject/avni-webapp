@@ -73,7 +73,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         operationalProgram.setProgramSubjectLabel(request.getProgramSubjectLabel());
         operationalProgram.setProgram(program);
         operationalProgramRepository.save(operationalProgram);
-        return ResponseEntity.ok(request);
+        return ResponseEntity.ok(ProgramContract.fromOperationalProgram(operationalProgram));
     }
 
     @PutMapping(value = "/web/program/{id}")
@@ -101,7 +101,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         operationalProgram.setName(programContract.getName());
         operationalProgramRepository.save(operationalProgram);
 
-        return new ResponseEntity<>(program, HttpStatus.OK);
+        return ResponseEntity.ok(ProgramContract.fromOperationalProgram(operationalProgram));
     }
 
     @DeleteMapping(value = "/web/program/{id}")
@@ -125,10 +125,6 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         return ResponseEntity.ok(null);
     }
 
-    private String getVoidedName(String name, Long id) {
-        return String.format("%s (voided~%d)", name, id);
-    }
-
     @GetMapping(value = "/web/program")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
@@ -147,6 +143,10 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
             return ResponseEntity.notFound().build();
         ProgramContract programContract = ProgramContract.fromOperationalProgram(operationalProgram);
         return new ResponseEntity<>(programContract, HttpStatus.OK);
+    }
+
+    private String getVoidedName(String name, Long id) {
+        return String.format("%s (voided~%d)", name, id);
     }
 
     private Program createProgram(ProgramRequest programRequest) {
