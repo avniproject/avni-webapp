@@ -29,7 +29,7 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
 
     FormMapping findByProgramIdAndEncounterTypeIdAndFormFormTypeAndIsVoidedFalse(Long programId, Long encounterTypeId, FormType formType);
 
-    @Query("select m from FormMapping m")
+    @Query("select m from FormMapping m where m.isVoided = false")
     List<FormMappingProjection> findAllOperational();
 
     default FormMapping findByName(String name) {

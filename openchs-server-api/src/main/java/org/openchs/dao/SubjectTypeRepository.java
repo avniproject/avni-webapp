@@ -15,6 +15,6 @@ public interface SubjectTypeRepository extends ReferenceDataRepository<SubjectTy
     @Query("select st from SubjectType st where name = 'Individual'")
     SubjectType individualSubjectType();
 
-    @Query("select st from SubjectType st where st.operationalSubjectTypes is not empty")
+    @Query("select st from SubjectType st where st.operationalSubjectTypes is not empty and st.isVoided = false")
     List<SubjectTypeProjection> findAllOperational();
 }

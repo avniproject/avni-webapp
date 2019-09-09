@@ -14,6 +14,6 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "encounterType", path = "encounterType")
 public interface EncounterTypeRepository extends ReferenceDataRepository<EncounterType>, FindByLastModifiedDateTime<EncounterType> {
 
-    @Query("select o from EncounterType o where o.operationalEncounterTypes is not empty")
+    @Query("select o from EncounterType o where o.operationalEncounterTypes is not empty and o.isVoided = false")
     List<EncounterTypeProjection> findAllOperational();
 }
