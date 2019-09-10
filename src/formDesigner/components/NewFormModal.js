@@ -1,11 +1,5 @@
 import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import axios from "axios";
@@ -18,19 +12,18 @@ class NewFormModal extends Component {
     super(props);
 
     this.state = {
-      name: "",
-      formType: "",
-      programName: "",
-      subjectType: "",
-      encounterType: [],
+      name: props.formProperties.name,
+      formType: props.formProperties.formType,
+      programName: props.formProperties.programName,
+      subjectType: props.formProperties.subjectType,
+      encounterType: props.formProperties.encounterTypes,
       open: false,
       onClose: false,
       data: {},
       toFormDetails: "",
       errors: { name: "", formType: "", programName: "", subjectType: "", encounterType: "" }
     };
-    this.handleClickOpen = this.handleClickOpen.bind(this);
-    this.handleClose = this.handleClose.bind(this);
+    console.log(this.props.formProperties);
   }
 
   validateForm() {
@@ -114,21 +107,6 @@ class NewFormModal extends Component {
     });
   }
 
-  handleClose() {
-    this.setState({ open: false });
-  }
-
-  NewFormButton() {
-    return (
-      <div style={{ textAlign: "right" }}>
-        <Button variant="outlined" color="secondary" onClick={this.handleClickOpen}>
-          {" "}
-          New Form{" "}
-        </Button>
-      </div>
-    );
-  }
-
   getDownshiftValue(encounterTypeValue) {
     this.setState({ encounterType: encounterTypeValue });
   }
@@ -143,11 +121,12 @@ class NewFormModal extends Component {
           value={this.state.programName}
           onChange={this.onChangeField.bind(this)}
         >
-          {this.state.data.programs.map(program => (
-            <MenuItem key={program.operationalProgramName} value={program.operationalProgramName}>
-              {program.operationalProgramName}
-            </MenuItem>
-          ))}
+          {this.state.data.programs != null &&
+            this.state.data.programs.map(program => (
+              <MenuItem key={program.operationalProgramName} value={program.operationalProgramName}>
+                {program.operationalProgramName}
+              </MenuItem>
+            ))}
         </Select>
         {this.state.errors.programName && (
           <FormHelperText error>{this.state.errors.programName}</FormHelperText>
@@ -183,6 +162,26 @@ class NewFormModal extends Component {
     );
   }
 
+  formTypeElement() {
+    const formTypes = [
+      "IndividualProfile",
+      "Encounter",
+      "ProgramEncounter",
+      "ProgramEnrolment",
+      "ProgramExit",
+      "ProgramEncounterCancellation",
+      "ChecklistItem"
+    ];
+
+    return formTypes.map(formType => {
+      return (
+        <MenuItem key={formType} value={formType}>
+          {formType}
+        </MenuItem>
+      );
+    });
+  }
+
   encounterTypesElement() {
     let encounterTypesValues =
       this.state.data.encounterTypes != null
@@ -196,6 +195,7 @@ class NewFormModal extends Component {
           id="ecounterTypes"
           suggestions={encounterTypesValues}
           OnGetSelectedValue={this.getDownshiftValue.bind(this)}
+          setEncounterTypes={this.state.encounterType}
         />
         {this.state.errors.ecounterType && (
           <FormHelperText error>{this.state.errors.ecounterType}</FormHelperText>
@@ -214,79 +214,60 @@ class NewFormModal extends Component {
       this.state.formType === "ProgramEncounter" ||
       this.state.formType === "ProgramExit" ||
       this.state.formType === "ProgramEnrolment";
+    const submitButtonName = this.props.isCreateFrom ? "Add" : "Update";
+
     return (
       <div>
-        {true && this.NewFormButton()}
-        <Dialog
-          fullWidth
-          maxWidth="xs"
-          onClose={this.handleClose}
-          aria-labelledby="customized-dialog-title"
-          open={this.state.open}
-        >
-          <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
-            New Form
-            <IconButton style={{ float: "right" }} onClick={this.handleClose}>
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
-          <form>
-            <DialogContent dividers>
-              {this.state.errorMsg && (
-                <FormControl fullWidth margin="dense">
-                  <li style={{ color: "red" }}>{this.state.errorMsg}</li>
-                </FormControl>
-              )}
-              <FormControl fullWidth margin="dense">
-                <InputLabel htmlFor="formType">Form Type</InputLabel>
-                <Select
-                  id="formType"
-                  name="formType"
-                  value={this.state.formType}
-                  onChange={this.onChangeField.bind(this)}
-                  required
-                >
-                  <MenuItem value="IndividualProfile">IndividualProfile</MenuItem>
-                  <MenuItem value="Encounter">Encounter</MenuItem>
-                  <MenuItem value="ProgramEncounter">ProgramEncounter</MenuItem>
-                  <MenuItem value="ProgramEnrolment">ProgramEnrollment</MenuItem>
-                  <MenuItem value="ProgramExit">ProgramExit</MenuItem>
-                  <MenuItem value="ProgramEnrolmentCancellation">
-                    ProgramEnrollmentCancellation
-                  </MenuItem>
-                  <MenuItem value="ChecklistItem">ChecklistItem</MenuItem>
-                </Select>
-                {this.state.errors.formType && (
-                  <FormHelperText error>{this.state.errors.formType}</FormHelperText>
-                )}
-              </FormControl>
-              <FormControl fullWidth margin="dense">
-                <InputLabel htmlFor="name">Name</InputLabel>
-                <Input
-                  type="text"
-                  id="formName"
-                  name="name"
-                  onChange={this.onChangeField.bind(this)}
-                  fullWidth
-                />
-                {this.state.errors.name && (
-                  <FormHelperText error>{this.state.errors.name}</FormHelperText>
-                )}
-              </FormControl>
-              {this.subjectTypeElement()}
-              {programBased && this.programNameElement()}
-              {encounterTypes && this.encounterTypesElement()}
-            </DialogContent>
-            <DialogActions>
-              <Button variant="contained" color="primary" onClick={this.addFields.bind(this)}>
-                Add
-              </Button>
-            </DialogActions>
-          </form>
-        </Dialog>
+        <form>
+          {this.state.errorMsg && (
+            <FormControl fullWidth margin="dense">
+              <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+            </FormControl>
+          )}
+          <FormControl fullWidth margin="dense">
+            <InputLabel htmlFor="formType">Form Type</InputLabel>
+            <Select
+              id="formType"
+              name="formType"
+              value={this.state.formType}
+              onChange={this.onChangeField.bind(this)}
+              required
+            >
+              {this.formTypeElement()}
+            </Select>
+            {this.state.errors.formType && (
+              <FormHelperText error>{this.state.errors.formType}</FormHelperText>
+            )}
+          </FormControl>
+          <FormControl fullWidth margin="dense">
+            <InputLabel htmlFor="name">Name</InputLabel>
+            <Input
+              type="text"
+              id="formName"
+              name="name"
+              value={this.state.name}
+              onChange={this.onChangeField.bind(this)}
+              fullWidth
+            />
+            {this.state.errors.name && (
+              <FormHelperText error>{this.state.errors.name}</FormHelperText>
+            )}
+          </FormControl>
+          {this.subjectTypeElement()}
+          {programBased && this.programNameElement()}
+          {encounterTypes && this.encounterTypesElement()}
+        </form>
+        <Button variant="contained" color="primary" onClick={this.addFields.bind(this)}>
+          {submitButtonName}
+        </Button>
       </div>
     );
   }
 }
+
+NewFormModal.defaultProps = {
+  formProperties: { name: "", subjectType: "", formType: "", encounterTypes: [], programName: "" },
+  isCreateFrom: true
+};
 
 export default NewFormModal;
