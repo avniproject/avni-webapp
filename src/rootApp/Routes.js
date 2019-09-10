@@ -76,7 +76,7 @@ const Routes = props => (
       path="/concept/create"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
-      component={() => <CreateEditConcept isCreate={true} />}
+      component={() => <CreateEditConcept isCreatePage={true} />}
     />
     <RestrictedRoute
       exact
