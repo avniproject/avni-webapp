@@ -47,7 +47,7 @@ export const ProgramDetail = props => {
 export const ProgramCreate = props => {
   return (
     <Create title="Add a new Program" {...props}>
-      <SimpleForm>
+      <SimpleForm redirect="show">
         <TextInput source="name" />
         <ColorInput source="colour" />
         <TextInput source="programSubjectLabel" />
@@ -59,7 +59,7 @@ export const ProgramCreate = props => {
 export const ProgramEdit = props => {
   return (
     <Edit undoable={false} title="Edit Program" {...props}>
-      <SimpleForm>
+      <SimpleForm redirect="show">
         <TextInput source="name" />
         <ColorInput source="colour" picker="Sketch" />
         <TextInput source="programSubjectLabel" />
