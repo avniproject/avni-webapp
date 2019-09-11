@@ -3,17 +3,23 @@ package org.openchs.web;
 import org.openchs.application.*;
 import org.openchs.builder.FormBuilder;
 import org.openchs.builder.FormBuilderException;
-import org.openchs.dao.*;
+import org.openchs.dao.OperationalEncounterTypeRepository;
+import org.openchs.dao.OperationalProgramRepository;
+import org.openchs.dao.ProgramRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.FormWebProjection;
 import org.openchs.service.FormMappingService;
+import org.openchs.util.ApiException;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormatContract;
-import org.openchs.web.request.application.*;
-import org.openchs.web.request.webapp.CreateFormRequest;
+import org.openchs.web.request.application.BasicFormDetails;
+import org.openchs.web.request.application.FormContract;
+import org.openchs.web.request.application.FormElementContract;
+import org.openchs.web.request.application.FormElementGroupContract;
+import org.openchs.web.request.webapp.CreateUpdateFormRequest;
 import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +54,6 @@ public class FormController {
     private RepositoryEntityLinks entityLinks;
     private ProjectionFactory projectionFactory;
     private final FormMappingService formMappingService;
-
-    private final static String FORM_ALREADY_EXISTS = "Form with name %s already exists";
 
 
     @Autowired
@@ -90,25 +94,49 @@ public class FormController {
     @PostMapping(value = "/web/forms")
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public ResponseEntity createWeb(@RequestBody CreateFormRequest formRequest) {
-        String formName = formRequest.getName().trim();
-        Form existingForm = formRepository.findByNameIgnoreCase(formName);
-        if (existingForm != null) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(String.format(FORM_ALREADY_EXISTS, formName));
-        }
-
+    public ResponseEntity createWeb(@RequestBody CreateUpdateFormRequest request) {
+        validateCreate(request);
         FormBuilder formBuilder = new FormBuilder(null);
         Form form = formBuilder
-                .withName(formRequest.getName())
-                .withType(formRequest.getFormType())
+                .withName(request.getName())
+                .withType(request.getFormType())
                 .withUUID(UUID.randomUUID().toString())
                 .build();
         formRepository.save(form);
-        formMappingService.createFormMapping(formRequest, form);
-
+        formMappingService.createFormMapping(request, form);
         return ResponseEntity.ok(form);
+    }
+
+    private void validateCreate(CreateUpdateFormRequest request) {
+        if (formRepository.findByNameIgnoreCase(request.getName()) != null) {
+            throw new ApiException("Form with name %s already exists", request.getName());
+        }
+    }
+
+    @PutMapping(value = "web/forms/{formUUID}/metadata")
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public ResponseEntity updateMetadata(@RequestBody CreateUpdateFormRequest request, @PathVariable String formUUID) {
+        Form form = validateUpdateMetadata(request, formUUID);
+        form.setName(request.getName());
+        form.setFormType(FormType.valueOf(request.getFormType()));
+        formRepository.save(form);
+        formMappingService.updateFormMapping(request, form);
+        return ResponseEntity.ok(null);
+    }
+
+    private Form validateUpdateMetadata(CreateUpdateFormRequest request, String formUUID) {
+        Form byUuid = formRepository.findByUuid(formUUID);
+        if (byUuid == null) {
+            throw new ApiException("Form with uuid %s does not exist", formUUID);
+        }
+        Form form = formRepository.findByNameIgnoreCase(request.getName());
+        if (form == null) {
+            throw new ApiException("Can not update form because form by name %s do not exist", request.getName());
+        } else if (!form.getUuid().equals(formUUID)) {
+            throw new ApiException("Can not update form name because form by name %s already exists", request.getName());
+        }
+        return form;
     }
 
     private Form saveForm(@RequestBody FormContract formRequest) throws FormBuilderException {

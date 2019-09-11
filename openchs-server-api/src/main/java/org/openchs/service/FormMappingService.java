@@ -3,58 +3,21 @@ package org.openchs.service;
 import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
-import org.openchs.dao.*;
+import org.openchs.dao.EncounterTypeRepository;
+import org.openchs.dao.ProgramRepository;
+import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
 import org.openchs.util.ApiException;
-import org.openchs.web.request.webapp.CreateFormRequest;
+import org.openchs.web.request.webapp.CreateUpdateFormRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-
-class CreateFormMapping {
-    private String subjectType;
-    private String programName;
-    private String encounterType;
-    private Form form;
-
-    public String getSubjectType() {
-        return subjectType;
-    }
-
-    public void setSubjectType(String subjectType) {
-        this.subjectType = subjectType;
-    }
-
-    public String getProgramName() {
-        return programName;
-    }
-
-    public void setProgramName(String programName) {
-        this.programName = programName;
-    }
-
-    public String getEncounterType() {
-        return encounterType;
-    }
-
-    public void setEncounterType(String encounterType) {
-        this.encounterType = encounterType;
-    }
-
-    public Form getForm() {
-        return form;
-    }
-
-    public void setForm(Form form) {
-        this.form = form;
-    }
-}
+import java.util.stream.Collectors;
 
 @Service
 public class FormMappingService {
@@ -77,81 +40,86 @@ public class FormMappingService {
         this.subjectTypeRepository = subjectTypeRepository;
     }
 
-    public void createFormMapping(CreateFormRequest createFormRequest, Form form) {
-        FormType formType = form.getFormType();
-        if (formType == FormType.ChecklistItem)
-            return;
-
-        if (formType.isLinkedToEncounterType() &&
-                (CollectionUtils.isEmpty(createFormRequest.getEncounterTypes()))) {
-            throw new ApiException("Form of type %s must pass encounterTypes", formType);
-        }
-
-        List<String> encounterTypes = createFormRequest.getEncounterTypes();
-        if (encounterTypes != null) {
-            for (String encounterType : encounterTypes) {
-                CreateFormMapping formMapping = new CreateFormMapping();
-                formMapping.setForm(form);
-                formMapping.setProgramName(createFormRequest.getProgramName());
-                formMapping.setSubjectType(createFormRequest.getSubjectType());
-                formMapping.setEncounterType(encounterType);
-                createFormMapping(formMapping);
-            }
+    public void updateFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
+        validateRequest(createUpdateFormRequest, form.getFormType());
+        List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
+        if (formMappings.size() == 1) {
+            FormMapping formMapping = formMappings.get(0);
+            setSubjectTypeIfRequired(formMapping, createUpdateFormRequest.getSubjectType());
+            setProgramNameIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getProgramName());
+            setEncounterTypeIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getEncounterType());
+            formMappingRepository.save(formMapping);
         } else {
-            CreateFormMapping formMapping = new CreateFormMapping();
-            formMapping.setForm(form);
-            formMapping.setProgramName(createFormRequest.getProgramName());
-            formMapping.setSubjectType(createFormRequest.getSubjectType());
-            createFormMapping(formMapping);
+            throw new RuntimeException(String.format("There should have been only one form mapping for %s", form.getName()));
         }
     }
 
-    private void createFormMapping(CreateFormMapping createFormMapping) {
+    public void createFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
+        FormType formType = form.getFormType();
+        if (formType == FormType.ChecklistItem)
+            return;
+        validateRequest(createUpdateFormRequest, formType);
         FormMapping formMapping = new FormMapping();
         formMapping.assignUUID();
-        Form form = createFormMapping.getForm();
         formMapping.setForm(form);
-
-        FormType formType = form.getFormType();
-
-        if (createFormMapping.getSubjectType() == null) {
-            throw new ApiException("Subject type must be specified");
-        } else {
-            SubjectType subjectType = subjectTypeRepository.findByNameIgnoreCase(createFormMapping.getSubjectType());
-            if (subjectType != null) {
-                formMapping.setSubjectType(subjectType);
-            } else {
-                throw new ApiException("Subject type %s not found", createFormMapping.getSubjectType());
-            }
-        }
-
-        if (formType.isLinkedToProgram()) {
-            if (createFormMapping.getProgramName() == null) {
-                throw new ApiException("Form of type %s must pass programName", formType);
-            } else {
-                Program program = programRepository.findByNameIgnoreCase(createFormMapping.getProgramName());
-                if (program != null) {
-                    formMapping.setProgram(program);
-                } else {
-                    throw new ApiException("Program %s not found", createFormMapping.getProgramName());
-                }
-            }
-        }
-
-        if (formType.isLinkedToEncounterType()) {
-            if (createFormMapping.getEncounterType() == null) {
-                throw new ApiException("Form of type %s must pass encounterType", formType);
-            } else {
-                EncounterType encounterType = encounterTypeRepository.findByNameIgnoreCase(createFormMapping.getEncounterType());
-                if (encounterType != null) {
-                    formMapping.setEncounterType(encounterType);
-                } else {
-                    throw new ApiException("Encounter Type %s not found", createFormMapping.getEncounterType());
-                }
-            }
-        }
-
+        setSubjectTypeIfRequired(formMapping, createUpdateFormRequest.getSubjectType());
+        setProgramNameIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getProgramName());
+        setEncounterTypeIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getEncounterType());
         formMappingRepository.save(formMapping);
+    }
+
+    private void validateRequest(CreateUpdateFormRequest createUpdateFormRequest, FormType formType) {
+        if (formType.isLinkedToEncounterType() && createUpdateFormRequest.getEncounterType() == null) {
+            throw new ApiException("Form of type %s must pass encounterType", formType);
+        }
+
+        if (createUpdateFormRequest.getSubjectType() == null) {
+            throw new ApiException("Subject type must be specified");
+        }
+
+        if (formType.isLinkedToProgram() && createUpdateFormRequest.getProgramName() == null) {
+            throw new ApiException("Form of type %s must pass programName", formType);
+        }
+    }
+
+    private void createFormMapping(Form form, String subjectType, String programName, String encounterType) {
+        FormMapping formMapping = new FormMapping();
+        formMapping.assignUUID();
+        formMapping.setForm(form);
+        setSubjectTypeIfRequired(formMapping, subjectType);
+        setProgramNameIfRequired(formMapping, form.getFormType(), programName);
+        setEncounterTypeIfRequired(formMapping, form.getFormType(), encounterType);
+        formMappingRepository.save(formMapping);
+    }
+
+    private void updateFormMapping(FormMapping formMapping, FormType formType, String subjectType, String programName, String encounterType) {
+        setSubjectTypeIfRequired(formMapping, subjectType);
+        setProgramNameIfRequired(formMapping, formType, programName);
+        setEncounterTypeIfRequired(formMapping, formType, encounterType);
+        formMappingRepository.save(formMapping);
+    }
+
+
+    private void setEncounterTypeIfRequired(FormMapping formMapping, FormType formType, String requestEncounterType) {
+        if (formType.isLinkedToEncounterType() && requestEncounterType != null) {
+            EncounterType encounterType = encounterTypeRepository.findByNameIgnoreCase(requestEncounterType);
+            if (encounterType == null) throw new ApiException("Encounter Type %s not found", requestEncounterType);
+            formMapping.setEncounterType(encounterType);
+        }
+    }
+
+    private void setProgramNameIfRequired(FormMapping formMapping, FormType formType, String programName) {
+        if (formType.isLinkedToProgram()) {
+            Program program = programRepository.findByNameIgnoreCase(programName);
+            if (program == null) throw new ApiException("Program %s not found", programName);
+            formMapping.setProgram(program);
+        }
+    }
+
+    private void setSubjectTypeIfRequired(FormMapping formMapping, String requestSubjectType) {
+        SubjectType subjectType = subjectTypeRepository.findByNameIgnoreCase(requestSubjectType);
+        if (subjectType == null) throw new ApiException("Subject type %s not found", requestSubjectType);
+        formMapping.setSubjectType(subjectType);
     }
 
 }

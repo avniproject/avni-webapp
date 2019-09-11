@@ -2,13 +2,13 @@ package org.openchs.web.request.webapp;
 
 import java.util.List;
 
-public class CreateFormRequest {
+public class CreateUpdateFormRequest {
 
     private String formType;
     private String name;
     private String subjectType;
     private String programName;
-    private List<String> encounterTypes;
+    private String encounterType;
 
     public String getFormType() {
         return formType;
@@ -42,11 +42,11 @@ public class CreateFormRequest {
         this.programName = programName;
     }
 
-    public List<String> getEncounterTypes() {
-        return encounterTypes;
+    public String getEncounterType() {
+        return encounterType;
     }
 
-    public void setEncounterTypes(List<String> encounterTypes) {
-        this.encounterTypes = encounterTypes;
+    public void setEncounterType(String encounterType) {
+        this.encounterType = encounterType;
     }
 }
