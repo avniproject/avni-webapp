@@ -28,6 +28,12 @@ import {
   EncounterTypeCreate,
   EncounterTypeEdit
 } from "./EncounterTypes";
+import {
+  organisationConfigCreate,
+  organisationConfigDetail,
+  organisationConfigEdit,
+  organisationConfigList
+} from "./OrganisationConfig";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -100,6 +106,14 @@ class OrgManager extends Component {
           show={EncounterTypeDetail}
           create={EncounterTypeCreate}
           edit={EncounterTypeEdit}
+        />
+        <Resource
+          name="organisationConfig"
+          options={{ label: "Organisation Config" }}
+          list={organisationConfigList}
+          show={organisationConfigDetail}
+          create={organisationConfigCreate}
+          edit={organisationConfigEdit}
         />
       </Admin>
     );
