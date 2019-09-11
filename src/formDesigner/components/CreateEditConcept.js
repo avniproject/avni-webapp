@@ -6,8 +6,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 import { default as UUID } from "uuid";
-import NumericConcept from "./NumericDataType";
-import CodedConcept from "./CodedDataType";
+import NumericConcept from "./NumericConcept";
+import CodedConcept from "./CodedConcept";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
@@ -32,13 +32,12 @@ class CreateEditConcept extends Component {
         { name: "", uuid: "", unique: false, abnormal: false, editable: true, voided: false }
       ],
       conceptCreationAlert: false,
-      error: {},
-      isCreatePage: this.props.isCreate
+      error: {}
     };
   }
 
   componentDidMount() {
-    if (this.state.isCreatePage) {
+    if (this.props.isCreatePage === true) {
       axios
         .get("/concept/dataTypes")
         .then(response => {
@@ -189,13 +188,13 @@ class CreateEditConcept extends Component {
       axios
         .get("/web/concept/name/" + conceptName)
         .then(response => {
-          if (response.status === 200 && this.state.isCreatePage === true) {
+          if (response.status === 200 && this.props.isCreatePage === true) {
             error["nameError"] = true;
           }
           if (
             response.status === 200 &&
             response.data.uuid !== this.state.uuid &&
-            this.state.isCreatePage === false
+            this.props.isCreatePage === false
           ) {
             error["nameError"] = true;
           }
@@ -248,7 +247,7 @@ class CreateEditConcept extends Component {
 
       let index = 0;
       if (length !== 0) {
-        answers.map(answer => {
+        answers.forEach(answer => {
           return axios
             .get("/web/concept/name/" + answer.name)
             .then(response => {
@@ -329,21 +328,6 @@ class CreateEditConcept extends Component {
     });
   };
 
-  onAppbarTitle() {
-    if (this.state.isCreatePage === true) {
-      return "Create a Concept";
-    } else {
-      return "Edit a Concept";
-    }
-  }
-  onConceptCreationMessage() {
-    if (this.state.isCreatePage === true) {
-      return "Concept created successfully.";
-    } else {
-      return "Concept updated successfully.";
-    }
-  }
-
   render() {
     let dataType;
     const classes = {
@@ -363,6 +347,12 @@ class CreateEditConcept extends Component {
         marginTop: 15
       }
     };
+
+    const conceptCreationMessage = this.props.isCreatePage
+      ? "Concept created successfully."
+      : "Concept updated successfully.";
+
+    const appBarTitle = this.props.isCreatePage ? "Create a Concept" : "Edit a Concept";
 
     if (this.state.dataType === "Numeric") {
       dataType = (
@@ -385,7 +375,7 @@ class CreateEditConcept extends Component {
     }
 
     return (
-      <ScreenWithAppBar appbarTitle={this.onAppbarTitle()} enableLeftMenuButton={true}>
+      <ScreenWithAppBar appbarTitle={appBarTitle} enableLeftMenuButton={true}>
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
             <Grid item sm={12}>
@@ -404,7 +394,7 @@ class CreateEditConcept extends Component {
             </Grid>
 
             <Grid>
-              {this.state.isCreatePage && (
+              {this.props.isCreatePage && (
                 <FormControl>
                   <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
                   <Select
@@ -427,7 +417,7 @@ class CreateEditConcept extends Component {
                   )}
                 </FormControl>
               )}
-              {!this.state.isCreatePage && (
+              {!this.props.isCreatePage && (
                 <TextField
                   id="dataType"
                   label="DataType"
@@ -447,7 +437,7 @@ class CreateEditConcept extends Component {
           </Grid>
 
           {this.state.conceptCreationAlert && (
-            <CustomizedSnackbar message={this.onConceptCreationMessage()} />
+            <CustomizedSnackbar message={conceptCreationMessage} />
           )}
         </form>
       </ScreenWithAppBar>
@@ -455,6 +445,6 @@ class CreateEditConcept extends Component {
   }
 }
 
-CreateEditConcept.propTypes = { isCreate: PropTypes.bool };
-CreateEditConcept.defaultProps = { isCreate: false };
+CreateEditConcept.propTypes = { isCreatePage: PropTypes.bool };
+CreateEditConcept.defaultProps = { isCreatePage: false };
 export default CreateEditConcept;

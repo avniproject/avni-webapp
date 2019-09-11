@@ -77,7 +77,7 @@ const Concepts = ({ history }) => {
             icon: "edit",
             tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
             onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`),
-            disabled: rowData.organisationId === 1
+            disabled: rowData.organisationId === 1 || rowData.voided === true
           }),
           {
             icon: "add",

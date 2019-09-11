@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-
+import { Paper } from "@material-ui/core";
 import _ from "lodash";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
@@ -12,6 +12,7 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import FormSettings from "./FormSettings";
 import { default as UUID } from "uuid";
+import NewFormModal from "./NewFormModal";
 
 function TabContainer(props) {
   return (
@@ -187,7 +188,13 @@ class FormDetails extends Component {
                 </div>
               </TabContainer>
             )}
-            {this.state.activeTabIndex === 1 && <FormSettings formProperties={this.state.form} />}
+            {this.state.activeTabIndex === 1 && (
+              <Paper>
+                <div style={{ margin: 10 }}>
+                  <NewFormModal formProperties={this.state.form} isCreateFrom={false} />
+                </div>
+              </Paper>
+            )}
           </Grid>
         </Grid>
       </ScreenWithAppBar>

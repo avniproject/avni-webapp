@@ -60,13 +60,7 @@ renderInput.propTypes = {
 };
 
 function renderSuggestion(suggestionProps) {
-  const {
-    suggestion,
-    index,
-    itemProps,
-    highlightedIndex,
-    selectedItem
-  } = suggestionProps;
+  const { suggestion, index, itemProps, highlightedIndex, selectedItem } = suggestionProps;
   const isHighlighted = highlightedIndex === index;
   const isSelected = (selectedItem || "").indexOf(suggestion.label) > -1;
 
@@ -86,10 +80,7 @@ function renderSuggestion(suggestionProps) {
 }
 
 renderSuggestion.propTypes = {
-  highlightedIndex: PropTypes.oneOfType([
-    PropTypes.oneOf([null]),
-    PropTypes.number
-  ]).isRequired,
+  highlightedIndex: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.number]).isRequired,
   index: PropTypes.number.isRequired,
   itemProps: PropTypes.object.isRequired,
   selectedItem: PropTypes.string.isRequired,
@@ -107,8 +98,7 @@ function getSuggestions(suggestions, value, { showEmpty = false } = {}) {
     ? []
     : suggestions.filter(suggestion => {
         const keep =
-          count < 5 &&
-          suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
+          count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
 
         if (keep) {
           count += 1;
@@ -121,14 +111,10 @@ function getSuggestions(suggestions, value, { showEmpty = false } = {}) {
 function DownshiftMultiple(props) {
   const classes = useStyles();
   const [inputValue, setInputValue] = React.useState("");
-  const [selectedItem, setSelectedItem] = React.useState([]);
+  const [selectedItem, setSelectedItem] = React.useState(props.setEncounterTypes);
 
   function handleKeyDown(event) {
-    if (
-      selectedItem.length &&
-      !inputValue.length &&
-      event.key === "Backspace"
-    ) {
+    if (selectedItem.length && !inputValue.length && event.key === "Backspace") {
       setSelectedItem(selectedItem.slice(0, selectedItem.length - 1));
     }
   }
@@ -203,15 +189,14 @@ function DownshiftMultiple(props) {
 
             {isOpen ? (
               <Paper className={classes.paper} square>
-                {getSuggestions(props.suggestions, inputValue2).map(
-                  (suggestion, index) =>
-                    renderSuggestion({
-                      suggestion,
-                      index,
-                      itemProps: getItemProps({ item: suggestion.label }),
-                      highlightedIndex,
-                      selectedItem: selectedItem2
-                    })
+                {getSuggestions(props.suggestions, inputValue2).map((suggestion, index) =>
+                  renderSuggestion({
+                    suggestion,
+                    index,
+                    itemProps: getItemProps({ item: suggestion.label }),
+                    highlightedIndex,
+                    selectedItem: selectedItem2
+                  })
                 )}
               </Paper>
             ) : null}
