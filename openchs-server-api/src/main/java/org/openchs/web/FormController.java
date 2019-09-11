@@ -125,18 +125,16 @@ public class FormController {
         return ResponseEntity.ok(null);
     }
 
-    private Form validateUpdateMetadata(CreateUpdateFormRequest request, String formUUID) {
-        Form byUuid = formRepository.findByUuid(formUUID);
+    private Form validateUpdateMetadata(CreateUpdateFormRequest request, String requestUUID) {
+        Form byUuid = formRepository.findByUuid(requestUUID);
         if (byUuid == null) {
-            throw new ApiException("Form with uuid %s does not exist", formUUID);
+            throw new ApiException("Form with uuid %s does not exist", requestUUID);
         }
-        Form form = formRepository.findByNameIgnoreCase(request.getName());
-        if (form == null) {
-            throw new ApiException("Can not update form because form by name %s do not exist", request.getName());
-        } else if (!form.getUuid().equals(formUUID)) {
-            throw new ApiException("Can not update form name because form by name %s already exists", request.getName());
+        Form byName = formRepository.findByNameIgnoreCase(request.getName());
+        if (byName != null && !byName.getUuid().equals(requestUUID)) {
+            throw new ApiException("Can not update form name to %s because form by that name already exists", request.getName());
         }
-        return form;
+        return byUuid;
     }
 
     private Form saveForm(@RequestBody FormContract formRequest) throws FormBuilderException {
