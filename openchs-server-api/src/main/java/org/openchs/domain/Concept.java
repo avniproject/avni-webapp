@@ -205,14 +205,29 @@ public class Concept extends OrganisationAwareEntity {
     @JsonIgnore
     public ConceptContract toConceptContract() {
         ConceptContract conceptContract = new ConceptContract();
-        BeanUtils.copyProperties(this, conceptContract);
+        conceptContract.setName(this.getName());
+        conceptContract.setUuid(this.getUuid());
+        conceptContract.setDataType(this.getDataType());
+        conceptContract.setLowAbsolute(this.getLowAbsolute());
+        conceptContract.setHighAbsolute(this.getHighAbsolute());
+        conceptContract.setLowNormal(this.getLowNormal());
+        conceptContract.setHighNormal(this.getHighNormal());
+        conceptContract.setUnit(this.getUnit());
+        conceptContract.setVoided(this.isVoided());
+
         if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
             conceptContract.setAnswers(new ArrayList<>());
         }
         for (ConceptAnswer answer : this.getConceptAnswers()) {
+            Concept answerConcept = answer.getAnswerConcept();
+
             ConceptContract answerConceptContract = new ConceptContract();
-            answerConceptContract.setUuid(answer.getAnswerConcept().getUuid());
-            answerConceptContract.setName(answer.getAnswerConcept().getName());
+            answerConceptContract.setUuid(answerConcept.getUuid());
+            answerConceptContract.setName(answerConcept.getName());
+            answerConceptContract.setOrder(answer.getOrder());
+            answerConceptContract.setAbnormal(answer.isAbnormal());
+            answerConceptContract.setUnique(answer.isUnique());
+
             conceptContract.getAnswers().add(answerConceptContract);
         }
         return conceptContract;

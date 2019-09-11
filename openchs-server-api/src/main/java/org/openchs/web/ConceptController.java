@@ -1,27 +1,31 @@
 package org.openchs.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.service.ConceptService;
+import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.ConceptContract;
-import org.openchs.web.request.ExportRequest;
+import org.openchs.web.request.webapp.ConceptExport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +37,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     private ConceptRepository conceptRepository;
     private ConceptService conceptService;
     private ProjectionFactory projectionFactory;
+    ObjectMapper objectMapper;
 
     @Autowired
     public ConceptController(ConceptRepository conceptRepository, ConceptService conceptService, ProjectionFactory projectionFactory) {
@@ -40,6 +45,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         this.conceptService = conceptService;
         this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
+        objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
     @RequestMapping(value = "/concepts", method = RequestMethod.POST)
@@ -49,20 +55,41 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         conceptRequests.forEach(conceptService::saveOrUpdate);
     }
 
-    @RequestMapping(value = "/concepts/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/concepts/export", method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
-    void export(@RequestBody ExportRequest exportRequest) {
-        List<ConceptContract> conceptContracts = new ArrayList<>();
-        conceptRepository.findAll().iterator().forEachRemaining(concept -> conceptContracts.add(concept.toConceptContract()));
-        ObjectMapper mapper = null; //Use global instance of ObjectMapper
+    public ResponseEntity<ByteArrayResource> export() throws JsonProcessingException {
+        Long orgId = UserContextHolder.getUserContext().getOrganisation().getId();
 
-        try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(exportRequest.getFileName()), conceptContracts);
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<ConceptExport> conceptContracts = new ArrayList<>();
+        List<Concept> naConcepts = conceptRepository.findAllByOrganisationIdAndDataType(orgId, "NA");
+        List<Concept> codedConcepts = conceptRepository.findAllByOrganisationIdAndDataType(orgId, "Coded");
+        List<Concept> otherThanCodedOrNA = conceptRepository.findAllByOrganisationIdAndDataTypeNotIn(orgId, new String[]{"NA", "Coded"});
+
+        for (Concept concept : naConcepts) {
+            conceptContracts.add(ConceptExport.fromConcept(concept));
         }
-        logger.info("Concepts size: " + conceptContracts.size());
-        logger.info(String.format("Exporting conceptContracts to : %s", exportRequest.getFileName()));
+        for (Concept concept : codedConcepts) {
+            conceptContracts.add(ConceptExport.fromConcept(concept));
+        }
+        for (Concept concept : otherThanCodedOrNA) {
+            conceptContracts.add(ConceptExport.fromConcept(concept));
+        }
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=concepts.json");
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        byte[] byteArray = objectMapper.writer().writeValueAsBytes(conceptContracts);
+        ByteArrayResource resource = new ByteArrayResource(byteArray);
+
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentLength(byteArray.length)
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
+
     }
 
     @GetMapping(value = "/web/concept/{uuid}")
