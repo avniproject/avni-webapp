@@ -38,16 +38,12 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
       <div>
         {parts.map(part => (
           <span key={part.text.name} style={{ fontWeight: part.highlight ? 500 : 400 }}>
-            {part.text.name}
+            {part.text.name + " (" + part.text.dataType + ")"}
           </span>
         ))}
       </div>
     </MenuItem>
   );
-}
-
-function getSuggestionValue(suggestion) {
-  return suggestion;
 }
 
 const useStyles = theme => ({
@@ -87,7 +83,7 @@ export default function AutoSuggestSingleSelection(props) {
   const [stateSuggestions, setSuggestions] = React.useState([]);
 
   let defaultConcept = "";
-  if (props.visibility) {
+  if (props.visibility && props.showAnswer.name != undefined) {
     defaultConcept = props.showAnswer.name;
   } else {
     defaultConcept = state.single;
@@ -118,6 +114,13 @@ export default function AutoSuggestSingleSelection(props) {
       });
   };
 
+  const getSuggestionValue = suggestion => {
+    if (props.finalReturn) {
+      props.onChangeAnswerName(suggestion, props.index);
+    }
+    return suggestion;
+  };
+
   const handleSuggestionsClearRequested = () => {
     setSuggestions([]);
   };
@@ -134,7 +137,9 @@ export default function AutoSuggestSingleSelection(props) {
       ...state,
       [name]: autoSuggestedName
     });
-    props.onChangeAnswerName(autoSuggestedName, props.index);
+    if (!props.finalReturn) {
+      props.onChangeAnswerName(autoSuggestedName, props.index);
+    }
   };
 
   const autosuggestProps = {
@@ -176,3 +181,7 @@ export default function AutoSuggestSingleSelection(props) {
     </div>
   );
 }
+
+AutoSuggestSingleSelection.defaultProps = {
+  finalReturn: false
+};

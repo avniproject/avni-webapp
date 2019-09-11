@@ -178,6 +178,7 @@ export default function FormElement(props) {
                   Type <br />
                   {props.formElementData.concept.dataType}{" "}
                   {props.formElementData.concept.dataType === "Coded" &&
+                    props.formElementData.type != "" &&
                     ": " + props.formElementData.type}
                 </FormControl>
               </Typography>

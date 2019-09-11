@@ -200,10 +200,7 @@ export default function FormElementGroup(props) {
                 </FormControl>
               </Typography>
             </Grid>
-            <Grid item sm={1}>
-              &nbsp;
-            </Grid>
-            <Grid item sm={2}>
+            <Grid item sm={3}>
               <Typography component={"div"} className={classes.questionCount}>
                 No. of questions : {questionCount}
               </Typography>

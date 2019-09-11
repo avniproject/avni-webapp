@@ -1,9 +1,10 @@
 import React from "react";
-import { Input, InputLabel, Checkbox, FormControlLabel } from "@material-ui/core";
+import { Input, InputLabel, Checkbox, FormControlLabel, Select } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const FormControl = withStyles({
   root: {
@@ -20,12 +21,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function onChangeAnswerName(answerName, index) {
-  console.log("onChangeAnswerName");
-}
-
 export default function FormElementDetails(props) {
   const classes = useStyles();
+
+  function onChangeAnswerName(answerName, index) {
+    props.updateElementData(props.groupIndex, "concept", answerName, props.index);
+    if (props.formElementData.name == "") {
+      props.updateElementData(props.groupIndex, "name", answerName.name, props.index);
+    }
+  }
 
   return (
     <Grid container item sm={12}>
@@ -45,19 +49,38 @@ export default function FormElementDetails(props) {
       <Grid item sm={6}>
         <FormControl fullWidth>
           <AutoSuggestSingleSelection
-            visibility={false}
-            showAnswer={props.formElementData.concept.name}
+            visibility={!props.formElementData.newFlag}
+            showAnswer={props.formElementData.concept}
             onChangeAnswerName={onChangeAnswerName}
+            finalReturn={true}
             index={0}
             label="Concept"
           />
         </FormControl>
       </Grid>
-      <Grid item sm={6} />
+      {props.formElementData.concept.dataType === "Coded" && (
+        <Grid item sm={6}>
+          <FormControl fullWidth>
+            <InputLabel>Type</InputLabel>
+            <Select
+              name="type"
+              value={props.formElementData.type}
+              onChange={event =>
+                props.updateElementData(props.groupIndex, "type", event.target.value, props.index)
+              }
+              required
+            >
+              <MenuItem value="SingleSelect">SingleSelect</MenuItem>
+              <MenuItem value="MultiSelect">MultiSelect</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+      )}
+      {props.formElementData.concept.dataType != "Coded" && <Grid item sm={6} />}
 
       {props.formElementData.concept.dataType === "Numeric" && (
         <Grid container item sm={12}>
-          <Grid item sm={3}>
+          <Grid item sm={2}>
             <FormControl>
               <InputLabel>Low Absolute</InputLabel>
               <Input
@@ -67,7 +90,7 @@ export default function FormElementDetails(props) {
               />
             </FormControl>
           </Grid>
-          <Grid item sm={3}>
+          <Grid item sm={2}>
             <FormControl>
               <InputLabel>High Absolute</InputLabel>
               <Input
@@ -77,7 +100,7 @@ export default function FormElementDetails(props) {
               />
             </FormControl>
           </Grid>
-          <Grid item sm={3}>
+          <Grid item sm={2}>
             <FormControl>
               <InputLabel>Low normal</InputLabel>
               <Input
@@ -87,7 +110,7 @@ export default function FormElementDetails(props) {
               />
             </FormControl>
           </Grid>
-          <Grid item sm={3}>
+          <Grid item sm={2}>
             <FormControl>
               <InputLabel>High normal</InputLabel>
               <Input
@@ -97,13 +120,26 @@ export default function FormElementDetails(props) {
               />
             </FormControl>
           </Grid>
+          <Grid item sm={2}>
+            <FormControl>
+              <InputLabel>Unit</InputLabel>
+              <Input disableUnderline={true} value={props.formElementData.concept.unit} disabled />
+            </FormControl>
+          </Grid>
         </Grid>
       )}
       {props.formElementData.concept.dataType === "Coded" && (
         <Grid container item sm={12}>
           <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
           {props.formElementData.concept.answers.map(function(d) {
-            return <div className={classes.answers}> {d.name} </div>;
+            if (d.voided === false) {
+              return (
+                <div key={d.name} className={classes.answers}>
+                  {" "}
+                  {d.name}{" "}
+                </div>
+              );
+            }
           })}
         </Grid>
       )}
