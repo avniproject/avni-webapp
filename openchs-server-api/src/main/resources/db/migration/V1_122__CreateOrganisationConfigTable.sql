@@ -3,7 +3,7 @@ create table organisation_config
     id              serial primary key,
     uuid            varchar(255) not null,
     organisation_id bigint       not null,
-    config          jsonb
+    settings          jsonb
 );
 
 alter table only organisation_config

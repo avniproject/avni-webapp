@@ -5,7 +5,7 @@ import org.openchs.domain.JsonObject;
 public class OrganisationConfigRequest {
 
     private String uuid;
-    private JsonObject config;
+    private JsonObject settings;
 
     public String getUuid() {
         return uuid;
@@ -15,11 +15,11 @@ public class OrganisationConfigRequest {
         this.uuid = uuid;
     }
 
-    public JsonObject getConfig() {
-        return config;
+    public JsonObject getSettings() {
+        return settings;
     }
 
-    public void setConfig(JsonObject config) {
-        this.config = config;
+    public void setSettings(JsonObject settings) {
+        this.settings = settings;
     }
 }

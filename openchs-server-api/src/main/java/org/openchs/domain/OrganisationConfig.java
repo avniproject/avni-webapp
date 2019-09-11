@@ -23,7 +23,7 @@ public class OrganisationConfig {
 
     @Column
     @Type(type = "jsonObject")
-    private JsonObject config;
+    private JsonObject settings;
 
     public Long getId() {
         return id;
@@ -41,12 +41,12 @@ public class OrganisationConfig {
         this.organisationId = organisationId;
     }
 
-    public JsonObject getConfig() {
-        return config;
+    public JsonObject getSettings() {
+        return settings;
     }
 
-    public void setConfig(JsonObject config) {
-        this.config = config;
+    public void setSettings(JsonObject settings) {
+        this.settings = settings;
     }
 
     public String getUuid() {

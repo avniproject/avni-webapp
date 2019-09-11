@@ -36,7 +36,7 @@ public class OrganisationConfigController implements RestControllerResourceProce
         }
         organisationConfig.setOrganisationId(organisation.getId());
         organisationConfig.assignUUIDIfRequired();
-        organisationConfig.setConfig(request.getConfig());
+        organisationConfig.setSettings(request.getSettings());
         organisationConfigRepository.save(organisationConfig);
         return new ResponseEntity<>(organisationConfig, HttpStatus.CREATED);
     }
