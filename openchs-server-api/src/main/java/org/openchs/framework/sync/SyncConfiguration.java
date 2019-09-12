@@ -58,7 +58,8 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "subjectType",
             "operationalSubjectType",
             "identifierSource",
-            "identifierAssignmentPool"
+            "identifierAssignmentPool",
+            "organisationConfig"
     ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     @Autowired
