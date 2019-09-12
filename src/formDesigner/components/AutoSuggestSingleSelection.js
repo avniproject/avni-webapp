@@ -83,7 +83,7 @@ export default function AutoSuggestSingleSelection(props) {
   const [stateSuggestions, setSuggestions] = React.useState([]);
 
   let defaultConcept = "";
-  if (props.visibility && props.showAnswer.name != undefined) {
+  if (props.visibility && props.showAnswer.name !== undefined) {
     defaultConcept = props.showAnswer.name;
   } else {
     defaultConcept = state.single;

@@ -21,7 +21,7 @@ import FormElement from "./FormElement";
 
 const useStyles = makeStyles(theme => ({
   parent: {
-    paddingLeft: 20,
+    paddingLeft: 0,
     paddingBottom: 30
   },
   root: {

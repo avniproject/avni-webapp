@@ -17,7 +17,8 @@ const useStyles = makeStyles(theme => ({
     padding: "5px 10px 5px 10px",
     backgroundColor: "#bcbcbc",
     marginLeft: 10,
-    borderRadius: 15
+    borderRadius: 15,
+    marginBottom: 5
   }
 }));
 
@@ -26,7 +27,7 @@ export default function FormElementDetails(props) {
 
   function onChangeAnswerName(answerName, index) {
     props.updateElementData(props.groupIndex, "concept", answerName, props.index);
-    if (props.formElementData.name == "") {
+    if (props.formElementData.name === "") {
       props.updateElementData(props.groupIndex, "name", answerName.name, props.index);
     }
   }
@@ -76,7 +77,7 @@ export default function FormElementDetails(props) {
           </FormControl>
         </Grid>
       )}
-      {props.formElementData.concept.dataType != "Coded" && <Grid item sm={6} />}
+      {props.formElementData.concept.dataType !== "Coded" && <Grid item sm={6} />}
 
       {props.formElementData.concept.dataType === "Numeric" && (
         <Grid container item sm={12}>
@@ -140,6 +141,7 @@ export default function FormElementDetails(props) {
                 </div>
               );
             }
+            return "";
           })}
         </Grid>
       )}

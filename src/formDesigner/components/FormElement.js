@@ -96,7 +96,7 @@ const ExpansionPanelSummary = withStyles({
   },
   focused: {},
   content: {
-    margin: "10px 0 0 0",
+    margin: "10px",
     "&$expanded": { margin: "10px 0 0 0" }
   },
   expanded: {}
@@ -175,10 +175,11 @@ export default function FormElement(props) {
             <Grid item sm={4}>
               <Typography component={"span"} className={classes.secondaryHeading}>
                 <FormControl fullWidth>
-                  Type <br />
+                  {props.formElementData.concept.dataType !== "" && "Type"}
+                  <br />
                   {props.formElementData.concept.dataType}{" "}
                   {props.formElementData.concept.dataType === "Coded" &&
-                    props.formElementData.type != "" &&
+                    props.formElementData.type !== "" &&
                     ": " + props.formElementData.type}
                 </FormControl>
               </Typography>

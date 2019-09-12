@@ -88,7 +88,7 @@ export default function CustomizedSnackbar(props) {
       >
         <MySnackbarContentWrapper onClose={handleClose} variant="success" message={props.message} />
       </Snackbar>
-      {redirectAlert && <Redirect to="/concepts" />}
+      {redirectAlert && <Redirect to={props.url} />}
     </div>
   );
 }

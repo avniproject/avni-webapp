@@ -10,9 +10,10 @@ import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
-import FormSettings from "./FormSettings";
 import { default as UUID } from "uuid";
 import NewFormModal from "./NewFormModal";
+import SaveIcon from "@material-ui/icons/Save";
+import CustomizedSnackbar from "./CustomizedSnackbar";
 
 function TabContainer(props) {
   return (
@@ -32,7 +33,8 @@ class FormDetails extends Component {
     this.state = {
       form: [],
       createFlag: true,
-      activeTabIndex: 0
+      activeTabIndex: 0,
+      successAlert: false
     };
     this.btnGroupClick = this.btnGroupClick.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
@@ -70,23 +72,38 @@ class FormDetails extends Component {
     });
     return groupFlag;
   }
+
+  reOrderSequence(form, index = -1) {
+    if (index <= -1) {
+      _.forEach(form.formElementGroups, (group, ind) => {
+        group.displayOrder = ind + 1;
+      });
+    } else {
+      _.forEach(form.formElementGroups[index].formElements, (element, ind) => {
+        element.displayOrder = ind + 1;
+      });
+    }
+  }
+
   // Group level events
   deleteGroup(index, elementIndex = -1) {
     if (elementIndex === -1) {
       this.setState(state => {
-        const form = this.state.form;
-        if (form.formElementGroups[index].newFlag === "true")
+        let form = this.state.form;
+        if (form.formElementGroups[index].newFlag === "true") {
           form.formElementGroups.splice(index, 1);
-        else form.formElementGroups[index].voided = true;
+          this.reOrderSequence(form);
+        } else form.formElementGroups[index].voided = true;
         this.setState({ createFlag: this.countGroupElements(form) });
         return form;
       });
     } else {
       this.setState(state => {
-        const form = this.state.form;
-        if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true")
+        let form = this.state.form;
+        if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true") {
           form.formElementGroups[index].formElements.splice(elementIndex, 1);
-        else form.formElementGroups[index].formElements[elementIndex].voided = true;
+          this.reOrderSequence(form, index);
+        } else form.formElementGroups[index].formElements[elementIndex].voided = true;
 
         return form;
       });
@@ -124,25 +141,28 @@ class FormDetails extends Component {
     const form = this.state.form;
     const formElement_temp = {
       uuid: UUID.v4(),
+      displayOrder: -1,
       newFlag: "true",
       name: "",
       type: "",
       mandatory: false,
       voided: false,
-      concept: { name: "", type: "" }
+      concept: { name: "", dataType: "" }
     };
     if (elementIndex === -1) {
       form.formElementGroups.splice(index + 1, 0, {
         uuid: UUID.v4(),
         newFlag: "true",
+        displayOrder: -1,
         name: "",
         display: "",
-        displayOrder: index + 1,
         voided: false,
         formElements: [formElement_temp]
       });
+      this.reOrderSequence(form);
     } else {
       form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, formElement_temp);
+      this.reOrderSequence(form, index);
     }
     this.setState({
       form
@@ -159,6 +179,20 @@ class FormDetails extends Component {
     this.setState({ activeTabIndex: value });
   };
 
+  updateForm = event => {
+    let dataSend = this.state.form;
+    axios
+      .post("/forms", dataSend)
+      .then(response => {
+        if (response.status === 200) {
+          this.setState({ successAlert: true });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   render() {
     return (
       <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
@@ -171,19 +205,40 @@ class FormDetails extends Component {
             {this.state.activeTabIndex === 0 && (
               <TabContainer>
                 <div name="divGroup">
-                  {this.state.createFlag && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={this.btnGroupClick.bind(this)}
-                    >
-                      Add Group
-                    </Button>
-                  )
-                  //            <Fab color="primary" aria-label="add" onClick={this.btnGroupClick.bind(this)} size="small">
-                  //              <AddIcon />
-                  //            </Fab>
-                  }
+                  <Grid container sm={12} direction="row-reverse">
+                    {this.state.createFlag && (
+                      <Grid item sm={2}>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          color="primary"
+                          onClick={this.btnGroupClick.bind(this)}
+                        >
+                          Add Group
+                        </Button>
+                      </Grid>
+                    )
+                    //            <Fab color="primary" aria-label="add" onClick={this.btnGroupClick.bind(this)} size="small">
+                    //              <AddIcon />
+                    //            </Fab>
+                    }
+                    {!this.state.createFlag && (
+                      <Grid item sm={2} style={{ paddingBottom: 20 }}>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          color="success"
+                          onClick={this.updateForm.bind(this)}
+                        >
+                          <SaveIcon />
+                          &nbsp;Save
+                        </Button>
+                      </Grid>
+                    )}
+                    <Grid item sm={10}>
+                      <b>Form : {this.state.form.name}</b>
+                    </Grid>
+                  </Grid>
                   {this.renderGroups()}
                 </div>
               </TabContainer>
@@ -197,6 +252,9 @@ class FormDetails extends Component {
             )}
           </Grid>
         </Grid>
+        {this.state.successAlert && (
+          <CustomizedSnackbar message="Successfully updated the form" url="/forms" />
+        )}
       </ScreenWithAppBar>
     );
   }

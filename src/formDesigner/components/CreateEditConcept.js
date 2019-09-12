@@ -437,7 +437,7 @@ class CreateEditConcept extends Component {
           </Grid>
 
           {this.state.conceptCreationAlert && (
-            <CustomizedSnackbar message={conceptCreationMessage} />
+            <CustomizedSnackbar message={conceptCreationMessage} url="/concepts" />
           )}
         </form>
       </ScreenWithAppBar>
