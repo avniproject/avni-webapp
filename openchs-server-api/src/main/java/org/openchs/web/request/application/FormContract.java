@@ -2,12 +2,15 @@ package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.application.Form;
 import org.openchs.web.request.ReferenceDataContract;
 
 import java.io.InvalidObjectException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.openchs.application.FormElement.PLACEHOLDER_CONCEPT_UUID;
 
@@ -103,5 +106,18 @@ public class FormContract extends ReferenceDataContract {
 
     public void setEncounterTypes(List<String> encounterTypes) {
         this.encounterTypes = encounterTypes;
+    }
+
+    public static FormContract fromForm(Form form) {
+        FormContract formContract = new FormContract();
+        formContract.setFormType(form.getFormType().name());
+        formContract.setName(form.getName());
+        formContract.setUuid(form.getUuid());
+        List<FormElementGroupContract> fegContracts = form.getFormElementGroups().stream()
+                .map(FormElementGroupContract::fromFormElementGroup)
+                .sorted(Comparator.comparingDouble(FormElementGroupContract::getDisplayOrder))
+                .collect(Collectors.toList());
+        formContract.setFormElementGroups(fegContracts);
+        return formContract;
     }
 }

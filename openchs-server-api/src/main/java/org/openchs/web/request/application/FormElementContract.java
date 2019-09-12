@@ -111,4 +111,20 @@ public class FormElementContract extends ReferenceDataContract {
     public Long getOrganisationId() {
         return organisationId;
     }
+
+    public static FormElementContract fromFormElement(FormElement formElement) {
+        FormElementContract feContract = new FormElementContract();
+        feContract.setName(formElement.getName());
+        feContract.setUuid(formElement.getUuid());
+        feContract.setDisplayOrder(formElement.getDisplayOrder());
+        feContract.setMandatory(formElement.isMandatory());
+        feContract.setType(formElement.getType());
+        feContract.setKeyValues(formElement.getKeyValues());
+        feContract.setValidFormat(FormatContract.fromFormat(formElement.getValidFormat()));
+        feContract.setVoided(formElement.isVoided());
+        ConceptContract conceptContract = new ConceptContract();
+        conceptContract.setUuid(formElement.getConcept().getUuid());
+        feContract.setConcept(conceptContract);
+        return feContract;
+    }
 }

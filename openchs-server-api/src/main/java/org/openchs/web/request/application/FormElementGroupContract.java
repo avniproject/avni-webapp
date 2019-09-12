@@ -1,10 +1,13 @@
 package org.openchs.web.request.application;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.openchs.application.FormElementGroup;
 import org.openchs.web.request.ReferenceDataContract;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FormElementGroupContract extends ReferenceDataContract {
@@ -65,5 +68,19 @@ public class FormElementGroupContract extends ReferenceDataContract {
 
     public Long getOrganisationId() {
         return organisationId;
+    }
+
+    public static FormElementGroupContract fromFormElementGroup(FormElementGroup feg) {
+        FormElementGroupContract fegContract = new FormElementGroupContract();
+        fegContract.setName(feg.getName());
+        fegContract.setUuid(feg.getUuid());
+        fegContract.setDisplay(feg.getDisplay());
+        fegContract.setDisplayOrder(feg.getDisplayOrder());
+        List<FormElementContract> feContracts = feg.getFormElements().stream()
+                .map(FormElementContract::fromFormElement)
+                .sorted(Comparator.comparingDouble(FormElementContract::getDisplayOrder))
+                .collect(Collectors.toList());
+        fegContract.setFormElements(feContracts);
+        return fegContract;
     }
 }

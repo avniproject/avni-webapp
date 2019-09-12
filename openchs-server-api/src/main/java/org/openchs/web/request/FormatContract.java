@@ -34,4 +34,10 @@ public class FormatContract extends ReferenceDataContract {
     public Format toFormat() {
         return new Format(this.regex, this.descriptionKey);
     }
+
+    public static FormatContract fromFormat(Format format) {
+        if (format == null)
+            return null;
+        return new FormatContract(format.getRegex(), format.getDescriptionKey());
+    }
 }
