@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Paper } from "@material-ui/core";
 import _ from "lodash";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
@@ -194,11 +193,16 @@ class FormDetails extends Component {
   };
 
   render() {
+    const encounterType = this.state.form.encounterTypes ? this.state.form.encounterTypes[0] : "";
     return (
       <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
         <Grid container justify="center">
           <Grid item sm={12}>
-            <Tabs value={this.state.activeTabIndex} onChange={this.handleChange.bind(this)}>
+            <Tabs
+              style={{ background: "#2196f3", color: "white" }}
+              value={this.state.activeTabIndex}
+              onChange={this.handleChange.bind(this)}
+            >
               <Tab label="Details" />
               <Tab label="Settings" />
             </Tabs>
@@ -243,12 +247,15 @@ class FormDetails extends Component {
                 </div>
               </TabContainer>
             )}
+
             {this.state.activeTabIndex === 1 && (
-              <Paper>
-                <div style={{ margin: 10 }}>
-                  <NewFormModal formProperties={this.state.form} isCreateFrom={false} />
-                </div>
-              </Paper>
+              <div style={{ marginRight: "60%", marginTop: "2%" }}>
+                <NewFormModal
+                  formProperties={this.state.form}
+                  encounterType={encounterType}
+                  isCreateFrom={false}
+                />
+              </div>
             )}
           </Grid>
         </Grid>

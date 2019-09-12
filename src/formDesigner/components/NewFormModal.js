@@ -3,7 +3,6 @@ import Button from "@material-ui/core/Button";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import axios from "axios";
-import DownshiftMultiple from "./AutoComplete";
 import { Redirect } from "react-router-dom";
 import FormHelperText from "@material-ui/core/FormHelperText";
 
@@ -16,14 +15,13 @@ class NewFormModal extends Component {
       formType: props.formProperties.formType,
       programName: props.formProperties.programName,
       subjectType: props.formProperties.subjectType,
-      encounterType: props.formProperties.encounterTypes,
+      encounterType: props.encounterType,
       open: false,
       onClose: false,
       data: {},
       toFormDetails: "",
       errors: { name: "", formType: "", programName: "", subjectType: "", encounterType: "" }
     };
-    console.log(this.props.formProperties);
   }
 
   validateForm() {
@@ -40,9 +38,9 @@ class NewFormModal extends Component {
       errorsList["programName"] = "Please select program name.";
     if (
       (this.state.formType === "Encounter" || this.state.formType === "ProgramEncounter") &&
-      this.state.encounterType.length === 0
+      this.state.encounterType === ""
     )
-      errorsList["encounterType"] = "Please select atleast one encounter type.";
+      errorsList["encounterType"] = "Please select encounter type.";
 
     this.setState({
       errors: errorsList
@@ -53,14 +51,15 @@ class NewFormModal extends Component {
     return errorFlag;
   }
   addFields() {
-    if (this.validateForm()) {
+    const validateFormStatus = this.validateForm();
+    if (validateFormStatus && this.props.isCreateFrom) {
       let dataSend = {
         name: this.state.name,
         formType: this.state.formType,
         subjectType: this.state.subjectType
       };
       dataSend["programName"] = this.state.programName;
-      dataSend["encounterTypes"] = this.state.encounterType;
+      dataSend["encounterType"] = this.state.encounterType;
       axios
         .post("/web/forms", dataSend)
         .then(response => {
@@ -69,6 +68,45 @@ class NewFormModal extends Component {
           });
         })
         .catch(error => {
+          this.setState({ errorMsg: error.response.data });
+        });
+    } else if (validateFormStatus && this.props.isCreateFrom === false) {
+      const existFormUUID = this.props.formProperties.uuid;
+
+      if (
+        this.state.formType === "IndividualProfile" &&
+        this.state.formType === "Encounter" &&
+        this.state.formType === "ProgramEncounterCancellation" &&
+        this.state.formType === "ChecklistItem"
+      ) {
+        this.setState({ programName: "" });
+      }
+
+      if (this.state.formType !== "Encounter" && this.state.formType !== "ProgramEncounter") {
+        this.setState({ encounterType: "" });
+      }
+      axios
+        .put("/web/forms/" + existFormUUID + "/metadata", {
+          name: this.state.name,
+          formType: this.state.formType,
+          encounterType: this.state.encounterType,
+          subjectType: this.state.subjectType,
+          programName: this.state.programName
+        })
+        .then(response => {
+          this.setState({
+            redirectAlert: true,
+            toFormDetails: response.data.uuid
+          });
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            this.setState({
+              redirectAlert: true,
+              toFormDetails: existFormUUID
+            });
+          } else {
+          }
           this.setState({ errorMsg: error.response.data });
         });
     }
@@ -93,9 +131,9 @@ class NewFormModal extends Component {
     this.setState(Object.assign({}, this.state, { [event.target.name]: event.target.value }));
   }
 
-  onChangeEncounterField(encounterTypes) {
-    this.setState(Object.assign({}, this.state, { encounterTypes: encounterTypes }));
-  }
+  // onChangeEncounterField(encounterTypes) {
+  //   this.setState(Object.assign({}, this.state, { encounterType: encounterTypes }));
+  // }
 
   handleClickOpen() {
     this.setState({
@@ -107,9 +145,9 @@ class NewFormModal extends Component {
     });
   }
 
-  getDownshiftValue(encounterTypeValue) {
-    this.setState({ encounterType: encounterTypeValue });
-  }
+  // getDownshiftValue(encounterTypeValue) {
+  //   this.setState({ encounterType: encounterTypeValue });
+  // }
 
   programNameElement() {
     return (
@@ -183,22 +221,24 @@ class NewFormModal extends Component {
   }
 
   encounterTypesElement() {
-    let encounterTypesValues =
-      this.state.data.encounterTypes != null
-        ? this.state.data.encounterTypes.map(encounterType => ({
-            label: encounterType.operationalEncounterTypeName
-          }))
-        : [];
     return (
       <FormControl fullWidth margin="dense">
-        <DownshiftMultiple
-          id="ecounterTypes"
-          suggestions={encounterTypesValues}
-          OnGetSelectedValue={this.getDownshiftValue.bind(this)}
-          setEncounterTypes={this.state.encounterType}
-        />
-        {this.state.errors.ecounterType && (
-          <FormHelperText error>{this.state.errors.ecounterType}</FormHelperText>
+        <InputLabel htmlFor="encounterType">Encounter Type</InputLabel>
+        <Select
+          id="encounterType"
+          name="encounterType"
+          value={this.state.encounterType}
+          onChange={this.onChangeField.bind(this)}
+        >
+          {this.state.data.encounterTypes != null &&
+            this.state.data.encounterTypes.map(encounterType => (
+              <MenuItem key={encounterType.name} value={encounterType.name}>
+                {encounterType.name}
+              </MenuItem>
+            ))}
+        </Select>
+        {this.state.errors.encounterType && (
+          <FormHelperText error>{this.state.errors.encounterType}</FormHelperText>
         )}
       </FormControl>
     );
@@ -257,7 +297,12 @@ class NewFormModal extends Component {
           {programBased && this.programNameElement()}
           {encounterTypes && this.encounterTypesElement()}
         </form>
-        <Button variant="contained" color="primary" onClick={this.addFields.bind(this)}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.addFields.bind(this)}
+          style={{ marginTop: 10 }}
+        >
           {submitButtonName}
         </Button>
       </div>
@@ -266,7 +311,8 @@ class NewFormModal extends Component {
 }
 
 NewFormModal.defaultProps = {
-  formProperties: { name: "", subjectType: "", formType: "", encounterTypes: [], programName: "" },
+  formProperties: { name: "", subjectType: "", formType: "", programName: "" },
+  encounterType: "",
   isCreateFrom: true
 };
 
