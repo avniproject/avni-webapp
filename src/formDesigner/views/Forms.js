@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import ProgramCard from "./ProgramCard";
-import NewFormModal from "./NewFormModal";
+import ProgramCard from "../components/ProgramCard";
+import NewFormModal from "../components/NewFormModal";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 

@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import config from "../config";
 
 class FormCard extends Component {
   constructor(props) {
@@ -22,10 +21,7 @@ class FormCard extends Component {
         <div className="card h-100">
           <div className="card-body">
             <h4 className="card-title">
-              <Link
-                className={config.orgClassName(form.organisationId)}
-                to={linkProps}
-              >
+              <Link className={"text-primary"} to={linkProps}>
                 {form.name}
               </Link>
             </h4>

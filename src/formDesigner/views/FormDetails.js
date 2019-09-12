@@ -4,16 +4,16 @@ import { Paper } from "@material-ui/core";
 import _ from "lodash";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
-import FormElementGroup from "./FormElementGroup";
+import FormElementGroup from "../components/FormElementGroup";
 import Button from "@material-ui/core/Button";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import { default as UUID } from "uuid";
-import NewFormModal from "./NewFormModal";
+import NewFormModal from "../components/NewFormModal";
 import SaveIcon from "@material-ui/icons/Save";
-import CustomizedSnackbar from "./CustomizedSnackbar";
+import CustomizedSnackbar from "../components/CustomizedSnackbar";
 
 function TabContainer(props) {
   return (

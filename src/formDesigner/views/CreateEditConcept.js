@@ -6,13 +6,13 @@ import InputLabel from "@material-ui/core/InputLabel";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 import { default as UUID } from "uuid";
-import NumericConcept from "./NumericConcept";
-import CodedConcept from "./CodedConcept";
+import NumericConcept from "../components/NumericConcept";
+import CodedConcept from "../components/CodedConcept";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import CustomizedSnackbar from "./CustomizedSnackbar";
+import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import PropTypes from "prop-types";
 
 class CreateEditConcept extends Component {
