@@ -11,6 +11,7 @@ const Concepts = ({ history }) => {
     { title: "DataType", field: "dataType" },
     { title: "OrganisationId", field: "organisationId", type: "numeric" }
   ];
+
   const tableRef = React.createRef();
   return (
     <ScreenWithAppBar appbarTitle="Concepts List" enableLeftMenuButton={true}>
@@ -46,7 +47,12 @@ const Concepts = ({ history }) => {
           pageSizeOptions: [10, 15, 20],
           addRowPosition: "first",
           sorting: true,
-          debounceInterval: 500
+          debounceInterval: 500,
+          searchFieldAlignment: "left",
+          searchFieldStyle: { width: "100%" },
+          rowStyle: rowData => ({
+            backgroundColor: rowData["voided"] === false ? "#fff" : "#DBDBDB"
+          })
         }}
         actions={[
           rowData => ({
