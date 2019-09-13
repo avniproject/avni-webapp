@@ -176,7 +176,7 @@ class FormDetails extends Component {
   }
   // END Group level Events
 
-  handleChange = (event, value) => {
+  onTabHandleChange = (event, value) => {
     this.setState({ activeTabIndex: value });
   };
 
@@ -195,7 +195,6 @@ class FormDetails extends Component {
   };
 
   render() {
-    const encounterType = this.state.form.encounterTypes ? this.state.form.encounterTypes[0] : "";
     return (
       <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
         <Grid container justify="center">
@@ -203,7 +202,7 @@ class FormDetails extends Component {
             <Tabs
               style={{ background: "#2196f3", color: "white" }}
               value={this.state.activeTabIndex}
-              onChange={this.handleChange.bind(this)}
+              onChange={this.onTabHandleChange.bind(this)}
             >
               <Tab label="Details" />
               <Tab label="Settings" />
@@ -223,11 +222,7 @@ class FormDetails extends Component {
                           Add Group
                         </Button>
                       </Grid>
-                    )
-                    //            <Fab color="primary" aria-label="add" onClick={this.btnGroupClick.bind(this)} size="small">
-                    //              <AddIcon />
-                    //            </Fab>
-                    }
+                    )}
                     {!this.state.createFlag && (
                       <Grid item sm={2} style={{ paddingBottom: 20 }}>
                         <Button
@@ -249,13 +244,12 @@ class FormDetails extends Component {
                 </div>
               </TabContainer>
             )}
-
             {this.state.activeTabIndex === 1 && (
               <div style={{ marginRight: "60%", marginTop: "2%" }}>
                 <NewFormModal
-                  formProperties={this.state.form}
-                  encounterType={encounterType}
+                  uuid={this.props.match.params.formUUID}
                   isCreateFrom={false}
+                  onTabHandleChange={this.onTabHandleChange}
                 />
               </div>
             )}
