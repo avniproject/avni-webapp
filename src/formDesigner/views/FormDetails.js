@@ -1,19 +1,18 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Paper } from "@material-ui/core";
 import _ from "lodash";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
-import FormElementGroup from "./FormElementGroup";
+import FormElementGroup from "../components/FormElementGroup";
 import Button from "@material-ui/core/Button";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import { default as UUID } from "uuid";
-import NewFormModal from "./NewFormModal";
+import NewFormModal from "../components/NewFormModal";
 import SaveIcon from "@material-ui/icons/Save";
-import CustomizedSnackbar from "./CustomizedSnackbar";
+import CustomizedSnackbar from "../components/CustomizedSnackbar";
 
 function TabContainer(props) {
   return (
@@ -196,11 +195,16 @@ class FormDetails extends Component {
   };
 
   render() {
+    const encounterType = this.state.form.encounterTypes ? this.state.form.encounterTypes[0] : "";
     return (
       <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
         <Grid container justify="center">
           <Grid item sm={12}>
-            <Tabs value={this.state.activeTabIndex} onChange={this.handleChange.bind(this)}>
+            <Tabs
+              style={{ background: "#2196f3", color: "white" }}
+              value={this.state.activeTabIndex}
+              onChange={this.handleChange.bind(this)}
+            >
               <Tab label="Details" />
               <Tab label="Settings" />
             </Tabs>
@@ -245,12 +249,15 @@ class FormDetails extends Component {
                 </div>
               </TabContainer>
             )}
+
             {this.state.activeTabIndex === 1 && (
-              <Paper>
-                <div style={{ margin: 10 }}>
-                  <NewFormModal formProperties={this.state.form} isCreateFrom={false} />
-                </div>
-              </Paper>
+              <div style={{ marginRight: "60%", marginTop: "2%" }}>
+                <NewFormModal
+                  formProperties={this.state.form}
+                  encounterType={encounterType}
+                  isCreateFrom={false}
+                />
+              </div>
             )}
           </Grid>
         </Grid>

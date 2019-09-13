@@ -57,6 +57,7 @@ export default props => {
               aria-label="open drawer"
               onClick={props.handleDrawer}
               edge="start"
+              style={{ outline: "none" }}
             >
               <MenuIcon />
             </IconButton>

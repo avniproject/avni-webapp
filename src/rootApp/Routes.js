@@ -4,16 +4,16 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied } from "../common/components/utils";
 import { OrgManager } from "../adminApp";
-import Forms from "../formDesigner/components/Forms";
-import FormDetails from "../formDesigner/components/FormDetails";
-import Concepts from "../formDesigner/components/Concepts";
-import NewConcept from "../formDesigner/components/NewConcept";
-import Concept from "../formDesigner/components/Concept";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
-import CreateEditConcept from "../formDesigner/components/CreateEditConcept";
-import Homepage from "../formDesigner/components/Homepage";
+import Homepage from "./views/Homepage";
+import Forms from "../formDesigner/views/Forms";
+import FormDetails from "../formDesigner/views/FormDetails";
+import Concepts from "../formDesigner/views/Concepts";
+import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
+import UploadImpl from "../formDesigner/views/UploadImpl";
+
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
     {...rest}
@@ -66,13 +66,6 @@ const Routes = props => (
     />
     <RestrictedRoute
       exact
-      path="/concepts/addConcept"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
-      component={NewConcept}
-    />
-    <RestrictedRoute
-      exact
       path="/concept/create"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
@@ -87,10 +80,10 @@ const Routes = props => (
     />
     <RestrictedRoute
       exact
-      path="/concepts/:conceptId"
+      path="/upload"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
-      component={Concept}
+      component={UploadImpl}
     />
     <RestrictedRoute
       exact

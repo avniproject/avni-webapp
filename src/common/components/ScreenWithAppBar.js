@@ -169,7 +169,7 @@ const applyLeftMenu = (
 
 const ScreenWithAppBar = props => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const selectedListItem = window.location.href.includes("/#/forms") === true ? 1 : 2;
   const [selectedIndex, setSelectedIndex] = React.useState(selectedListItem);
   function handleListItemClick(event, index) {
