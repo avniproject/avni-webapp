@@ -12,6 +12,7 @@ import Forms from "../formDesigner/views/Forms";
 import FormDetails from "../formDesigner/views/FormDetails";
 import Concepts from "../formDesigner/views/Concepts";
 import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
+import UploadImpl from "../formDesigner/views/UploadImpl";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -76,6 +77,13 @@ const Routes = props => (
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
       component={CreateEditConcept}
+    />
+    <RestrictedRoute
+      exact
+      path="/upload"
+      allowedRoles={[ROLES.ORG_ADMIN]}
+      currentUserRoles={props.userRoles}
+      component={UploadImpl}
     />
     <RestrictedRoute
       exact
