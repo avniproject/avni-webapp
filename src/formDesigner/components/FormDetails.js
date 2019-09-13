@@ -89,7 +89,7 @@ class FormDetails extends Component {
   deleteGroup(index, elementIndex = -1) {
     if (elementIndex === -1) {
       this.setState(state => {
-        let form = this.state.form;
+        let form = Object.assign({}, state.form);
         if (form.formElementGroups[index].newFlag === "true") {
           form.formElementGroups.splice(index, 1);
           this.reOrderSequence(form);
@@ -99,7 +99,7 @@ class FormDetails extends Component {
       });
     } else {
       this.setState(state => {
-        let form = this.state.form;
+        let form = Object.assign({}, state.form);
         if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true") {
           form.formElementGroups[index].formElements.splice(elementIndex, 1);
           this.reOrderSequence(form, index);
@@ -128,44 +128,46 @@ class FormDetails extends Component {
     return formElements;
   }
   handleGroupElementChange(index, propertyName, value, elementIndex = -1) {
-    const form = this.state.form;
-    if (elementIndex === -1) {
-      form.formElementGroups[index][propertyName] = value;
-    } else {
-      form.formElementGroups[index].formElements[elementIndex][propertyName] = value;
-    }
-    this.setState({ form });
+    this.setState(prevState => {
+      let form = Object.assign({}, prevState.form);
+      if (elementIndex === -1) {
+        form.formElementGroups[index][propertyName] = value;
+      } else {
+        form.formElementGroups[index].formElements[elementIndex][propertyName] = value;
+      }
+      return { form };
+    });
   }
 
   btnGroupAdd(index, elementIndex = -1) {
-    const form = this.state.form;
-    const formElement_temp = {
-      uuid: UUID.v4(),
-      displayOrder: -1,
-      newFlag: "true",
-      name: "",
-      type: "",
-      mandatory: false,
-      voided: false,
-      concept: { name: "", dataType: "" }
-    };
-    if (elementIndex === -1) {
-      form.formElementGroups.splice(index + 1, 0, {
+    this.setState(prevState => {
+      let form = Object.assign({}, prevState.form);
+      const formElement_temp = {
         uuid: UUID.v4(),
-        newFlag: "true",
         displayOrder: -1,
+        newFlag: "true",
         name: "",
-        display: "",
+        type: "",
+        mandatory: false,
         voided: false,
-        formElements: [formElement_temp]
-      });
-      this.reOrderSequence(form);
-    } else {
-      form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, formElement_temp);
-      this.reOrderSequence(form, index);
-    }
-    this.setState({
-      form
+        concept: { name: "", dataType: "" }
+      };
+      if (elementIndex === -1) {
+        form.formElementGroups.splice(index + 1, 0, {
+          uuid: UUID.v4(),
+          newFlag: "true",
+          displayOrder: -1,
+          name: "",
+          display: "",
+          voided: false,
+          formElements: [formElement_temp]
+        });
+        this.reOrderSequence(form);
+      } else {
+        form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, formElement_temp);
+        this.reOrderSequence(form, index);
+      }
+      return { form };
     });
   }
 
@@ -205,7 +207,7 @@ class FormDetails extends Component {
             {this.state.activeTabIndex === 0 && (
               <TabContainer>
                 <div name="divGroup">
-                  <Grid container sm={12} direction="row-reverse">
+                  <Grid container item sm={12} direction="row-reverse">
                     {this.state.createFlag && (
                       <Grid item sm={2}>
                         <Button
@@ -227,7 +229,7 @@ class FormDetails extends Component {
                         <Button
                           fullWidth
                           variant="contained"
-                          color="success"
+                          color="secondary"
                           onClick={this.updateForm.bind(this)}
                         >
                           <SaveIcon />

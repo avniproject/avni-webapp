@@ -96,7 +96,7 @@ const ExpansionPanelSummary = withStyles({
   },
   focused: {},
   content: {
-    margin: "10px",
+    margin: "10px 0 0 0",
     "&$expanded": { margin: "10px 0 0 0" }
   },
   expanded: {}
