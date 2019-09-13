@@ -11,7 +11,7 @@ class NewFormModal extends Component {
     super(props);
 
     this.state = {
-      name: "",
+      name: props.name,
       formType: "",
       programName: "",
       subjectType: "",
@@ -104,15 +104,18 @@ class NewFormModal extends Component {
             toFormDetails: existFormUUID
           });
           if (this.props.isCreateFrom === false) {
+            this.props.onUpdateFormName(this.state.name);
             this.props.onTabHandleChange(0, 0);
           }
         })
         .catch(error => {
+          console.log("Response erroe:::", error);
           if (error.response.status === 404) {
             this.setState({
               toFormDetails: existFormUUID
             });
             if (this.props.isCreateFrom === false) {
+              this.props.onUpdateFormName(this.state.name);
               this.props.onTabHandleChange(0, 0);
             }
           } else {
@@ -127,7 +130,6 @@ class NewFormModal extends Component {
       axios
         .get(`/forms/export?formUUID=${this.props.uuid}`)
         .then(response => {
-          console.log("Response:: ", response);
           this.setState({
             name: response.data.name,
             formType: response.data.formType,
@@ -346,6 +348,7 @@ class NewFormModal extends Component {
 }
 
 NewFormModal.defaultProps = {
+  name: "",
   uuid: "",
   isCreateFrom: true
 };
