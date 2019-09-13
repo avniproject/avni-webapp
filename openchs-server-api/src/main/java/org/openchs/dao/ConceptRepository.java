@@ -3,6 +3,7 @@ package org.openchs.dao;
 import org.openchs.domain.Concept;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,7 @@ public interface ConceptRepository extends ReferenceDataRepository<Concept>, Fin
     Page<Concept> findByNameIgnoreCaseContaining(String name, Pageable pageable);
     List<Concept> findAllByOrganisationIdAndDataTypeNotIn(Long organisationId, String[] notIn);
     List<Concept> findAllByOrganisationIdAndDataType(Long organisationId, String dataType);
+
+    @Query("select c.name from Concept c where c.isVoided = false")
+    List<String> getAllNames();
 }

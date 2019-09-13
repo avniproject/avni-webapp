@@ -16,4 +16,7 @@ public interface EncounterTypeRepository extends ReferenceDataRepository<Encount
 
     @Query("select o from EncounterType o where o.operationalEncounterTypes is not empty and o.isVoided = false")
     List<EncounterTypeProjection> findAllOperational();
+
+    @Query("select e.name from EncounterType e where e.isVoided = false")
+    List<String> getAllNames();
 }

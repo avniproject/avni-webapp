@@ -13,4 +13,7 @@ import java.util.List;
 public interface ProgramRepository extends ReferenceDataRepository<Program>, FindByLastModifiedDateTime<Program> {
     @Query("select o from Program o where o.operationalPrograms is not empty and o.isVoided = false")
     List<ProgramProjection> findAllOperational();
+
+    @Query("select p.name from Program p where p.isVoided = false")
+    List<String> getAllNames();
 }

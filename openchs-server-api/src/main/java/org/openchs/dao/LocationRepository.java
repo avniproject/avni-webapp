@@ -71,4 +71,6 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     @RestResource(path = "autocompleteLocationsOfType", rel = "autocompleteLocationsOfType")
     List<AddressLevel> findByTypeIdAndTitleIgnoreCaseStartingWithAndIsVoidedFalse(@Param("typeId") Long typeId,
                                                                                   @Param("title") String title);
+    @Query("select a.title from AddressLevel a where a.isVoided = false")
+    List<String> getAllNames();
 }

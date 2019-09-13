@@ -12,6 +12,8 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "operationalProgram", path = "operationalProgram")
 public interface OperationalProgramRepository extends ImplReferenceDataRepository<OperationalProgram> {
@@ -24,5 +26,8 @@ public interface OperationalProgramRepository extends ImplReferenceDataRepositor
     OperationalProgram findByProgramIdAndOrganisationId(long programId, long organisationId);
 
     Page<OperationalProgram> findByIsVoidedFalse(Pageable pageable);
+
+    @Query("select o.name from OperationalProgram o where o.isVoided = false")
+    List<String> getAllNames();
 
 }
