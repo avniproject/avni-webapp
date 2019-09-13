@@ -1,9 +1,11 @@
-import React, { Fragment } from "react";
+import React, { Fragment, ReactElement } from "react";
 import MaterialTable from "material-table";
 import axios from "axios";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 
 const Concepts = ({ history }) => {
   const columns = [
@@ -49,7 +51,7 @@ const Concepts = ({ history }) => {
           sorting: true,
           debounceInterval: 500,
           searchFieldAlignment: "left",
-          searchFieldStyle: { width: "100%" },
+          searchFieldStyle: { width: "100%", marginLeft: "-8%" },
           rowStyle: rowData => ({
             backgroundColor: rowData["voided"] === false ? "#fff" : "#DBDBDB"
           })
@@ -64,18 +66,24 @@ const Concepts = ({ history }) => {
                 ? "Unvoid Concept"
                 : "Void Concept",
             onClick: (event, rowData) => {
-              axios
-                .post("/concepts", [
-                  {
-                    uuid: rowData.uuid,
-                    voided: !rowData.voided
-                  }
-                ])
-                .then(response => {
-                  if (response.status === 200) {
-                    tableRef.current && tableRef.current.onQueryChange();
-                  }
-                });
+              console.log(rowData);
+              const voidedMessage = rowData.voided
+                ? "Do you want to unvoid the concept " + rowData.name + " ?"
+                : "Do you want to void the concept " + rowData.name + " ?";
+              if (window.confirm(voidedMessage)) {
+                axios
+                  .post("/concepts", [
+                    {
+                      uuid: rowData.uuid,
+                      voided: !rowData.voided
+                    }
+                  ])
+                  .then(response => {
+                    if (response.status === 200) {
+                      tableRef.current && tableRef.current.onQueryChange();
+                    }
+                  });
+              }
             },
             disabled: rowData.organisationId === 1
           }),
@@ -86,8 +94,25 @@ const Concepts = ({ history }) => {
             disabled: rowData.organisationId === 1 || rowData.voided === true
           }),
           {
-            icon: "add",
+            icon: () => (
+              <IconButton disabled backgroundColor="white">
+                <Button
+                  color="primary"
+                  style={{
+                    outlined: {
+                      "&:hover": {
+                        backgroundColor: "white"
+                      }
+                    }
+                  }}
+                >
+                  + CREATE
+                </Button>
+              </IconButton>
+            ),
+
             tooltip: "Create Concept",
+
             isFreeAction: true,
             onClick: event => history.push(`/concept/create`)
           }
