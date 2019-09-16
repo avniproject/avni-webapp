@@ -13,6 +13,7 @@ import FormDetails from "../formDesigner/views/FormDetails";
 import Concepts from "../formDesigner/views/Concepts";
 import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
 import UploadImpl from "../formDesigner/views/UploadImpl";
+import { Translations } from "../translations";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -91,6 +92,13 @@ const Routes = props => (
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={props.userRoles}
       component={Homepage}
+    />
+    <RestrictedRoute
+      exact
+      path="/translations"
+      allowedRoles={[ROLES.ORG_ADMIN]}
+      currentUserRoles={props.userRoles}
+      component={Translations}
     />
     <Route exact path="/">
       <Redirect to={includes(props.userRoles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
