@@ -11,11 +11,11 @@ class NewFormModal extends Component {
     super(props);
 
     this.state = {
-      name: props.formProperties.name,
-      formType: props.formProperties.formType,
-      programName: props.formProperties.programName,
-      subjectType: props.formProperties.subjectType,
-      encounterType: props.encounterType,
+      name: props.name,
+      formType: "",
+      programName: "",
+      subjectType: "",
+      encounterType: "",
       open: false,
       onClose: false,
       data: {},
@@ -32,12 +32,15 @@ class NewFormModal extends Component {
     if (
       (this.state.formType === "ProgramEncounter" ||
         this.state.formType === "ProgramExit" ||
-        this.state.formType === "ProgramEnrolment") &&
+        this.state.formType === "ProgramEnrolment" ||
+        this.state.formType === "ProgramEncounterCancellation") &&
       this.state.programName === ""
     )
       errorsList["programName"] = "Please select program name.";
     if (
-      (this.state.formType === "Encounter" || this.state.formType === "ProgramEncounter") &&
+      (this.state.formType === "Encounter" ||
+        this.state.formType === "ProgramEncounter" ||
+        this.state.formType === "ProgramEncounterCancellation") &&
       this.state.encounterType === ""
     )
       errorsList["encounterType"] = "Please select encounter type.";
@@ -71,18 +74,21 @@ class NewFormModal extends Component {
           this.setState({ errorMsg: error.response.data });
         });
     } else if (validateFormStatus && this.props.isCreateFrom === false) {
-      const existFormUUID = this.props.formProperties.uuid;
+      const existFormUUID = this.props.uuid;
 
       if (
-        this.state.formType === "IndividualProfile" &&
-        this.state.formType === "Encounter" &&
-        this.state.formType === "ProgramEncounterCancellation" &&
+        this.state.formType === "IndividualProfile" ||
+        this.state.formType === "Encounter" ||
         this.state.formType === "ChecklistItem"
       ) {
         this.setState({ programName: "" });
       }
 
-      if (this.state.formType !== "Encounter" && this.state.formType !== "ProgramEncounter") {
+      if (
+        this.state.formType !== "Encounter" &&
+        this.state.formType !== "ProgramEncounter" &&
+        this.state.formType !== "ProgramEncounterCancellation"
+      ) {
         this.setState({ encounterType: "" });
       }
       axios
@@ -95,24 +101,52 @@ class NewFormModal extends Component {
         })
         .then(response => {
           this.setState({
-            redirectAlert: true,
-            toFormDetails: response.data.uuid
+            toFormDetails: existFormUUID
           });
+          if (this.props.isCreateFrom === false) {
+            this.props.onUpdateFormName(this.state.name);
+            this.props.onTabHandleChange(0, 0);
+          }
         })
         .catch(error => {
+          console.log("Response erroe:::", error);
           if (error.response.status === 404) {
             this.setState({
-              redirectAlert: true,
               toFormDetails: existFormUUID
             });
+            if (this.props.isCreateFrom === false) {
+              this.props.onUpdateFormName(this.state.name);
+              this.props.onTabHandleChange(0, 0);
+            }
           } else {
+            this.setState({ errorMsg: error.response.data });
           }
-          this.setState({ errorMsg: error.response.data });
         });
     }
   }
 
   componentDidMount() {
+    if (this.props.isCreateFrom === false) {
+      axios
+        .get(`/forms/export?formUUID=${this.props.uuid}`)
+        .then(response => {
+          this.setState({
+            name: response.data.name,
+            formType: response.data.formType,
+            subjectType: response.data.subjectType
+          });
+
+          if (response.data.encounterTypes) {
+            this.setState({ encounterType: response.data.encounterTypes[0] });
+          }
+          if (response.data.programName) {
+            this.setState({ programName: response.data.programName });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
     axios
       .get("/web/operationalModules")
       .then(response => {
@@ -249,11 +283,14 @@ class NewFormModal extends Component {
       return <Redirect to={"/forms/" + this.state.toFormDetails} />;
     }
     const encounterTypes =
-      this.state.formType === "Encounter" || this.state.formType === "ProgramEncounter";
+      this.state.formType === "Encounter" ||
+      this.state.formType === "ProgramEncounter" ||
+      this.state.formType === "ProgramEncounterCancellation";
     const programBased =
       this.state.formType === "ProgramEncounter" ||
       this.state.formType === "ProgramExit" ||
-      this.state.formType === "ProgramEnrolment";
+      this.state.formType === "ProgramEnrolment" ||
+      this.state.formType === "ProgramEncounterCancellation";
     const submitButtonName = this.props.isCreateFrom ? "Add" : "Update";
 
     return (
@@ -311,8 +348,8 @@ class NewFormModal extends Component {
 }
 
 NewFormModal.defaultProps = {
-  formProperties: { name: "", subjectType: "", formType: "", programName: "" },
-  encounterType: "",
+  name: "",
+  uuid: "",
   isCreateFrom: true
 };
 

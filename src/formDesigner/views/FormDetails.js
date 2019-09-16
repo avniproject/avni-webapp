@@ -31,6 +31,7 @@ class FormDetails extends Component {
     super(props);
     this.state = {
       form: [],
+      name: "",
       createFlag: true,
       activeTabIndex: 0,
       successAlert: false
@@ -41,6 +42,15 @@ class FormDetails extends Component {
     this.handleGroupElementChange = this.handleGroupElementChange.bind(this);
     this.updateConceptElementData = this.updateConceptElementData.bind(this);
   }
+
+  onUpdateFormName = name => {
+    // this function is because of we are using name in this component.
+    this.setState({ name: name });
+  };
+
+  onTabHandleChange = (event, value) => {
+    this.setState({ activeTabIndex: value });
+  };
 
   componentDidMount() {
     return axios
@@ -53,7 +63,7 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => (fe.collapse = true));
         });
         let dataGroupFlag = this.countGroupElements(form);
-        this.setState({ form: form, createFlag: dataGroupFlag });
+        this.setState({ form: form, name: form.name, createFlag: dataGroupFlag });
         if (dataGroupFlag) {
           this.btnGroupClick();
         }
@@ -185,10 +195,6 @@ class FormDetails extends Component {
   }
   // END Group level Events
 
-  handleChange = (event, value) => {
-    this.setState({ activeTabIndex: value });
-  };
-
   updateForm = event => {
     let dataSend = this.state.form;
     axios
@@ -204,7 +210,6 @@ class FormDetails extends Component {
   };
 
   render() {
-    const encounterType = this.state.form.encounterTypes ? this.state.form.encounterTypes[0] : "";
     return (
       <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
         <Grid container justify="center">
@@ -212,7 +217,7 @@ class FormDetails extends Component {
             <Tabs
               style={{ background: "#2196f3", color: "white" }}
               value={this.state.activeTabIndex}
-              onChange={this.handleChange.bind(this)}
+              onChange={this.onTabHandleChange.bind(this)}
             >
               <Tab label="Details" />
               <Tab label="Settings" />
@@ -232,11 +237,7 @@ class FormDetails extends Component {
                           Add Group
                         </Button>
                       </Grid>
-                    )
-                    //            <Fab color="primary" aria-label="add" onClick={this.btnGroupClick.bind(this)} size="small">
-                    //              <AddIcon />
-                    //            </Fab>
-                    }
+                    )}
                     {!this.state.createFlag && (
                       <Grid item sm={2} style={{ paddingBottom: 20 }}>
                         <Button
@@ -251,20 +252,21 @@ class FormDetails extends Component {
                       </Grid>
                     )}
                     <Grid item sm={10}>
-                      <b>Form : {this.state.form.name}</b>
+                      <b>Form : {this.state.name}</b>
                     </Grid>
                   </Grid>
                   {this.renderGroups()}
                 </div>
               </TabContainer>
             )}
-
             {this.state.activeTabIndex === 1 && (
               <div style={{ marginRight: "60%", marginTop: "2%" }}>
                 <NewFormModal
-                  formProperties={this.state.form}
-                  encounterType={encounterType}
+                  name={this.state.name}
+                  onUpdateFormName={this.onUpdateFormName}
+                  uuid={this.props.match.params.formUUID}
                   isCreateFrom={false}
+                  onTabHandleChange={this.onTabHandleChange}
                 />
               </div>
             )}
