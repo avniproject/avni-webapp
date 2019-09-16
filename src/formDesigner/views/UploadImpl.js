@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Button from "@material-ui/core/Button";
 import JSZip from "jszip";
-// import axios from "axios";
+import axios from "axios";
 
 function UploadImpl() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -10,34 +10,33 @@ function UploadImpl() {
   const onFileSelected = event => {
     setSelectedFile(event.target.files[0]);
   };
-
-  const onUploadHandler = () => {
-    JSZip.loadAsync(selectedFile).then(zip => {
-      zip.forEach((relativePath, zipEntry) => {
-        zip.files[relativePath].async("text").then(data => {
-          if (!zipEntry.dir) {
-            if (relativePath.startsWith("concepts")) {
-              // console.log(`CONCEPTS ${relativePath}: ${data}`);
-              // axios.post("/concepts", data, {
-              //   headers: {
-              //     "Content-Type": "application/json"
-              //   }
-              // });
-            } else if (relativePath.startsWith("forms")) {
-              // axios.post("/forms", data, {
-              //   headers: {
-              //     "Content-Type": "application/json"
-              //   }
-              // });
-            }
-          }
-        });
-      });
+  function post(url, jsonText) {
+    return axios.post(url, jsonText, {
+      headers: {
+        "Content-Type": "application/json"
+      }
     });
-  };
+  }
+
+  function onUploadHandler() {
+    JSZip.loadAsync(selectedFile).then(zip => {
+      zip.files["concepts.json"]
+        .async("text")
+        .then(data => {
+          return post("/concepts", data);
+        })
+        .then(() => {
+          zip.forEach((relativePath, zipEntry) => {
+            zip.files[relativePath].async("text").then(data => {
+              if (!zipEntry.dir && relativePath.startsWith("forms")) return post("/forms", data);
+            });
+          });
+        });
+    });
+  }
 
   return (
-    <ScreenWithAppBar appbarTitle={`Import Export`}>
+    <ScreenWithAppBar enableLeftMenuButton={true} appbarTitle={`Import Export`}>
       <p>Upload Implementation</p>
       <div
         style={{

@@ -154,6 +154,17 @@ const applyLeftMenu = (
           >
             {applyListIcon(open, <ListAltIcon />, "Concepts")}
           </ListItem>
+          <Divider />
+          <ListItem
+            button
+            component="a"
+            href="/#/upload"
+            key="Upload"
+            selected={selectedIndex === 3}
+            onClick={event => handleListItemClick(event, 3)}
+          >
+            {applyListIcon(open, <ListAltIcon />, "Upload/Download Data")}
+          </ListItem>
         </List>
       </Drawer>
       <main
