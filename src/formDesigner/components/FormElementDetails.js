@@ -25,10 +25,14 @@ const useStyles = makeStyles(theme => ({
 export default function FormElementDetails(props) {
   const classes = useStyles();
 
-  function onChangeAnswerName(answerName, index) {
-    props.updateElementData(props.groupIndex, "concept", answerName, props.index);
-    if (props.formElementData.name === "") {
-      props.updateElementData(props.groupIndex, "name", answerName.name, props.index);
+  function onChangeAnswerName(answerName, index, flag = true) {
+    if (flag) {
+      props.updateElementData(props.groupIndex, "concept", answerName, props.index);
+      if (props.formElementData.name === "") {
+        props.updateElementData(props.groupIndex, "name", answerName.name, props.index);
+      }
+    } else {
+      props.updateConceptElementData(props.groupIndex, "name", answerName, props.index);
     }
   }
 

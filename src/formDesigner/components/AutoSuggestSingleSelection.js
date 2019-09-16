@@ -82,12 +82,12 @@ export default function AutoSuggestSingleSelection(props) {
   });
   const [stateSuggestions, setSuggestions] = React.useState([]);
 
-  let defaultConcept = "";
-  if (props.visibility && props.showAnswer.name !== undefined) {
-    defaultConcept = props.showAnswer.name;
-  } else {
-    defaultConcept = state.single;
-  }
+  //  let defaultConcept = "";
+  //  if (props.visibility && props.showAnswer.name !== undefined) {
+  //    defaultConcept = props.showAnswer.name;
+  //  } else {
+  //    defaultConcept = state.single;
+  //  }
 
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
@@ -137,9 +137,9 @@ export default function AutoSuggestSingleSelection(props) {
       ...state,
       [name]: autoSuggestedName
     });
-    if (!props.finalReturn) {
-      props.onChangeAnswerName(autoSuggestedName, props.index);
-    }
+    //    if (!props.finalReturn) {
+    props.onChangeAnswerName(autoSuggestedName, props.index, false);
+    //    }
   };
 
   const autosuggestProps = {
@@ -160,7 +160,7 @@ export default function AutoSuggestSingleSelection(props) {
           required: true,
           label: props.label,
           placeholder: props.placeholder,
-          value: defaultConcept,
+          value: props.showAnswer.name,
           onChange: handleChange("single"),
           disabled: props.visibility
         }}

@@ -39,6 +39,7 @@ class FormDetails extends Component {
     this.deleteGroup = this.deleteGroup.bind(this);
     this.btnGroupAdd = this.btnGroupAdd.bind(this);
     this.handleGroupElementChange = this.handleGroupElementChange.bind(this);
+    this.updateConceptElementData = this.updateConceptElementData.bind(this);
   }
 
   componentDidMount() {
@@ -108,6 +109,13 @@ class FormDetails extends Component {
       });
     }
   }
+  updateConceptElementData(index, propertyName, value, elementIndex = -1) {
+    this.setState(prevState => {
+      let form = Object.assign({}, prevState.form);
+      form.formElementGroups[index].formElements[elementIndex]["concept"][propertyName] = value;
+      return { form };
+    });
+  }
 
   renderGroups() {
     const formElements = [];
@@ -115,6 +123,7 @@ class FormDetails extends Component {
       if (group.voided === false)
         formElements.push(
           <FormElementGroup
+            updateConceptElementData={this.updateConceptElementData}
             key={index}
             groupData={group}
             index={index}

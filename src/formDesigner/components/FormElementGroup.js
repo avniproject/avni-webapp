@@ -132,6 +132,7 @@ export default function FormElementGroup(props) {
       if (formElement.voided === false)
         formElements.push(
           <FormElement
+            {...props}
             key={index}
             formElementData={formElement}
             groupIndex={props.index}
