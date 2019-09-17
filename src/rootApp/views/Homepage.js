@@ -27,43 +27,31 @@ const Homepage = () => {
     }
   };
 
+  const renderCard = (href, name) => (
+    <CardActionArea style={classes.cardArea} href={href}>
+      <Card style={classes.card} raised={true}>
+        <CardContent>
+          <Typography align="center" color="primary" />
+        </CardContent>
+        <Typography
+          variant="h5"
+          component="h2"
+          align="center"
+          color="primary"
+          style={{ marginTop: 30 }}
+        >
+          {name}
+        </Typography>
+      </Card>
+    </CardActionArea>
+  );
+
   return (
     <ScreenWithAppBar appbarTitle={"OpenCHS Web Console"}>
       <Grid container justify="center">
-        <CardActionArea style={classes.cardArea} href="/#/admin">
-          <Card style={classes.card} raised={true}>
-            <CardContent>
-              <Typography align="center" color="primary" />
-            </CardContent>
-            <Typography
-              variant="h5"
-              component="h2"
-              align="center"
-              color="primary"
-              style={{ marginTop: 30 }}
-            >
-              Admin
-            </Typography>
-          </Card>
-        </CardActionArea>
-
-        <CardActionArea style={classes.cardArea} href="/#/forms">
-          <Card style={classes.card} raised={true}>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom />
-              <Typography align="center" color="primary" />
-            </CardContent>
-            <Typography
-              variant="h5"
-              component="h2"
-              align="center"
-              color="primary"
-              style={{ marginTop: 30 }}
-            >
-              UI Designer
-            </Typography>
-          </Card>
-        </CardActionArea>
+        {renderCard("/#/admin", "Admin")}
+        {renderCard("/#/forms", "UI Designer")}
+        {renderCard("/#/translations", "Translations")}
       </Grid>
     </ScreenWithAppBar>
   );

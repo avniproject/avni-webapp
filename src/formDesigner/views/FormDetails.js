@@ -315,15 +315,17 @@ class FormDetails extends Component {
               </TabContainer>
             )}
             {this.state.activeTabIndex === 1 && (
-              <div style={{ marginRight: "60%", marginTop: "2%" }}>
-                <NewFormModal
-                  name={this.state.name}
-                  onUpdateFormName={this.onUpdateFormName}
-                  uuid={this.props.match.params.formUUID}
-                  isCreateFrom={false}
-                  onTabHandleChange={this.onTabHandleChange}
-                />
-              </div>
+              <Grid container sm={12}>
+                <Grid item sm={8}>
+                  <NewFormModal
+                    name={this.state.name}
+                    onUpdateFormName={this.onUpdateFormName}
+                    uuid={this.props.match.params.formUUID}
+                    isCreateFrom={false}
+                    onTabHandleChange={this.onTabHandleChange}
+                  />
+                </Grid>
+              </Grid>
             )}
           </Grid>
         </Grid>
