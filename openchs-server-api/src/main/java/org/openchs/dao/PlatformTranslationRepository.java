@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RepositoryRestResource(collectionResourceRel = "platformTranslation", path = "platformTranslation")
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface PlatformTranslationRepository extends ReferenceDataRepository<PlatformTranslation>, FindByLastModifiedDateTime<PlatformTranslation> {
 

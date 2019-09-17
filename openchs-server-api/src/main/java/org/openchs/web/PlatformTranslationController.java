@@ -21,39 +21,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
-@RestController
+@RepositoryRestController
 public class PlatformTranslationController implements RestControllerResourceProcessor<PlatformTranslation> {
 
     private final PlatformTranslationRepository platformTranslationRepository;
-    private final ObjectMapper mapper;
     private final Logger logger;
 
-    public PlatformTranslationController(PlatformTranslationRepository platformTranslationRepository,
-                                         ObjectMapper mapper) {
+    public PlatformTranslationController(PlatformTranslationRepository platformTranslationRepository) {
         this.platformTranslationRepository = platformTranslationRepository;
-        this.mapper = mapper;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @RequestMapping(value = "/platformTranslation", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public ResponseEntity<?> uploadPlatformTranslations(@RequestBody MultipartFile translationFile,
+    public ResponseEntity<?> uploadPlatformTranslations(@RequestBody JsonObject translations,
                                                         @RequestParam(value = "platform") String platform) throws Exception {
         PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatform(Platform.valueOf(platform));
         if (platformTranslation == null) {
             platformTranslation = new PlatformTranslation();
         }
-        String jsonContent = new BufferedReader(new InputStreamReader(translationFile.getInputStream()))
-                .lines()
-                .parallel()
-                .collect(Collectors.joining("\n"));
-        try {
-            JsonObject json = mapper.readValue(jsonContent, JsonObject.class);
-            platformTranslation.setTranslationJson(json);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        platformTranslation.setTranslationJson(translations);
         platformTranslation.assignUUIDIfRequired();
         platformTranslation.setPlatform(Platform.valueOf(platform));
         platformTranslationRepository.save(platformTranslation);

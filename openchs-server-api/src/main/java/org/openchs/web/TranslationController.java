@@ -18,6 +18,7 @@ import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +38,6 @@ import java.util.stream.Collectors;
 public class TranslationController implements RestControllerResourceProcessor<Translation> {
 
     private final TranslationRepository translationRepository;
-    private final ObjectMapper mapper;
     private final Logger logger;
     private final FormElementGroupRepository formElementGroupRepository;
     private final FormElementRepository formElementRepository;
@@ -56,7 +56,6 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
 
     @Autowired
     TranslationController(TranslationRepository translationRepository,
-                          ObjectMapper mapper,
                           FormElementGroupRepository formElementGroupRepository,
                           FormElementRepository formElementRepository,
                           ConceptRepository conceptRepository,
@@ -86,29 +85,19 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
         this.organisationConfigRepository = organisationConfigRepository;
         this.formRepository = formRepository;
         this.platformTranslationRepository = platformTranslationRepository;
-        this.mapper = mapper;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @RequestMapping(value = "/translation", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public ResponseEntity<?> uploadTranslations(@RequestParam("translationFile") MultipartFile translationFile) throws Exception {
+    public ResponseEntity<?> uploadTranslations(@RequestBody JsonObject translations) {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         Translation translation = translationRepository.findByOrganisationId(organisation.getId());
         if (translation == null) {
             translation = new Translation();
         }
-        String jsonContent = new BufferedReader(new InputStreamReader(translationFile.getInputStream()))
-                .lines()
-                .parallel()
-                .collect(Collectors.joining("\n"));
-        try {
-            JsonObject json = mapper.readValue(jsonContent, JsonObject.class);
-            translation.setTranslationJson(json);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        translation.setTranslationJson(translations);
         translation.assignUUIDIfRequired();
         translationRepository.save(translation);
         logger.info(String.format("Saved Translation with UUID: %s", translation.getUuid()));
@@ -126,11 +115,12 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
                 return ResponseEntity.badRequest().body(String.format("Organisation configuration not set for %s. Unable to fetch data", organisation.getName()));
             }
             logger.info(String.format("Translation for organisation '%s' not found, creating empty translation file", organisation.getName()));
-            Map<String, String> emptyTranslations = generateEmptyTranslations();
+
             JsonObject jsonObject = new JsonObject();
             JsonObject platformTranslations = platformTranslationRepository.findByPlatform(Platform.valueOf(platform)).getTranslationJson();
             ((List<String>) organisationConfig.getSettings().get("languages"))
                     .forEach(language -> {
+                        Map<String, String> emptyTranslations = generateEmptyTranslations();
                         emptyTranslations.putAll((Map<String, String>) platformTranslations.get(language));
                         jsonObject.with(language, emptyTranslations);
                     });
