@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.transaction.Transactional;
+import java.util.UUID;
 
 @RepositoryRestController
 public class OrganisationConfigController implements RestControllerResourceProcessor<OrganisationConfig> {
@@ -35,7 +36,7 @@ public class OrganisationConfigController implements RestControllerResourceProce
             organisationConfig = new OrganisationConfig();
         }
         organisationConfig.setOrganisationId(organisation.getId());
-        organisationConfig.assignUUIDIfRequired();
+        organisationConfig.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
         organisationConfig.setSettings(request.getSettings());
         organisationConfigRepository.save(organisationConfig);
         return new ResponseEntity<>(organisationConfig, HttpStatus.CREATED);
