@@ -13,6 +13,7 @@ import { default as UUID } from "uuid";
 import NewFormModal from "../components/NewFormModal";
 import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
+import { FormControl } from "@material-ui/core";
 
 function TabContainer(props) {
   return (
@@ -32,6 +33,8 @@ class FormDetails extends Component {
     this.state = {
       form: [],
       name: "",
+      errorMsg: "",
+      saveCall: false,
       createFlag: true,
       activeTabIndex: 0,
       successAlert: false
@@ -60,7 +63,11 @@ class FormDetails extends Component {
         _.forEach(form.formElementGroups, group => {
           group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
           group.collapse = true;
-          group.formElements.forEach(fe => (fe.collapse = true));
+          group.error = false;
+          group.formElements.forEach(fe => {
+            fe.collapse = true;
+            fe.error = false;
+          });
         });
         let dataGroupFlag = this.countGroupElements(form);
         this.setState({ form: form, name: form.name, createFlag: dataGroupFlag });
@@ -103,7 +110,12 @@ class FormDetails extends Component {
         if (form.formElementGroups[index].newFlag === "true") {
           form.formElementGroups.splice(index, 1);
           this.reOrderSequence(form);
-        } else form.formElementGroups[index].voided = true;
+        } else {
+          form.formElementGroups[index].voided = true;
+          _.forEach(form.formElementGroups[index].formElements, (group, index) => {
+            group.voided = true;
+          });
+        }
         this.setState({ createFlag: this.countGroupElements(form) });
         return form;
       });
@@ -130,18 +142,19 @@ class FormDetails extends Component {
   renderGroups() {
     const formElements = [];
     _.forEach(this.state.form.formElementGroups, (group, index) => {
-      if (group.voided === false)
-        formElements.push(
-          <FormElementGroup
-            updateConceptElementData={this.updateConceptElementData}
-            key={index}
-            groupData={group}
-            index={index}
-            deleteGroup={this.deleteGroup}
-            btnGroupAdd={this.btnGroupAdd}
-            updateGroupData={this.handleGroupElementChange}
-          />
-        );
+      if (group.voided === false) {
+        let propsGroup = {
+          updateConceptElementData: this.updateConceptElementData,
+          key: index,
+          groupData: group,
+          index: index,
+          deleteGroup: this.deleteGroup,
+          btnGroupAdd: this.btnGroupAdd,
+          updateGroupData: this.handleGroupElementChange
+        };
+
+        formElements.push(<FormElementGroup {...propsGroup} />);
+      }
     });
     return formElements;
   }
@@ -194,6 +207,41 @@ class FormDetails extends Component {
     this.setState({ createFlag: false });
   }
   // END Group level Events
+  validateForm = () => {
+    let flag = false;
+    let errormsg = "";
+    this.setState(prevState => {
+      let form = Object.assign({}, prevState.form);
+      _.forEach(form.formElementGroups, group => {
+        group.error = false;
+        group.collapse = false;
+        if (group.voided === false && group.name.trim() === "") {
+          group.error = true;
+          group.collapse = true;
+          flag = true;
+        }
+        group.formElements.forEach(fe => {
+          fe.error = false;
+          fe.collapse = false;
+          if (
+            fe.voided === false &&
+            (fe.name === "" ||
+              fe.concept.dataType === "" ||
+              fe.concept.dataType === "NA" ||
+              (fe.concept.dataType === "Coded" && fe.type === ""))
+          ) {
+            fe.error = true;
+            fe.collapse = true;
+            flag = true;
+          }
+        });
+      });
+      if (flag) {
+        errormsg = "Resolve below errors";
+      }
+      return { form: form, saveCall: !flag, errorMsg: errormsg };
+    });
+  };
 
   updateForm = event => {
     let dataSend = this.state.form;
@@ -201,11 +249,11 @@ class FormDetails extends Component {
       .post("/forms", dataSend)
       .then(response => {
         if (response.status === 200) {
-          this.setState({ successAlert: true });
+          this.setState({ saveCall: false, successAlert: true });
         }
       })
       .catch(error => {
-        console.log(error);
+        this.setState({ saveCall: false, errorMsg: "Server error" });
       });
   };
 
@@ -244,7 +292,7 @@ class FormDetails extends Component {
                           fullWidth
                           variant="contained"
                           color="secondary"
-                          onClick={this.updateForm.bind(this)}
+                          onClick={this.validateForm.bind(this)}
                         >
                           <SaveIcon />
                           &nbsp;Save
@@ -253,6 +301,13 @@ class FormDetails extends Component {
                     )}
                     <Grid item sm={10}>
                       <b>Form : {this.state.name}</b>
+                    </Grid>
+                    <Grid item sm={12}>
+                      {this.state.errorMsg !== "" && (
+                        <FormControl fullWidth margin="dense">
+                          <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+                        </FormControl>
+                      )}
                     </Grid>
                   </Grid>
                   {this.renderGroups()}
@@ -275,6 +330,7 @@ class FormDetails extends Component {
         {this.state.successAlert && (
           <CustomizedSnackbar message="Successfully updated the form" url="/forms" />
         )}
+        {this.state.saveCall && this.updateForm()}
       </ScreenWithAppBar>
     );
   }

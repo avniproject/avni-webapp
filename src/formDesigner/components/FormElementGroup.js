@@ -27,6 +27,10 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
   },
+  rootError: {
+    width: "100%",
+    border: "1px solid red"
+  },
   iconlay: {
     padding: "20px 20px 20px 0px"
   },
@@ -129,19 +133,19 @@ export default function FormElementGroup(props) {
   const renderFormElements = () => {
     const formElements = [];
     _.forEach(props.groupData.formElements, (formElement, index) => {
-      if (formElement.voided === false)
-        formElements.push(
-          <FormElement
-            {...props}
-            key={index}
-            formElementData={formElement}
-            groupIndex={props.index}
-            index={index}
-            btnElementAdd={props.btnGroupAdd}
-            updateElementData={props.updateGroupData}
-            deleteElement={props.deleteGroup}
-          />
-        );
+      if (formElement.voided === false) {
+        let propsElement = {
+          key: index,
+          formElementData: formElement,
+          groupIndex: props.index,
+          index: index,
+          btnElementAdd: props.btnGroupAdd,
+          updateElementData: props.updateGroupData,
+          deleteElement: props.deleteGroup
+        };
+
+        formElements.push(<FormElement {...props} {...propsElement} />);
+      }
     });
     return formElements;
   };
@@ -154,7 +158,7 @@ export default function FormElementGroup(props) {
     >
       <ExpansionPanel
         expanded={props.groupData.collapse}
-        className={classes.root}
+        className={props.groupData.error ? classes.rootError : classes.root}
         onChange={event =>
           props.updateGroupData(props.index, "collapse", !props.groupData.collapse)
         }

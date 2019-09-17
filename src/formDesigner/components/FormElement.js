@@ -28,6 +28,10 @@ const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
   },
+  rootError: {
+    width: "100%",
+    border: "1px solid red"
+  },
   iconlay: {
     padding: "20px 20px 20px 0px"
   },
@@ -139,7 +143,7 @@ export default function FormElement(props) {
     >
       <ExpansionPanel
         expanded={expanded === panel}
-        className={classes.root}
+        className={props.formElementData.error ? classes.rootError : classes.root}
         onChange={handleChange(panel)}
       >
         <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
