@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
-import { forEach, isEmpty, isNull } from "lodash";
+import { forEach, isEmpty } from "lodash";
 import Box from "@material-ui/core/Box";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
@@ -24,10 +24,10 @@ export const Translations = props => {
     Web: "Web"
   };
 
-  const [selectedFile, setSelectedFile] = useState(null);
   const [tableData, setTableData] = useState(initialTableState);
   const [incompleteCount, setIncomplete] = useState(0);
   const [platform, setPlatform] = useState("");
+  const [data, setData] = useState("");
 
   const onFileChooseHandler = event => {
     setTableData(initialTableState);
@@ -37,6 +37,7 @@ export const Translations = props => {
       let translations;
       try {
         translations = JSON.parse(event.target.result);
+        setData(translations);
       } catch (error) {
         alert(error.message);
         return;
@@ -57,21 +58,18 @@ export const Translations = props => {
       });
       setTableData({ data });
     };
-    setSelectedFile(event.target.files[0]);
   };
 
   const onUploadPressedHandler = () => {
-    if (isNull(selectedFile)) {
+    if (isEmpty(data)) {
       return alert("Choose File before uploading");
     }
     if (incompleteCount > 0) {
-      setSelectedFile(null);
+      setData("");
       document.getElementById("file_upload").value = "";
       setIncomplete(0);
       return alert("Can not upload incomplete translation file");
     }
-    const data = new FormData();
-    data.append("translationFile", selectedFile);
     axios
       .post("/translation", data)
       .then(res => {
@@ -86,7 +84,7 @@ export const Translations = props => {
           alert("Something went wrong while uploading the file");
         }
       });
-    setSelectedFile(null);
+    setData("");
     document.getElementById("file_upload").value = "";
   };
 

@@ -4,8 +4,6 @@ import axios from "axios";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
 
 const Concepts = ({ history }) => {
   const columns = [
@@ -15,6 +13,73 @@ const Concepts = ({ history }) => {
   ];
 
   const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
+
+  const fetchData = query =>
+    new Promise(resolve => {
+      let apiUrl = "/web/concepts?";
+      apiUrl += "size=" + query.pageSize;
+      apiUrl += "&page=" + query.page;
+      if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
+      if (!_.isEmpty(query.orderBy.field))
+        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      axios
+        .get(apiUrl)
+        .then(response => response.data)
+        .then(result => {
+          resolve({
+            data: result._embedded ? result._embedded.concept : [],
+            page: result.page.number,
+            totalCount: result.page.totalElements
+          });
+        });
+    });
+
+  const voidConcept = rowData => ({
+    icon: rowData.voided ? "restore_from_trash" : "delete_outline",
+    tooltip:
+      rowData.organisationId === 1
+        ? "Can not void core concepts"
+        : rowData.voided
+        ? "Unvoid Concept"
+        : "Void Concept",
+    onClick: (event, rowData) => {
+      console.log(rowData);
+      const voidedMessage = rowData.voided
+        ? "Do you want to unvoid the concept " + rowData.name + " ?"
+        : "Do you want to void the concept " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        axios
+          .post("/concepts", [
+            {
+              uuid: rowData.uuid,
+              voided: !rowData.voided
+            }
+          ])
+          .then(response => {
+            if (response.status === 200) {
+              refreshTable(tableRef);
+            }
+          });
+      }
+    },
+    disabled: rowData.organisationId === 1
+  });
+
+  const editConcept = rowData => ({
+    icon: "edit",
+    tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
+    onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`),
+    disabled: rowData.organisationId === 1 || rowData.voided === true
+  });
+
+  const addNewConcept = {
+    icon: "add",
+    tooltip: "Create Concept",
+    isFreeAction: true,
+    onClick: event => history.push(`/concept/create`)
+  };
+
   return (
     <ScreenWithAppBar appbarTitle="Concepts List" enableLeftMenuButton={true}>
       <MaterialTable
@@ -24,26 +89,7 @@ const Concepts = ({ history }) => {
         }}
         tableRef={tableRef}
         columns={columns}
-        data={query =>
-          new Promise(resolve => {
-            let apiUrl = "/web/concepts?";
-            apiUrl += "size=" + query.pageSize;
-            apiUrl += "&page=" + query.page;
-            if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
-            if (!_.isEmpty(query.orderBy.field))
-              apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
-            axios
-              .get(apiUrl)
-              .then(response => response.data)
-              .then(result => {
-                resolve({
-                  data: result._embedded ? result._embedded.concept : [],
-                  page: result.page.number,
-                  totalCount: result.page.totalElements
-                });
-              });
-          })
-        }
+        data={fetchData}
         options={{
           pageSize: 10,
           pageSizeOptions: [10, 15, 20],
@@ -56,67 +102,7 @@ const Concepts = ({ history }) => {
             backgroundColor: rowData["voided"] === false ? "#fff" : "#DBDBDB"
           })
         }}
-        actions={[
-          rowData => ({
-            icon: rowData.voided ? "restore_from_trash" : "delete_outline",
-            tooltip:
-              rowData.organisationId === 1
-                ? "Can not void core concepts"
-                : rowData.voided
-                ? "Unvoid Concept"
-                : "Void Concept",
-            onClick: (event, rowData) => {
-              console.log(rowData);
-              const voidedMessage = rowData.voided
-                ? "Do you want to unvoid the concept " + rowData.name + " ?"
-                : "Do you want to void the concept " + rowData.name + " ?";
-              if (window.confirm(voidedMessage)) {
-                axios
-                  .post("/concepts", [
-                    {
-                      uuid: rowData.uuid,
-                      voided: !rowData.voided
-                    }
-                  ])
-                  .then(response => {
-                    if (response.status === 200) {
-                      tableRef.current && tableRef.current.onQueryChange();
-                    }
-                  });
-              }
-            },
-            disabled: rowData.organisationId === 1
-          }),
-          rowData => ({
-            icon: "edit",
-            tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
-            onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`),
-            disabled: rowData.organisationId === 1 || rowData.voided === true
-          }),
-          {
-            icon: () => (
-              <IconButton disabled backgroundColor="white">
-                <Button
-                  color="primary"
-                  style={{
-                    outlined: {
-                      "&:hover": {
-                        backgroundColor: "white"
-                      }
-                    }
-                  }}
-                >
-                  + CREATE
-                </Button>
-              </IconButton>
-            ),
-
-            tooltip: "Create Concept",
-
-            isFreeAction: true,
-            onClick: event => history.push(`/concept/create`)
-          }
-        ]}
+        actions={[voidConcept, editConcept, addNewConcept]}
       />
     </ScreenWithAppBar>
   );
