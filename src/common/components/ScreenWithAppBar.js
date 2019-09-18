@@ -37,14 +37,16 @@ const useStyles = makeStyles(theme => ({
     })
   },
   appBarShift: {
-    paddingLeft: drawerWidth / 2,
+    paddingLeft: drawerWidth / 2 + 45,
     width: `calc(100%)`,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
     })
   },
-
+  container: {
+    margin: "0px 15px 0px 90px"
+  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
@@ -191,7 +193,7 @@ const ScreenWithAppBar = props => {
   }
 
   return (
-    <Container fixed>
+    <div className={classes.container}>
       <AppBar
         title={props.appbarTitle}
         handleDrawer={handleDrawer}
@@ -208,7 +210,7 @@ const ScreenWithAppBar = props => {
         )}
 
       {!props.enableLeftMenuButton && <Body>{props.children}</Body>}
-    </Container>
+    </div>
   );
 };
 
