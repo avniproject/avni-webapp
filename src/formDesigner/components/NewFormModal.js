@@ -5,7 +5,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
 import FormHelperText from "@material-ui/core/FormHelperText";
-
+import CustomizedSnackbar from "./CustomizedSnackbar";
 class NewFormModal extends Component {
   constructor(props) {
     super(props);
@@ -20,7 +20,9 @@ class NewFormModal extends Component {
       onClose: false,
       data: {},
       toFormDetails: "",
-      errors: { name: "", formType: "", programName: "", subjectType: "", encounterType: "" }
+      errors: { name: "", formType: "", programName: "", subjectType: "", encounterType: "" },
+      showUpdateAlert: false,
+      defaultSnackbarStatus: true
     };
   }
 
@@ -53,6 +55,10 @@ class NewFormModal extends Component {
     if (Object.keys(errorsList).length > 0) errorFlag = false;
     return errorFlag;
   }
+
+  getDefaultSnackbarStatus = defaultSnackbarStatus => {
+    this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
+  };
   addFields() {
     const validateFormStatus = this.validateForm();
     if (validateFormStatus && this.props.isCreateFrom) {
@@ -100,26 +106,23 @@ class NewFormModal extends Component {
           programName: this.state.programName
         })
         .then(response => {
-          this.setState({
-            toFormDetails: existFormUUID
-          });
           if (this.props.isCreateFrom === false) {
+            this.setState({
+              showUpdateAlert: true,
+              defaultSnackbarStatus: true
+            });
             this.props.onUpdateFormName(this.state.name);
-            this.props.onTabHandleChange(0, 0);
           }
         })
         .catch(error => {
-          console.log("Response erroe:::", error);
           if (error.response.status === 404) {
             this.setState({
-              toFormDetails: existFormUUID
+              showUpdateAlert: true,
+              defaultSnackbarStatus: true
             });
-            if (this.props.isCreateFrom === false) {
-              this.props.onUpdateFormName(this.state.name);
-              this.props.onTabHandleChange(0, 0);
-            }
+            this.props.onUpdateFormName(this.state.name);
           } else {
-            this.setState({ errorMsg: error.response.data });
+            this.setState({ errorMsg: error.response.data, showUpdateAlert: false });
           }
         });
     }
@@ -165,10 +168,6 @@ class NewFormModal extends Component {
     this.setState(Object.assign({}, this.state, { [event.target.name]: event.target.value }));
   }
 
-  // onChangeEncounterField(encounterTypes) {
-  //   this.setState(Object.assign({}, this.state, { encounterType: encounterTypes }));
-  // }
-
   handleClickOpen() {
     this.setState({
       formType: "",
@@ -178,10 +177,6 @@ class NewFormModal extends Component {
       open: true
     });
   }
-
-  // getDownshiftValue(encounterTypeValue) {
-  //   this.setState({ encounterType: encounterTypeValue });
-  // }
 
   programNameElement() {
     return (
@@ -342,6 +337,14 @@ class NewFormModal extends Component {
         >
           {submitButtonName}
         </Button>
+        {this.state.showUpdateAlert && (
+          <CustomizedSnackbar
+            message="Form settings updated successfully!"
+            allowRedirect={false}
+            getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+            defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+          />
+        )}
       </div>
     );
   }

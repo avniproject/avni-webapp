@@ -64,15 +64,17 @@ MySnackbarContentWrapper.propTypes = {
 };
 
 export default function CustomizedSnackbar(props) {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(props.defaultSnackbarStatus);
   const [redirectAlert, setRedirectAlert] = React.useState(false);
   function handleClose(event, reason) {
     if (reason === "clickaway") {
-      setRedirectAlert(true);
+      props.allowRedirect && setRedirectAlert(true);
+      !props.allowRedirect && props.getDefaultSnackbarStatus(false);
       return;
     }
     setOpen(false);
-    setRedirectAlert(true);
+    !props.allowRedirect && props.getDefaultSnackbarStatus(false);
+    props.allowRedirect && setRedirectAlert(true);
   }
 
   return (
@@ -82,7 +84,7 @@ export default function CustomizedSnackbar(props) {
           vertical: "bottom",
           horizontal: "center"
         }}
-        open={open}
+        open={open || props.defaultSnackbarStatus}
         autoHideDuration={1000}
         onClose={handleClose}
       >
@@ -92,3 +94,8 @@ export default function CustomizedSnackbar(props) {
     </div>
   );
 }
+
+CustomizedSnackbar.defaultProps = {
+  allowRedirect: true,
+  defaultSnackbarStatus: true
+};
