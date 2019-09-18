@@ -16,4 +16,6 @@ public interface OrganisationConfigRepository extends ReferenceDataRepository<Or
     default OrganisationConfig findByNameIgnoreCase(String name) {
         throw new UnsupportedOperationException("No field 'name' in Location. Field 'title' not unique.");
     }
+
+    OrganisationConfig findByOrganisationId(Long organisationId);
 }

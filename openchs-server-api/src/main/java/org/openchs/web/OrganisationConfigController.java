@@ -31,7 +31,7 @@ public class OrganisationConfigController implements RestControllerResourceProce
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public ResponseEntity save(@RequestBody OrganisationConfigRequest request) {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        OrganisationConfig organisationConfig = organisationConfigRepository.findByUuid(request.getUuid());
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisation.getId());
         if (organisationConfig == null) {
             organisationConfig = new OrganisationConfig();
         }
