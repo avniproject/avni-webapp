@@ -108,13 +108,8 @@ const ExpansionPanelSummary = withStyles({
 
 export default function FormElement(props) {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
   const [hover, setHover] = React.useState(false);
   const panel = "panel" + props.groupIndex.toString + props.index.toString();
-
-  const handleChange = panel => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
 
   const handleDelete = event => {
     props.deleteElement(props.groupIndex, props.index);
@@ -142,13 +137,20 @@ export default function FormElement(props) {
       onMouseLeave={hoverHideAddGroup}
     >
       <ExpansionPanel
-        expanded={expanded === panel}
+        expanded={props.formElementData.collapse}
         className={props.formElementData.error ? classes.rootError : classes.root}
-        onChange={handleChange(panel)}
+        onChange={event =>
+          props.updateGroupData(
+            props.groupIndex,
+            "collapse",
+            !props.formElementData.collapse,
+            props.index
+          )
+        }
       >
         <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
           <div className={classes.iconlay}>
-            {expanded === panel ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            {props.formElementData.collapse === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </div>
           <Grid container item sm={12}>
             <Grid item sm={4}>

@@ -181,12 +181,14 @@ class FormDetails extends Component {
         type: "",
         mandatory: false,
         voided: false,
+        collapse: true,
         concept: { name: "", dataType: "" }
       };
       if (elementIndex === -1) {
         form.formElementGroups.splice(index + 1, 0, {
           uuid: UUID.v4(),
           newFlag: "true",
+          collapse: true,
           displayOrder: -1,
           name: "",
           display: "",
@@ -217,9 +219,9 @@ class FormDetails extends Component {
         group.collapse = false;
         if (group.voided === false && group.name.trim() === "") {
           group.error = true;
-          group.collapse = true;
           flag = true;
         }
+        let groupError = false;
         group.formElements.forEach(fe => {
           fe.error = false;
           fe.collapse = false;
@@ -232,12 +234,16 @@ class FormDetails extends Component {
           ) {
             fe.error = true;
             fe.collapse = true;
-            flag = true;
+            flag = groupError = true;
           }
         });
+        if (groupError || group.error) {
+          group.collapse = true;
+        }
       });
       if (flag) {
-        errormsg = "Resolve below errors";
+        errormsg =
+          "There are empty fields or an invalid concept selected. Please find below highlighted groups or questions.";
       }
       return { form: form, saveCall: !flag, errorMsg: errormsg };
     });
@@ -253,7 +259,10 @@ class FormDetails extends Component {
         }
       })
       .catch(error => {
-        this.setState({ saveCall: false, errorMsg: "Server error" });
+        this.setState({
+          saveCall: false,
+          errorMsg: "Server error received " + error.response.data
+        });
       });
   };
 
