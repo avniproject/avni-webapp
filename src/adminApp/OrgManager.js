@@ -34,7 +34,11 @@ import {
   organisationConfigEdit,
   organisationConfigList
 } from "./OrganisationConfig";
+import { Redirect } from "react-router-dom";
 
+const redirectHome = () => {
+  return <Redirect to="/" />;
+};
 class OrgManager extends Component {
   static childContextTypes = {
     store: PropTypes.object
@@ -115,6 +119,7 @@ class OrgManager extends Component {
           create={organisationConfigCreate}
           edit={organisationConfigEdit}
         />
+        <Resource name="home" options={{ label: "Home" }} list={redirectHome} />
       </Admin>
     );
   }
