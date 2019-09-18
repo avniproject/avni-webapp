@@ -30,14 +30,14 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   appBar: {
-    paddingLeft: 0,
+    paddingLeft: 70,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     })
   },
   appBarShift: {
-    paddingLeft: drawerWidth / 2 + 45,
+    paddingLeft: drawerWidth,
     width: `calc(100%)`,
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     })
   },
   container: {
-    margin: "0px 15px 0px 90px"
+    margin: "0px 15px 0px 15px"
   },
   drawer: {
     width: drawerWidth,
