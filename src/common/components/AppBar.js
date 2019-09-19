@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LogoutButton from "../../adminApp/react-admin-config/LogoutButton";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -8,6 +8,7 @@ import Menu from "@material-ui/core/Menu";
 import IconButton from "@material-ui/core/IconButton";
 import UserIcon from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
+import axios from "axios";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -37,7 +38,7 @@ const useStyle = makeStyles(theme => ({
 
 export default props => {
   const classes = useStyle();
-
+  const [loginDetails, setLoginDetails] = React.useState({ name: "", orgName: "" });
   const [anchorEl, setAnchorEl] = React.useState(null);
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
@@ -46,6 +47,17 @@ export default props => {
   function handleClose() {
     setAnchorEl(null);
   }
+
+  useEffect(() => {
+    const fetchOrgDetails = async () => {
+      const result = await axios("/v2/me");
+      setLoginDetails({
+        name: result.data._embedded.userInfo[0].username,
+        orgName: result.data._embedded.userInfo[0].organisationName
+      });
+    };
+    fetchOrgDetails();
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -69,6 +81,9 @@ export default props => {
           </div>
 
           <div className={classes.profile}>
+            <div style={{ marginTop: "2%" }}>
+              <b>{loginDetails.orgName} </b> ({loginDetails.name})
+            </div>
             <IconButton
               aria-label="Profile"
               aria-controls="long-menu"
