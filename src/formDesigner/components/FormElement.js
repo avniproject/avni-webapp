@@ -16,6 +16,19 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+
+import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
+import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
+import QueryBuilderIcon from "@material-ui/icons/QueryBuilder";
+import TimerIcon from "@material-ui/icons/Timer";
+import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
+import DateRangeIcon from "@material-ui/icons/DateRange";
+import TextFieldsIcon from "@material-ui/icons/TextFields";
+import NoteIcon from "@material-ui/icons/Note";
+import Tooltip from "@material-ui/core/Tooltip";
+import ImageIcon from "@material-ui/icons/Image";
+import VideocamIcon from "@material-ui/icons/Videocam";
+
 import Mandatory from "@material-ui/icons/CheckCircleOutline";
 import NonMandatory from "@material-ui/icons/HighlightOff";
 import FormElementTabs from "./FormElementTabs";
@@ -33,7 +46,11 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid red"
   },
   iconlay: {
-    padding: "20px 20px 20px 0px"
+    padding: "15px 15px 15px 0px"
+  },
+  iconDataType: {
+    padding: "5px",
+    backgroundColor: "#efefef"
   },
   questionCount: {
     paddingTop: "20px"
@@ -105,7 +122,19 @@ const ExpansionPanelSummary = withStyles({
   },
   expanded: {}
 })(MuiExpansionPanelSummary);
-
+const dataTypeIcons = {
+  concept: { SingleSelect: <RadioButtonCheckedIcon />, MultiSelect: <CheckCircleOutlineIcon /> },
+  Date: <CalendarTodayIcon />,
+  Numeric: <b>N</b>,
+  Text: <TextFieldsIcon />,
+  Notes: <NoteIcon />,
+  Image: <ImageIcon />,
+  DateTime: <DateRangeIcon />,
+  Time: <QueryBuilderIcon />,
+  Duration: <TimerIcon />,
+  Video: <VideocamIcon />,
+  id: <b>Id</b>
+};
 export default function FormElement(props) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
@@ -153,7 +182,7 @@ export default function FormElement(props) {
             {props.formElementData.collapse === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </div>
           <Grid container item sm={12}>
-            <Grid item sm={4}>
+            <Grid item sm={10}>
               <Typography component={"span"} className={classes.heading}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor={"name" + panel}>Name</InputLabel>
@@ -178,32 +207,42 @@ export default function FormElement(props) {
             <Grid item sm={1}>
               &nbsp;
             </Grid>
-            <Grid item sm={4}>
-              <Typography component={"span"} className={classes.secondaryHeading}>
-                <FormControl fullWidth>
-                  {props.formElementData.concept.dataType !== "" && "Type"}
-                  <br />
-                  {props.formElementData.concept.dataType}{" "}
-                  {props.formElementData.concept.dataType === "Coded" &&
-                    props.formElementData.type !== "" &&
-                    ": " + props.formElementData.type}
-                </FormControl>
-              </Typography>
-            </Grid>
             <Grid item sm={1}>
-              &nbsp;
-            </Grid>
-            <Grid item sm={2}>
-              <Typography component={"span"} className={classes.secondaryHeading}>
-                <FormControl fullWidth>
-                  Mandatory <br />
-                  {props.formElementData.mandatory ? (
-                    <Mandatory className={classes.iconMandatory} />
-                  ) : (
-                    <NonMandatory className={classes.iconNonMandatory} />
+              <div className={classes.iconlay}>
+                <Typography component={"span"} className={classes.secondaryHeading}>
+                  {props.formElementData.concept.dataType !== "Coded" && (
+                    <div className={classes.iconDataType}>
+                      <Tooltip title={props.formElementData.concept.dataType}>
+                        {dataTypeIcons[props.formElementData.concept.dataType]}
+                      </Tooltip>
+                    </div>
                   )}
-                </FormControl>
-              </Typography>
+                  {props.formElementData.concept.dataType === "Coded" && (
+                    <div className={classes.iconDataType}>
+                      <Tooltip
+                        title={
+                          props.formElementData.concept.dataType +
+                          " : " +
+                          props.formElementData.type
+                        }
+                      >
+                        {dataTypeIcons["concept"][props.formElementData.type]}
+                      </Tooltip>
+                    </div>
+                  )}
+                  <FormControl fullWidth>
+                    {props.formElementData.mandatory ? (
+                      <Tooltip title="Required">
+                        <Mandatory className={classes.iconMandatory} />
+                      </Tooltip>
+                    ) : (
+                      <Tooltip title="Not required">
+                        <NonMandatory className={classes.iconNonMandatory} />
+                      </Tooltip>
+                    )}
+                  </FormControl>
+                </Typography>
+              </div>
             </Grid>
           </Grid>
           <IconButton className={classes.deleteicon} aria-label="delete" onClick={handleDelete}>

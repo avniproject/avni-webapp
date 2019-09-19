@@ -65,7 +65,7 @@ class FormDetails extends Component {
           group.collapse = true;
           group.error = false;
           group.formElements.forEach(fe => {
-            fe.collapse = true;
+            fe.collapse = false;
             fe.error = false;
           });
         });
