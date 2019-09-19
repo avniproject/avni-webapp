@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,7 +16,9 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "form", path = "form")
 public interface FormRepository extends ReferenceDataRepository<Form>, FindByLastModifiedDateTime<Form> {
 
+    @RestResource(exported = false)
     List<Form> findAllByOrganisationId(Long organisationId);
+    @RestResource(exported = false) 
     Page<Form> findAllByOrganisationId(Long organisationId, Pageable pageable);
 
     @Query("select f.name from Form f where f.isVoided = false")
