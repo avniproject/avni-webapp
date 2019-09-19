@@ -30,7 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +45,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
-public class FormController {
+public class FormController implements RestControllerResourceProcessor<BasicFormDetails> {
     private final Logger logger;
     private FormRepository formRepository;
     private ProgramRepository programRepository;
@@ -74,6 +75,26 @@ public class FormController {
         this.projectionFactory = projectionFactory;
         this.formMappingService = formMappingService;
         logger = LoggerFactory.getLogger(this.getClass());
+    }
+
+    @GetMapping(value = "/web/forms")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    public PagedResources<Resource<BasicFormDetails>> getAllFormsWeb(Pageable pageable) {
+        Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
+        Page<Form> forms = formRepository.findAllByOrganisationId(organisationId, pageable);
+        Page<BasicFormDetails> basicFormDetailsPage = forms.map(form -> {
+            BasicFormDetails basicFormDetails = new BasicFormDetails(form, null);
+            List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
+            if(formMappings.size() > 0) {
+                FormMapping firstFormMapping = formMappings.get(0);
+                Program program = firstFormMapping.getProgram();
+                if(program != null)
+                    basicFormDetails.setProgramName(program.getOperationalProgramName());
+                basicFormDetails.setSubjectName(firstFormMapping.getSubjectType().getName());
+            }
+            return basicFormDetails;
+        });
+        return wrap(basicFormDetailsPage);
     }
 
     @RequestMapping(value = "/forms", method = RequestMethod.POST)

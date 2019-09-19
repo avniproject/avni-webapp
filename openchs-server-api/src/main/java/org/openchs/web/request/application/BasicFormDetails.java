@@ -15,6 +15,7 @@ public class BasicFormDetails extends ResourceSupport {
     private String uuid;
     private String formType;
     private String programName;
+    private String subjectName;
     private DateTime createDateTime;
     private DateTime lastModifiedDateTime;
     private String createdBy;
@@ -53,6 +54,10 @@ public class BasicFormDetails extends ResourceSupport {
         return programName;
     }
 
+    public void setProgramName(String programName) {
+        this.programName = programName;
+    }
+
     public DateTime getCreateDateTime() {
         return createDateTime;
     }
@@ -79,5 +84,13 @@ public class BasicFormDetails extends ResourceSupport {
 
     public Long getOrganisationId() {
         return organisationId;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
 }
