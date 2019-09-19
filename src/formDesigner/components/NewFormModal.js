@@ -340,7 +340,6 @@ class NewFormModal extends Component {
         {this.state.showUpdateAlert && (
           <CustomizedSnackbar
             message="Form settings updated successfully!"
-            allowRedirect={false}
             getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
             defaultSnackbarStatus={this.state.defaultSnackbarStatus}
           />

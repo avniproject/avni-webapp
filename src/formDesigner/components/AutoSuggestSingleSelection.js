@@ -106,7 +106,10 @@ export default function AutoSuggestSingleSelection(props) {
           });
           setSuggestions(filteredSuggestions);
         } else {
-          setSuggestions(suggestions);
+          const filteredSuggestions = suggestions.filter(suggestion => {
+            return suggestion.dataType !== "NA";
+          });
+          setSuggestions(filteredSuggestions);
         }
       })
       .catch(error => {
@@ -183,5 +186,6 @@ export default function AutoSuggestSingleSelection(props) {
 }
 
 AutoSuggestSingleSelection.defaultProps = {
-  finalReturn: false
+  finalReturn: false,
+  showSuggestionStartsWith: false
 };

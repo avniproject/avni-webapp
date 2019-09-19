@@ -37,7 +37,8 @@ class FormDetails extends Component {
       saveCall: false,
       createFlag: true,
       activeTabIndex: 0,
-      successAlert: false
+      successAlert: false,
+      defaultSnackbarStatus: true
     };
     this.btnGroupClick = this.btnGroupClick.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
@@ -53,6 +54,10 @@ class FormDetails extends Component {
 
   onTabHandleChange = (event, value) => {
     this.setState({ activeTabIndex: value });
+  };
+
+  getDefaultSnackbarStatus = defaultSnackbarStatus => {
+    this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
   };
 
   componentDidMount() {
@@ -255,7 +260,7 @@ class FormDetails extends Component {
       .post("/forms", dataSend)
       .then(response => {
         if (response.status === 200) {
-          this.setState({ saveCall: false, successAlert: true });
+          this.setState({ saveCall: false, successAlert: true, defaultSnackbarStatus: true });
         }
       })
       .catch(error => {
@@ -338,7 +343,11 @@ class FormDetails extends Component {
           </Grid>
         </Grid>
         {this.state.successAlert && (
-          <CustomizedSnackbar message="Successfully updated the form" url="/forms" />
+          <CustomizedSnackbar
+            message="Successfully updated the form"
+            getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+            defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+          />
         )}
         {this.state.saveCall && this.updateForm()}
       </ScreenWithAppBar>

@@ -32,7 +32,8 @@ class CreateEditConcept extends Component {
         { name: "", uuid: "", unique: false, abnormal: false, editable: true, voided: false }
       ],
       conceptCreationAlert: false,
-      error: {}
+      error: {},
+      defaultSnackbarStatus: true
     };
   }
 
@@ -84,6 +85,10 @@ class CreateEditConcept extends Component {
         });
     }
   }
+
+  getDefaultSnackbarStatus = defaultSnackbarStatus => {
+    this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
+  };
 
   onDeleteAnswer = index => {
     const answers = [...this.state.answers];
@@ -170,7 +175,8 @@ class CreateEditConcept extends Component {
                 lowNormal: null,
                 highNormal: null,
                 unit: null,
-                answers: []
+                answers: [],
+                defaultSnackbarStatus: true
               });
             }
           })
@@ -312,7 +318,8 @@ class CreateEditConcept extends Component {
           .then(response => {
             if (response.status === 200) {
               this.setState({
-                conceptCreationAlert: true
+                conceptCreationAlert: true,
+                defaultSnackbarStatus: true
               });
             }
           })
@@ -437,7 +444,11 @@ class CreateEditConcept extends Component {
           </Grid>
 
           {this.state.conceptCreationAlert && (
-            <CustomizedSnackbar message={conceptCreationMessage} url="/concepts" />
+            <CustomizedSnackbar
+              message={conceptCreationMessage}
+              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+            />
           )}
         </form>
       </ScreenWithAppBar>

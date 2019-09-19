@@ -8,7 +8,6 @@ import IconButton from "@material-ui/core/IconButton";
 import Snackbar from "@material-ui/core/Snackbar";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 import { makeStyles } from "@material-ui/core/styles";
-import { Redirect } from "react-router-dom";
 
 const variantIcon = {
   success: CheckCircleIcon
@@ -64,17 +63,12 @@ MySnackbarContentWrapper.propTypes = {
 };
 
 export default function CustomizedSnackbar(props) {
-  const [open, setOpen] = React.useState(props.defaultSnackbarStatus);
-  const [redirectAlert, setRedirectAlert] = React.useState(false);
   function handleClose(event, reason) {
     if (reason === "clickaway") {
-      props.allowRedirect && setRedirectAlert(true);
-      !props.allowRedirect && props.getDefaultSnackbarStatus(false);
+      props.getDefaultSnackbarStatus(false);
       return;
     }
-    setOpen(false);
-    !props.allowRedirect && props.getDefaultSnackbarStatus(false);
-    props.allowRedirect && setRedirectAlert(true);
+    props.getDefaultSnackbarStatus(false);
   }
 
   return (
@@ -84,18 +78,16 @@ export default function CustomizedSnackbar(props) {
           vertical: "bottom",
           horizontal: "center"
         }}
-        open={open || props.defaultSnackbarStatus}
+        open={props.defaultSnackbarStatus}
         autoHideDuration={1000}
         onClose={handleClose}
       >
         <MySnackbarContentWrapper onClose={handleClose} variant="success" message={props.message} />
       </Snackbar>
-      {redirectAlert && <Redirect to={props.url} />}
     </div>
   );
 }
 
 CustomizedSnackbar.defaultProps = {
-  allowRedirect: true,
   defaultSnackbarStatus: true
 };
