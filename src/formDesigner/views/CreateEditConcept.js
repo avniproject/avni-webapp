@@ -89,7 +89,7 @@ class CreateEditConcept extends Component {
     const answers = [...this.state.answers];
     if (answers[index].name !== "") {
       answers[index].voided = true;
-      const encodedURL = "/web/concept/name/" + answers[index].name;
+      const encodedURL = `/web/concept?name=${answers[index].name}`;
 
       axios
         .get(encodedURL)
@@ -186,7 +186,7 @@ class CreateEditConcept extends Component {
     let error = {};
     var promise = new Promise((resolve, reject) => {
       axios
-        .get("/web/concept/name/" + conceptName)
+        .get(`/web/concept?name=${conceptName}`)
         .then(response => {
           if (response.status === 200 && this.props.isCreatePage === true) {
             error["nameError"] = true;
@@ -249,7 +249,7 @@ class CreateEditConcept extends Component {
       if (length !== 0) {
         answers.forEach(answer => {
           return axios
-            .get("/web/concept/name/" + answer.name)
+            .get(`/web/concept?name=${answer.name}`)
             .then(response => {
               if (response.status === 200) {
                 answer.uuid = response.data.uuid;
