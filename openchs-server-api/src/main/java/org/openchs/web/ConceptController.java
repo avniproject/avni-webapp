@@ -17,8 +17,11 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.HandlerMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,10 +58,10 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
     }
 
-    @GetMapping(value = "/web/concept/name/{name}")
+    @GetMapping(value = "/web/concept")
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
-    public ResponseEntity<ConceptProjection> getOneForWebByName(@PathVariable String name) {
+    public ResponseEntity<ConceptProjection> getOneForWebByName(@RequestParam String name) {
         Concept concept = conceptRepository.findByNameIgnoreCase(name);
         if (concept == null)
             return ResponseEntity.notFound().build();
