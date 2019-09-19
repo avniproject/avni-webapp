@@ -87,7 +87,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
 
         OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
 
-        if (operationalProgramRepository == null)
+        if (operationalProgram == null)
             return ResponseEntity.badRequest()
                     .body(ReactAdminUtil.generateJsonError(String.format("Operational Program with id '%d' not found", id)));
 
@@ -107,7 +107,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @DeleteMapping(value = "/web/program/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
-    public ResponseEntity voidLocation(@PathVariable("id") Long id) {
+    public ResponseEntity voidProgram(@PathVariable("id") Long id) {
         OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
         if (operationalProgram == null)
             return ResponseEntity.notFound().build();
@@ -115,8 +115,8 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         if (program == null)
             return ResponseEntity.notFound().build();
 
-        operationalProgram.setName(getVoidedName(operationalProgram.getName(), operationalProgram.getId()));
-        program.setName(getVoidedName(program.getName(), program.getId()));
+        operationalProgram.setName(ReactAdminUtil.getVoidedName(operationalProgram.getName(), operationalProgram.getId()));
+        program.setName(ReactAdminUtil.getVoidedName(program.getName(), program.getId()));
         operationalProgram.setVoided(true);
         program.setVoided(true);
         operationalProgramRepository.save(operationalProgram);
@@ -130,7 +130,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @ResponseBody
     public PagedResources<Resource<ProgramContract>> getAll(Pageable pageable) {
         return wrap(operationalProgramRepository
-                .findByIsVoidedFalse(pageable)
+                .findPageByIsVoidedFalse(pageable)
                 .map(ProgramContract::fromOperationalProgram));
     }
 
@@ -143,10 +143,6 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
             return ResponseEntity.notFound().build();
         ProgramContract programContract = ProgramContract.fromOperationalProgram(operationalProgram);
         return new ResponseEntity<>(programContract, HttpStatus.OK);
-    }
-
-    private String getVoidedName(String name, Long id) {
-        return String.format("%s (voided~%d)", name, id);
     }
 
     private Program createProgram(ProgramRequest programRequest) {

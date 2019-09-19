@@ -17,8 +17,6 @@ public interface CatchmentRepository extends ReferenceDataRepository<Catchment>,
     @RestResource(path = "findAllById", rel = "findAllById")
     List<Catchment> findByIdIn(@Param("ids") Long[] ids);
 
-    Page<Catchment> findByIsVoidedFalse(Pageable pageable);
-
     @Query("select c.name from Catchment c where c.isVoided = false")
     List<String> getAllNames();
 }

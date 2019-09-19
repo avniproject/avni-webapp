@@ -20,5 +20,4 @@ public interface AddressLevelTypeRepository extends ReferenceDataRepository<Addr
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevelType> findByIdIn(@Param("ids") Long[] ids);
 
-    Page<AddressLevelType> findByIsVoidedFalse(Pageable pageable);
 }

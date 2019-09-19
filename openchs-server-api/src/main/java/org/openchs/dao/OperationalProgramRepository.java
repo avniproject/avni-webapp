@@ -25,8 +25,6 @@ public interface OperationalProgramRepository extends ImplReferenceDataRepositor
 
     OperationalProgram findByProgramIdAndOrganisationId(long programId, long organisationId);
 
-    Page<OperationalProgram> findByIsVoidedFalse(Pageable pageable);
-
     @Query("select o.name from OperationalProgram o where o.isVoided = false")
     List<String> getAllNames();
 

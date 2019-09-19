@@ -22,8 +22,6 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     @RestResource(path = "findAllById", rel = "findAllById")
     List<AddressLevel> findByIdIn(@Param("ids") Long[] ids);
 
-    Page<AddressLevel> findByIsVoidedFalse(Pageable pageable);
-
     Page<AddressLevel> findByVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,
             DateTime lastModifiedDateTime,

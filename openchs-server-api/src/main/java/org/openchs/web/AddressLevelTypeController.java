@@ -39,7 +39,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @ResponseBody
     public Page<AddressLevelType> getAllNonVoidedAddressLevelType(Pageable pageable) {
-        return addressLevelTypeRepository.findByIsVoidedFalse(pageable);
+        return addressLevelTypeRepository.findPageByIsVoidedFalse(pageable);
     }
 
     @GetMapping(value = "/addressLevelType/{id}")

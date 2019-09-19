@@ -51,7 +51,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @GetMapping(value = "catchment")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public PagedResources<Resource<CatchmentContract>> get(Pageable pageable) {
-        Page<Catchment> all = catchmentRepository.findByIsVoidedFalse(pageable);
+        Page<Catchment> all = catchmentRepository.findPageByIsVoidedFalse(pageable);
         Page<CatchmentContract> catchmentContracts = all.map(catchment -> {
             CatchmentContract catchmentContract = CatchmentContract.fromEntity(catchment);
             return catchmentContract;
