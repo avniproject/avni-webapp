@@ -2,9 +2,8 @@ package org.openchs.domain;
 
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "translation")
@@ -12,6 +11,20 @@ public class Translation extends OrganisationAwareEntity {
     @Column
     @Type(type = "jsonObject")
     private JsonObject translationJson;
+
+
+    @NotNull
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Locale language;
+
+    public Locale getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Locale language) {
+        this.language = language;
+    }
 
     public JsonObject getTranslationJson() {
         return translationJson;

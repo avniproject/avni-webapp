@@ -18,6 +18,19 @@ public class PlatformTranslation extends CHSEntity {
     @Enumerated(EnumType.STRING)
     private Platform platform;
 
+    @NotNull
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Locale language;
+
+    public Locale getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Locale language) {
+        this.language = language;
+    }
+
     public Platform getPlatform() {
         return platform;
     }

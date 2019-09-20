@@ -1,16 +1,14 @@
 package org.openchs.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.Platform;
 import org.openchs.dao.*;
 import org.openchs.dao.application.FormElementGroupRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.application.FormRepository;
-import org.openchs.domain.JsonObject;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.OrganisationConfig;
-import org.openchs.domain.Translation;
+import org.openchs.domain.Locale;
+import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.web.request.TranslationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @RepositoryRestController
 public class TranslationController implements RestControllerResourceProcessor<Translation> {
@@ -91,13 +81,14 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
     @RequestMapping(value = "/translation", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public ResponseEntity<?> uploadTranslations(@RequestBody JsonObject translations) {
-        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        Translation translation = translationRepository.findByOrganisationId(organisation.getId());
+    public ResponseEntity<?> uploadTranslations(@RequestBody TranslationRequest request) {
+        Locale language = Locale.valueOf(request.getLanguage());
+        Translation translation = translationRepository.findByLanguage(language);
         if (translation == null) {
             translation = new Translation();
         }
-        translation.setTranslationJson(translations);
+        translation.setTranslationJson(request.getTranslations());
+        translation.setLanguage(language);
         translation.assignUUIDIfRequired();
         translationRepository.save(translation);
         logger.info(String.format("Saved Translation with UUID: %s", translation.getUuid()));
@@ -108,29 +99,33 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public ResponseEntity<?> downloadTranslations(@RequestParam(value = "platform") String platform) {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        Translation translation = translationRepository.findByOrganisationId(organisation.getId());
-        if (translation == null) {
+        List<Translation> translations = translationRepository.findAll();
+        if (translations.isEmpty()) {
             OrganisationConfig organisationConfig = organisationConfigRepository.findAll().stream().findFirst().orElse(null);
             if (organisationConfig == null) {
                 return ResponseEntity.badRequest().body(String.format("Organisation configuration not set for %s. Unable to fetch data", organisation.getName()));
             }
             logger.info(String.format("Translation for organisation '%s' not found, creating empty translation file", organisation.getName()));
 
-            JsonObject jsonObject = new JsonObject();
-            JsonObject platformTranslations = platformTranslationRepository.findByPlatform(Platform.valueOf(platform)).getTranslationJson();
+            List<Translation> emptyImplTranslations = new ArrayList<>();
             ((List<String>) organisationConfig.getSettings().get("languages"))
                     .forEach(language -> {
-                        Map<String, String> emptyTranslations = generateEmptyTranslations();
-                        emptyTranslations.putAll((Map<String, String>) platformTranslations.get(language));
-                        jsonObject.with(language, emptyTranslations);
+                        PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatformAndLanguage(Platform.valueOf(platform), Locale.valueOf(language));
+                        Translation translation = new Translation();
+                        JsonObject jsonObject = new JsonObject(generateEmptyTranslations());
+                        jsonObject.putAll(platformTranslation.getTranslationJson());
+                        translation.setLanguage(Locale.valueOf(language));
+                        translation.setTranslationJson(jsonObject);
+                        emptyImplTranslations.add(translation);
+
                     });
-            return ResponseEntity.ok().body(jsonObject);
+            return ResponseEntity.ok().body(emptyImplTranslations);
         }
-        return ResponseEntity.ok().body(translation.getTranslationJson());
+        return ResponseEntity.ok().body(translations);
     }
 
-    private Map<String, String> generateEmptyTranslations() {
-        Map<String, String> result = new HashMap<>();
+    private Map<String, Object> generateEmptyTranslations() {
+        Map<String, Object> result = new HashMap<>();
         Arrays.asList(formElementGroupRepository.getAllNames(),
                 formElementRepository.getAllNames(),
                 conceptRepository.getAllNames(),

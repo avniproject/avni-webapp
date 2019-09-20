@@ -1,5 +1,6 @@
 package org.openchs.dao;
 
+import org.openchs.domain.Locale;
 import org.openchs.domain.Translation;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Repository;
 @RepositoryRestResource(collectionResourceRel = "translation", path = "translation")
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface TranslationRepository extends ReferenceDataRepository<Translation>, FindByLastModifiedDateTime<Translation> {
-    Translation findByOrganisationId(Long organisationId);
+
+    Translation findByLanguage(Locale language);
 
     default Translation findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in Location. Field 'title' not unique.");

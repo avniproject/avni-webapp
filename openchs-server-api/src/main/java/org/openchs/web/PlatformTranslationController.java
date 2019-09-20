@@ -1,25 +1,21 @@
 package org.openchs.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.Platform;
 import org.openchs.dao.PlatformTranslationRepository;
-import org.openchs.domain.JsonObject;
+import org.openchs.domain.Locale;
 import org.openchs.domain.PlatformTranslation;
+import org.openchs.web.request.TranslationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.transaction.Transactional;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.stream.Collectors;
 
 @RepositoryRestController
 public class PlatformTranslationController implements RestControllerResourceProcessor<PlatformTranslation> {
@@ -35,27 +31,20 @@ public class PlatformTranslationController implements RestControllerResourceProc
     @RequestMapping(value = "/platformTranslation", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public ResponseEntity<?> uploadPlatformTranslations(@RequestBody JsonObject translations,
-                                                        @RequestParam(value = "platform") String platform) throws Exception {
-        PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatform(Platform.valueOf(platform));
+    public ResponseEntity<?> uploadPlatformTranslations(@RequestBody TranslationRequest request) {
+        Platform platform = Platform.valueOf(request.getPlatform());
+        Locale language = Locale.valueOf(request.getLanguage());
+        PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatformAndLanguage(platform, language);
         if (platformTranslation == null) {
             platformTranslation = new PlatformTranslation();
         }
-        platformTranslation.setTranslationJson(translations);
+        platformTranslation.setTranslationJson(request.getTranslations());
         platformTranslation.assignUUIDIfRequired();
-        platformTranslation.setPlatform(Platform.valueOf(platform));
+        platformTranslation.setPlatform(platform);
+        platformTranslation.setLanguage(language);
         platformTranslationRepository.save(platformTranslation);
         logger.info(String.format("Saved Translation with UUID: %s", platformTranslation.getUuid()));
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/platformTranslation", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public ResponseEntity<?> downloadPlatformTranslations(@RequestParam(value = "platform") String platform) {
-        PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatform(Platform.valueOf(platform));
-        if (platformTranslation == null) {
-            return ResponseEntity.badRequest().body(String.format("No translation found for %s platform", platform));
-        }
-        return ResponseEntity.ok().body(platformTranslation.getTranslationJson());
-    }
 }
