@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import Grid from "@material-ui/core/Grid";
-import { FormControl, Input, InputLabel } from "@material-ui/core";
+import { FormControl, Input } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -32,13 +32,13 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid red"
   },
   iconlay: {
-    padding: "20px 20px 20px 0px"
+    padding: "5px 20px 20px 0px"
   },
   questionCount: {
-    paddingTop: "20px"
+    paddingTop: "5px"
   },
   deleteicon: {
-    padding: "20px 30px 20px 30px",
+    padding: "9px 30px 20px 30px",
     marginTop: "-10px"
   },
   absolute: {
@@ -99,6 +99,10 @@ export default function FormElementGroup(props) {
   const [hover, setHover] = React.useState(false);
   const panel = "panel" + props.index.toString();
   let questionCount = 0;
+  const eventCall = (index, key, value) => {
+    props.updateGroupData(index, key, value);
+    props.updateGroupData(index, "display", value);
+  };
 
   _.forEach(props.groupData.formElements, (element, index) => {
     if (element.voided === false) {
@@ -168,43 +172,22 @@ export default function FormElementGroup(props) {
             {props.groupData.collapse === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           </div>
           <Grid container item sm={12}>
-            <Grid item sm={4}>
-              <Typography component={"span"} className={classes.heading}>
+            <Grid item sm={8}>
+              <Typography component={"div"} className={classes.heading}>
                 <FormControl fullWidth>
-                  <InputLabel htmlFor={"name" + panel}>Name</InputLabel>
                   <Input
                     type="text"
+                    placeholder="Name"
                     disableUnderline={true}
                     onClick={stopPropagation}
                     name={"name" + panel}
                     value={props.groupData.name}
-                    onChange={event =>
-                      props.updateGroupData(props.index, "name", event.target.value)
-                    }
+                    onChange={event => eventCall(props.index, "name", event.target.value)}
                   />
                 </FormControl>
               </Typography>
             </Grid>
-            <Grid item sm={1}>
-              &nbsp;
-            </Grid>
-            <Grid item sm={4}>
-              <Typography component={"span"} className={classes.secondaryHeading}>
-                <FormControl fullWidth>
-                  <InputLabel htmlFor={"display" + panel}>Display Name</InputLabel>
-                  <Input
-                    type="text"
-                    disableUnderline={true}
-                    name={"display" + panel}
-                    value={props.groupData.display}
-                    onClick={stopPropagation}
-                    onChange={event =>
-                      props.updateGroupData(props.index, "display", event.target.value)
-                    }
-                  />
-                </FormControl>
-              </Typography>
-            </Grid>
+
             <Grid item sm={3}>
               <Typography component={"div"} className={classes.questionCount}>
                 No. of questions : {questionCount}
