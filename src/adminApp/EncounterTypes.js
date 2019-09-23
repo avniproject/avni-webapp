@@ -51,7 +51,7 @@ export const EncounterTypeCreate = props => {
 
 export const EncounterTypeEdit = props => {
   return (
-    <Edit title="Edit Encounter" {...props}>
+    <Edit undoable={false} title="Edit Encounter" {...props}>
       <SimpleForm>
         <TextInput source="name" />
       </SimpleForm>

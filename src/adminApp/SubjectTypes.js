@@ -51,7 +51,7 @@ export const SubjectTypeCreate = props => {
 
 export const SubjectTypeEdit = props => {
   return (
-    <Edit title="Edit Subject" {...props}>
+    <Edit undoable={false} title="Edit Subject" {...props}>
       <SimpleForm>
         <TextInput source="name" />
       </SimpleForm>
