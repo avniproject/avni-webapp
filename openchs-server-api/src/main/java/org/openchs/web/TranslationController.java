@@ -113,7 +113,7 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
                         PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatformAndLanguage(Platform.valueOf(platform), Locale.valueOf(language));
                         Translation translation = new Translation();
                         JsonObject jsonObject = new JsonObject(generateEmptyTranslations());
-                        jsonObject.putAll(platformTranslation.getTranslationJson());
+                        jsonObject.putAll(platformTranslation != null ? platformTranslation.getTranslationJson() : new HashMap<>());
                         translation.setLanguage(Locale.valueOf(language));
                         translation.setTranslationJson(jsonObject);
                         emptyImplTranslations.add(translation);
