@@ -38,7 +38,8 @@ class FormDetails extends Component {
       createFlag: true,
       activeTabIndex: 0,
       successAlert: false,
-      defaultSnackbarStatus: true
+      defaultSnackbarStatus: true,
+      detectBrowserCloseEvent: false
     };
     this.btnGroupClick = this.btnGroupClick.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
@@ -60,7 +61,15 @@ class FormDetails extends Component {
     this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
   };
 
+  setupBeforeUnloadListener = () => {
+    window.addEventListener("beforeunload", ev => {
+      ev.preventDefault();
+      this.state.detectBrowserCloseEvent && (ev.returnValue = "Are you sure you want to close?");
+    });
+  };
+
   componentDidMount() {
+    this.setupBeforeUnloadListener();
     return axios
       .get(`/forms/export?formUUID=${this.props.match.params.formUUID}`)
       .then(response => response.data)
@@ -121,8 +130,12 @@ class FormDetails extends Component {
             group.voided = true;
           });
         }
-        this.setState({ createFlag: this.countGroupElements(form) });
-        return form;
+
+        return {
+          form: form,
+          createFlag: this.countGroupElements(form),
+          detectBrowserCloseEvent: true
+        };
       });
     } else {
       this.setState(state => {
@@ -130,9 +143,11 @@ class FormDetails extends Component {
         if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true") {
           form.formElementGroups[index].formElements.splice(elementIndex, 1);
           this.reOrderSequence(form, index);
-        } else form.formElementGroups[index].formElements[elementIndex].voided = true;
+        } else {
+          form.formElementGroups[index].formElements[elementIndex].voided = true;
+        }
 
-        return form;
+        return { form: form, detectBrowserCloseEvent: true };
       });
     }
   }
@@ -171,7 +186,7 @@ class FormDetails extends Component {
       } else {
         form.formElementGroups[index].formElements[elementIndex][propertyName] = value;
       }
-      return { form };
+      return { form: form, detectBrowserCloseEvent: true };
     });
   }
 
@@ -205,7 +220,8 @@ class FormDetails extends Component {
         form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, formElement_temp);
         this.reOrderSequence(form, index);
       }
-      return { form };
+      // return { form };
+      return { form: form, detectBrowserCloseEvent: true };
     });
   }
 
@@ -260,7 +276,12 @@ class FormDetails extends Component {
       .post("/forms", dataSend)
       .then(response => {
         if (response.status === 200) {
-          this.setState({ saveCall: false, successAlert: true, defaultSnackbarStatus: true });
+          this.setState({
+            saveCall: false,
+            successAlert: true,
+            defaultSnackbarStatus: true,
+            detectBrowserCloseEvent: false
+          });
         }
       })
       .catch(error => {
@@ -307,6 +328,7 @@ class FormDetails extends Component {
                           variant="contained"
                           color="secondary"
                           onClick={this.validateForm.bind(this)}
+                          disabled={!this.state.detectBrowserCloseEvent}
                         >
                           <SaveIcon />
                           &nbsp;Save

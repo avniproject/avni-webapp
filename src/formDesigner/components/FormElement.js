@@ -46,19 +46,22 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid red"
   },
   iconlay: {
+    paddingTop: "3px"
+  },
+  expandIcon: {
     paddingTop: "3px",
-    paddingRight: "5px"
+    paddingRight: "0px"
   },
   iconDataType: {
-    // padding: "1px"
+    padding: "10px"
     // backgroundColor: "#efefef"
   },
   questionCount: {
     paddingTop: "20px"
   },
   deleteicon: {
-    padding: "5px 30px 20px 30px",
-    marginTop: "-10px"
+    padding: "10px 30px -1px 0px"
+    // marginTop: "-10px"
   },
   absolute: {
     position: "absolute",
@@ -68,7 +71,8 @@ const useStyles = makeStyles(theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     flexBasis: "33.33%",
-    flexShrink: 0
+    flexShrink: 0,
+    paddingTop: "10px"
   },
   secondaryHeading: {
     flexBasis: "70%",
@@ -80,6 +84,9 @@ const useStyles = makeStyles(theme => ({
   },
   iconNonMandatory: {
     color: "Red"
+  },
+  requiredIcon: {
+    textAlign: "center"
   }
 }));
 const ExpansionPanel = withStyles({
@@ -106,6 +113,7 @@ const ExpansionPanelDetails = withStyles({
 const ExpansionPanelSummary = withStyles({
   root: {
     paddingRight: 0,
+    paddingLeft: "10px",
     backgroundColor: "#fff",
     border: "2px solid #bdc6cf",
     minHeight: 56,
@@ -118,8 +126,8 @@ const ExpansionPanelSummary = withStyles({
   },
   focused: {},
   content: {
-    margin: "10px 0 0 0",
-    "&$expanded": { margin: "10px 0 0 0" }
+    margin: "0px 0 0 0",
+    "&$expanded": { margin: "0px 0 0 0" }
   },
   expanded: {}
 })(MuiExpansionPanelSummary);
@@ -130,7 +138,7 @@ const dataTypeIcons = {
     "": <b />
   },
   Date: <CalendarTodayIcon />,
-  Numeric: <b>N</b>,
+  Numeric: <b>123</b>,
   Text: <TextFieldsIcon />,
   Notes: <NoteIcon />,
   Image: <ImageIcon />,
@@ -218,9 +226,9 @@ export default function FormElement(props) {
             </Typography>
           </div>
           <Grid container item sm={12}>
-            <Grid item sm={10}>
+            <Grid item sm={10} style={{ paddingTop: "10px" }}>
               <Typography component={"span"} className={classes.heading}>
-                <span className={classes.iconlay}>
+                <span className={classes.expandIcon}>
                   {props.formElementData.collapse === true ? (
                     <ExpandLessIcon />
                   ) : (
@@ -234,7 +242,7 @@ export default function FormElement(props) {
                   name={"name" + panel}
                   value={props.formElementData.name}
                   onClick={stopPropagation}
-                  style={{ width: "70%" }}
+                  style={{ width: "85%" }}
                   onChange={event =>
                     props.updateElementData(
                       props.groupIndex,
@@ -246,22 +254,24 @@ export default function FormElement(props) {
                 />
               </Typography>
             </Grid>
-            <Grid item sm={2}>
-              <span className={classes.deleteicon}>
-                {props.formElementData.mandatory ? (
-                  <Tooltip title="Required">
-                    <Mandatory className={classes.iconMandatory} />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="Not required">
-                    <NonMandatory className={classes.iconNonMandatory} />
-                  </Tooltip>
-                )}
 
-                <IconButton aria-label="delete" onClick={handleDelete}>
-                  <DeleteIcon />
-                </IconButton>
-              </span>
+            <Grid item sm={2} className={classes.requiredIcon}>
+              {/* <div className={classes.requiredIcon}> */}
+              {props.formElementData.mandatory ? (
+                <Tooltip title="Required">
+                  <Mandatory className={classes.iconMandatory} />
+                </Tooltip>
+              ) : (
+                <Tooltip title="Not required">
+                  <NonMandatory className={classes.iconNonMandatory} />
+                </Tooltip>
+              )}
+              {/* </span>
+              <span className={classes.deleteicon}> */}
+              <IconButton aria-label="delete" onClick={handleDelete}>
+                <DeleteIcon />
+              </IconButton>
+              {/* </div> */}
             </Grid>
           </Grid>
         </ExpansionPanelSummary>
