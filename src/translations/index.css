@@ -57,7 +57,7 @@ h6 {
   color: white;
 }
 
-#inline {
-  display: flex;
-  align-items: center;
+#margin {
+  margin-left: 30%;
+  margin-right: 30%;
 }
