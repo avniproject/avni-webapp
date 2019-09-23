@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "platform_translation")
-public class PlatformTranslation extends CHSEntity {
+public class PlatformTranslation extends OrganisationAwareEntity {
     @Column
     @Type(type = "jsonObject")
     private JsonObject translationJson;
