@@ -179,11 +179,20 @@ const applyLeftMenu = (
   );
 };
 
+const getSelectedListItem = () => {
+  switch (true) {
+    case window.location.href.includes("/#/forms"):
+      return 1;
+    case window.location.href.includes("/#/concept"):
+      return 2;
+    case window.location.href.includes("/#/upload"):
+      return 3;
+  }
+};
 const ScreenWithAppBar = props => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const selectedListItem = window.location.href.includes("/#/forms") === true ? 1 : 2;
-  const [selectedIndex, setSelectedIndex] = React.useState(selectedListItem);
+  const [selectedIndex, setSelectedIndex] = React.useState(getSelectedListItem());
   function handleListItemClick(event, index) {
     setSelectedIndex(index);
   }
