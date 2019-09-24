@@ -10,7 +10,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-
+import FormListing from "./FormListing";
 class Forms extends Component {
   constructor(props) {
     super(props);
@@ -34,9 +34,10 @@ class Forms extends Component {
   handleClose() {
     this.setState({ open: false });
   }
+
   NewFormButton() {
     return (
-      <div style={{ textAlign: "right" }}>
+      <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
         <Button variant="outlined" color="secondary" onClick={this.handleClickOpen}>
           {" "}
           New Form{" "}
@@ -74,7 +75,8 @@ class Forms extends Component {
                 <NewFormModal {...this.props} />
               </DialogContent>
             </Dialog>
-            <ProgramCard data={this.state.data} {...this.props} />
+            {/* <ProgramCard data={this.state.data} {...this.props} /> */}
+            <FormListing />
           </div>
         </div>
       </ScreenWithAppBar>
