@@ -3,7 +3,6 @@ import MaterialTable from "material-table";
 import axios from "axios";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
-import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 
 const FormListing = ({ history }) => {
   const columns = [
@@ -13,7 +12,7 @@ const FormListing = ({ history }) => {
   ];
 
   const tableRef = React.createRef();
-  const refreshTable = ref => ref.current && ref.current.onQueryChange();
+  // const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   const fetchData = query =>
     new Promise(resolve => {

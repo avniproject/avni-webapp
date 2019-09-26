@@ -187,6 +187,8 @@ const getSelectedListItem = () => {
       return 2;
     case window.location.href.includes("/#/upload"):
       return 3;
+    default:
+      return;
   }
 };
 const ScreenWithAppBar = props => {
