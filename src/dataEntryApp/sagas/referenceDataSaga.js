@@ -2,7 +2,7 @@ import { setGenders, setOperationalModules, types } from "../reducers/metadataRe
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import api from "../api";
 import { isEmpty } from "lodash/core";
-import { mapGender, mapOperationalModules } from "../adapters";
+import { mapGender, mapOperationalModules } from "../../common/adapters";
 
 export function* dataEntryLoadOperationalModulesWatcher() {
   yield takeLatest(types.GET_OPERATIONAL_MODULES, dataEntryLoadOperationalModulesWorker);

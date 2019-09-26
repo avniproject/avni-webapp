@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
-import { find, isEmpty } from "lodash";
+import { find, identity, isEmpty, isNil, sortBy } from "lodash";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { localeChoices } from "../adminApp/user";
 import Grid from "@material-ui/core/Grid";
+import { getOrgConfig } from "./reducers/onLoadReducer";
+import { connect } from "react-redux";
+import { getLocales } from "../common/utils";
 
-export const Translations = props => {
+export const Translations = ({ user, organisation, organisationConfig, getOrgConfig }) => {
+  useEffect(() => {
+    getOrgConfig();
+  }, []);
+
   const initialTableState = {
     "Complete Keys": 0,
     "Incomplete Keys": 0
@@ -141,6 +147,10 @@ export const Translations = props => {
     </FormControl>
   );
 
+  if (isNil(organisationConfig)) return <ScreenWithAppBar appbarTitle={`Loading`} />;
+
+  const localeChoices = getLocales(organisationConfig);
+
   return (
     <ScreenWithAppBar appbarTitle={`Translations`}>
       <div id={"margin"}>
@@ -180,3 +190,12 @@ export const Translations = props => {
     </ScreenWithAppBar>
   );
 };
+
+const mapStateToProps = state => ({
+  organisationConfig: state.translations.onLoad.organisationConfig
+});
+
+export default connect(
+  mapStateToProps,
+  { getOrgConfig }
+)(Translations);

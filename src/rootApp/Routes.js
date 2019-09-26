@@ -2,7 +2,7 @@ import React from "react";
 import { includes, intersection, isEmpty } from "lodash";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
-import { AccessDenied } from "../common/components/utils";
+import { AccessDenied, WithProps } from "../common/components/utils";
 import { OrgManager } from "../adminApp";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
@@ -13,7 +13,7 @@ import FormDetails from "../formDesigner/views/FormDetails";
 import Concepts from "../formDesigner/views/Concepts";
 import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
 import UploadImpl from "../formDesigner/views/UploadImpl";
-import { Translations } from "../translations";
+import Translations from "../translations";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -28,80 +28,80 @@ const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest
   />
 );
 
-const Routes = props => (
+const Routes = ({ user, organisation }) => (
   <Switch>
     <Route path="/admin">
       <RestrictedRoute
         path="/"
         allowedRoles={[ROLES.ORG_ADMIN]}
-        currentUserRoles={props.userRoles}
+        currentUserRoles={user.roles}
         component={OrgManager}
       />
     </Route>
     <RestrictedRoute
       path="/app"
       allowedRoles={[ROLES.USER]}
-      currentUserRoles={props.userRoles}
+      currentUserRoles={user.roles}
       component={DataEntry}
     />
     <RestrictedRoute
       exact
       path="/forms"
       allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
+      currentUserRoles={user.roles}
       component={Forms}
     />
     <RestrictedRoute
       exact
       path="/forms/:formUUID"
       allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
+      currentUserRoles={user.roles}
       component={FormDetails}
     />
     <RestrictedRoute
       exact
       path="/concepts"
       allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
+      currentUserRoles={user.roles}
       component={Concepts}
     />
     <RestrictedRoute
       exact
       path="/concept/create"
       allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
+      currentUserRoles={user.roles}
       component={() => <CreateEditConcept isCreatePage={true} />}
     />
     <RestrictedRoute
       exact
       path="/concept/:uuid/edit"
       allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
+      currentUserRoles={user.roles}
       component={CreateEditConcept}
     />
     <RestrictedRoute
       exact
       path="/upload"
       allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
+      currentUserRoles={user.roles}
       component={UploadImpl}
     />
     <RestrictedRoute
       exact
       path="/"
       allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
+      currentUserRoles={user.roles}
       component={Homepage}
     />
     <RestrictedRoute
       exact
       path="/translations"
       allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={props.userRoles}
-      component={Translations}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, Translations)}
     />
     <Route exact path="/">
-      <Redirect to={includes(props.userRoles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
+      <Redirect to={includes(user.roles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
     </Route>
     <Route
       component={() => (
@@ -113,13 +113,13 @@ const Routes = props => (
   </Switch>
 );
 
-const RoutesWithoutDataEntry = props => (
+const RoutesWithoutDataEntry = ({ user }) => (
   <Switch>
     <Route path="/admin">
       <RestrictedRoute
         path="/"
         allowedRoles={[ROLES.ORG_ADMIN]}
-        currentUserRoles={props.userRoles}
+        currentUserRoles={user.roles}
         component={OrgManager}
       />
     </Route>
@@ -130,7 +130,8 @@ const RoutesWithoutDataEntry = props => (
 );
 
 const mapStateToProps = state => ({
-  userRoles: state.app.user.roles
+  organisation: state.app.organisation,
+  user: state.app.user
 });
 
 export default connect(

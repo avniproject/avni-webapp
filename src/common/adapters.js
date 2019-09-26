@@ -1,18 +1,19 @@
 import {
-  ModelGeneral as General,
-  KeyValue,
+  Concept,
+  ConceptAnswer,
+  EncounterType,
   Form,
+  Format,
   FormElement,
   FormElementGroup,
   Gender,
-  Concept,
-  ConceptAnswer,
-  Format,
-  EncounterType,
+  KeyValue,
+  ModelGeneral as General,
+  OrganisationConfig,
   Program,
   SubjectType
 } from "openchs-models";
-import { map, isNil, isEmpty } from "lodash";
+import { get, isEmpty, isNil, map } from "lodash";
 
 export const mapConceptAnswer = json => {
   const conceptAnswer = new ConceptAnswer();
@@ -61,30 +62,22 @@ export const mapFormElementGroup = (json, form) => {
 };
 
 export const mapForm = json => {
-  let form = General.assignFields(json, new Form(), [
-    "uuid",
-    "name",
-    "formType"
-  ]);
+  let form = General.assignFields(json, new Form(), ["uuid", "name", "formType"]);
   form.formElementGroups = map(json.formElementGroups, fegJson =>
     mapFormElementGroup(fegJson, form)
   );
   return form;
 };
 
-export const mapGender = json =>
-  General.assignFields(json, new Gender(), ["uuid", "name"]);
+export const mapGender = json => General.assignFields(json, new Gender(), ["uuid", "name"]);
 
 export const mapEncounterType = json => {
   const encounterType = new EncounterType();
   encounterType.name = json.name;
   encounterType.uuid = json.uuid;
   encounterType.voided = false;
-  encounterType.operationalEncounterTypeName =
-    json.operationalEncounterTypeName;
-  encounterType.displayName = isEmpty(
-    encounterType.operationalEncounterTypeName
-  )
+  encounterType.operationalEncounterTypeName = json.operationalEncounterTypeName;
+  encounterType.displayName = isEmpty(encounterType.operationalEncounterTypeName)
     ? encounterType.name
     : encounterType.operationalEncounterTypeName;
   return encounterType;
@@ -118,3 +111,8 @@ export const mapOperationalModules = json => ({
   programs: json.programs.map(mapProgram),
   subjectTypes: json.subjectTypes.map(mapSubjectType)
 });
+
+export const mapOrganisationConfig = json => {
+  let fromResource = OrganisationConfig.fromResource(get(json, "_embedded.organisationConfig.0"));
+  return fromResource;
+};

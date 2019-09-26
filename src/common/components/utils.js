@@ -83,3 +83,5 @@ export const withParams = Comp => ({ match, ...props }) => {
   const queryParams = qs.parse(get(props, "location.search"));
   return <Comp match={merge({}, match, { queryParams })} {...props} />;
 };
+
+export const WithProps = (extras, Compnent) => props => <Compnent {...extras} {...props} />;

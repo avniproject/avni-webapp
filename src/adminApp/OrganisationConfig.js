@@ -14,7 +14,7 @@ import {
   SimpleShowLayout
 } from "react-admin";
 import { LocaleSelectInput } from "./components/LocaleSelectInput";
-import { localeChoices } from "./user";
+import { localeChoices } from "../common/constants";
 import { isNil } from "lodash";
 
 const formatLocale = languages => {

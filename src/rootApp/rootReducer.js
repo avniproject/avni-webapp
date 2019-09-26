@@ -3,6 +3,7 @@ import { reducer as formReducer } from "redux-form";
 import { routerReducer } from "react-router-redux";
 import { adminReducer, defaultI18nProvider, i18nReducer } from "react-admin";
 import dataEntry from "../dataEntryApp/reducers/dataEntryReducer";
+import translations from "../translations/reducers";
 
 import app from "./ducks";
 
@@ -14,5 +15,6 @@ export default combineReducers({
   form: formReducer,
   router: routerReducer,
   app,
-  dataEntry
+  dataEntry,
+  translations
 });
