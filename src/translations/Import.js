@@ -1,27 +1,43 @@
 import DropDown from "../common/components/DropDown";
 import FileUpload from "../common/components/FileUpload";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { find, identity, isEmpty, isNil, sortBy } from "lodash";
+import { filter, find, identity, isEmpty, isNil, isString, reject, size, sortBy } from "lodash";
 import Box from "@material-ui/core/Box";
 
-export default ({ locales = [], onSuccessfulImport }) => {
-  const [tableData, setTableData] = useState({});
-  const [file, setFile] = useState("");
-  const [language, setLanguage] = useState("");
+const noOfKeysWithValues = file => {
+  return size(file && file.json) - noOfKeysWithoutValues(file);
+};
 
-  const onFileChooseHandler = (content, file) => {
-    let translations;
-    try {
-      translations = JSON.parse(content);
-    } catch (error) {
-      alert(error.message);
-      return "Broken JSON file.";
+const noOfKeysWithoutValues = file => {
+  return filter(file && file.json, value => ["", undefined, null].includes(value)).length;
+};
+
+const isInvalidFile = file => {
+  return !isEmpty(reject(file && file.json, isString));
+};
+
+export default ({ locales = [], onSuccessfulImport }) => {
+  const [file, setFile] = useState();
+  const [language, setLanguage] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isInvalidFile(file)) {
+      setError("Invalid file format. Please upload a valid file.");
+    } else {
+      setError("");
     }
-    setFile({ name: file.name, json: translations });
-    const incomplete = Object.values(translations).filter(t => t === "").length;
-    const complete = Object.keys(translations).length - incomplete;
-    setTableData({ complete, incomplete });
+  }, [file]);
+
+  const onFileChooseHandler = (content, domFile) => {
+    const file = { name: domFile.name };
+    try {
+      file.json = JSON.parse(content);
+      setFile(file);
+    } catch (error) {
+      setError("Invalid file format. Please upload a valid file.");
+    }
   };
 
   const onUploadPressedHandler = () => {
@@ -33,8 +49,6 @@ export default ({ locales = [], onSuccessfulImport }) => {
           alert("Upload successful");
           onSuccessfulImport();
         }
-        setTableData({});
-        setFile("");
       })
       .catch(error => {
         if (error.response) {
@@ -42,10 +56,8 @@ export default ({ locales = [], onSuccessfulImport }) => {
         } else {
           alert("Something went wrong while uploading the file");
         }
-        setTableData({});
-        setFile("");
       });
-    setFile("");
+    setFile();
     setLanguage("");
   };
 
@@ -53,22 +65,29 @@ export default ({ locales = [], onSuccessfulImport }) => {
     <div />
   ) : (
     <React.Fragment>
-      <DropDown name="Language" value={language} onChange={setLanguage} options={locales} />
+      <DropDown
+        name="Language"
+        style={{ width: 120 }}
+        value={language}
+        onChange={setLanguage}
+        options={locales}
+      />
       <FileUpload
         onSelect={onFileChooseHandler}
         onUpload={onUploadPressedHandler}
         canSelect={!isEmpty(language)}
-        canUpload={isEmpty(tableData.incomplete) && !isEmpty(language)}
+        canUpload={isEmpty(noOfKeysWithoutValues(file)) && isEmpty(error)}
       />
       <Box py={4}>
-        {!isEmpty(tableData) && (
+        {!isEmpty(file) && (
           <div>
             <p>Summary:</p>
             <p>File name: {file.name}</p>
-            <p>{tableData.complete} keys have translations.</p>
-            <p>{tableData.incomplete} keys dont have translations.</p>
+            <p>{noOfKeysWithValues(file)} keys have translations.</p>
+            <p>{noOfKeysWithoutValues(file)} keys don't have translations.</p>
           </div>
         )}
+        <p>{!isEmpty(error) && error}</p>
       </Box>
     </React.Fragment>
   );

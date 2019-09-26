@@ -4,8 +4,8 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 
-export default ({ name, value, onChange, options }) => (
-  <FormControl required>
+export default ({ name, value, onChange, options, style }) => (
+  <FormControl required style={style}>
     <InputLabel htmlFor={`${name}-required`}>{name}</InputLabel>
     <Select
       native
