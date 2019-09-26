@@ -12,6 +12,7 @@ import Grid from "@material-ui/core/Grid";
 import { getOrgConfig } from "./reducers/onLoadReducer";
 import { connect } from "react-redux";
 import { getLocales } from "../common/utils";
+import FileUpload from "../common/components/FileUpload";
 
 export const Translations = ({ user, organisation, organisationConfig, getOrgConfig }) => {
   useEffect(() => {
@@ -24,6 +25,7 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
   };
 
   const platforms = [{ id: "Android", name: "Android" }, { id: "Web", name: "Web" }];
+  const localeChoices = organisationConfig && getLocales(organisationConfig);
 
   const [tableData, setTableData] = useState(initialTableState);
   const [incompleteCount, setIncomplete] = useState(0);
@@ -31,41 +33,28 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
   const [data, setData] = useState("");
   const [language, setLanguage] = useState("");
 
-  const onFileChooseHandler = event => {
+  const onFileChooseHandler = content => {
     setTableData(initialTableState);
-    const fileReader = new FileReader();
-    event.target.files[0] && fileReader.readAsText(event.target.files[0]);
-    fileReader.onloadend = event => {
-      let translations;
-      try {
-        translations = JSON.parse(event.target.result);
-        setData(translations);
-      } catch (error) {
-        alert(error.message);
-        return;
-      }
-      const incomplete = Object.values(translations).filter(t => t === "").length;
-      if (incomplete > 0) {
-        setIncomplete(incomplete);
-      }
-      const complete = Object.keys(translations).length - incomplete;
-      setTableData({
-        "Complete Keys": complete,
-        "Incomplete Keys": incomplete
-      });
-    };
+    let translations;
+    try {
+      translations = JSON.parse(content);
+    } catch (error) {
+      alert(error.message);
+      return "Broken JSON file.";
+    }
+    setData(translations);
+    const incomplete = Object.values(translations).filter(t => t === "").length;
+    if (incomplete > 0) {
+      setIncomplete(incomplete);
+    }
+    const complete = Object.keys(translations).length - incomplete;
+    setTableData({
+      "Complete Keys": complete,
+      "Incomplete Keys": incomplete
+    });
   };
 
   const onUploadPressedHandler = () => {
-    if (isEmpty(data) || isEmpty(language)) {
-      return alert("Choose File and Language before uploading");
-    }
-    if (incompleteCount > 0) {
-      setData("");
-      document.getElementById("file_upload").value = "";
-      setIncomplete(0);
-      return alert("Can not upload incomplete translation file");
-    }
     const languageId = find(localeChoices, local => local.name === language).id;
     axios
       .post("/translation", { translations: data, language: languageId })
@@ -82,7 +71,7 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
         }
       });
     setData("");
-    document.getElementById("file_upload").value = "";
+    setLanguage("");
   };
 
   const onDownloadPressedHandler = () => {
@@ -149,8 +138,6 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
 
   if (isNil(organisationConfig)) return <ScreenWithAppBar appbarTitle={`Loading`} />;
 
-  const localeChoices = getLocales(organisationConfig);
-
   return (
     <ScreenWithAppBar appbarTitle={`Translations`}>
       <div id={"margin"}>
@@ -165,17 +152,12 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
         </div>
         <Grid container direction="row" justify="flex-start" alignItems="center">
           {renderOptions("Language", language, setLanguage, localeChoices)}
-          <input
-            style={{ padding: 10 }}
-            id="file_upload"
-            type="file"
-            onChange={onFileChooseHandler}
+          <FileUpload
+            onSelect={onFileChooseHandler}
+            onUpload={onUploadPressedHandler}
+            canSelect={!isEmpty(language)}
+            canUpload={incompleteCount === 0 && !isEmpty(language)}
           />
-          <div className="box has-text-centered">
-            <button className="button" onClick={onUploadPressedHandler}>
-              Upload
-            </button>
-          </div>
         </Grid>
         <p />
         <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
