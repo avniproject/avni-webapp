@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RepositoryRestController
 public class TranslationController implements RestControllerResourceProcessor<Translation> {
@@ -99,32 +100,34 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public ResponseEntity<?> downloadTranslations(@RequestParam(value = "platform") String platform) {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        List<Translation> translations = translationRepository.findAll();
-        if (translations.isEmpty()) {
-            OrganisationConfig organisationConfig = organisationConfigRepository.findAll().stream().findFirst().orElse(null);
-            if (organisationConfig == null) {
-                return ResponseEntity.badRequest().body(String.format("Organisation configuration not set for %s. Unable to fetch data", organisation.getName()));
-            }
-            logger.info(String.format("Translation for organisation '%s' not found, creating empty translation file", organisation.getName()));
-
-            List<Translation> emptyImplTranslations = new ArrayList<>();
-            ((List<String>) organisationConfig.getSettings().get("languages"))
-                    .forEach(language -> {
-                        PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatformAndLanguage(Platform.valueOf(platform), Locale.valueOf(language));
-                        Translation translation = new Translation();
-                        JsonObject jsonObject = new JsonObject(generateEmptyTranslations());
-                        jsonObject.putAll(platformTranslation != null ? platformTranslation.getTranslationJson() : new HashMap<>());
-                        translation.setLanguage(Locale.valueOf(language));
-                        translation.setTranslationJson(jsonObject);
-                        emptyImplTranslations.add(translation);
-
-                    });
-            return ResponseEntity.ok().body(emptyImplTranslations);
+        OrganisationConfig organisationConfig = organisationConfigRepository.findAll().stream().findFirst().orElse(null);
+        if (organisationConfig == null) {
+            return ResponseEntity.badRequest().body(String.format("Organisation configuration not set for %s. Unable to fetch data", organisation.getName()));
         }
-        return ResponseEntity.ok().body(translations);
+        List<Translation> translations = translationRepository.findAll();
+        return ResponseEntity.ok().body(generateTranslations(organisationConfig, translations, Platform.valueOf(platform)));
     }
 
-    private Map<String, Object> generateEmptyTranslations() {
+    private List<Translation> generateTranslations(OrganisationConfig organisationConfig, List<Translation> translations, Platform platform) {
+        List<Translation> translationList = new ArrayList<>();
+        Map<Locale, JsonObject> translationMap = translations.stream().collect(Collectors.toMap(Translation::getLanguage, Translation::getTranslationJson));
+        ((List<String>) organisationConfig.getSettings().get("languages"))
+                .forEach(language -> {
+                    JsonObject existingTranslations = translationMap.get(Locale.valueOf(language));
+                    Map<String, Object> platformTranslations = generatePlatformTranslations(platform, Locale.valueOf(language));
+                    Translation translation = new Translation();
+                    JsonObject jsonObject = new JsonObject(generateTranslationsWithValue(""));
+                    jsonObject.putAll(platformTranslations);
+                    jsonObject.putAll(existingTranslations != null ? existingTranslations : Collections.emptyMap());
+                    translation.setLanguage(Locale.valueOf(language));
+                    translation.setTranslationJson(jsonObject);
+                    translationList.add(translation);
+                });
+
+        return translationList;
+    }
+
+    private Map<String, Object> generateTranslationsWithValue(String value) {
         Map<String, Object> result = new HashMap<>();
         Arrays.asList(formElementGroupRepository.getAllNames(),
                 formElementRepository.getAllNames(),
@@ -139,7 +142,24 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
                 conceptAnswerRepository.getAllConceptNames(),
                 conceptAnswerRepository.getAllNames(),
                 formRepository.getAllNames()
-        ).forEach(list -> list.forEach(e -> result.put(e, "")));
+        ).forEach(list -> list.forEach(e -> result.put(e, value)));
         return result;
+    }
+
+    private Map<String, Object> generatePlatformTranslations(Platform platform, Locale language) {
+        PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatformAndLanguage(platform, language);
+        PlatformTranslation englishPlatformTranslation = platformTranslationRepository.findByPlatformAndLanguage(platform, Locale.en);
+        Map<String, Object> emptyEnglishTranslation = englishPlatformTranslation
+                .getTranslationJson()
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> ""));
+        if (platformTranslation == null) {
+            logger.info(String.format("No platform translations found for platform: %s, language: %s", platform.name(), language.name()));
+            return emptyEnglishTranslation;
+        }
+        JsonObject jsonObject = new JsonObject(emptyEnglishTranslation);
+        jsonObject.putAll(platformTranslation.getTranslationJson());
+        return jsonObject;
     }
 }
