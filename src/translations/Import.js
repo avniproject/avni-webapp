@@ -5,7 +5,7 @@ import axios from "axios";
 import { find, identity, isEmpty, isNil, sortBy } from "lodash";
 import Box from "@material-ui/core/Box";
 
-export default ({ locales = [] }) => {
+export default ({ locales = [], onSuccessfulImport }) => {
   const [tableData, setTableData] = useState({});
   const [file, setFile] = useState("");
   const [language, setLanguage] = useState("");
@@ -30,7 +30,8 @@ export default ({ locales = [] }) => {
       .post("/translation", { translations: file.json, language: languageId })
       .then(res => {
         if (res.status === 200) {
-          alert("upload successful");
+          alert("Upload successful");
+          onSuccessfulImport();
         }
         setTableData({});
         setFile("");

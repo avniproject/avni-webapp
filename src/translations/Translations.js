@@ -1,31 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
-import { find, identity, isEmpty, isNil, sortBy } from "lodash";
+import {find, isEmpty, isNil} from "lodash";
 import DropDown from "../common/components/DropDown";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
+import {saveAs} from "file-saver";
 import Grid from "@material-ui/core/Grid";
-import { getOrgConfig } from "./reducers/onLoadReducer";
-import { connect } from "react-redux";
-import { getLocales } from "../common/utils";
+import {getDashboardData, getOrgConfig} from "./reducers/onLoadReducer";
+import {connect} from "react-redux";
+import {getLocales} from "../common/utils";
 import Loading from "../dataEntryApp/components/Loading";
 import Import from "./Import";
+import {TranslationDashboard} from "./TranslationDashboard";
 
-export const Translations = ({ user, organisation, organisationConfig, getOrgConfig }) => {
+const EMPTY_TRANSLATION_KEY = 'KEY_NOT_DEFINED';
+export const Translations = ({user, organisation, organisationConfig, getOrgConfig, dashboardData, getDashboardData}) => {
   useEffect(() => {
     getOrgConfig();
+    getDashboardData("Android", EMPTY_TRANSLATION_KEY)
   }, []);
 
-  const initialTableState = {
-    "Complete Keys": 0,
-    "Incomplete Keys": 0
-  };
-
-  const platforms = [{ id: "Android", name: "Android" }, { id: "Web", name: "Web" }];
+  const platforms = [{id: "Android", name: "Android"}, {id: "Web", name: "Web"}];
   const localeChoices = organisationConfig && getLocales(organisationConfig);
-
-  const [tableData, setTableData] = useState(initialTableState);
   const [platform, setPlatform] = useState("");
 
   const onDownloadPressedHandler = () => {
@@ -36,7 +32,7 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
     return axios({
       url: "/translation",
       method: "GET",
-      params: { platform: platformId }
+      params: {platform: platformId}
     })
       .then(response => {
         const zip = new JSZip();
@@ -44,7 +40,7 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
         response.data.forEach(data =>
           folder.file(data.language + ".json", JSON.stringify(data.translationJson))
         );
-        zip.generateAsync({ type: "blob" }).then(content => saveAs(content, "translations.zip"));
+        zip.generateAsync({type: "blob"}).then(content => saveAs(content, "translations.zip"));
       })
       .catch(error => {
         if (error.response) {
@@ -55,41 +51,19 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
       });
   };
 
-  const renderTable = () => (
-    <tr>
-      <td>{tableData["Complete Keys"]}</td>
-      <td>{tableData["Incomplete Keys"]}</td>
-    </tr>
-  );
-
-  const renderTableHeader = () => {
-    let header = Object.keys(tableData);
-    return header.map((key, index) => {
-      return <th key={index}>{key}</th>;
-    });
-  };
-
-  if (isNil(organisationConfig)) return <Loading />;
+  if (isNil(organisationConfig)) return <Loading/>;
 
   return (
     <ScreenWithAppBar appbarTitle={`Translations`}>
       <div id={"margin"}>
-        <div style={{ marginBottom: 30 }}>
-          <h1 id="title">Translations Dashboard</h1>
-          <table id="translation">
-            <tbody>
-              <tr>{renderTableHeader()}</tr>
-              {renderTable()}
-            </tbody>
-          </table>
-        </div>
+        <TranslationDashboard data={dashboardData}/>
         <Grid container direction="row" justify="flex-start" alignItems="center">
-          <Import locales={localeChoices} />
+          <Import locales={localeChoices} onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)}/>
         </Grid>
-        <p />
+        <p/>
         <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
-          <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms} />
-          <div style={{ padding: 15 }} className="box has-text-centered">
+          <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms}/>
+          <div style={{padding: 15}} className="box has-text-centered">
             <button className="button" onClick={onDownloadPressedHandler}>
               Download
             </button>
@@ -101,10 +75,11 @@ export const Translations = ({ user, organisation, organisationConfig, getOrgCon
 };
 
 const mapStateToProps = state => ({
-  organisationConfig: state.translations.onLoad.organisationConfig
+  organisationConfig: state.translations.onLoad.organisationConfig,
+  dashboardData: state.translations.onLoad.dashboardData
 });
 
 export default connect(
   mapStateToProps,
-  { getOrgConfig }
+  {getOrgConfig, getDashboardData}
 )(Translations);
