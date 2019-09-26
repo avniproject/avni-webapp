@@ -10,8 +10,9 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
     const fileReader = new FileReader();
     event.target.files[0] && fileReader.readAsText(event.target.files[0]);
     setValue(event.target.value);
+    const file = event.target.files[0];
     fileReader.onloadend = event => {
-      const error = onSelect(event.target.result);
+      const error = onSelect(event.target.result, file);
       error && alert(error);
     };
   };
