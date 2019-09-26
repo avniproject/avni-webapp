@@ -31,11 +31,10 @@ export default ({ locales = [], onSuccessfulImport }) => {
   }, [file]);
 
   const onFileChooseHandler = (content, domFile) => {
-    const file = { name: domFile.name };
     try {
-      file.json = JSON.parse(content);
-      setFile(file);
+      setFile({ name: domFile.name, json: JSON.parse(content) });
     } catch (error) {
+      setFile({ name: domFile.name });
       setError("Invalid file format. Please upload a valid file.");
     }
   };
