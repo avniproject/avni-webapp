@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
     display: "flex"
   },
   tabs: {
-    marginLeft: -30,
+    marginLeft: -10,
     borderRight: `1px solid ${theme.palette.divider}`
   },
   tabsPanel: {

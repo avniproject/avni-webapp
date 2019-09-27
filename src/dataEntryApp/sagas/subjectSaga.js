@@ -17,7 +17,7 @@ import {
   selectSubjectTypeFromName,
   selectRegistrationSubject
 } from "./selectors";
-import { mapForm } from "../adapters";
+import { mapForm } from "../../common/adapters";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);

@@ -34,4 +34,20 @@ export const LOCALES = Object.freeze({
 
 export const phoneCountryPrefix = process.env.REACT_APP_PHONE_COUNTRY_PREFIX || "+91";
 
+export const localeChoices = [
+  { id: LOCALES.ENGLISH, name: "English" },
+  { id: LOCALES.HINDI, name: "Hindi" },
+  { id: LOCALES.MARATHI, name: "Marathi" },
+  { id: LOCALES.GUJARATI, name: "Gujarati" },
+  { id: LOCALES.BENGALI, name: "Bengali" },
+  { id: LOCALES.TELUGU, name: "Telugu" },
+  { id: LOCALES.TAMIL, name: "Tamil" },
+  { id: LOCALES.KANNADA, name: "Kannada" },
+  { id: LOCALES.ODIA, name: "Odia" },
+  { id: LOCALES.MALAYALAM, name: "Malayalam" },
+  { id: LOCALES.PUNJABI, name: "Punjabi" },
+  { id: LOCALES.SANSKRIT, name: "Sanskrit" },
+  { id: LOCALES.URDU, name: "Urdu" }
+];
+
 export const withoutDataEntry = false;

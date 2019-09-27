@@ -6870,10 +6870,10 @@ open@^6.3.0:
   dependencies:
     is-wsl "^1.1.0"
 
-openchs-models@0.0.21:
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.0.21.tgz#ac73621b106391c29fc9af6eac9e106d2ad8a9c1"
-  integrity sha512-YSJ3eelVILqBURxtqxWaOOKDWcJZ6lQ08Jghb6dtbm/tPGIeEUdmLx2RbOAPvep3mgzAk6PscSQb9heuHpzykw==
+openchs-models@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.0.tgz#0d24dd48dc669be5311cbf8f49753e95cfed6877"
+  integrity sha512-8s2AjvL6BgEkh4VjmoF41M4nqaLLldLyfBYCqvIaTvoHmBfyyXkjtQkMGmI4ariU6h6pWaCHiCohuEQ8g47yng==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"

@@ -1,6 +1,7 @@
 import { all, call, fork } from "redux-saga/effects";
 import { adminSaga, defaultI18nProvider } from "react-admin";
 import dataEntrySaga from "../dataEntryApp/sagas";
+import translationsSaga from "../translations/sagas";
 
 import {
   authProvider,
@@ -14,10 +15,13 @@ const i18nProvider = defaultI18nProvider;
 
 export default function* rootSaga() {
   yield call(initialiseCognito);
-  yield all([
-    fork(adminSaga(dataProvider, authProvider, i18nProvider)),
-    fork(onSetCognitoUser),
-    fork(userInfoWatcher),
-    fork(dataEntrySaga)
-  ]);
+  yield all(
+    [
+      adminSaga(dataProvider, authProvider, i18nProvider),
+      onSetCognitoUser,
+      userInfoWatcher,
+      dataEntrySaga,
+      translationsSaga
+    ].map(fork)
+  );
 }

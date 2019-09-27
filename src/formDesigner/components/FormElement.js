@@ -155,14 +155,11 @@ export default function FormElement(props) {
   const panel = "panel" + props.groupIndex.toString + props.index.toString();
 
   const handleDelete = event => {
-    props.deleteElement(props.groupIndex, props.index);
+    props.deleteGroup(props.groupIndex, props.index);
     event.stopPropagation();
     //props.deleteRecord(props.index);
   };
 
-  const separateAddElement = event => {
-    props.btnElementAdd(props.groupIndex, props.index);
-  };
   const stopPropagation = e => e.stopPropagation();
 
   const hoverDisplayAddGroup = event => {
@@ -172,7 +169,6 @@ export default function FormElement(props) {
   const hoverHideAddGroup = event => {
     setHover(false);
   };
-  console.log("Draggable Drag and drop");
   return (
     <Draggable draggableId={"Element" + props.index} index={props.index}>
       {provided => (
@@ -188,7 +184,7 @@ export default function FormElement(props) {
             expanded={props.formElementData.collapse}
             className={props.formElementData.error ? classes.rootError : classes.root}
             onChange={event =>
-              props.updateGroupData(
+              props.handleGroupElementChange(
                 props.groupIndex,
                 "collapse",
                 !props.formElementData.collapse,
@@ -251,7 +247,7 @@ export default function FormElement(props) {
                       onClick={stopPropagation}
                       style={{ width: "85%" }}
                       onChange={event =>
-                        props.updateElementData(
+                        props.handleGroupElementChange(
                           props.groupIndex,
                           "name",
                           event.target.value,
@@ -289,7 +285,12 @@ export default function FormElement(props) {
           </ExpansionPanel>
           <div className={classes.absolute}>
             {hover && (
-              <Fab color="secondary" aria-label="add" onClick={separateAddElement} size="small">
+              <Fab
+                color="secondary"
+                aria-label="add"
+                onClick={event => props.btnGroupAdd(props.groupIndex, props.index)}
+                size="small"
+              >
                 <AddIcon />
               </Fab>
             )}

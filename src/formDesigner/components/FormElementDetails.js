@@ -27,9 +27,9 @@ export default function FormElementDetails(props) {
 
   function onChangeAnswerName(answerName, index, flag = true) {
     if (flag) {
-      props.updateElementData(props.groupIndex, "concept", answerName, props.index);
+      props.handleGroupElementChange(props.groupIndex, "concept", answerName, props.index);
       if (props.formElementData.name === "") {
-        props.updateElementData(props.groupIndex, "name", answerName.name, props.index);
+        props.handleGroupElementChange(props.groupIndex, "name", answerName.name, props.index);
       }
     } else {
       props.updateConceptElementData(props.groupIndex, "name", answerName, props.index);
@@ -38,20 +38,24 @@ export default function FormElementDetails(props) {
 
   return (
     <Grid container item sm={12}>
-      <Grid item sm={6}>
+      <Grid item sm={12}>
         <FormControl fullWidth>
           <InputLabel htmlFor="elementNameDetails">Name</InputLabel>
           <Input
             id="elementNameDetails"
             value={props.formElementData.name}
             onChange={event =>
-              props.updateElementData(props.groupIndex, "name", event.target.value, props.index)
+              props.handleGroupElementChange(
+                props.groupIndex,
+                "name",
+                event.target.value,
+                props.index
+              )
             }
           />
         </FormControl>
       </Grid>
-      <Grid item sm={6} />
-      <Grid item sm={6}>
+      <Grid item sm={12}>
         <FormControl fullWidth>
           <AutoSuggestSingleSelection
             visibility={!props.formElementData.newFlag}
@@ -71,7 +75,12 @@ export default function FormElementDetails(props) {
               name="type"
               value={props.formElementData.type}
               onChange={event =>
-                props.updateElementData(props.groupIndex, "type", event.target.value, props.index)
+                props.handleGroupElementChange(
+                  props.groupIndex,
+                  "type",
+                  event.target.value,
+                  props.index
+                )
               }
               required
             >
@@ -149,7 +158,7 @@ export default function FormElementDetails(props) {
           })}
         </Grid>
       )}
-      <Grid item sm={6}>
+      <Grid item sm={12}>
         <FormControlLabel
           control={
             <Checkbox
@@ -157,7 +166,7 @@ export default function FormElementDetails(props) {
               checked={props.formElementData.mandatory}
               value={props.formElementData.mandatory ? "yes" : "no"}
               onChange={event =>
-                props.updateElementData(
+                props.handleGroupElementChange(
                   props.groupIndex,
                   "mandatory",
                   event.target.value === "yes" ? false : true,

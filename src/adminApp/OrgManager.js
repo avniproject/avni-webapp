@@ -35,6 +35,7 @@ import {
   organisationConfigList
 } from "./OrganisationConfig";
 import { Redirect } from "react-router-dom";
+import { WithProps } from "../common/components/utils";
 
 const redirectHome = () => {
   return <Redirect to="/" />;
@@ -55,14 +56,14 @@ class OrgManager extends Component {
         title="Manage Organisation"
         authProvider={authProvider}
         history={adminHistory}
-        logoutButton={With({ user }, LogoutButton)}
+        logoutButton={WithProps({ user }, LogoutButton)}
       >
         <Resource
           name="user"
-          list={With({ organisation }, UserList)}
-          create={With({ organisation }, UserCreate)}
-          show={With({ user }, UserDetail)}
-          edit={With({ user }, UserEdit)}
+          list={WithProps({ organisation }, UserList)}
+          create={WithProps({ organisation }, UserCreate)}
+          show={WithProps({ user }, UserDetail)}
+          edit={WithProps({ user }, UserEdit)}
         />
         <Resource
           name="catchment"
@@ -124,8 +125,6 @@ class OrgManager extends Component {
     );
   }
 }
-
-const With = (extras, Compnent) => props => <Compnent {...extras} {...props} />;
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,

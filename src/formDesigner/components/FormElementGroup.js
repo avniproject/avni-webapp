@@ -100,8 +100,8 @@ export default function FormElementGroup(props) {
   const panel = "panel" + props.index.toString();
   let questionCount = 0;
   const eventCall = (index, key, value) => {
-    props.updateGroupData(index, key, value);
-    props.updateGroupData(index, "display", value);
+    props.handleGroupElementChange(index, key, value);
+    props.handleGroupElementChange(index, "display", value);
   };
 
   _.forEach(props.groupData.formElements, (element, index) => {
@@ -141,16 +141,17 @@ export default function FormElementGroup(props) {
     _.forEach(displayOrderFormElements, (formElement, index) => {
       if (formElement.voided === false) {
         let propsElement = {
-          key: index,
+          key: "Element" + props.index + "" + index,
           formElementData: formElement,
           groupIndex: props.index,
           index: index,
-          btnElementAdd: props.btnGroupAdd,
-          updateElementData: props.updateGroupData,
-          deleteElement: props.deleteGroup
+          btnGroupAdd: props.btnGroupAdd,
+          handleGroupElementChange: props.handleGroupElementChange,
+          deleteGroup: props.deleteGroup,
+          updateConceptElementData: props.updateConceptElementData
         };
 
-        formElements.push(<FormElement {...props} {...propsElement} />);
+        formElements.push(<FormElement {...propsElement} />);
       }
     });
     return formElements;
@@ -183,7 +184,7 @@ export default function FormElementGroup(props) {
           expanded={props.groupData.collapse}
           className={props.groupData.error ? classes.rootError : classes.root}
           onChange={event =>
-            props.updateGroupData(props.index, "collapse", !props.groupData.collapse)
+            props.handleGroupElementChange(props.index, "collapse", !props.groupData.collapse)
           }
         >
           <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
