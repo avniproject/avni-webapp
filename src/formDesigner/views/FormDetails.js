@@ -16,8 +16,9 @@ import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 
 function TabContainer(props) {
+  const typographyCSS = { padding: 8 * 3 };
   return (
-    <Typography {...props} component="div" style={{ padding: 8 * 3 }}>
+    <Typography {...props} component="div" style={typographyCSS}>
       {props.children}
     </Typography>
   );
@@ -46,6 +47,7 @@ class FormDetails extends Component {
     this.btnGroupAdd = this.btnGroupAdd.bind(this);
     this.handleGroupElementChange = this.handleGroupElementChange.bind(this);
     this.updateConceptElementData = this.updateConceptElementData.bind(this);
+    this.validateForm = this.validateForm.bind(this);
   }
 
   onUpdateFormName = name => {
@@ -123,7 +125,6 @@ class FormDetails extends Component {
         let form = Object.assign({}, state.form);
         if (form.formElementGroups[index].newFlag === "true") {
           form.formElementGroups.splice(index, 1);
-          this.reOrderSequence(form);
         } else {
           form.formElementGroups[index].voided = true;
           _.forEach(form.formElementGroups[index].formElements, (group, index) => {
@@ -142,7 +143,6 @@ class FormDetails extends Component {
         let form = Object.assign({}, state.form);
         if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true") {
           form.formElementGroups[index].formElements.splice(elementIndex, 1);
-          this.reOrderSequence(form, index);
         } else {
           form.formElementGroups[index].formElements[elementIndex].voided = true;
         }
@@ -165,12 +165,12 @@ class FormDetails extends Component {
       if (group.voided === false) {
         let propsGroup = {
           updateConceptElementData: this.updateConceptElementData,
-          key: index,
+          key: "Group" + index,
           groupData: group,
           index: index,
           deleteGroup: this.deleteGroup,
           btnGroupAdd: this.btnGroupAdd,
-          updateGroupData: this.handleGroupElementChange
+          handleGroupElementChange: this.handleGroupElementChange
         };
 
         formElements.push(<FormElementGroup {...propsGroup} />);
@@ -178,6 +178,7 @@ class FormDetails extends Component {
     });
     return formElements;
   }
+
   handleGroupElementChange(index, propertyName, value, elementIndex = -1) {
     this.setState(prevState => {
       let form = Object.assign({}, prevState.form);
@@ -215,12 +216,9 @@ class FormDetails extends Component {
           voided: false,
           formElements: [formElement_temp]
         });
-        this.reOrderSequence(form);
       } else {
         form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, formElement_temp);
-        this.reOrderSequence(form, index);
       }
-      // return { form };
       return { form: form, detectBrowserCloseEvent: true };
     });
   }
@@ -230,7 +228,7 @@ class FormDetails extends Component {
     this.setState({ createFlag: false });
   }
   // END Group level Events
-  validateForm = () => {
+  validateForm() {
     let flag = false;
     let errormsg = "";
     this.setState(prevState => {
@@ -268,10 +266,14 @@ class FormDetails extends Component {
       }
       return { form: form, saveCall: !flag, errorMsg: errormsg };
     });
-  };
+  }
 
   updateForm = event => {
     let dataSend = this.state.form;
+    this.reOrderSequence(dataSend);
+    _.forEach(dataSend.formElementGroups, (group, index) => {
+      this.reOrderSequence(dataSend, index);
+    });
     axios
       .post("/forms", dataSend)
       .then(response => {
@@ -300,7 +302,7 @@ class FormDetails extends Component {
             <Tabs
               style={{ background: "#2196f3", color: "white" }}
               value={this.state.activeTabIndex}
-              onChange={this.onTabHandleChange.bind(this)}
+              onChange={this.onTabHandleChange}
             >
               <Tab label="Details" />
               <Tab label="Settings" />
@@ -315,7 +317,7 @@ class FormDetails extends Component {
                           fullWidth
                           variant="contained"
                           color="primary"
-                          onClick={this.btnGroupClick.bind(this)}
+                          onClick={this.btnGroupClick}
                         >
                           Add Group
                         </Button>
@@ -327,7 +329,7 @@ class FormDetails extends Component {
                           fullWidth
                           variant="contained"
                           color="secondary"
-                          onClick={this.validateForm.bind(this)}
+                          onClick={this.validateForm}
                           disabled={!this.state.detectBrowserCloseEvent}
                         >
                           <SaveIcon />

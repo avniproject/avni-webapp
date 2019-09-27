@@ -54,7 +54,7 @@ const useStyles = theme => ({
   container: {
     position: "relative",
     marginTop: 10,
-    width: 400
+    width: "100%"
   },
   suggestionsContainerOpen: {
     position: "absolute",
