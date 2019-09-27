@@ -75,7 +75,7 @@ export default ({ locales = [], onSuccessfulImport }) => {
         onSelect={onFileChooseHandler}
         onUpload={onUploadPressedHandler}
         canSelect={!isEmpty(language)}
-        canUpload={isEmpty(noOfKeysWithoutValues(file)) && isEmpty(error)}
+        canUpload={noOfKeysWithoutValues(file) === 0 && isEmpty(error)}
       />
       <Box py={4}>
         {!isEmpty(file) && (
