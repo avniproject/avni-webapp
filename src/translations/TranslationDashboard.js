@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import { isEmpty, noop } from "lodash";
+import React from "react";
+import { isEmpty } from "lodash";
 
 export const TranslationDashboard = props => {
-
   const renderTableHeader = () => {
     let header = Object.keys(props.data[0]);
     return header.map((key, index) => {
@@ -22,15 +21,17 @@ export const TranslationDashboard = props => {
     ));
   };
 
-  return !isEmpty(props.data) && (
-    <div style={{ marginBottom: 30 }}>
-      <h1 id="title">Translations Dashboard</h1>
-      <table id="translation">
-        <tbody>
-          <tr>{renderTableHeader()}</tr>
-          {renderTable()}
-        </tbody>
-      </table>
-    </div>
+  return (
+    !isEmpty(props.data) && (
+      <div style={{ marginBottom: 30 }}>
+        <h1 id="title">Translations Dashboard</h1>
+        <table id="translation">
+          <tbody>
+            <tr>{renderTableHeader()}</tr>
+            {renderTable()}
+          </tbody>
+        </table>
+      </div>
+    )
   );
 };

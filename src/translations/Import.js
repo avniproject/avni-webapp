@@ -2,7 +2,7 @@ import DropDown from "../common/components/DropDown";
 import FileUpload from "../common/components/FileUpload";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { filter, find, identity, isEmpty, isNil, isString, reject, size, sortBy } from "lodash";
+import { filter, find, isEmpty, isString, reject, size } from "lodash";
 import Box from "@material-ui/core/Box";
 
 const noOfKeysWithValues = file => {

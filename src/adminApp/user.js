@@ -1,4 +1,4 @@
-import { isEmpty, isFinite, isNil, sortBy } from "lodash";
+import { isEmpty, isFinite, isNil } from "lodash";
 import React, { Fragment } from "react";
 import {
   BooleanInput,
