@@ -165,18 +165,12 @@ class FormDetails extends Component {
       const sourceElement = form.formElementGroups[groupIndex].formElements.splice(
         sourceElementIndex,
         1
-      )[sourceElementIndex];
+      )[0];
       form.formElementGroups[groupIndex].formElements.splice(
         destinationElementIndex,
         0,
         sourceElement
       );
-
-      form.formElementGroups[groupIndex].formElements.map((formElement, index) => {
-        return (formElement.displayOrder = index);
-      });
-
-      console.log(form.formElementGroups[groupIndex].formElements[sourceElementIndex]);
       return { form: form, detectBrowserCloseEvent: true };
     });
   };
