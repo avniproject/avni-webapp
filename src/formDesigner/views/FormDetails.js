@@ -159,6 +159,28 @@ class FormDetails extends Component {
     });
   }
 
+  onUpdateDragDropOrder = (groupIndex, sourceElementIndex, destinationElementIndex) => {
+    this.setState(prevState => {
+      let form = Object.assign({}, prevState.form);
+      const sourceElement = form.formElementGroups[groupIndex].formElements.splice(
+        sourceElementIndex,
+        1
+      )[sourceElementIndex];
+      form.formElementGroups[groupIndex].formElements.splice(
+        destinationElementIndex,
+        0,
+        sourceElement
+      );
+
+      form.formElementGroups[groupIndex].formElements.map((formElement, index) => {
+        return (formElement.displayOrder = index);
+      });
+
+      console.log(form.formElementGroups[groupIndex].formElements[sourceElementIndex]);
+      return { form: form, detectBrowserCloseEvent: true };
+    });
+  };
+
   renderGroups() {
     const formElements = [];
     _.forEach(this.state.form.formElementGroups, (group, index) => {
@@ -170,7 +192,8 @@ class FormDetails extends Component {
           index: index,
           deleteGroup: this.deleteGroup,
           btnGroupAdd: this.btnGroupAdd,
-          updateGroupData: this.handleGroupElementChange
+          updateGroupData: this.handleGroupElementChange,
+          onUpdateDragDropOrder: this.onUpdateDragDropOrder
         };
 
         formElements.push(<FormElementGroup {...propsGroup} />);

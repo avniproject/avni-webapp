@@ -1,5 +1,4 @@
 import React from "react";
-
 import _ from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
@@ -16,6 +15,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 import FormElement from "./FormElement";
 
@@ -136,7 +136,9 @@ export default function FormElementGroup(props) {
 
   const renderFormElements = () => {
     const formElements = [];
-    _.forEach(props.groupData.formElements, (formElement, index) => {
+    const displayOrderFormElements = props.groupData.formElements;
+
+    _.forEach(displayOrderFormElements, (formElement, index) => {
       if (formElement.voided === false) {
         let propsElement = {
           key: index,
@@ -153,76 +155,100 @@ export default function FormElementGroup(props) {
     });
     return formElements;
   };
+  const onDragEnd = result => {
+    const { destination, source } = result;
+    console.log(result);
+    if (!destination) {
+      return;
+    }
 
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
+
+    const groupIndex = result.source.droppableId.replace("Group", "");
+    const sourceElementIndex = result.draggableId.replace("Element", "");
+    const destinationElementIndex = result.destination.index;
+    props.onUpdateDragDropOrder(groupIndex, sourceElementIndex, destinationElementIndex);
+  };
+  console.log("Form element drag drop");
   return (
     <div
       className={classes.parent}
       onMouseEnter={hoverDisplayAddGroup}
       onMouseLeave={hoverHideAddGroup}
     >
-      <ExpansionPanel
-        expanded={props.groupData.collapse}
-        className={props.groupData.error ? classes.rootError : classes.root}
-        onChange={event =>
-          props.updateGroupData(props.index, "collapse", !props.groupData.collapse)
-        }
-      >
-        <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
-          <div className={classes.iconlay}>
-            {props.groupData.collapse === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </div>
-          <Grid container item sm={12}>
-            <Grid item sm={8}>
-              <Typography component={"div"} className={classes.heading}>
-                <FormControl fullWidth>
-                  <Input
-                    type="text"
-                    placeholder="Name"
-                    disableUnderline={true}
-                    onClick={stopPropagation}
-                    name={"name" + panel}
-                    value={props.groupData.name}
-                    onChange={event => eventCall(props.index, "name", event.target.value)}
-                  />
-                </FormControl>
-              </Typography>
-            </Grid>
-
-            <Grid item sm={3}>
-              <Typography component={"div"} className={classes.questionCount}>
-                No. of questions : {questionCount}
-              </Typography>
-            </Grid>
-          </Grid>
-          <IconButton className={classes.deleteicon} aria-label="delete" onClick={handleDelete}>
-            <DeleteIcon />
-          </IconButton>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography component={"span"} className={classes.root}>
-            {renderFormElements()}
-
-            {questionCount === 0 && (
-              <FormControl fullWidth>
-                <Button variant="contained" color="secondary" onClick={separateAddElement}>
-                  Add Question
-                </Button>
-              </FormControl>
-            )}
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      {hover && (
-        <Fab
-          color="primary"
-          aria-label="add"
-          onClick={separateAddGroup}
-          className={classes.absolute}
-          size="small"
+      <DragDropContext onDragEnd={onDragEnd}>
+        <ExpansionPanel
+          expanded={props.groupData.collapse}
+          className={props.groupData.error ? classes.rootError : classes.root}
+          onChange={event =>
+            props.updateGroupData(props.index, "collapse", !props.groupData.collapse)
+          }
         >
-          <AddIcon />
-        </Fab>
-      )}
+          <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
+            <div className={classes.iconlay}>
+              {props.groupData.collapse === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </div>
+            <Grid container item sm={12}>
+              <Grid item sm={8}>
+                <Typography component={"div"} className={classes.heading}>
+                  <FormControl fullWidth>
+                    <Input
+                      type="text"
+                      placeholder="Name"
+                      disableUnderline={true}
+                      onClick={stopPropagation}
+                      name={"name" + panel}
+                      value={props.groupData.name}
+                      onChange={event => eventCall(props.index, "name", event.target.value)}
+                    />
+                  </FormControl>
+                </Typography>
+              </Grid>
+
+              <Grid item sm={3}>
+                <Typography component={"div"} className={classes.questionCount}>
+                  No. of questions : {questionCount}
+                </Typography>
+              </Grid>
+            </Grid>
+            <IconButton className={classes.deleteicon} aria-label="delete" onClick={handleDelete}>
+              <DeleteIcon />
+            </IconButton>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <Typography component={"span"} className={classes.root}>
+              <Droppable droppableId={"Group" + props.index}>
+                {provided => (
+                  <div ref={provided.innerRef} {...provided.droppableProps}>
+                    {renderFormElements()}
+                  </div>
+                )}
+              </Droppable>
+
+              {questionCount === 0 && (
+                <FormControl fullWidth>
+                  <Button variant="contained" color="secondary" onClick={separateAddElement}>
+                    Add Question
+                  </Button>
+                </FormControl>
+              )}
+            </Typography>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+        {hover && (
+          <Fab
+            color="primary"
+            aria-label="add"
+            onClick={separateAddGroup}
+            className={classes.absolute}
+            size="small"
+          >
+            <AddIcon />
+          </Fab>
+        )}
+      </DragDropContext>
     </div>
   );
 }

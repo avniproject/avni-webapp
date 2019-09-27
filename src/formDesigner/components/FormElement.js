@@ -16,7 +16,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
-
+import { Draggable } from "react-beautiful-dnd";
 import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
 import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import QueryBuilderIcon from "@material-ui/icons/QueryBuilder";
@@ -172,121 +172,130 @@ export default function FormElement(props) {
   const hoverHideAddGroup = event => {
     setHover(false);
   };
-  console.log(props.formElementData.concept.dataType);
+  console.log("Draggable Drag and drop");
   return (
-    <div
-      className={classes.parent}
-      onMouseEnter={hoverDisplayAddGroup}
-      onMouseLeave={hoverHideAddGroup}
-    >
-      <ExpansionPanel
-        expanded={props.formElementData.collapse}
-        className={props.formElementData.error ? classes.rootError : classes.root}
-        onChange={event =>
-          props.updateGroupData(
-            props.groupIndex,
-            "collapse",
-            !props.formElementData.collapse,
-            props.index
-          )
-        }
-      >
-        <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
-          <div className={classes.iconlay}>
-            <Typography component={"div"} className={classes.secondaryHeading}>
-              {[
-                "Date",
-                "Numeric",
-                "Text",
-                "Notes",
-                "Image",
-                "DateTime",
-                "Time",
-                "Duration",
-                "Video",
-                "Id"
-              ].includes(props.formElementData.concept.dataType) && (
-                <div className={classes.iconDataType}>
-                  <Tooltip title={props.formElementData.concept.dataType}>
-                    {dataTypeIcons[props.formElementData.concept.dataType]}
-                  </Tooltip>
-                </div>
-              )}
-              {props.formElementData.concept.dataType === "Coded" && (
-                <div className={classes.iconDataType}>
-                  <Tooltip
-                    title={
-                      props.formElementData.concept.dataType + " : " + props.formElementData.type
-                    }
-                  >
-                    {dataTypeIcons["concept"][props.formElementData.type]}
-                  </Tooltip>
-                </div>
-              )}
-            </Typography>
-          </div>
-          <Grid container item sm={12}>
-            <Grid item sm={10} style={{ paddingTop: "10px" }}>
-              <Typography component={"span"} className={classes.heading}>
-                <span className={classes.expandIcon}>
-                  {props.formElementData.collapse === true ? (
-                    <ExpandLessIcon />
-                  ) : (
-                    <ExpandMoreIcon />
+    <Draggable draggableId={"Element" + props.index} index={props.index}>
+      {provided => (
+        <div
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          className={classes.parent}
+          onMouseEnter={hoverDisplayAddGroup}
+          onMouseLeave={hoverHideAddGroup}
+        >
+          <ExpansionPanel
+            expanded={props.formElementData.collapse}
+            className={props.formElementData.error ? classes.rootError : classes.root}
+            onChange={event =>
+              props.updateGroupData(
+                props.groupIndex,
+                "collapse",
+                !props.formElementData.collapse,
+                props.index
+              )
+            }
+          >
+            <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
+              <div className={classes.iconlay}>
+                <Typography component={"div"} className={classes.secondaryHeading}>
+                  {[
+                    "Date",
+                    "Numeric",
+                    "Text",
+                    "Notes",
+                    "Image",
+                    "DateTime",
+                    "Time",
+                    "Duration",
+                    "Video",
+                    "Id"
+                  ].includes(props.formElementData.concept.dataType) && (
+                    <div className={classes.iconDataType}>
+                      <Tooltip title={props.formElementData.concept.dataType}>
+                        {dataTypeIcons[props.formElementData.concept.dataType]}
+                      </Tooltip>
+                    </div>
                   )}
-                </span>
-                <Input
-                  type="text"
-                  disableUnderline={true}
-                  placeholder="Name"
-                  name={"name" + panel}
-                  value={props.formElementData.name}
-                  onClick={stopPropagation}
-                  style={{ width: "85%" }}
-                  onChange={event =>
-                    props.updateElementData(
-                      props.groupIndex,
-                      "name",
-                      event.target.value,
-                      props.index
-                    )
-                  }
-                />
-              </Typography>
-            </Grid>
+                  {props.formElementData.concept.dataType === "Coded" && (
+                    <div className={classes.iconDataType}>
+                      <Tooltip
+                        title={
+                          props.formElementData.concept.dataType +
+                          " : " +
+                          props.formElementData.type
+                        }
+                      >
+                        {dataTypeIcons["concept"][props.formElementData.type]}
+                      </Tooltip>
+                    </div>
+                  )}
+                </Typography>
+              </div>
+              <Grid container item sm={12}>
+                <Grid item sm={10} style={{ paddingTop: "10px" }}>
+                  <Typography component={"span"} className={classes.heading}>
+                    <span className={classes.expandIcon}>
+                      {props.formElementData.collapse === true ? (
+                        <ExpandLessIcon />
+                      ) : (
+                        <ExpandMoreIcon />
+                      )}
+                    </span>
+                    <Input
+                      type="text"
+                      disableUnderline={true}
+                      placeholder="Name"
+                      name={"name" + panel}
+                      value={props.formElementData.name}
+                      onClick={stopPropagation}
+                      style={{ width: "85%" }}
+                      onChange={event =>
+                        props.updateElementData(
+                          props.groupIndex,
+                          "name",
+                          event.target.value,
+                          props.index
+                        )
+                      }
+                    />
+                  </Typography>
+                </Grid>
 
-            <Grid item sm={2} className={classes.requiredIcon}>
-              {/* <div className={classes.requiredIcon}> */}
-              {props.formElementData.mandatory ? (
-                <Tooltip title="Required">
-                  <Mandatory className={classes.iconMandatory} />
-                </Tooltip>
-              ) : (
-                <Tooltip title="Not required">
-                  <NonMandatory className={classes.iconNonMandatory} />
-                </Tooltip>
-              )}
-              {/* </span>
+                <Grid item sm={2} className={classes.requiredIcon}>
+                  {/* <div className={classes.requiredIcon}> */}
+                  {props.formElementData.mandatory ? (
+                    <Tooltip title="Required">
+                      <Mandatory className={classes.iconMandatory} />
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Not required">
+                      <NonMandatory className={classes.iconNonMandatory} />
+                    </Tooltip>
+                  )}
+                  {/* </span>
               <span className={classes.deleteicon}> */}
-              <IconButton aria-label="delete" onClick={handleDelete}>
-                <DeleteIcon />
-              </IconButton>
-              {/* </div> */}
-            </Grid>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <FormElementTabs {...props} indexTab={props.groupIndex + "" + props.index} />
-        </ExpansionPanelDetails>
-        {false && <Divider /> && <ExpansionPanelActions />}
-      </ExpansionPanel>
-      <div className={classes.absolute}>
-        {hover && (
-          <Fab color="secondary" aria-label="add" onClick={separateAddElement} size="small">
-            <AddIcon />
-          </Fab>
-        )}
-      </div>
-    </div>
+                  <IconButton aria-label="delete" onClick={handleDelete}>
+                    <DeleteIcon />
+                  </IconButton>
+                  {/* </div> */}
+                </Grid>
+              </Grid>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <FormElementTabs {...props} indexTab={props.groupIndex + "" + props.index} />
+            </ExpansionPanelDetails>
+            {false && <Divider /> && <ExpansionPanelActions />}
+          </ExpansionPanel>
+          <div className={classes.absolute}>
+            {hover && (
+              <Fab color="secondary" aria-label="add" onClick={separateAddElement} size="small">
+                <AddIcon />
+              </Fab>
+            )}
+          </div>
+        </div>
+      )}
+    </Draggable>
   );
 }
