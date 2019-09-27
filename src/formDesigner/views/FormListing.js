@@ -8,11 +8,15 @@ const FormListing = ({ history }) => {
   const columns = [
     { title: "Name", field: "name" },
     { title: "Form Type", field: "formType", defaultSort: "asc" },
-    { title: "Subject Name", field: "subjectName" }
+    { title: "Subject Name", field: "subjectName" },
+    {
+      title: "Program Name",
+      field: "programName",
+      render: rowData => (rowData.programName ? rowData.programName : "-")
+    }
   ];
 
   const tableRef = React.createRef();
-  // const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   const fetchData = query =>
     new Promise(resolve => {
