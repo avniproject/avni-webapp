@@ -1,28 +1,49 @@
-import React from "react";
-import { isEmpty } from "lodash";
+import React, { useEffect, useState } from "react";
+import { isEmpty, find } from "lodash";
+import { localeChoices } from "../common/constants";
 
 export const TranslationDashboard = props => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const keyCounts = [];
+    props.data &&
+      props.data.forEach(({ language, translationJson }) => {
+        const total = Object.keys(translationJson).length;
+        const incomplete = Object.values(translationJson).filter(
+          t => isEmpty(t) || t === props.emptyTranslationKey
+        ).length;
+        const complete = total - incomplete;
+        keyCounts.push({
+          Language: find(localeChoices, locale => locale.id === language).name,
+          "Total Keys": total,
+          "Keys with translations": complete,
+          "Keys without Translations": incomplete
+        });
+      });
+    setData(keyCounts);
+  }, [props.data]);
+
   const renderTableHeader = () => {
-    let header = Object.keys(props.data[0]);
+    let header = Object.keys(data[0]);
     return header.map((key, index) => {
       return <th key={index}>{key.toUpperCase()}</th>;
     });
   };
 
   const renderTable = () => {
-    return props.data.map((row, index) => (
+    return data.map((row, index) => (
       <tr key={index}>
         <td>{row["Language"]}</td>
         <td>{row["Total Keys"]}</td>
         <td>{row["Keys with translations"]}</td>
-        <td>{row["Keys with Empty Translations"]}</td>
-        <td>{row["Keys to be done"]}</td>
+        <td>{row["Keys without Translations"]}</td>
       </tr>
     ));
   };
 
   return (
-    !isEmpty(props.data) && (
+    !isEmpty(data) && (
       <div style={{ marginBottom: 30 }}>
         <h1 id="title">Translations Dashboard</h1>
         <table id="translation">
