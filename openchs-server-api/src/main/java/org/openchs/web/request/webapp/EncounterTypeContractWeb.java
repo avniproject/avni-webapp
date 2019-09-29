@@ -11,6 +11,7 @@ public class EncounterTypeContractWeb {
     private String name;
     private Long id;
     private Long organisationId;
+    private Long encounterTypeOrganisationId;
     private boolean voided;
 
     public String getName() {
@@ -42,6 +43,7 @@ public class EncounterTypeContractWeb {
         contract.setId(operationalEncounterType.getId());
         contract.setName(operationalEncounterType.getName());
         contract.setOrganisationId(operationalEncounterType.getOrganisationId());
+        contract.setEncounterTypeOrganisationId(operationalEncounterType.getEncounterType().getOrganisationId());
         contract.setVoided(operationalEncounterType.isVoided());
         return contract;
     }
@@ -52,5 +54,13 @@ public class EncounterTypeContractWeb {
 
     public void setVoided(boolean voided) {
         this.voided = voided;
+    }
+
+    public Long getEncounterTypeOrganisationId() {
+        return encounterTypeOrganisationId;
+    }
+
+    public void setEncounterTypeOrganisationId(Long encounterTypeOrganisationId) {
+        this.encounterTypeOrganisationId = encounterTypeOrganisationId;
     }
 }

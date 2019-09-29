@@ -11,6 +11,7 @@ public class SubjectTypeContractWeb {
     private String name;
     private Long id;
     private Long organisationId;
+    private Long subjectTypeOrganisationId;
     private boolean voided;
 
     public String getName() {
@@ -42,6 +43,7 @@ public class SubjectTypeContractWeb {
         contract.setId(operationalSubjectType.getId());
         contract.setName(operationalSubjectType.getName());
         contract.setOrganisationId(operationalSubjectType.getOrganisationId());
+        contract.setSubjectTypeOrganisationId(operationalSubjectType.getSubjectType().getOrganisationId());
         contract.setVoided(operationalSubjectType.isVoided());
         return contract;
     }
@@ -52,5 +54,13 @@ public class SubjectTypeContractWeb {
 
     public void setVoided(boolean voided) {
         this.voided = voided;
+    }
+
+    public Long getSubjectTypeOrganisationId() {
+        return subjectTypeOrganisationId;
+    }
+
+    public void setSubjectTypeOrganisationId(Long subjectTypeOrganisationId) {
+        this.subjectTypeOrganisationId = subjectTypeOrganisationId;
     }
 }
