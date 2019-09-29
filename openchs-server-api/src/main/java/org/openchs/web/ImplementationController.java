@@ -1,19 +1,16 @@
 package org.openchs.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.Form;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.Concept;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.service.ConceptService;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.webapp.ConceptExport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,17 +47,9 @@ public class ImplementationController implements RestControllerResourceProcessor
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         //ZipOutputStream will be automatically closed because we are using try-with-resources.
-        try (ZipOutputStream zos = new ZipOutputStream(baos)
-        ) {
-            createZipEntry(zos, "concepts.json", conceptsJson(orgId));
-            List<Form> forms = formRepository.findAllByOrganisationId(orgId);
-            if (forms.size() > 1) {
-                createZipEntry(zos, "forms/", null);
-            }
-            for (Form form : forms) {
-                FormContract formContract = FormContract.fromForm(form);
-                createZipEntry(zos, String.format("forms/%s.json", form.getName()), objectMapper.writer().writeValueAsBytes(formContract));
-            }
+        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+            addConceptsJson(orgId, zos);
+            addFormsJson(orgId, zos);
         }
 
         byte[] baosByteArray = baos.toByteArray();
@@ -73,31 +62,7 @@ public class ImplementationController implements RestControllerResourceProcessor
 
     }
 
-    private void createZipEntry(ZipOutputStream zos, String entryName, byte[] fileContent) throws IOException {
-        ZipEntry entry = new ZipEntry(entryName);
-        zos.putNextEntry(entry);
-        if(fileContent != null)
-            zos.write(fileContent);
-        zos.closeEntry();
-    }
-
-
-    private HttpHeaders getHttpHeaders() {
-        HttpHeaders header = new HttpHeaders();
-        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=impl.zip");
-        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        header.add("Pragma", "no-cache");
-        header.add("Expires", "0");
-        return header;
-    }
-
-    private byte[] formJson() throws JsonProcessingException {
-        List<Form> forms = formRepository.findAll();
-
-        return new byte[]{'\0'};
-    }
-
-    private byte[] conceptsJson(Long orgId) throws JsonProcessingException {
+    private void addConceptsJson(Long orgId, ZipOutputStream zos) throws IOException {
 
         List<ConceptExport> conceptContracts = new ArrayList<>();
         List<Concept> naConcepts = conceptRepository.findAllByOrganisationIdAndDataType(orgId, "NA");
@@ -113,9 +78,41 @@ public class ImplementationController implements RestControllerResourceProcessor
         for (Concept concept : otherThanCodedOrNA) {
             conceptContracts.add(ConceptExport.fromConcept(concept));
         }
-        byte[] conceptsByteArray = objectMapper.writer().writeValueAsBytes(conceptContracts);
-        return conceptsByteArray;
+        byte[] conceptsByteArray = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(conceptContracts);
+        addFileToZip(zos, "concepts.json", conceptsByteArray);
     }
 
+    private void addFormsJson(Long orgId, ZipOutputStream zos) throws IOException {
+        List<Form> forms = formRepository.findAllByOrganisationId(orgId);
+        if (forms.size() > 1) {
+            addDirectoryToZip(zos, "forms");
+        }
+        for (Form form : forms) {
+            FormContract formContract = FormContract.fromForm(form);
+            addFileToZip(zos, String.format("forms/%s.json", form.getName()), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(formContract));
+        }
+    }
 
+    private void addFileToZip(ZipOutputStream zos, String fileName, byte[] fileContent) throws IOException {
+        ZipEntry entry = new ZipEntry(fileName);
+        zos.putNextEntry(entry);
+        if (fileContent != null)
+            zos.write(fileContent);
+        zos.closeEntry();
+    }
+
+    private void addDirectoryToZip(ZipOutputStream zos, String directoryName) throws IOException {
+        ZipEntry entry = new ZipEntry(String.format("%s/", directoryName));
+        zos.putNextEntry(entry);
+        zos.closeEntry();
+    }
+
+    private HttpHeaders getHttpHeaders() {
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=impl.zip");
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+        return header;
+    }
 }
