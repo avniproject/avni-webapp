@@ -103,6 +103,9 @@ debug_server: build_server
 build_server: ## Builds the jar file
 	./gradlew clean build -x test
 
+boot_run:
+	OPENCHS_DATABASE=$(DB) ./gradlew bootRun
+
 test_server: rebuild_testdb ## Run tests
 	GRADLE_OPTS="-Xmx256m" ./gradlew clean test
 
