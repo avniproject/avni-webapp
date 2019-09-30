@@ -224,6 +224,7 @@ export default function FormElementGroup(props) {
                 {provided => (
                   <div ref={provided.innerRef} {...provided.droppableProps}>
                     {renderFormElements()}
+                    {provided.placeholder}
                   </div>
                 )}
               </Droppable>
