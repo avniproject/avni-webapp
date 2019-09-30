@@ -117,7 +117,7 @@ public class ExcelUtil {
             String content = CellType.STRING.equals(cell.getCellTypeEnum())
                     ? cell.getStringCellValue()
                     : df.format(cell.getNumericCellValue());
-            if (StringUtils.isEmpty(content)) return null;
+            if (StringUtils.isEmpty(content) || CellType.BLANK.equals(cell.getCellTypeEnum())) return null;
             return Double.valueOf(content);
         } catch (RuntimeException e) {
             if (NAN.equalsIgnoreCase(ExcelUtil.getFatText(row, cellNum))) {
