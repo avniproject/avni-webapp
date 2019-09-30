@@ -32,6 +32,11 @@ export const LOCALES = Object.freeze({
   URDU: "ur_IN"
 });
 
+export const datePickerModes = [
+  { id: "calendar", name: "Calendar" },
+  { id: "spinner", name: "Spinner" }
+];
+
 export const phoneCountryPrefix = process.env.REACT_APP_PHONE_COUNTRY_PREFIX || "+91";
 
 export const localeChoices = [

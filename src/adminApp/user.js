@@ -12,6 +12,7 @@ import {
   FormDataConsumer,
   FunctionField,
   List,
+  SelectInput,
   RadioButtonGroupInput,
   REDUX_FORM_NAME,
   ReferenceField,
@@ -31,7 +32,7 @@ import CardActions from "@material-ui/core/CardActions";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
-import { localeChoices, phoneCountryPrefix } from "../common/constants";
+import { localeChoices, phoneCountryPrefix, datePickerModes } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
@@ -169,9 +170,39 @@ export const UserDetail = ({ user, ...props }) => (
         render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")}
       />
       <FunctionField
+        label="Date Picker Mode"
+        render={user => (!isNil(user.settings) ? user.settings.datePickerMode : "Calendar")}
+      />
+      <FunctionField
         label="Track Location"
         render={user =>
           !isNil(user.settings) ? (user.settings.trackLocation ? "True" : "False") : ""
+        }
+      />
+      <FunctionField
+        label="Hide Exit"
+        render={user => (!isNil(user.settings) ? (user.settings.hideExit ? "True" : "False") : "")}
+      />
+      <FunctionField
+        label="Hide Enrol"
+        render={user => (!isNil(user.settings) ? (user.settings.hideEnrol ? "True" : "False") : "")}
+      />
+      <FunctionField
+        label="Hide Register"
+        render={user =>
+          !isNil(user.settings) ? (user.settings.hideRegister ? "True" : "False") : ""
+        }
+      />
+      <FunctionField
+        label="Hide Unplanned"
+        render={user =>
+          !isNil(user.settings) ? (user.settings.hideUnplanned ? "True" : "False") : ""
+        }
+      />
+      <FunctionField
+        label="Beneficiary Mode"
+        render={user =>
+          !isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : ""
         }
       />
     </SimpleShowLayout>
@@ -311,8 +342,18 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         <Typography variant="title" component="h3">
           Settings
         </Typography>
-        <RadioButtonGroupInput source="settings.locale" label="Language" choices={localeChoices} />
+        <SelectInput source="settings.locale" label="Language" choices={localeChoices} />
         <BooleanInput source="settings.trackLocation" label="Track location" />
+        <BooleanInput source="settings.hideExit" label="Hide exit" />
+        <BooleanInput source="settings.hideEnrol" label="Hide enrol" />
+        <BooleanInput source="settings.hideRegister" label="Hide register" />
+        <BooleanInput source="settings.hideUnplanned" label="Hide unplanned" />
+        <BooleanInput source="settings.showBeneficiaryMode" label="Beneficiary mode" />
+        <RadioButtonGroupInput
+          source="settings.datePickerMode"
+          label="Date picker mode"
+          choices={datePickerModes}
+        />
       </Fragment>
     </SimpleForm>
   );
