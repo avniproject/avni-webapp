@@ -14,6 +14,7 @@ import NewFormModal from "../components/NewFormModal";
 import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
@@ -159,20 +160,34 @@ class FormDetails extends Component {
     });
   }
 
-  onUpdateDragDropOrder = (groupIndex, sourceElementIndex, destinationElementIndex) => {
-    this.setState(prevState => {
-      let form = Object.assign({}, prevState.form);
-      const sourceElement = form.formElementGroups[groupIndex].formElements.splice(
-        sourceElementIndex,
-        1
-      )[0];
-      form.formElementGroups[groupIndex].formElements.splice(
-        destinationElementIndex,
-        0,
-        sourceElement
-      );
-      return { form: form, detectBrowserCloseEvent: true };
-    });
+  onUpdateDragDropOrder = (
+    groupIndex,
+    sourceElementIndex,
+    destinationElementIndex,
+    groupOrElement = 1
+  ) => {
+    if (groupOrElement === 1) {
+      this.setState(prevState => {
+        let form = Object.assign({}, prevState.form);
+        const sourceElement = form.formElementGroups[groupIndex].formElements.splice(
+          sourceElementIndex,
+          1
+        )[0];
+        form.formElementGroups[groupIndex].formElements.splice(
+          destinationElementIndex,
+          0,
+          sourceElement
+        );
+        return { form: form, detectBrowserCloseEvent: true };
+      });
+    } else {
+      this.setState(prevState => {
+        let form = Object.assign({}, prevState.form);
+        const sourceElement = form.formElementGroups.splice(sourceElementIndex, 1)[0];
+        form.formElementGroups.splice(destinationElementIndex, 0, sourceElement);
+        return { form: form, detectBrowserCloseEvent: true };
+      });
+    }
   };
 
   renderGroups() {
@@ -310,6 +325,23 @@ class FormDetails extends Component {
         });
       });
   };
+  onDragEnd = result => {
+    console.log(result);
+    const { destination, source } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
+
+    const groupIndex = result.source.droppableId.replace("Group", "");
+    const sourceElementIndex = result.draggableId.replace("Element", "");
+    const destinationElementIndex = result.destination.index;
+    this.onUpdateDragDropOrder(groupIndex, sourceElementIndex, destinationElementIndex, 0);
+  };
 
   render() {
     return (
@@ -365,7 +397,16 @@ class FormDetails extends Component {
                       )}
                     </Grid>
                   </Grid>
-                  {this.renderGroups()}
+                  <DragDropContext onDragEnd={this.onDragEnd}>
+                    <Droppable droppableId={"Group0"}>
+                      {provided => (
+                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                          {this.renderGroups()}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
                 </div>
               </TabContainer>
             )}
