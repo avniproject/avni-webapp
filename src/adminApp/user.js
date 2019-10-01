@@ -1,5 +1,5 @@
 import { isEmpty, isFinite, isNil } from "lodash";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   BooleanInput,
   Create,
@@ -34,6 +34,8 @@ import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
 import { localeChoices, phoneCountryPrefix, datePickerModes } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
+import axios from "axios";
+import { filter } from "lodash";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
   <Create {...props}>
@@ -166,7 +168,7 @@ export const UserDetail = ({ user, ...props }) => (
         render={user => formatOperatingScope(user.operatingIndividualScope)}
       />
       <FunctionField
-        label="Language"
+        label="Preferred Language"
         render={user => (!isNil(user.settings) ? formatLang(user.settings.locale) : "")}
       />
       <FunctionField
@@ -243,6 +245,17 @@ const validateEmail = [isRequired, email("Please enter a valid email address")];
 const validatePhone = [isRequired, regex(/[0-9]{12}/, "Enter a 10 digit number (eg. 9820324567)")];
 
 const UserForm = ({ edit, user, nameSuffix, ...props }) => {
+  const [languages, setLanguages] = useState([]);
+  useEffect(() => {
+    axios.get("/organisationConfig").then(res => {
+      const organisationLocales = isEmpty(res.data._embedded.organisationConfig)
+        ? [localeChoices[0]]
+        : filter(localeChoices, l =>
+            res.data._embedded.organisationConfig[0].settings.languages.includes(l.id)
+          );
+      setLanguages(organisationLocales);
+    });
+  }, []);
   const sanitizeProps = ({ record, resource, save }) => ({
     record,
     resource,
@@ -342,7 +355,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         <Typography variant="title" component="h3">
           Settings
         </Typography>
-        <SelectInput source="settings.locale" label="Language" choices={localeChoices} />
+        <SelectInput source="settings.locale" label="Preferred Language" choices={languages} />
         <BooleanInput source="settings.trackLocation" label="Track location" />
         <BooleanInput source="settings.hideExit" label="Hide exit" />
         <BooleanInput source="settings.hideEnrol" label="Hide enrol" />
