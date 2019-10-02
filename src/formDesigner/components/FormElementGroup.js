@@ -1,5 +1,5 @@
 import React from "react";
-import _ from "lodash";
+import _, { isEqual } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -94,7 +94,7 @@ const ExpansionPanelSummary = withStyles({
   expanded: {}
 })(MuiExpansionPanelSummary);
 
-export default function FormElementGroup(props) {
+function FormElementGroup(props) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
   const panel = "panel" + props.index.toString();
@@ -150,7 +150,7 @@ export default function FormElementGroup(props) {
           deleteGroup: props.deleteGroup,
           updateConceptElementData: props.updateConceptElementData
         };
-
+        // if(index === 0)
         formElements.push(<FormElement {...propsElement} />);
       }
     });
@@ -264,3 +264,17 @@ export default function FormElementGroup(props) {
     </Draggable>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  // delete prevProps.groupData.formElements[0].concept;
+  // delete nextProps.groupData.formElements[0].concept;
+  console.log(
+    `FormElementGroup: prevProps ${JSON.stringify(
+      prevProps.groupData.formElements[0].name
+    )} nextProps ${JSON.stringify(nextProps.groupData.formElements[0].name)}`
+  );
+  return isEqual(prevProps, nextProps);
+}
+
+// export default (FormElementGroup)
+export default React.memo(FormElementGroup, areEqual);

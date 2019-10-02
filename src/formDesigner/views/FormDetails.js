@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _ from "lodash";
+import _, { cloneDeep } from "lodash";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
@@ -15,6 +15,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import produce from "immer";
 
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
@@ -87,7 +88,7 @@ class FormDetails extends Component {
           });
         });
         let dataGroupFlag = this.countGroupElements(form);
-        this.setState({ form: form, name: form.name, createFlag: dataGroupFlag });
+        this.setState({ form: form, name: form.name, createFlag: dataGroupFlag, dataLoaded: true });
         if (dataGroupFlag) {
           this.btnGroupClick();
         }
@@ -122,42 +123,45 @@ class FormDetails extends Component {
   // Group level events
   deleteGroup(index, elementIndex = -1) {
     if (elementIndex === -1) {
-      this.setState(state => {
-        let form = Object.assign({}, state.form);
-        if (form.formElementGroups[index].newFlag === "true") {
-          form.formElementGroups.splice(index, 1);
-        } else {
-          form.formElementGroups[index].voided = true;
-          _.forEach(form.formElementGroups[index].formElements, (group, index) => {
-            group.voided = true;
-          });
-        }
-
-        return {
-          form: form,
-          createFlag: this.countGroupElements(form),
-          detectBrowserCloseEvent: true
-        };
-      });
+      this.setState(
+        produce(draft => {
+          let form = draft.form;
+          if (form.formElementGroups[index].newFlag === "true") {
+            form.formElementGroups.splice(index, 1);
+          } else {
+            form.formElementGroups[index].voided = true;
+            _.forEach(form.formElementGroups[index].formElements, (group, index) => {
+              group.voided = true;
+            });
+          }
+          draft.createFlag = this.countGroupElements(form);
+          draft.detectBrowserCloseEvent = true;
+        })
+      );
     } else {
-      this.setState(state => {
-        let form = Object.assign({}, state.form);
-        if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true") {
-          form.formElementGroups[index].formElements.splice(elementIndex, 1);
-        } else {
-          form.formElementGroups[index].formElements[elementIndex].voided = true;
-        }
+      this.setState(
+        produce(draft => {
+          let form = draft.form;
+          if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true") {
+            form.formElementGroups[index].formElements.splice(elementIndex, 1);
+          } else {
+            form.formElementGroups[index].formElements[elementIndex].voided = true;
+          }
 
-        return { form: form, detectBrowserCloseEvent: true };
-      });
+          draft.detectBrowserCloseEvent = true;
+        })
+      );
     }
   }
+
   updateConceptElementData(index, propertyName, value, elementIndex = -1) {
-    this.setState(prevState => {
-      let form = Object.assign({}, prevState.form);
-      form.formElementGroups[index].formElements[elementIndex]["concept"][propertyName] = value;
-      return { form };
-    });
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex]["concept"][
+          propertyName
+        ] = value;
+      })
+    );
   }
 
   onUpdateDragDropOrder = (
@@ -167,26 +171,30 @@ class FormDetails extends Component {
     groupOrElement = 1
   ) => {
     if (groupOrElement === 1) {
-      this.setState(prevState => {
-        let form = Object.assign({}, prevState.form);
-        const sourceElement = form.formElementGroups[groupIndex].formElements.splice(
-          sourceElementIndex,
-          1
-        )[0];
-        form.formElementGroups[groupIndex].formElements.splice(
-          destinationElementIndex,
-          0,
-          sourceElement
-        );
-        return { form: form, detectBrowserCloseEvent: true };
-      });
+      this.setState(
+        produce(draft => {
+          let form = draft.form;
+          const sourceElement = form.formElementGroups[groupIndex].formElements.splice(
+            sourceElementIndex,
+            1
+          )[0];
+          form.formElementGroups[groupIndex].formElements.splice(
+            destinationElementIndex,
+            0,
+            sourceElement
+          );
+          draft.detectBrowserCloseEvent = true;
+        })
+      );
     } else {
-      this.setState(prevState => {
-        let form = Object.assign({}, prevState.form);
-        const sourceElement = form.formElementGroups.splice(sourceElementIndex, 1)[0];
-        form.formElementGroups.splice(destinationElementIndex, 0, sourceElement);
-        return { form: form, detectBrowserCloseEvent: true };
-      });
+      this.setState(
+        produce(draft => {
+          let form = draft.form;
+          const sourceElement = form.formElementGroups.splice(sourceElementIndex, 1)[0];
+          form.formElementGroups.splice(destinationElementIndex, 0, sourceElement);
+          draft.detectBrowserCloseEvent = true;
+        })
+      );
     }
   };
 
@@ -205,6 +213,7 @@ class FormDetails extends Component {
           handleGroupElementChange: this.handleGroupElementChange
         };
 
+        // if(index === 0)
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
     });
@@ -212,47 +221,50 @@ class FormDetails extends Component {
   }
 
   handleGroupElementChange(index, propertyName, value, elementIndex = -1) {
-    this.setState(prevState => {
-      let form = Object.assign({}, prevState.form);
-      if (elementIndex === -1) {
-        form.formElementGroups[index][propertyName] = value;
-      } else {
-        form.formElementGroups[index].formElements[elementIndex][propertyName] = value;
-      }
-      return { form: form, detectBrowserCloseEvent: true };
-    });
+    this.setState(
+      produce(draft => {
+        if (elementIndex === -1) {
+          draft.form.formElementGroups[index][propertyName] = value;
+        } else {
+          draft.form.formElementGroups[index].formElements[elementIndex][propertyName] = value;
+        }
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
   }
 
   btnGroupAdd(index, elementIndex = -1) {
-    this.setState(prevState => {
-      let form = Object.assign({}, prevState.form);
-      const formElement_temp = {
-        uuid: UUID.v4(),
-        displayOrder: -1,
-        newFlag: "true",
-        name: "",
-        type: "",
-        mandatory: false,
-        voided: false,
-        collapse: true,
-        concept: { name: "", dataType: "" }
-      };
-      if (elementIndex === -1) {
-        form.formElementGroups.splice(index + 1, 0, {
+    this.setState(
+      produce(draft => {
+        let form = draft.form;
+        const formElement_temp = {
           uuid: UUID.v4(),
-          newFlag: "true",
-          collapse: true,
           displayOrder: -1,
+          newFlag: "true",
           name: "",
-          display: "",
+          type: "",
+          mandatory: false,
           voided: false,
-          formElements: [formElement_temp]
-        });
-      } else {
-        form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, formElement_temp);
-      }
-      return { form: form, detectBrowserCloseEvent: true };
-    });
+          collapse: true,
+          concept: { name: "", dataType: "" }
+        };
+        if (elementIndex === -1) {
+          form.formElementGroups.splice(index + 1, 0, {
+            uuid: UUID.v4(),
+            newFlag: "true",
+            collapse: true,
+            displayOrder: -1,
+            name: "",
+            display: "",
+            voided: false,
+            formElements: [formElement_temp]
+          });
+        } else {
+          form.formElementGroups[index].formElements.splice(elementIndex + 1, 0, formElement_temp);
+        }
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
   }
 
   btnGroupClick() {
@@ -263,45 +275,47 @@ class FormDetails extends Component {
   validateForm() {
     let flag = false;
     let errormsg = "";
-    this.setState(prevState => {
-      let form = Object.assign({}, prevState.form);
-      _.forEach(form.formElementGroups, group => {
-        group.error = false;
-        group.collapse = false;
-        if (group.voided === false && group.name.trim() === "") {
-          group.error = true;
-          flag = true;
-        }
-        let groupError = false;
-        group.formElements.forEach(fe => {
-          fe.error = false;
-          fe.collapse = false;
-          if (
-            fe.voided === false &&
-            (fe.name === "" ||
-              fe.concept.dataType === "" ||
-              fe.concept.dataType === "NA" ||
-              (fe.concept.dataType === "Coded" && fe.type === ""))
-          ) {
-            fe.error = true;
-            fe.collapse = true;
-            flag = groupError = true;
+    this.setState(
+      produce(draft => {
+        _.forEach(draft.form.formElementGroups, group => {
+          group.error = false;
+          group.collapse = false;
+          if (group.voided === false && group.name.trim() === "") {
+            group.error = true;
+            flag = true;
+          }
+          let groupError = false;
+          group.formElements.forEach(fe => {
+            fe.error = false;
+            fe.collapse = false;
+            if (
+              fe.voided === false &&
+              (fe.name === "" ||
+                fe.concept.dataType === "" ||
+                fe.concept.dataType === "NA" ||
+                (fe.concept.dataType === "Coded" && fe.type === ""))
+            ) {
+              fe.error = true;
+              fe.collapse = true;
+              flag = groupError = true;
+            }
+          });
+          if (groupError || group.error) {
+            group.collapse = true;
           }
         });
-        if (groupError || group.error) {
-          group.collapse = true;
+        if (flag) {
+          errormsg =
+            "There are empty fields or an invalid concept selected. Please find below highlighted groups or questions.";
         }
-      });
-      if (flag) {
-        errormsg =
-          "There are empty fields or an invalid concept selected. Please find below highlighted groups or questions.";
-      }
-      return { form: form, saveCall: !flag, errorMsg: errormsg };
-    });
+        draft.saveCall = !flag;
+        draft.errorMsg = errormsg;
+      })
+    );
   }
 
   updateForm = event => {
-    let dataSend = this.state.form;
+    let dataSend = cloneDeep(this.state.form);
     this.reOrderSequence(dataSend);
     _.forEach(dataSend.formElementGroups, (group, index) => {
       this.reOrderSequence(dataSend, index);
@@ -344,86 +358,89 @@ class FormDetails extends Component {
   };
 
   render() {
+    const form = (
+      <Grid container justify="center">
+        <Grid item sm={12}>
+          <Tabs
+            style={{ background: "#2196f3", color: "white" }}
+            value={this.state.activeTabIndex}
+            onChange={this.onTabHandleChange}
+          >
+            <Tab label="Details" />
+            <Tab label="Settings" />
+          </Tabs>
+          {this.state.activeTabIndex === 0 && (
+            <TabContainer>
+              <div name="divGroup">
+                <Grid container item sm={12} direction="row-reverse">
+                  {this.state.createFlag && (
+                    <Grid item sm={2}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        onClick={this.btnGroupClick}
+                      >
+                        Add Group
+                      </Button>
+                    </Grid>
+                  )}
+                  {!this.state.createFlag && (
+                    <Grid item sm={2} style={{ paddingBottom: 20 }}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="secondary"
+                        onClick={this.validateForm}
+                        disabled={!this.state.detectBrowserCloseEvent}
+                      >
+                        <SaveIcon />
+                        &nbsp;Save
+                      </Button>
+                    </Grid>
+                  )}
+                  <Grid item sm={10}>
+                    <b>Form : {this.state.name}</b>
+                  </Grid>
+                  <Grid item sm={12}>
+                    {this.state.errorMsg !== "" && (
+                      <FormControl fullWidth margin="dense">
+                        <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+                      </FormControl>
+                    )}
+                  </Grid>
+                </Grid>
+                <DragDropContext onDragEnd={this.onDragEnd}>
+                  <Droppable droppableId={"Group0"}>
+                    {provided => (
+                      <div ref={provided.innerRef} {...provided.droppableProps}>
+                        {this.renderGroups()}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </div>
+            </TabContainer>
+          )}
+          {this.state.activeTabIndex === 1 && (
+            <Grid container item sm={12}>
+              <Grid item sm={8}>
+                <NewFormModal
+                  name={this.state.name}
+                  onUpdateFormName={this.onUpdateFormName}
+                  uuid={this.props.match.params.formUUID}
+                  isCreateFrom={false}
+                />
+              </Grid>
+            </Grid>
+          )}
+        </Grid>
+      </Grid>
+    );
     return (
       <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
-        <Grid container justify="center">
-          <Grid item sm={12}>
-            <Tabs
-              style={{ background: "#2196f3", color: "white" }}
-              value={this.state.activeTabIndex}
-              onChange={this.onTabHandleChange}
-            >
-              <Tab label="Details" />
-              <Tab label="Settings" />
-            </Tabs>
-            {this.state.activeTabIndex === 0 && (
-              <TabContainer>
-                <div name="divGroup">
-                  <Grid container item sm={12} direction="row-reverse">
-                    {this.state.createFlag && (
-                      <Grid item sm={2}>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          color="primary"
-                          onClick={this.btnGroupClick}
-                        >
-                          Add Group
-                        </Button>
-                      </Grid>
-                    )}
-                    {!this.state.createFlag && (
-                      <Grid item sm={2} style={{ paddingBottom: 20 }}>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          color="secondary"
-                          onClick={this.validateForm}
-                          disabled={!this.state.detectBrowserCloseEvent}
-                        >
-                          <SaveIcon />
-                          &nbsp;Save
-                        </Button>
-                      </Grid>
-                    )}
-                    <Grid item sm={10}>
-                      <b>Form : {this.state.name}</b>
-                    </Grid>
-                    <Grid item sm={12}>
-                      {this.state.errorMsg !== "" && (
-                        <FormControl fullWidth margin="dense">
-                          <li style={{ color: "red" }}>{this.state.errorMsg}</li>
-                        </FormControl>
-                      )}
-                    </Grid>
-                  </Grid>
-                  <DragDropContext onDragEnd={this.onDragEnd}>
-                    <Droppable droppableId={"Group0"}>
-                      {provided => (
-                        <div ref={provided.innerRef} {...provided.droppableProps}>
-                          {this.renderGroups()}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                  </DragDropContext>
-                </div>
-              </TabContainer>
-            )}
-            {this.state.activeTabIndex === 1 && (
-              <Grid container item sm={12}>
-                <Grid item sm={8}>
-                  <NewFormModal
-                    name={this.state.name}
-                    onUpdateFormName={this.onUpdateFormName}
-                    uuid={this.props.match.params.formUUID}
-                    isCreateFrom={false}
-                  />
-                </Grid>
-              </Grid>
-            )}
-          </Grid>
-        </Grid>
+        {this.state.dataLoaded ? form : <div>Loading</div>}
         {this.state.successAlert && (
           <CustomizedSnackbar
             message="Successfully updated the form"

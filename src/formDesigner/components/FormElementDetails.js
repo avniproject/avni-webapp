@@ -5,6 +5,7 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import MenuItem from "@material-ui/core/MenuItem";
+import { isEqual } from "lodash";
 
 const FormControl = withStyles({
   root: {
@@ -22,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function FormElementDetails(props) {
+function FormElementDetails(props) {
   const classes = useStyles();
 
   function onChangeAnswerName(answerName, index, flag = true) {
@@ -36,6 +37,7 @@ export default function FormElementDetails(props) {
     }
   }
 
+  console.log(`FormElementDetails: render`);
   return (
     <Grid container item sm={12}>
       <Grid item sm={12}>
@@ -181,3 +183,15 @@ export default function FormElementDetails(props) {
     </Grid>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  console.log(
+    `FormElementDetails: prevProps ${JSON.stringify(
+      prevProps.formElementData.name
+    )} nextProps ${JSON.stringify(nextProps.formElementData.name)}`
+  );
+  return isEqual(prevProps, nextProps);
+}
+
+// export default (FormElementDetails)
+export default React.memo(FormElementDetails, areEqual);

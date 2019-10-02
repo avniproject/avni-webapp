@@ -32,6 +32,7 @@ import VideocamIcon from "@material-ui/icons/Videocam";
 import Mandatory from "@material-ui/icons/CheckCircleOutline";
 import NonMandatory from "@material-ui/icons/HighlightOff";
 import FormElementTabs from "./FormElementTabs";
+import { isEqual } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -149,7 +150,8 @@ const dataTypeIcons = {
   Id: <b>Id</b>,
   "": <b />
 };
-export default function FormElement(props) {
+
+function FormElement(props) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
   const panel = "panel" + props.groupIndex.toString + props.index.toString();
@@ -300,3 +302,15 @@ export default function FormElement(props) {
     </Draggable>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  console.log(
+    `FormElement: prevProps ${JSON.stringify(
+      prevProps.formElementData.name
+    )} nextProps ${JSON.stringify(nextProps.formElementData.name)}`
+  );
+  return isEqual(prevProps, nextProps);
+}
+
+// export default (FormElement);
+export default React.memo(FormElement, areEqual);
