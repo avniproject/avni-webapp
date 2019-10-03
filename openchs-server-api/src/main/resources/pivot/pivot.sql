@@ -11,7 +11,6 @@ SELECT
   individual.registration_date "Ind.registration_date",
   individual.facility_id  "Ind.facility_id",
   a.title "Ind.Area",
-  c2.name "Ind.Catchment",
   individual.is_voided "Ind.is_voided",
   op.name "Enl.Program Name",
   programEnrolment.id  "Enl.Id",
@@ -38,10 +37,7 @@ FROM program_encounter programEncounter
   LEFT OUTER JOIN individual individual ON programEnrolment.individual_id = individual.id
   LEFT OUTER JOIN gender g ON g.id = individual.gender_id
   LEFT OUTER JOIN address_level a ON individual.address_id = a.id
-  LEFT OUTER JOIN virtual_catchment_address_mapping_table m2 ON a.id = m2.addresslevel_id
-  LEFT OUTER JOIN catchment c2 ON m2.catchment_id = c2.id
-WHERE c2.name not ilike '%master%'
-  AND op.uuid = '${operationalProgramUuid}'
+WHERE op.uuid = '${operationalProgramUuid}'
   AND oet.uuid = '${operationalEncounterTypeUuid}'
   AND programEncounter.encounter_date_time IS NOT NULL
   AND programEnrolment.enrolment_date_time IS NOT NULL;
