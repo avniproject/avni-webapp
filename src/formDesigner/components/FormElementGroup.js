@@ -185,6 +185,7 @@ function FormElementGroup(props) {
         >
           <DragDropContext onDragEnd={onDragEnd}>
             <ExpansionPanel
+              TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
               expanded={props.groupData.expanded}
               className={props.groupData.error ? classes.rootError : classes.root}
               onChange={event =>

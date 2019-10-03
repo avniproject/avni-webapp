@@ -185,6 +185,7 @@ function FormElement(props) {
           onMouseLeave={hoverHideAddGroup}
         >
           <ExpansionPanel
+            TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
             expanded={props.formElementData.expanded}
             className={props.formElementData.error ? classes.rootError : classes.root}
             onChange={event =>
