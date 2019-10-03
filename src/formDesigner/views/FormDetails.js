@@ -313,6 +313,9 @@ class FormDetails extends Component {
   }
 
   updateForm = event => {
+    /*Have to deep clone state.form here as we want to modify this data before we send it to server.
+     * Modifying this data will give an error as Immer freezes the state object for direct modifications.
+     */
     let dataSend = cloneDeep(this.state.form);
     this.reOrderSequence(dataSend);
     _.forEach(dataSend.formElementGroups, (group, index) => {

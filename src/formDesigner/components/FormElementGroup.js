@@ -17,7 +17,7 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import FormElement from "./FormElement";
+import FormElementWithAddButton from "./FormElementWithAddButton";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -150,7 +150,7 @@ function FormElementGroup(props) {
           deleteGroup: props.deleteGroup,
           updateConceptElementData: props.updateConceptElementData
         };
-        formElements.push(<FormElement {...propsElement} />);
+        formElements.push(<FormElementWithAddButton {...propsElement} />);
       }
     });
     return formElements;
