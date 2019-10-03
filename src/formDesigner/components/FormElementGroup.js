@@ -150,7 +150,6 @@ function FormElementGroup(props) {
           deleteGroup: props.deleteGroup,
           updateConceptElementData: props.updateConceptElementData
         };
-        // if(index === 0)
         formElements.push(<FormElement {...propsElement} />);
       }
     });

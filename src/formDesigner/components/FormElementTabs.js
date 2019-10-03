@@ -6,6 +6,7 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import FormElementDetails from "./FormElementDetails";
+import { isEqual } from "lodash";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -48,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function FormElementTabs(props) {
+function FormElementTabs(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -79,3 +80,9 @@ export default function FormElementTabs(props) {
     </div>
   );
 }
+
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
+
+export default React.memo(FormElementTabs, areEqual);
