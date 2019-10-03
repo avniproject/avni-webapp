@@ -171,6 +171,8 @@ function FormElement(props) {
   const hoverHideAddGroup = event => {
     setHover(false);
   };
+
+  console.log(`FormElement: render`);
   return (
     <Draggable draggableId={"Element" + props.index} index={props.index}>
       {provided => (
@@ -304,13 +306,7 @@ function FormElement(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(
-    `FormElement: prevProps ${JSON.stringify(
-      prevProps.formElementData.name
-    )} nextProps ${JSON.stringify(nextProps.formElementData.name)}`
-  );
   return isEqual(prevProps, nextProps);
 }
 
-// export default (FormElement);
 export default React.memo(FormElement, areEqual);

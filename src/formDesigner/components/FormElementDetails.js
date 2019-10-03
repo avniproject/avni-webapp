@@ -185,13 +185,7 @@ function FormElementDetails(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  console.log(
-    `FormElementDetails: prevProps ${JSON.stringify(
-      prevProps.formElementData.name
-    )} nextProps ${JSON.stringify(nextProps.formElementData.name)}`
-  );
   return isEqual(prevProps, nextProps);
 }
 
-// export default (FormElementDetails)
 export default React.memo(FormElementDetails, areEqual);

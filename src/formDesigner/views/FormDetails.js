@@ -358,6 +358,7 @@ class FormDetails extends Component {
   };
 
   render() {
+    console.log(`FormDetails: render`);
     const form = (
       <Grid container justify="center">
         <Grid item sm={12}>

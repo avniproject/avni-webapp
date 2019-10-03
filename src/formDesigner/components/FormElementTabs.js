@@ -56,6 +56,7 @@ export default function FormElementTabs(props) {
     setValue(newValue);
   }
 
+  console.log(`FormElementTabs: render`);
   return (
     <div className={classes.root}>
       <Tabs

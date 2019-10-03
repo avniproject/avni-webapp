@@ -158,7 +158,6 @@ function FormElementGroup(props) {
   };
   const onDragEnd = result => {
     const { destination, source } = result;
-    console.log(result);
     if (!destination) {
       return;
     }
@@ -172,6 +171,8 @@ function FormElementGroup(props) {
     const destinationElementIndex = result.destination.index;
     props.onUpdateDragDropOrder(groupIndex, sourceElementIndex, destinationElementIndex);
   };
+
+  console.log(`FormElementGroup: render`);
   return (
     <Draggable draggableId={"Element" + props.index} index={props.index}>
       {provided => (
@@ -266,15 +267,7 @@ function FormElementGroup(props) {
 }
 
 function areEqual(prevProps, nextProps) {
-  // delete prevProps.groupData.formElements[0].concept;
-  // delete nextProps.groupData.formElements[0].concept;
-  console.log(
-    `FormElementGroup: prevProps ${JSON.stringify(
-      prevProps.groupData.formElements[0].name
-    )} nextProps ${JSON.stringify(nextProps.groupData.formElements[0].name)}`
-  );
   return isEqual(prevProps, nextProps);
 }
 
-// export default (FormElementGroup)
 export default React.memo(FormElementGroup, areEqual);
