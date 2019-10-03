@@ -185,15 +185,15 @@ function FormElementGroup(props) {
         >
           <DragDropContext onDragEnd={onDragEnd}>
             <ExpansionPanel
-              expanded={props.groupData.collapse}
+              expanded={props.groupData.expanded}
               className={props.groupData.error ? classes.rootError : classes.root}
               onChange={event =>
-                props.handleGroupElementChange(props.index, "collapse", !props.groupData.collapse)
+                props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
               }
             >
               <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
                 <div className={classes.iconlay}>
-                  {props.groupData.collapse === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  {props.groupData.expanded === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </div>
                 <Grid container item sm={12}>
                   <Grid item sm={8}>

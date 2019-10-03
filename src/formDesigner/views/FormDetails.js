@@ -80,10 +80,10 @@ class FormDetails extends Component {
       .then(form => {
         _.forEach(form.formElementGroups, group => {
           group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
-          group.collapse = true;
+          group.expanded = true;
           group.error = false;
           group.formElements.forEach(fe => {
-            fe.collapse = false;
+            fe.expanded = false;
             fe.error = false;
           });
         });
@@ -243,14 +243,14 @@ class FormDetails extends Component {
           type: "",
           mandatory: false,
           voided: false,
-          collapse: true,
+          expanded: true,
           concept: { name: "", dataType: "" }
         };
         if (elementIndex === -1) {
           form.formElementGroups.splice(index + 1, 0, {
             uuid: UUID.v4(),
             newFlag: "true",
-            collapse: true,
+            expanded: true,
             displayOrder: -1,
             name: "",
             display: "",
@@ -277,7 +277,7 @@ class FormDetails extends Component {
       produce(draft => {
         _.forEach(draft.form.formElementGroups, group => {
           group.error = false;
-          group.collapse = false;
+          group.expanded = false;
           if (group.voided === false && group.name.trim() === "") {
             group.error = true;
             flag = true;
@@ -285,7 +285,7 @@ class FormDetails extends Component {
           let groupError = false;
           group.formElements.forEach(fe => {
             fe.error = false;
-            fe.collapse = false;
+            fe.expanded = false;
             if (
               fe.voided === false &&
               (fe.name === "" ||
@@ -294,12 +294,12 @@ class FormDetails extends Component {
                 (fe.concept.dataType === "Coded" && fe.type === ""))
             ) {
               fe.error = true;
-              fe.collapse = true;
+              fe.expanded = true;
               flag = groupError = true;
             }
           });
           if (groupError || group.error) {
-            group.collapse = true;
+            group.expanded = true;
           }
         });
         if (flag) {

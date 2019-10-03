@@ -185,13 +185,13 @@ function FormElement(props) {
           onMouseLeave={hoverHideAddGroup}
         >
           <ExpansionPanel
-            expanded={props.formElementData.collapse}
+            expanded={props.formElementData.expanded}
             className={props.formElementData.error ? classes.rootError : classes.root}
             onChange={event =>
               props.handleGroupElementChange(
                 props.groupIndex,
-                "collapse",
-                !props.formElementData.collapse,
+                "expanded",
+                !props.formElementData.expanded,
                 props.index
               )
             }
@@ -236,7 +236,7 @@ function FormElement(props) {
                 <Grid item sm={10} style={{ paddingTop: "10px" }}>
                   <Typography component={"span"} className={classes.heading}>
                     <span className={classes.expandIcon}>
-                      {props.formElementData.collapse === true ? (
+                      {props.formElementData.expanded === true ? (
                         <ExpandLessIcon />
                       ) : (
                         <ExpandMoreIcon />
