@@ -212,8 +212,6 @@ class FormDetails extends Component {
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
           handleGroupElementChange: this.handleGroupElementChange
         };
-
-        // if(index === 0)
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
     });
@@ -370,72 +368,68 @@ class FormDetails extends Component {
             <Tab label="Details" />
             <Tab label="Settings" />
           </Tabs>
-          {this.state.activeTabIndex === 0 && (
-            <TabContainer>
-              <div name="divGroup">
-                <Grid container item sm={12} direction="row-reverse">
-                  {this.state.createFlag && (
-                    <Grid item sm={2}>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        onClick={this.btnGroupClick}
-                      >
-                        Add Group
-                      </Button>
-                    </Grid>
-                  )}
-                  {!this.state.createFlag && (
-                    <Grid item sm={2} style={{ paddingBottom: 20 }}>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        color="secondary"
-                        onClick={this.validateForm}
-                        disabled={!this.state.detectBrowserCloseEvent}
-                      >
-                        <SaveIcon />
-                        &nbsp;Save
-                      </Button>
-                    </Grid>
-                  )}
-                  <Grid item sm={10}>
-                    <b>Form : {this.state.name}</b>
+          <TabContainer hidden={this.state.activeTabIndex !== 0}>
+            <div name="divGroup">
+              <Grid container item sm={12} direction="row-reverse">
+                {this.state.createFlag && (
+                  <Grid item sm={2}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      onClick={this.btnGroupClick}
+                    >
+                      Add Group
+                    </Button>
                   </Grid>
-                  <Grid item sm={12}>
-                    {this.state.errorMsg !== "" && (
-                      <FormControl fullWidth margin="dense">
-                        <li style={{ color: "red" }}>{this.state.errorMsg}</li>
-                      </FormControl>
-                    )}
+                )}
+                {!this.state.createFlag && (
+                  <Grid item sm={2} style={{ paddingBottom: 20 }}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="secondary"
+                      onClick={this.validateForm}
+                      disabled={!this.state.detectBrowserCloseEvent}
+                    >
+                      <SaveIcon />
+                      &nbsp;Save
+                    </Button>
                   </Grid>
+                )}
+                <Grid item sm={10}>
+                  <b>Form : {this.state.name}</b>
                 </Grid>
-                <DragDropContext onDragEnd={this.onDragEnd}>
-                  <Droppable droppableId={"Group0"}>
-                    {provided => (
-                      <div ref={provided.innerRef} {...provided.droppableProps}>
-                        {this.renderGroups()}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-              </div>
-            </TabContainer>
-          )}
-          {this.state.activeTabIndex === 1 && (
-            <Grid container item sm={12}>
-              <Grid item sm={8}>
-                <NewFormModal
-                  name={this.state.name}
-                  onUpdateFormName={this.onUpdateFormName}
-                  uuid={this.props.match.params.formUUID}
-                  isCreateFrom={false}
-                />
+                <Grid item sm={12}>
+                  {this.state.errorMsg !== "" && (
+                    <FormControl fullWidth margin="dense">
+                      <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+                    </FormControl>
+                  )}
+                </Grid>
               </Grid>
+              <DragDropContext onDragEnd={this.onDragEnd}>
+                <Droppable droppableId={"Group0"}>
+                  {provided => (
+                    <div ref={provided.innerRef} {...provided.droppableProps}>
+                      {this.renderGroups()}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            </div>
+          </TabContainer>
+          <Grid container item sm={12} hidden={this.state.activeTabIndex !== 1}>
+            <Grid item sm={8}>
+              <NewFormModal
+                name={this.state.name}
+                onUpdateFormName={this.onUpdateFormName}
+                uuid={this.props.match.params.formUUID}
+                isCreateFrom={false}
+              />
             </Grid>
-          )}
+          </Grid>
         </Grid>
       </Grid>
     );
