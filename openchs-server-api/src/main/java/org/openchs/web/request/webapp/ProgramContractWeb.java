@@ -1,14 +1,13 @@
 package org.openchs.web.request.webapp;
 
 import org.openchs.domain.OperationalProgram;
-import org.openchs.domain.Program;
 import org.springframework.hateoas.core.Relation;
 
 /**
  * This class represents a combined entity representing one to one mapping of Program and OperationalProgram.
  */
 @Relation(collectionRelation = "program")
-public class ProgramContract {
+public class ProgramContractWeb {
     private String name;
     private String programSubjectLabel;
     private String colour;
@@ -56,8 +55,8 @@ public class ProgramContract {
         this.colour = colour;
     }
 
-    public static ProgramContract fromOperationalProgram(OperationalProgram operationalProgram) {
-        ProgramContract contract = new ProgramContract();
+    public static ProgramContractWeb fromOperationalProgram(OperationalProgram operationalProgram) {
+        ProgramContractWeb contract = new ProgramContractWeb();
 
         contract.setId(operationalProgram.getId());
         contract.setName(operationalProgram.getName());

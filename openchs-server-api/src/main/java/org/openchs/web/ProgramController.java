@@ -6,7 +6,7 @@ import org.openchs.domain.OperationalProgram;
 import org.openchs.domain.Program;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ProgramRequest;
-import org.openchs.web.request.webapp.ProgramContract;
+import org.openchs.web.request.webapp.ProgramContractWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
-public class ProgramController implements RestControllerResourceProcessor<ProgramContract> {
+public class ProgramController implements RestControllerResourceProcessor<ProgramContractWeb> {
     private final Logger logger;
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
@@ -55,7 +55,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @PostMapping(value = "/web/program")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
-    ResponseEntity saveProgramForWeb(@RequestBody ProgramContract request) {
+    ResponseEntity saveProgramForWeb(@RequestBody ProgramContractWeb request) {
         Program existingProgram =
                 programRepository.findByNameIgnoreCase(request.getName());
         OperationalProgram existingOperationalProgram =
@@ -73,16 +73,16 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         operationalProgram.setProgramSubjectLabel(request.getProgramSubjectLabel());
         operationalProgram.setProgram(program);
         operationalProgramRepository.save(operationalProgram);
-        return ResponseEntity.ok(ProgramContract.fromOperationalProgram(operationalProgram));
+        return ResponseEntity.ok(ProgramContractWeb.fromOperationalProgram(operationalProgram));
     }
 
     @PutMapping(value = "/web/program/{id}")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
-    public ResponseEntity updateProgramForWeb(@RequestBody ProgramContract programContract,
+    public ResponseEntity updateProgramForWeb(@RequestBody ProgramContractWeb programContractWeb,
                                               @PathVariable("id") Long id) {
-        logger.info(String.format("Processing Operational Program update request: %s", programContract.toString()));
-        if (programContract.getName().trim().equals(""))
+        logger.info(String.format("Processing Operational Program update request: %s", programContractWeb.toString()));
+        if (programContractWeb.getName().trim().equals(""))
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("Name can not be empty"));
 
         OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
@@ -93,15 +93,15 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
 
         Program program = operationalProgram.getProgram();
 
-        program.setName(programContract.getName());
-        program.setColour(programContract.getColour());
+        program.setName(programContractWeb.getName());
+        program.setColour(programContractWeb.getColour());
         programRepository.save(program);
 
-        operationalProgram.setProgramSubjectLabel(programContract.getProgramSubjectLabel());
-        operationalProgram.setName(programContract.getName());
+        operationalProgram.setProgramSubjectLabel(programContractWeb.getProgramSubjectLabel());
+        operationalProgram.setName(programContractWeb.getName());
         operationalProgramRepository.save(operationalProgram);
 
-        return ResponseEntity.ok(ProgramContract.fromOperationalProgram(operationalProgram));
+        return ResponseEntity.ok(ProgramContractWeb.fromOperationalProgram(operationalProgram));
     }
 
     @DeleteMapping(value = "/web/program/{id}")
@@ -128,10 +128,10 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @GetMapping(value = "/web/program")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
-    public PagedResources<Resource<ProgramContract>> getAll(Pageable pageable) {
+    public PagedResources<Resource<ProgramContractWeb>> getAll(Pageable pageable) {
         return wrap(operationalProgramRepository
                 .findPageByIsVoidedFalse(pageable)
-                .map(ProgramContract::fromOperationalProgram));
+                .map(ProgramContractWeb::fromOperationalProgram));
     }
 
     @GetMapping(value = "/web/program/{id}")
@@ -141,8 +141,8 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
         if (operationalProgram.isVoided())
             return ResponseEntity.notFound().build();
-        ProgramContract programContract = ProgramContract.fromOperationalProgram(operationalProgram);
-        return new ResponseEntity<>(programContract, HttpStatus.OK);
+        ProgramContractWeb programContractWeb = ProgramContractWeb.fromOperationalProgram(operationalProgram);
+        return new ResponseEntity<>(programContractWeb, HttpStatus.OK);
     }
 
     private Program createProgram(ProgramRequest programRequest) {
