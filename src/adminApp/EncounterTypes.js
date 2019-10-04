@@ -25,6 +25,7 @@ export const EncounterTypeList = props => (
   <List {...props} bulkActions={false}>
     <Datagrid rowClick="show">
       <TextField label="Name" source="name" />
+      <TextField label="Organisation Id" source="encounterTypeOrganisationId" />
     </Datagrid>
   </List>
 );
@@ -34,6 +35,7 @@ export const EncounterTypeDetail = props => {
     <Show title={<Title />} {...props}>
       <SimpleShowLayout>
         <TextField source="name" label="Name" />
+        <TextField label="Organisation Id" source="encounterTypeOrganisationId" />
       </SimpleShowLayout>
     </Show>
   );

@@ -28,6 +28,7 @@ export const ProgramList = props => (
       <TextField source="name" label="Name" />
       <ColorField source="colour" label="Colour" />
       <TextField source="programSubjectLabel" label="Program Subject Label" />
+      <TextField label="Organisation Id" source="programOrganisationId" />
     </Datagrid>
   </List>
 );
@@ -39,6 +40,7 @@ export const ProgramDetail = props => {
         <TextField source="name" label="Name" />
         <ColorField source="colour" label="Colour" />
         <TextField source="programSubjectLabel" label="Program Subject Label" />
+        <TextField label="Organisation Id" source="programOrganisationId" />
       </SimpleShowLayout>
     </Show>
   );
