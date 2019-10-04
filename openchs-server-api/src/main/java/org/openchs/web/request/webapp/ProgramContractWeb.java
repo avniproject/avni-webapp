@@ -13,6 +13,7 @@ public class ProgramContractWeb {
     private String colour;
     private Long id;
     private Long organisationId;
+    private Long programOrganisationId;
     private boolean voided;
 
     public String getName() {
@@ -64,6 +65,7 @@ public class ProgramContractWeb {
         contract.setProgramSubjectLabel(operationalProgram.getProgramSubjectLabel());
         contract.setOrganisationId(operationalProgram.getOrganisationId());
         contract.setVoided(operationalProgram.isVoided());
+        contract.setProgramOrganisationId(operationalProgram.getProgram().getOrganisationId());
 
         return contract;
     }
@@ -75,5 +77,13 @@ public class ProgramContractWeb {
 
     public void setVoided(boolean voided) {
         this.voided = voided;
+    }
+
+    public Long getProgramOrganisationId() {
+        return programOrganisationId;
+    }
+
+    public void setProgramOrganisationId(Long programOrganisationId) {
+        this.programOrganisationId = programOrganisationId;
     }
 }
