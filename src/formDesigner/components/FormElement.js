@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import Grid from "@material-ui/core/Grid";
-import { Input } from "@material-ui/core";
+import { InputLabel } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
@@ -153,8 +153,6 @@ function FormElement(props) {
     //props.deleteRecord(props.index);
   };
 
-  const stopPropagation = e => e.stopPropagation();
-  console.log(`FormElement: render`);
   return (
     <ExpansionPanel
       TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
@@ -209,23 +207,9 @@ function FormElement(props) {
               <span className={classes.expandIcon}>
                 {props.formElementData.expanded === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </span>
-              <Input
-                type="text"
-                disableUnderline={true}
-                placeholder="Name"
-                name={"name" + panel}
-                value={props.formElementData.name}
-                onClick={stopPropagation}
-                style={{ width: "85%" }}
-                onChange={event =>
-                  props.handleGroupElementChange(
-                    props.groupIndex,
-                    "name",
-                    event.target.value,
-                    props.index
-                  )
-                }
-              />
+              <InputLabel name={"name" + panel} style={{ width: "80%", display: "inline-block" }}>
+                {props.formElementData.name}
+              </InputLabel>
             </Typography>
           </Grid>
 
