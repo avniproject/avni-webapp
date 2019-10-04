@@ -8,10 +8,11 @@ const FormListing = ({ history }) => {
   const columns = [
     { title: "Name", field: "name" },
     { title: "Form Type", field: "formType", defaultSort: "asc" },
-    { title: "Subject Name", field: "subjectName" },
+    { title: "Subject Name", field: "subjectName", sorting: false },
     {
       title: "Program Name",
       field: "programName",
+      sorting: false,
       render: rowData => (rowData.programName ? rowData.programName : "-")
     }
   ];
