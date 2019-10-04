@@ -79,16 +79,20 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
 
     @GetMapping(value = "/web/forms")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    public PagedResources<Resource<BasicFormDetails>> getAllFormsWeb(Pageable pageable) {
+    public PagedResources<Resource<BasicFormDetails>> getAllFormsWeb(
+            @RequestParam(value = "name", required = false) String name,
+            Pageable pageable) {
         Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
-        Page<Form> forms = formRepository.findAllByOrganisationId(organisationId, pageable);
+        Page<Form> forms = name != null
+                ? formRepository.findByOrganisationIdAndNameIgnoreCaseContaining(organisationId, name, pageable)
+                : formRepository.findAllByOrganisationId(organisationId, pageable);
         Page<BasicFormDetails> basicFormDetailsPage = forms.map(form -> {
             BasicFormDetails basicFormDetails = new BasicFormDetails(form, null);
             List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
-            if(formMappings.size() > 0) {
+            if (formMappings.size() > 0) {
                 FormMapping firstFormMapping = formMappings.get(0);
                 Program program = firstFormMapping.getProgram();
-                if(program != null)
+                if (program != null)
                     basicFormDetails.setProgramName(program.getOperationalProgramName());
                 basicFormDetails.setSubjectName(firstFormMapping.getSubjectType().getName());
             }
