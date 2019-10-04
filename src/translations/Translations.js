@@ -60,7 +60,11 @@ export const Translations = ({
   if (isNil(organisationConfig)) return <Loading />;
 
   return (
-    <ScreenWithAppBar appbarTitle={`Translations`}>
+    <ScreenWithAppBar
+      appbarTitle={`Translations`}
+      enableLeftMenuButton={true}
+      renderAllOptions={false}
+    >
       <div id={"margin"}>
         <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
         <Grid container direction="row" justify="flex-start" alignItems="center">

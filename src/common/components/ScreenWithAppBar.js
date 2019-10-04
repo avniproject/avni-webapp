@@ -100,7 +100,8 @@ const applyLeftMenu = (
   handleDrawer,
   selectedIndex,
   handleListItemClick,
-  children
+  children,
+  renderAllOptions
 ) => {
   return (
     <>
@@ -134,38 +135,44 @@ const applyLeftMenu = (
             {applyListIcon(open, <HomeIcon />, "Home")}
           </ListItem>
           <Divider />
-          <ListItem
-            button
-            component="a"
-            href="/#/forms"
-            key="Forms"
-            selected={selectedIndex === 1}
-            onClick={event => handleListItemClick(event, 1)}
-          >
-            {applyListIcon(open, <DescriptionIcon />, "Forms")}
-          </ListItem>
-          <Divider />
-          <ListItem
-            button
-            component="a"
-            href="/#/concepts"
-            key="Concepts"
-            selected={selectedIndex === 2}
-            onClick={event => handleListItemClick(event, 2)}
-          >
-            {applyListIcon(open, <ListAltIcon />, "Concepts")}
-          </ListItem>
-          <Divider />
-          <ListItem
-            button
-            component="a"
-            href="/#/upload"
-            key="Upload"
-            selected={selectedIndex === 3}
-            onClick={event => handleListItemClick(event, 3)}
-          >
-            {applyListIcon(open, <ListAltIcon />, "Upload/Download Data")}
-          </ListItem>
+          {renderAllOptions === false ? (
+            <div />
+          ) : (
+            <>
+              <ListItem
+                button
+                component="a"
+                href="/#/forms"
+                key="Forms"
+                selected={selectedIndex === 1}
+                onClick={event => handleListItemClick(event, 1)}
+              >
+                {applyListIcon(open, <DescriptionIcon />, "Forms")}
+              </ListItem>
+              <Divider />
+              <ListItem
+                button
+                component="a"
+                href="/#/concepts"
+                key="Concepts"
+                selected={selectedIndex === 2}
+                onClick={event => handleListItemClick(event, 2)}
+              >
+                {applyListIcon(open, <ListAltIcon />, "Concepts")}
+              </ListItem>
+              <Divider />
+              <ListItem
+                button
+                component="a"
+                href="/#/upload"
+                key="Upload"
+                selected={selectedIndex === 3}
+                onClick={event => handleListItemClick(event, 3)}
+              >
+                {applyListIcon(open, <ListAltIcon />, "Upload/Download Data")}
+              </ListItem>
+            </>
+          )}
         </List>
       </Drawer>
       <main
@@ -216,7 +223,8 @@ const ScreenWithAppBar = props => {
           handleDrawer,
           selectedIndex,
           handleListItemClick,
-          props.children
+          props.children,
+          props.renderAllOptions
         )}
 
       {!props.enableLeftMenuButton && <Body>{props.children}</Body>}
