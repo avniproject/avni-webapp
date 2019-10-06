@@ -14,6 +14,7 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import PropTypes from "prop-types";
+import { DragDropContext } from "react-beautiful-dnd";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -29,7 +30,15 @@ class CreateEditConcept extends Component {
       highNormal: null,
       unit: null,
       answers: [
-        { name: "", uuid: "", unique: false, abnormal: false, editable: true, voided: false }
+        {
+          name: "",
+          uuid: "",
+          unique: false,
+          abnormal: false,
+          editable: true,
+          voided: false,
+          order: 0
+        }
       ],
       conceptCreationAlert: false,
       error: {},
@@ -121,7 +130,15 @@ class CreateEditConcept extends Component {
     this.setState({
       answers: [
         ...this.state.answers,
-        { name: "", uuid: "", unique: false, abnormal: false, editable: true, voided: false }
+        {
+          name: "",
+          uuid: "",
+          unique: false,
+          abnormal: false,
+          editable: true,
+          voided: false,
+          order: 0
+        }
       ]
     });
   };
@@ -149,6 +166,10 @@ class CreateEditConcept extends Component {
   };
 
   postCodedData(answers) {
+    answers.map(function(answer, index) {
+      return (answer.order = index);
+    });
+
     this.setState(
       {
         answers: answers
@@ -244,6 +265,25 @@ class CreateEditConcept extends Component {
     e.preventDefault();
 
     this.formValidation();
+  };
+
+  onDragEnd = result => {
+    const { destination, source } = result;
+    if (!destination) {
+      return;
+    }
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
+    const sourceElementIndex = result.draggableId.replace("Element", "");
+    const destinationElementIndex = result.destination.index;
+    const answers = [...this.state.answers];
+    const answer = answers.splice(sourceElementIndex, 1);
+
+    answers.splice(destinationElementIndex, 0, answer[0]);
+    this.setState({
+      answers
+    });
   };
 
   afterSuccessfullValidation = () => {
@@ -371,13 +411,15 @@ class CreateEditConcept extends Component {
     }
     if (this.state.dataType === "Coded") {
       dataType = (
-        <CodedConcept
-          answers={this.state.answers}
-          onDeleteAnswer={this.onDeleteAnswer}
-          onAddAnswer={this.onAddAnswer}
-          onChangeAnswerName={this.onChangeAnswerName}
-          onToggleAnswerField={this.onToggleAnswerField}
-        />
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <CodedConcept
+            answers={this.state.answers}
+            onDeleteAnswer={this.onDeleteAnswer}
+            onAddAnswer={this.onAddAnswer}
+            onChangeAnswerName={this.onChangeAnswerName}
+            onToggleAnswerField={this.onToggleAnswerField}
+          />
+        </DragDropContext>
       );
     }
 
