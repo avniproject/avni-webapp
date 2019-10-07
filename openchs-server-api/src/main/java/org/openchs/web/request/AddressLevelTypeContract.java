@@ -1,5 +1,9 @@
 package org.openchs.web.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.openchs.domain.AddressLevelType;
+
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class AddressLevelTypeContract extends ReferenceDataContract {
     private Double level;
     private ReferenceDataContract parent;
@@ -27,5 +31,20 @@ public class AddressLevelTypeContract extends ReferenceDataContract {
 
     public void setParentId(Long parentId) {
         this.parentId = parentId;
+    }
+
+    public static AddressLevelTypeContract fromAddressLevelType(AddressLevelType addressLevelType) {
+        AddressLevelTypeContract contract = new AddressLevelTypeContract();
+        contract.setUuid(addressLevelType.getUuid());
+        contract.setName(addressLevelType.getName());
+        contract.setLevel(addressLevelType.getLevel());
+        contract.setVoided(addressLevelType.isVoided());
+        AddressLevelType parent = addressLevelType.getParent();
+        if (parent != null) {
+            ReferenceDataContract parentContract = new ReferenceDataContract();
+            parentContract.setUuid(parent.getUuid());
+            contract.setParent(parentContract);
+        }
+        return contract;
     }
 }

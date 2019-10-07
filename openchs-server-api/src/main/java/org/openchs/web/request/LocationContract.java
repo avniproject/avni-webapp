@@ -1,5 +1,6 @@
 package org.openchs.web.request;
 
+import org.openchs.domain.AddressLevel;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -67,5 +68,19 @@ public class LocationContract extends ReferenceDataContract {
 
     public void setAddressLevelTypeUUID(String addressLevelTypeUUID) {
         this.addressLevelTypeUUID = addressLevelTypeUUID;
+    }
+
+    public static LocationContract fromAddressLevel(AddressLevel addressLevel) {
+        LocationContract contract = new LocationContract();
+        contract.setUuid(addressLevel.getUuid());
+        contract.setName(addressLevel.getTitle());
+        contract.setAddressLevelTypeUUID(addressLevel.getType().getUuid());
+        AddressLevel parent = addressLevel.getParent();
+        if (parent != null) {
+            ReferenceDataContract parentContract = new ReferenceDataContract();
+            parentContract.setUuid(parent.getUuid());
+            contract.setParent(parentContract);
+        }
+        return contract;
     }
 }

@@ -17,12 +17,7 @@ import java.util.List;
 public interface FormRepository extends ReferenceDataRepository<Form>, FindByLastModifiedDateTime<Form> {
 
     @RestResource(exported = false)
-    List<Form> findAllByOrganisationId(Long organisationId);
-    @RestResource(exported = false) 
-    Page<Form> findAllByOrganisationId(Long organisationId, Pageable pageable);
-    @RestResource(exported = false)
     Page<Form> findByOrganisationIdAndNameIgnoreCaseContaining(Long organisationId, String name, Pageable pageable);
-
 
     @Query("select f.name from Form f where f.isVoided = false")
     List<String> getAllNames();

@@ -7,6 +7,8 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import java.util.List;
+
 @NoRepositoryBean
 @PreAuthorize(value = "hasAnyAuthority('user', 'admin', 'organisation_admin')")
 public interface ReferenceDataRepository<T extends CHSEntity> extends CHSRepository<T>, PagingAndSortingRepository<T, Long> {
@@ -14,6 +16,9 @@ public interface ReferenceDataRepository<T extends CHSEntity> extends CHSReposit
     T findByNameIgnoreCase(String name);
 
     Page<T> findPageByIsVoidedFalse(Pageable pageable);
+
+    List<T> findAllByOrganisationId(Long organisationId);
+    Page<T> findAllByOrganisationId(Long organisationId, Pageable pageable);
 
 
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")

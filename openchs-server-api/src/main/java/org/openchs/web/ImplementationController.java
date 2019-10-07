@@ -2,11 +2,16 @@ package org.openchs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.Form;
+import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.LocationRepository;
+import org.openchs.dao.UserRepository;
 import org.openchs.dao.application.FormRepository;
+import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Concept;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.ObjectMapperSingleton;
+import org.openchs.web.request.AddressLevelTypeContract;
 import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.webapp.ConceptExport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -30,12 +36,22 @@ import java.util.zip.ZipOutputStream;
 public class ImplementationController implements RestControllerResourceProcessor<Concept> {
     private ConceptRepository conceptRepository;
     private final FormRepository formRepository;
+    private final UserRepository userRepository;
+    private final AddressLevelTypeRepository addressLevelTypeRepository;
+    private final LocationRepository locationRepository;
     private ObjectMapper objectMapper;
 
     @Autowired
-    public ImplementationController(ConceptRepository conceptRepository, FormRepository formRepository) {
+    public ImplementationController(ConceptRepository conceptRepository,
+                                    FormRepository formRepository,
+                                    UserRepository userRepository,
+                                    AddressLevelTypeRepository addressLevelTypeRepository,
+                                    LocationRepository locationRepository) {
         this.conceptRepository = conceptRepository;
         this.formRepository = formRepository;
+        this.userRepository = userRepository;
+        this.addressLevelTypeRepository = addressLevelTypeRepository;
+        this.locationRepository = locationRepository;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
@@ -48,6 +64,8 @@ public class ImplementationController implements RestControllerResourceProcessor
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         //ZipOutputStream will be automatically closed because we are using try-with-resources.
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+            addAddressLevelTypesJson(orgId, zos);
+            addLocationsJson(orgId, zos);
             addConceptsJson(orgId, zos);
             addFormsJson(orgId, zos);
         }
@@ -60,6 +78,36 @@ public class ImplementationController implements RestControllerResourceProcessor
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new ByteArrayResource(baosByteArray));
 
+    }
+
+    private void addLocationsJson(Long orgId, ZipOutputStream zos) throws IOException {
+
+    }
+
+    private void addAddressLevelTypesJson(Long orgId, ZipOutputStream zos) throws IOException {
+        List<AddressLevelTypeContract> contracts = new ArrayList<>();
+        List<AddressLevelType> allAddressLevelTypes = addressLevelTypeRepository.findAllByOrganisationId(orgId);
+        List<AddressLevelType> rootNodes = allAddressLevelTypes.stream()
+                .filter(addressLevelType -> addressLevelType.getParent() == null)
+                .collect(Collectors.toList());
+        for (AddressLevelType node : rootNodes) {
+            addAddressLevelType(node, allAddressLevelTypes, contracts);
+        }
+        byte[] bytes = objectMapper.writer().writeValueAsBytes(contracts);
+        addFileToZip(zos, "addressLevelTypes.json", bytes);
+    }
+
+    private void addAddressLevelType(AddressLevelType node, List<AddressLevelType> allAddressLevelTypes, List<AddressLevelTypeContract> contracts) {
+        List<AddressLevelType> children = allAddressLevelTypes.stream()
+                .filter(addressLevelType -> {
+                    AddressLevelType parent = addressLevelType.getParent();
+                    return parent != null && parent.getId().equals(node.getId());
+                })
+                .collect(Collectors.toList());
+        contracts.add(AddressLevelTypeContract.fromAddressLevelType(node));
+        for (AddressLevelType child : children) {
+            addAddressLevelType(child, allAddressLevelTypes, contracts);
+        }
     }
 
     private void addConceptsJson(Long orgId, ZipOutputStream zos) throws IOException {
@@ -78,7 +126,7 @@ public class ImplementationController implements RestControllerResourceProcessor
         for (Concept concept : otherThanCodedOrNA) {
             conceptContracts.add(ConceptExport.fromConcept(concept));
         }
-        byte[] conceptsByteArray = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(conceptContracts);
+        byte[] conceptsByteArray = objectMapper.writer().writeValueAsBytes(conceptContracts);
         addFileToZip(zos, "concepts.json", conceptsByteArray);
     }
 
@@ -89,7 +137,7 @@ public class ImplementationController implements RestControllerResourceProcessor
         }
         for (Form form : forms) {
             FormContract formContract = FormContract.fromForm(form);
-            addFileToZip(zos, String.format("forms/%s.json", form.getName()), objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(formContract));
+            addFileToZip(zos, String.format("forms/%s.json", form.getName()), objectMapper.writer().writeValueAsBytes(formContract));
         }
     }
 
