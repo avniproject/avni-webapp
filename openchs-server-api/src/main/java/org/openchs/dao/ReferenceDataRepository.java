@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
@@ -17,7 +18,9 @@ public interface ReferenceDataRepository<T extends CHSEntity> extends CHSReposit
 
     Page<T> findPageByIsVoidedFalse(Pageable pageable);
 
+    @RestResource(exported = false)
     List<T> findAllByOrganisationId(Long organisationId);
+    @RestResource(exported = false)
     Page<T> findAllByOrganisationId(Long organisationId, Pageable pageable);
 
 
