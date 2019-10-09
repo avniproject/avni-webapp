@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import org.openchs.domain.Program;
+
 public class ProgramRequest {
 
     private String name;
@@ -28,5 +30,13 @@ public class ProgramRequest {
 
     public void setColour(String colour) {
         this.colour = colour;
+    }
+
+    public static ProgramRequest fromProgram(Program program) {
+        ProgramRequest programRequest = new ProgramRequest();
+        programRequest.setUuid(program.getUuid());
+        programRequest.setName(program.getName());
+        programRequest.setColour(program.getColour());
+        return programRequest;
     }
 }

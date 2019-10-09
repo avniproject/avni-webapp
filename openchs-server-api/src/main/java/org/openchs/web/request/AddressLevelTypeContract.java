@@ -1,9 +1,7 @@
 package org.openchs.web.request;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.openchs.domain.AddressLevelType;
 
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class AddressLevelTypeContract extends ReferenceDataContract {
     private Double level;
     private ReferenceDataContract parent;

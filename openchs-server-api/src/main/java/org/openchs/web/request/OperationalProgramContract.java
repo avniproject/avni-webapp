@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import org.openchs.domain.OperationalProgram;
+
 public class OperationalProgramContract extends CHSRequest {
     private CHSRequest program;
     private String name; /* operationalProgram's Name or in other words alias for a program */
@@ -27,5 +29,14 @@ public class OperationalProgramContract extends CHSRequest {
 
     public String getProgramSubjectLabel() {
         return programSubjectLabel;
+    }
+
+    public static OperationalProgramContract fromOperationalProgram(OperationalProgram operationalProgram) {
+        OperationalProgramContract contract = new OperationalProgramContract();
+        contract.setUuid(operationalProgram.getUuid());
+        contract.setName(operationalProgram.getName());
+        contract.setProgramSubjectLabel(operationalProgram.getProgramSubjectLabel());
+        contract.setProgram(new CHSRequest(operationalProgram.getProgramUUID()));
+        return contract;
     }
 }

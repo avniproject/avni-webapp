@@ -1,5 +1,8 @@
 package org.openchs.web.request.webapp;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class AnswerExport {
     private String name;
     private String uuid;

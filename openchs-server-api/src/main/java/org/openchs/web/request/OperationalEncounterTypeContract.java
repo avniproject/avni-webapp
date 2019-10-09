@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import org.openchs.domain.OperationalEncounterType;
+
 public class OperationalEncounterTypeContract extends CHSRequest {
     private CHSRequest encounterType;
     private String name; /* operationalEncounterType's Name or in other words alias for a encounter type */
@@ -18,5 +20,14 @@ public class OperationalEncounterTypeContract extends CHSRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public static OperationalEncounterTypeContract fromOperationalEncounterType(
+            OperationalEncounterType operationalEncounterType) {
+        OperationalEncounterTypeContract contract = new OperationalEncounterTypeContract();
+        contract.setUuid(operationalEncounterType.getUuid());
+        contract.setName(operationalEncounterType.getName());
+        contract.setEncounterType(new CHSRequest(operationalEncounterType.getEncounterTypeUUID()));
+        return contract;
     }
 }

@@ -41,6 +41,10 @@ public class FormMapping extends OrganisationAwareEntity {
         this.form = form;
     }
 
+    public String getFormUuid() {
+        return this.getForm() != null ? this.getForm().getUuid() : null;
+    }
+
     public Program getProgram() {
         return program;
     }
@@ -67,6 +71,10 @@ public class FormMapping extends OrganisationAwareEntity {
 
     public SubjectType getSubjectType() {
         return subjectType;
+    }
+
+    public String getSubjectTypeUuid() {
+        return this.getSubjectType() != null ? this.getSubjectType().getUuid() : null;
     }
 
     public void setSubjectType(SubjectType subjectType) {

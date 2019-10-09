@@ -14,6 +14,10 @@ public class ReferenceDataContract extends CHSRequest {
         this.name = name;
     }
 
+    public ReferenceDataContract(String uuid) {
+        super(uuid);
+    }
+
     public String getName() {
         return name == null ? null : name.trim();
     }

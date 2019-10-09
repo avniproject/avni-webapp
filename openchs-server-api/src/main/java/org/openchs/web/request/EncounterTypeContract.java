@@ -1,9 +1,15 @@
 package org.openchs.web.request;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.domain.EncounterType;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"name", "uuid"})
 public class EncounterTypeContract extends ReferenceDataContract {
+
+    public static EncounterTypeContract fromEncounterType(EncounterType encounterType) {
+        EncounterTypeContract contract = new EncounterTypeContract();
+        contract.setName(encounterType.getName());
+        contract.setUuid(encounterType.getUuid());
+        return contract;
+    }
 }

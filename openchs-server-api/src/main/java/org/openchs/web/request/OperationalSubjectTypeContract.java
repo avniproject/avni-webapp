@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import org.openchs.domain.OperationalSubjectType;
+
 public class OperationalSubjectTypeContract extends CHSRequest {
     private CHSRequest subjectType;
     private String name;
@@ -18,5 +20,13 @@ public class OperationalSubjectTypeContract extends CHSRequest {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public static OperationalSubjectTypeContract fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
+        OperationalSubjectTypeContract contract = new OperationalSubjectTypeContract();
+        contract.setUuid(operationalSubjectType.getUuid());
+        contract.setName(operationalSubjectType.getName());
+        contract.setSubjectType(new CHSRequest(operationalSubjectType.getSubjectTypeUUID()));
+        return contract;
     }
 }
