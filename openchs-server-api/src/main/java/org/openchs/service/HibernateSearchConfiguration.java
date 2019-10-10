@@ -17,6 +17,7 @@ public class HibernateSearchConfiguration {
     @Autowired
     EntityManager entityManager;
 
+/* TODO: Uncomment and fix this
     @Bean
     @Lazy
     @EventListener(ApplicationReadyEvent.class)
@@ -25,5 +26,6 @@ public class HibernateSearchConfiguration {
         hibernateSearchService.initializeHibernateSearch();
         return hibernateSearchService;
     }
+*/
 
 }

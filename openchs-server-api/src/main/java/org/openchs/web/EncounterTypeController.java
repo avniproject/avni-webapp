@@ -59,7 +59,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public ResponseEntity getOne(@PathVariable("id") Long id) {
-        OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findById(id);
+        OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findOne(id);
         if (operationalEncounterType.isVoided())
             return ResponseEntity.notFound().build();
         EncounterTypeContractWeb encounterTypeContractWeb = EncounterTypeContractWeb.fromOperationalEncounterType(operationalEncounterType);
@@ -99,7 +99,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
         if (request.getName().trim().equals(""))
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("Name can not be empty"));
 
-        OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findById(id);
+        OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findOne(id);
 
         if (operationalEncounterType == null)
             return ResponseEntity.badRequest()
@@ -120,7 +120,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity voidEncounterType(@PathVariable("id") Long id) {
-        OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findById(id);
+        OperationalEncounterType operationalEncounterType = operationalEncounterTypeRepository.findOne(id);
         if (operationalEncounterType == null)
             return ResponseEntity.notFound().build();
         EncounterType encounterType = operationalEncounterType.getEncounterType();

@@ -2,7 +2,7 @@ package org.openchs.framework.hibernate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 import java.io.*;
@@ -20,7 +20,7 @@ public abstract class AbstractJsonbUserType implements UserType {
     }
 
     @Override
-    public Object nullSafeGet(final ResultSet rs, final String[] names, final SessionImplementor session,
+    public Object nullSafeGet(final ResultSet rs, final String[] names, final SharedSessionContractImplementor session,
                               final Object owner) throws HibernateException, SQLException {
         final String cellContent = rs.getString(names[0]);
         if (cellContent == null) {
@@ -35,7 +35,7 @@ public abstract class AbstractJsonbUserType implements UserType {
 
     @Override
     public void nullSafeSet(final PreparedStatement ps, final Object value, final int idx,
-                            final SessionImplementor session) throws HibernateException, SQLException {
+                            final SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value == null) {
             ps.setNull(idx, Types.OTHER);
             return;

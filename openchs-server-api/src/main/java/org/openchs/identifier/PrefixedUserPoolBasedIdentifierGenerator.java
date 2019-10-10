@@ -53,8 +53,8 @@ public class PrefixedUserPoolBasedIdentifierGenerator {
             generatedIdentifiers.add(assignNextIdentifier(identifierUserAssignment, prefix));
         }
 
-        identifierUserAssignmentRepository.save(identifierUserAssignments);
-        identifierAssignmentRepository.save(generatedIdentifiers);
+        identifierUserAssignmentRepository.saveAll(identifierUserAssignments);
+        identifierAssignmentRepository.saveAll(generatedIdentifiers);
     }
 
     private IdentifierAssignment assignNextIdentifier(IdentifierUserAssignment identifierUserAssignment, String prefix) {

@@ -31,6 +31,7 @@ public class OpenCHS {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(OpenCHS.class);
+        app.setWebEnvironment(true);
         app.run(args);
     }
 

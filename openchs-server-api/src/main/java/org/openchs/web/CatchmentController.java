@@ -78,7 +78,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
         catchment.setName(catchmentContract.getName());
         catchment.setType(catchmentContract.getType());
         for (Long locationId : catchmentContract.getLocationIds()) {
-            AddressLevel addressLevel = locationRepository.findById(locationId);
+            AddressLevel addressLevel = locationRepository.findOne(locationId);
             if(addressLevel == null)
                 throw new Exception(String.format("Location id %d not found", locationId));
             catchment.addAddressLevel(addressLevel);
@@ -91,12 +91,12 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> updateCatchment(@PathVariable("id") Long id, @RequestBody CatchmentContract catchmentContract) throws Exception {
-        Catchment catchment = catchmentRepository.findById(id);
+        Catchment catchment = catchmentRepository.findOne(id);
         catchment.setName(catchmentContract.getName());
         catchment.setType(catchmentContract.getType());
         catchment.clearAddressLevels();
         for (Long locationId : catchmentContract.getLocationIds()) {
-            AddressLevel addressLevel = locationRepository.findById(locationId);
+            AddressLevel addressLevel = locationRepository.findOne(locationId);
             if(addressLevel == null)
                 throw new Exception(String.format("Location id %d not found", locationId));
             addressLevel.addCatchment(catchment);
@@ -109,7 +109,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> voidCatchment(@PathVariable("id") Long id) {
-        Catchment catchment = catchmentRepository.findById(id);
+        Catchment catchment = catchmentRepository.findOne(id);
         if (catchment == null) {
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("AddressLevelType with id %d not found", id)));
         }

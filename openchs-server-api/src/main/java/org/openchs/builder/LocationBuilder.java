@@ -40,7 +40,7 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
                 get().setParentLocationMapping(fetchOrCreateLocationMapping(get(), parentLocation));
                 get().setParent(locationRepository.findByUuid(parentLocation.getUuid()));
             } else if (parentLocation.getId() != null) {
-                get().setParent(locationRepository.findById(parentLocation.getId()));
+                get().setParent(locationRepository.findOne(parentLocation.getId()));
             }
         }
         return this;

@@ -71,7 +71,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public ResponseEntity getOne(@PathVariable("id") Long id) {
-        OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findById(id);
+        OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findOne(id);
         if (operationalSubjectType.isVoided())
             return ResponseEntity.notFound().build();
         SubjectTypeContractWeb subjectTypeContractWeb = SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType);
@@ -111,7 +111,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         if (request.getName().trim().equals(""))
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("Name can not be empty"));
 
-        OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findById(id);
+        OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findOne(id);
 
         if (operationalSubjectType == null)
             return ResponseEntity.badRequest()
@@ -132,7 +132,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity voidSubjectType(@PathVariable("id") Long id) {
-        OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findById(id);
+        OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findOne(id);
         if (operationalSubjectType == null)
             return ResponseEntity.notFound().build();
         SubjectType subjectType = operationalSubjectType.getSubjectType();

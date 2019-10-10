@@ -4,7 +4,7 @@ import org.openchs.dao.UserRepository;
 import org.openchs.domain.User;
 import org.openchs.framework.jpa.CHSAuditorAware;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;

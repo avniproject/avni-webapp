@@ -44,7 +44,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
 
     @GetMapping(value = "/addressLevelType/{id}")
     public ResponseEntity<?> getSingle(@PathVariable Long id) {
-        return new ResponseEntity<>(addressLevelTypeRepository.findById(id), HttpStatus.OK);
+        return new ResponseEntity<>(addressLevelTypeRepository.findOne(id), HttpStatus.OK);
     }
 
     @PostMapping(value = "/addressLevelType")
@@ -61,7 +61,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
             parent = addressLevelTypeRepository.findByUuid(contract.getParent().getUuid());
         }
         if (contract.getParentId() != null) {
-            parent = addressLevelTypeRepository.findById(contract.getParentId());
+            parent = addressLevelTypeRepository.findOne(contract.getParentId());
         }
         addressLevelType.setParent(parent);
         addressLevelTypeRepository.save(addressLevelType);
@@ -94,7 +94,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> voidAddressLevelType(@PathVariable("id") Long id) {
-        AddressLevelType addressLevelType = addressLevelTypeRepository.findById(id);
+        AddressLevelType addressLevelType = addressLevelTypeRepository.findOne(id);
         if (addressLevelType == null) {
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("AddressLevelType with id %d not found", id)));
         }
