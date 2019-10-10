@@ -28,6 +28,7 @@ public class OperationalEncounterTypeContract extends CHSRequest {
         contract.setUuid(operationalEncounterType.getUuid());
         contract.setName(operationalEncounterType.getName());
         contract.setEncounterType(new CHSRequest(operationalEncounterType.getEncounterTypeUUID()));
+        contract.setVoided(operationalEncounterType.isVoided());
         return contract;
     }
 }

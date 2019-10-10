@@ -12,6 +12,7 @@ public class CatchmentExport {
     private String uuid;
     private String type;
     private List<ReferenceDataContract> locations;
+    private boolean voided;
 
     public String getName() {
         return name;
@@ -50,11 +51,20 @@ public class CatchmentExport {
         catchmentExport.setUuid(catchment.getUuid());
         catchmentExport.setName(catchment.getName());
         catchmentExport.setType(catchment.getType());
+        catchmentExport.setVoided(catchment.isVoided());
         catchmentExport.setLocations(catchment.getAddressLevels()
                 .stream()
                 .map(addressLevel -> new ReferenceDataContract(addressLevel.getUuid()))
                 .collect(Collectors.toList())
         );
         return catchmentExport;
+    }
+
+    public boolean isVoided() {
+        return voided;
+    }
+
+    public void setVoided(boolean voided) {
+        this.voided = voided;
     }
 }

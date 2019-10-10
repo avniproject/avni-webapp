@@ -75,6 +75,7 @@ public class LocationContract extends ReferenceDataContract {
         contract.setUuid(addressLevel.getUuid());
         contract.setName(addressLevel.getTitle());
         contract.setAddressLevelTypeUUID(addressLevel.getType().getUuid());
+        contract.setVoided(addressLevel.isVoided());
         AddressLevel parent = addressLevel.getParent();
         if (parent != null) {
             ReferenceDataContract parentContract = new ReferenceDataContract();

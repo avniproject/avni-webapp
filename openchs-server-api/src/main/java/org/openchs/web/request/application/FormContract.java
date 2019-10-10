@@ -113,6 +113,7 @@ public class FormContract extends ReferenceDataContract {
         formContract.setFormType(form.getFormType().name());
         formContract.setName(form.getName());
         formContract.setUuid(form.getUuid());
+        formContract.setVoided(form.isVoided());
         List<FormElementGroupContract> fegContracts = form.getFormElementGroups().stream()
                 .map(FormElementGroupContract::fromFormElementGroup)
                 .sorted(Comparator.comparingDouble(FormElementGroupContract::getDisplayOrder))

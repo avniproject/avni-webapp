@@ -76,6 +76,7 @@ public class FormElementGroupContract extends ReferenceDataContract {
         fegContract.setUuid(feg.getUuid());
         fegContract.setDisplay(feg.getDisplay());
         fegContract.setDisplayOrder(feg.getDisplayOrder());
+        fegContract.setVoided(feg.isVoided());
         List<FormElementContract> feContracts = feg.getFormElements().stream()
                 .map(FormElementContract::fromFormElement)
                 .sorted(Comparator.comparingDouble(FormElementContract::getDisplayOrder))

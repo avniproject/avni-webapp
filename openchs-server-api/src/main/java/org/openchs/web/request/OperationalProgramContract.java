@@ -37,6 +37,7 @@ public class OperationalProgramContract extends CHSRequest {
         contract.setName(operationalProgram.getName());
         contract.setProgramSubjectLabel(operationalProgram.getProgramSubjectLabel());
         contract.setProgram(new CHSRequest(operationalProgram.getProgramUUID()));
+        contract.setVoided(operationalProgram.isVoided());
         return contract;
     }
 }

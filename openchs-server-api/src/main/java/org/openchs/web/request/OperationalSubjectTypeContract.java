@@ -27,6 +27,7 @@ public class OperationalSubjectTypeContract extends CHSRequest {
         contract.setUuid(operationalSubjectType.getUuid());
         contract.setName(operationalSubjectType.getName());
         contract.setSubjectType(new CHSRequest(operationalSubjectType.getSubjectTypeUUID()));
+        contract.setVoided(operationalSubjectType.isVoided());
         return contract;
     }
 }

@@ -12,6 +12,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
         SubjectTypeContract contract = new SubjectTypeContract();
         contract.setName(subjectType.getName());
         contract.setUuid(subjectType.getUuid());
+        contract.setVoided(subjectType.isVoided());
         return contract;
     }
 }

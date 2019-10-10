@@ -10,6 +10,7 @@ public class EncounterTypeContract extends ReferenceDataContract {
         EncounterTypeContract contract = new EncounterTypeContract();
         contract.setName(encounterType.getName());
         contract.setUuid(encounterType.getUuid());
+        contract.setVoided(encounterType.isVoided());
         return contract;
     }
 }

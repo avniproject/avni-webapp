@@ -52,6 +52,7 @@ public class FormMappingContract extends ReferenceDataContract {
         contract.setProgramUUID(formMapping.getProgramUuid());
         contract.setFormUUID(formMapping.getFormUuid());
         contract.setEncounterTypeUUID(formMapping.getEncounterTypeUuid());
+        contract.setVoided(formMapping.isVoided());
         return contract;
     }
 
