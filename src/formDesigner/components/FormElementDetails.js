@@ -37,7 +37,6 @@ function FormElementDetails(props) {
     }
   }
 
-  console.log(`FormElementDetails: render`);
   return (
     <Grid container item sm={12}>
       <Grid item sm={12}>

@@ -165,24 +165,43 @@ class FormDetails extends Component {
   }
 
   onUpdateDragDropOrder = (
-    groupIndex,
+    groupSourceIndex,
     sourceElementIndex,
     destinationElementIndex,
-    groupOrElement = 1
+    groupOrElement = 1,
+    groupDestinationIndex
   ) => {
     if (groupOrElement === 1) {
       this.setState(
         produce(draft => {
-          let form = draft.form;
-          const sourceElement = form.formElementGroups[groupIndex].formElements.splice(
-            sourceElementIndex,
-            1
-          )[0];
-          form.formElementGroups[groupIndex].formElements.splice(
-            destinationElementIndex,
-            0,
-            sourceElement
-          );
+          if (groupSourceIndex !== groupDestinationIndex) {
+            let form = draft.form;
+            const sourceElement = cloneDeep(
+              form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex]
+            );
+            sourceElement.uuid = UUID.v4();
+            form.formElementGroups[groupDestinationIndex].formElements.splice(
+              destinationElementIndex,
+              0,
+              sourceElement
+            );
+
+            form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex].voided = true;
+          } else {
+            let form = draft.form;
+
+            const sourceElement = form.formElementGroups[groupSourceIndex].formElements.splice(
+              sourceElementIndex,
+              1
+            )[0];
+
+            form.formElementGroups[groupSourceIndex].formElements.splice(
+              destinationElementIndex,
+              0,
+              sourceElement
+            );
+          }
+
           draft.detectBrowserCloseEvent = true;
         })
       );
@@ -340,6 +359,7 @@ class FormDetails extends Component {
         });
       });
   };
+
   onDragEnd = result => {
     console.log(result);
     const { destination, source } = result;
@@ -352,14 +372,33 @@ class FormDetails extends Component {
       return;
     }
 
-    const groupIndex = result.source.droppableId.replace("Group", "");
-    const sourceElementIndex = result.draggableId.replace("Element", "");
-    const destinationElementIndex = result.destination.index;
-    this.onUpdateDragDropOrder(groupIndex, sourceElementIndex, destinationElementIndex, 0);
+    if (result.type === "task") {
+      const groupSourceIndex = result.source.droppableId.replace("Group", "");
+      const groupDestinationIndex = result.destination.droppableId.replace("Group", "");
+      const sourceElementIndex = result.source.index;
+      const destinationElementIndex = result.destination.index;
+      this.onUpdateDragDropOrder(
+        groupSourceIndex,
+        sourceElementIndex,
+        destinationElementIndex,
+        1,
+        groupDestinationIndex
+      );
+    } else {
+      const groupSourceIndex = result.source.droppableId.replace("Group", "");
+      const sourceElementIndex = result.draggableId.replace("Element", "");
+      const destinationElementIndex = result.destination.index;
+      this.onUpdateDragDropOrder(
+        groupSourceIndex,
+        sourceElementIndex,
+        destinationElementIndex,
+        0,
+        null
+      );
+    }
   };
 
   render() {
-    console.log(`FormDetails: render`);
     const form = (
       <Grid container justify="center">
         <Grid item sm={12}>
@@ -411,8 +450,9 @@ class FormDetails extends Component {
                   )}
                 </Grid>
               </Grid>
+
               <DragDropContext onDragEnd={this.onDragEnd}>
-                <Droppable droppableId={"Group0"}>
+                <Droppable droppableId="all-columns" direction="vertical" type="row">
                   {provided => (
                     <div ref={provided.innerRef} {...provided.droppableProps}>
                       {this.renderGroups()}
