@@ -74,7 +74,7 @@ public class FormContract extends ReferenceDataContract {
         for (FormElementGroupContract formElementGroup : getFormElementGroups()) {
             for (FormElementContract formElement : formElementGroup.getFormElements()) {
                 String conceptUuid = formElement.getConcept().getUuid();
-                if (!conceptUuid.equals(PLACEHOLDER_CONCEPT_UUID) && !uniqueConcepts.add(conceptUuid)) {
+                if (!formElement.isVoided() && !conceptUuid.equals(PLACEHOLDER_CONCEPT_UUID) && !uniqueConcepts.add(conceptUuid)) {
                     throw new InvalidObjectException(String.format(
                             "Cannot use same concept twice. Form{uuid='%s',..} uses Concept{uuid='%s',..} twice",
                             getUuid(),

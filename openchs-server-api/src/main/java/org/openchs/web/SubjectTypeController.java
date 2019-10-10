@@ -54,6 +54,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     private SubjectType createSubjectType(SubjectTypeContract programRequest) {
         SubjectType subjectType = new SubjectType();
         subjectType.setUuid(programRequest.getUuid());
+        subjectType.setVoided(programRequest.isVoided());
         return subjectType;
     }
 
