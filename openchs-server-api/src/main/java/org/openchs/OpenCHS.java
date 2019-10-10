@@ -3,15 +3,16 @@ package org.openchs;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
 import org.openchs.application.FormMapping;
-import org.openchs.dao.EncounterTypeRepository;
-import org.openchs.dao.ProgramRepository;
 import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
+import org.openchs.importer.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
@@ -20,13 +21,11 @@ import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class OpenCHS {
-    private final ProgramRepository programRepository;
-    private final EncounterTypeRepository encounterTypeRepository;
+    private final JobService jobService;
 
     @Autowired
-    public OpenCHS(ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository) {
-        this.programRepository = programRepository;
-        this.encounterTypeRepository = encounterTypeRepository;
+    public OpenCHS(JobService jobService) {
+        this.jobService = jobService;
     }
 
     public static void main(String[] args) {
@@ -186,4 +185,8 @@ public class OpenCHS {
         };
     }
 
+    @EventListener(ApplicationReadyEvent.class)
+    public void restartFailedJobs() throws Exception {
+        jobService.retryJobsFailedInLast2Hours();
+    }
 }
