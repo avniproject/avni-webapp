@@ -25,7 +25,7 @@ ospackage {
 
     into '/opt/openchs'
 
-    from(jar.outputs.files) {
+    from(bootJar.outputs.files) {
         rename { String fileName ->
             fileName.replace("-${project.version}", "")
         }
