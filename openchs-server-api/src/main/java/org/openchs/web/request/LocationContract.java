@@ -15,13 +15,6 @@ public class LocationContract extends ReferenceDataContract {
     private String organisationUUID;
     private String addressLevelTypeUUID;
 
-    public LocationContract() {
-    }
-
-    public LocationContract(String uuid) {
-        setUuid(uuid);
-    }
-
     public Double getLevel() {
         return level;
     }

@@ -15,9 +15,7 @@ public interface GenderRepository extends CHSRepository<Gender>, PagingAndSortin
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
     Gender save(Gender gender);
 
-    default Gender findOne(long id) {
-        return findById(id).orElse(null);
-    };
+    Gender findById(long id);
 
     default Gender findByUuidOrName(String name, String uuid) {
         return uuid != null ? findByUuid(uuid) : findByName(name);

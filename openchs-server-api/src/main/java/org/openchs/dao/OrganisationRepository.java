@@ -19,8 +19,4 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Lon
     @PreAuthorize("hasAnyAuthority('admin')")
     @Procedure(value = "create_db_user")
     void createDBUser(String name, String pass);
-
-    default Organisation findOne(Long organisationId) {
-        return findById(organisationId).orElse(null);
-    }
 }

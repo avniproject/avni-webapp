@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +21,14 @@ public class HibernateSearchService {
     private final EntityManager entityManager;
 
     @Autowired
-    public HibernateSearchService(EntityManagerFactory entityManagerFactory) {
-        this.entityManager = entityManagerFactory.createEntityManager();
+    public HibernateSearchService(EntityManager entityManager) {
+        super();
+        this.entityManager = entityManager;
     }
 
-    @PostConstruct
-    void init() {
-        Search.getFullTextEntityManager(entityManager).createIndexer().start();
+    void initializeHibernateSearch() {
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+        fullTextEntityManager.createIndexer().start();
     }
 
     @Transactional

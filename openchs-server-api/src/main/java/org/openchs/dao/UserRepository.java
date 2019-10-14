@@ -18,10 +18,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends PagingAndSortingRepository<User, Long>, JpaSpecificationExecutor<User> {
     User findByUsername(String username);
     User findByUuid(String uuid);
-
-    default User findOne(Long id) {
-        return findById(id).orElse(null);
-    }
+    User findById(Long id);
 
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin', 'user')")
     User save(User user);
