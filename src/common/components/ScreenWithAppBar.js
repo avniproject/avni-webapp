@@ -169,7 +169,7 @@ const applyLeftMenu = (
                 selected={selectedIndex === 3}
                 onClick={event => handleListItemClick(event, 3)}
               >
-                {applyListIcon(open, <ListAltIcon />, "Upload/Download Data")}
+                {applyListIcon(open, <ListAltIcon />, "Bundle")}
               </ListItem>
             </>
           )}

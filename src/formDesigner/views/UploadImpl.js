@@ -6,8 +6,9 @@ import JSZip from "jszip";
 import axios from "axios";
 import { LineBreak } from "../../common/components/utils";
 import fileDownload from "js-file-download";
+import { connect } from "react-redux";
 
-function UploadImpl() {
+function UploadImpl({ organisation }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = React.useState(false);
 
@@ -53,7 +54,7 @@ function UploadImpl() {
         responseType: "blob"
       })
       .then(response => {
-        fileDownload(response.data, "bundle.zip");
+        fileDownload(response.data, `${organisation.name}.zip`);
       });
   }
 
@@ -82,4 +83,11 @@ function UploadImpl() {
   );
 }
 
-export default UploadImpl;
+const mapStateToProps = state => ({
+  organisation: state.app.organisation
+});
+
+export default connect(
+  mapStateToProps,
+  null
+)(UploadImpl);
