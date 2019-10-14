@@ -141,10 +141,10 @@ function FormElementGroup(props) {
     _.forEach(displayOrderFormElements, (formElement, index) => {
       if (formElement.voided === false) {
         let propsElement = {
-          key: "Element" + props.index + "" + counter,
+          key: "Element" + props.index + "" + index,
           formElementData: formElement,
           groupIndex: props.index,
-          index: counter,
+          index: index,
           btnGroupAdd: props.btnGroupAdd,
           handleGroupElementChange: props.handleGroupElementChange,
           deleteGroup: props.deleteGroup,
@@ -152,7 +152,7 @@ function FormElementGroup(props) {
         };
         formElements.push(
           <Draggable
-            key={counter}
+            key={index}
             draggableId={"Group" + props.index + "Element:" + index}
             index={index}
           >
