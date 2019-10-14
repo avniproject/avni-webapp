@@ -11,7 +11,9 @@ import org.openchs.web.request.ConceptContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
@@ -72,10 +74,12 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @ResponseBody
     public PagedResources<Resource<Concept>> getAll(@RequestParam(value = "name", required = false) String name, Pageable pageable) {
+        Sort sortWithId = pageable.getSort().and(new Sort("id"));
+        PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sortWithId);
         if (name == null) {
-            return wrap(conceptRepository.findAll(pageable));
+            return wrap(conceptRepository.findAll(pageRequest));
         } else {
-            return wrap(conceptRepository.findByNameIgnoreCaseContaining(name, pageable));
+            return wrap(conceptRepository.findByNameIgnoreCaseContaining(name, pageRequest));
         }
     }
 
