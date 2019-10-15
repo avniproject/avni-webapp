@@ -172,6 +172,7 @@ class FormDetails extends Component {
     groupDestinationIndex
   ) => {
     if (groupOrElement === 1) {
+      let counter = 0;
       this.setState(
         produce(draft => {
           if (groupSourceIndex !== groupDestinationIndex) {
@@ -180,37 +181,58 @@ class FormDetails extends Component {
               form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex]
             );
             sourceElement.uuid = UUID.v4();
-            form.formElementGroups[groupDestinationIndex].formElements.splice(
-              destinationElementIndex,
-              0,
-              sourceElement
-            );
+            form.formElementGroups[groupDestinationIndex].formElements.forEach((element, index) => {
+              if (element.voided === false) {
+                counter += 1;
+                if (counter === destinationElementIndex) {
+                  form.formElementGroups[groupDestinationIndex].formElements.splice(
+                    index + 1,
+                    0,
+                    sourceElement
+                  );
+                }
+              }
+            });
 
             form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex].voided = true;
           } else {
             let form = draft.form;
 
-            const sourceElement = form.formElementGroups[groupSourceIndex].formElements.splice(
-              sourceElementIndex,
-              1
-            )[0];
-
-            form.formElementGroups[groupSourceIndex].formElements.splice(
-              destinationElementIndex,
-              0,
-              sourceElement
-            );
+            form.formElementGroups[groupSourceIndex].formElements.forEach((element, index) => {
+              if (element.voided === false) {
+                if (counter === destinationElementIndex) {
+                  const sourceElement = form.formElementGroups[
+                    groupSourceIndex
+                  ].formElements.splice(sourceElementIndex, 1)[0];
+                  form.formElementGroups[groupSourceIndex].formElements.splice(
+                    index,
+                    0,
+                    sourceElement
+                  );
+                }
+                counter += 1;
+              }
+            });
           }
 
           draft.detectBrowserCloseEvent = true;
         })
       );
     } else {
+      let counter = 0;
       this.setState(
         produce(draft => {
           let form = draft.form;
-          const sourceElement = form.formElementGroups.splice(sourceElementIndex, 1)[0];
-          form.formElementGroups.splice(destinationElementIndex, 0, sourceElement);
+
+          form.formElementGroups.forEach((element, index) => {
+            if (element.voided === false) {
+              if (counter === destinationElementIndex) {
+                const sourceElement = form.formElementGroups.splice(sourceElementIndex, 1)[0];
+                form.formElementGroups.splice(index, 0, sourceElement);
+              }
+              counter += 1;
+            }
+          });
           draft.detectBrowserCloseEvent = true;
         })
       );
@@ -263,7 +285,8 @@ class FormDetails extends Component {
           mandatory: false,
           voided: false,
           expanded: true,
-          concept: { name: "", dataType: "" }
+          concept: { name: "", dataType: "" },
+          errorMessage: { name: false, concept: false, type: false }
         };
         if (elementIndex === -1) {
           form.formElementGroups.splice(index + 1, 0, {
@@ -292,6 +315,8 @@ class FormDetails extends Component {
   validateForm() {
     let flag = false;
     let errormsg = "";
+    let numberGroupError = 0;
+    let numberElementError = 0;
     this.setState(
       produce(draft => {
         _.forEach(draft.form.formElementGroups, group => {
@@ -300,6 +325,7 @@ class FormDetails extends Component {
           if (group.voided === false && group.name.trim() === "") {
             group.error = true;
             flag = true;
+            numberGroupError += 1;
           }
           let groupError = false;
           group.formElements.forEach(fe => {
@@ -312,9 +338,14 @@ class FormDetails extends Component {
                 fe.concept.dataType === "NA" ||
                 (fe.concept.dataType === "Coded" && fe.type === ""))
             ) {
+              numberElementError = numberElementError + 1;
               fe.error = true;
+              fe.errorMessage = {};
               fe.expanded = true;
               flag = groupError = true;
+              if (fe.name === "") fe.errorMessage.name = true;
+              if (fe.concept.dataType === "") fe.errorMessage.concept = true;
+              if (fe.concept.dataType === "Coded" && fe.type === "") fe.errorMessage.type = true;
             }
           });
           if (groupError || group.error) {
@@ -322,8 +353,12 @@ class FormDetails extends Component {
           }
         });
         if (flag) {
-          errormsg =
-            "There are empty fields or an invalid concept selected. Please find below highlighted groups or questions.";
+          if (numberGroupError !== 0) {
+            errormsg += "There is a error in " + numberGroupError + " form group";
+            if (numberElementError !== 0)
+              errormsg += " and " + numberElementError + " form element.";
+          } else if (numberElementError !== 0)
+            errormsg += "There is a error in " + numberElementError + " form element.";
         }
         draft.saveCall = !flag;
         draft.errorMsg = errormsg;

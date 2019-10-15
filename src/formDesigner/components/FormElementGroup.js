@@ -137,7 +137,7 @@ function FormElementGroup(props) {
   const renderFormElements = () => {
     const formElements = [];
     const displayOrderFormElements = props.groupData.formElements;
-    let counter = 0;
+
     _.forEach(displayOrderFormElements, (formElement, index) => {
       if (formElement.voided === false) {
         let propsElement = {
@@ -152,8 +152,8 @@ function FormElementGroup(props) {
         };
         formElements.push(
           <Draggable
-            key={index}
-            draggableId={"Group" + props.index + "Element:" + index}
+            key={"Element" + props.index + "" + index}
+            draggableId={"Group" + props.index + "Element" + index}
             index={index}
           >
             {provided => (
@@ -167,14 +167,17 @@ function FormElementGroup(props) {
             )}
           </Draggable>
         );
-        counter = counter + 1;
       }
     });
     return formElements;
   };
 
   return (
-    <Draggable key={props.index} draggableId={"Element" + props.index} index={props.index}>
+    <Draggable
+      key={"Element" + props.index}
+      draggableId={"Element" + props.index}
+      index={props.index}
+    >
       {provided => (
         <div
           {...provided.draggableProps}
@@ -196,9 +199,13 @@ function FormElementGroup(props) {
               <div className={classes.iconlay}>
                 {props.groupData.expanded === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </div>
+
               <Grid container item sm={12}>
                 <Grid item sm={8}>
                   <Typography component={"div"} className={classes.heading}>
+                    {props.groupData.error === true && (
+                      <div style={{ color: "red" }}>Please enter group name.</div>
+                    )}
                     <FormControl fullWidth>
                       <Input
                         type="text"

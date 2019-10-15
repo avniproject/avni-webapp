@@ -40,6 +40,10 @@ function FormElementDetails(props) {
   return (
     <Grid container item sm={12}>
       <Grid item sm={12}>
+        {props.formElementData.errorMessage &&
+          (props.formElementData.errorMessage.name && (
+            <div style={{ color: "red" }}>Please enter name</div>
+          ))}
         <FormControl fullWidth>
           <InputLabel htmlFor="elementNameDetails">Name</InputLabel>
           <Input
@@ -57,6 +61,11 @@ function FormElementDetails(props) {
         </FormControl>
       </Grid>
       <Grid item sm={12}>
+        {props.formElementData.errorMessage &&
+          (props.formElementData.errorMessage.concept && (
+            <div style={{ color: "red" }}>Please enter concept </div>
+          ))}
+
         <FormControl fullWidth>
           <AutoSuggestSingleSelection
             visibility={!props.formElementData.newFlag}
@@ -70,6 +79,10 @@ function FormElementDetails(props) {
       </Grid>
       {props.formElementData.concept.dataType === "Coded" && (
         <Grid item sm={6}>
+          {props.formElementData.errorMessage &&
+            (props.formElementData.errorMessage.type && (
+              <div style={{ color: "red" }}>Please select type</div>
+            ))}
           <FormControl fullWidth>
             <InputLabel>Type</InputLabel>
             <Select
@@ -147,7 +160,7 @@ function FormElementDetails(props) {
         <Grid container item sm={12}>
           <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
           {props.formElementData.concept.answers.map(function(d) {
-            if (d.voided === false) {
+            if (!d.voided) {
               return (
                 <div key={d.name} className={classes.answers}>
                   {" "}
