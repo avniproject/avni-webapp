@@ -53,10 +53,10 @@ ALTER SEQUENCE audit_id_seq RESTART WITH 1;
 
 INSERT INTO organisation (id, name, db_user, media_directory, uuid)
 VALUES (1, 'OpenCHS', 'openchs', 'openchs_impl', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
-INSERT INTO organisation (id, name, db_user, media_directory, uuid)
-VALUES (2, 'demo', 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5');
-INSERT INTO organisation (id, name, db_user, media_directory, uuid)
-VALUES (3, 'a-demo', 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325');
+INSERT INTO organisation (id, name, db_user, media_directory, uuid, parent_organisation_id)
+VALUES (2, 'demo', 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5', 1);
+INSERT INTO organisation (id, name, db_user, media_directory, uuid, parent_organisation_id)
+VALUES (3, 'a-demo', 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325', 1);
 
 insert into subject_type(id, uuid, name, organisation_id, audit_id) VALUES (1, '9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3', 'Individual', 1, create_audit());
 
@@ -206,9 +206,9 @@ VALUES (2, 'Naya Gaon', 1, 'a62d5ff9-4480-44f8-ab9f-9fe12e2e1a91', 1, '2', NULL)
 INSERT INTO catchment_address_mapping (catchment_id, addresslevel_id)
 VALUES (1, 1), (1, 2), (2, 2);
 
-INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id,
+INSERT INTO individual (uuid, address_id, version, date_of_birth, date_of_birth_verified, first_name, last_name, gender_id, organisation_id,
  subject_type_id)
-VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2,
+VALUES ('4378dce3-247e-4393-8dd5-032c6eb0a655', 1, 1, current_timestamp, FALSE, 'Prabhu', 'Kumar', 2, 2,
  (select id from subject_type where name = 'Individual'));
 
 INSERT INTO program_enrolment (individual_id, program_id, enrolment_date_time, uuid, version)

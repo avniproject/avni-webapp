@@ -177,7 +177,7 @@ public class UserController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity deleteUser(@PathVariable("id") Long id) {
         try {
-            User user = userRepository.findById(id);
+            User user = userRepository.findOne(id);
             cognitoService.deleteUser(user);
             user.setVoided(true);
             user.setDisabledInCognito(true);
@@ -196,7 +196,7 @@ public class UserController {
     public ResponseEntity disableUser(@PathVariable("id") Long id,
                                       @RequestParam(value = "disable", required = false, defaultValue = "false") boolean disable) {
         try {
-            User user = userRepository.findById(id);
+            User user = userRepository.findOne(id);
             if (disable) {
                 cognitoService.disableUser(user);
                 user.setDisabledInCognito(true);

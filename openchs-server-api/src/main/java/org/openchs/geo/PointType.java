@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 import org.postgresql.geometric.PGpoint;
 
@@ -29,7 +29,7 @@ public class PointType implements UserType {
     }
 
     @Override
-    public boolean equals( Object o, Object o1 ) throws HibernateException {
+    public boolean equals(Object o, Object o1) throws HibernateException {
         if (o == null && o1 == null)
             return true;
         else if (o == null || o1 == null)
@@ -38,7 +38,7 @@ public class PointType implements UserType {
     }
 
     @Override
-    public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor sessionImplementor, Object owner) throws HibernateException, SQLException {
+    public Object nullSafeGet(ResultSet resultSet, String[] names, SharedSessionContractImplementor sessionImplementor, Object owner) throws HibernateException, SQLException {
         if (names.length != 1)
             throw new IllegalArgumentException("names.length != 1, names = " + names);
 
@@ -52,7 +52,7 @@ public class PointType implements UserType {
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement preparedStatement, Object value, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement preparedStatement, Object value, int i, SharedSessionContractImplementor sessionImplementor) throws HibernateException, SQLException {
         if (value == null) {
             preparedStatement.setNull(i, java.sql.Types.OTHER);
         } else {
@@ -61,7 +61,7 @@ public class PointType implements UserType {
     }
 
     @Override
-    public Object deepCopy( Object o ) throws HibernateException {
+    public Object deepCopy(Object o) throws HibernateException {
         if (o == null)
             return null;
 

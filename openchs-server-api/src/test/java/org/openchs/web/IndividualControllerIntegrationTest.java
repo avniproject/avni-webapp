@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -96,15 +97,25 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
     }
 
     @Test
-    public void shouldSearchWithinOperatingIndividualScope() {
-        setUser("demo-user");
+    public void shouldSearchWithinOperatingIndividualScope() throws IOException {
         String url = "/individual/search?size=10&page=0";
-        ResponseEntity<JsonObject> catchment2 = template.getForEntity(base.toString() + url, JsonObject.class);
-        Assert.assertEquals(1, ((List) catchment2.getBody().get("content")).size());
+        Function<String, Integer> countOfIndividuals = (user) -> {
+            setUser(user);
+            ResponseEntity<JsonObject> individuals = template.getForEntity(base.toString() + url, JsonObject.class);
+            return ((List) individuals.getBody().get("content")).size();
+        };
+        String catchmentYUser = "demo-user";
+        String catchmentXUser = "demo-user-2";
+        Object newIndividualInX = mapper.readValue(this.getClass().getResource("/ref/individual/newIndividual.json"), Object.class);
 
-        setUser("demo-user-2");
-        ResponseEntity<JsonObject> catchment1 = template.getForEntity(base.toString() + url, JsonObject.class);
-        Assert.assertEquals(4, ((List) catchment1.getBody().get("content")).size());
+        Integer totalIndividualsInCatchmentXBeforeTest = countOfIndividuals.apply(catchmentXUser);
+        Integer totalIndividualsInCatchmentYBeforeTest = countOfIndividuals.apply(catchmentYUser);
+
+        post(catchmentXUser, "/individuals", newIndividualInX);
+
+        Assert.assertEquals(1, countOfIndividuals.apply(catchmentXUser) - totalIndividualsInCatchmentXBeforeTest);
+
+        Assert.assertEquals(0, countOfIndividuals.apply(catchmentYUser) - totalIndividualsInCatchmentYBeforeTest);
     }
 
 }

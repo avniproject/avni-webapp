@@ -85,7 +85,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         if (programContractWeb.getName().trim().equals(""))
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("Name can not be empty"));
 
-        OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
+        OperationalProgram operationalProgram = operationalProgramRepository.findOne(id);
 
         if (operationalProgram == null)
             return ResponseEntity.badRequest()
@@ -108,7 +108,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity voidProgram(@PathVariable("id") Long id) {
-        OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
+        OperationalProgram operationalProgram = operationalProgramRepository.findOne(id);
         if (operationalProgram == null)
             return ResponseEntity.notFound().build();
         Program program = operationalProgram.getProgram();
@@ -138,7 +138,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public ResponseEntity getOne(@PathVariable("id") Long id) {
-        OperationalProgram operationalProgram = operationalProgramRepository.findById(id);
+        OperationalProgram operationalProgram = operationalProgramRepository.findOne(id);
         if (operationalProgram.isVoided())
             return ResponseEntity.notFound().build();
         ProgramContractWeb programContractWeb = ProgramContractWeb.fromOperationalProgram(operationalProgram);

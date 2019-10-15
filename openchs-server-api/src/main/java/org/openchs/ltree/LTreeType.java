@@ -1,7 +1,7 @@
 package org.openchs.ltree;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 import java.io.Serializable;
@@ -17,7 +17,7 @@ public class LTreeType implements UserType {
 
     @Override
     public int[] sqlTypes() {
-        return new int[] {Types.OTHER};
+        return new int[]{Types.OTHER};
     }
 
     @Override
@@ -39,18 +39,18 @@ public class LTreeType implements UserType {
     }
 
     @Override
-    public Object nullSafeGet(ResultSet resultSet, String[] strings, SessionImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
+    public Object nullSafeGet(ResultSet resultSet, String[] strings, SharedSessionContractImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
         return resultSet.getString(strings[0]);
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SharedSessionContractImplementor sessionImplementor) throws HibernateException, SQLException {
         preparedStatement.setObject(i, o, Types.OTHER);
     }
 
     @Override
     public Object deepCopy(Object o) throws HibernateException {
-        return o != null ? new String((String)o) : null;
+        return o != null ? new String((String) o) : null;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class LTreeType implements UserType {
 
     @Override
     public Serializable disassemble(Object o) throws HibernateException {
-        return (Serializable)o;
+        return (Serializable) o;
     }
 
     @Override

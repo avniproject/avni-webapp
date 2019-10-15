@@ -19,7 +19,8 @@ public class SearchController {
     private final HibernateSearchService searchService;
     private final Logger logger;
 
-    @Autowired @Lazy
+    @Autowired
+    @Lazy
     public SearchController(HibernateSearchService searchService) {
         this.searchService = searchService;
         logger = LoggerFactory.getLogger(this.getClass());
@@ -27,7 +28,8 @@ public class SearchController {
 
     @RequestMapping(value = "/search/concept", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
-    public List<ConceptContract> searchConcept(@RequestParam(value = "name") String query, @RequestParam(value = "dataType", required = false) String dataType) {
-        return searchService.searchConcepts(query, dataType);
+    public List<ConceptContract> searchConcept(@RequestParam String name,
+                                               @RequestParam(required = false) String dataType) {
+        return searchService.searchConcepts(name, dataType);
     }
 }

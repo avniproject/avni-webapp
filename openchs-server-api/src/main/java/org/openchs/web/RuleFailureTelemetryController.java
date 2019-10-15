@@ -47,7 +47,7 @@ public class RuleFailureTelemetryController implements RestControllerResourcePro
     @Transactional
     public ResponseEntity updateStatus(@PathVariable("id") Long id,
                                        @RequestParam(value = "isClosed") Boolean isClosed) {
-        RuleFailureTelemetry ruleFailureTelemetry = ruleFailureTelemetryRepository.findById(id);
+        RuleFailureTelemetry ruleFailureTelemetry = ruleFailureTelemetryRepository.findOne(id);
         if (ruleFailureTelemetry == null) {
             return ResponseEntity.badRequest().body(String.format("No entry found with id %d", id));
         }

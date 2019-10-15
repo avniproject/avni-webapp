@@ -10,9 +10,9 @@ import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -75,6 +75,11 @@ public abstract class AbstractControllerIntegrationTest {
         ResponseEntity<String> responseEntity = template.postForEntity(path, json, String.class);
         String body = String.valueOf(responseEntity.getBody());
         assertTrue(body, responseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    protected void post(String username, String path, Object json) {
+        setUser(username);
+        post(path, json);
     }
 
     protected String postForBody(String path, Object json) {

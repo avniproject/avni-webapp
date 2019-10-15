@@ -63,6 +63,8 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
             nativeQuery = true)
     Page<AddressLevel> getAddressLevelsByLquery(@Param("lquery") String lquery, Pageable pageable);
 
+    AddressLevel findByTitleLineageIgnoreCase(String lineage);
+
     @RestResource(path = "findByParent", rel = "findByParent")
     Page<AddressLevel> findByIsVoidedFalseAndParent_Id(@Param("parentId") Long parentId, Pageable pageable);
 
