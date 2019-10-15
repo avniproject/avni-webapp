@@ -28,8 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -240,21 +239,29 @@ public class ImplementationController implements RestControllerResourceProcessor
     }
 
     private void addConceptsJson(Long orgId, ZipOutputStream zos) throws IOException {
-
         List<ConceptExport> conceptContracts = new ArrayList<>();
-        List<Concept> naConcepts = conceptRepository.findAllByOrganisationIdAndDataType(orgId, "NA");
-        List<Concept> codedConcepts = conceptRepository.findAllByOrganisationIdAndDataType(orgId, "Coded");
-        List<Concept> otherThanCodedOrNA = conceptRepository.findAllByOrganisationIdAndDataTypeNotIn(orgId, new String[]{"NA", "Coded"});
+        List<Concept> allConcepts = conceptRepository.findAllByOrganisationId(orgId);
+        Map<String, Concept> allAnswers = new HashMap<>();
 
-        for (Concept concept : naConcepts) {
-            conceptContracts.add(ConceptExport.fromConcept(concept));
-        }
+        List<Concept> codedConcepts = conceptRepository.findAllByOrganisationIdAndDataType(orgId, "Coded");
+
         for (Concept concept : codedConcepts) {
-            conceptContracts.add(ConceptExport.fromConcept(concept));
+            Set<ConceptAnswer> conceptAnswers = concept.getConceptAnswers();
+            for (ConceptAnswer conceptAnswer : conceptAnswers) {
+                Concept answerConcept = conceptAnswer.getAnswerConcept();
+                if (!allAnswers.containsKey(answerConcept.getUuid())) {
+                    allAnswers.put(answerConcept.getUuid(), answerConcept);
+                    conceptContracts.add(ConceptExport.fromConcept(answerConcept));
+                }
+            }
         }
-        for (Concept concept : otherThanCodedOrNA) {
-            conceptContracts.add(ConceptExport.fromConcept(concept));
+
+        for (Concept concept : allConcepts) {
+            if (!allAnswers.containsKey(concept.getUuid())) {
+                conceptContracts.add(ConceptExport.fromConcept(concept));
+            }
         }
+
         addFileToZip(zos, "concepts.json", conceptContracts);
     }
 
