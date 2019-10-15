@@ -51,12 +51,21 @@ ALTER SEQUENCE individual_relationship_type_id_seq RESTART WITH 1;
 ALTER SEQUENCE individual_relationship_id_seq RESTART WITH 1;
 ALTER SEQUENCE audit_id_seq RESTART WITH 1;
 
-INSERT INTO organisation (id, name, db_user, media_directory, uuid)
-VALUES (1, 'OpenCHS', 'openchs', 'openchs_impl', '3539a906-dfae-4ec3-8fbb-1b08f35c3884');
+INSERT into organisation(id, name, db_user, uuid, media_directory, parent_organisation_id)
+values (1, 'OpenCHS', 'openchs', '3539a906-dfae-4ec3-8fbb-1b08f35c3884', 'openchs_impl', null)
+ON CONFLICT (uuid) DO NOTHING;
+
+select create_db_user('demo', 'password');
+
+INSERT INTO organisation(id, name, db_user, media_directory, uuid, parent_organisation_id)
+VALUES (2, 'demo', 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5', 1)
+ON CONFLICT (uuid) DO NOTHING;
+
+select create_db_user('a_demo', 'password');
+
 INSERT INTO organisation (id, name, db_user, media_directory, uuid, parent_organisation_id)
-VALUES (2, 'demo', 'demo', 'demo', 'ae0e4ac4-681d-45f2-8bdd-2b09a5a1a6e5', 1);
-INSERT INTO organisation (id, name, db_user, media_directory, uuid, parent_organisation_id)
-VALUES (3, 'a-demo', 'a-demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325', 1);
+VALUES (3, 'a-demo', 'a_demo', 'a-demo', '2734f2ba-610b-49f8-b8d3-4196a460e325', 1)
+ON CONFLICT (uuid) DO NOTHING;
 
 insert into subject_type(id, uuid, name, organisation_id, audit_id) VALUES (1, '9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3', 'Individual', 1, create_audit());
 
