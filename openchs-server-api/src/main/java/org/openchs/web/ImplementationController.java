@@ -1,5 +1,7 @@
 package org.openchs.web;
 
+import com.fasterxml.jackson.core.PrettyPrinter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
@@ -271,7 +273,8 @@ public class ImplementationController implements RestControllerResourceProcessor
         ZipEntry entry = new ZipEntry(fileName);
         zos.putNextEntry(entry);
         if (fileContent != null) {
-            byte[] bytes = objectMapper.writer().writeValueAsBytes(fileContent);
+            PrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
+            byte[] bytes = objectMapper.writer(prettyPrinter).writeValueAsBytes(fileContent);
             zos.write(bytes);
         }
         zos.closeEntry();
