@@ -1,6 +1,6 @@
 package org.openchs.web;
 
-import org.openchs.service.StorageService;
+import org.openchs.service.S3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +17,11 @@ import static java.lang.String.format;
 @RestController
 public class MediaController {
     private final Logger logger;
-    private final StorageService storageService;
+    private final S3Service s3Service;
 
     @Autowired
-    public MediaController(StorageService storageService) {
-        this.storageService = storageService;
+    public MediaController(S3Service s3Service) {
+        this.s3Service = s3Service;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -30,7 +30,7 @@ public class MediaController {
     public ResponseEntity<String> generateUploadUrl(@PathVariable String fileName) {
         try {
             logger.info("getting media upload url");
-            URL url = storageService.generateMediaUploadUrl(fileName);
+            URL url = s3Service.generateMediaUploadUrl(fileName);
             logger.debug(format("Generating pre-signed url: %s", url.toString()));
             return ResponseEntity.ok(url.toString());
         } catch (AccessDeniedException e) {
@@ -46,7 +46,7 @@ public class MediaController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<String> generateDownloadUrl(@RequestParam String url) {
         try {
-            return ResponseEntity.ok(storageService.generateMediaDownloadUrl(url).toString());
+            return ResponseEntity.ok(s3Service.generateMediaDownloadUrl(url).toString());
         } catch (AccessDeniedException e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());

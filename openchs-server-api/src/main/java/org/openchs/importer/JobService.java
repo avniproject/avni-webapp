@@ -53,10 +53,11 @@ public class JobService {
         }
     }
 
-    public JobExecution create(String type, String fileName, Long userId) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+    public JobExecution create(String uuid, String type, String fileName, String s3Key, Long userId) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         JobParameters parameters = new JobParametersBuilder()
-                .addString("uuid", UUID.randomUUID().toString())
-                .addString("s3Key", fileName)
+                .addString("uuid", uuid)
+                .addString("fileName", fileName, false)
+                .addString("s3Key", s3Key, false)
                 .addLong("userId", userId, false)
                 .addString("type", type, false)
                 .toJobParameters();

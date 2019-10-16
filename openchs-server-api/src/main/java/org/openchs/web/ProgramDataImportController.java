@@ -4,6 +4,7 @@ import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.JobService;
 import org.openchs.service.DataImportService;
+import org.openchs.service.S3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -20,18 +21,24 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
+
+import static java.lang.String.format;
 
 @RestController
 public class ProgramDataImportController {
     private final DataImportService dataImportService;
     private final Logger logger;
     private final JobService jobService;
+    private final S3Service s3Service;
 
     @Autowired
-    public ProgramDataImportController(DataImportService dataImportService, JobLauncher bgJobLauncher, JobRepository jobRepository, Job importJob, JobService jobService) {
+    public ProgramDataImportController(DataImportService dataImportService, JobLauncher bgJobLauncher, JobRepository jobRepository, Job importJob, JobService jobService, S3Service s3Service) {
         this.dataImportService = dataImportService;
         this.jobService = jobService;
+        this.s3Service = s3Service;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -45,16 +52,23 @@ public class ProgramDataImportController {
         return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 
-    @GetMapping("/import")
-    public ResponseEntity<?> doit(@RequestParam String type) {
+    @PostMapping("/import")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public ResponseEntity<?> doit(@RequestParam MultipartFile file,
+                                  @RequestParam String type) {
+        String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
         try {
-            jobService.create(type, "", user.getId());
+            String s3Key = s3Service.uploadFile(uuid, file);
+            jobService.create(uuid, type, file.getOriginalFilename(), s3Key, user.getId());
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to process file. %s", e.getMessage()));
         }
-        logger.info("Import initiated {type='%s',user='%s'}", type, user.getUsername());
+        logger.info(format("Import initiated {type='%s',user='%s'}", type, user.getUsername()));
         return ResponseEntity.ok(true);
     }
 }

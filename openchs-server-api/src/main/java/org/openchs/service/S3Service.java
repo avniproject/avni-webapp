@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.slf4j.Logger;
@@ -16,19 +17,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.Duration;
 import java.util.Date;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 
 @Service
-public class StorageService {
+public class S3Service {
+    private final String bulkuploadDir = "bulkuploadfiles";
+
     @Value("${openchs.bucketName}")
     private String bucketName;
 
@@ -46,7 +54,7 @@ public class StorageService {
     private Logger logger;
 
     @Autowired
-    public StorageService() {
+    public S3Service() {
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -54,8 +62,12 @@ public class StorageService {
     public void init() {
         s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion(REGION)
-                .withCredentials(getCredentialsProvider())
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretAccessKey)))
                 .build();
+        if (bucketName == null) {
+            logger.error("Setup error. openchs.bucketName should be present in properties file");
+            throw new IllegalStateException("Configuration missing. S3 Bucket name not configured.");
+        }
     }
 
     private String getContentType(String fileName) {
@@ -64,7 +76,7 @@ public class StorageService {
 
     public URL generateMediaUploadUrl(String fileName) {
         authorizeUser();
-        String mediaDirectory = getMediaDirectory();
+        String mediaDirectory = getOrgDirectoryName();
 
         String objectKey = format("%s/%s", mediaDirectory, fileName);
 
@@ -79,7 +91,7 @@ public class StorageService {
 
     public URL generateMediaDownloadUrl(String url) {
         UserContext userContext = authorizeUser();
-        String mediaDirectory = getMediaDirectory();
+        String mediaDirectory = getOrgDirectoryName();
 
         AmazonS3URI amazonS3URI = new AmazonS3URI(url);
         String objectKey = amazonS3URI.getKey();
@@ -100,8 +112,26 @@ public class StorageService {
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
-    private AWSStaticCredentialsProvider getCredentialsProvider() {
-        return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyId, secretAccessKey));
+    public String uploadFile(String uuid, MultipartFile requestFile) throws IOException {
+        Objects.requireNonNull(requestFile.getOriginalFilename());
+        String originalFileName = requestFile.getOriginalFilename().replace(" ", "_");
+
+        File localFile = convertMultiPartToFile(requestFile);
+        String objectKey = putFile(uuid, originalFileName, localFile);
+        localFile.delete();
+        return objectKey;
+    }
+
+    private String putFile(String uuid, String originalFileName, File localFile) {
+        String objectKey = format("%s/%s/%s-%s",
+                bulkuploadDir,
+                getOrgDirectoryName(),
+                uuid,
+                originalFileName
+        );
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectKey, localFile);
+        s3Client.putObject(putObjectRequest);
+        return objectKey;
     }
 
     private Date getExpireDate(long expireDuration) {
@@ -119,14 +149,27 @@ public class StorageService {
         return userContext;
     }
 
-    private String getMediaDirectory() {
+    private String getOrgDirectoryName() {
         String mediaDirectory = UserContextHolder.getUserContext().getOrganisation().getMediaDirectory();
-        if (mediaDirectory == null || bucketName == null) {
-            logger.error("Setup error. Media directory needs to be set up in organisation table. openchs.bucketName should be present in properties file");
-            logger.error(format("Media directory = %s, Bucket Name = %s", mediaDirectory, bucketName));
-            throw new IllegalStateException("Information missing. Media Directory for Implementation or Bucket name for Environment absent");
+        if (mediaDirectory == null) {
+            logger.error("Media directory needs to be set up for the organisation.");
+            throw new IllegalStateException("Information missing. Media Directory for Implementation absent");
         }
         return mediaDirectory;
     }
 
+    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+        String filename = file.getOriginalFilename();
+        File localFile = new File(format("%s-%s", new Date().getTime(), filename).replace(" ", "_"));
+        try {
+            FileOutputStream fos;
+            fos = new FileOutputStream(localFile);
+            fos.write(file.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException(String.format("Unable to create temp file %s. Error: %s", filename, e.getMessage()));
+        }
+        return localFile;
+    }
 }
