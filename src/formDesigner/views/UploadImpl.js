@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 function UploadImpl({ organisation }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = React.useState(false);
+  const showUploadFeature = false; //Feature toggle to hide upload function
 
   const onFileSelected = event => {
     setSelectedFile(event.target.files[0]);
@@ -59,22 +60,31 @@ function UploadImpl({ organisation }) {
   }
 
   return (
-    <ScreenWithAppBar enableLeftMenuButton={true} appbarTitle={`Import Export`}>
-      <p>Upload Implementation Bundle</p>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center"
-        }}
-      >
-        <input type="file" onChange={onFileSelected} />
+    <ScreenWithAppBar enableLeftMenuButton={true} appbarTitle={`Bundle`}>
+      {showUploadFeature && (
+        <>
+          <p>Upload Implementation Bundle</p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            <input type="file" onChange={onFileSelected} />
 
-        <Button variant="contained" color="primary" disabled={loading} onClick={onUploadHandler}>
-          Upload
-        </Button>
-        {loading && <CircularProgress size={24} />}
-      </div>
-      <LineBreak num={2} />
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={loading}
+              onClick={onUploadHandler}
+            >
+              Upload
+            </Button>
+            {loading && <CircularProgress size={24} />}
+          </div>
+          <LineBreak num={2} />
+        </>
+      )}
       <p>Download Implementation Bundle</p>
       <Button variant="contained" color="primary" onClick={onDownloadHandler}>
         Download
