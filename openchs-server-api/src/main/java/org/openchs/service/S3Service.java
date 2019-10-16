@@ -11,18 +11,19 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.importer.BatchConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.Duration;
@@ -171,5 +172,14 @@ public class S3Service {
             throw new IOException(String.format("Unable to create temp file %s. Error: %s", filename, e.getMessage()));
         }
         return localFile;
+    }
+
+    public Resource getFileResource(String s3Key) {
+        InputStream objectContent = s3Client.getObject(bucketName, s3Key).getObjectContent();
+        return new InputStreamResource(objectContent);
+    }
+
+    public Reader getFileReader(String s3Key) throws IOException {
+        return new InputStreamReader(getFileResource(s3Key).getInputStream());
     }
 }

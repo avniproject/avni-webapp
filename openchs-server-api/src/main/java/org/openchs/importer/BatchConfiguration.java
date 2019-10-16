@@ -6,6 +6,7 @@ import org.openchs.dao.UserRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.importer.format.Row;
 import org.openchs.service.LocationService;
+import org.openchs.service.S3Service;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -21,15 +22,14 @@ import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
@@ -46,9 +46,10 @@ public class BatchConfiguration {
     private final UserRepository userRepository;
     private final OrganisationRepository organisationRepository;
     private final JobRepository jobRepository;
+    private final S3Service s3Service;
 
     @Autowired
-    public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, LocationService locationService, LocationRepository locationRepository, UserRepository userRepository, OrganisationRepository organisationRepository, JobRepository jobRepository) {
+    public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, LocationService locationService, LocationRepository locationRepository, UserRepository userRepository, OrganisationRepository organisationRepository, JobRepository jobRepository, S3Service s3Service) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.locationService = locationService;
@@ -56,13 +57,13 @@ public class BatchConfiguration {
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
         this.jobRepository = jobRepository;
+        this.s3Service = s3Service;
     }
 
     @Bean
-    public FlatFileItemReader<Row> rowItemReader() throws IOException {
-        ClassPathResource inputFile = new ClassPathResource("sample-data.csv");
-
-        BufferedReader csvReader = new BufferedReader(new InputStreamReader(inputFile.getInputStream()));
+    @StepScope
+    public FlatFileItemReader<Row> csvFileItemReader(@Value("#{jobParameters['s3Key']}") String s3Key) throws IOException {
+        BufferedReader csvReader = new BufferedReader(s3Service.getFileReader(s3Key));
         final String[] headers = csvReader.readLine().split(",");
         csvReader.close();
 
@@ -72,7 +73,7 @@ public class BatchConfiguration {
 
         return new FlatFileItemReaderBuilder<Row>()
                 .name("locationReader")
-                .resource(inputFile)
+                .resource(s3Service.getFileResource(s3Key))
                 .linesToSkip(1)
                 .lineMapper(lineMapper)
                 .build();
@@ -89,14 +90,11 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step importStep() throws IOException {
+    public Step importStep(FlatFileItemReader<Row> csvFileItemReader, LocationProcessor locationProcessor) throws IOException {
         return stepBuilderFactory.get("importStep")
                 .<Row, List<AddressLevel>>chunk(10)
-                .reader(rowItemReader())
-                .processor(locationProcessor())
-                .writer(x -> {
-                    sleep(10000);
-                })
+                .reader(csvFileItemReader)
+                .processor(locationProcessor)
                 .build();
     }
 

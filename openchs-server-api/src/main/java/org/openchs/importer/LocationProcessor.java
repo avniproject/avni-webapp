@@ -47,9 +47,8 @@ public class LocationProcessor implements ItemProcessor<Row, List<AddressLevel>>
         authenticate();
         AddressLevel parent = null;
         List<AddressLevel> locations = new ArrayList<>(row.size());
-        System.out.println(Thread.currentThread().getId() + Thread.currentThread().getName());
+
         for (String header : row.getHeaders()) {
-//            if (true) break;
             String lineage = parent == null
                     ? row.get(header)
                     : parent.getTitleLineage() + ", " + row.get(header);
