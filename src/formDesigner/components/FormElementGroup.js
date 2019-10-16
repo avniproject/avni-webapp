@@ -105,7 +105,7 @@ function FormElementGroup(props) {
   };
 
   _.forEach(props.groupData.formElements, (element, index) => {
-    if (element.voided === false) {
+    if (!element.voided) {
       questionCount = questionCount + 1;
     }
   });
@@ -139,7 +139,7 @@ function FormElementGroup(props) {
     const displayOrderFormElements = props.groupData.formElements;
 
     _.forEach(displayOrderFormElements, (formElement, index) => {
-      if (formElement.voided === false) {
+      if (!formElement.voided) {
         let propsElement = {
           key: "Element" + props.index + "" + index,
           formElementData: formElement,
@@ -197,13 +197,13 @@ function FormElementGroup(props) {
           >
             <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
               <div className={classes.iconlay}>
-                {props.groupData.expanded === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                {props.groupData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </div>
 
               <Grid container item sm={12}>
                 <Grid item sm={8}>
                   <Typography component={"div"} className={classes.heading}>
-                    {props.groupData.error === true && (
+                    {props.groupData.error && (
                       <div style={{ color: "red" }}>Please enter group name.</div>
                     )}
                     <FormControl fullWidth>

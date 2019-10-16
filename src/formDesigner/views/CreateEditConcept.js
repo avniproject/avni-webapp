@@ -47,7 +47,7 @@ class CreateEditConcept extends Component {
   }
 
   componentDidMount() {
-    if (this.props.isCreatePage === true) {
+    if (this.props.isCreatePage) {
       axios
         .get("/concept/dataTypes")
         .then(response => {
@@ -215,13 +215,13 @@ class CreateEditConcept extends Component {
       axios
         .get(`/web/concept?name=${encodeURIComponent(conceptName)}`)
         .then(response => {
-          if (response.status === 200 && this.props.isCreatePage === true) {
+          if (response.status === 200 && this.props.isCreatePage) {
             error["nameError"] = true;
           }
           if (
             response.status === 200 &&
             response.data.uuid !== this.state.uuid &&
-            this.props.isCreatePage === false
+            !this.props.isCreatePage
           ) {
             error["nameError"] = true;
           }

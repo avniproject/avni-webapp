@@ -101,7 +101,7 @@ class FormDetails extends Component {
   countGroupElements(form) {
     let groupFlag = true;
     _.forEach(form.formElementGroups, (groupElement, index) => {
-      if (groupElement.voided === false) {
+      if (!groupElement.voided) {
         groupFlag = false;
       }
     });
@@ -182,7 +182,7 @@ class FormDetails extends Component {
             );
             sourceElement.uuid = UUID.v4();
             form.formElementGroups[groupDestinationIndex].formElements.forEach((element, index) => {
-              if (element.voided === false) {
+              if (!element.voided) {
                 counter += 1;
                 if (counter === destinationElementIndex) {
                   form.formElementGroups[groupDestinationIndex].formElements.splice(
@@ -199,7 +199,7 @@ class FormDetails extends Component {
             let form = draft.form;
 
             form.formElementGroups[groupSourceIndex].formElements.forEach((element, index) => {
-              if (element.voided === false) {
+              if (!element.voided) {
                 if (counter === destinationElementIndex) {
                   const sourceElement = form.formElementGroups[
                     groupSourceIndex
@@ -225,7 +225,7 @@ class FormDetails extends Component {
           let form = draft.form;
 
           form.formElementGroups.forEach((element, index) => {
-            if (element.voided === false) {
+            if (!element.voided) {
               if (counter === destinationElementIndex) {
                 const sourceElement = form.formElementGroups.splice(sourceElementIndex, 1)[0];
                 form.formElementGroups.splice(index, 0, sourceElement);
@@ -242,7 +242,7 @@ class FormDetails extends Component {
   renderGroups() {
     const formElements = [];
     _.forEach(this.state.form.formElementGroups, (group, index) => {
-      if (group.voided === false) {
+      if (!group.voided) {
         let propsGroup = {
           updateConceptElementData: this.updateConceptElementData,
           key: "Group" + index,
@@ -322,7 +322,7 @@ class FormDetails extends Component {
         _.forEach(draft.form.formElementGroups, group => {
           group.error = false;
           group.expanded = false;
-          if (group.voided === false && group.name.trim() === "") {
+          if (!group.voided && group.name.trim() === "") {
             group.error = true;
             flag = true;
             numberGroupError += 1;
@@ -332,7 +332,7 @@ class FormDetails extends Component {
             fe.error = false;
             fe.expanded = false;
             if (
-              fe.voided === false &&
+              !fe.voided &&
               (fe.name === "" ||
                 fe.concept.dataType === "" ||
                 fe.concept.dataType === "NA" ||

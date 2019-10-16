@@ -205,7 +205,7 @@ function FormElement(props) {
           <Grid item sm={10} style={{ paddingTop: "10px" }}>
             <Typography component={"span"} className={classes.heading}>
               <span className={classes.expandIcon}>
-                {props.formElementData.expanded === true ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                {props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </span>
               <InputLabel name={"name" + panel} style={{ width: "80%", display: "inline-block" }}>
                 {props.formElementData.name}

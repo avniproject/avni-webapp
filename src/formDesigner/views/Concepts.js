@@ -70,7 +70,7 @@ const Concepts = ({ history }) => {
     icon: "edit",
     tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
     onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`),
-    disabled: rowData.organisationId === 1 || rowData.voided === true
+    disabled: rowData.organisationId === 1 || rowData.voided
   });
 
   const addNewConcept = {
@@ -99,7 +99,7 @@ const Concepts = ({ history }) => {
           searchFieldAlignment: "left",
           searchFieldStyle: { width: "100%", marginLeft: "-8%" },
           rowStyle: rowData => ({
-            backgroundColor: rowData["voided"] === false ? "#fff" : "#DBDBDB"
+            backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
           })
         }}
         actions={[voidConcept, editConcept, addNewConcept]}

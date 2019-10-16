@@ -79,7 +79,7 @@ class NewFormModal extends Component {
         .catch(error => {
           this.setState({ errorMsg: error.response.data });
         });
-    } else if (validateFormStatus && this.props.isCreateFrom === false) {
+    } else if (validateFormStatus && !this.props.isCreateFrom) {
       const existFormUUID = this.props.uuid;
 
       if (
@@ -106,7 +106,7 @@ class NewFormModal extends Component {
           programName: this.state.programName
         })
         .then(response => {
-          if (this.props.isCreateFrom === false) {
+          if (!this.props.isCreateFrom) {
             this.setState({
               showUpdateAlert: true,
               defaultSnackbarStatus: true
@@ -129,7 +129,7 @@ class NewFormModal extends Component {
   }
 
   componentDidMount() {
-    if (this.props.isCreateFrom === false) {
+    if (!this.props.isCreateFrom) {
       axios
         .get(`/forms/export?formUUID=${this.props.uuid}`)
         .then(response => {
