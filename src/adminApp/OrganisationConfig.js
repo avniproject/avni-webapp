@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { localeChoices } from "../common/constants";
 import _, { isEmpty } from "lodash";
 import axios from "axios";
@@ -9,6 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { Add, Edit } from "@material-ui/icons";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles({
   root: {
@@ -56,9 +57,9 @@ export const customConfig = ({ history }) => {
   const styles = useStyles();
 
   const columns = [
-    { title: "FilterName", field: "titleKey" },
-    { title: "ConceptName", field: "conceptName" },
-    { title: "SearchScope", field: "searchType" }
+    { title: "Filter Name", field: "titleKey" },
+    { title: "Concept Name", field: "conceptName" },
+    { title: "Search Scope", field: "searchType" }
   ];
 
   const renderLanguage = languages => {
@@ -144,39 +145,38 @@ export const customConfig = ({ history }) => {
   );
 
   const renderFilterTable = filterType => (
-    <MaterialTable
-      title={_.startCase(filterType)}
-      columns={columns}
-      data={filterData(settings.settings[filterType])}
-      options={{ search: false, paging: false }}
-      actions={[addFilter(filterType), deleteFilter(filterType), editFilter(filterType)]}
-    />
+    <Box m={2}>
+      <MaterialTable
+        title={_.startCase(filterType)}
+        components={{
+          Container: props => <Fragment>{props.children}</Fragment>
+        }}
+        columns={columns}
+        data={filterData(settings.settings[filterType])}
+        options={{ search: false, paging: false }}
+        actions={[addFilter(filterType), deleteFilter(filterType), editFilter(filterType)]}
+      />
+    </Box>
   );
 
   return (
-    <div>
+    <Box>
       <Title title="Organisation Config" />
       <Paper className={styles.root}>
         <p />
-        <div>
+        <Box ml={2} mr={2} borderBottom={1} borderColor="#e0e0e0">
           <h6 className="MuiTypography-root MuiTypography-h6" style={{ marginLeft: 20 }}>
             Languages
           </h6>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center"
-            }}
-          >
+          <Box>
             {editLanguage()}
             {renderLanguage(settings.settings.languages)}
-          </div>
-        </div>
+          </Box>
+        </Box>
         <p />
         {renderFilterTable("myDashboardFilters")}
         {renderFilterTable("searchFilters")}
       </Paper>
-    </div>
+    </Box>
   );
 };
