@@ -239,29 +239,11 @@ public class ImplementationController implements RestControllerResourceProcessor
     }
 
     private void addConceptsJson(Long orgId, ZipOutputStream zos) throws IOException {
-        List<ConceptExport> conceptContracts = new ArrayList<>();
         List<Concept> allConcepts = conceptRepository.findAllByOrganisationId(orgId);
-        Map<String, Concept> allAnswers = new HashMap<>();
-
-        List<Concept> codedConcepts = conceptRepository.findAllByOrganisationIdAndDataType(orgId, "Coded");
-
-        for (Concept concept : codedConcepts) {
-            Set<ConceptAnswer> conceptAnswers = concept.getConceptAnswers();
-            for (ConceptAnswer conceptAnswer : conceptAnswers) {
-                Concept answerConcept = conceptAnswer.getAnswerConcept();
-                if (!allAnswers.containsKey(answerConcept.getUuid())) {
-                    allAnswers.put(answerConcept.getUuid(), answerConcept);
-                    conceptContracts.add(ConceptExport.fromConcept(answerConcept));
-                }
-            }
-        }
-
-        for (Concept concept : allConcepts) {
-            if (!allAnswers.containsKey(concept.getUuid())) {
-                conceptContracts.add(ConceptExport.fromConcept(concept));
-            }
-        }
-
+        List<ConceptExport> conceptContracts = allConcepts.stream()
+                .sorted(Comparator.comparing(Concept::getName, String::compareToIgnoreCase))
+                .map(ConceptExport::fromConcept)
+                .collect(Collectors.toList());
         addFileToZip(zos, "concepts.json", conceptContracts);
     }
 

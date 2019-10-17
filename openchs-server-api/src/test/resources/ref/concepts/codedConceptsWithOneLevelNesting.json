@@ -1,0 +1,60 @@
+[
+  {
+    "name": "Absent",
+    "uuid": "cdd86de1-ff2c-4fe9-b49f-b2a3975def41",
+    "dataType": "NA"
+  },
+  {
+    "name": "High Risk Conditions",
+    "uuid": "0ca1c6a2-001b-475a-9813-1d905df9e81b",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "name": "Jaundice (Icterus)",
+        "uuid": "efd91533-e2d0-497e-a4dc-0b66a30ef233",
+        "abnormal": true,
+        "order": 1.0
+      }
+    ]
+  },
+  {
+    "name": "Jaundice (Icterus)",
+    "uuid": "efd91533-e2d0-497e-a4dc-0b66a30ef233",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "name": "Present",
+        "uuid": "69f28ae9-7ef7-4602-a575-69034521d02a",
+        "abnormal": true,
+        "order": 1.0
+      },
+      {
+        "name": "Absent",
+        "uuid": "cdd86de1-ff2c-4fe9-b49f-b2a3975def41",
+        "order": 2.0
+      }
+    ]
+  },
+  {
+    "name": "Katcha",
+    "uuid": "781aa33a-2bb0-45ed-b00e-d344186d9824",
+    "dataType": "Coded",
+    "answers": [
+      {
+        "name": "Kolcha",
+        "uuid": "ba09d6cc-fa79-47e9-b978-f19f181b19bd",
+        "abnormal": false
+      }
+    ]
+  },
+  {
+    "name": "Kolcha",
+    "uuid": "ba09d6cc-fa79-47e9-b978-f19f181b19bd",
+    "dataType": "NA"
+  },
+  {
+    "name": "Present",
+    "uuid": "69f28ae9-7ef7-4602-a575-69034521d02a",
+    "dataType": "NA"
+  }
+]

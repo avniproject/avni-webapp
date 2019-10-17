@@ -16,8 +16,8 @@ import org.springframework.util.StringUtils;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -56,7 +56,7 @@ public class ConceptService {
         return concept != null && !concept.getUuid().equals(conceptRequest.getUuid());
     }
 
-    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, ConceptContract answerConceptRequest, double answerOrder) {
+    private ConceptAnswer fetchOrCreateConceptAnswer(Concept concept, ConceptContract answerConceptRequest, double answerOrder) throws AnswerConceptNotFoundException {
         if (StringUtils.isEmpty(answerConceptRequest.getUuid())) {
             throw new ValidationException("UUID missing for answer");
         }
@@ -69,7 +69,7 @@ public class ConceptService {
         if (answerConcept == null) {
             String message = String.format("Answer concept not found for UUID:%s", answerConceptRequest.getUuid());
             logger.error(message);
-            throw new ValidationException(message);
+            throw new AnswerConceptNotFoundException(message);
         }
         updateOrganisationIfNeeded(conceptAnswer, answerConceptRequest);
         if (!conceptAnswer.editableBy(userService.getCurrentUser().getOrganisationId())) {
@@ -85,12 +85,14 @@ public class ConceptService {
         return conceptAnswer;
     }
 
-    private Concept createCodedConcept(Concept concept, ConceptContract conceptRequest) {
+    private Concept createCodedConcept(Concept concept, ConceptContract conceptRequest) throws AnswerConceptNotFoundException {
         List<ConceptContract> answers = (List<ConceptContract>) O.coalesce(conceptRequest.getAnswers(), new ArrayList<>());
         AtomicInteger index = new AtomicInteger(0);
-        List<ConceptAnswer> conceptAnswers = answers.stream()
-                .map(answerContract -> fetchOrCreateConceptAnswer(concept, answerContract, (short) index.incrementAndGet()))
-                .collect(Collectors.toList());
+        List<ConceptAnswer> conceptAnswers = new ArrayList<>();
+        for (ConceptContract answerContract : answers) {
+            ConceptAnswer conceptAnswer = fetchOrCreateConceptAnswer(concept, answerContract, (short) index.incrementAndGet());
+            conceptAnswers.add(conceptAnswer);
+        }
         concept.addAll(conceptAnswers);
         return concept;
     }
@@ -111,7 +113,7 @@ public class ConceptService {
         return conceptContract.getDataType();
     }
 
-    private Concept map(@NotNull ConceptContract conceptRequest) {
+    private Concept map(@NotNull ConceptContract conceptRequest) throws AnswerConceptNotFoundException {
         Concept concept = fetchOrCreateConcept(conceptRequest.getUuid());
 
         concept.setName(conceptRequest.getName() != null ? conceptRequest.getName() : concept.getName());
@@ -142,7 +144,7 @@ public class ConceptService {
         return entity;
     }
 
-    public Concept saveOrUpdate(ConceptContract conceptRequest) {
+    private Concept saveOrUpdate(ConceptContract conceptRequest) throws AnswerConceptNotFoundException {
         if (conceptRequest == null) return null;
         if (conceptExistsWithSameNameAndDifferentUUID(conceptRequest)) {
             throw new RuntimeException(String.format("Concept %s exists with different uuid", conceptRequest.getName()));
@@ -151,6 +153,36 @@ public class ConceptService {
 
         Concept concept = map(conceptRequest);
         return conceptRepository.save(concept);
+    }
+
+    public void saveOrUpdateConcepts(List<ConceptContract> conceptRequests) {
+        List<ConceptContract> failedDueToAnswerConceptNotFound = new ArrayList<>();
+        for (ConceptContract conceptRequest : conceptRequests) {
+            try {
+                saveOrUpdate(conceptRequest);
+            } catch (AnswerConceptNotFoundException answerConceptNotFoundException) {
+                failedDueToAnswerConceptNotFound.add(conceptRequest);
+            }
+        }
+
+        //Retry
+        for (ConceptContract conceptRequest : failedDueToAnswerConceptNotFound) {
+            List<ConceptContract> requestAnswers = conceptRequest.getAnswers();
+            try {
+                for (ConceptContract requestAnswer : requestAnswers) {
+                    Optional<ConceptContract> answerConcept = failedDueToAnswerConceptNotFound.stream()
+                            .filter(conceptContract -> conceptContract.getUuid().equals(requestAnswer.getUuid()))
+                            .findFirst();
+                    if (answerConcept.isPresent()) {
+                        saveOrUpdate(answerConcept.get());
+                    }
+                }
+                saveOrUpdate(conceptRequest);
+            } catch (AnswerConceptNotFoundException answerConceptNotFoundException) {
+                throw new ValidationException(answerConceptNotFoundException.getMessage());
+            }
+
+        }
     }
 
     public Concept get(String uuid) {

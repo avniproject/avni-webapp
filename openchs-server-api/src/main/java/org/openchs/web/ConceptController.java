@@ -50,7 +50,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     @Transactional
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
     void save(@RequestBody List<ConceptContract> conceptRequests) {
-        conceptRequests.forEach(conceptService::saveOrUpdate);
+        conceptService.saveOrUpdateConcepts(conceptRequests);
     }
 
     @GetMapping(value = "/web/concept/{uuid}")

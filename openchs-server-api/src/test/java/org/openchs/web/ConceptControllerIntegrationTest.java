@@ -39,6 +39,28 @@ public class ConceptControllerIntegrationTest extends AbstractControllerIntegrat
     }
 
     @Test
+    public void shouldCreateConceptsWithOneLevelNesting() throws IOException {
+        Object json = getJSON("/ref/concepts/codedConceptsWithOneLevelNesting.json");
+        post(json);
+
+        Concept nestedConcept = conceptRepository.findByUuid("0ca1c6a2-001b-475a-9813-1d905df9e81b");
+        assertThat(nestedConcept).isNotNull();
+        assertThat(nestedConcept.getName()).isEqualTo("High Risk Conditions");
+    }
+
+    @Test
+    public void shouldFailToCreateConceptsWithMultipleNesting() throws IOException {
+
+        try {
+            Object json = getJSON("/ref/concepts/codedConceptsWithMultipleNesting.json");
+            post(json);
+            assertThat(false);
+        } catch (AssertionError e) {
+            assertThat(e.getMessage()).isEqualTo("Answer concept not found for UUID:781aa33a-2bb0-45ed-b00e-d344186d9824");
+        }
+    }
+
+    @Test
     public void shouldVoidAConcept() throws IOException {
         Object json = getJSON("/ref/concepts/voidableConcept.json");
         post(json);
