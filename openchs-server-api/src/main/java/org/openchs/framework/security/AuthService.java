@@ -43,10 +43,7 @@ public class AuthService {
 
     public UserContext authenticateByToken(String authToken) {
         becomeSuperUser();
-        if (!StringUtils.isEmpty(authToken)) {
-            return changeUser(cognitoAuthService.getUserFromToken(authToken));
-        }
-        throw new RuntimeException(String.format("Auth token empty or not present: '%s'}", authToken));
+        return changeUser(cognitoAuthService.getUserFromToken(authToken));
     }
 
     public UserContext authenticateByUserId(Long userId) {
