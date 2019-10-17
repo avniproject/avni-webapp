@@ -134,6 +134,13 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
                 .map(ProgramContractWeb::fromOperationalProgram));
     }
 
+    @GetMapping(value = "/web/programs")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    @ResponseBody
+    public List<OperationalProgram> getAllPrograms() {
+        return operationalProgramRepository.findAll();
+    }
+
     @GetMapping(value = "/web/program/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody

@@ -15,6 +15,7 @@ public interface ConceptRepository extends ReferenceDataRepository<Concept>, Fin
     Page<Concept> findByNameIgnoreCaseContaining(String name, Pageable pageable);
     List<Concept> findAllByOrganisationIdAndDataTypeNotIn(Long organisationId, String[] notIn);
     List<Concept> findAllByOrganisationIdAndDataType(Long organisationId, String dataType);
+    List<Concept> findAllByDataType(String dataType);
 
     @Query("select c.name from Concept c where c.isVoided = false")
     List<String> getAllNames();

@@ -55,6 +55,13 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
                 .map(EncounterTypeContractWeb::fromOperationalEncounterType));
     }
 
+    @GetMapping(value = "/web/encounterTypes")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    @ResponseBody
+    public List<OperationalEncounterType> encounterTypes() {
+        return operationalEncounterTypeRepository.findAll();
+    }
+
     @GetMapping(value = "/web/encounterType/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody

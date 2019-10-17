@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
+import org.openchs.projection.CodedConceptProjection;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.service.ConceptService;
 import org.openchs.util.ObjectMapperSingleton;
@@ -81,6 +82,16 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         } else {
             return wrap(conceptRepository.findByNameIgnoreCaseContaining(name, pageRequest));
         }
+    }
+
+    @GetMapping(value = "/codedConcepts")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @ResponseBody
+    public List<CodedConceptProjection> getAllCodedConcepts() {
+        return conceptRepository.findAllByDataType("Coded")
+                .stream()
+                .map(t -> projectionFactory.createProjection(CodedConceptProjection.class, t))
+                .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/concept/dataTypes")
