@@ -1,4 +1,4 @@
-package org.openchs.importer.format;
+package org.openchs.importer.batch.model;
 
 import java.util.HashMap;
 import java.util.stream.IntStream;

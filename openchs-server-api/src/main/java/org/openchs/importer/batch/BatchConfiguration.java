@@ -1,11 +1,6 @@
-package org.openchs.importer;
+package org.openchs.importer.batch;
 
-import org.openchs.dao.LocationRepository;
-import org.openchs.dao.OrganisationRepository;
-import org.openchs.dao.UserRepository;
-import org.openchs.domain.AddressLevel;
-import org.openchs.importer.format.Row;
-import org.openchs.service.LocationService;
+import org.openchs.importer.batch.model.Row;
 import org.openchs.service.S3Service;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -30,32 +25,20 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
-
-import static java.lang.Thread.sleep;
 
 @Configuration
 @EnableBatchProcessing
 @EnableScheduling
 public class BatchConfiguration {
-
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final LocationService locationService;
-    private final LocationRepository locationRepository;
-    private final UserRepository userRepository;
-    private final OrganisationRepository organisationRepository;
     private final JobRepository jobRepository;
     private final S3Service s3Service;
 
     @Autowired
-    public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, LocationService locationService, LocationRepository locationRepository, UserRepository userRepository, OrganisationRepository organisationRepository, JobRepository jobRepository, S3Service s3Service) {
+    public BatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, JobRepository jobRepository, S3Service s3Service) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
-        this.locationService = locationService;
-        this.locationRepository = locationRepository;
-        this.userRepository = userRepository;
-        this.organisationRepository = organisationRepository;
         this.jobRepository = jobRepository;
         this.s3Service = s3Service;
     }
@@ -80,7 +63,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Job importJob(JobCompletionNotificationListener listener, Step importStep) {
+    public Job importJob(AfterJobExecutionListener listener, Step importStep) {
         return jobBuilderFactory.get("importJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
@@ -90,18 +73,12 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step importStep(FlatFileItemReader<Row> csvFileItemReader, LocationProcessor locationProcessor) throws IOException {
+    public Step importStep(FlatFileItemReader<Row> csvFileItemReader, CsvFileItemWriter csvFileItemWriter) {
         return stepBuilderFactory.get("importStep")
-                .<Row, List<AddressLevel>>chunk(10)
+                .<Row, Row>chunk(10)
                 .reader(csvFileItemReader)
-                .processor(locationProcessor)
+                .writer(csvFileItemWriter)
                 .build();
-    }
-
-    @Bean
-    @StepScope
-    public LocationProcessor locationProcessor() {
-        return new LocationProcessor(locationService, locationRepository, userRepository, organisationRepository);
     }
 
     @Bean

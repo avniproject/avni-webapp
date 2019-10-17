@@ -6,7 +6,7 @@ import org.openchs.application.FormMapping;
 import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
-import org.openchs.importer.JobService;
+import org.openchs.importer.batch.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

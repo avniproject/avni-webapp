@@ -1,6 +1,8 @@
-package org.openchs.importer;
+package org.openchs.importer.batch;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -13,12 +15,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.UUID;
 
+import static java.lang.String.format;
 import static org.springframework.batch.core.BatchStatus.*;
 
 @Service
 public class JobService {
+    private Logger logger;
     private JobExplorer jobExplorer;
     private JobRepository jobRepository;
     private Job importJob;
@@ -30,6 +33,7 @@ public class JobService {
         this.jobRepository = jobRepository;
         this.importJob = importJob;
         this.bgJobLauncher = bgJobLauncher;
+        logger = LoggerFactory.getLogger(getClass());
     }
 
     public void retryJobsFailedInLast2Hours() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
@@ -61,6 +65,8 @@ public class JobService {
                 .addLong("userId", userId, false)
                 .addString("type", type, false)
                 .toJobParameters();
+        logger.info(format("Bulkupload initiated! Job{type='%s',uuid='%s',fileName='%s'}", type, uuid, fileName));
+
         return bgJobLauncher.run(importJob, parameters);
     }
 }

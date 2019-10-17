@@ -2,7 +2,7 @@ package org.openchs.web;
 
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.importer.JobService;
+import org.openchs.importer.batch.JobService;
 import org.openchs.service.DataImportService;
 import org.openchs.service.S3Service;
 import org.slf4j.Logger;
@@ -68,7 +68,6 @@ public class ProgramDataImportController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to process file. %s", e.getMessage()));
         }
-        logger.info(format("Import initiated {type='%s',user='%s'}", type, user.getUsername()));
         return ResponseEntity.ok(true);
     }
 }

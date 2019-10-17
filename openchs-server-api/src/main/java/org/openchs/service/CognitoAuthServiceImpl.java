@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -66,7 +67,7 @@ public class CognitoAuthServiceImpl implements CognitoAuthService {
     @Override
     public User getUserFromToken(String token) {
         logConfiguration();
-        if (token == null) return null;
+        if (StringUtils.isEmpty(token)) return null;
 
         DecodedJWT jwt = verifyAndDecodeToken(token, true);
         if (jwt == null) return null;

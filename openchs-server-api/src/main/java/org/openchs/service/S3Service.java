@@ -11,7 +11,6 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.importer.BatchConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
