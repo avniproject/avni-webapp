@@ -7,6 +7,8 @@ commands:
       to:
         type: string
         default: staging
+      server_url:
+        type: string
     steps:
     - attach_workspace:
         at: ~/artifacts
