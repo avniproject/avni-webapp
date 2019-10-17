@@ -30,6 +30,8 @@ commands:
 
     - run: cd ~/infra; make install; make << parameters.to >>-create;
 
+    - run: sh ~/openchs-server/.circleci/health_check.sh << parameters.server_url >>
+
 jobs:
   test:
     docker:
@@ -121,6 +123,7 @@ jobs:
     steps:
     - deploy:
         to: staging
+        server_url: https://staging.openchs.org/
 
   UAT_deploy:
     docker:
@@ -129,6 +132,7 @@ jobs:
     steps:
     - deploy:
         to: uat
+        server_url: https://uat.openchs.org/
 
   PRERELEASE_deploy:
     docker:
@@ -137,6 +141,7 @@ jobs:
     steps:
     - deploy:
         to: prerelease
+        server_url: https://prerelease.openchs.org/
 
 workflows:
   version: 2
