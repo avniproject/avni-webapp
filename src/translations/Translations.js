@@ -9,7 +9,6 @@ import Grid from "@material-ui/core/Grid";
 import { getDashboardData, getOrgConfig } from "./reducers/onLoadReducer";
 import { connect } from "react-redux";
 import { getLocales } from "../common/utils";
-import Loading from "../dataEntryApp/components/Loading";
 import Import from "./Import";
 import { TranslationDashboard } from "./TranslationDashboard";
 import Button from "@material-ui/core/Button";
@@ -22,7 +21,8 @@ export const Translations = ({
   organisationConfig,
   getOrgConfig,
   dashboardData,
-  getDashboardData
+  getDashboardData,
+  history
 }) => {
   useEffect(() => {
     getOrgConfig();
@@ -57,7 +57,25 @@ export const Translations = ({
       });
   };
 
-  if (isNil(organisationConfig)) return <Loading />;
+  if (isEmpty(localeChoices)) {
+    const link = (
+      <a
+        style={{ cursor: "pointer", color: "blue", textDecorationLine: "underline" }}
+        onClick={() => history.push("/admin/organisationConfig")}
+      >
+        click here
+      </a>
+    );
+    return (
+      <ScreenWithAppBar
+        appbarTitle={`Translations`}
+        enableLeftMenuButton={true}
+        renderAllOptions={false}
+      >
+        <Box>Language not set {link} to set.</Box>
+      </ScreenWithAppBar>
+    );
+  }
 
   return (
     <ScreenWithAppBar
