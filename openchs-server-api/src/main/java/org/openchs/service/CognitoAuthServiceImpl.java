@@ -37,20 +37,17 @@ public class CognitoAuthServiceImpl implements CognitoAuthService {
     @Value("${cognito.clientid}")
     private String clientId;
 
-    private OrganisationRepository organisationRepository;
     private UserRepository userRepository;
     private Boolean isDev;
 
     @Autowired
-    public CognitoAuthServiceImpl(OrganisationRepository organisationRepository, UserRepository userRepository, Boolean isDev) {
-        this.organisationRepository = organisationRepository;
+    public CognitoAuthServiceImpl(UserRepository userRepository, Boolean isDev) {
         this.userRepository = userRepository;
         this.isDev = isDev;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public CognitoAuthServiceImpl(OrganisationRepository organisationRepository, UserRepository userRepository, String poolId, String clientId) {
-        this.organisationRepository = organisationRepository;
+    public CognitoAuthServiceImpl(UserRepository userRepository, String poolId, String clientId) {
         this.userRepository = userRepository;
         this.poolId = poolId;
         this.clientId = clientId;

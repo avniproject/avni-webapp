@@ -28,6 +28,7 @@ import java.net.URLConnection;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -159,18 +160,18 @@ public class S3Service {
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        String filename = file.getOriginalFilename();
-        File localFile = new File(format("%s-%s", new Date().getTime(), filename).replace(" ", "_"));
+        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".csv");
         try {
             FileOutputStream fos;
-            fos = new FileOutputStream(localFile);
+            fos = new FileOutputStream(tempFile);
             fos.write(file.getBytes());
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IOException(String.format("Unable to create temp file %s. Error: %s", filename, e.getMessage()));
+            throw new IOException(
+                    format("Unable to create temp file %s. Error: %s", file.getOriginalFilename(), e.getMessage()));
         }
-        return localFile;
+        return tempFile;
     }
 
     public Resource getFileResource(String s3Key) {
