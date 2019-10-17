@@ -36,6 +36,7 @@
     "react-redux": "^6.0.1",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.5",
+    "react-select": "^3.0.8",
     "react-tagsinput": "^3.19.0",
     "react-window": "^1.8.5",
     "reactstrap": "^6.2.0",

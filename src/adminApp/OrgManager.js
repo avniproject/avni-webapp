@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Admin, Resource } from "react-admin";
-import { withRouter } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { authProvider, LogoutButton } from "./react-admin-config";
@@ -15,27 +15,23 @@ import {
   LocationTypeList
 } from "./addressLevelType";
 import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
-import { ProgramList, ProgramDetail, ProgramCreate, ProgramEdit } from "./programs";
+import { ProgramCreate, ProgramDetail, ProgramEdit, ProgramList } from "./programs";
 import {
-  SubjectTypeList,
-  SubjectTypeDetail,
   SubjectTypeCreate,
-  SubjectTypeEdit
+  SubjectTypeDetail,
+  SubjectTypeEdit,
+  SubjectTypeList
 } from "./SubjectTypes";
 import {
-  EncounterTypeList,
-  EncounterTypeDetail,
   EncounterTypeCreate,
-  EncounterTypeEdit
+  EncounterTypeDetail,
+  EncounterTypeEdit,
+  EncounterTypeList
 } from "./EncounterTypes";
-import {
-  organisationConfigCreate,
-  organisationConfigDetail,
-  organisationConfigEdit,
-  organisationConfigList
-} from "./OrganisationConfig";
-import { Redirect } from "react-router-dom";
+import { customConfig } from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
+
+import customRoutes from "./customRoutes";
 
 const redirectHome = () => {
   return <Redirect to="/" />;
@@ -57,6 +53,7 @@ class OrgManager extends Component {
         authProvider={authProvider}
         history={adminHistory}
         logoutButton={WithProps({ user }, LogoutButton)}
+        customRoutes={customRoutes}
       >
         <Resource
           name="user"
@@ -115,10 +112,7 @@ class OrgManager extends Component {
         <Resource
           name="organisationConfig"
           options={{ label: "Organisation Config" }}
-          list={organisationConfigList}
-          show={organisationConfigDetail}
-          create={organisationConfigCreate}
-          edit={organisationConfigEdit}
+          list={customConfig}
         />
         <Resource name="home" options={{ label: "Home" }} list={redirectHome} />
       </Admin>
