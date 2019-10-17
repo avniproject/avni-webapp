@@ -1,8 +1,7 @@
 package org.openchs.framework.security;
 
-import org.openchs.service.UserContextService;
-import org.openchs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -17,11 +16,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @EnableWebSecurity(debug = false)
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ApiSecurity extends WebSecurityConfigurerAdapter {
-    private final UserContextService userContextService;
+    private final AuthService authService;
+    private final Boolean isDev;
+
+    @Value("${openchs.defaultUserName}")
+    private String defaultUserName;
 
     @Autowired
-    public ApiSecurity(UserContextService userContextService) {
-        this.userContextService = userContextService;
+    public ApiSecurity(AuthService authService, Boolean isDev) {
+        this.authService = authService;
+        this.isDev = isDev;
     }
 
     @Override
@@ -32,7 +36,7 @@ public class ApiSecurity extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
                 .authorizeRequests().anyRequest().permitAll()
                 .and()
-                .addFilter(new AuthenticationFilter(authenticationManager(), userContextService))
+                .addFilter(new AuthenticationFilter(authenticationManager(), authService, isDev, defaultUserName))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 }

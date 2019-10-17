@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -37,17 +36,14 @@ public class CognitoIdpService {
 
     private AWSCognitoIdentityProvider cognitoClient;
 
-    private boolean isDev;
-
     @Value("${openchs.connectToCognitoInDev}")
     private boolean cognitoInDevProperty;
 
-    private Environment environment;
+    private Boolean isDev;
 
     @Autowired
-    public CognitoIdpService(Environment environment) {
-        this.environment = environment;
-        this.isDev = isDev();
+    public CognitoIdpService(Boolean isDev) {
+        this.isDev = isDev;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -60,11 +56,6 @@ public class CognitoIdpService {
                     .build();
             logger.info("Initialized CognitoIDP client");
         }
-    }
-
-    private boolean isDev() {
-        String[] activeProfiles = environment.getActiveProfiles();
-        return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
     }
 
     private boolean cognitoInDev() {

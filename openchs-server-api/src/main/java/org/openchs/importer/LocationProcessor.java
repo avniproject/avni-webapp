@@ -24,7 +24,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.openchs.framework.security.AuthenticationFilter.*;
+import static org.openchs.framework.security.AuthService.ADMIN_AUTHORITY;
+import static org.openchs.framework.security.AuthService.ORGANISATION_ADMIN_AUTHORITY;
+import static org.openchs.framework.security.AuthService.USER_AUTHORITY;
 
 public class LocationProcessor implements ItemProcessor<Row, List<AddressLevel>> {
 

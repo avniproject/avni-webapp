@@ -12,15 +12,12 @@ import com.google.common.base.Strings;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.UserRepository;
 import org.openchs.domain.User;
-import org.openchs.domain.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,11 +25,10 @@ import java.security.interfaces.RSAPublicKey;
 
 @Service
 @Profile({"default", "live", "dev", "test"})
-public class CognitoUserContextServiceImpl implements UserContextService {
+public class CognitoAuthServiceImpl implements CognitoAuthService {
 
     private static final String COGNITO_URL = "https://cognito-idp.ap-south-1.amazonaws.com/";
     private final Logger logger;
-    private boolean isDev;
 
     @Value("${cognito.poolid}")
     private String poolId;
@@ -40,23 +36,19 @@ public class CognitoUserContextServiceImpl implements UserContextService {
     @Value("${cognito.clientid}")
     private String clientId;
 
-    @Value("${openchs.defaultUserName}")
-    private String defaultUserName;
-
     private OrganisationRepository organisationRepository;
     private UserRepository userRepository;
-    private Environment environment;
+    private Boolean isDev;
 
     @Autowired
-    public CognitoUserContextServiceImpl(Environment environment, OrganisationRepository organisationRepository, UserRepository userRepository) {
-        this.environment = environment;
+    public CognitoAuthServiceImpl(OrganisationRepository organisationRepository, UserRepository userRepository, Boolean isDev) {
         this.organisationRepository = organisationRepository;
         this.userRepository = userRepository;
+        this.isDev = isDev;
         logger = LoggerFactory.getLogger(this.getClass());
-        this.isDev = isDev();
     }
 
-    public CognitoUserContextServiceImpl(OrganisationRepository organisationRepository, UserRepository userRepository, String poolId, String clientId) {
+    public CognitoAuthServiceImpl(OrganisationRepository organisationRepository, UserRepository userRepository, String poolId, String clientId) {
         this.organisationRepository = organisationRepository;
         this.userRepository = userRepository;
         this.poolId = poolId;
@@ -71,44 +63,19 @@ public class CognitoUserContextServiceImpl implements UserContextService {
         logger.debug(String.format("Dev mode: %s", isDev));
     }
 
-    private boolean isDev() {
-        String[] activeProfiles = environment.getActiveProfiles();
-        return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
-    }
-
     @Override
-    public UserContext getUserContext(String token, String becomeUserName) {
+    public User getUserFromToken(String token) {
         logConfiguration();
-        if (isDev) {
-            String username = StringUtils.isEmpty(becomeUserName) ? defaultUserName : becomeUserName;
-            User user = userRepository.findByUsername(username);
-            if (user == null) {
-                throw new RuntimeException(String.format("Not found: User{name='%s'}", username));
-            }
-            UserContext userContext = new UserContext();
-            userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
-//            userContext.addUserRole().addAdminRole().addOrganisationAdminRole();
-            userContext.setUser(user);
-            return userContext;
-        } else {
-            return getUserContext(token, true);
-        }
-    }
+        if (token == null) return null;
 
-    protected UserContext getUserContext(String token, boolean verify) {
-        UserContext userContext = new UserContext();
-        if (token == null) return userContext;
-
-        DecodedJWT jwt = verifyAndDecodeToken(token, verify);
-        if (jwt == null) return userContext;
+        DecodedJWT jwt = verifyAndDecodeToken(token, true);
+        if (jwt == null) return null;
 
         String username = getValueInToken(jwt, "cognito:username");
         String userUUID = getValueInToken(jwt, "custom:userUUID");
-        User user = Strings.isNullOrEmpty(userUUID) ?
-                userRepository.findByUsername(username) : userRepository.findByUuid(userUUID);
-        userContext.setUser(user);
-        userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
-        return userContext;
+        return Strings.isNullOrEmpty(userUUID)
+                ? userRepository.findByUsername(username)
+                : userRepository.findByUuid(userUUID);
     }
 
     private DecodedJWT verifyAndDecodeToken(String token, boolean verify) {

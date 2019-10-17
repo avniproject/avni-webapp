@@ -30,7 +30,10 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertTrue;
-import static org.openchs.framework.security.AuthenticationFilter.*;
+import static org.openchs.framework.security.AuthService.ADMIN_AUTHORITY;
+import static org.openchs.framework.security.AuthService.ORGANISATION_ADMIN_AUTHORITY;
+import static org.openchs.framework.security.AuthService.USER_AUTHORITY;
+import static org.openchs.framework.security.AuthenticationFilter.USER_NAME_HEADER;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
