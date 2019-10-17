@@ -6,7 +6,10 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Concept;
+import org.openchs.domain.Organisation;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.ConceptContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,12 @@ import java.util.List;
 @Service
 public class HibernateSearchService {
     private final EntityManager entityManager;
+    private final OrganisationRepository organisationRepository;
 
     @Autowired
-    public HibernateSearchService(EntityManagerFactory entityManagerFactory) {
+    public HibernateSearchService(EntityManagerFactory entityManagerFactory, OrganisationRepository organisationRepository) {
         this.entityManager = entityManagerFactory.createEntityManager();
+        this.organisationRepository = organisationRepository;
     }
 
     @PostConstruct
@@ -34,6 +39,9 @@ public class HibernateSearchService {
 
     @Transactional
     public List<ConceptContract> searchConcepts(String searchTerm, String dataType) {
+
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        List<Long> organisationIds = getOrganisationIds(organisation, new ArrayList<>());
 
         if (searchTerm.length() < 2 || StopAnalyzer.ENGLISH_STOP_WORDS_SET.contains(searchTerm))
             return new ArrayList<>();
@@ -58,16 +66,24 @@ public class HibernateSearchService {
         List resultList = jpaQuery.getResultList();
         List<ConceptContract> searchResult = new ArrayList<>();
         resultList.forEach(o -> {
-            if (dataType == null) {
-                searchResult.add(((Concept) o).toConceptContract());
-            } else {
-                Concept concept = (Concept) o;
-                if (concept.getDataType().equals(dataType)) {
-                    searchResult.add(((Concept) o).toConceptContract());
-                }
+            Concept concept = (Concept) o;
+            if (organisationIds.contains(concept.getOrganisationId()) &&
+                    (dataType == null || concept.getDataType().equals(dataType))) {
+                searchResult.add((concept).toConceptContract());
             }
+
         });
 
         return searchResult;
+    }
+
+    private List<Long> getOrganisationIds(Organisation organisation, List<Long> orgIds) {
+        if (organisation.getParentOrganisationId() == null) {
+            orgIds.add(organisation.getId());
+            return orgIds;
+        } else {
+            orgIds.add(organisation.getId());
+            return getOrganisationIds(organisationRepository.findOne(organisation.getParentOrganisationId()), orgIds);
+        }
     }
 }
