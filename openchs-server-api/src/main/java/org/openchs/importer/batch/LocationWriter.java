@@ -32,16 +32,13 @@ public class LocationWriter implements ItemWriter<Row> {
     private void write(Row row) throws BuilderException {
         AddressLevel parent = null;
         for (String header : row.getHeaders()) {
-            String lineage = parent == null
-                    ? row.get(header)
-                    : parent.getTitleLineage() + ", " + row.get(header);
-            AddressLevel location = locationRepository.findByTitleLineageIgnoreCase(lineage);
+            AddressLevel location = locationRepository.findByParentAndTitleIgnoreCase(parent, row.get(header));
             if (location == null) {
                 LocationContract locationContract = new LocationContract();
                 locationContract.setupUuidIfNeeded();
                 locationContract.setName(row.get(header));
                 locationContract.setType(header);
-                locationContract.setLevel((double) lineage.split(", ").length);
+                locationContract.setLevel(parent == null ? row.getHeaders().length : parent.getLevel() - 1);
                 if (parent != null) {
                     locationContract.setParent(new LocationContract(parent.getUuid()));
                 }

@@ -1,7 +1,6 @@
 PHC Area,Subcenter,Village
-PHC 101,Sub 101,Vil 101
-PHC 102,Sub 102,Vil 102
-PHC 104,Sub 104,Vil 104
-PHC 105,Sub 105,Vil 105
-PHC 106,Sub 106,Vil 106
-PHC 107,Sub 107,Vil 107
+PHC A,Sub A,Vil A
+PHC B,Sub B,Vil B
+PHC B,Sub B,Vil C
+PHC B,Sub C,Vil C
+PHC C,Sub C,Vil C

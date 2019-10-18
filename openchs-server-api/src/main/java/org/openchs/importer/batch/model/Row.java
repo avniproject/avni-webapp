@@ -3,7 +3,7 @@ package org.openchs.importer.batch.model;
 import java.util.HashMap;
 import java.util.stream.IntStream;
 
-public class Row extends HashMap<Object, String> {
+public class Row extends HashMap<String, String> {
 
     private final String[] headers;
 
