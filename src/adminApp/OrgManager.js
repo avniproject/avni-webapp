@@ -77,7 +77,7 @@ class OrgManager extends Component {
   render() {
     const { organisation, user } = this.props;
     return (
-      <JssProvider generateClassName={generateClassName}>
+      <JssProvider classNamePrefix="OpenCHSAdmin-">
         <Admin
           title="Manage Organisation"
           authProvider={authProvider}
