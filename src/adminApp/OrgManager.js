@@ -46,9 +46,9 @@ let classCounter = 0;
 export const generateClassName = (rule, styleSheet) => {
   classCounter += 1;
 
-  if (process.env.NODE_ENV === "production") {
-    return `c${classCounter}`;
-  }
+  //   if (process.env.NODE_ENV === "production") {
+  //     return `c${classCounter}`;
+  //   }
 
   if (styleSheet && styleSheet.options.classNamePrefix) {
     let prefix = styleSheet.options.classNamePrefix;
@@ -77,7 +77,7 @@ class OrgManager extends Component {
   render() {
     const { organisation, user } = this.props;
     return (
-      <JssProvider classNamePrefix="OpenCHSAdmin-">
+      <JssProvider generateClassName={generateClassName}>
         <Admin
           title="Manage Organisation"
           authProvider={authProvider}
