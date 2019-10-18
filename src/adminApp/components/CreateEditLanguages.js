@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Select from "react-select";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { localeChoices } from "../../common/constants";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";

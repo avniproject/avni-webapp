@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { find, isEmpty, isNil } from "lodash";
 import DropDown from "../common/components/DropDown";
 import JSZip from "jszip";
@@ -13,6 +12,7 @@ import Import from "./Import";
 import { TranslationDashboard } from "./TranslationDashboard";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
+import { Title } from "react-admin";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
 export const Translations = ({
@@ -61,28 +61,22 @@ export const Translations = ({
     const link = (
       <a
         style={{ cursor: "pointer", color: "blue", textDecorationLine: "underline" }}
-        onClick={() => history.push("/admin/organisationConfig")}
+        onClick={() => history.push("/organisationConfig")}
       >
         click here
       </a>
     );
     return (
-      <ScreenWithAppBar
-        appbarTitle={`Translations`}
-        enableLeftMenuButton={true}
-        renderAllOptions={false}
-      >
+      <>
+        <Title title="Translations" />
         <Box>Language not set {link} to set.</Box>
-      </ScreenWithAppBar>
+      </>
     );
   }
 
   return (
-    <ScreenWithAppBar
-      appbarTitle={`Translations`}
-      enableLeftMenuButton={true}
-      renderAllOptions={false}
-    >
+    <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Title title="Translations" />
       <div id={"margin"}>
         <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
         <Grid container direction="row" justify="flex-start" alignItems="center">
@@ -107,7 +101,7 @@ export const Translations = ({
           </Box>
         </Grid>
       </div>
-    </ScreenWithAppBar>
+    </Box>
   );
 };
 

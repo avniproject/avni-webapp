@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Admin, Resource } from "react-admin";
-import { Redirect, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-
 import { authProvider, LogoutButton } from "./react-admin-config";
 import { adminHistory, store } from "../common/store";
 import { UserCreate, UserDetail, UserEdit, UserList } from "./user";
@@ -30,12 +29,12 @@ import {
 } from "./EncounterTypes";
 import { customConfig } from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
-
+import Forms from "../formDesigner/views/Forms";
+import Concepts from "../formDesigner/views/Concepts";
+import UploadImpl from "../formDesigner/views/UploadImpl";
 import customRoutes from "./customRoutes";
+import Translations from "../translations";
 
-const redirectHome = () => {
-  return <Redirect to="/" />;
-};
 class OrgManager extends Component {
   static childContextTypes = {
     store: PropTypes.object
@@ -114,7 +113,14 @@ class OrgManager extends Component {
           options={{ label: "Organisation Config" }}
           list={customConfig}
         />
-        <Resource name="home" options={{ label: "Home" }} list={redirectHome} />
+        <Resource name="forms" options={{ label: "Forms" }} list={Forms} />
+        <Resource name="concepts" options={{ label: "Concepts" }} list={Concepts} />
+        <Resource name="upload" options={{ label: "Bundle" }} list={UploadImpl} />
+        <Resource
+          name="translations"
+          options={{ label: "Translations" }}
+          list={WithProps({ user, organisation }, Translations)}
+        />
       </Admin>
     );
   }

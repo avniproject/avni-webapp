@@ -4,10 +4,6 @@ import { Provider } from "react-redux";
 import { HashRouter } from "react-router-dom";
 
 import "./index.css";
-import "jquery";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap";
-import "./formDesigner/App.css";
 import * as serviceWorker from "./serviceWorker";
 import { store } from "./common/store";
 import { cognitoInDev, isProdEnv } from "./common/constants";
@@ -27,9 +23,7 @@ const theme = createMuiTheme({
 ReactDOM.render(
   <ThemeProvider theme={theme}>
     <Provider store={store}>
-      <HashRouter>
-        {isProdEnv || cognitoInDev ? <SecureApp /> : <App />}
-      </HashRouter>
+      <HashRouter>{isProdEnv || cognitoInDev ? <SecureApp /> : <App />}</HashRouter>
     </Provider>
   </ThemeProvider>,
   document.getElementById("root")
