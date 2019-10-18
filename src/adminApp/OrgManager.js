@@ -152,6 +152,7 @@ class OrgManager extends Component {
             options={{ label: "Translations" }}
             list={WithProps({ user, organisation }, Translations)}
           />
+          <Resource name="Test" options={{ label: "Test" }} list={() => <div>Test Page</div>} />
         </Admin>
       </JssProvider>
     );
