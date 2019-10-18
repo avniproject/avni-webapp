@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,9 +51,11 @@ public class S3Service {
     private AmazonS3 s3Client;
     private Pattern mediaDirPattern = Pattern.compile("^/?(?<mediaDir>[^/]+)/.+$");
     private Logger logger;
+    private Boolean isDev;
 
     @Autowired
-    public S3Service() {
+    public S3Service(Boolean isDev) {
+        this.isDev = isDev;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -116,23 +116,13 @@ public class S3Service {
     public String uploadFile(String uuid, MultipartFile requestFile) throws IOException {
         Objects.requireNonNull(requestFile.getOriginalFilename());
         String originalFileName = requestFile.getOriginalFilename().replace(" ", "_");
-
-        File localFile = convertMultiPartToFile(requestFile);
-        String objectKey = putFile(uuid, originalFileName, localFile);
-        localFile.delete();
-        return objectKey;
-    }
-
-    private String putFile(String uuid, String originalFileName, File localFile) {
         String objectKey = format("%s/%s/%s-%s",
                 bulkuploadDir,
                 getOrgDirectoryName(),
                 uuid,
                 originalFileName
         );
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectKey, localFile);
-        s3Client.putObject(putObjectRequest);
-        return objectKey;
+        return putObject(objectKey, convertMultiPartToFile(requestFile));
     }
 
     private Date getExpireDate(long expireDuration) {
@@ -174,12 +164,27 @@ public class S3Service {
         return tempFile;
     }
 
-    public Resource getFileResource(String s3Key) {
-        InputStream objectContent = s3Client.getObject(bucketName, s3Key).getObjectContent();
-        return new InputStreamResource(objectContent);
+    public String putObject(String objectKey, File tempFile) {
+        if (isDev) {
+            logger.info(format("[dev] Save file locally. '%s'", objectKey));
+            return tempFile.getAbsolutePath();
+        }
+        s3Client.putObject(new PutObjectRequest(bucketName, objectKey, tempFile));
+        tempFile.delete();
+        return objectKey;
     }
 
-    public Reader getFileReader(String s3Key) throws IOException {
-        return new InputStreamReader(getFileResource(s3Key).getInputStream());
+    public InputStream getObjectContent(String s3Key) {
+        if (isDev) {
+            try {
+                logger.info(format("[dev] Get file locally. '%s'", s3Key));
+                return new FileInputStream(s3Key);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                logger.error(format("[dev] File not found. Assume empty. '%s'", s3Key));
+                return new ByteArrayInputStream(new byte[]{});
+            }
+        }
+        return s3Client.getObject(bucketName, s3Key).getObjectContent();
     }
 }

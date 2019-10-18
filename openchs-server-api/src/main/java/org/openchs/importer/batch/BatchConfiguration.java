@@ -20,11 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 @Configuration
 @EnableBatchProcessing
@@ -46,7 +48,7 @@ public class BatchConfiguration {
     @Bean
     @StepScope
     public FlatFileItemReader<Row> csvFileItemReader(@Value("#{jobParameters['s3Key']}") String s3Key) throws IOException {
-        BufferedReader csvReader = new BufferedReader(s3Service.getFileReader(s3Key));
+        BufferedReader csvReader = new BufferedReader(new InputStreamReader(s3Service.getObjectContent(s3Key)));
         final String[] headers = csvReader.readLine().split(",");
         csvReader.close();
 
@@ -56,7 +58,7 @@ public class BatchConfiguration {
 
         return new FlatFileItemReaderBuilder<Row>()
                 .name("locationReader")
-                .resource(s3Service.getFileResource(s3Key))
+                .resource(new InputStreamResource(s3Service.getObjectContent(s3Key)))
                 .linesToSkip(1)
                 .lineMapper(lineMapper)
                 .build();

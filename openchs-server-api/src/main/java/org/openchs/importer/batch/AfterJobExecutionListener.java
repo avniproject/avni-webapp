@@ -17,7 +17,7 @@ public class AfterJobExecutionListener extends JobExecutionListenerSupport {
     @Override
     public void afterJob(JobExecution jobExecution) {
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-            logger.info(format("Bulkupload completed! Job{type='%s',uuid='%s',fileName='%s'}",
+            logger.info(format("Bulkupload ended! Check for errors. Job{type='%s',uuid='%s',fileName='%s'}",
                     jobExecution.getJobParameters().getString("type"),
                     jobExecution.getJobParameters().getString("uuid"),
                     jobExecution.getJobParameters().getString("fileName")
