@@ -31,11 +31,24 @@ export const customConfig = ({ history }) => {
 
   useEffect(_.noop, [settings]);
 
+  const createOrgSettings = setting => {
+    const { uuid, settings } = setting;
+    const { languages, myDashboardFilters, searchFilters } = settings;
+    return {
+      uuid: uuid,
+      settings: {
+        languages: _.isNil(languages) ? [] : languages,
+        myDashboardFilters: _.isNil(myDashboardFilters) ? [] : myDashboardFilters,
+        searchFilters: _.isNil(searchFilters) ? [] : searchFilters
+      }
+    };
+  };
+
   useEffect(() => {
     axios.get("/organisationConfig").then(res => {
       const orgSettings = isEmpty(res.data._embedded.organisationConfig)
         ? emptyOrgSettings
-        : res.data._embedded.organisationConfig[0];
+        : createOrgSettings(res.data._embedded.organisationConfig[0]);
       setSettings(orgSettings);
     });
   }, []);
@@ -59,7 +72,7 @@ export const customConfig = ({ history }) => {
   const columns = [
     { title: "Filter Name", field: "titleKey" },
     { title: "Concept Name", field: "conceptName" },
-    { title: "Search Scope", field: "searchType" }
+    { title: "Search Scope", field: "scope" }
   ];
 
   const renderLanguage = languages => {
@@ -74,6 +87,7 @@ export const customConfig = ({ history }) => {
       ? filters
       : _.map(filters, filter => {
           filter["conceptName"] = _.find(concepts, c => c.uuid === filter.conceptUUID).name;
+          filter["scope"] = _.startCase(filter.searchType);
           return filter;
         });
   };

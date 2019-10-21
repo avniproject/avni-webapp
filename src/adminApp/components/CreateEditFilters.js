@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
+import { FormControl, Input, InputLabel, Select as SingleSelect } from "@material-ui/core";
+import Select from "react-select";
 import _ from "lodash";
 import Grid from "@material-ui/core/Grid";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -23,20 +24,26 @@ export const CreateEditFilters = props => {
   const { programs, encounterTypes, concepts } = props.location.state;
   const { conceptName, searchType, titleKey, searchParameters } =
     props.location.state.selectedFilter || emptyFilter;
-  const encounterName =
-    searchType === "programEncounter" || searchType === "encounter"
-      ? encounterTypes.find(e => e.encounterType.uuid === searchParameters.encounterTypeUUID).name
-      : "";
-  const programName =
-    searchType === "programEncounter" || searchType === "programEnrolment"
-      ? programs.find(e => e.program.uuid === searchParameters.programUUID).name
-      : "";
+
+  const programOptions = programs.map(p => ({ label: p.name, value: p.program.uuid }));
+  const encounterTypeOptions = encounterTypes.map(e => ({
+    label: e.name,
+    value: e.encounterType.uuid
+  }));
 
   const [filterName, setFilterName] = useState(titleKey);
   const [conceptNameState, setConceptName] = useState({ conceptName, error: "" });
   const [scope, setScope] = useState(searchType);
-  const [encounterNameState, setEncounterName] = useState(encounterName);
-  const [programNameState, setProgramName] = useState(programName);
+  const encNames =
+    (searchParameters.encounterTypeUUIDs &&
+      encounterTypeOptions.filter(l => searchParameters.encounterTypeUUIDs.includes(l.value))) ||
+    [];
+  const progNames =
+    (searchParameters.programUUIDs &&
+      programOptions.filter(l => searchParameters.programUUIDs.includes(l.value))) ||
+    [];
+  const [encounterNameState, setEncounterName] = useState(encNames);
+  const [programNameState, setProgramName] = useState(progNames);
   const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 
@@ -68,15 +75,15 @@ export const CreateEditFilters = props => {
   };
 
   const saveFilter = () => {
-    const encType = encounterTypes.find(e => e.name === encounterNameState);
-    const prog = programs.find(p => p.program.name === programNameState);
+    const encType = _.isNil(encounterNameState) ? [] : encounterNameState.map(l => l.value);
+    const prog = _.isNil(programNameState) ? [] : programNameState.map(l => l.value);
     const newFilter = {
       titleKey: filterName,
       searchType: scope,
       conceptUUID: concepts.find(concept => concept.name === conceptNameState.conceptName).uuid,
       searchParameters: {
-        programUUID: _.isNil(prog) ? "" : prog.program.uuid,
-        encounterTypeUUID: _.isNil(encType) ? "" : encType.encounterType.uuid
+        programUUIDs: scope === "registration" ? [] : prog,
+        encounterTypeUUIDs: scope === "registration" || scope === "programEnrolment" ? [] : encType
       }
     };
     const data = getNewFilterData(newFilter);
@@ -116,9 +123,9 @@ export const CreateEditFilters = props => {
     <div>
       <Title title="Filter Config" />
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        {!_.isEmpty(programs) && !_.isEmpty(encounterTypes) && (
-          <Box m={4}>
-            <Grid container item sm={12}>
+        <Box mr={130}>
+          {!_.isEmpty(programs) && !_.isEmpty(encounterTypes) && (
+            <Grid container justify="flex-start">
               <Grid item sm={12}>
                 <FormControl fullWidth>
                   <InputLabel>Name</InputLabel>
@@ -129,6 +136,7 @@ export const CreateEditFilters = props => {
                   />
                 </FormControl>
               </Grid>
+              <Box m={0.5} />
               <Grid item sm={12}>
                 <FormControl fullWidth>
                   <AutoSuggestSingleSelection
@@ -144,10 +152,11 @@ export const CreateEditFilters = props => {
                   )}
                 </FormControl>
               </Grid>
+              <Box m={0.5} />
               <Grid item sm={12}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor="Scope">Search Scope</InputLabel>
-                  <Select
+                  <SingleSelect
                     id="Scope"
                     name="Scope"
                     value={scope}
@@ -158,47 +167,51 @@ export const CreateEditFilters = props => {
                         {scope}
                       </MenuItem>
                     ))}
-                  </Select>
+                  </SingleSelect>
                 </FormControl>
               </Grid>
-              {(scope === "programEncounter" || scope === "programEnrolment") && (
+              <Box m={0.5} />
+              {scope === "programEnrolment" && (
                 <Grid item sm={12}>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor="Program">Program</InputLabel>
+                  <div>
+                    <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>Progam</div>
                     <Select
-                      id="Program"
-                      name="Program"
+                      isMulti
+                      placeholder={"Select Program"}
                       value={programNameState}
-                      onChange={event => setProgramName(event.target.value)}
-                    >
-                      {programs != null &&
-                        programs.map(program => (
-                          <MenuItem key={program.name} value={program.name}>
-                            {program.name}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  </FormControl>
+                      options={programOptions}
+                      onChange={name => setProgramName(name)}
+                    />
+                  </div>
                 </Grid>
               )}
+              <Box m={0.5} />
+              {scope === "programEncounter" && (
+                <Grid item sm={12}>
+                  <div>
+                    <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>Progam</div>
+                    <Select
+                      placeholder={"Select Program"}
+                      value={programNameState}
+                      options={programOptions}
+                      onChange={name => setProgramName([name])}
+                    />
+                  </div>
+                </Grid>
+              )}
+              <Box m={0.5} />
               {(scope === "programEncounter" || scope === "encounter") && (
                 <Grid item sm={12}>
-                  <FormControl fullWidth>
-                    <InputLabel htmlFor="Encounter">Encounter Type</InputLabel>
+                  <div>
+                    <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>Encounter Type</div>
                     <Select
-                      id="Encounter"
-                      name="Encounter"
+                      isMulti
+                      placeholder={"Select Encounter Type"}
                       value={encounterNameState}
-                      onChange={event => setEncounterName(event.target.value)}
-                    >
-                      {encounterTypes != null &&
-                        encounterTypes.map(encounterType => (
-                          <MenuItem key={encounterType.name} value={encounterType.name}>
-                            {encounterType.name}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  </FormControl>
+                      options={encounterTypeOptions}
+                      onChange={name => setEncounterName(name)}
+                    />
+                  </div>
                 </Grid>
               )}
               <Box mt={2} display="flex" justifyContent="center">
@@ -214,8 +227,8 @@ export const CreateEditFilters = props => {
               </Box>
               <p />
             </Grid>
-          </Box>
-        )}
+          )}
+        </Box>
         {messageStatus.display && (
           <CustomizedSnackbar
             message={messageStatus.message}

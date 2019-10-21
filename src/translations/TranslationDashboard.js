@@ -16,9 +16,9 @@ export const TranslationDashboard = props => {
         const complete = total - incomplete;
         keyCounts.push({
           Language: find(localeChoices, locale => locale.id === language).name,
-          "Total Keys": total,
+          "Total keys": total,
           "Keys with translations": complete,
-          "Keys without Translations": incomplete
+          "Keys without translations": incomplete
         });
       });
     setData(keyCounts);
@@ -27,7 +27,7 @@ export const TranslationDashboard = props => {
   const renderTableHeader = () => {
     let header = Object.keys(data[0]);
     return header.map((key, index) => {
-      return <th key={index}>{key.toUpperCase()}</th>;
+      return <th key={index}>{key}</th>;
     });
   };
 
@@ -35,9 +35,9 @@ export const TranslationDashboard = props => {
     return data.map((row, index) => (
       <tr key={index}>
         <td>{row["Language"]}</td>
-        <td>{row["Total Keys"]}</td>
+        <td>{row["Total keys"]}</td>
         <td>{row["Keys with translations"]}</td>
-        <td>{row["Keys without Translations"]}</td>
+        <td>{row["Keys without translations"]}</td>
       </tr>
     ));
   };
