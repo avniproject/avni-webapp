@@ -45,7 +45,7 @@ export const TranslationDashboard = props => {
   return (
     !isEmpty(data) && (
       <div style={{ marginBottom: 30 }}>
-        <h1 id="title">Translations Dashboard</h1>
+        <h5 id="title">Translations Dashboard</h5>
         <table id="translation">
           <tbody>
             <tr>{renderTableHeader()}</tr>

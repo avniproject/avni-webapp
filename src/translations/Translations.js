@@ -78,28 +78,41 @@ export const Translations = ({
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Title title="Translations" />
       <div id={"margin"}>
-        <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
-        <Grid container direction="row" justify="flex-start" alignItems="center">
-          <Import
-            locales={localeChoices}
-            onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)}
-          />
-        </Grid>
+        <Box border={1} borderColor={"#ddd"} p={2}>
+          <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
+        </Box>
         <p />
-        <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
-          <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms} />
-          <Box pl={2} pr={4}>
-            <Button
-              variant="contained"
-              onClick={onDownloadPressedHandler}
-              color="primary"
-              aria-haspopup="false"
-              disabled={isEmpty(platform)}
-            >
-              Download
-            </Button>
-          </Box>
-        </Grid>
+        <Box border={1} borderColor={"#ddd"} p={2}>
+          <Grid justify="center">
+            <h5 id="title">Upload Translations</h5>
+          </Grid>
+          <Grid container direction="row" justify="flex-start" alignItems="center">
+            <Import
+              locales={localeChoices}
+              onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)}
+            />
+          </Grid>
+        </Box>
+        <p />
+        <Box border={1} borderColor={"#ddd"} p={2}>
+          <Grid justify="center">
+            <h5 id="title">Download Translations</h5>
+          </Grid>
+          <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
+            <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms} />
+            <Box pl={2} pr={4}>
+              <Button
+                variant="contained"
+                onClick={onDownloadPressedHandler}
+                color="primary"
+                aria-haspopup="false"
+                disabled={isEmpty(platform)}
+              >
+                Download
+              </Button>
+            </Box>
+          </Grid>
+        </Box>
       </div>
     </Box>
   );
