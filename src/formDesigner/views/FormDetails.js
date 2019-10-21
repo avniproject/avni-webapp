@@ -15,9 +15,17 @@ import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import produce from "immer";
-import Box from "@material-ui/core/Box";
-import { Title } from "react-admin";
+import Paper from "@material-ui/core/Paper";
 
+import { Title } from "react-admin";
+// import { styled } from '@material-ui/core/styles';
+// import { compose, spacing, palette } from '@material-ui/system';
+// const Box = styled('div')(
+//     compose(
+//       spacing,
+//       palette,
+//     ),
+// );
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
   return (
@@ -515,7 +523,7 @@ class FormDetails extends Component {
     return (
       <>
         <Title title="Form Details" />
-        <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Paper>
           {this.state.dataLoaded ? form : <div>Loading</div>}
           {this.state.successAlert && (
             <CustomizedSnackbar
@@ -525,7 +533,7 @@ class FormDetails extends Component {
             />
           )}
           {this.state.saveCall && this.updateForm()}
-        </Box>
+        </Paper>
       </>
     );
   }

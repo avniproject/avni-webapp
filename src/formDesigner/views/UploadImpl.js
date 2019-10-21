@@ -6,9 +6,16 @@ import axios from "axios";
 import { LineBreak } from "../../common/components/utils";
 import fileDownload from "js-file-download";
 import { connect } from "react-redux";
-import Box from "@material-ui/core/Box";
-import { Title } from "react-admin";
 
+import { Title } from "react-admin";
+// import { styled } from '@material-ui/core/styles';
+// import { compose, spacing, palette } from '@material-ui/system';
+// const Box = styled('div')(
+//     compose(
+//       spacing,
+//       palette,
+//     ),
+// );
 function UploadImpl({ organisation }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = React.useState(false);
@@ -61,7 +68,7 @@ function UploadImpl({ organisation }) {
   }
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <div boxShadow={2} p={3} bgcolor="background.paper">
       <Title title="Bundle" />
       {showUploadFeature && (
         <>
@@ -91,7 +98,7 @@ function UploadImpl({ organisation }) {
       <Button variant="contained" color="primary" onClick={onDownloadHandler}>
         Download
       </Button>
-    </Box>
+    </div>
   );
 }
 

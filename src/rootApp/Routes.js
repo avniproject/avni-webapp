@@ -4,9 +4,9 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied } from "../common/components/utils";
 import { OrgManager } from "../adminApp";
-import { ROLES, withoutDataEntry } from "../common/constants";
+import { ROLES } from "../common/constants";
 import "./SecureApp.css";
-import DataEntry from "../dataEntryApp/DataEntry";
+// import DataEntry from "../dataEntryApp/DataEntry";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -31,12 +31,12 @@ const Routes = ({ user, organisation }) => (
         component={OrgManager}
       />
     </Route>
-    <RestrictedRoute
-      path="/app"
-      allowedRoles={[ROLES.USER]}
-      currentUserRoles={user.roles}
-      component={DataEntry}
-    />
+    {/*<RestrictedRoute*/}
+    {/*path="/app"*/}
+    {/*allowedRoles={[ROLES.USER]}*/}
+    {/*currentUserRoles={user.roles}*/}
+    {/*component={DataEntry}*/}
+    {/*/>*/}
     <Route exact path="/">
       <Redirect to={includes(user.roles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
     </Route>
@@ -74,4 +74,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   null
-)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);
+)(false ? RoutesWithoutDataEntry : Routes);

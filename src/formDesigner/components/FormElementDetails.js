@@ -1,7 +1,7 @@
 import React from "react";
 import { Input, InputLabel, Checkbox, FormControlLabel, Select } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -13,7 +13,7 @@ const FormControl = withStyles({
   }
 })(MuiFormControl);
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
   answers: {
     padding: "5px 10px 5px 10px",
     backgroundColor: "#bcbcbc",
@@ -21,10 +21,10 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 15,
     marginBottom: 5
   }
-}));
+});
 
 function FormElementDetails(props) {
-  const classes = useStyles();
+  const { classes } = props;
 
   function onChangeAnswerName(answerName, index, flag = true) {
     if (flag) {
@@ -200,4 +200,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default React.memo(FormElementDetails, areEqual);
+export default React.memo(withStyles(styles)(FormElementDetails), areEqual);

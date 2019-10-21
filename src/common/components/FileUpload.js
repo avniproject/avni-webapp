@@ -1,7 +1,14 @@
 import React from "react";
 import { isEmpty } from "lodash";
 import Button from "@material-ui/core/Button";
-import Box from "@material-ui/core/Box";
+// import { styled } from '@material-ui/core/styles';
+// import { compose, spacing, palette } from '@material-ui/system';
+// const Box = styled('div')(
+//     compose(
+//       spacing,
+//       palette,
+//     ),
+// );
 
 export default ({ onSelect, onUpload, canSelect, canUpload }) => {
   const [value, setValue] = React.useState("");
@@ -24,13 +31,13 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
 
   return (
     <React.Fragment>
-      <Box pl={4} pr={2}>
+      <div pl={4} pr={2}>
         <Button variant="contained" component="label" disabled={!canSelect}>
           Choose File
           <input type="file" value={value} onChange={onSelectWrapper} style={{ display: "none" }} />
         </Button>
-      </Box>
-      <Box pl={2} pr={4}>
+      </div>
+      <div pl={2} pr={4}>
         <div className="box has-text-centered">
           <Button
             variant="contained"
@@ -42,7 +49,7 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
             Upload
           </Button>
         </div>
-      </Box>
+      </div>
     </React.Fragment>
   );
 };

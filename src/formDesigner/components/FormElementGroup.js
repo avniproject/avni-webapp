@@ -1,6 +1,6 @@
 import React from "react";
 import _, { isEqual } from "lodash";
-import { makeStyles } from "@material-ui/core/styles";
+// import { makeStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
@@ -13,13 +13,12 @@ import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
-import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 
 import FormElementWithAddButton from "./FormElementWithAddButton";
 
-const useStyles = makeStyles(theme => ({
+const styles = theme => ({
   parent: {
     paddingLeft: 0,
     paddingBottom: 30
@@ -56,7 +55,8 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.pxToRem(15)
     //color: theme.palette.text.secondary,
   }
-}));
+});
+
 const ExpansionPanel = withStyles({
   root: {
     "&$expanded": {
@@ -95,7 +95,7 @@ const ExpansionPanelSummary = withStyles({
 })(MuiExpansionPanelSummary);
 
 function FormElementGroup(props) {
-  const classes = useStyles();
+  const { classes } = props;
   const [hover, setHover] = React.useState(false);
   const panel = "panel" + props.index.toString();
   let questionCount = 0;
@@ -188,7 +188,7 @@ function FormElementGroup(props) {
         >
           <ExpansionPanel
             {...provided.dragHandleProps}
-            TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
+            CollapseProps={{ mountOnEnter: true, unmountOnExit: true }}
             expanded={props.groupData.expanded}
             className={props.groupData.error ? classes.rootError : classes.root}
             onChange={event =>
@@ -252,15 +252,16 @@ function FormElementGroup(props) {
             </ExpansionPanelDetails>
           </ExpansionPanel>
           {hover && (
-            <Fab
+            <Button
+              variant="fab"
               color="primary"
               aria-label="add"
               onClick={separateAddGroup}
               className={classes.absolute}
-              size="small"
+              mini
             >
               <AddIcon />
-            </Fab>
+            </Button>
           )}
         </div>
       )}
@@ -272,4 +273,4 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-export default React.memo(FormElementGroup, areEqual);
+export default React.memo(withStyles(styles)(FormElementGroup), areEqual);

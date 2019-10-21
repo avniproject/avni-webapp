@@ -14,9 +14,16 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import PropTypes from "prop-types";
 import { DragDropContext } from "react-beautiful-dnd";
-import Box from "@material-ui/core/Box";
-import { Title } from "react-admin";
 
+import { Title } from "react-admin";
+// import { styled } from '@material-ui/core/styles';
+// import { compose, spacing, palette } from '@material-ui/system';
+// const Box = styled('div')(
+//     compose(
+//       spacing,
+//       palette,
+//     ),
+// );
 class CreateEditConcept extends Component {
   constructor(props) {
     super(props);
@@ -425,7 +432,7 @@ class CreateEditConcept extends Component {
     }
 
     return (
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <div boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={appBarTitle} />
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
@@ -495,7 +502,7 @@ class CreateEditConcept extends Component {
             />
           )}
         </form>
-      </Box>
+      </div>
     );
   }
 }

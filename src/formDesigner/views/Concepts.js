@@ -3,9 +3,16 @@ import MaterialTable from "material-table";
 import axios from "axios";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
-import Box from "@material-ui/core/Box";
-import { Title } from "react-admin";
 
+import { Title } from "react-admin";
+// import { styled } from '@material-ui/core/styles';
+// import { compose, spacing, palette } from '@material-ui/system';
+// const Box = styled('div')(
+//     compose(
+//       spacing,
+//       palette,
+//     ),
+// );
 const Concepts = ({ history }) => {
   const columns = [
     { title: "Name", field: "name", defaultSort: "asc" },
@@ -82,7 +89,7 @@ const Concepts = ({ history }) => {
   };
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <div boxShadow={2} p={3} bgcolor="background.paper">
       <Title title="Concepts" />
       <MaterialTable
         title=""
@@ -106,7 +113,7 @@ const Concepts = ({ history }) => {
         }}
         actions={[voidConcept, editConcept, addNewConcept]}
       />
-    </Box>
+    </div>
   );
 };
 

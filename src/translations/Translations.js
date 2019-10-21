@@ -11,7 +11,6 @@ import { getLocales } from "../common/utils";
 import Import from "./Import";
 import { TranslationDashboard } from "./TranslationDashboard";
 import Button from "@material-ui/core/Button";
-import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
@@ -69,20 +68,20 @@ export const Translations = ({
     return (
       <>
         <Title title="Translations" />
-        <Box>Language not set {link} to set.</Box>
+        <div>Language not set {link} to set.</div>
       </>
     );
   }
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
+    <div boxShadow={2} p={3} bgcolor="background.paper">
       <Title title="Translations" />
       <div id={"margin"}>
-        <Box border={1} borderColor={"#ddd"} p={2}>
+        <div border={1} borderColor={"#ddd"} p={2}>
           <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
-        </Box>
+        </div>
         <p />
-        <Box border={1} borderColor={"#ddd"} p={2}>
+        <div border={1} borderColor={"#ddd"} p={2}>
           <Grid justify="center">
             <h5 id="title">Upload Translations</h5>
           </Grid>
@@ -92,15 +91,15 @@ export const Translations = ({
               onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)}
             />
           </Grid>
-        </Box>
+        </div>
         <p />
-        <Box border={1} borderColor={"#ddd"} p={2}>
+        <div border={1} borderColor={"#ddd"} p={2}>
           <Grid justify="center">
             <h5 id="title">Download Translations</h5>
           </Grid>
           <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
             <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms} />
-            <Box pl={2} pr={4}>
+            <div pl={2} pr={4}>
               <Button
                 variant="contained"
                 onClick={onDownloadPressedHandler}
@@ -110,11 +109,11 @@ export const Translations = ({
               >
                 Download
               </Button>
-            </Box>
+            </div>
           </Grid>
-        </Box>
+        </div>
       </div>
-    </Box>
+    </div>
   );
 };
 
