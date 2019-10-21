@@ -27,7 +27,7 @@ import {
   EncounterTypeEdit,
   EncounterTypeList
 } from "./EncounterTypes";
-import { customConfig } from "./OrganisationConfig";
+import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 import Forms from "../formDesigner/views/Forms";
 import Concepts from "../formDesigner/views/Concepts";
@@ -86,19 +86,42 @@ class OrgManager extends Component {
           customRoutes={customRoutes}
         >
           <Resource
-            name="user"
-            list={WithProps({ organisation }, UserList)}
-            create={WithProps({ organisation }, UserCreate)}
-            show={WithProps({ user }, UserDetail)}
-            edit={WithProps({ user }, UserEdit)}
+            name="organisationConfig"
+            options={{ label: "Organisation Config" }}
+            list={customConfig}
           />
+
           <Resource
-            name="catchment"
-            list={CatchmentList}
-            show={CatchmentDetail}
-            create={CatchmentCreate}
-            edit={CatchmentEdit}
+            name="subjectType"
+            options={{ label: "Subject Types" }}
+            list={SubjectTypeList}
+            show={SubjectTypeDetail}
+            create={SubjectTypeCreate}
+            edit={SubjectTypeEdit}
           />
+
+          <Resource
+            name="program"
+            options={{ label: "Programs" }}
+            list={ProgramList}
+            show={ProgramDetail}
+            create={ProgramCreate}
+            edit={ProgramEdit}
+          />
+
+          <Resource
+            name="encounterType"
+            options={{ label: "Encounter Types" }}
+            list={EncounterTypeList}
+            show={EncounterTypeDetail}
+            create={EncounterTypeCreate}
+            edit={EncounterTypeEdit}
+          />
+
+          <Resource name="concepts" options={{ label: "Concepts" }} list={Concepts} />
+
+          <Resource name="forms" options={{ label: "Forms" }} list={Forms} />
+
           <Resource
             name="addressLevelType"
             options={{ label: "Location Types" }}
@@ -116,43 +139,28 @@ class OrgManager extends Component {
             edit={LocationEdit}
           />
           <Resource
-            name="program"
-            options={{ label: "Programs" }}
-            list={ProgramList}
-            show={ProgramDetail}
-            create={ProgramCreate}
-            edit={ProgramEdit}
+            name="catchment"
+            list={CatchmentList}
+            show={CatchmentDetail}
+            create={CatchmentCreate}
+            edit={CatchmentEdit}
           />
+
           <Resource
-            name="subjectType"
-            options={{ label: "Subject Types" }}
-            list={SubjectTypeList}
-            show={SubjectTypeDetail}
-            create={SubjectTypeCreate}
-            edit={SubjectTypeEdit}
+            name="user"
+            list={WithProps({ organisation }, UserList)}
+            create={WithProps({ organisation }, UserCreate)}
+            show={WithProps({ user }, UserDetail)}
+            edit={WithProps({ user }, UserEdit)}
           />
-          <Resource
-            name="encounterType"
-            options={{ label: "Encounter Types" }}
-            list={EncounterTypeList}
-            show={EncounterTypeDetail}
-            create={EncounterTypeCreate}
-            edit={EncounterTypeEdit}
-          />
-          <Resource
-            name="organisationConfig"
-            options={{ label: "Organisation Config" }}
-            list={customConfig}
-          />
-          <Resource name="forms" options={{ label: "Forms" }} list={Forms} />
-          <Resource name="concepts" options={{ label: "Concepts" }} list={Concepts} />
-          <Resource name="upload" options={{ label: "Bundle" }} list={UploadImpl} />
+
           <Resource
             name="translations"
             options={{ label: "Translations" }}
             list={WithProps({ user, organisation }, Translations)}
           />
-          <Resource name="Test" options={{ label: "Test" }} list={() => <div>Test Page</div>} />
+
+          <Resource name="upload" options={{ label: "Bundle" }} list={UploadImpl} />
         </Admin>
       </JssProvider>
     );
