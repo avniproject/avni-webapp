@@ -3,14 +3,7 @@ import FileUpload from "../common/components/FileUpload";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { filter, find, isEmpty, isString, reject, size } from "lodash";
-// import { styled } from '@material-ui/core/styles';
-// import { compose, spacing, palette } from '@material-ui/system';
-// const Box = styled('div')(
-//     compose(
-//       spacing,
-//       palette,
-//     ),
-// );
+import Box from "@material-ui/core/Box";
 
 const noOfKeysWithValues = file => {
   return size(file && file.json) - noOfKeysWithoutValues(file);
@@ -84,7 +77,7 @@ export default ({ locales = [], onSuccessfulImport }) => {
         canSelect={!isEmpty(language)}
         canUpload={noOfKeysWithoutValues(file) === 0 && isEmpty(error)}
       />
-      <div py={4}>
+      <Box py={4}>
         {!isEmpty(file) && (
           <div>
             <p>Summary:</p>
@@ -94,7 +87,7 @@ export default ({ locales = [], onSuccessfulImport }) => {
           </div>
         )}
         <p>{!isEmpty(error) && error}</p>
-      </div>
+      </Box>
     </React.Fragment>
   );
 };

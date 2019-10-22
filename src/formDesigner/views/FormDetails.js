@@ -5,6 +5,7 @@ import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
 import Button from "@material-ui/core/Button";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
@@ -15,17 +16,7 @@ import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import produce from "immer";
-import Paper from "@material-ui/core/Paper";
 
-import { Title } from "react-admin";
-// import { styled } from '@material-ui/core/styles';
-// import { compose, spacing, palette } from '@material-ui/system';
-// const Box = styled('div')(
-//     compose(
-//       spacing,
-//       palette,
-//     ),
-// );
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
   return (
@@ -521,20 +512,17 @@ class FormDetails extends Component {
       </Grid>
     );
     return (
-      <>
-        <Title title="Form Details" />
-        <Paper>
-          {this.state.dataLoaded ? form : <div>Loading</div>}
-          {this.state.successAlert && (
-            <CustomizedSnackbar
-              message="Successfully updated the form"
-              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
-              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
-            />
-          )}
-          {this.state.saveCall && this.updateForm()}
-        </Paper>
-      </>
+      <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
+        {this.state.dataLoaded ? form : <div>Loading</div>}
+        {this.state.successAlert && (
+          <CustomizedSnackbar
+            message="Successfully updated the form"
+            getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+            defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+          />
+        )}
+        {this.state.saveCall && this.updateForm()}
+      </ScreenWithAppBar>
     );
   }
 }

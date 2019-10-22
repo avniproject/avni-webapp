@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import JSZip from "jszip";
@@ -7,15 +8,6 @@ import { LineBreak } from "../../common/components/utils";
 import fileDownload from "js-file-download";
 import { connect } from "react-redux";
 
-import { Title } from "react-admin";
-// import { styled } from '@material-ui/core/styles';
-// import { compose, spacing, palette } from '@material-ui/system';
-// const Box = styled('div')(
-//     compose(
-//       spacing,
-//       palette,
-//     ),
-// );
 function UploadImpl({ organisation }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = React.useState(false);
@@ -68,8 +60,7 @@ function UploadImpl({ organisation }) {
   }
 
   return (
-    <div boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title="Bundle" />
+    <ScreenWithAppBar enableLeftMenuButton={true} appbarTitle={`Bundle`}>
       {showUploadFeature && (
         <>
           <p>Upload Implementation Bundle</p>
@@ -98,7 +89,7 @@ function UploadImpl({ organisation }) {
       <Button variant="contained" color="primary" onClick={onDownloadHandler}>
         Download
       </Button>
-    </div>
+    </ScreenWithAppBar>
   );
 }
 

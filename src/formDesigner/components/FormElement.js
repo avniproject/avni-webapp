@@ -1,5 +1,6 @@
 import React from "react";
 
+import { makeStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
@@ -14,10 +15,10 @@ import { withStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
-import CheckCircleOutlineIcon from "../../common/icons/CheckCircleOutline";
+import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import QueryBuilderIcon from "@material-ui/icons/QueryBuilder";
 import TimerIcon from "@material-ui/icons/Timer";
-// import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
+import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
 import NoteIcon from "@material-ui/icons/Note";
@@ -25,7 +26,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import ImageIcon from "@material-ui/icons/Image";
 import VideocamIcon from "@material-ui/icons/Videocam";
 
-import Mandatory from "../../common/icons/CheckCircleOutline";
+import Mandatory from "@material-ui/icons/CheckCircleOutline";
 import NonMandatory from "@material-ui/icons/HighlightOff";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
@@ -34,7 +35,7 @@ function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
   root: {
     width: "100%"
   },
@@ -80,8 +81,7 @@ const styles = theme => ({
   requiredIcon: {
     textAlign: "center"
   }
-});
-
+}));
 const ExpansionPanel = withStyles({
   root: {
     "&$expanded": {
@@ -130,7 +130,7 @@ const dataTypeIcons = {
     MultiSelect: <CheckCircleOutlineIcon />,
     "": <b />
   },
-  Date: <div />,
+  Date: <CalendarTodayIcon />,
   Numeric: <b>123</b>,
   Text: <TextFieldsIcon />,
   Notes: <NoteIcon />,
@@ -144,7 +144,7 @@ const dataTypeIcons = {
 };
 
 function FormElement(props) {
-  const { classes } = props;
+  const classes = useStyles();
   const panel = "panel" + props.groupIndex.toString + props.index.toString();
 
   const handleDelete = event => {
@@ -155,7 +155,7 @@ function FormElement(props) {
 
   return (
     <ExpansionPanel
-      CollapseProps={{ mountOnEnter: true, unmountOnExit: true }}
+      TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
       expanded={props.formElementData.expanded}
       className={props.formElementData.error ? classes.rootError : classes.root}
       onChange={event =>
@@ -241,4 +241,4 @@ function FormElement(props) {
   );
 }
 
-export default React.memo(withStyles(styles)(FormElement), areEqual);
+export default React.memo(FormElement, areEqual);

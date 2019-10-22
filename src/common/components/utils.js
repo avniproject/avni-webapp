@@ -1,9 +1,20 @@
 import React from "react";
 import _, { get, merge } from "lodash";
 import { Link as RouterLink, withRouter } from "react-router-dom";
+import Link from "@material-ui/core/Link";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import qs from "query-string";
 import { join } from "path";
+
+import { makeStyles } from "@material-ui/core/styles";
+
+const createStyles = makeStyles(theme => ({
+  noUnderline: {
+    "&:hover, &:focus": {
+      textDecoration: "none"
+    }
+  }
+}));
 
 export const AddIcon = props => (
   <SvgIcon {...props}>
@@ -11,13 +22,27 @@ export const AddIcon = props => (
   </SvgIcon>
 );
 
+export const InternalLink = ({ children, noUnderline, ...props }) => {
+  const classes = createStyles();
+  return (
+    <Link
+      component={React.forwardRef((props, ref) => (
+        <RouterLink innerRef={ref} {...props} className={noUnderline ? classes.noUnderline : ""} />
+      ))}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+};
+
 export const RelativeLink = withRouter(
   ({ location, children, to = "./", params, noParams, ...props }) => {
     const updatedParams = noParams ? "" : qs.stringify(merge(qs.parse(location.search), params));
     return (
-      <div to={`${join(location.pathname, to)}?${updatedParams}`} {...props}>
+      <InternalLink to={`${join(location.pathname, to)}?${updatedParams}`} {...props}>
         {children}
-      </div>
+      </InternalLink>
     );
   }
 );
@@ -26,7 +51,7 @@ export const Home = () => (
   <div>
     <ul>
       <li>
-        <div to="/org/">Manage Users</div>
+        <Link to="/org/">Manage Users</Link>
       </li>
     </ul>
   </div>

@@ -6,6 +6,7 @@ import _ from "lodash";
 import Grid from "@material-ui/core/Grid";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 import AutoSuggestSingleSelection from "../../formDesigner/components/AutoSuggestSingleSelection";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import axios from "axios";
@@ -121,8 +122,8 @@ export const CreateEditFilters = props => {
   return (
     <div>
       <Title title="Filter Config" />
-      <div boxShadow={2} p={3} bgcolor="background.paper">
-        <div mr={130}>
+      <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Box mr={130}>
           {!_.isEmpty(programs) && !_.isEmpty(encounterTypes) && (
             <Grid container justify="flex-start">
               <Grid item sm={12}>
@@ -135,7 +136,7 @@ export const CreateEditFilters = props => {
                   />
                 </FormControl>
               </Grid>
-              <div m={0.5} />
+              <Box m={0.5} />
               <Grid item sm={12}>
                 <FormControl fullWidth>
                   <AutoSuggestSingleSelection
@@ -151,7 +152,7 @@ export const CreateEditFilters = props => {
                   )}
                 </FormControl>
               </Grid>
-              <div m={0.5} />
+              <Box m={0.5} />
               <Grid item sm={12}>
                 <FormControl fullWidth>
                   <InputLabel htmlFor="Scope">Search Scope</InputLabel>
@@ -169,7 +170,7 @@ export const CreateEditFilters = props => {
                   </SingleSelect>
                 </FormControl>
               </Grid>
-              <div m={0.5} />
+              <Box m={0.5} />
               {scope === "programEnrolment" && (
                 <Grid item sm={12}>
                   <div>
@@ -184,7 +185,7 @@ export const CreateEditFilters = props => {
                   </div>
                 </Grid>
               )}
-              <div m={0.5} />
+              <Box m={0.5} />
               {scope === "programEncounter" && (
                 <Grid item sm={12}>
                   <div>
@@ -198,7 +199,7 @@ export const CreateEditFilters = props => {
                   </div>
                 </Grid>
               )}
-              <div m={0.5} />
+              <Box m={0.5} />
               {(scope === "programEncounter" || scope === "encounter") && (
                 <Grid item sm={12}>
                   <div>
@@ -213,7 +214,7 @@ export const CreateEditFilters = props => {
                   </div>
                 </Grid>
               )}
-              <div mt={2} display="flex" justifyContent="center">
+              <Box mt={2} display="flex" justifyContent="center">
                 <Button
                   variant="contained"
                   onClick={saveFilter}
@@ -223,11 +224,11 @@ export const CreateEditFilters = props => {
                 >
                   Save
                 </Button>
-              </div>
+              </Box>
               <p />
             </Grid>
           )}
-        </div>
+        </Box>
         {messageStatus.display && (
           <CustomizedSnackbar
             message={messageStatus.message}
@@ -235,7 +236,7 @@ export const CreateEditFilters = props => {
             defaultSnackbarStatus={snackBarStatus}
           />
         )}
-      </div>
+      </Box>
     </div>
   );
 };

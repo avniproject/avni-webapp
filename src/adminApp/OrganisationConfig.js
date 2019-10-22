@@ -3,21 +3,22 @@ import { localeChoices } from "../common/constants";
 import _, { isEmpty } from "lodash";
 import axios from "axios";
 import MaterialTable from "material-table";
+import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import { Add, Edit } from "@material-ui/icons";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
-import { withStyles } from "@material-ui/core/styles";
+import Box from "@material-ui/core/Box";
 
-const styles = () => ({
+const useStyles = makeStyles({
   root: {
     width: "100%",
     overflowX: "auto"
   }
 });
 
-const customConfig = ({ history, classes }) => {
+export const customConfig = ({ history }) => {
   const emptyOrgSettings = {
     uuid: UUID.v4(),
     settings: { languages: [], myDashboardFilters: [], searchFilters: [] }
@@ -65,6 +66,8 @@ const customConfig = ({ history, classes }) => {
   useEffect(() => {
     axios.get("/web/encounterTypes").then(res => setEncounterTypes(res.data));
   }, []);
+
+  const styles = useStyles();
 
   const columns = [
     { title: "Filter Name", field: "titleKey" },
@@ -156,7 +159,7 @@ const customConfig = ({ history, classes }) => {
   );
 
   const renderFilterTable = filterType => (
-    <div m={2}>
+    <Box m={2}>
       <MaterialTable
         title={_.startCase(filterType)}
         components={{
@@ -167,29 +170,27 @@ const customConfig = ({ history, classes }) => {
         options={{ search: false, paging: false }}
         actions={[addFilter(filterType), deleteFilter(filterType), editFilter(filterType)]}
       />
-    </div>
+    </Box>
   );
 
   return (
-    <div>
+    <Box>
       <Title title="Organisation Config" />
-      <Paper className={classes.root}>
+      <Paper className={styles.root}>
         <p />
-        <div ml={2} mr={2} borderBottom={1} borderColor="#e0e0e0">
+        <Box ml={2} mr={2} borderBottom={1} borderColor="#e0e0e0">
           <h6 className="MuiTypography-root MuiTypography-h6" style={{ marginLeft: 20 }}>
             Languages
           </h6>
-          <div>
+          <Box>
             {editLanguage()}
             {renderLanguage(settings.settings.languages)}
-          </div>
-        </div>
+          </Box>
+        </Box>
         <p />
         {renderFilterTable("myDashboardFilters")}
         {renderFilterTable("searchFilters")}
       </Paper>
-    </div>
+    </Box>
   );
 };
-
-export default withStyles(styles)(customConfig);

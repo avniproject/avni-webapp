@@ -13,7 +13,8 @@ import { store } from "./common/store";
 import { cognitoInDev, isProdEnv } from "./common/constants";
 import { App, SecureApp } from "./rootApp";
 
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/styles";
+import { createMuiTheme } from "@material-ui/core/styles";
 import * as Colors from "@material-ui/core/colors";
 
 const theme = createMuiTheme({
@@ -24,11 +25,11 @@ const theme = createMuiTheme({
 });
 
 ReactDOM.render(
-  <MuiThemeProvider theme={theme}>
+  <ThemeProvider theme={theme}>
     <Provider store={store}>
       <HashRouter>{isProdEnv || cognitoInDev ? <SecureApp /> : <App />}</HashRouter>
     </Provider>
-  </MuiThemeProvider>,
+  </ThemeProvider>,
   document.getElementById("root")
 );
 

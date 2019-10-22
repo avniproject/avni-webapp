@@ -3,19 +3,12 @@ import Select from "react-select";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { localeChoices } from "../../common/constants";
 import Button from "@material-ui/core/Button";
-
+import Box from "@material-ui/core/Box";
 import axios from "axios";
 import _ from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
-// import { styled } from '@material-ui/core/styles';
-// import { compose, spacing, palette } from '@material-ui/system';
-// const Box = styled('div')(
-//     compose(
-//       spacing,
-//       palette,
-//     ),
-// );
+
 const options = localeChoices.map(l => ({ label: l.name, value: l.id }));
 
 export const CreateEditLanguages = props => {
@@ -55,15 +48,15 @@ export const CreateEditLanguages = props => {
   return (
     <div>
       <Title title="Language Config" />
-      <div boxShadow={2} p={3} bgcolor="background.paper">
-        <div m={2}>
+      <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Box m={2}>
           <Select isMulti value={lang} options={options} onChange={name => setLang(name)} />
-        </div>
-        <div m={2} display="flex" justifyContent="left">
+        </Box>
+        <Box m={2} display="flex" justifyContent="left">
           <Button variant="contained" onClick={saveLanguage} color="primary" aria-haspopup="false">
             Save
           </Button>
-        </div>
+        </Box>
         {messageStatus.display && (
           <CustomizedSnackbar
             message={messageStatus.message}
@@ -71,7 +64,7 @@ export const CreateEditLanguages = props => {
             defaultSnackbarStatus={snackBarStatus}
           />
         )}
-      </div>
+      </Box>
     </div>
   );
 };

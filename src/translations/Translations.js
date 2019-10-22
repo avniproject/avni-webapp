@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { find, isEmpty, isNil } from "lodash";
 import DropDown from "../common/components/DropDown";
 import JSZip from "jszip";
@@ -11,7 +12,7 @@ import { getLocales } from "../common/utils";
 import Import from "./Import";
 import { TranslationDashboard } from "./TranslationDashboard";
 import Button from "@material-ui/core/Button";
-import { Title } from "react-admin";
+import Box from "@material-ui/core/Box";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
 export const Translations = ({
@@ -60,28 +61,34 @@ export const Translations = ({
     const link = (
       <a
         style={{ cursor: "pointer", color: "blue", textDecorationLine: "underline" }}
-        onClick={() => history.push("/organisationConfig")}
+        onClick={() => history.push("/admin/organisationConfig")}
       >
         click here
       </a>
     );
     return (
-      <>
-        <Title title="Translations" />
-        <div>Language not set {link} to set.</div>
-      </>
+      <ScreenWithAppBar
+        appbarTitle={`Translations`}
+        enableLeftMenuButton={true}
+        renderAllOptions={false}
+      >
+        <Box>Language not set {link} to set.</Box>
+      </ScreenWithAppBar>
     );
   }
 
   return (
-    <div boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title="Translations" />
+    <ScreenWithAppBar
+      appbarTitle={`Translations`}
+      enableLeftMenuButton={true}
+      renderAllOptions={false}
+    >
       <div id={"margin"}>
-        <div border={1} borderColor={"#ddd"} p={2}>
+        <Box border={1} borderColor={"#ddd"} p={2}>
           <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
-        </div>
+        </Box>
         <p />
-        <div border={1} borderColor={"#ddd"} p={2}>
+        <Box border={1} borderColor={"#ddd"} p={2}>
           <Grid justify="center">
             <h5 id="title">Upload Translations</h5>
           </Grid>
@@ -91,15 +98,15 @@ export const Translations = ({
               onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)}
             />
           </Grid>
-        </div>
+        </Box>
         <p />
-        <div border={1} borderColor={"#ddd"} p={2}>
+        <Box border={1} borderColor={"#ddd"} p={2}>
           <Grid justify="center">
             <h5 id="title">Download Translations</h5>
           </Grid>
           <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
             <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms} />
-            <div pl={2} pr={4}>
+            <Box pl={2} pr={4}>
               <Button
                 variant="contained"
                 onClick={onDownloadPressedHandler}
@@ -109,11 +116,11 @@ export const Translations = ({
               >
                 Download
               </Button>
-            </div>
+            </Box>
           </Grid>
-        </div>
+        </Box>
       </div>
-    </div>
+    </ScreenWithAppBar>
   );
 };
 

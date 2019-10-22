@@ -2,9 +2,10 @@ import React from "react";
 import Body from "./Body";
 import AppBar from "./AppBar";
 import HomeIcon from "@material-ui/icons/Home";
+import ListAltIcon from "@material-ui/icons/ListAlt";
 import DescriptionIcon from "@material-ui/icons/Description";
 import clsx from "clsx";
-// import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
@@ -26,59 +27,59 @@ import PropTypes from "prop-types";
 
 const drawerWidth = 240;
 
-// const useStyles = makeStyles(theme => ({
-//   appBar: {
-//     paddingLeft: 70,
-//     transition: theme.transitions.create(["width", "margin"], {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.leavingScreen
-//     })
-//   },
-//   appBarShift: {
-//     paddingLeft: drawerWidth,
-//     width: `calc(100%)`,
-//     transition: theme.transitions.create(["width", "margin"], {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.enteringScreen
-//     })
-//   },
-//   container: {
-//     margin: "0px 15px 0px 15px"
-//   },
-//   drawer: {
-//     width: drawerWidth,
-//     flexShrink: 0,
-//     whiteSpace: "nowrap",
-//     zIndex: 1
-//   },
-//   drawerOpen: {
-//     zIndex: 1,
-//     width: drawerWidth,
-//     transition: theme.transitions.create("width", {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.enteringScreen
-//     })
-//   },
-//   drawerClose: {
-//     zIndex: 1,
-//     transition: theme.transitions.create("width", {
-//       easing: theme.transitions.easing.sharp,
-//       duration: theme.transitions.duration.leavingScreen
-//     }),
-//     overflowX: "hidden",
-//     width: theme.spacing(7) + 1,
-//     [theme.breakpoints.up("sm")]: {
-//       width: theme.spacing(9) + 1
-//     }
-//   },
-//   toolbar: {
-//     display: "flex",
-//     alignItems: "center",
-//     justifyContent: "flex-end",
-//     padding: "0 8px",
-//     ...theme.mixins.toolbar
-//   }
-// }));
+const useStyles = makeStyles(theme => ({
+  appBar: {
+    paddingLeft: 70,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  appBarShift: {
+    paddingLeft: drawerWidth,
+    width: `calc(100%)`,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  container: {
+    margin: "0px 15px 0px 15px"
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+    zIndex: 1
+  },
+  drawerOpen: {
+    zIndex: 1,
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  drawerClose: {
+    zIndex: 1,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
+    overflowX: "hidden",
+    width: theme.spacing(7) + 1,
+    [theme.breakpoints.up("sm")]: {
+      width: theme.spacing(9) + 1
+    }
+  },
+  toolbar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 8px",
+    ...theme.mixins.toolbar
+  }
+}));
 
 const applyListIcon = (open, icon, listTextName) => {
   if (!open) {
@@ -157,7 +158,7 @@ const applyLeftMenu = (
                 selected={selectedIndex === 2}
                 onClick={event => handleListItemClick(event, 2)}
               >
-                {applyListIcon(open, <div />, "Concepts")}
+                {applyListIcon(open, <ListAltIcon />, "Concepts")}
               </ListItem>
               <Divider />
               <ListItem
@@ -168,7 +169,7 @@ const applyLeftMenu = (
                 selected={selectedIndex === 3}
                 onClick={event => handleListItemClick(event, 3)}
               >
-                {applyListIcon(open, <div />, "Bundle")}
+                {applyListIcon(open, <ListAltIcon />, "Bundle")}
               </ListItem>
             </>
           )}
@@ -198,7 +199,7 @@ const getSelectedListItem = () => {
   }
 };
 const ScreenWithAppBar = props => {
-  const classes = {};
+  const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [selectedIndex, setSelectedIndex] = React.useState(getSelectedListItem());
   function handleListItemClick(event, index) {

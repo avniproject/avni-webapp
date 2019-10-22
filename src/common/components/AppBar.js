@@ -3,41 +3,41 @@ import LogoutButton from "../../adminApp/react-admin-config/LogoutButton";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-// import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Menu from "@material-ui/core/Menu";
 import IconButton from "@material-ui/core/IconButton";
 import UserIcon from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
 import axios from "axios";
 
-// const useStyle = makeStyles(theme => ({
-//   root: {
-//     flexGrow: 1,
-//     marginBottom: theme.spacing(10)
-//   },
-//   title: {
-//     flex: 1,
-//     fontSize: theme.spacing(3)
-//   },
-//   titlet: {
-//     flex: 1
-//   },
-//   toolbar: {
-//     display: "flex",
-//     minHeight: theme.spacing(6)
-//   },
-//   profile: {
-//     flex: 1,
-//     display: "flex",
-//     justifyContent: "flex-end"
-//   },
-//   profileButton: {
-//     color: "white"
-//   }
-// }));
+const useStyle = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+    marginBottom: theme.spacing(10)
+  },
+  title: {
+    flex: 1,
+    fontSize: theme.spacing(3)
+  },
+  titlet: {
+    flex: 1
+  },
+  toolbar: {
+    display: "flex",
+    minHeight: theme.spacing(6)
+  },
+  profile: {
+    flex: 1,
+    display: "flex",
+    justifyContent: "flex-end"
+  },
+  profileButton: {
+    color: "white"
+  }
+}));
 
 export default props => {
-  const classes = {};
+  const classes = useStyle();
   const [loginDetails, setLoginDetails] = React.useState({ name: "", orgName: "" });
   const [anchorEl, setAnchorEl] = React.useState(null);
   function handleClick(event) {

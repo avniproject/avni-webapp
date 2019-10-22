@@ -68,7 +68,7 @@ jobs:
           paths:
             - ./node_modules
 
-      - run: CI=false yarn run build #We have to say CI=false in any app created via create-react-app to prevent the build failing from lint warnings
+      - run: CI=false yarn run build
 
       - run: cd build; zip -r ../build.zip *
 
