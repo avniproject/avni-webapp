@@ -44,7 +44,7 @@ export const Translations = ({
         const zip = new JSZip();
         const folder = zip.folder("locale");
         response.data.forEach(data =>
-          folder.file(data.language + ".json", JSON.stringify(data.translationJson))
+          folder.file(data.language + ".json", JSON.stringify(data.translationJson, undefined, 2))
         );
         zip.generateAsync({ type: "blob" }).then(content => saveAs(content, "translations.zip"));
       })
