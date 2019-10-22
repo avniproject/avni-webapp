@@ -13,9 +13,11 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.item.file.transform.FlatFileFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -65,7 +68,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Job importJob(AfterJobExecutionListener listener, Step importStep) {
+    public Job importJob(ErrorFileCreatorListener listener, Step importStep) {
         return jobBuilderFactory.get("importJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
@@ -75,11 +78,20 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step importStep(FlatFileItemReader<Row> csvFileItemReader, CsvFileItemWriter csvFileItemWriter) {
+    public Step importStep(FlatFileItemReader<Row> csvFileItemReader,
+                           CsvFileItemWriter csvFileItemWriter,
+                           ErrorFileWriterListener errorFileWriterListener) {
         return stepBuilderFactory.get("importStep")
-                .<Row, Row>chunk(10)
+                .<Row, Row>chunk(1)
                 .reader(csvFileItemReader)
                 .writer(csvFileItemWriter)
+                .faultTolerant()
+                .skip(Exception.class)
+                .noSkip(FileNotFoundException.class)
+                .noSkip(FlatFileParseException.class)
+                .noSkip(FlatFileFormatException.class)
+                .skipPolicy((error, count) -> true)
+                .listener(errorFileWriterListener)
                 .build();
     }
 

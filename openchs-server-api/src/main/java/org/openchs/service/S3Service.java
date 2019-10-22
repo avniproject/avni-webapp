@@ -25,7 +25,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.time.Duration;
 import java.util.Date;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,16 +112,17 @@ public class S3Service {
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
-    public String uploadFile(String uuid, MultipartFile requestFile) throws IOException {
-        Objects.requireNonNull(requestFile.getOriginalFilename());
-        String originalFileName = requestFile.getOriginalFilename().replace(" ", "_");
-        String objectKey = format("%s/%s/%s-%s",
-                bulkuploadDir,
+    public String uploadFile(File tempSourceFile, String destFileName, String directory) throws IOException {
+        String objectKey = format("%s/%s/%s",
+                directory,
                 getOrgDirectoryName(),
-                uuid,
-                originalFileName
+                destFileName.replace(" ", "_")
         );
-        return putObject(objectKey, convertMultiPartToFile(requestFile));
+        return putObject(objectKey, tempSourceFile);
+    }
+
+    public String uploadFile(MultipartFile source, String destFileName, String directory) throws IOException {
+        return uploadFile(convertMultiPartToFile(source), destFileName, directory);
     }
 
     private Date getExpireDate(long expireDuration) {
@@ -164,7 +164,7 @@ public class S3Service {
         return tempFile;
     }
 
-    public String putObject(String objectKey, File tempFile) {
+    private String putObject(String objectKey, File tempFile) {
         if (isDev) {
             logger.info(format("[dev] Save file locally. '%s'", objectKey));
             return tempFile.getAbsolutePath();

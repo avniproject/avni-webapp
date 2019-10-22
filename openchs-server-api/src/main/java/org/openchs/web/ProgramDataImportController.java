@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.batch.JobService;
+import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.DataImportService;
 import org.openchs.service.S3Service;
 import org.slf4j.Logger;
@@ -32,13 +33,13 @@ public class ProgramDataImportController {
     private final DataImportService dataImportService;
     private final Logger logger;
     private final JobService jobService;
-    private final S3Service s3Service;
+    private final BulkUploadS3Service bulkUploadS3Service;
 
     @Autowired
-    public ProgramDataImportController(DataImportService dataImportService, JobLauncher bgJobLauncher, JobRepository jobRepository, Job importJob, JobService jobService, S3Service s3Service) {
+    public ProgramDataImportController(DataImportService dataImportService, JobService jobService, BulkUploadS3Service bulkUploadS3Service) {
         this.dataImportService = dataImportService;
         this.jobService = jobService;
-        this.s3Service = s3Service;
+        this.bulkUploadS3Service = bulkUploadS3Service;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -59,12 +60,14 @@ public class ProgramDataImportController {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
         try {
-            String s3Key = s3Service.uploadFile(uuid, file);
+            String s3Key = bulkUploadS3Service.uploadFile(file, uuid);
             jobService.create(uuid, type, file.getOriginalFilename(), s3Key, user.getId());
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
+            logger.error(format("Bulkupload initiation failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         } catch (IOException e) {
+            logger.error(format("Bulkupload initiation failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to process file. %s", e.getMessage()));
         }
