@@ -35,7 +35,11 @@ export const CatchmentEdit = props => (
 );
 
 const TitleChip = props => {
-  return <Chip label={`${props.record.title} (${props.record.typeString})`} />;
+  return props.record ? (
+    <Chip label={`${props.record.title} (${props.record.typeString})`} />
+  ) : (
+    <></>
+  );
 };
 
 const Title = ({ record }) => {
