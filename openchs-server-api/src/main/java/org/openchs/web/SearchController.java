@@ -33,9 +33,9 @@ public class SearchController {
     public List<ConceptContract> searchConcept(@RequestParam String name,
                                                @RequestParam(required = false) String dataType) {
         if (dataType == null) {
-            return getConceptContract(conceptRepository.findByNameIgnoreCaseContaining(name));
+            return getConceptContract(conceptRepository.findByNameIgnoreCaseContains(name));
         } else {
-            return getConceptContract(conceptRepository.findByDataTypeAndNameIgnoreCaseContaining(dataType, name));
+            return getConceptContract(conceptRepository.findByDataTypeAndNameIgnoreCaseContains(dataType, name));
         }
     }
 
