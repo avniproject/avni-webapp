@@ -146,6 +146,7 @@ export const CreateEditFilters = props => {
                     finalReturn={true}
                     index={0}
                     label="Concept"
+                    dataType={"Coded"}
                   />
                   {!_.isEmpty(conceptNameState.error) && (
                     <FormHelperText error>{conceptNameState.error}</FormHelperText>

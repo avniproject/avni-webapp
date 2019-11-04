@@ -91,10 +91,14 @@ export default function AutoSuggestSingleSelection(props) {
 
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
+    const dataType = props.dataType;
+    const queryString = _.isEmpty(dataType)
+      ? `name=${inputValue}`
+      : `name=${inputValue}&dataType=${dataType}`;
     const inputLength = inputValue.length;
 
     axios
-      .get(`/search/concept?name=${inputValue}`)
+      .get(`/search/concept?${queryString}`)
       .then(response => {
         const suggestions = response.data;
         _.sortBy(suggestions, function(concept) {
