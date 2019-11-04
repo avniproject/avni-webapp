@@ -34,6 +34,9 @@ public class Organisation {
     @Column
     private String usernameSuffix;
 
+    @Column
+    private boolean isVoided;
+
     public Organisation() {
     }
 
@@ -123,5 +126,13 @@ public class Organisation {
     public boolean isNew() {
         Long id = getId();
         return (id == null || id == 0);
+    }
+
+    public boolean isVoided() {
+        return isVoided;
+    }
+
+    public void setVoided(boolean voided) {
+        isVoided = voided;
     }
 }
