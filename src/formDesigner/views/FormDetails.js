@@ -100,7 +100,10 @@ class FormDetails extends Component {
                 keyValueObject["durationOptions"] = [];
               }
             }
-            if (fe.concept.dataType === "Coded") {
+            if (
+              fe.concept.dataType === "Coded" &&
+              keyValueObject["ExcludedAnswers"] !== undefined
+            ) {
               _.forEach(fe.concept.answers, answer => {
                 if (keyValueObject["ExcludedAnswers"].includes(answer.name)) {
                   answer["voided"] = true;
