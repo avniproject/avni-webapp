@@ -48,6 +48,8 @@ class FormDetails extends Component {
     this.deleteGroup = this.deleteGroup.bind(this);
     this.btnGroupAdd = this.btnGroupAdd.bind(this);
     this.handleGroupElementChange = this.handleGroupElementChange.bind(this);
+    this.handleGroupElementKeyValueChange = this.handleGroupElementKeyValueChange.bind(this);
+    this.handleExcludedAnswers = this.handleExcludedAnswers.bind(this);
     this.updateConceptElementData = this.updateConceptElementData.bind(this);
     this.validateForm = this.validateForm.bind(this);
   }
@@ -85,6 +87,27 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
+            let keyValueObject = {};
+
+            fe.keyValues.map(keyValue => {
+              return (keyValueObject[keyValue.key] = keyValue.value);
+            });
+
+            // "Date", "Duration"
+            if (["Date", "Duration"].includes(fe.concept.dataType)) {
+              if (!Object.keys(keyValueObject).includes("durationOptions")) {
+                keyValueObject["durationOptions"] = [];
+              }
+            }
+            if (fe.concept.dataType === "Coded") {
+              _.forEach(fe.concept.answers, answer => {
+                if (keyValueObject["ExcludedAnswers"].includes(answer.name)) {
+                  answer["voided"] = true;
+                }
+              });
+            }
+
+            fe.keyValues = keyValueObject;
           });
         });
         let dataGroupFlag = this.countGroupElements(form);
@@ -251,13 +274,101 @@ class FormDetails extends Component {
           deleteGroup: this.deleteGroup,
           btnGroupAdd: this.btnGroupAdd,
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
-          handleGroupElementChange: this.handleGroupElementChange
+          handleGroupElementChange: this.handleGroupElementChange,
+          handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
+          handleExcludedAnswers: this.handleExcludedAnswers
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
     });
     return formElements;
   }
+
+  handleExcludedAnswers = (name, status, index, elementIndex) => {
+    this.setState(
+      produce(draft => {
+        _.forEach(
+          draft.form.formElementGroups[index].formElements[elementIndex].concept.answers,
+          answer => {
+            if (answer.name === name) {
+              if (status !== false) answer["voided"] = status;
+              else delete answer.voided;
+              return answer;
+            }
+          }
+        );
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
+  handleGroupElementKeyValueChange = (index, propertyName, value, elementIndex) => {
+    this.setState(
+      produce(draft => {
+        if (propertyName === "editable") {
+          if (value === "undefined") {
+            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+              propertyName
+            ] = true;
+          } else {
+            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+              propertyName
+            ] = !value;
+          }
+        } else if (propertyName === "datePickerMode") {
+          draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+            propertyName
+          ] = value;
+        } else if (
+          propertyName === "maxHeight" ||
+          propertyName === "maxWidth" ||
+          propertyName === "imageQuality" ||
+          propertyName === "durationLimitInSecs" ||
+          propertyName === "videoQuality"
+        ) {
+          draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+            propertyName
+          ] = value;
+        } else if (
+          propertyName === "years" ||
+          propertyName === "months" ||
+          propertyName === "days" ||
+          propertyName === "weeks" ||
+          propertyName === "hours"
+        ) {
+          if (
+            !Object.keys(
+              draft.form.formElementGroups[index].formElements[elementIndex].keyValues
+            ).includes("durationOptions")
+          ) {
+            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+              "durationOptions"
+            ] = [];
+          }
+          if (
+            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+              "durationOptions"
+            ].includes(propertyName)
+          ) {
+            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+              "durationOptions"
+            ].splice(
+              draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+                "durationOptions"
+              ].indexOf(propertyName),
+              1
+            );
+          } else {
+            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+              "durationOptions"
+            ].push(value);
+          }
+        }
+
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
 
   handleGroupElementChange(index, propertyName, value, elementIndex = -1) {
     this.setState(
@@ -282,6 +393,7 @@ class FormDetails extends Component {
           newFlag: "true",
           name: "",
           type: "",
+          keyValues: {},
           mandatory: false,
           voided: false,
           expanded: true,
@@ -370,7 +482,34 @@ class FormDetails extends Component {
     /*Have to deep clone state.form here as we want to modify this data before we send it to server.
      * Modifying this data will give an error as Immer freezes the state object for direct modifications.
      */
+
+    // this.setState({
+    //   form: keyValueForm
+    // });
     let dataSend = cloneDeep(this.state.form);
+    let keyValueForm = dataSend;
+    _.forEach(keyValueForm.formElementGroups, (group, index) => {
+      _.forEach(group.formElements, (element, index1) => {
+        if (element.concept.dataType === "Coded") {
+          const newArr = element.concept.answers.map(function(answer) {
+            if (answer.voided) {
+              return answer.name;
+            }
+          });
+          element.keyValues["ExcludedAnswers"] = newArr.filter(e => e);
+        }
+
+        if (Object.keys(element.keyValues).length !== 0) {
+          const tempKeyValue = Object.keys(element.keyValues).map(keyValue => {
+            return { key: keyValue, value: element.keyValues[keyValue] };
+          });
+
+          element.keyValues = tempKeyValue;
+        } else {
+          element.keyValues = [];
+        }
+      });
+    });
     this.reOrderSequence(dataSend);
     _.forEach(dataSend.formElementGroups, (group, index) => {
       this.reOrderSequence(dataSend, index);
