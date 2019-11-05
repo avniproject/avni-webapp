@@ -424,7 +424,10 @@ class CreateEditConcept extends Component {
     }
 
     return (
-      <ScreenWithAppBar appbarTitle={appBarTitle} enableLeftMenuButton={true}>
+      <ScreenWithAppBar
+        appbarTitle={appBarTitle}
+        enableLeftMenuButton={this.props.enableLeftMenuButton}
+      >
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
             <Grid item sm={12}>
@@ -499,5 +502,5 @@ class CreateEditConcept extends Component {
 }
 
 CreateEditConcept.propTypes = { isCreatePage: PropTypes.bool };
-CreateEditConcept.defaultProps = { isCreatePage: false };
+CreateEditConcept.defaultProps = { isCreatePage: false, enableLeftMenuButton: true };
 export default CreateEditConcept;

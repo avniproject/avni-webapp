@@ -148,7 +148,9 @@ function FormElementGroup(props) {
           btnGroupAdd: props.btnGroupAdd,
           handleGroupElementChange: props.handleGroupElementChange,
           deleteGroup: props.deleteGroup,
-          updateConceptElementData: props.updateConceptElementData
+          updateConceptElementData: props.updateConceptElementData,
+          handleGroupElementKeyValueChange: props.handleGroupElementKeyValueChange,
+          handleExcludedAnswers: props.handleExcludedAnswers
         };
         formElements.push(
           <Draggable

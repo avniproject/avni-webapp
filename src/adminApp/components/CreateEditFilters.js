@@ -123,7 +123,7 @@ export const CreateEditFilters = props => {
     <div>
       <Title title="Filter Config" />
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Box mr={130}>
+        <Box mr={80}>
           {!_.isEmpty(programs) && !_.isEmpty(encounterTypes) && (
             <Grid container justify="flex-start">
               <Grid item sm={12}>
@@ -146,6 +146,7 @@ export const CreateEditFilters = props => {
                     finalReturn={true}
                     index={0}
                     label="Concept"
+                    dataType={"Coded"}
                   />
                   {!_.isEmpty(conceptNameState.error) && (
                     <FormHelperText error>{conceptNameState.error}</FormHelperText>
