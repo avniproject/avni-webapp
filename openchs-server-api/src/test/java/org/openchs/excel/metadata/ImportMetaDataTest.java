@@ -11,7 +11,7 @@ import org.openchs.dao.individualRelationship.IndividualRelationshipTypeReposito
 import org.openchs.domain.*;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.importer.*;
-import org.openchs.service.DataImportService;
+import org.openchs.service.OldDataImportService;
 import org.openchs.web.ChecklistController;
 import org.openchs.web.ChecklistItemController;
 import org.openchs.web.IndividualRelationshipController;
@@ -120,9 +120,9 @@ public class ImportMetaDataTest {
         ProgramEncounterImporter programEncounterImporter = new ProgramEncounterImporter(conceptRepository, formElementRepository, null, null, userRepository);
         ChecklistImporter checklistImporter = new ChecklistImporter(conceptRepository, formElementRepository, checklistDetailRepository, checklistItemDetailRepository, checklistRepository, checklistController, checklistItemController, null, userRepository);
         IndividualRelationshipImporter individualRelationshipImporter = new IndividualRelationshipImporter(conceptRepository, formElementRepository, individualRelationshipTypeRepository, individualRelationshipController, userRepository);
-        DataImportService dataImportService = new DataImportService(individualImporter, encounterImporter, programEnrolmentImporter, programEncounterImporter, checklistImporter, individualRelationshipImporter);
+        OldDataImportService oldDataImportService = new OldDataImportService(individualImporter, encounterImporter, programEnrolmentImporter, programEncounterImporter, checklistImporter, individualRelationshipImporter);
         String fileName = "Test Import";
-        Map<ImportSheetMetaData, List<CHSRequest>> requestMap = dataImportService.importExcel(metaDataInputStream, new ClassPathResource(fileName + ".xlsx").getInputStream(), fileName, false, null, null);
+        Map<ImportSheetMetaData, List<CHSRequest>> requestMap = oldDataImportService.importExcel(metaDataInputStream, new ClassPathResource(fileName + ".xlsx").getInputStream(), fileName, false, null, null);
 
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", Individual.class)).size(), 5);
         assertEquals(requestMap.get(new ImportSheetMetaData("Test Import", "Amalzar_Madhyamik_24-7", ProgramEnrolment.class)).size(), 5);
