@@ -16,6 +16,7 @@ import { isEqual } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
+import Chip from "@material-ui/core/Chip";
 
 const FormControl = withStyles({
   root: {
@@ -462,16 +463,13 @@ function FormElementDetails(props) {
             {props.formElementData.concept.answers.map(function(d) {
               if (!d.voided) {
                 return (
-                  <div
+                  <Chip
                     key={d.name}
-                    className={classes.answers}
-                    onClick={event =>
+                    label={d.name}
+                    onDelete={event =>
                       props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
                     }
-                  >
-                    {" "}
-                    {d.name}{" "}
-                  </div>
+                  />
                 );
               }
               return "";
@@ -482,16 +480,13 @@ function FormElementDetails(props) {
             {props.formElementData.concept.answers.map(function(d) {
               if (d.voided) {
                 return (
-                  <div
+                  <Chip
                     key={d.name}
-                    className={classes.answers}
-                    onClick={event =>
+                    label={d.name}
+                    onDelete={event =>
                       props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
                     }
-                  >
-                    {" "}
-                    {d.name}{" "}
-                  </div>
+                  />
                 );
               }
               return "";
