@@ -13,6 +13,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
@@ -73,4 +74,6 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
                                                                                   @Param("title") String title);
     @Query("select a.title from AddressLevel a where a.isVoided = false")
     List<String> getAllNames();
+
+    Optional<AddressLevel> findByTitleLineageIgnoreCase(String locationTitleLineage);
 }

@@ -27,9 +27,10 @@ public class CsvFileItemWriter implements ItemWriter<Row> {
     private String type;
 
     @Autowired
-    public CsvFileItemWriter(AuthService authService, LocationWriter locationWriter) {
+    public CsvFileItemWriter(AuthService authService, LocationWriter locationWriter, UserAndCatchmentWriter userAndCatchmentWriter) {
         this.authService = authService;
         writers.put("locations", locationWriter);
+        writers.put("usersAndCatchments", userAndCatchmentWriter);
     }
 
     @Override

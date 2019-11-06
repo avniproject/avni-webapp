@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
@@ -18,10 +20,9 @@ import static java.lang.String.format;
 @StepScope
 public class ErrorFileWriterListener {
 
+    private final BulkUploadS3Service bulkUploadS3Service;
     @Value("#{jobParameters['uuid']}")
     private String uuid;
-
-    private final BulkUploadS3Service bulkUploadS3Service;
 
     public ErrorFileWriterListener(BulkUploadS3Service bulkUploadS3Service) {
         this.bulkUploadS3Service = bulkUploadS3Service;
@@ -39,11 +40,16 @@ public class ErrorFileWriterListener {
 
     public void appendToErrorFile(Row item, Throwable t) {
         try {
+            String stackTrace = Stream.of(t.getStackTrace())
+                    .map(StackTraceElement::toString)
+                    .collect(Collectors.joining("\n"));
             FileWriter fileWriter = new FileWriter(bulkUploadS3Service.getLocalErrorFile(uuid), true);
             fileWriter.append(item.toString());
-            fileWriter.append(',');
+            fileWriter.append(",\"");
             fileWriter.append(t.getMessage());
-            fileWriter.append('\n');
+            fileWriter.append("\n");
+            fileWriter.append(t.getMessage() == null ? stackTrace : "");
+            fileWriter.append("\"\n");
             fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
