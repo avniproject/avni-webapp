@@ -183,7 +183,6 @@ class FormSettings extends Component {
           formMappings: formMappings,
           data: data
         });
-        console.log(this.state.formMappings);
       })
       .catch(error => {
         console.log(error);
@@ -310,6 +309,7 @@ class FormSettings extends Component {
   }
   removeMapping = index => {
     const mapping = this.state.formMappings;
+
     mapping[index]["voided"] = true;
     this.setState({
       formMappings: mapping
@@ -342,7 +342,6 @@ class FormSettings extends Component {
       this.state.formType === "ProgramEnrolment" ||
       this.state.formType === "ProgramEncounterCancellation";
     const submitButtonName = "Save";
-    console.log("Form Mappings::", this.state.errors);
     return (
       <div>
         <form>
@@ -385,7 +384,7 @@ class FormSettings extends Component {
             return (
               !mapping.voided && (
                 <div key={index}>
-                  <Grid container item sm={12}>
+                  <Grid container item sm={12} spacing={2}>
                     <Grid item sm={3}>
                       {this.subjectTypeElement(index)}
                     </Grid>
