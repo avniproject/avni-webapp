@@ -90,7 +90,7 @@ class FormSettings extends Component {
       if (existingMapping.includes(uniqueString)) {
         errorsList["existingMapping"][index] = "Same mapping already exist";
       }
-      existingMapping.push(uniqueString);
+      !formMap.voided && existingMapping.push(uniqueString);
     });
 
     if (Object.keys(errorsList["unselectedData"]).length === 0) {
