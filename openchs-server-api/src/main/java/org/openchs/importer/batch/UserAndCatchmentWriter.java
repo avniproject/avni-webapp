@@ -61,6 +61,7 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
 
         Catchment catchment = catchmentService.createOrUpdate(catchmentName, location);
 
+        User.validateUsername(username);
         User user = userRepository.findByUsername(username);
         if (user != null) return;
         user = new User();

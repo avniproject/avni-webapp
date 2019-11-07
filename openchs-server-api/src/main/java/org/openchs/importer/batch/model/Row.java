@@ -21,6 +21,9 @@ public class Row extends HashMap<String, String> {
 
     @Override
     public String toString() {
-        return Arrays.stream(headers).map(this::get).map(v-> "\"" + v + "\"").reduce((c1, c2) -> format("%s,%s", c1, c2)).get();
+        return Arrays.stream(headers)
+                .map(header -> format("\"%s\"", get(header) != null ? get(header) : ""))
+                .reduce((c1, c2) -> format("%s,%s", c1, c2))
+                .get();
     }
 }

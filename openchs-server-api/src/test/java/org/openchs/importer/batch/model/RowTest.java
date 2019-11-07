@@ -9,7 +9,7 @@ public class RowTest {
     @Test
     public void toStringShouldSerialiseProperly() throws Exception {
         String[] headers = {"A", "B"};
-        assertEquals("\"AA\",\"null\"", new Row(headers, new String[]{"AA"}).toString());
+        assertEquals("\"AA\",\"\"", new Row(headers, new String[]{"AA"}).toString());
 
         assertEquals("\"AA\",\"BB\"", new Row(headers, new String[]{"AA", "BB"}).toString());
 

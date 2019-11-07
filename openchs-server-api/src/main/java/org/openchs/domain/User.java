@@ -322,4 +322,15 @@ public class User {
             throw new ValidationException(String.format("Invalid phone number %s", phoneNumber));
         }
     }
+
+    /**
+     * username must be at least 7 char and
+     * must be in the format of xxx@yyy
+     * where yyy is {@link Organisation#getUsernameSuffix()} and xxx represents user
+     */
+    public static void validateUsername(String username) {
+        if (username == null || !username.contains("@") || username.length() < 7) {
+            throw new ValidationException(String.format("Invalid username '%s'. It must be at least 7 characters.", username));
+        }
+    }
 }

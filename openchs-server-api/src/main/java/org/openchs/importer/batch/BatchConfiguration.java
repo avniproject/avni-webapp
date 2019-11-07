@@ -57,7 +57,7 @@ public class BatchConfiguration {
         lineMapper.setFieldSetMapper(fieldSet -> new Row(headers, fieldSet.getValues()));
 
         return new FlatFileItemReaderBuilder<Row>()
-                .name("locationReader")
+                .name("csvFileItemReader")
                 .resource(new InputStreamResource(s3Service.getObjectContent(s3Key)))
                 .linesToSkip(1)
                 .lineMapper(lineMapper)
