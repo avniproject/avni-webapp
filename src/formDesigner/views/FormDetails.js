@@ -10,7 +10,6 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import { default as UUID } from "uuid";
-import NewFormModal from "../components/NewFormModal";
 import FormSettings from "../components/FormSettings";
 import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
@@ -643,17 +642,15 @@ class FormDetails extends Component {
           </TabContainer>
           <Grid container item sm={12} hidden={this.state.activeTabIndex !== 1}>
             <Grid item sm={8}>
-              {/*<FormSettings
-                formData = {{"name":this.state.form.name, "uuid":this.state.form.uuid, "formType":this.state.form.formType}}
+              <FormSettings
+                formData={{
+                  name: this.state.form.name,
+                  uuid: this.state.form.uuid,
+                  formType: this.state.form.formType
+                }}
                 name={this.state.name}
                 onUpdateFormName={this.onUpdateFormName}
                 uuid={this.props.match.params.formUUID}
-              />*/}
-              <NewFormModal
-                name={this.state.name}
-                onUpdateFormName={this.onUpdateFormName}
-                uuid={this.props.match.params.formUUID}
-                isCreateFrom={false}
               />
             </Grid>
           </Grid>
