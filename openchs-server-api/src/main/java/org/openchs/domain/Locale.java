@@ -1,17 +1,34 @@
 package org.openchs.domain;
 
 public enum Locale {
-    en,
-    hi_IN,
-    mr_IN,
-    gu_IN,
-    be_IN,
-    te_IN,
-    ta_IN,
-    ka_IN,
-    od_IN,
-    ma_IN,
-    pu_IN,
-    sa_IN,
-    ur_IN
+    en("English"),
+    hi_IN("Hindi"),
+    mr_IN("Marathi"),
+    gu_IN("Gujarati"),
+    be_IN("Bengali"),
+    te_IN("Telugu"),
+    ta_IN("Tamil"),
+    ka_IN("Kannada"),
+    od_IN("Odia"),
+    ma_IN("Malayalam"),
+    pu_IN("Punjabi"),
+    sa_IN("Sanskrit"),
+    ur_IN("Urdu");
+
+    private final String name;
+
+    Locale(String name) {
+        this.name = name;
+    }
+
+    public static Locale valueByName(String name) {
+        for (Locale value : Locale.values()) {
+            if (value.name.equals(name)) return value;
+        }
+        return null;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

@@ -26,10 +26,9 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 @EnableBatchProcessing
@@ -51,16 +50,14 @@ public class BatchConfiguration {
     @Bean
     @StepScope
     public FlatFileItemReader<Row> csvFileItemReader(@Value("#{jobParameters['s3Key']}") String s3Key) throws IOException {
-        BufferedReader csvReader = new BufferedReader(new InputStreamReader(s3Service.getObjectContent(s3Key)));
-        final String[] headers = csvReader.readLine().split(",");
-        csvReader.close();
+        String[] headers = this.getHeaders(new InputStreamReader(s3Service.getObjectContent(s3Key)));
 
         DefaultLineMapper<Row> lineMapper = new DefaultLineMapper<>();
         lineMapper.setLineTokenizer(new DelimitedLineTokenizer());
         lineMapper.setFieldSetMapper(fieldSet -> new Row(headers, fieldSet.getValues()));
 
         return new FlatFileItemReaderBuilder<Row>()
-                .name("locationReader")
+                .name("csvFileItemReader")
                 .resource(new InputStreamResource(s3Service.getObjectContent(s3Key)))
                 .linesToSkip(1)
                 .lineMapper(lineMapper)
@@ -108,4 +105,16 @@ public class BatchConfiguration {
         }};
     }
 
+    private String[] getHeaders(Reader reader) throws IOException {
+        BufferedReader csvReader = new BufferedReader(reader);
+        String headerLine = csvReader.readLine();
+        csvReader.close();
+
+        final List<String> headers = new ArrayList<>();
+        new DelimitedLineTokenizer() {{
+            headers.addAll(doTokenize(headerLine));
+        }};
+
+        return headers.toArray(new String[]{});
+    }
 }

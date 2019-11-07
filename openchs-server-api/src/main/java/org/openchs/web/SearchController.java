@@ -1,6 +1,7 @@
 package org.openchs.web;
 
-import org.openchs.service.HibernateSearchService;
+import org.openchs.dao.ConceptRepository;
+import org.openchs.domain.Concept;
 import org.openchs.web.request.ConceptContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,16 +14,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class SearchController {
-    private final HibernateSearchService searchService;
+    private final ConceptRepository conceptRepository;
     private final Logger logger;
 
     @Autowired
     @Lazy
-    public SearchController(HibernateSearchService searchService) {
-        this.searchService = searchService;
+    public SearchController(ConceptRepository conceptRepository) {
+        this.conceptRepository = conceptRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -30,6 +32,17 @@ public class SearchController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'user', 'organisation_admin')")
     public List<ConceptContract> searchConcept(@RequestParam String name,
                                                @RequestParam(required = false) String dataType) {
-        return searchService.searchConcepts(name, dataType);
+        if (dataType == null) {
+            return getConceptContract(conceptRepository.findByNameIgnoreCaseContains(name));
+        } else {
+            return getConceptContract(conceptRepository.findByDataTypeAndNameIgnoreCaseContains(dataType, name));
+        }
+    }
+
+    private List<ConceptContract> getConceptContract(List<Concept> concepts) {
+        return concepts
+                .stream()
+                .map(Concept::toConceptContract)
+                .collect(Collectors.toList());
     }
 }

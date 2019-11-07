@@ -10,7 +10,6 @@ import org.openchs.excel.metadata.ImportSheetMetaDataList;
 import org.openchs.excel.reader.ImportMetaDataExcelReader;
 import org.openchs.importer.*;
 import org.openchs.web.request.CHSRequest;
-import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +22,17 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class DataImportService {
-    private static Logger logger = LoggerFactory.getLogger(DataImportService.class);
+public class OldDataImportService {
+    private static Logger logger = LoggerFactory.getLogger(OldDataImportService.class);
     private final Map<Class, Importer> importerMap = new HashMap<>();
 
     @Autowired
-    public DataImportService(IndividualImporter individualImporter,
-                             EncounterImporter encounterImporter,
-                             ProgramEnrolmentImporter programEnrolmentImporter,
-                             ProgramEncounterImporter programEncounterImporter,
-                             ChecklistImporter checklistImporter,
-                             IndividualRelationshipImporter individualRelationshipImporter) {
+    public OldDataImportService(IndividualImporter individualImporter,
+                                EncounterImporter encounterImporter,
+                                ProgramEnrolmentImporter programEnrolmentImporter,
+                                ProgramEncounterImporter programEncounterImporter,
+                                ChecklistImporter checklistImporter,
+                                IndividualRelationshipImporter individualRelationshipImporter) {
         this.importerMap.put(Individual.class, individualImporter);
         this.importerMap.put(Encounter.class, encounterImporter);
         this.importerMap.put(ProgramEnrolment.class, programEnrolmentImporter);

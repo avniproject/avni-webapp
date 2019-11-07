@@ -1,9 +1,11 @@
 package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.web.validation.ValidationException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +15,8 @@ import java.util.*;
 @Table(name = "users")
 @BatchSize(size = 100)
 public class User {
+    public static String MOBILE_NUMBER_PATTERN = "^\\+91[0-9]{10}";
+
     @Column
     @NotNull
     private String username;
@@ -297,5 +301,36 @@ public class User {
         }
         this.setLastModifiedBy(currentUser);
         this.setLastModifiedDateTime(new DateTime());
+    }
+
+    public void assignUUID() {
+        this.uuid = UUID.randomUUID().toString();
+    }
+
+    public void assignUUIDIfRequired() {
+        if (this.uuid == null) this.assignUUID();
+    }
+
+    public static void validateEmail(String email) {
+        if (!EmailValidator.getInstance().isValid(email)) {
+            throw new ValidationException(String.format("Invalid email address %s", email));
+        }
+    }
+
+    public static void validatePhoneNumber(String phoneNumber) {
+        if (!phoneNumber.matches(MOBILE_NUMBER_PATTERN)) {
+            throw new ValidationException(String.format("Invalid phone number %s", phoneNumber));
+        }
+    }
+
+    /**
+     * username must be at least 7 char and
+     * must be in the format of xxx@yyy
+     * where yyy is {@link Organisation#getUsernameSuffix()} and xxx represents user
+     */
+    public static void validateUsername(String username) {
+        if (username == null || !username.contains("@") || username.length() < 7) {
+            throw new ValidationException(String.format("Invalid username '%s'. It must be at least 7 characters.", username));
+        }
     }
 }

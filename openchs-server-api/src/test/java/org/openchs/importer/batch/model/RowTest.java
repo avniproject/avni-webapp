@@ -8,12 +8,11 @@ public class RowTest {
 
     @Test
     public void toStringShouldSerialiseProperly() throws Exception {
-        assertEquals("1,2,3,4", new Row(new String[]{"A", "B", "C", "D"}, new String[]{"1", "2", "3", "4"}).toString());
+        String[] headers = {"A", "B"};
+        assertEquals("\"AA\",\"\"", new Row(headers, new String[]{"AA"}).toString());
 
-        assertEquals("\"1\",2,3", new Row(new String[]{"A", "B", "D"}, new String[]{"\"1\"", "2", "3"}).toString());
+        assertEquals("\"AA\",\"BB\"", new Row(headers, new String[]{"AA", "BB"}).toString());
 
-        assertEquals("\"1,2,3\",2,3", new Row(new String[]{"A", "B", "D"}, new String[]{"\"1,2,3\"", "2", "3"}).toString());
-
-        assertEquals("0,\"1,2,3\",2", new Row(new String[]{"A", "B", "D"}, new String[]{"0", "\"1,2,3\"", "2"}).toString());
+        assertEquals("\"AB, CD\",\"BB, EE\"", new Row(headers, new String[]{"AB, CD", "BB, EE"}).toString());
     }
 }

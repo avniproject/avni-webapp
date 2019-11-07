@@ -1,21 +1,22 @@
 package org.openchs.web;
 
+import org.openchs.dao.JobStatus;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.batch.JobService;
 import org.openchs.service.BulkUploadS3Service;
-import org.openchs.service.DataImportService;
-import org.openchs.service.S3Service;
+import org.openchs.service.OldDataImportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.PagedResources.PageMetadata;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,19 +26,20 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
 @RestController
-public class ProgramDataImportController {
-    private final DataImportService dataImportService;
+public class ImportController {
+    private final OldDataImportService oldDataImportService;
     private final Logger logger;
     private final JobService jobService;
     private final BulkUploadS3Service bulkUploadS3Service;
 
     @Autowired
-    public ProgramDataImportController(DataImportService dataImportService, JobService jobService, BulkUploadS3Service bulkUploadS3Service) {
-        this.dataImportService = dataImportService;
+    public ImportController(OldDataImportService oldDataImportService, JobService jobService, BulkUploadS3Service bulkUploadS3Service) {
+        this.oldDataImportService = oldDataImportService;
         this.jobService = jobService;
         this.bulkUploadS3Service = bulkUploadS3Service;
         logger = LoggerFactory.getLogger(getClass());
@@ -49,11 +51,11 @@ public class ProgramDataImportController {
                                         @RequestParam MultipartFile dataFile,
                                         @RequestParam(required = false) Integer maxNumberOfRecords,
                                         @RequestParam List<Integer> activeSheets) throws Exception {
-        dataImportService.importExcel(metaDataFile.getInputStream(), dataFile.getInputStream(), dataFile.getOriginalFilename(), true, maxNumberOfRecords, activeSheets);
+        oldDataImportService.importExcel(metaDataFile.getInputStream(), dataFile.getInputStream(), dataFile.getOriginalFilename(), true, maxNumberOfRecords, activeSheets);
         return new ResponseEntity<>(true, HttpStatus.CREATED);
     }
 
-    @PostMapping("/import")
+    @PostMapping("/import/new")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> doit(@RequestParam MultipartFile file,
                                   @RequestParam String type) {
@@ -72,5 +74,19 @@ public class ProgramDataImportController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to process file. %s", e.getMessage()));
         }
         return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/import/status")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public PagedResources<?> getUploadStats(Pageable pageable) {
+        List<JobStatus> jobStatuses = jobService.getAll();
+        PageMetadata pageMetadata = new PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), jobStatuses.size());
+        List<Resource<JobStatus>> pagedContent = jobStatuses
+                .stream()
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .map(it -> new Resource<>(it))
+                .collect(Collectors.toList());
+        return new PagedResources<>(pagedContent, pageMetadata);
     }
 }
