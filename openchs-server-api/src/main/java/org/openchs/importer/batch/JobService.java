@@ -88,6 +88,7 @@ public class JobService {
                     jobStatus.setType(parameters.getString("type"));
                     jobStatus.setStatus(execution.getStatus());
                     jobStatus.setExitStatus(execution.getExitStatus());
+                    jobStatus.setCreateTime(execution.getCreateTime());
                     jobStatus.setStartTime(execution.getStartTime());
                     jobStatus.setEndTime(execution.getEndTime());
                     execution.getStepExecutions()
@@ -101,7 +102,7 @@ public class JobService {
                             });
                     return jobStatus;
                 })
-                .sorted(Comparator.comparing(JobStatus::getStartTime).reversed())
+                .sorted(Comparator.comparing(JobStatus::getCreateTime).reversed())
                 .collect(Collectors.toList());
     }
 }

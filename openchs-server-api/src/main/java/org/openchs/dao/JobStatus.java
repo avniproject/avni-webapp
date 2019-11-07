@@ -18,6 +18,7 @@ public class JobStatus {
     private int total;
     private int completed;
     private int skipped;
+    private Date createTime;
 
     public String getUuid() {
         return uuid;
@@ -113,5 +114,13 @@ public class JobStatus {
 
     public void setSkipped(int skipped) {
         this.skipped = skipped;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
     }
 }
