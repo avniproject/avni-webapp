@@ -1,14 +1,12 @@
 package org.openchs.web.request.webapp;
-
+import org.openchs.web.request.webapp.FormMappingRequest;
 import java.util.List;
 
 public class CreateUpdateFormRequest {
 
     private String formType;
     private String name;
-    private String subjectType;
-    private String programName;
-    private String encounterType;
+    private List<FormMappingRequest> formMappings;
 
     public String getFormType() {
         return formType;
@@ -26,27 +24,16 @@ public class CreateUpdateFormRequest {
         this.name = name;
     }
 
-    public String getSubjectType() {
-        return subjectType;
+    public List<FormMappingRequest> getFormMappings()
+    {
+      return formMappings;
     }
 
-    public void setSubjectType(String subjectType) {
-        this.subjectType = subjectType;
+    public FormMappingRequest getFormMappingByIndex(int index){
+        return formMappings.get(index);
     }
 
-    public String getProgramName() {
-        return programName;
-    }
-
-    public void setProgramName(String programName) {
-        this.programName = programName;
-    }
-
-    public String getEncounterType() {
-        return encounterType;
-    }
-
-    public void setEncounterType(String encounterType) {
-        this.encounterType = encounterType;
+    public void setFormMappings(List<FormMappingRequest> formMapping){
+      this.formMappings = formMapping;
     }
 }
