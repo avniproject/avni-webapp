@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import org.openchs.domain.JsonObject;
+import org.openchs.domain.OrganisationConfig;
 
 public class OrganisationConfigRequest {
 
@@ -21,5 +22,12 @@ public class OrganisationConfigRequest {
 
     public void setSettings(JsonObject settings) {
         this.settings = settings;
+    }
+
+    public static OrganisationConfigRequest fromOrganisationConfig(OrganisationConfig organisationConfig) {
+        OrganisationConfigRequest configRequest = new OrganisationConfigRequest();
+        configRequest.setUuid(organisationConfig.getUuid());
+        configRequest.setSettings(organisationConfig.getSettings());
+        return configRequest;
     }
 }

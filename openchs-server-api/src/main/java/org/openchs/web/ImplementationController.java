@@ -48,6 +48,7 @@ public class ImplementationController implements RestControllerResourceProcessor
     private final ProgramRepository programRepository;
     private final OperationalProgramRepository operationalProgramRepository;
     private final FormMappingRepository formMappingRepository;
+    private final OrganisationConfigRepository organisationConfigRepository;
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -62,7 +63,8 @@ public class ImplementationController implements RestControllerResourceProcessor
                                     EncounterTypeRepository encounterTypeRepository,
                                     ProgramRepository programRepository,
                                     OperationalProgramRepository operationalProgramRepository,
-                                    FormMappingRepository formMappingRepository) {
+                                    FormMappingRepository formMappingRepository,
+                                    OrganisationConfigRepository organisationConfigRepository) {
         this.conceptRepository = conceptRepository;
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
@@ -75,6 +77,7 @@ public class ImplementationController implements RestControllerResourceProcessor
         this.programRepository = programRepository;
         this.operationalProgramRepository = operationalProgramRepository;
         this.formMappingRepository = formMappingRepository;
+        this.organisationConfigRepository = organisationConfigRepository;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
@@ -100,6 +103,7 @@ public class ImplementationController implements RestControllerResourceProcessor
             addConceptsJson(orgId, zos);
             addFormsJson(orgId, zos);
             addFormMappingsJson(orgId, zos);
+            addOragnisationConfigJson(orgId, zos);
         }
 
         byte[] baosByteArray = baos.toByteArray();
@@ -110,6 +114,13 @@ public class ImplementationController implements RestControllerResourceProcessor
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new ByteArrayResource(baosByteArray));
 
+    }
+
+    private void addOragnisationConfigJson(Long orgId, ZipOutputStream zos) throws IOException {
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(orgId);
+        if(organisationConfig != null) {
+            addFileToZip(zos, "organisationConfig.json", OrganisationConfigRequest.fromOrganisationConfig(organisationConfig));
+        }
     }
 
     private void addFormMappingsJson(Long orgId, ZipOutputStream zos) throws IOException {
