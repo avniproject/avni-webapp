@@ -374,7 +374,7 @@ class FormSettings extends Component {
 
           {this.state.formMappings.map((mapping, index) => {
             return (
-              !mapping.isVoided && (
+              !mapping.voided && (
                 <div key={index}>
                   <Grid container item sm={12} spacing={2}>
                     <Grid item sm={3}>

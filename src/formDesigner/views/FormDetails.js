@@ -87,6 +87,22 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
+            if (fe["rule"]) {
+              let ruleExtraction = fe["rule"];
+              ruleExtraction = ruleExtraction.replace(
+                `'use strict';
+function rule(params, imports) {`,
+                ""
+              );
+
+              ruleExtraction = ruleExtraction.replace(
+                `};
+rule;`,
+                ""
+              );
+              fe["rule"] = ruleExtraction;
+            }
+
             let keyValueObject = {};
 
             fe.keyValues.map(keyValue => {
@@ -186,9 +202,19 @@ class FormDetails extends Component {
         draft.form.formElementGroups[index].formElements[elementIndex]["concept"][
           propertyName
         ] = value;
+        draft.detectBrowserCloseEvent = true;
       })
     );
   }
+
+  updateSkipLogicRule = (index, elementIndex, value) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex]["rule"] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
 
   onUpdateDragDropOrder = (
     groupSourceIndex,
@@ -279,7 +305,8 @@ class FormDetails extends Component {
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
-          handleExcludedAnswers: this.handleExcludedAnswers
+          handleExcludedAnswers: this.handleExcludedAnswers,
+          updateSkipLogicRule: this.updateSkipLogicRule
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -400,6 +427,7 @@ class FormDetails extends Component {
           mandatory: false,
           voided: false,
           expanded: true,
+          rule: "",
           concept: { name: "", dataType: "" },
           errorMessage: { name: false, concept: false, type: false }
         };
@@ -493,23 +521,32 @@ class FormDetails extends Component {
     let keyValueForm = dataSend;
     _.forEach(keyValueForm.formElementGroups, (group, index) => {
       _.forEach(group.formElements, (element, index1) => {
-        if (element.concept.dataType === "Coded") {
-          const newArr = element.concept.answers.map(function(answer) {
-            if (answer.voided) {
-              return answer.name;
-            }
-          });
-          element.keyValues["ExcludedAnswers"] = newArr.filter(e => e);
-        }
+        if (!element.voided) {
+          const skipRule = `'use strict';
+function rule(params, imports) {
+    ${element.rule}
+};
+rule;`;
+          element["rule"] = skipRule;
+          if (element.concept.dataType === "Coded") {
+            const newArr = element.concept.answers.map(function(answer) {
+              if (answer.voided) {
+                return answer.name;
+              }
+            });
+            element.keyValues["ExcludedAnswers"] = newArr.filter(e => e);
+          }
 
-        if (Object.keys(element.keyValues).length !== 0) {
-          const tempKeyValue = Object.keys(element.keyValues).map(keyValue => {
-            return { key: keyValue, value: element.keyValues[keyValue] };
-          });
+          if (Object.keys(element.keyValues).length !== 0) {
+            const tempKeyValue = Object.keys(element.keyValues).map(keyValue => {
+              return { key: keyValue, value: element.keyValues[keyValue] };
+            });
 
-          element.keyValues = tempKeyValue;
-        } else {
-          element.keyValues = [];
+            element.keyValues = tempKeyValue;
+          } else {
+            element.keyValues = [];
+          }
+          console.log(element);
         }
       });
     });

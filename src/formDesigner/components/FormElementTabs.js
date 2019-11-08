@@ -1,5 +1,4 @@
 import React from "react";
-
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -7,6 +6,10 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import FormElementDetails from "./FormElementDetails";
 import { isEqual } from "lodash";
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-javascript";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -56,8 +59,6 @@ function FormElementTabs(props) {
   function handleChange(event, newValue) {
     setValue(newValue);
   }
-
-  console.log(`FormElementTabs: render`);
   return (
     <div className={classes.root}>
       <Tabs
@@ -69,13 +70,36 @@ function FormElementTabs(props) {
         className={classes.tabs}
       >
         <Tab label="Details" {...a11yProps(props.indexTab, 0)} />
-        <Tab label="Rules" {...a11yProps(props.indexTab, 1)} />
+        <Tab label="Rule" {...a11yProps(props.indexTab, 1)} />
       </Tabs>
       <TabPanel className={classes.tabsPanel} value={value} index={0} propsIndex={props.indexTab}>
         <FormElementDetails {...props} />
       </TabPanel>
       <TabPanel className={classes.tabsPanel} value={value} index={1} propsIndex={props.indexTab}>
-        Rules
+        <SyntaxHighlighter language="javascript" style={docco}>
+          {`'use strict'; 
+function rule(params, imports) {`}
+        </SyntaxHighlighter>
+        <AceEditor
+          placeholder="Enter code without function tag"
+          mode="javascript"
+          onChange={value => props.updateSkipLogicRule(props.groupIndex, props.index, value)}
+          fontSize={16}
+          height="300px"
+          width="600px"
+          showPrintMargin={true}
+          showGutter={true}
+          highlightActiveLine={true}
+          value={props.formElementData.rule}
+          setOptions={{
+            showLineNumbers: true,
+            tabSize: 1
+          }}
+        />
+        <SyntaxHighlighter language="javascript" style={docco}>
+          {`}; 
+rule;`}
+        </SyntaxHighlighter>
       </TabPanel>
     </div>
   );
