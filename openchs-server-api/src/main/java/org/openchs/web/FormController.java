@@ -132,6 +132,22 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         return ResponseEntity.ok(form);
     }
 
+    @DeleteMapping(value = "/web/forms")
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    public ResponseEntity deleteWeb(@RequestBody boolean isVoided, @RequestBody String formUUID){
+        try {
+            Form existingForm = formRepository.findByUuid(formUUID);
+            existingForm.setVoided(isVoided);
+            formRepository.save(existingForm);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok(null);
+    }
+
     private void validateCreate(CreateUpdateFormRequest request) {
         if (formRepository.findByNameIgnoreCase(request.getName()) != null) {
             throw new ApiException("Form with name %s already exists", request.getName());
