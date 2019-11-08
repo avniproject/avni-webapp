@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl, Input, InputLabel, Select as SingleSelect } from "@material-ui/core";
 import Select from "react-select";
@@ -20,9 +20,15 @@ export const CreateEditFilters = props => {
 
   const scopes = ["programEncounter", "programEnrolment", "registration", "encounter"];
 
-  const emptyFilter = { conceptName: "", searchType: "", titleKey: "", searchParameters: "" };
+  const emptyFilter = {
+    conceptName: "",
+    searchType: "",
+    titleKey: "",
+    searchParameters: "",
+    subjectTypeUUID: ""
+  };
   const { programs, encounterTypes, concepts } = props.location.state;
-  const { conceptName, searchType, titleKey, searchParameters } =
+  const { conceptName, searchType, titleKey, searchParameters, subjectTypeUUID } =
     props.location.state.selectedFilter || emptyFilter;
 
   const programOptions = programs.map(p => ({ label: p.name, value: p.program.uuid }));
@@ -46,6 +52,17 @@ export const CreateEditFilters = props => {
   const [programNameState, setProgramName] = useState(progNames);
   const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
+  const [subjectTypes, setSubjectTypes] = useState([]);
+  const [selectedSubjectType, setSelectedSubjectType] = useState({});
+
+  useEffect(() => {
+    axios.get("/subjectType").then(res => {
+      const response = res.data._embedded.subjectType;
+      setSubjectTypes(response);
+      const selected = response.filter(st => st.uuid === subjectTypeUUID);
+      _.isEmpty(selected) ? setSelectedSubjectType({}) : setSelectedSubjectType(selected[0]);
+    });
+  }, []);
 
   const checkForConceptError = conceptName => {
     const error = "Only coded concepts are allowed";
@@ -59,6 +76,7 @@ export const CreateEditFilters = props => {
       _.isEmpty(filterName) ||
       _.isEmpty(scope) ||
       _.isEmpty(conceptNameState.conceptName) ||
+      _.isEmpty(selectedSubjectType) ||
       !_.isEmpty(conceptNameState.error);
     switch (scope) {
       case "registration":
@@ -80,6 +98,7 @@ export const CreateEditFilters = props => {
     const newFilter = {
       titleKey: filterName,
       searchType: scope,
+      subjectTypeUUID: selectedSubjectType.uuid,
       conceptUUID: concepts.find(concept => concept.name === conceptNameState.conceptName).uuid,
       searchParameters: {
         programUUIDs: scope === "registration" ? [] : prog,
@@ -156,16 +175,40 @@ export const CreateEditFilters = props => {
               <Box m={0.5} />
               <Grid item sm={12}>
                 <FormControl fullWidth>
+                  <InputLabel htmlFor="subjectType">Subject Type</InputLabel>
+                  <SingleSelect
+                    id="subjectType"
+                    name="subjectType"
+                    value={selectedSubjectType.name || ""}
+                    onChange={event => {
+                      const subjectType = _.filter(
+                        subjectTypes,
+                        s => s.name === event.target.value
+                      );
+                      setSelectedSubjectType((subjectType && subjectType[0]) || []);
+                    }}
+                  >
+                    {subjectTypes.map(subjectType => (
+                      <MenuItem key={subjectType.uuid} value={subjectType.name}>
+                        {subjectType.name}
+                      </MenuItem>
+                    ))}
+                  </SingleSelect>
+                </FormControl>
+              </Grid>
+              <Box m={0.5} />
+              <Grid item sm={12}>
+                <FormControl fullWidth>
                   <InputLabel htmlFor="Scope">Search Scope</InputLabel>
                   <SingleSelect
                     id="Scope"
                     name="Scope"
                     value={scope}
-                    onChange={event => setScope(event.target.value)}
+                    onChange={event => setScope(_.camelCase(event.target.value))}
                   >
                     {scopes.map(scope => (
                       <MenuItem key={scope} value={scope}>
-                        {scope}
+                        {_.startCase(scope)}
                       </MenuItem>
                     ))}
                   </SingleSelect>

@@ -18,7 +18,7 @@ const useStyles = makeStyles({
   }
 });
 
-export const customConfig = ({ history }) => {
+export const customConfig = ({ history, organisation }) => {
   const emptyOrgSettings = {
     uuid: UUID.v4(),
     settings: { languages: [], myDashboardFilters: [], searchFilters: [] }
@@ -46,9 +46,11 @@ export const customConfig = ({ history }) => {
 
   useEffect(() => {
     axios.get("/organisationConfig").then(res => {
-      const orgSettings = isEmpty(res.data._embedded.organisationConfig)
-        ? emptyOrgSettings
-        : createOrgSettings(res.data._embedded.organisationConfig[0]);
+      const settings = _.filter(
+        res.data._embedded.organisationConfig,
+        config => config.organisationId === organisation.id
+      );
+      const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
     });
   }, []);

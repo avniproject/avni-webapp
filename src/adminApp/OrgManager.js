@@ -112,7 +112,7 @@ class OrgManager extends Component {
         <Resource
           name="organisationConfig"
           options={{ label: "Organisation Config" }}
-          list={customConfig}
+          list={WithProps({ organisation }, customConfig)}
         />
         <Resource name="home" options={{ label: "Home" }} list={redirectHome} />
       </Admin>
