@@ -64,11 +64,13 @@ class NewFormModal extends Component {
     if (validateFormStatus && this.props.isCreateFrom) {
       let dataSend = {
         name: this.state.name,
-        formType: this.state.formType,
-        subjectType: this.state.subjectType
+        formType: this.state.formType
       };
-      dataSend["programName"] = this.state.programName;
-      dataSend["encounterType"] = this.state.encounterType;
+      let mapping = {};
+      mapping["subjectType"] = this.state.subjectType;
+      mapping["programName"] = this.state.programName;
+      mapping["encounterType"] = this.state.encounterType;
+      dataSend["formMappings"] = [mapping];
       axios
         .post("/web/forms", dataSend)
         .then(response => {
@@ -190,7 +192,7 @@ class NewFormModal extends Component {
         >
           {this.state.data.programs != null &&
             this.state.data.programs.map(program => (
-              <MenuItem key={program.operationalProgramName} value={program.operationalProgramName}>
+              <MenuItem key={program.uuid} value={program.uuid}>
                 {program.operationalProgramName}
               </MenuItem>
             ))}
@@ -214,10 +216,7 @@ class NewFormModal extends Component {
         >
           {this.state.data.subjectTypes != null &&
             this.state.data.subjectTypes.map(subjectType => (
-              <MenuItem
-                key={subjectType.operationalSubjectTypeName}
-                value={subjectType.operationalSubjectTypeName}
-              >
+              <MenuItem key={subjectType.uuid} value={subjectType.uuid}>
                 {subjectType.operationalSubjectTypeName}
               </MenuItem>
             ))}
@@ -261,7 +260,7 @@ class NewFormModal extends Component {
         >
           {this.state.data.encounterTypes != null &&
             this.state.data.encounterTypes.map(encounterType => (
-              <MenuItem key={encounterType.name} value={encounterType.name}>
+              <MenuItem key={encounterType.uuid} value={encounterType.uuid}>
                 {encounterType.name}
               </MenuItem>
             ))}
