@@ -10,6 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { default as UUID } from "uuid";
+import { constFormType } from "../common/constants";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -268,7 +269,7 @@ class FormSettings extends Component {
     return formTypes.map(formType => {
       return (
         <MenuItem key={formType} value={formType}>
-          {formType}
+          {constFormType[formType]}
         </MenuItem>
       );
     });
