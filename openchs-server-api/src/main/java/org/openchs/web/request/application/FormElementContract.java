@@ -11,7 +11,7 @@ import org.openchs.web.request.FormatContract;
 import org.openchs.common.ValidationResult;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type"})
+@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type", "rule"})
 public class FormElementContract extends ReferenceDataContract {
     private boolean isMandatory;
     private KeyValues keyValues;
