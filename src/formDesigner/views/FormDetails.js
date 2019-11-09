@@ -87,21 +87,21 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
-            if (fe["rule"]) {
-              let ruleExtraction = fe["rule"];
-              ruleExtraction = ruleExtraction.replace(
-                `'use strict';
-function rule(params, imports) {`,
-                ""
-              );
+            //             if (fe["rule"]) {
+            //               let ruleExtraction = fe["rule"];
+            //               ruleExtraction = ruleExtraction.replace(
+            //                 `'use strict';
+            // function rule(params, imports) {`,
+            //                 ""
+            //               );
 
-              ruleExtraction = ruleExtraction.replace(
-                `};
-rule;`,
-                ""
-              );
-              fe["rule"] = ruleExtraction;
-            }
+            //               ruleExtraction = ruleExtraction.replace(
+            //                 `};
+            // rule;`,
+            //                 ""
+            //               );
+            //               fe["rule"] = ruleExtraction;
+            //             }
 
             let keyValueObject = {};
 
@@ -522,12 +522,6 @@ rule;`,
     _.forEach(keyValueForm.formElementGroups, (group, index) => {
       _.forEach(group.formElements, (element, index1) => {
         if (!element.voided) {
-          const skipRule = `'use strict';
-function rule(params, imports) {
-    ${element.rule}
-};
-rule;`;
-          element["rule"] = skipRule;
           if (element.concept.dataType === "Coded") {
             const newArr = element.concept.answers.map(function(answer) {
               if (answer.voided) {

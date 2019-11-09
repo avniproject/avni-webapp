@@ -10,6 +10,8 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-javascript";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import TextField from "@material-ui/core/TextField";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -76,11 +78,15 @@ function FormElementTabs(props) {
         <FormElementDetails {...props} />
       </TabPanel>
       <TabPanel className={classes.tabsPanel} value={value} index={1} propsIndex={props.indexTab}>
-        <SyntaxHighlighter language="javascript" style={docco}>
+        {/* <SyntaxHighlighter language="javascript" style={docco}>
           {`'use strict'; 
 function rule(params, imports) {`}
-        </SyntaxHighlighter>
-        <AceEditor
+        </SyntaxHighlighter> */}
+
+        {/* <div>{`'use strict';`} </div>
+        <div>{`function rule(params, imports) {`}</div> */}
+
+        {/* <AceEditor
           placeholder="Enter code without function tag"
           mode="javascript"
           onChange={value => props.updateSkipLogicRule(props.groupIndex, props.index, value)}
@@ -95,11 +101,23 @@ function rule(params, imports) {`}
             showLineNumbers: true,
             tabSize: 1
           }}
+        /> */}
+
+        <TextareaAutosize
+          rowsMin={8}
+          style={{ height: "300px", width: "800px", marginTop: "2%" }}
+          placeholder="Enter code without function tag"
+          defaultValue={props.formElementData.rule}
+          onChange={event =>
+            props.updateSkipLogicRule(props.groupIndex, props.index, event.target.value)
+          }
         />
-        <SyntaxHighlighter language="javascript" style={docco}>
+        {/* <SyntaxHighlighter language="javascript" style={docco}>
           {`}; 
 rule;`}
-        </SyntaxHighlighter>
+        </SyntaxHighlighter> */}
+        {/* <div>{`}; `}</div>
+        <div>{`rule;`}</div> */}
       </TabPanel>
     </div>
   );

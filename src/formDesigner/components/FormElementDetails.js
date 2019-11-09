@@ -8,7 +8,7 @@ import {
   FormGroup
 } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -23,8 +23,14 @@ const FormControl = withStyles({
     paddingBottom: 10
   }
 })(MuiFormControl);
-
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120
+  }
+}));
 function FormElementDetails(props) {
+  const classes = useStyles();
   const cssClasses = {
     label: {
       marginTop: 13,
@@ -202,7 +208,7 @@ function FormElementDetails(props) {
             <TextField
               type="number"
               name="durationLimitInSecs"
-              label="Duration limit(seconds)"
+              label="Duration limit (seconds)"
               value={props.formElementData.keyValues.durationLimitInSecs}
               onChange={event =>
                 props.handleGroupElementKeyValueChange(
@@ -218,10 +224,9 @@ function FormElementDetails(props) {
           </Grid>
           <Grid item sm={1} />
           <Grid item sm={3}>
-            <FormControl>
-              <InputLabel style={cssClasses.labelWidth}>Video Quality</InputLabel>
+            <FormControl className={classes.formControl}>
+              <InputLabel>Video Quality</InputLabel>
               <Select
-                style={{ marginTop: "55%" }}
                 name="videoQuality"
                 classes={cssClasses.dropDown}
                 value={props.formElementData.keyValues.videoQuality}
@@ -283,10 +288,9 @@ function FormElementDetails(props) {
           </Grid>
           <Grid item sm={1} />
           <Grid item sm={3}>
-            <FormControl>
-              <InputLabel style={cssClasses.labelWidth}>Image Quality</InputLabel>
+            <FormControl className={classes.formControl}>
+              <InputLabel>Image Quality</InputLabel>
               <Select
-                style={{ marginTop: "55%" }}
                 name="imageQuality"
                 value={props.formElementData.keyValues.imageQuality}
                 onChange={event =>
@@ -298,8 +302,8 @@ function FormElementDetails(props) {
                   )
                 }
               >
-                <MenuItem value="0">0</MenuItem>
-                <MenuItem value="1">1</MenuItem>
+                <MenuItem value="0">Low</MenuItem>
+                <MenuItem value="1">High</MenuItem>
               </Select>
             </FormControl>
           </Grid>
