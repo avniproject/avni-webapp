@@ -213,7 +213,7 @@ function FormElementDetails(props) {
             <TextField
               type="number"
               name="durationLimitInSecs"
-              label="Duration limit(seconds)"
+              label="Duration limit (seconds)"
               value={props.formElementData.keyValues.durationLimitInSecs}
               onChange={event =>
                 props.handleGroupElementKeyValueChange(

@@ -140,10 +140,16 @@ class FormSettings extends Component {
           formMappings: this.state.formMappings
         })
         .then(response => {
+          let formMapping = this.state.formMappings;
+          _.forEach(formMapping, (formMap, index) => {
+            formMap.newFlag = false;
+          });
           this.setState({
             showUpdateAlert: true,
-            defaultSnackbarStatus: true
+            defaultSnackbarStatus: true,
+            formMapping: formMapping
           });
+
           this.props.onUpdateFormName(this.state.name);
         })
         .catch(error => {
@@ -178,7 +184,8 @@ class FormSettings extends Component {
               programName: formMapping.programUuid,
               subjectType: formMapping.subjectTypeUuid,
               encounterType: formMapping.encounterTypeUuid,
-              isVoided: false
+              voided: false,
+              newFlag: false
             });
           }
         });
@@ -303,7 +310,7 @@ class FormSettings extends Component {
   }
   removeMapping = index => {
     const mapping = this.state.formMappings;
-    mapping[index]["voided"] = true;
+    mapping[index].newFlag ? mapping.splice(index, 1) : (mapping[index]["voided"] = true);
     this.setState({
       formMappings: mapping
     });
@@ -318,7 +325,8 @@ class FormSettings extends Component {
           formUuid: this.state.uuid,
           subjectType: "",
           programName: program ? "" : null,
-          encounterType: encounter ? "" : null
+          encounterType: encounter ? "" : null,
+          newFlag: true
         }
       ]
     });
@@ -375,7 +383,7 @@ class FormSettings extends Component {
 
           {this.state.formMappings.map((mapping, index) => {
             return (
-              !mapping.isVoided && (
+              !mapping.voided && (
                 <div key={index}>
                   <Grid container item sm={12} spacing={2}>
                     <Grid item sm={3}>
