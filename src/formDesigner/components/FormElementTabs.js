@@ -1,4 +1,5 @@
 import React from "react";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -61,6 +62,8 @@ function FormElementTabs(props) {
   function handleChange(event, newValue) {
     setValue(newValue);
   }
+
+  console.log(`FormElementTabs: render`);
   return (
     <div className={classes.root}>
       <Tabs
@@ -72,7 +75,7 @@ function FormElementTabs(props) {
         className={classes.tabs}
       >
         <Tab label="Details" {...a11yProps(props.indexTab, 0)} />
-        <Tab label="Rule" {...a11yProps(props.indexTab, 1)} />
+        <Tab label="Rules" {...a11yProps(props.indexTab, 1)} />
       </Tabs>
       <TabPanel className={classes.tabsPanel} value={value} index={0} propsIndex={props.indexTab}>
         <FormElementDetails {...props} />

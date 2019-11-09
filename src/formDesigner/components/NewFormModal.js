@@ -6,6 +6,8 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
+import { constFormType } from "../common/constants";
+
 class NewFormModal extends Component {
   constructor(props) {
     super(props);
@@ -242,7 +244,7 @@ class NewFormModal extends Component {
     return formTypes.map(formType => {
       return (
         <MenuItem key={formType} value={formType}>
-          {formType}
+          {constFormType[formType]}
         </MenuItem>
       );
     });

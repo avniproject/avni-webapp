@@ -3,11 +3,17 @@ import MaterialTable from "material-table";
 import axios from "axios";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
+import { constFormType } from "../common/constants";
 
 const FormListing = ({ history }) => {
   const columns = [
     { title: "Name", field: "name" },
-    { title: "Form Type", field: "formType", defaultSort: "asc" },
+    {
+      title: "Form Type",
+      field: "formType",
+      defaultSort: "asc",
+      render: rowData => constFormType[rowData.formType]
+    },
     { title: "Subject Name", field: "subjectName", sorting: false },
     {
       title: "Program Name",
@@ -18,6 +24,7 @@ const FormListing = ({ history }) => {
   ];
 
   const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   const fetchData = query =>
     new Promise(resolve => {
@@ -42,7 +49,26 @@ const FormListing = ({ history }) => {
   const editForm = rowData => ({
     icon: "edit",
     tooltip: "Edit Form",
-    onClick: (event, form) => history.push(`/forms/${form.uuid}`)
+    onClick: (event, form) => history.push(`/forms/${form.uuid}`),
+    disabled: rowData.voided
+  });
+
+  const voidForm = rowData => ({
+    icon: rowData.voided ? "restore_from_trash" : "delete_outline",
+    tooltip: rowData.voided ? "Unvoid Form" : "Void Form",
+    onClick: (event, rowData) => {
+      const voidedMessage = rowData.voided
+        ? "Do you want to unvoid the form " + rowData.name + " ?"
+        : "Do you want to void the form " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        axios.delete("/web/forms/" + rowData.uuid).then(response => {
+          if (response.status === 200) {
+            refreshTable(tableRef);
+          }
+        });
+      }
+    },
+    disabled: rowData.organisationId === 1
   });
 
   return (
@@ -67,7 +93,7 @@ const FormListing = ({ history }) => {
           width: "100%"
         })
       }}
-      actions={[editForm]}
+      actions={[editForm, voidForm]}
     />
   );
 };

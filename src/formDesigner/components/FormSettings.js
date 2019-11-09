@@ -10,6 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { default as UUID } from "uuid";
+import { constFormType } from "../common/constants";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -139,10 +140,16 @@ class FormSettings extends Component {
           formMappings: this.state.formMappings
         })
         .then(response => {
+          let formMapping = this.state.formMappings;
+          _.forEach(formMapping, (formMap, index) => {
+            formMap.newFlag = false;
+          });
           this.setState({
             showUpdateAlert: true,
-            defaultSnackbarStatus: true
+            defaultSnackbarStatus: true,
+            formMapping: formMapping
           });
+
           this.props.onUpdateFormName(this.state.name);
         })
         .catch(error => {
@@ -177,7 +184,8 @@ class FormSettings extends Component {
               programName: formMapping.programUuid,
               subjectType: formMapping.subjectTypeUuid,
               encounterType: formMapping.encounterTypeUuid,
-              isVoided: false
+              voided: false,
+              newFlag: false
             });
           }
         });
@@ -268,7 +276,7 @@ class FormSettings extends Component {
     return formTypes.map(formType => {
       return (
         <MenuItem key={formType} value={formType}>
-          {formType}
+          {constFormType[formType]}
         </MenuItem>
       );
     });
@@ -302,7 +310,7 @@ class FormSettings extends Component {
   }
   removeMapping = index => {
     const mapping = this.state.formMappings;
-    mapping[index]["voided"] = true;
+    mapping[index].newFlag ? mapping.splice(index, 1) : (mapping[index]["voided"] = true);
     this.setState({
       formMappings: mapping
     });
@@ -317,7 +325,8 @@ class FormSettings extends Component {
           formUuid: this.state.uuid,
           subjectType: "",
           programName: program ? "" : null,
-          encounterType: encounter ? "" : null
+          encounterType: encounter ? "" : null,
+          newFlag: true
         }
       ]
     });

@@ -202,19 +202,9 @@ class FormDetails extends Component {
         draft.form.formElementGroups[index].formElements[elementIndex]["concept"][
           propertyName
         ] = value;
-        draft.detectBrowserCloseEvent = true;
       })
     );
   }
-
-  updateSkipLogicRule = (index, elementIndex, value) => {
-    this.setState(
-      produce(draft => {
-        draft.form.formElementGroups[index].formElements[elementIndex]["rule"] = value;
-        draft.detectBrowserCloseEvent = true;
-      })
-    );
-  };
 
   onUpdateDragDropOrder = (
     groupSourceIndex,
@@ -305,8 +295,7 @@ class FormDetails extends Component {
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
-          handleExcludedAnswers: this.handleExcludedAnswers,
-          updateSkipLogicRule: this.updateSkipLogicRule
+          handleExcludedAnswers: this.handleExcludedAnswers
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -427,7 +416,6 @@ class FormDetails extends Component {
           mandatory: false,
           voided: false,
           expanded: true,
-          rule: "",
           concept: { name: "", dataType: "" },
           errorMessage: { name: false, concept: false, type: false }
         };
@@ -521,26 +509,23 @@ class FormDetails extends Component {
     let keyValueForm = dataSend;
     _.forEach(keyValueForm.formElementGroups, (group, index) => {
       _.forEach(group.formElements, (element, index1) => {
-        if (!element.voided) {
-          if (element.concept.dataType === "Coded") {
-            const newArr = element.concept.answers.map(function(answer) {
-              if (answer.voided) {
-                return answer.name;
-              }
-            });
-            element.keyValues["ExcludedAnswers"] = newArr.filter(e => e);
-          }
+        if (element.concept.dataType === "Coded") {
+          const newArr = element.concept.answers.map(function(answer) {
+            if (answer.voided) {
+              return answer.name;
+            }
+          });
+          element.keyValues["ExcludedAnswers"] = newArr.filter(e => e);
+        }
 
-          if (Object.keys(element.keyValues).length !== 0) {
-            const tempKeyValue = Object.keys(element.keyValues).map(keyValue => {
-              return { key: keyValue, value: element.keyValues[keyValue] };
-            });
+        if (Object.keys(element.keyValues).length !== 0) {
+          const tempKeyValue = Object.keys(element.keyValues).map(keyValue => {
+            return { key: keyValue, value: element.keyValues[keyValue] };
+          });
 
-            element.keyValues = tempKeyValue;
-          } else {
-            element.keyValues = [];
-          }
-          console.log(element);
+          element.keyValues = tempKeyValue;
+        } else {
+          element.keyValues = [];
         }
       });
     });
