@@ -54,6 +54,9 @@ public class FormElement extends OrganisationAwareEntity {
     @Embedded
     private Format validFormat;
 
+    @Column(name = "rule")
+    private String rule;
+
     public String getName() {
         return name;
     }
@@ -176,5 +179,13 @@ public class FormElement extends OrganisationAwareEntity {
 
     public boolean isApplicable() {
         return this.getNonApplicableFormElements().isEmpty();
+    }
+
+    public String getRule() {
+        return rule;
+    }
+
+    public void setRule(String rule) {
+        this.rule = rule;
     }
 }
