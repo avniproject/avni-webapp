@@ -206,6 +206,15 @@ class FormDetails extends Component {
     );
   }
 
+  updateSkipLogicRule = (index, elementIndex, value) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex]["rule"] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
   onUpdateDragDropOrder = (
     groupSourceIndex,
     sourceElementIndex,
@@ -295,7 +304,8 @@ class FormDetails extends Component {
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
-          handleExcludedAnswers: this.handleExcludedAnswers
+          handleExcludedAnswers: this.handleExcludedAnswers,
+          updateSkipLogicRule: this.updateSkipLogicRule
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }

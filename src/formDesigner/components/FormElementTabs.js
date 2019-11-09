@@ -7,12 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import FormElementDetails from "./FormElementDetails";
 import { isEqual } from "lodash";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-javascript";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
-import TextField from "@material-ui/core/TextField";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -108,9 +103,9 @@ function rule(params, imports) {`}
 
         <TextareaAutosize
           rowsMin={8}
-          style={{ height: "300px", width: "800px", marginTop: "2%" }}
+          style={{ height: "300px", width: "100%", marginTop: "2%" }}
           placeholder="Enter code without function tag"
-          defaultValue={props.formElementData.rule}
+          value={props.formElementData.rule}
           onChange={event =>
             props.updateSkipLogicRule(props.groupIndex, props.index, event.target.value)
           }
