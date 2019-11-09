@@ -8,7 +8,7 @@ import {
   FormGroup
 } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -24,7 +24,18 @@ const FormControl = withStyles({
   }
 })(MuiFormControl);
 
+const useStyles = makeStyles(theme => ({
+  answers: {
+    padding: "5px 10px 5px 10px",
+    backgroundColor: "#bcbcbc",
+    marginLeft: 10,
+    borderRadius: 15,
+    marginBottom: 5
+  }
+}));
+
 function FormElementDetails(props) {
+  const classes = useStyles();
   const cssClasses = {
     label: {
       marginTop: 13,
