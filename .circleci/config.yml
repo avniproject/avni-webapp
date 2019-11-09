@@ -47,6 +47,8 @@ jobs:
           paths:
             - ./node_modules
 
+      - run: yarn test
+
   app_build:
     docker:
       - image: circleci/node:8.14.0
