@@ -23,6 +23,7 @@ public class BasicFormDetails extends ResourceSupport {
     private String createdByUUID;
     private String lastModifiedByUUID;
     private Long organisationId;
+    private Boolean voided;
 
     public BasicFormDetails(Form form, String programName) {
         this.name = form.getName();
@@ -36,6 +37,7 @@ public class BasicFormDetails extends ResourceSupport {
         this.lastModifiedBy = form.getAudit().getLastModifiedBy().getName();
         this.lastModifiedByUUID = form.getAudit().getLastModifiedBy().getUuid();
         this.organisationId = form.getOrganisationId();
+        this.voided = form.isVoided();
     }
 
     public String getName() {
@@ -92,5 +94,13 @@ public class BasicFormDetails extends ResourceSupport {
 
     public void setSubjectName(String subjectName) {
         this.subjectName = subjectName;
+    }
+
+    public Boolean getVoided() {
+        return voided;
+    }
+
+    public void setVoided(Boolean voided) {
+        this.voided = voided;
     }
 }

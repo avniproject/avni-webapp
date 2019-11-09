@@ -26,7 +26,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
@@ -83,9 +85,12 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             @RequestParam(value = "name", required = false) String name,
             Pageable pageable) {
         Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
+        Sort sortWithId = pageable.getSort().and(new Sort("id"));
+
+        PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sortWithId);
         Page<Form> forms = name != null
-                ? formRepository.findByOrganisationIdAndNameIgnoreCaseContaining(organisationId, name, pageable)
-                : formRepository.findAllByOrganisationId(organisationId, pageable);
+                ? formRepository.findByOrganisationIdAndNameIgnoreCaseContaining(organisationId, name, pageRequest)
+                : formRepository.findAllByOrganisationId(organisationId, pageRequest);
         Page<BasicFormDetails> basicFormDetailsPage = forms.map(form -> {
             BasicFormDetails basicFormDetails = new BasicFormDetails(form, null);
             List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
@@ -132,13 +137,13 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         return ResponseEntity.ok(form);
     }
 
-    @DeleteMapping(value = "/web/forms")
+    @DeleteMapping(value = "/web/forms/{formUUID}")
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public ResponseEntity deleteWeb(@RequestBody boolean isVoided, @RequestBody String formUUID){
+    public ResponseEntity deleteWeb( @PathVariable String formUUID){
         try {
             Form existingForm = formRepository.findByUuid(formUUID);
-            existingForm.setVoided(isVoided);
+            existingForm.setVoided(!existingForm.isVoided());
             formRepository.save(existingForm);
         }
         catch(Exception e){
