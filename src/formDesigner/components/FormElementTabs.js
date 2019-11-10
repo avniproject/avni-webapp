@@ -104,7 +104,7 @@ function rule(params, imports) {`}
         <TextareaAutosize
           rowsMin={8}
           style={{ height: "300px", width: "100%", marginTop: "2%" }}
-          placeholder="Enter code without function tag"
+          placeholder="Enter skip logic here"
           value={props.formElementData.rule}
           onChange={event =>
             props.updateSkipLogicRule(props.groupIndex, props.index, event.target.value)
