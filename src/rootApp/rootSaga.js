@@ -2,6 +2,7 @@ import { all, call, fork } from "redux-saga/effects";
 import { adminSaga, defaultI18nProvider } from "react-admin";
 import dataEntrySaga from "../dataEntryApp/sagas";
 import translationsSaga from "../translations/sagas";
+import uploadSagas from "../upload/sagas";
 
 import {
   authProvider,
@@ -21,7 +22,8 @@ export default function* rootSaga() {
       onSetCognitoUser,
       userInfoWatcher,
       dataEntrySaga,
-      translationsSaga
+      translationsSaga,
+      uploadSagas
     ].map(fork)
   );
 }

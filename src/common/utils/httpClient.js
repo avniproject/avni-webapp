@@ -43,6 +43,20 @@ class HttpClient {
     return fetchUtils.fetchJson(url, options);
   }
 
+  async downloadFile(url, filename) {
+    return await axios({
+      method: "GET",
+      url: url,
+      responseType: "blob"
+    }).then(response => {
+      const anchorTag = document.createElement("a");
+      anchorTag.href = window.URL.createObjectURL(new Blob([response.data]));
+      anchorTag.setAttribute("download", filename);
+      document.body.appendChild(anchorTag);
+      anchorTag.click();
+    });
+  }
+
   withParams(url, params) {
     return url + "?" + stringify(params);
   }

@@ -31,6 +31,7 @@ import {
 import { customConfig } from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 
+import Upload from "../upload";
 import customRoutes from "./customRoutes";
 
 const redirectHome = () => {
@@ -114,6 +115,7 @@ class OrgManager extends Component {
           options={{ label: "Organisation Config" }}
           list={WithProps({ organisation }, customConfig)}
         />
+        <Resource name="upload" options={{ label: "Upload" }} list={Upload} />
         <Resource name="home" options={{ label: "Home" }} list={redirectHome} />
       </Admin>
     );
