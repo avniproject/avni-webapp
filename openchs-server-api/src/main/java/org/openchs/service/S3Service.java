@@ -187,4 +187,23 @@ public class S3Service {
         }
         return s3Client.getObject(bucketName, s3Key).getObjectContent();
     }
+
+    public InputStream downloadFile(String directory, String fileName) {
+        if (isDev) {
+            String localFilePath = format("%s/%s/%s", System.getProperty("java.io.tmpdir"), directory, fileName);
+            try {
+                return new FileInputStream(localFilePath);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                logger.error(format("[dev] File not found. Assume empty. '%s'", fileName));
+                return new ByteArrayInputStream(new byte[]{});
+            }
+        }
+        String s3Key = format("%s/%s/%s",
+                directory,
+                getOrgDirectoryName(),
+                fileName
+        );
+        return s3Client.getObject(bucketName, s3Key).getObjectContent();
+    }
 }

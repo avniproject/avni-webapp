@@ -13,10 +13,12 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.PagedResources.PageMetadata;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,11 +26,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.springframework.http.MediaType.*;
 
 @RestController
 public class ImportController {
@@ -88,5 +92,17 @@ public class ImportController {
                 .map(it -> new Resource<>(it))
                 .collect(Collectors.toList());
         return new PagedResources<>(pagedContent, pageMetadata);
+    }
+
+    @GetMapping(value = "/import/errorfile",
+            produces = TEXT_PLAIN_VALUE,
+            consumes = APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<InputStreamResource> getDocument(@RequestParam String jobUuid) {
+        InputStream file = bulkUploadS3Service.downloadErrorFile(jobUuid);
+        return ResponseEntity.ok()
+                .contentType(TEXT_PLAIN)
+                .cacheControl(CacheControl.noCache())
+                .header("Content-Disposition", "attachment; ")
+                .body(new InputStreamResource(file));
     }
 }

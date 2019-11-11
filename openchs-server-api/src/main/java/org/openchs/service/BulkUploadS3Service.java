@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static java.lang.String.format;
 
@@ -32,5 +33,9 @@ public class BulkUploadS3Service {
         File errorDir = new File(format("%s/bulkuploads/error", System.getProperty("java.io.tmpdir")));
         errorDir.mkdirs();
         return new File(errorDir, format("%s.csv", uuid));
+    }
+
+    public InputStream downloadErrorFile(String jobUuid) {
+        return s3Service.downloadFile("bulkuploads/error", format("%s.csv", jobUuid));
     }
 }
