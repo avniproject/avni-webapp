@@ -1,7 +1,7 @@
 import React from "react";
 import { isEmpty } from "lodash";
 import Button from "@material-ui/core/Button";
-import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
 
 export default ({ onSelect, onUpload, canSelect, canUpload }) => {
   const [value, setValue] = React.useState("");
@@ -23,26 +23,24 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
   };
 
   return (
-    <React.Fragment>
-      <Box pl={4} pr={2}>
+    <Grid container direction="row" spacing={1} pad={2}>
+      <Grid container item xs={12} sm={6}>
         <Button variant="contained" component="label" disabled={!canSelect}>
           Choose File
           <input type="file" value={value} onChange={onSelectWrapper} style={{ display: "none" }} />
         </Button>
-      </Box>
-      <Box pl={2} pr={4}>
-        <div className="box has-text-centered">
-          <Button
-            variant="contained"
-            onClick={onUploadWrapper}
-            color="primary"
-            aria-haspopup="false"
-            disabled={!canUpload || isEmpty(value)}
-          >
-            Upload
-          </Button>
-        </div>
-      </Box>
-    </React.Fragment>
+      </Grid>
+      <Grid container item xs={12} sm={6}>
+        <Button
+          variant="contained"
+          color="primary"
+          aria-haspopup="false"
+          onClick={onUploadWrapper}
+          disabled={!canUpload || isEmpty(value)}
+        >
+          Upload
+        </Button>
+      </Grid>
+    </Grid>
   );
 };

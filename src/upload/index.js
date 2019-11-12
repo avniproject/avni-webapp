@@ -1,3 +1,3 @@
-import Upload from "./Upload";
+import Dashboard from "./Dashboard";
 
-export default Upload;
+export { Dashboard };

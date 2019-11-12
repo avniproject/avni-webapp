@@ -34,8 +34,6 @@ class HttpClient {
       options.headers.set("user-name", authParams.username);
       if (authParams.token) options.headers.set("AUTH-TOKEN", authParams.token);
     }
-    // options.headers.set("USER-NAME", "kalaptrusttab3@gmail.com");
-    // options.headers.set("USER-NAME", "ihmp-dev");
   }
 
   fetchJson(url, options = {}) {
@@ -55,6 +53,12 @@ class HttpClient {
       document.body.appendChild(anchorTag);
       anchorTag.click();
     });
+  }
+
+  async uploadFile(url, file) {
+    const formData = new FormData();
+    formData.append("file", file);
+    return await axios.post(url, formData);
   }
 
   withParams(url, params) {

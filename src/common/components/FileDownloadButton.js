@@ -1,9 +1,9 @@
 import React from "react";
 import Link from "@material-ui/core/Link";
+import CloudDownload from "@material-ui/icons/CloudDownload";
 import { httpClient } from "../utils/httpClient";
-import { DownloadIcon } from "./utils";
 
-const FileDownloadButton = ({ url, filename, iconStyle }) => {
+const FileDownloadButton = ({ url, filename, iconProps }) => {
   return (
     <Link
       href={url}
@@ -12,7 +12,7 @@ const FileDownloadButton = ({ url, filename, iconStyle }) => {
         httpClient.downloadFile(url, filename);
       }}
     >
-      <DownloadIcon style={iconStyle} />
+      <CloudDownload {...iconProps} />
     </Link>
   );
 };

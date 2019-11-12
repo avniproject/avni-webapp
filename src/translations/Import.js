@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { filter, find, isEmpty, isString, reject, size } from "lodash";
 import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
 
 const noOfKeysWithValues = file => {
   return size(file && file.json) - noOfKeysWithoutValues(file);
@@ -63,20 +64,26 @@ export default ({ locales = [], onSuccessfulImport }) => {
   return isEmpty(locales) ? (
     <div />
   ) : (
-    <React.Fragment>
-      <DropDown
-        name="Language"
-        style={{ width: 120 }}
-        value={language}
-        onChange={setLanguage}
-        options={locales}
-      />
-      <FileUpload
-        onSelect={onFileChooseHandler}
-        onUpload={onUploadPressedHandler}
-        canSelect={!isEmpty(language)}
-        canUpload={noOfKeysWithoutValues(file) === 0 && isEmpty(error)}
-      />
+    <Grid container direction="row" spacing={2}>
+      <Grid container item direction="row" justify="space-between" alignItems="center">
+        <Grid item xs={12} sm={4}>
+          <DropDown
+            name="Language"
+            style={{ width: 120 }}
+            value={language}
+            onChange={setLanguage}
+            options={locales}
+          />
+        </Grid>
+        <Grid item xs={12} sm={8}>
+          <FileUpload
+            onSelect={onFileChooseHandler}
+            onUpload={onUploadPressedHandler}
+            canSelect={!isEmpty(language)}
+            canUpload={noOfKeysWithoutValues(file) === 0 && isEmpty(error)}
+          />
+        </Grid>
+      </Grid>
       <Box py={4}>
         {!isEmpty(file) && (
           <div>
@@ -88,6 +95,6 @@ export default ({ locales = [], onSuccessfulImport }) => {
         )}
         <p>{!isEmpty(error) && error}</p>
       </Box>
-    </React.Fragment>
+    </Grid>
   );
 };
