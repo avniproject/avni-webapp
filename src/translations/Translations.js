@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
-import { find, isEmpty, isNil } from "lodash";
+import { find, isEmpty } from "lodash";
 import DropDown from "../common/components/DropDown";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
@@ -59,12 +59,12 @@ export const Translations = ({
 
   if (isEmpty(localeChoices)) {
     const link = (
-      <a
+      <span
         style={{ cursor: "pointer", color: "blue", textDecorationLine: "underline" }}
         onClick={() => history.push("/admin/organisationConfig")}
       >
         click here
-      </a>
+      </span>
     );
     return (
       <ScreenWithAppBar
@@ -89,7 +89,7 @@ export const Translations = ({
         </Box>
         <p />
         <Box border={1} borderColor={"#ddd"} p={2}>
-          <Grid justify="center">
+          <Grid>
             <h5 id="title">Upload Translations</h5>
           </Grid>
           <Grid container direction="row" justify="flex-start" alignItems="center">
@@ -101,7 +101,7 @@ export const Translations = ({
         </Box>
         <p />
         <Box border={1} borderColor={"#ddd"} p={2}>
-          <Grid justify="center">
+          <Grid>
             <h5 id="title">Download Translations</h5>
           </Grid>
           <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>

@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { find, get, isEmpty, isNil, map } from "lodash";
+import { get, isEmpty, isNil } from "lodash";
 import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";

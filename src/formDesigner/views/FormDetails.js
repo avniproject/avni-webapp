@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _, { cloneDeep } from "lodash";
+import _, { cloneDeep, filter, map } from "lodash";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
@@ -520,12 +520,8 @@ class FormDetails extends Component {
     _.forEach(keyValueForm.formElementGroups, (group, index) => {
       _.forEach(group.formElements, (element, index1) => {
         if (element.concept.dataType === "Coded") {
-          const newArr = element.concept.answers.map(function(answer) {
-            if (answer.voided) {
-              return answer.name;
-            }
-          });
-          element.keyValues["ExcludedAnswers"] = newArr.filter(e => e);
+          const excluded = map(filter(element.concept.answers, "voided"), "name");
+          element.keyValues["ExcludedAnswers"] = excluded;
         }
 
         if (Object.keys(element.keyValues).length !== 0) {
