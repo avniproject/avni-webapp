@@ -12,10 +12,10 @@ import Types from "./Types";
 import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
 
-const Status = ({ statuses, getStatuses }) => {
+const Status = ({ viewVersion, statuses, getStatuses }) => {
   React.useEffect(() => {
     getStatuses();
-  }, []);
+  }, [viewVersion]);
 
   return (
     <Table aria-label="simple table">
@@ -66,7 +66,8 @@ const Status = ({ statuses, getStatuses }) => {
 const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
 
 const mapStateToProps = state => ({
-  statuses: state.bulkUpload.statuses
+  statuses: state.bulkUpload.statuses,
+  viewVersion: state.admin.ui.viewVersion
 });
 
 export default withRouter(
