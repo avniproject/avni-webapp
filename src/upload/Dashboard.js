@@ -4,9 +4,10 @@ import { withRouter } from "react-router-dom";
 import { get, isEmpty, isNil } from "lodash";
 import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
-import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
+import CloudDownload from "@material-ui/icons/CloudDownload";
+import Button from "@material-ui/core/Button";
 import FileUpload from "../common/components/FileUpload";
 import Types from "./Types";
 import api from "./api";
@@ -17,7 +18,7 @@ const useStyles = makeStyles(theme => ({
   button: {
     color: "#3f51b5"
   },
-  uploadbox: {
+  uploadDownloadSection: {
     padding: theme.spacing(2)
   }
 }));
@@ -25,6 +26,7 @@ const useStyles = makeStyles(theme => ({
 const Dashboard = () => {
   const classes = useStyles();
   const [entity, setEntity] = React.useState("");
+  const [entityForDownload, setEntityForDownload] = React.useState("");
   const [file, setFile] = React.useState();
 
   const selectFile = (content, userfile) => setFile(userfile);
@@ -34,31 +36,59 @@ const Dashboard = () => {
     setEntity("");
   };
 
+  const downloadSampleFile = async () => {
+    await api.downloadSample(Types.getCode(entityForDownload));
+    setEntityForDownload("");
+  };
+
   return (
     <Paper className={classes.root}>
-      <Box paddingX={4} paddingTop={2} paddingBottom={4}>
-        <Paper className={classes.uploadbox}>
-          <Grid container item>
-            Upload
-          </Grid>
-          <Grid container item>
-            <Grid container item xs={12} sm={3}>
-              <DropDown name="Type" value={entity} onChange={setEntity} options={Types.names} />
+      <Paper className={classes.uploadDownloadSection}>
+        <Grid container>
+          <Grid item xs={12} sm={6}>
+            <Grid container item>
+              Upload
             </Grid>
-            <Grid container item direction="column" justify="flex-start" xs={12} sm={3}>
-              <Grid item>
-                <FileUpload
-                  canSelect={!isEmpty(entity)}
-                  canUpload={!isNil(file)}
-                  onSelect={selectFile}
-                  onUpload={uploadFile}
-                />
+            <Grid container item spacing={2}>
+              <Grid container item xs={12} sm={3}>
+                <DropDown name="Type" value={entity} onChange={setEntity} options={Types.names} />
               </Grid>
-              <Grid item>Selected File: {get(file, "name", "")}</Grid>
+              <Grid container item direction="column" justify="flex-start" xs={12} sm={9}>
+                <Grid item>
+                  <FileUpload
+                    canSelect={!isEmpty(entity)}
+                    canUpload={!isNil(file)}
+                    onSelect={selectFile}
+                    onUpload={uploadFile}
+                  />
+                </Grid>
+                <Grid item>Selected File: {get(file, "name", "")}</Grid>
+              </Grid>
             </Grid>
           </Grid>
-        </Paper>
-      </Box>
+          <Grid item xs={12} sm={6}>
+            <Grid container item>
+              Download Sample
+            </Grid>
+            <Grid item container direction="row" justify="flex-start" alignItems="center">
+              <DropDown
+                name="Type"
+                value={entityForDownload}
+                onChange={setEntityForDownload}
+                options={Types.names}
+              />
+              <Button
+                color="primary"
+                onClick={downloadSampleFile}
+                disabled={isEmpty(entityForDownload)}
+              >
+                <CloudDownload disabled={isEmpty(entityForDownload)} />
+                {" Download"}
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Paper>
       <Status />
     </Paper>
   );

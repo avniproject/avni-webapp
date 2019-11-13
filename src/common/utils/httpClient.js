@@ -3,6 +3,7 @@ import { fetchUtils } from "react-admin";
 import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
 import axios from "axios";
+import files from "./files";
 
 class HttpClient {
   static instance;
@@ -47,11 +48,7 @@ class HttpClient {
       url: url,
       responseType: "blob"
     }).then(response => {
-      const anchorTag = document.createElement("a");
-      anchorTag.href = window.URL.createObjectURL(new Blob([response.data]));
-      anchorTag.setAttribute("download", filename);
-      document.body.appendChild(anchorTag);
-      anchorTag.click();
+      files.download(filename, response.data);
     });
   }
 
