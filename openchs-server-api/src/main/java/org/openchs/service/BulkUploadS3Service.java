@@ -1,5 +1,6 @@
 package org.openchs.service;
 
+import org.openchs.service.S3Service.ObjectInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,12 +21,12 @@ public class BulkUploadS3Service {
         this.s3Service = s3Service;
     }
 
-    public String uploadFile(MultipartFile source, String uuid) throws IOException {
+    public ObjectInfo uploadFile(MultipartFile source, String uuid) throws IOException {
         String targetFileName = format("%s-%s", uuid, source.getOriginalFilename());
         return s3Service.uploadFile(source, targetFileName, "bulkuploads/input");
     }
 
-    public String uploadErrorFile(File tempSourceFile, String uuid) throws IOException {
+    public ObjectInfo uploadErrorFile(File tempSourceFile, String uuid) throws IOException {
         return s3Service.uploadFile(tempSourceFile, format("%s.csv", uuid), "bulkuploads/error");
     }
 

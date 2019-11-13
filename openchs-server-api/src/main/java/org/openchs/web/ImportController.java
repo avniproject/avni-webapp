@@ -6,6 +6,8 @@ import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.batch.JobService;
 import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.OldDataImportService;
+import org.openchs.service.S3Service;
+import org.openchs.service.S3Service.ObjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -66,8 +68,8 @@ public class ImportController {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
         try {
-            String s3Key = bulkUploadS3Service.uploadFile(file, uuid);
-            jobService.create(uuid, type, file.getOriginalFilename(), s3Key, user.getId());
+            ObjectInfo storedFileInfo = bulkUploadS3Service.uploadFile(file, uuid);
+            jobService.create(uuid, type, file.getOriginalFilename(), storedFileInfo, user.getId());
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
             logger.error(format("Bulkupload initiation failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();

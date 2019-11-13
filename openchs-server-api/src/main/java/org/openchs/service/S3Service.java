@@ -23,6 +23,8 @@ import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Date;
 import java.util.UUID;
@@ -112,16 +114,18 @@ public class S3Service {
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
-    public String uploadFile(File tempSourceFile, String destFileName, String directory) throws IOException {
-        String objectKey = format("%s/%s/%s",
+    public ObjectInfo uploadFile(File tempSourceFile, String destFileName, String directory) throws IOException {
+        String suggestedS3Key = format("%s/%s/%s",
                 directory,
                 getOrgDirectoryName(),
                 destFileName.replace(" ", "_")
         );
-        return putObject(objectKey, tempSourceFile);
+        String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
+        long noOfLines = Files.lines(Paths.get(tempSourceFile.getAbsolutePath())).count();
+        return new ObjectInfo(actualS3Key, noOfLines);
     }
 
-    public String uploadFile(MultipartFile source, String destFileName, String directory) throws IOException {
+    public ObjectInfo uploadFile(MultipartFile source, String destFileName, String directory) throws IOException {
         return uploadFile(convertMultiPartToFile(source), destFileName, directory);
     }
 
@@ -205,5 +209,24 @@ public class S3Service {
                 fileName
         );
         return s3Client.getObject(bucketName, s3Key).getObjectContent();
+    }
+
+    public class ObjectInfo implements Serializable {
+        private String key;
+        private Long noOfLines;
+
+        public ObjectInfo(String key, Long noOfLines) {
+            this.key = key;
+            this.noOfLines = noOfLines;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public Long getNoOfLines() {
+            return noOfLines;
+        }
+
     }
 }

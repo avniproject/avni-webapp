@@ -2,6 +2,7 @@ package org.openchs.importer.batch;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.JobStatus;
+import org.openchs.service.S3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.*;
@@ -61,11 +62,12 @@ public class JobService {
         }
     }
 
-    public JobExecution create(String uuid, String type, String fileName, String s3Key, Long userId) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+    public JobExecution create(String uuid, String type, String fileName, S3Service.ObjectInfo s3FileInfo, Long userId) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
         JobParameters parameters = new JobParametersBuilder()
                 .addString("uuid", uuid)
                 .addString("fileName", fileName, false)
-                .addString("s3Key", s3Key, false)
+                .addString("s3Key", s3FileInfo.getKey(), false)
+                .addLong("noOfLines", s3FileInfo.getNoOfLines(), false)
                 .addLong("userId", userId, false)
                 .addString("type", type, false)
                 .toJobParameters();
@@ -83,6 +85,7 @@ public class JobService {
                     JobParameters parameters = execution.getJobParameters();
                     jobStatus.setUuid(parameters.getString("uuid"));
                     jobStatus.setFileName(parameters.getString("fileName"));
+                    jobStatus.setNoOfLines(parameters.getLong("noOfLines"));
                     jobStatus.setS3Key(parameters.getString("s3Key"));
                     jobStatus.setUserId(parameters.getLong("userId"));
                     jobStatus.setType(parameters.getString("type"));
