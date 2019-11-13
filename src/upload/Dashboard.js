@@ -53,7 +53,16 @@ const Dashboard = () => {
               <Grid container item xs={12} sm={3}>
                 <DropDown name="Type" value={entity} onChange={setEntity} options={Types.names} />
               </Grid>
-              <Grid container item direction="column" justify="flex-start" xs={12} sm={9}>
+              <Grid
+                container
+                item
+                direction="column"
+                justify="center"
+                alignItems="flex-start"
+                xs={12}
+                sm={9}
+                spacing={2}
+              >
                 <Grid item>
                   <FileUpload
                     canSelect={!isEmpty(entity)}

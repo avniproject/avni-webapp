@@ -1,9 +1,18 @@
 import React from "react";
 import { isEmpty } from "lodash";
 import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 
+const useStyles = makeStyles(theme => ({
+  item: {
+    marginLeft: theme.spacing(2)
+  }
+}));
+
 export default ({ onSelect, onUpload, canSelect, canUpload }) => {
+  const classes = useStyles();
+
   const [value, setValue] = React.useState("");
 
   const onSelectWrapper = event => {
@@ -23,24 +32,21 @@ export default ({ onSelect, onUpload, canSelect, canUpload }) => {
   };
 
   return (
-    <Grid container direction="row" spacing={1} pad={2}>
-      <Grid container item xs={12} sm={6}>
-        <Button variant="contained" component="label" disabled={!canSelect}>
-          Choose File
-          <input type="file" value={value} onChange={onSelectWrapper} style={{ display: "none" }} />
-        </Button>
-      </Grid>
-      <Grid container item xs={12} sm={6}>
-        <Button
-          variant="contained"
-          color="primary"
-          aria-haspopup="false"
-          onClick={onUploadWrapper}
-          disabled={!canUpload || isEmpty(value)}
-        >
-          Upload
-        </Button>
-      </Grid>
+    <Grid container direction="row" justify="flex-start" spacing={1}>
+      <Button variant="contained" component="label" disabled={!canSelect} className={classes.item}>
+        Choose File
+        <input type="file" value={value} onChange={onSelectWrapper} style={{ display: "none" }} />
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        aria-haspopup="false"
+        onClick={onUploadWrapper}
+        disabled={!canUpload || isEmpty(value)}
+        className={classes.item}
+      >
+        Upload
+      </Button>
     </Grid>
   );
 };
