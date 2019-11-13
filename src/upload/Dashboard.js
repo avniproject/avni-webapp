@@ -42,64 +42,70 @@ const Dashboard = () => {
   };
 
   return (
-    <Paper className={classes.root}>
-      <Paper className={classes.uploadDownloadSection}>
-        <Grid container>
-          <Grid item xs={12} sm={6}>
-            <Grid container item>
-              Upload
-            </Grid>
-            <Grid container item spacing={2}>
-              <Grid container item xs={12} sm={3}>
-                <DropDown name="Type" value={entity} onChange={setEntity} options={Types.names} />
+    <Grid container spacing={2} className={classes.root}>
+      <Grid item style={{ minWidth: 1200, maxWidth: 1400 }}>
+        <Paper className={classes.uploadDownloadSection}>
+          <Grid container>
+            <Grid item xs={12} sm={6}>
+              <Grid container item>
+                Upload
               </Grid>
-              <Grid
-                container
-                item
-                direction="column"
-                justify="center"
-                alignItems="flex-start"
-                xs={12}
-                sm={9}
-                spacing={2}
-              >
-                <Grid item>
-                  <FileUpload
-                    canSelect={!isEmpty(entity)}
-                    canUpload={!isNil(file)}
-                    onSelect={selectFile}
-                    onUpload={uploadFile}
-                  />
+              <Grid container item spacing={2}>
+                <Grid container item xs={12} sm={3}>
+                  <DropDown name="Type" value={entity} onChange={setEntity} options={Types.names} />
                 </Grid>
-                <Grid item>Selected File: {get(file, "name", "")}</Grid>
+                <Grid
+                  container
+                  item
+                  direction="column"
+                  justify="center"
+                  alignItems="flex-start"
+                  xs={12}
+                  sm={9}
+                  spacing={2}
+                >
+                  <Grid item>
+                    <FileUpload
+                      canSelect={!isEmpty(entity)}
+                      canUpload={!isNil(file)}
+                      onSelect={selectFile}
+                      onUpload={uploadFile}
+                    />
+                  </Grid>
+                  <Grid item>Selected File: {get(file, "name", "")}</Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Grid container item>
+                Download Sample
+              </Grid>
+              <Grid item container direction="row" justify="flex-start" alignItems="center">
+                <DropDown
+                  name="Type"
+                  value={entityForDownload}
+                  onChange={setEntityForDownload}
+                  options={Types.names}
+                />
+                <Button
+                  color="primary"
+                  onClick={downloadSampleFile}
+                  disabled={isEmpty(entityForDownload)}
+                >
+                  <CloudDownload disabled={isEmpty(entityForDownload)} />
+                  {" Download"}
+                </Button>
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <Grid container item>
-              Download Sample
-            </Grid>
-            <Grid item container direction="row" justify="flex-start" alignItems="center">
-              <DropDown
-                name="Type"
-                value={entityForDownload}
-                onChange={setEntityForDownload}
-                options={Types.names}
-              />
-              <Button
-                color="primary"
-                onClick={downloadSampleFile}
-                disabled={isEmpty(entityForDownload)}
-              >
-                <CloudDownload disabled={isEmpty(entityForDownload)} />
-                {" Download"}
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Paper>
-      <Status />
-    </Paper>
+        </Paper>
+      </Grid>
+      <Grid item>
+        <Paper>
+          <Status />
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 

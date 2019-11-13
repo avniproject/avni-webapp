@@ -1,9 +1,9 @@
-Location with full hierarchy,Catchment Name,Username,Full Name of User,Email,Phone,Language,Track Location
-"PHC B, Sub B, Vil B",Org X Cat A,user29@orgx,user29,"email@example.com","+919876543210","English","yes"
-"PHC B, Sub B, Vil C",Org X Cat A,user29@orgx,user29,"email@example.com","+919876543210","English","yes"
-"PHC B, Sub C, Vil C",Org X Cat A,user29@orgx,user29,"email@example.com","+919876543210","English","yes"
-"PHC B, Sub B, Vil C",Org X Cat B,user49@orgx,user49,"email@example.com","+919876543210","English","yes"
-"PHC B, Sub C, Vil C",Org X Cat B,user49@orgx,user49,"email@example.com","+919876543210","English","yes"
-"PHC C, Sub C, Vil C",Org X Cat B,user49@orgx,user49,"email@example.com","+919876543210","English","yes"
-"PHC B, Sub C, Vil C",Org X Cat C,user69@orgx,user69,"email@example.com","+919876543210","English","no"
-"PHC C, Sub C, Vil C",Org X Cat C,user69@orgx,user69,"email@example.com","+919876543210","English","no"
+Location with full hierarchy,Catchment Name,Username,Full Name of User,Email,Phone,Language,Track Location,Date picker mode,Hide enrol,Hide exit,Hide register,Hide unplanned,Enable Beneficiary mode,Beneficiary ID Prefix
+"PHC B, Sub B, Vil B",Org X Cat A,user29@orgx,user29,email@example.com,"+919876543210",English,yes,calendar,yes,yes,no,yes,no,U29
+"PHC B, Sub B, Vil C",Org X Cat A,user29@orgx,user29,email@example.com,"+919876543210",English,yes,calendar,yes,yes,no,yes,no,U29
+"PHC B, Sub C, Vil C",Org X Cat A,user29@orgx,user29,email@example.com,"+919876543210",English,yes,calendar,yes,yes,no,yes,no,U29
+"PHC B, Sub B, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,"+919876543210",English,yes,,no,yes,no,yes,no,U49
+"PHC B, Sub C, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,"+919876543210",English,yes,,no,yes,no,yes,no,U49
+"PHC C, Sub C, Vil C",Org X Cat B,user49@orgx,user49,email@example.com,"+919876543210",English,yes,,no,yes,no,yes,no,U49
+"PHC B, Sub C, Vil C",Org X Cat C,user69@orgx,user69,email@example.com,"+919876543210",English,no,spinner,no,no,no,no,no,U69
+"PHC C, Sub C, Vil C",Org X Cat C,user69@orgx,user69,email@example.com,"+919876543210",English,no,spinner,no,no,no,no,no,U69

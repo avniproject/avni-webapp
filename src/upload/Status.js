@@ -6,13 +6,26 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Tooltip from "@material-ui/core/Tooltip";
 import { getStatuses } from "./reducers";
 import { get, isNil, map } from "lodash";
 import Types from "./Types";
 import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
 
+import { makeStyles } from "@material-ui/core/styles";
+
+const createStyles = makeStyles(theme => ({
+  filename: {
+    maxWidth: 180,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap"
+  }
+}));
+
 const Status = ({ viewVersion, statuses, getStatuses }) => {
+  const classes = createStyles();
   React.useEffect(() => {
     getStatuses();
   }, [viewVersion]);
@@ -23,9 +36,15 @@ const Status = ({ viewVersion, statuses, getStatuses }) => {
         <TableRow>
           <TableCell>File name</TableCell>
           <TableCell align="right">Type</TableCell>
-          <TableCell align="right">Created at</TableCell>
-          <TableCell align="right">Started at</TableCell>
-          <TableCell align="right">Ended at</TableCell>
+          <TableCell align="right" style={{ minWidth: 180 }}>
+            Created at
+          </TableCell>
+          <TableCell align="right" style={{ minWidth: 180 }}>
+            Started at
+          </TableCell>
+          <TableCell align="right" style={{ minWidth: 180 }}>
+            Ended at
+          </TableCell>
           <TableCell align="right">Status</TableCell>
           <TableCell align="right">{"Rows read"}</TableCell>
           <TableCell align="right">{"Rows completed"}</TableCell>
@@ -36,9 +55,14 @@ const Status = ({ viewVersion, statuses, getStatuses }) => {
       <TableBody>
         {map(get(statuses, "_embedded.jobStatuses"), jobStatus => (
           <TableRow key={jobStatus.uuid}>
-            <TableCell component="th" scope="jobStatus">
-              {jobStatus.fileName}
-            </TableCell>
+            <Tooltip
+              title={<span style={{ fontSize: "2em" }}>{jobStatus.fileName}</span>}
+              placement="bottom"
+            >
+              <TableCell component="th" scope="jobStatus" className={classes.filename}>
+                {jobStatus.fileName}
+              </TableCell>
+            </Tooltip>
             <TableCell align="right">{Types.getName(jobStatus.type)}</TableCell>
             <TableCell align="right">{formatDate(jobStatus.createTime)}</TableCell>
             <TableCell align="right">{formatDate(jobStatus.startTime)}</TableCell>
@@ -48,12 +72,14 @@ const Status = ({ viewVersion, statuses, getStatuses }) => {
             <TableCell align="right">{jobStatus.completed}</TableCell>
             <TableCell align="right">{jobStatus.skipped}</TableCell>
             <TableCell align="right">
-              {["COMPLETED", "FAILED"].includes(jobStatus.status) && (
+              {jobStatus.status === "FAILED" || 0 < jobStatus.skipped ? (
                 <FileDownloadButton
                   url={`/import/errorfile/?jobUuid=${jobStatus.uuid}`}
                   filename={`errors-${jobStatus.fileName}`}
                   iconProps={{ color: "error" }}
                 />
+              ) : (
+                <div />
               )}
             </TableCell>
           </TableRow>
