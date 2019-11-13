@@ -1,5 +1,7 @@
 package org.openchs.domain;
 
+import org.springframework.lang.Nullable;
+
 public enum Locale {
     en("English"),
     hi_IN("Hindi"),
@@ -21,7 +23,7 @@ public enum Locale {
         this.name = name;
     }
 
-    public static Locale valueByName(String name) {
+    public static Locale valueByName(@Nullable String name) {
         for (Locale value : Locale.values()) {
             if (value.name.equals(name)) return value;
         }

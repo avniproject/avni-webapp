@@ -1,4 +1,4 @@
-Location with full hierarchy,Catchment Name,Username,Full Name of User,Email,Phone,Language,Track Location
+Location with full hierarchy,Catchment Name,Username,Full Name of User,Email,Phone,Language,Track Location,Date picker mode,Hide enrol,Hide exit,Hide register,Hide unplanned,Beneficiary mode,ID Prefix
 "PHC B, Sub B, Vil B",Org X Cat A,user29@orgx,user29,email@example.com,+919876543210,English,yes
 "PHC B, Sub B, Vil C",Org X Cat A,user29@orgx,,,,,
 "PHC B, Sub C, Vil C",Org X Cat A,user29@orgx,,,,,

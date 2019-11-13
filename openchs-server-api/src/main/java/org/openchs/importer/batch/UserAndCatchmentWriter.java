@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static org.openchs.domain.OperatingIndividualScope.ByCatchment;
@@ -24,7 +23,6 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
     private final CatchmentService catchmentService;
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
-    private final Pattern TRUE_VALUE = Pattern.compile("yes|true|1");
     private final CognitoIdpService cognitoService;
 
     @Autowired
@@ -52,8 +50,15 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         String username = row.get("Username");
         String email = row.get("Email");
         String phoneNumber = row.get("Phone");
-        String language = row.get("Language");
-        Boolean trackLocation = TRUE_VALUE.matcher(row.getOrDefault("Track Location", "")).matches();
+        Locale locale = Locale.valueByName(row.get("Language"));
+        Boolean trackLocation = row.getBool("Track Location");
+        String datePickerMode = row.get("Date picker mode");
+        Boolean hideEnrol = row.getBool("Hide enrol");
+        Boolean hideExit = row.getBool("Hide exit");
+        Boolean hideRegister = row.getBool("Hide register");
+        Boolean hideUnplanned = row.getBool("Hide unplanned");
+        Boolean beneficiaryMode = row.getBool("Enable Beneficiary mode");
+        String idPrefix = row.get("Beneficiary ID Prefix");
 
         AddressLevel location = locationRepository.findByTitleLineageIgnoreCase(fullAddress)
                 .orElseThrow(() -> new Exception(format(
@@ -76,8 +81,15 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         user.setOperatingIndividualScope(ByCatchment);
 
         user.setSettings(new JsonObject()
-                .with("locale", Locale.valueByName(language))
-                .with("trackLocation", trackLocation));
+                .with("locale", locale)
+                .with("trackLocation", trackLocation)
+                .with("datePickerMode", datePickerMode)
+                .with("hideEnrol", hideEnrol)
+                .with("hideExit", hideExit)
+                .with("hideRegister", hideRegister)
+                .with("hideUnplanned", hideUnplanned)
+                .with("showBeneficiaryMode", beneficiaryMode)
+                .with("idPrefix", idPrefix));
 
         User currentUser = userService.getCurrentUser();
         user.setOrganisationId(currentUser.getOrganisationId());
