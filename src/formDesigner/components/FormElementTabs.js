@@ -8,12 +8,6 @@ import Box from "@material-ui/core/Box";
 import FormElementDetails from "./FormElementDetails";
 import { isEqual } from "lodash";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
-import AceEditor from "react-ace";
-
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/theme-github";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -82,12 +76,15 @@ function FormElementTabs(props) {
         <FormElementDetails {...props} />
       </TabPanel>
       <TabPanel className={classes.tabsPanel} value={value} index={1} propsIndex={props.indexTab}>
-        <SyntaxHighlighter language="javascript" style={docco}>
+        {/* <SyntaxHighlighter language="javascript" style={docco}>
           {`'use strict'; 
 function rule(params, imports) {`}
-        </SyntaxHighlighter>
+        </SyntaxHighlighter> */}
 
-        <AceEditor
+        {/* <div>{`'use strict';`} </div>
+        <div>{`function rule(params, imports) {`}</div> */}
+
+        {/* <AceEditor
           placeholder="Enter code without function tag"
           mode="javascript"
           onChange={value => props.updateSkipLogicRule(props.groupIndex, props.index, value)}
@@ -102,9 +99,9 @@ function rule(params, imports) {`}
             showLineNumbers: true,
             tabSize: 1
           }}
-        />
+        /> */}
 
-        {/* <TextareaAutosize
+        <TextareaAutosize
           rowsMin={8}
           style={{ height: "300px", width: "100%", marginTop: "2%" }}
           placeholder="Enter skip logic here"
@@ -112,11 +109,13 @@ function rule(params, imports) {`}
           onChange={event =>
             props.updateSkipLogicRule(props.groupIndex, props.index, event.target.value)
           }
-        /> */}
-        <SyntaxHighlighter language="javascript" style={docco}>
+        />
+        {/* <SyntaxHighlighter language="javascript" style={docco}>
           {`}; 
 rule;`}
-        </SyntaxHighlighter>
+        </SyntaxHighlighter> */}
+        {/* <div>{`}; `}</div>
+        <div>{`rule;`}</div> */}
       </TabPanel>
     </div>
   );
