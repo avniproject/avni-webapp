@@ -8,6 +8,11 @@ import Box from "@material-ui/core/Box";
 import FormElementDetails from "./FormElementDetails";
 import { isEqual } from "lodash";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-javascript";
+import Button from "@material-ui/core/Button";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -101,15 +106,26 @@ function rule(params, imports) {`}
           }}
         /> */}
 
-        <TextareaAutosize
-          rowsMin={8}
-          style={{ height: "300px", width: "100%", marginTop: "2%" }}
-          placeholder="Enter skip logic here"
-          value={props.formElementData.rule}
-          onChange={event =>
-            props.updateSkipLogicRule(props.groupIndex, props.index, event.target.value)
-          }
+        {/*<TextareaAutosize*/}
+        {/*rowsMin={8}*/}
+        {/*style={{ height: "300px", width: "100%", marginTop: "2%" }}*/}
+        {/*placeholder="Enter skip logic here"*/}
+        {/*value={props.formElementData.rule}*/}
+        {/*onChange={event =>*/}
+        {/*props.updateSkipLogicRule(props.groupIndex, props.index, event.target.value)*/}
+        {/*}*/}
+        {/*/>*/}
+        <Editor
+          value={props.formElementData.rule ? props.formElementData.rule : "  "}
+          onValueChange={code => props.updateSkipLogicRule(props.groupIndex, props.index, code)}
+          highlight={code => highlight(code, languages.js)}
+          padding={10}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 12
+          }}
         />
+        <Button onClick={() => props.formatCode(props.groupIndex, props.index)}>Validate</Button>
         {/* <SyntaxHighlighter language="javascript" style={docco}>
           {`}; 
 rule;`}
