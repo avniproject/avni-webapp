@@ -47,13 +47,10 @@ public class AuthServiceTest {
     @Test
     public void shouldReturnEmptyUserContextIfUserCannotBeFoundInToken() {
         when(cognitoAuthService.getUserFromToken("some token")).thenReturn(null);
-        String errorMessage = null;
-        try {
-            authService.authenticateByToken("some token");
-        } catch (Exception e) {
-            errorMessage = e.getMessage();
-        }
-        assertThat(errorMessage, is(equalTo("Can't determine User from token: token='some token'")));
+        UserContext userContext = authService.authenticateByToken("some token");
+        assertThat(userContext.getUser(), is(equalTo(null)));
+        assertThat(userContext.getOrganisation(), is(equalTo(null)));
+        assertThat(userContext.getRoles().size(), is(equalTo(0)));
     }
 
     @Test

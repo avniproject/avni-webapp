@@ -42,7 +42,6 @@ public class AuthService {
         if (user != null) {
             return changeUser(user);
         }
-        resetUser();
         throw new RuntimeException(String.format("Not found: User{username='%s'}", username));
     }
 
@@ -52,7 +51,6 @@ public class AuthService {
         if (user != null) {
             return changeUser(user);
         }
-        resetUser();
         throw new RuntimeException(String.format("Can't determine User from token: token='%s'", authToken));
     }
 
@@ -62,7 +60,6 @@ public class AuthService {
         if (user.isPresent()) {
             return changeUser(user.get());
         }
-        resetUser();
         throw new RuntimeException(String.format("Not found: User{id='%s'}", userId));
     }
 
@@ -87,11 +84,6 @@ public class AuthService {
 
     private void becomeSuperUser() {
         SecurityContextHolder.getContext().setAuthentication(createTempAuth(ALL_AUTHORITIES));
-    }
-
-    private void resetUser() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-        UserContextHolder.clear();
     }
 
     private Authentication createTempAuth(List<SimpleGrantedAuthority> authorities) {
