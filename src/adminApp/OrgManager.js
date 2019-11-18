@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Admin, Resource } from "react-admin";
-import { Redirect, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { authProvider, LogoutButton } from "./react-admin-config";
@@ -33,10 +33,8 @@ import { WithProps } from "../common/components/utils";
 
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
+import AdminLayout from "./components/AdminLayout";
 
-const redirectHome = () => {
-  return <Redirect to="/" />;
-};
 class OrgManager extends Component {
   static childContextTypes = {
     store: PropTypes.object
@@ -55,6 +53,7 @@ class OrgManager extends Component {
         history={adminHistory}
         logoutButton={WithProps({ user }, LogoutButton)}
         customRoutes={customRoutes}
+        appLayout={AdminLayout}
       >
         <Resource
           name="user"
@@ -116,7 +115,6 @@ class OrgManager extends Component {
           list={WithProps({ organisation }, customConfig)}
         />
         <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
-        <Resource name="home" options={{ label: "Home" }} list={redirectHome} />
       </Admin>
     );
   }
@@ -127,9 +125,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(OrgManager)
-);
+export default withRouter(connect(mapStateToProps, null)(OrgManager));

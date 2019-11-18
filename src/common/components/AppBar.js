@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import LogoutButton from "../../adminApp/react-admin-config/LogoutButton";
-import AppBar from "@material-ui/core/AppBar";
+import MuiAppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
@@ -8,7 +8,9 @@ import Menu from "@material-ui/core/Menu";
 import IconButton from "@material-ui/core/IconButton";
 import UserIcon from "@material-ui/icons/AccountCircle";
 import MenuIcon from "@material-ui/icons/Menu";
-import axios from "axios";
+import HomeIcon from "@material-ui/icons/Home";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -36,9 +38,8 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-export default props => {
+const AppBar = props => {
   const classes = useStyle();
-  const [loginDetails, setLoginDetails] = React.useState({ name: "", orgName: "" });
   const [anchorEl, setAnchorEl] = React.useState(null);
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
@@ -48,20 +49,9 @@ export default props => {
     setAnchorEl(null);
   }
 
-  useEffect(() => {
-    const fetchOrgDetails = async () => {
-      const result = await axios("/v2/me");
-      setLoginDetails({
-        name: result.data._embedded.userInfo[0].username,
-        orgName: result.data._embedded.userInfo[0].organisationName
-      });
-    };
-    fetchOrgDetails();
-  }, []);
-
   return (
     <div className={classes.root}>
-      <AppBar position="fixed">
+      <MuiAppBar position="fixed">
         <Toolbar className={classes.toolbar}>
           {props.enableLeftMenuButton && (
             <IconButton
@@ -82,8 +72,11 @@ export default props => {
 
           <div className={classes.profile}>
             <div style={{ marginTop: "2%" }}>
-              <b>{loginDetails.orgName} </b> ({loginDetails.name})
+              <b>{props.organisation.name} </b> ({props.user.username})
             </div>
+            <IconButton onClick={() => props.history.push("/")} aria-label="Home" color="inherit">
+              <HomeIcon />
+            </IconButton>
             <IconButton
               aria-label="Profile"
               aria-controls="long-menu"
@@ -103,7 +96,14 @@ export default props => {
             </Menu>
           </div>
         </Toolbar>
-      </AppBar>
+      </MuiAppBar>
     </div>
   );
 };
+
+const mapStateToProps = state => ({
+  organisation: state.app.organisation,
+  user: state.app.user
+});
+
+export default withRouter(connect(mapStateToProps, null)(AppBar));

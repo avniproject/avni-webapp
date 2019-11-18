@@ -124,17 +124,6 @@ const applyLeftMenu = (
         </div>
 
         <List>
-          <ListItem
-            button
-            component="a"
-            href="/#/"
-            key="Homepage"
-            selected={selectedIndex === 0}
-            onClick={event => handleListItemClick(event, 0)}
-          >
-            {applyListIcon(open, <HomeIcon />, "Home")}
-          </ListItem>
-          <Divider />
           {renderAllOptions === false ? (
             <div />
           ) : (
