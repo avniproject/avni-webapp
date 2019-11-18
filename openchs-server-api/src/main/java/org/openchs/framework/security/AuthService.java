@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -38,20 +38,12 @@ public class AuthService {
 
     public UserContext authenticateByUserName(String username) {
         becomeSuperUser();
-        User user = userRepository.findByUsername(username);
-        if (user != null) {
-            return changeUser(user);
-        }
-        throw new RuntimeException(String.format("Not found: User{username='%s'}", username));
+        return changeUser(userRepository.findByUsername(username));
     }
 
     public UserContext authenticateByToken(String authToken) {
         becomeSuperUser();
-        User user = cognitoAuthService.getUserFromToken(authToken);
-        if (user != null) {
-            return changeUser(user);
-        }
-        throw new RuntimeException(String.format("Can't determine User from token: token='%s'", authToken));
+        return changeUser(cognitoAuthService.getUserFromToken(authToken));
     }
 
     public UserContext authenticateByUserId(Long userId) {
@@ -63,9 +55,12 @@ public class AuthService {
         throw new RuntimeException(String.format("Not found: User{id='%s'}", userId));
     }
 
-    private Authentication attemptAuthentication(@NotNull User user) {
+    private Authentication attemptAuthentication(User user) {
         UserContext userContext = new UserContext();
         UserContextHolder.create(userContext);
+        if (user == null) {
+            return null;
+        }
         userContext.setUser(user);
         userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
 
@@ -77,7 +72,7 @@ public class AuthService {
         return createTempAuth(authorities);
     }
 
-    private UserContext changeUser(@NotNull User user) {
+    private UserContext changeUser(User user) {
         SecurityContextHolder.getContext().setAuthentication(attemptAuthentication(user));
         return UserContextHolder.getUserContext();
     }
