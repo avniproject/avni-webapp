@@ -10,7 +10,7 @@ import {
   SimpleForm,
   TextInput
 } from "react-admin";
-import { ColorField, ColorInput } from "react-admin-color-input";
+import { ColorField } from "react-admin-color-input";
 
 const Title = ({ record }) => {
   return (
@@ -51,7 +51,7 @@ export const ProgramCreate = props => {
     <Create title="Add a new Program" {...props}>
       <SimpleForm redirect="show">
         <TextInput source="name" />
-        <ColorInput source="colour" />
+        <TextInput source="colour" />
         <TextInput source="programSubjectLabel" />
       </SimpleForm>
     </Create>
@@ -63,7 +63,7 @@ export const ProgramEdit = props => {
     <Edit undoable={false} title="Edit Program" {...props}>
       <SimpleForm redirect="show">
         <TextInput source="name" />
-        <ColorInput source="colour" picker="Sketch" />
+        <TextInput source="colour" />
         <TextInput source="programSubjectLabel" />
       </SimpleForm>
     </Edit>
