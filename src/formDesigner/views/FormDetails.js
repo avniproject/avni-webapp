@@ -16,7 +16,6 @@ import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import produce from "immer";
-import prettier from "prettier";
 
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
@@ -216,17 +215,6 @@ class FormDetails extends Component {
     );
   };
 
-  formatCode = (index, elementIndex) => {
-    this.setState(
-      produce(draft => {
-        draft.form.formElementGroups[index].formElements[elementIndex]["rule"] = prettier.format(
-          draft.form.formElementGroups[index].formElements[elementIndex]["rule"]
-        );
-        draft.detectBrowserCloseEvent = true;
-      })
-    );
-  };
-
   onUpdateDragDropOrder = (
     groupSourceIndex,
     sourceElementIndex,
@@ -317,8 +305,7 @@ class FormDetails extends Component {
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
           handleExcludedAnswers: this.handleExcludedAnswers,
-          updateSkipLogicRule: this.updateSkipLogicRule,
-          formatCode: this.updateSkipLogicRule
+          updateSkipLogicRule: this.updateSkipLogicRule
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }

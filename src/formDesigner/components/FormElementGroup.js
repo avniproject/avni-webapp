@@ -151,8 +151,7 @@ function FormElementGroup(props) {
           updateConceptElementData: props.updateConceptElementData,
           handleGroupElementKeyValueChange: props.handleGroupElementKeyValueChange,
           handleExcludedAnswers: props.handleExcludedAnswers,
-          updateSkipLogicRule: props.updateSkipLogicRule,
-          formatCode: props.formatCode
+          updateSkipLogicRule: props.updateSkipLogicRule
         };
         formElements.push(
           <Draggable
