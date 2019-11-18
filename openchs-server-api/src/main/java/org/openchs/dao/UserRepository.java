@@ -45,5 +45,4 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     Page<User> findByOrganisationIdAndIsVoidedFalseAndPhoneNumberContaining(Long organisationId,
                                                                             String phoneNumber,
                                                                             Pageable pageable);
-
 }

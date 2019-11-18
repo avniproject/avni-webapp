@@ -10,12 +10,12 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.search.annotations.Parameter;
 import org.hibernate.search.annotations.*;
 import org.openchs.web.request.ConceptContract;
-import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Indexed
@@ -60,6 +60,25 @@ public class Concept extends OrganisationAwareEntity {
     private Double lowNormal;
     private Double highNormal;
     private String unit;
+
+    public static Concept create(String name, String dataType) {
+        return create(name, dataType, UUID.randomUUID().toString());
+    }
+
+    public static Concept create(String name, String dataType, String uuid) {
+        Concept concept = new Concept();
+        concept.name = name;
+        concept.dataType = dataType;
+        if (ConceptDataType.Coded.toString().equals(dataType)) {
+            concept.conceptAnswers = new HashSet<>();
+        }
+        if (uuid == null) {
+            concept.assignUUID();
+        } else {
+            concept.setUuid(uuid);
+        }
+        return concept;
+    }
 
     public String getName() {
         return name;
@@ -115,25 +134,6 @@ public class Concept extends OrganisationAwareEntity {
 
     public void setConceptAnswers(Set<ConceptAnswer> conceptAnswers) {
         this.conceptAnswers = conceptAnswers;
-    }
-
-    public static Concept create(String name, String dataType) {
-        return create(name, dataType, UUID.randomUUID().toString());
-    }
-
-    public static Concept create(String name, String dataType, String uuid) {
-        Concept concept = new Concept();
-        concept.name = name;
-        concept.dataType = dataType;
-        if (ConceptDataType.Coded.toString().equals(dataType)) {
-            concept.conceptAnswers = new HashSet<>();
-        }
-        if (uuid == null) {
-            concept.assignUUID();
-        } else {
-            concept.setUuid(uuid);
-        }
-        return concept;
     }
 
     public ConceptAnswer findConceptAnswerByName(String answerConceptName) {
@@ -231,5 +231,9 @@ public class Concept extends OrganisationAwareEntity {
             conceptContract.getAnswers().add(answerConceptContract);
         }
         return conceptContract;
+    }
+
+    public Stream<ConceptAnswer> getSortedAnswers() {
+        return this.getConceptAnswers().stream().sorted(Comparator.comparing(ConceptAnswer::getOrder));
     }
 }
