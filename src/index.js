@@ -13,7 +13,7 @@ import { store } from "./common/store";
 import { cognitoInDev, isProdEnv } from "./common/constants";
 import { App, SecureApp } from "./rootApp";
 
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider, StylesProvider, createGenerateClassName } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 import * as Colors from "@material-ui/core/colors";
 
@@ -24,12 +24,18 @@ const theme = createMuiTheme({
   }
 });
 
+const generateClassName = createGenerateClassName({
+  productionPrefix: "avnijss"
+});
+
 ReactDOM.render(
-  <ThemeProvider theme={theme}>
-    <Provider store={store}>
-      <HashRouter>{isProdEnv || cognitoInDev ? <SecureApp /> : <App />}</HashRouter>
-    </Provider>
-  </ThemeProvider>,
+  <StylesProvider generateClassName={generateClassName}>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <HashRouter>{isProdEnv || cognitoInDev ? <SecureApp /> : <App />}</HashRouter>
+      </Provider>
+    </ThemeProvider>
+  </StylesProvider>,
   document.getElementById("root")
 );
 

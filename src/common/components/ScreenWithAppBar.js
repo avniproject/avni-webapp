@@ -1,7 +1,6 @@
 import React from "react";
 import Body from "./Body";
 import AppBar from "./AppBar";
-import HomeIcon from "@material-ui/icons/Home";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import DescriptionIcon from "@material-ui/icons/Description";
 import clsx from "clsx";
