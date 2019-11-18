@@ -1,5 +1,6 @@
 package org.openchs.framework.security;
 
+import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 
 public class UserContextHolder {
@@ -18,5 +19,10 @@ public class UserContextHolder {
 
     public static void clear() {
         userContext.remove();
+    }
+
+    public static User getUser() {
+        UserContext context = getUserContext();
+        return context != null ? context.getUser() : null;
     }
 }

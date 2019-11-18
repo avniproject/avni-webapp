@@ -154,8 +154,8 @@ public class User {
         return catchment;
     }
 
-    public Long getCatchmentId() {
-        return catchment != null ? catchment.getId() : null;
+    public Optional<Long> getCatchmentId() {
+        return Optional.ofNullable(catchment != null ? catchment.getId() : null);
     }
 
     public void setCatchment(@NotNull Catchment catchment) {

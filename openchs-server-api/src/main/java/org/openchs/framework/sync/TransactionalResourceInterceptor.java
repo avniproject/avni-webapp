@@ -2,8 +2,7 @@ package org.openchs.framework.sync;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-import org.openchs.domain.Catchment;
-import org.openchs.domain.UserContext;
+import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -15,10 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter {
-    private static final int DEFAULT_CATCHMENT_ID_FOR_DEV = 1;
+    private static final Long DEFAULT_CATCHMENT_ID_FOR_DEV = 1L;
     private final Environment environment;
 
     private final Map<String, Integer> nowMap = new HashMap<String, Integer>() {{
@@ -54,15 +54,9 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
     }
 
     private Long getCatchmentId() {
-        UserContext userContext = UserContextHolder.getUserContext();
-        Catchment catchment = userContext.getUser().getCatchment();
-        if (catchment == null && isDev()) {
-            return (long) DEFAULT_CATCHMENT_ID_FOR_DEV;
-        } else if (catchment == null) {
-            return null;
-        } else {
-            return catchment.getId();
-        }
+        User user = UserContextHolder.getUser();
+        Objects.requireNonNull(user, "User not available from UserContext. Check for Auth errors");
+        return user.getCatchmentId().orElse(isDev() ? DEFAULT_CATCHMENT_ID_FOR_DEV : null);
     }
 
     private boolean isDev() {
