@@ -1,11 +1,24 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
 import axios from "axios";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
 import { constFormType } from "../common/constants";
 
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import NewFormModal from "../components/NewFormModal";
+
 const FormListing = ({ history }) => {
+  const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
+
+  const [showNewFormDialog, setShowNewFormDialog] = useState(false);
+  const openNewFormDialog = () => setShowNewFormDialog(true);
+  const closeNewFormDialog = () => setShowNewFormDialog(false);
+
   const columns = [
     { title: "Name", field: "name" },
     {
@@ -53,6 +66,35 @@ const FormListing = ({ history }) => {
     disabled: rowData.voided
   });
 
+  const NewForm = () => {
+    return (
+      <Dialog
+        fullWidth
+        maxWidth="xs"
+        onClose={closeNewFormDialog}
+        aria-labelledby="customized-dialog-title"
+        open={cloneFormIndicator}
+      >
+        <DialogTitle id="customized-dialog-title" onClose={closeNewFormDialog}>
+          New Form
+          <IconButton style={{ float: "right" }} onClick={closeNewFormDialog}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent dividers>
+          <NewFormModal isCloneForm={true} />
+        </DialogContent>
+      </Dialog>
+    );
+  };
+  const cloneForm = rowData => ({
+    icon: "library_add",
+    tooltip: "clone Form",
+    onClick: (event, form) => setCloneFormIndicator(true),
+    disabled: rowData.voided
+  });
+
   const voidForm = rowData => ({
     icon: rowData.voided ? "restore_from_trash" : "delete_outline",
     tooltip: rowData.voided ? "Unvoid Form" : "Void Form",
@@ -72,29 +114,32 @@ const FormListing = ({ history }) => {
   });
 
   return (
-    <MaterialTable
-      title=""
-      components={{
-        Container: props => <Fragment>{props.children}</Fragment>
-      }}
-      tableRef={tableRef}
-      columns={columns}
-      data={fetchData}
-      options={{
-        pageSize: 10,
-        pageSizeOptions: [10, 15, 20],
-        addRowPosition: "first",
-        sorting: true,
-        debounceInterval: 500,
-        searchFieldAlignment: "left",
-        searchFieldStyle: { width: "100%", marginLeft: "-8%" },
-        rowStyle: rowData => ({
-          backgroundColor: "#fff",
-          width: "100%"
-        })
-      }}
-      actions={[editForm, voidForm]}
-    />
+    <>
+      <MaterialTable
+        title=""
+        components={{
+          Container: props => <Fragment>{props.children}</Fragment>
+        }}
+        tableRef={tableRef}
+        columns={columns}
+        data={fetchData}
+        options={{
+          pageSize: 10,
+          pageSizeOptions: [10, 15, 20],
+          addRowPosition: "first",
+          sorting: true,
+          debounceInterval: 500,
+          searchFieldAlignment: "left",
+          searchFieldStyle: { width: "100%", marginLeft: "-8%" },
+          rowStyle: rowData => ({
+            backgroundColor: "#fff",
+            width: "100%"
+          })
+        }}
+        actions={[editForm, cloneForm, voidForm]}
+      />
+      {cloneFormIndicator && NewForm()}
+    </>
   );
 };
 

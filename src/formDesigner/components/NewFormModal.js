@@ -7,6 +7,8 @@ import { Redirect } from "react-router-dom";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import { constFormType } from "../common/constants";
+import { default as UUID } from "uuid";
+import _ from "lodash";
 
 class NewFormModal extends Component {
   constructor(props) {
@@ -76,9 +78,64 @@ class NewFormModal extends Component {
       axios
         .post("/web/forms", dataSend)
         .then(response => {
-          this.setState({
-            toFormDetails: response.data.uuid
-          });
+          if (this.props.isCloneForm === false) {
+            this.setState({
+              toFormDetails: response.data.uuid
+            });
+          } else {
+            const newUUID = response.data.uuid;
+            let editResponse;
+            axios
+              .get(`/forms/export?formUUID=fbedc462-3787-4563-bf88-7228ed3cfb11`)
+              .then(response => {
+                editResponse = response.data;
+                editResponse["uuid"] = newUUID;
+                editResponse["name"] = this.state.name;
+
+                var promise = new Promise((resolve, reject) => {
+                  _.forEach(editResponse.formElementGroups, (group, index) => {
+                    group["uuid"] = UUID.v4();
+                    _.forEach(group.formElements, (element, index1) => {
+                      element["uuid"] = UUID.v4();
+                    });
+                  });
+                  console.log("EditResponse:::", editResponse);
+                  resolve("Promise resolved ");
+                });
+                promise.then(
+                  result => {
+                    console.log("After EditResponse:::", editResponse);
+                    axios
+                      .post("/forms", editResponse)
+                      .then(response => {
+                        console.log("After EditResponse:::", response);
+                        if (response.status === 200) {
+                          // axios
+                          //   .get(`/forms/export?formUUID=${newUUID}`)
+                          //   .then(response => {
+                          //     console.log("Final Response:::", response);
+                          //     this.setState({
+                          //       toFormDetails: newUUID
+                          //     });
+                          //   })
+                          //   .catch(error => {
+                          //     console.log(error);
+                          //   });
+                        }
+                      })
+                      .catch(error => {
+                        console.log(error);
+                      });
+                  },
+                  function(error) {
+                    console.log(error);
+                  }
+                );
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          }
         })
         .catch(error => {
           this.setState({ errorMsg: error.response.data });
@@ -275,6 +332,7 @@ class NewFormModal extends Component {
   }
 
   render() {
+    console.log("Called");
     if (this.state.toFormDetails !== "") {
       return <Redirect to={"/forms/" + this.state.toFormDetails} />;
     }
@@ -353,7 +411,8 @@ class NewFormModal extends Component {
 NewFormModal.defaultProps = {
   name: "",
   uuid: "",
-  isCreateFrom: true
+  isCreateFrom: true,
+  isCloneForm: false
 };
 
 export default NewFormModal;
