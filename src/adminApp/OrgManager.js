@@ -49,6 +49,8 @@ class OrgManager extends Component {
 
   render() {
     const { organisation, user } = this.props;
+    const uiDesignerToggle =
+      window.location.href.includes("localhost") || window.location.href.includes("staging");
     return (
       <Admin
         title="Manage Organisation"
@@ -97,7 +99,7 @@ class OrgManager extends Component {
         <Resource
           name="subjectType"
           options={{ label: "Subject Types" }}
-          list={SubjectTypeList}
+          list={uiDesignerToggle && SubjectTypeList}
           show={SubjectTypeDetail}
           create={SubjectTypeCreate}
           edit={SubjectTypeEdit}
@@ -105,7 +107,7 @@ class OrgManager extends Component {
         <Resource
           name="program"
           options={{ label: "Programs" }}
-          list={ProgramList}
+          list={uiDesignerToggle && ProgramList}
           show={ProgramDetail}
           create={ProgramCreate}
           edit={ProgramEdit}
@@ -113,14 +115,22 @@ class OrgManager extends Component {
         <Resource
           name="encounterType"
           options={{ label: "Encounter Types" }}
-          list={EncounterTypeList}
+          list={uiDesignerToggle && EncounterTypeList}
           show={EncounterTypeDetail}
           create={EncounterTypeCreate}
           edit={EncounterTypeEdit}
         />
-        <Resource name="forms" options={{ label: "Forms" }} list={Forms} />
-        <Resource name="concepts" options={{ label: "Concepts" }} list={Concepts} />
-        <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
+        <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
+        <Resource
+          name="concepts"
+          options={{ label: "Concepts" }}
+          list={uiDesignerToggle && Concepts}
+        />
+        <Resource
+          name="bundle"
+          options={{ label: "Bundle" }}
+          list={uiDesignerToggle && ImplementationBundle}
+        />
       </Admin>
     );
   }
