@@ -86,41 +86,29 @@ class NewFormModal extends Component {
             const newUUID = response.data.uuid;
             let editResponse;
             axios
-              .get(`/forms/export?formUUID=fbedc462-3787-4563-bf88-7228ed3cfb11`)
+              .get(`/forms/export?formUUID=${this.props.uuid}`)
               .then(response => {
                 editResponse = response.data;
                 editResponse["uuid"] = newUUID;
                 editResponse["name"] = this.state.name;
+                editResponse["formType"] = this.state.formType;
 
                 var promise = new Promise((resolve, reject) => {
-                  _.forEach(editResponse.formElementGroups, (group, index) => {
+                  _.forEach(editResponse.formElementGroups, group => {
                     group["uuid"] = UUID.v4();
-                    _.forEach(group.formElements, (element, index1) => {
+                    _.forEach(group.formElements, element => {
                       element["uuid"] = UUID.v4();
                     });
                   });
-                  console.log("EditResponse:::", editResponse);
                   resolve("Promise resolved ");
                 });
                 promise.then(
                   result => {
-                    console.log("After EditResponse:::", editResponse);
                     axios
                       .post("/forms", editResponse)
                       .then(response => {
-                        console.log("After EditResponse:::", response);
                         if (response.status === 200) {
-                          // axios
-                          //   .get(`/forms/export?formUUID=${newUUID}`)
-                          //   .then(response => {
-                          //     console.log("Final Response:::", response);
-                          //     this.setState({
-                          //       toFormDetails: newUUID
-                          //     });
-                          //   })
-                          //   .catch(error => {
-                          //     console.log(error);
-                          //   });
+                          this.setState({ toFormDetails: newUUID });
                         }
                       })
                       .catch(error => {
@@ -332,7 +320,6 @@ class NewFormModal extends Component {
   }
 
   render() {
-    console.log("Called");
     if (this.state.toFormDetails !== "") {
       return <Redirect to={"/forms/" + this.state.toFormDetails} />;
     }

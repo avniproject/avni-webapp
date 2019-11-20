@@ -14,11 +14,16 @@ import NewFormModal from "../components/NewFormModal";
 
 const FormListing = ({ history }) => {
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
+  const [uuid, setUUID] = useState(0);
 
-  const [showNewFormDialog, setShowNewFormDialog] = useState(false);
-  const openNewFormDialog = () => setShowNewFormDialog(true);
-  const closeNewFormDialog = () => setShowNewFormDialog(false);
+  const onCloseEvent = () => {
+    setCloneFormIndicator(false);
+  };
 
+  const onSetUuidAndIndicator = (value, uuid) => {
+    setUUID(uuid);
+    setCloneFormIndicator(value);
+  };
   const columns = [
     { title: "Name", field: "name" },
     {
@@ -66,24 +71,24 @@ const FormListing = ({ history }) => {
     disabled: rowData.voided
   });
 
-  const NewForm = () => {
+  const showCloneForm = () => {
     return (
       <Dialog
         fullWidth
         maxWidth="xs"
-        onClose={closeNewFormDialog}
+        onClose={onCloseEvent}
         aria-labelledby="customized-dialog-title"
         open={cloneFormIndicator}
       >
-        <DialogTitle id="customized-dialog-title" onClose={closeNewFormDialog}>
-          New Form
-          <IconButton style={{ float: "right" }} onClick={closeNewFormDialog}>
+        <DialogTitle id="customized-dialog-title" onClose={onCloseEvent}>
+          Clone Form
+          <IconButton style={{ float: "right" }} onClick={onCloseEvent}>
             <CloseIcon />
           </IconButton>
         </DialogTitle>
 
         <DialogContent dividers>
-          <NewFormModal isCloneForm={true} />
+          <NewFormModal isCloneForm={true} uuid={uuid} />
         </DialogContent>
       </Dialog>
     );
@@ -91,7 +96,7 @@ const FormListing = ({ history }) => {
   const cloneForm = rowData => ({
     icon: "library_add",
     tooltip: "clone Form",
-    onClick: (event, form) => setCloneFormIndicator(true),
+    onClick: (event, form) => onSetUuidAndIndicator(true, rowData["uuid"]),
     disabled: rowData.voided
   });
 
@@ -138,7 +143,7 @@ const FormListing = ({ history }) => {
         }}
         actions={[editForm, cloneForm, voidForm]}
       />
-      {cloneFormIndicator && NewForm()}
+      {cloneFormIndicator && showCloneForm()}
     </>
   );
 };
