@@ -51,6 +51,8 @@ class OrgManager extends Component {
     const { organisation, user } = this.props;
     const uiDesignerToggle =
       window.location.href.includes("localhost") || window.location.href.includes("staging");
+    const csvUploadToggle =
+      window.location.href.includes("localhost") || window.location.href.includes("staging");
     return (
       <Admin
         title="Manage Organisation"
@@ -95,7 +97,11 @@ class OrgManager extends Component {
           show={WithProps({ user }, UserDetail)}
           edit={WithProps({ user }, UserEdit)}
         />
-        <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
+        <Resource
+          name="upload"
+          options={{ label: "Upload" }}
+          list={csvUploadToggle && UploadDashboard}
+        />
         <Resource
           name="subjectType"
           options={{ label: "Subject Types" }}
