@@ -90,11 +90,11 @@ function FormElementTabs(props) {
             value={
               props.formElementData.rule
                 ? props.formElementData.rule
-                : `use strict";
-function rule({ params, imports }) {
-       
-}
-rule;`
+                : `
+
+
+
+`
             }
             onValueChange={event => props.updateSkipLogicRule(props.groupIndex, props.index, event)}
             highlight={code => highlight(code, languages.js)}
