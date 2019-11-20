@@ -321,7 +321,7 @@ class NewFormModal extends Component {
 
   render() {
     if (this.state.toFormDetails !== "") {
-      return <Redirect to={"/forms/" + this.state.toFormDetails} />;
+      return <Redirect to={"/admin/forms/" + this.state.toFormDetails} />;
     }
     const encounterTypes =
       this.state.formType === "Encounter" ||

@@ -33,7 +33,10 @@ import { WithProps } from "../common/components/utils";
 
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
-import AdminLayout from "./components/AdminLayout";
+import AdminLayout from "../common/components/AdminLayout";
+import Forms from "../formDesigner/views/Forms";
+import Concepts from "../formDesigner/views/Concepts";
+import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -56,18 +59,9 @@ class OrgManager extends Component {
         appLayout={AdminLayout}
       >
         <Resource
-          name="user"
-          list={WithProps({ organisation }, UserList)}
-          create={WithProps({ organisation }, UserCreate)}
-          show={WithProps({ user }, UserDetail)}
-          edit={WithProps({ user }, UserEdit)}
-        />
-        <Resource
-          name="catchment"
-          list={CatchmentList}
-          show={CatchmentDetail}
-          create={CatchmentCreate}
-          edit={CatchmentEdit}
+          name="organisationConfig"
+          options={{ label: "Organisation Config" }}
+          list={WithProps({ organisation }, customConfig)}
         />
         <Resource
           name="addressLevelType"
@@ -86,13 +80,20 @@ class OrgManager extends Component {
           edit={LocationEdit}
         />
         <Resource
-          name="program"
-          options={{ label: "Programs" }}
-          list={ProgramList}
-          show={ProgramDetail}
-          create={ProgramCreate}
-          edit={ProgramEdit}
+          name="catchment"
+          list={CatchmentList}
+          show={CatchmentDetail}
+          create={CatchmentCreate}
+          edit={CatchmentEdit}
         />
+        <Resource
+          name="user"
+          list={WithProps({ organisation }, UserList)}
+          create={WithProps({ organisation }, UserCreate)}
+          show={WithProps({ user }, UserDetail)}
+          edit={WithProps({ user }, UserEdit)}
+        />
+        <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
         <Resource
           name="subjectType"
           options={{ label: "Subject Types" }}
@@ -102,6 +103,14 @@ class OrgManager extends Component {
           edit={SubjectTypeEdit}
         />
         <Resource
+          name="program"
+          options={{ label: "Programs" }}
+          list={ProgramList}
+          show={ProgramDetail}
+          create={ProgramCreate}
+          edit={ProgramEdit}
+        />
+        <Resource
           name="encounterType"
           options={{ label: "Encounter Types" }}
           list={EncounterTypeList}
@@ -109,12 +118,9 @@ class OrgManager extends Component {
           create={EncounterTypeCreate}
           edit={EncounterTypeEdit}
         />
-        <Resource
-          name="organisationConfig"
-          options={{ label: "Organisation Config" }}
-          list={WithProps({ organisation }, customConfig)}
-        />
-        <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
+        <Resource name="forms" options={{ label: "Forms" }} list={Forms} />
+        <Resource name="concepts" options={{ label: "Concepts" }} list={Concepts} />
+        <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
       </Admin>
     );
   }

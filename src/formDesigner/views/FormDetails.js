@@ -5,7 +5,6 @@ import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
 import Button from "@material-ui/core/Button";
-import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
@@ -16,6 +15,8 @@ import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import produce from "immer";
+import Box from "@material-ui/core/Box";
+import { Title } from "react-admin";
 
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
@@ -680,7 +681,8 @@ class FormDetails extends Component {
       </Grid>
     );
     return (
-      <ScreenWithAppBar appbarTitle={"Form Details"} enableLeftMenuButton={true}>
+      <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Title title="Form Details" />
         {this.state.dataLoaded ? form : <div>Loading</div>}
         {this.state.successAlert && (
           <CustomizedSnackbar
@@ -690,7 +692,7 @@ class FormDetails extends Component {
           />
         )}
         {this.state.saveCall && this.updateForm()}
-      </ScreenWithAppBar>
+      </Box>
     );
   }
 }

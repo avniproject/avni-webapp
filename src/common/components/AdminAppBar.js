@@ -16,17 +16,20 @@ const styles = {
   }
 };
 
-const AdminAppBar = withStyles(styles)(({ classes, ...props }) => (
-  <AppBar {...props}>
-    <Typography variant="title" color="inherit" className={classes.title} id="react-admin-title" />
-    <div>
-      <b>{props.organisation.name} </b> ({props.user.username})
-    </div>
-    <IconButton onClick={() => props.history.push("/")} aria-label="Home" color="inherit">
-      <HomeIcon />
-    </IconButton>
-  </AppBar>
-));
+const AdminAppBar = withStyles(styles)(({ classes, ...props }) => {
+  const { organisation, user, history, staticContext, dispatch, ...rest } = props;
+  return (
+    <AppBar {...rest}>
+      <Typography variant="h6" color="inherit" className={classes.title} id="react-admin-title" />
+      <div>
+        <b>{organisation.name} </b> ({user.username})
+      </div>
+      <IconButton onClick={() => history.push("/")} aria-label="Home" color="inherit">
+        <HomeIcon />
+      </IconButton>
+    </AppBar>
+  );
+});
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,

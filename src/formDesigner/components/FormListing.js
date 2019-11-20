@@ -67,7 +67,7 @@ const FormListing = ({ history }) => {
   const editForm = rowData => ({
     icon: "edit",
     tooltip: "Edit Form",
-    onClick: (event, form) => history.push(`/forms/${form.uuid}`),
+    onClick: (event, form) => history.push(`/admin/forms/${form.uuid}`),
     disabled: rowData.voided
   });
 

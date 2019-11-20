@@ -50,7 +50,6 @@ const Homepage = () => {
     <ScreenWithAppBar appbarTitle={"OpenCHS Web Console"}>
       <Grid container justify="center">
         {renderCard("/#/admin/user", "Admin")}
-        {renderCard("/#/forms", "UI Designer")}
         {renderCard("/#/translations", "Translations")}
       </Grid>
     </ScreenWithAppBar>

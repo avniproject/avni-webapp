@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import NewFormModal from "../components/NewFormModal";
 import Button from "@material-ui/core/Button";
-
-import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import FormListing from "../components/FormListing";
+import Box from "@material-ui/core/Box";
+import { Title } from "react-admin";
 
 const Forms = props => {
   const [showNewFormDialog, setShowNewFormDialog] = useState(false);
@@ -16,7 +16,8 @@ const Forms = props => {
   const closeNewFormDialog = () => setShowNewFormDialog(false);
 
   return (
-    <ScreenWithAppBar appbarTitle={"Form list"} enableLeftMenuButton={true}>
+    <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Title title="Forms" />
       <div className="container">
         <div>
           <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
@@ -46,7 +47,7 @@ const Forms = props => {
           <FormListing />
         </div>
       </div>
-    </ScreenWithAppBar>
+    </Box>
   );
 };
 
