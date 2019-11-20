@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FormMappingService {
@@ -57,9 +56,9 @@ public class FormMappingService {
                 formMapping.setUuid(formMappingRequest.getUuid());
                 formMapping.setForm(form);
             }
-            setSubjectTypeIfRequired(formMapping, formMappingRequest.getSubjectType());
-            setProgramNameIfRequired(formMapping, form.getFormType(), formMappingRequest.getProgramName());
-            setEncounterTypeIfRequired(formMapping, form.getFormType(), formMappingRequest.getEncounterType());
+            setSubjectTypeIfRequired(formMapping, formMappingRequest.getSubjectTypeUuid());
+            setProgramNameIfRequired(formMapping, form.getFormType(), formMappingRequest.getProgramUuid());
+            setEncounterTypeIfRequired(formMapping, form.getFormType(), formMappingRequest.getEncounterTypeUuid());
             formMapping.setVoided(formMappingRequest.getVoided());
             formMappingRepository.save(formMapping);
         }
@@ -75,22 +74,22 @@ public class FormMappingService {
         formMapping.assignUUID();
         formMapping.setForm(form);
 
-        setSubjectTypeIfRequired(formMapping, createUpdateFormRequest.getFormMappingByIndex(0).getSubjectType());
-        setProgramNameIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getFormMappingByIndex(0).getProgramName());
-        setEncounterTypeIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getFormMappingByIndex(0).getEncounterType());
+        setSubjectTypeIfRequired(formMapping, createUpdateFormRequest.getFormMappingByIndex(0).getSubjectTypeUuid());
+        setProgramNameIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getFormMappingByIndex(0).getProgramUuid());
+        setEncounterTypeIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getFormMappingByIndex(0).getEncounterTypeUuid());
         formMappingRepository.save(formMapping);
     }
 
     private void validateRequest(CreateUpdateFormRequest createUpdateFormRequest, FormType formType) {
-        if (formType.isLinkedToEncounterType() && createUpdateFormRequest.getFormMappingByIndex(0).getEncounterType() == null) {
+        if (formType.isLinkedToEncounterType() && createUpdateFormRequest.getFormMappingByIndex(0).getEncounterTypeUuid() == null) {
             throw new ApiException("Form of type %s must pass encounterType", formType);
         }
 
-        if (createUpdateFormRequest.getFormMappingByIndex(0).getSubjectType() == null) {
+        if (createUpdateFormRequest.getFormMappingByIndex(0).getSubjectTypeUuid() == null) {
             throw new ApiException("Subject type must be specified");
         }
 
-        if (formType.isLinkedToProgram() && createUpdateFormRequest.getFormMappingByIndex(0).getProgramName() == null) {
+        if (formType.isLinkedToProgram() && createUpdateFormRequest.getFormMappingByIndex(0).getProgramUuid() == null) {
             throw new ApiException("Form of type %s must pass programName", formType);
         }
     }

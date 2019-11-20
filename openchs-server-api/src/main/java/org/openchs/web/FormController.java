@@ -167,7 +167,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         form.setName(request.getName());
         form.setFormType(FormType.valueOf(request.getFormType()));
         formRepository.save(form);
-        formMappingService.updateFormMapping(request, form);
+        if (request.getFormMappings().size() > 0) {
+            formMappingService.updateFormMapping(request, form);
+        }
         return ResponseEntity.ok(null);
     }
 
@@ -395,7 +397,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
 //
 //            encounterFormMappings = encounterFormMappings.stream().filter(x ->
 //                    operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getEncounterTypeId(), organisation.getId()) != null &&
-//                            operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getEncounterTypeId(), organisation.getId()).getEncounterType().getId().equals(x.getEncounterTypeId())
+//                            operationalEncounterTypeRepository.findByEncounterTypeIdAndOrganisationId(x.getEncounterTypeId(), organisation.getId()).getEncounterTypeUuid().getId().equals(x.getEncounterTypeId())
 //            ).collect(Collectors.toList());
 //        } else { // if organisation is OpenCHS, filter out other organisation forms
 //            encounterFormMappings = encounterFormMappings.stream().filter(x -> x.getOrganisationId() == 1).collect(Collectors.toList());

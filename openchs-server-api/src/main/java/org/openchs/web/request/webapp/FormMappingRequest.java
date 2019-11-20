@@ -2,9 +2,9 @@ package org.openchs.web.request.webapp;
 
 public class FormMappingRequest {
     private String uuid;
-    private String subjectType;
-    private String programName;
-    private String encounterType;
+    private String subjectTypeUuid;
+    private String programUuid;
+    private String encounterTypeUuid;
     private boolean isVoided;
 
     public String getUuid() {
@@ -16,28 +16,28 @@ public class FormMappingRequest {
     }
 
 
-    public String getSubjectType() {
-        return subjectType;
+    public String getSubjectTypeUuid() {
+        return subjectTypeUuid;
     }
 
-    public void setSubjectType(String subjectType) {
-        this.subjectType = subjectType;
+    public void setSubjectTypeUuid(String subjectTypeUuid) {
+        this.subjectTypeUuid = subjectTypeUuid;
     }
 
-    public String getProgramName() {
-        return programName;
+    public String getProgramUuid() {
+        return programUuid;
     }
 
-    public void setProgramName(String programName) {
-        this.programName = programName;
+    public void setProgramUuid(String programUuid) {
+        this.programUuid = programUuid;
     }
 
-    public String getEncounterType() {
-        return encounterType;
+    public String getEncounterTypeUuid() {
+        return encounterTypeUuid;
     }
 
-    public void setEncounterType(String encounterType) {
-        this.encounterType = encounterType;
+    public void setEncounterTypeUuid(String encounterTypeUuid) {
+        this.encounterTypeUuid = encounterTypeUuid;
     }
 
     public boolean getVoided(){ return isVoided; }
