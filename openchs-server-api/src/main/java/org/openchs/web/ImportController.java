@@ -6,6 +6,8 @@ import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.batch.JobService;
 import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.OldDataImportService;
+import org.openchs.service.S3Service;
+import org.openchs.service.S3Service.ObjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -13,10 +15,12 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.PagedResources.PageMetadata;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,11 +28,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.springframework.http.MediaType.*;
 
 @RestController
 public class ImportController {
@@ -62,8 +68,8 @@ public class ImportController {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
         try {
-            String s3Key = bulkUploadS3Service.uploadFile(file, uuid);
-            jobService.create(uuid, type, file.getOriginalFilename(), s3Key, user.getId());
+            ObjectInfo storedFileInfo = bulkUploadS3Service.uploadFile(file, uuid);
+            jobService.create(uuid, type, file.getOriginalFilename(), storedFileInfo, user.getId());
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
             logger.error(format("Bulkupload initiation failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();
@@ -88,5 +94,17 @@ public class ImportController {
                 .map(it -> new Resource<>(it))
                 .collect(Collectors.toList());
         return new PagedResources<>(pagedContent, pageMetadata);
+    }
+
+    @GetMapping(value = "/import/errorfile",
+            produces = TEXT_PLAIN_VALUE,
+            consumes = APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<InputStreamResource> getDocument(@RequestParam String jobUuid) {
+        InputStream file = bulkUploadS3Service.downloadErrorFile(jobUuid);
+        return ResponseEntity.ok()
+                .contentType(TEXT_PLAIN)
+                .cacheControl(CacheControl.noCache())
+                .header("Content-Disposition", "attachment; ")
+                .body(new InputStreamResource(file));
     }
 }

@@ -39,4 +39,12 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     default FormMapping findByNameIgnoreCase(String name) {
         throw new UnsupportedOperationException("No field 'name' in FormMapping");
     }
+
+    FormMapping findByEncounterType_UuidAndProgram_UuidAndIsVoidedFalseAndSubjectType_UuidAndForm_FormType(String encounterTypeUUID, String programUUID, String subjectTypeUUID, FormType formType);
+
+    FormMapping findByProgram_UuidAndSubjectType_UuidAndForm_FormType(String programUUID, String subjectTypeUUID, FormType formType);
+
+    FormMapping findBySubjectType_UuidAndForm_FormType(String subjectTypeUuid, FormType formType);
+
+    FormMapping findByEncounterType_UuidAndSubjectType_UuidAndForm_FormType(String encounterTypeUUID, String subjectTypeUuid, FormType formType);
 }

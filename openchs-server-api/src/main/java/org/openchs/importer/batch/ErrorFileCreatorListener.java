@@ -2,6 +2,7 @@ package org.openchs.importer.batch;
 
 import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.S3Service;
+import org.openchs.service.S3Service.ObjectInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.JobExecution;
@@ -70,8 +71,8 @@ public class ErrorFileCreatorListener implements JobExecutionListener {
     public void afterJob(JobExecution jobExecution) {
         logger.info(format("Bulkupload '%s'! %s", jobExecution.getStatus(), jobInfo));
         try {
-            String s3Key = bulkUploadS3Service.uploadErrorFile(errorFile, uuid);
-            logger.info(format("Bulkupload '%s'! Check for errors at '%s'", jobExecution.getStatus(), s3Key));
+            ObjectInfo metadata = bulkUploadS3Service.uploadErrorFile(errorFile, uuid);
+            logger.info(format("Bulkupload '%s'! Check for errors at '%s'", jobExecution.getStatus(), metadata.getKey()));
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("Unable to create error files in S3", e.getMessage());

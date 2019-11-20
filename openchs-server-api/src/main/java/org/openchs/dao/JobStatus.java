@@ -19,6 +19,7 @@ public class JobStatus {
     private int completed;
     private int skipped;
     private Date createTime;
+    private Long noOfLines;
 
     public String getUuid() {
         return uuid;
@@ -122,5 +123,13 @@ public class JobStatus {
 
     public Date getCreateTime() {
         return createTime;
+    }
+
+    public void setNoOfLines(Long noOfLines) {
+        this.noOfLines = noOfLines;
+    }
+
+    public Long getNoOfLines() {
+        return noOfLines;
     }
 }

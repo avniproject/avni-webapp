@@ -11,7 +11,7 @@ import org.openchs.web.request.FormatContract;
 import org.openchs.common.ValidationResult;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type"})
+@JsonPropertyOrder({"name", "uuid", "isMandatory", "keyValues", "concept", "displayOrder", "type", "rule"})
 public class FormElementContract extends ReferenceDataContract {
     private boolean isMandatory;
     private KeyValues keyValues;
@@ -20,6 +20,7 @@ public class FormElementContract extends ReferenceDataContract {
     private String type;
     private FormatContract validFormat;
     private Long organisationId;
+    private String rule;
 
     public FormElementContract() {
     }
@@ -122,9 +123,18 @@ public class FormElementContract extends ReferenceDataContract {
         feContract.setKeyValues(formElement.getKeyValues());
         feContract.setValidFormat(FormatContract.fromFormat(formElement.getValidFormat()));
         feContract.setVoided(formElement.isVoided());
+        feContract.setRule(formElement.getRule());
         ConceptContract conceptContract = new ConceptContract();
         conceptContract.setUuid(formElement.getConcept().getUuid());
         feContract.setConcept(conceptContract);
         return feContract;
+    }
+
+    public String getRule() {
+        return rule;
+    }
+
+    public void setRule(String rule) {
+        this.rule = rule;
     }
 }

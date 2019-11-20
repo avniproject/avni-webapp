@@ -5,9 +5,8 @@ import org.openchs.domain.Program;
 import org.openchs.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -38,4 +37,9 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     default Page<ProgramEnrolment> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
         return findByIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, lastModifiedDateTime, now, pageable);
     }
+
+    @Query("select enl from ProgramEnrolment enl " +
+            "where enl.isVoided = false and " +
+            "enl.individual.isVoided = false ")
+    Page<ProgramEnrolment> findEnrolments(Pageable pageable);
 }

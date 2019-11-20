@@ -1,5 +1,6 @@
 package org.openchs.util;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -24,6 +25,10 @@ public class O {
 
     public static Date getDateFromDbFormat(String dbFormat) {
         return LocalDate.parse(dbFormat, dbFormatter).toDate();
+    }
+
+    public static DateTime getDateTimeDbFormat(String dbFormat) {
+        return dbFormatter.parseDateTime(dbFormat);
     }
 
     public static Object coalesce(Object... elements) {
