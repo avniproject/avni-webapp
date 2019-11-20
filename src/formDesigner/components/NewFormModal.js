@@ -7,6 +7,8 @@ import { Redirect } from "react-router-dom";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import { constFormType } from "../common/constants";
+import { default as UUID } from "uuid";
+import _ from "lodash";
 
 class NewFormModal extends Component {
   constructor(props) {
@@ -76,9 +78,52 @@ class NewFormModal extends Component {
       axios
         .post("/web/forms", dataSend)
         .then(response => {
-          this.setState({
-            toFormDetails: response.data.uuid
-          });
+          if (this.props.isCloneForm === false) {
+            this.setState({
+              toFormDetails: response.data.uuid
+            });
+          } else {
+            const newUUID = response.data.uuid;
+            let editResponse;
+            axios
+              .get(`/forms/export?formUUID=${this.props.uuid}`)
+              .then(response => {
+                editResponse = response.data;
+                editResponse["uuid"] = newUUID;
+                editResponse["name"] = this.state.name;
+                editResponse["formType"] = this.state.formType;
+
+                var promise = new Promise((resolve, reject) => {
+                  _.forEach(editResponse.formElementGroups, group => {
+                    group["uuid"] = UUID.v4();
+                    _.forEach(group.formElements, element => {
+                      element["uuid"] = UUID.v4();
+                    });
+                  });
+                  resolve("Promise resolved ");
+                });
+                promise.then(
+                  result => {
+                    axios
+                      .post("/forms", editResponse)
+                      .then(response => {
+                        if (response.status === 200) {
+                          this.setState({ toFormDetails: newUUID });
+                        }
+                      })
+                      .catch(error => {
+                        console.log(error);
+                      });
+                  },
+                  function(error) {
+                    console.log(error);
+                  }
+                );
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          }
         })
         .catch(error => {
           this.setState({ errorMsg: error.response.data });
@@ -353,7 +398,8 @@ class NewFormModal extends Component {
 NewFormModal.defaultProps = {
   name: "",
   uuid: "",
-  isCreateFrom: true
+  isCreateFrom: true,
+  isCloneForm: false
 };
 
 export default NewFormModal;
