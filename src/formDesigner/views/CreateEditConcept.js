@@ -11,10 +11,11 @@ import CodedConcept from "../components/CodedConcept";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import PropTypes from "prop-types";
 import { DragDropContext } from "react-beautiful-dnd";
+import Box from "@material-ui/core/Box";
+import { Title } from "react-admin";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -424,10 +425,8 @@ class CreateEditConcept extends Component {
     }
 
     return (
-      <ScreenWithAppBar
-        appbarTitle={appBarTitle}
-        enableLeftMenuButton={this.props.enableLeftMenuButton}
-      >
+      <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Title title={appBarTitle} />
         <form onSubmit={this.handleSubmit}>
           <Grid container justify="flex-start">
             <Grid item sm={12}>
@@ -496,7 +495,7 @@ class CreateEditConcept extends Component {
             />
           )}
         </form>
-      </ScreenWithAppBar>
+      </Box>
     );
   }
 }

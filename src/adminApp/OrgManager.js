@@ -33,7 +33,10 @@ import { WithProps } from "../common/components/utils";
 
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
-import AdminLayout from "./components/AdminLayout";
+import AdminLayout from "../common/components/AdminLayout";
+import Forms from "../formDesigner/views/Forms";
+import Concepts from "../formDesigner/views/Concepts";
+import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -46,6 +49,10 @@ class OrgManager extends Component {
 
   render() {
     const { organisation, user } = this.props;
+    const uiDesignerToggle =
+      window.location.href.includes("localhost") || window.location.href.includes("staging");
+    const csvUploadToggle =
+      window.location.href.includes("localhost") || window.location.href.includes("staging");
     return (
       <Admin
         title="Manage Organisation"
@@ -56,18 +63,9 @@ class OrgManager extends Component {
         appLayout={AdminLayout}
       >
         <Resource
-          name="user"
-          list={WithProps({ organisation }, UserList)}
-          create={WithProps({ organisation }, UserCreate)}
-          show={WithProps({ user }, UserDetail)}
-          edit={WithProps({ user }, UserEdit)}
-        />
-        <Resource
-          name="catchment"
-          list={CatchmentList}
-          show={CatchmentDetail}
-          create={CatchmentCreate}
-          edit={CatchmentEdit}
+          name="organisationConfig"
+          options={{ label: "Organisation Config" }}
+          list={WithProps({ organisation }, customConfig)}
         />
         <Resource
           name="addressLevelType"
@@ -86,35 +84,59 @@ class OrgManager extends Component {
           edit={LocationEdit}
         />
         <Resource
-          name="program"
-          options={{ label: "Programs" }}
-          list={ProgramList}
-          show={ProgramDetail}
-          create={ProgramCreate}
-          edit={ProgramEdit}
+          name="catchment"
+          list={CatchmentList}
+          show={CatchmentDetail}
+          create={CatchmentCreate}
+          edit={CatchmentEdit}
+        />
+        <Resource
+          name="user"
+          list={WithProps({ organisation }, UserList)}
+          create={WithProps({ organisation }, UserCreate)}
+          show={WithProps({ user }, UserDetail)}
+          edit={WithProps({ user }, UserEdit)}
+        />
+        <Resource
+          name="upload"
+          options={{ label: "Upload" }}
+          list={csvUploadToggle && UploadDashboard}
         />
         <Resource
           name="subjectType"
           options={{ label: "Subject Types" }}
-          list={SubjectTypeList}
+          list={uiDesignerToggle && SubjectTypeList}
           show={SubjectTypeDetail}
           create={SubjectTypeCreate}
           edit={SubjectTypeEdit}
         />
         <Resource
+          name="program"
+          options={{ label: "Programs" }}
+          list={uiDesignerToggle && ProgramList}
+          show={ProgramDetail}
+          create={ProgramCreate}
+          edit={ProgramEdit}
+        />
+        <Resource
           name="encounterType"
           options={{ label: "Encounter Types" }}
-          list={EncounterTypeList}
+          list={uiDesignerToggle && EncounterTypeList}
           show={EncounterTypeDetail}
           create={EncounterTypeCreate}
           edit={EncounterTypeEdit}
         />
+        <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
         <Resource
-          name="organisationConfig"
-          options={{ label: "Organisation Config" }}
-          list={WithProps({ organisation }, customConfig)}
+          name="concepts"
+          options={{ label: "Concepts" }}
+          list={uiDesignerToggle && Concepts}
         />
-        <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
+        <Resource
+          name="bundle"
+          options={{ label: "Bundle" }}
+          list={uiDesignerToggle && ImplementationBundle}
+        />
       </Admin>
     );
   }

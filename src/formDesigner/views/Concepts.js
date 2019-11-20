@@ -3,7 +3,8 @@ import MaterialTable from "material-table";
 import axios from "axios";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
-import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
+import Box from "@material-ui/core/Box";
+import { Title } from "react-admin";
 
 const Concepts = ({ history }) => {
   const columns = [
@@ -69,7 +70,7 @@ const Concepts = ({ history }) => {
   const editConcept = rowData => ({
     icon: "edit",
     tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
-    onClick: (event, concept) => history.push(`/concept/${concept.uuid}/edit`),
+    onClick: (event, concept) => history.push(`/admin/concept/${concept.uuid}/edit`),
     disabled: rowData.organisationId === 1 || rowData.voided
   });
 
@@ -77,11 +78,12 @@ const Concepts = ({ history }) => {
     icon: "add",
     tooltip: "Create Concept",
     isFreeAction: true,
-    onClick: event => history.push(`/concept/create`)
+    onClick: event => history.push(`/admin/concept/create`)
   };
 
   return (
-    <ScreenWithAppBar appbarTitle="Concepts List" enableLeftMenuButton={true}>
+    <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Title title="Concepts" />
       <MaterialTable
         title=""
         components={{
@@ -104,7 +106,7 @@ const Concepts = ({ history }) => {
         }}
         actions={[voidConcept, editConcept, addNewConcept]}
       />
-    </ScreenWithAppBar>
+    </Box>
   );
 };
 

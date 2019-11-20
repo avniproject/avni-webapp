@@ -8,11 +8,6 @@ import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
-import Forms from "../formDesigner/views/Forms";
-import FormDetails from "../formDesigner/views/FormDetails";
-import Concepts from "../formDesigner/views/Concepts";
-import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
-import UploadImpl from "../formDesigner/views/UploadImpl";
 import Translations from "../translations";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
@@ -43,48 +38,6 @@ const Routes = ({ user, organisation }) => (
       allowedRoles={[ROLES.USER]}
       currentUserRoles={user.roles}
       component={DataEntry}
-    />
-    <RestrictedRoute
-      exact
-      path="/forms"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={user.roles}
-      component={Forms}
-    />
-    <RestrictedRoute
-      exact
-      path="/forms/:formUUID"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={user.roles}
-      component={FormDetails}
-    />
-    <RestrictedRoute
-      exact
-      path="/concepts"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={user.roles}
-      component={Concepts}
-    />
-    <RestrictedRoute
-      exact
-      path="/concept/create"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={user.roles}
-      component={() => <CreateEditConcept isCreatePage={true} />}
-    />
-    <RestrictedRoute
-      exact
-      path="/concept/:uuid/edit"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={user.roles}
-      component={CreateEditConcept}
-    />
-    <RestrictedRoute
-      exact
-      path="/upload"
-      allowedRoles={[ROLES.ORG_ADMIN]}
-      currentUserRoles={user.roles}
-      component={UploadImpl}
     />
     <RestrictedRoute
       exact
@@ -134,7 +87,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default connect(
-  mapStateToProps,
-  null
-)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);
+export default connect(mapStateToProps, null)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);

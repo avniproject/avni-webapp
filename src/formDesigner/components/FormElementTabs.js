@@ -1,5 +1,4 @@
 import React from "react";
-
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -7,7 +6,10 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import FormElementDetails from "./FormElementDetails";
 import { isEqual } from "lodash";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-javascript";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -58,7 +60,6 @@ function FormElementTabs(props) {
     setValue(newValue);
   }
 
-  console.log(`FormElementTabs: render`);
   return (
     <div className={classes.root}>
       <Tabs
@@ -76,46 +77,20 @@ function FormElementTabs(props) {
         <FormElementDetails {...props} />
       </TabPanel>
       <TabPanel className={classes.tabsPanel} value={value} index={1} propsIndex={props.indexTab}>
-        {/* <SyntaxHighlighter language="javascript" style={docco}>
-          {`'use strict'; 
-function rule(params, imports) {`}
-        </SyntaxHighlighter> */}
-
-        {/* <div>{`'use strict';`} </div>
-        <div>{`function rule(params, imports) {`}</div> */}
-
-        {/* <AceEditor
-          placeholder="Enter code without function tag"
-          mode="javascript"
-          onChange={value => props.updateSkipLogicRule(props.groupIndex, props.index, value)}
-          fontSize={16}
-          height="300px"
-          width="600px"
-          showPrintMargin={true}
-          showGutter={true}
-          highlightActiveLine={true}
-          value={props.formElementData.rule}
-          setOptions={{
-            showLineNumbers: true,
-            tabSize: 1
+        <Editor
+          value={props.formElementData.rule ? props.formElementData.rule : ""}
+          onValueChange={event => props.updateSkipLogicRule(props.groupIndex, props.index, event)}
+          highlight={code => highlight(code, languages.js)}
+          padding={10}
+          tabSize={4}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 14,
+            height: 300,
+            borderStyle: "solid",
+            borderWidth: "1px"
           }}
-        /> */}
-
-        <TextareaAutosize
-          rowsMin={8}
-          style={{ height: "300px", width: "100%", marginTop: "2%" }}
-          placeholder="Enter skip logic here"
-          value={props.formElementData.rule}
-          onChange={event =>
-            props.updateSkipLogicRule(props.groupIndex, props.index, event.target.value)
-          }
         />
-        {/* <SyntaxHighlighter language="javascript" style={docco}>
-          {`}; 
-rule;`}
-        </SyntaxHighlighter> */}
-        {/* <div>{`}; `}</div>
-        <div>{`rule;`}</div> */}
       </TabPanel>
     </div>
   );
