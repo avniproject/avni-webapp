@@ -2,7 +2,6 @@ package org.openchs.web;
 
 
 import org.openchs.domain.User;
-import org.openchs.exporter.ExportBatchConfiguration;
 import org.openchs.framework.security.UserContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import static java.lang.String.format;
-
 @RestController
 public class ExportController {
 
@@ -39,11 +36,11 @@ public class ExportController {
         logger = LoggerFactory.getLogger(getClass());
     }
 
-    @RequestMapping(value = "/visit/export", method = RequestMethod.GET)
+    @RequestMapping(value = "/export", method = RequestMethod.GET)
     ///TODO:remove user
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<?> getVisitData(@RequestParam String encounterTypeUUID,
-                                          @RequestParam String programUUID,
+                                          @RequestParam(required = false) String programUUID,
                                           @RequestParam String subjectTypeUUID,
                                           @RequestParam String startDate,
                                           @RequestParam String endDate) {
@@ -60,11 +57,8 @@ public class ExportController {
                         .toJobParameters();
 
         try {
-            JobExecution execution = jobLauncher.run(readCSVFilesJob, jobParameters);
-            System.out.println("Exit Status ========: " + execution.getStatus());
+            jobLauncher.run(readCSVFilesJob, jobParameters);
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
-            logger.error("Export failed");
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
         return ResponseEntity.ok(true);

@@ -1,9 +1,8 @@
 package org.openchs.exporter;
 
+import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
-import org.openchs.domain.ProgramEnrolment;
 import org.openchs.framework.security.AuthService;
-import org.openchs.util.O;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -23,9 +22,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -40,13 +37,16 @@ public class ExportBatchConfiguration {
 
     private ProgramEnrolmentRepository programEnrolmentRepository;
 
+    private IndividualRepository individualRepository;
+
     private AuthService authService;
 
     @Autowired
-    public ExportBatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, ProgramEnrolmentRepository programEnrolmentRepository, AuthService authService) {
+    public ExportBatchConfiguration(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, ProgramEnrolmentRepository programEnrolmentRepository, IndividualRepository individualRepository, AuthService authService) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.programEnrolmentRepository = programEnrolmentRepository;
+        this.individualRepository = individualRepository;
         this.authService = authService;
     }
 
@@ -61,25 +61,27 @@ public class ExportBatchConfiguration {
     }
 
     @Bean
-    public Step step1(RepositoryItemReader<ProgramEnrolment> reader,
-                      FlatFileItemWriter<ProgramEnrolment> fileWriter) {
-        return stepBuilderFactory.get("step1").<ProgramEnrolment, ProgramEnrolment>chunk(5)
+    public Step step1(RepositoryItemReader<Object> reader,
+                      ExportProcessor exportProcessor,
+                      FlatFileItemWriter<ExportItemRow> fileWriter) {
+        return stepBuilderFactory.get("step1").<Object, ExportItemRow>chunk(5)
                 .reader(reader)
+                .processor(exportProcessor)
                 .writer(fileWriter)
                 .build();
     }
 
     @Bean
     @StepScope
-    public FlatFileItemWriter<ProgramEnrolment> fileWriter(@Value("#{jobParameters['uuid']}") String uuid,
-                                                           ExportCSVFieldExtractor exportCSVFieldExtractor) {
-        FlatFileItemWriter<ProgramEnrolment> writer = new FlatFileItemWriter<>();
+    public FlatFileItemWriter<ExportItemRow> fileWriter(@Value("#{jobParameters['uuid']}") String uuid,
+                                                        ExportCSVFieldExtractor exportCSVFieldExtractor) {
+        FlatFileItemWriter<ExportItemRow> writer = new FlatFileItemWriter<>();
         File outputFile;
         File errorDir = new File(format("%s/exports/", System.getProperty("java.io.tmpdir")));
         errorDir.mkdirs();
         outputFile = new File(errorDir, format("%s.csv", uuid));
         writer.setResource(new FileSystemResource(outputFile));
-        DelimitedLineAggregator<ProgramEnrolment> delimitedLineAggregator = new DelimitedLineAggregator<>();
+        DelimitedLineAggregator<ExportItemRow> delimitedLineAggregator = new DelimitedLineAggregator<>();
         delimitedLineAggregator.setDelimiter(",");
         delimitedLineAggregator.setFieldExtractor(exportCSVFieldExtractor);
         writer.setLineAggregator(delimitedLineAggregator);
@@ -89,25 +91,27 @@ public class ExportBatchConfiguration {
 
     @Bean
     @StepScope
-    public RepositoryItemReader<ProgramEnrolment> reader(@Value("#{jobParameters['userId']}") Long userId,
-                                                         @Value("#{jobParameters['encounterTypeUUID']}") String encounterTypeUUID,
-                                                         @Value("#{jobParameters['startDate']}") String startDate,
-                                                         @Value("#{jobParameters['endDate']}") String endDate) {
+    public RepositoryItemReader<Object> reader(@Value("#{jobParameters['userId']}") Long userId,
+                                               @Value("#{jobParameters['programUUID']}") String programUUID) {
         authService.authenticateByUserId(userId);
         final Map<String, Sort.Direction> sorts = new HashMap<>();
         sorts.put("id", Sort.Direction.ASC);
-        List<Object> args1 = new ArrayList<>();
-        args1.add(encounterTypeUUID);
-        args1.add(O.getDateTimeDbFormat(startDate));
-        args1.add(O.getDateTimeDbFormat(endDate));
+        if (programUUID != null) {
+            return new RepositoryItemReaderBuilder<Object>()
+                    .name("reader")
+                    .repository(programEnrolmentRepository)
+                    .methodName("findEnrolments")
+                    .sorts(sorts)
+                    .build();
+        } else {
+            return new RepositoryItemReaderBuilder<Object>()
+                    .name("reader")
+                    .repository(individualRepository)
+                    .methodName("findIndividuals")
+                    .sorts(sorts)
+                    .build();
+        }
 
-        return new RepositoryItemReaderBuilder<ProgramEnrolment>()
-                .name("reader")
-                .repository(programEnrolmentRepository)
-                .methodName("findEnrolmentsBetween")
-                .sorts(sorts)
-                .arguments(args1)
-                .build();
     }
 
     @Bean

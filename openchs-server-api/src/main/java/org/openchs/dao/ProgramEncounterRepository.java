@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.openchs.domain.ProgramEncounter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
@@ -26,4 +27,13 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     default Page<ProgramEncounter> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
         return findByProgramEnrolmentIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, lastModifiedDateTime, now, pageable);
     }
+
+    @Query(value = "select count(enc.id) as count " +
+            "from program_encounter enc " +
+            "join encounter_type t on t.id = enc.encounter_type_id " +
+            "where t.uuid = :programEncounterTypeUUID " +
+            "group by enc.program_enrolment_id " +
+            "order by count desc " +
+            "limit 1", nativeQuery = true)
+    Long getMaxProgramEncounterCount(String programEncounterTypeUUID);
 }

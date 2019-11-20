@@ -19,4 +19,7 @@ public interface EncounterTypeRepository extends ReferenceDataRepository<Encount
 
     @Query("select e.name from EncounterType e where e.isVoided = false")
     List<String> getAllNames();
+
+    @Query("select e.name from EncounterType e where e.isVoided = false and e.uuid =:EncounterTypeUUID")
+    String getEncounterTypeName(String EncounterTypeUUID);
 }

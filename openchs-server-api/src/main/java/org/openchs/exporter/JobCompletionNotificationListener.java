@@ -11,29 +11,27 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
-
-    private static final Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
-
+    private Logger logger;
 
     @Autowired
     public JobCompletionNotificationListener() {
+        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override
     public void afterJob(JobExecution jobExecution) {
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-            log.info("!!! JOB FINISHED! Time to verify the results {}", jobExecution.getJobConfigurationName());
+            logger.info("Export Job with uuid {} finished", jobExecution.getJobParameters().getString("uuid"));
         } else {
-            log.error("some error occurred in the job {}", jobExecution.getStatus());
+            logger.info("Job finished with status {}", jobExecution.getStatus());
             for (Throwable t : jobExecution.getAllFailureExceptions()) {
-                log.error("some error occurred in the job2 {}", t.getMessage());
-                log.error("some error occurred in the job2 {}", t.getStackTrace());
+                logger.error("some error occurred in the job2 {}", t.getMessage());
             }
         }
     }
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        log.info("starting the actual JOB with id {} name {}", jobExecution.getJobId(), jobExecution.getJobConfigurationName());
+        logger.info("starting export job with uuid {}", jobExecution.getJobParameters().getString("uuid"));
     }
 }

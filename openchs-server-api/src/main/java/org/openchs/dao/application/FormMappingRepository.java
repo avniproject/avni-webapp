@@ -1,6 +1,5 @@
 package org.openchs.dao.application;
 
-import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
 import org.openchs.application.FormMapping.FormMappingProjection;
 import org.openchs.application.FormType;
@@ -45,6 +44,7 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
 
     FormMapping findByProgram_UuidAndSubjectType_UuidAndForm_FormType(String programUUID, String subjectTypeUUID, FormType formType);
 
-    //@Query("select fm from FormMapping fm where fm.FormType = 'IndividualProfile' and fm.subjectType.operationalSubjectType.name ")
     FormMapping findBySubjectType_UuidAndForm_FormType(String subjectTypeUuid, FormType formType);
+
+    FormMapping findByEncounterType_UuidAndSubjectType_UuidAndForm_FormType(String encounterTypeUUID, String subjectTypeUuid, FormType formType);
 }
