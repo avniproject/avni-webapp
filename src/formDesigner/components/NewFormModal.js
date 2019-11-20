@@ -71,9 +71,9 @@ class NewFormModal extends Component {
         formType: this.state.formType
       };
       let mapping = {};
-      mapping["subjectType"] = this.state.subjectType;
-      mapping["programName"] = this.state.programName;
-      mapping["encounterType"] = this.state.encounterType;
+      mapping["subjectTypeUuid"] = this.state.subjectType;
+      mapping["programUuid"] = this.state.programName;
+      mapping["encounterTypeUuid"] = this.state.encounterType;
       dataSend["formMappings"] = [mapping];
       axios
         .post("/web/forms", dataSend)

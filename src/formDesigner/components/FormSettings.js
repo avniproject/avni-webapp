@@ -46,9 +46,9 @@ class FormSettings extends Component {
     _.forEach(formMapping, (formMap, index) => {
       let uniqueString;
       if (this.state.formType === "ChecklistItem" || this.state.formType === "IndividualProfile") {
-        uniqueString = formMap.subjectType;
-        if (formMap.subjectType === "") {
-          errorsList["unselectedData"]["subjectType" + index] = "Please select subject type.";
+        uniqueString = formMap.subjectTypeUuid;
+        if (formMap.subjectTypeUuid === "") {
+          errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
         }
       }
 
@@ -56,36 +56,38 @@ class FormSettings extends Component {
         this.state.formType === "ProgramEncounterCancellation" ||
         this.state.formType === "ProgramEncounter"
       ) {
-        uniqueString = formMap.subjectType + formMap.programName + formMap.encounterType;
-        if (formMap.subjectType === "") {
-          errorsList["unselectedData"]["subjectType" + index] = "Please select subject type.";
+        uniqueString = formMap.subjectTypeUuid + formMap.programUuid + formMap.encounterTypeUuid;
+        if (formMap.subjectTypeUuid === "") {
+          errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
         }
-        if (formMap.programName === "") {
-          errorsList["unselectedData"]["programName" + index] = "Please select program type.";
+        if (formMap.programUuid === "") {
+          errorsList["unselectedData"]["programUuid" + index] = "Please select program type.";
         }
-        if (formMap.encounterType === "") {
-          errorsList["unselectedData"]["encounterType" + index] = "Please select encounter type.";
+        if (formMap.encounterTypeUuid === "") {
+          errorsList["unselectedData"]["encounterTypeUuid" + index] =
+            "Please select encounter type.";
         }
       }
 
       if (this.state.formType === "ProgramExit" || this.state.formType === "ProgramEnrolment") {
-        uniqueString = formMap.subjectType + formMap.programName;
-        if (formMap.subjectType === "") {
-          errorsList["unselectedData"]["subjectType" + index] = "Please select subject type.";
+        uniqueString = formMap.subjectTypeUuid + formMap.programUuid;
+        if (formMap.subjectTypeUuid === "") {
+          errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
         }
-        if (formMap.programName === "") {
-          errorsList["unselectedData"]["programName" + index] = "Please select program type.";
+        if (formMap.programUuid === "") {
+          errorsList["unselectedData"]["programUuid" + index] = "Please select program type.";
         }
       }
 
       if (this.state.formType === "Encounter") {
-        uniqueString = formMap.subjectType + formMap.encounterType;
-        if (formMap.subjectType === "") {
-          errorsList["unselectedData"]["subjectType" + index] = "Please select subject type.";
+        uniqueString = formMap.subjectTypeUuid + formMap.encounterTypeUuid;
+        if (formMap.subjectTypeUuid === "") {
+          errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
         }
 
-        if (formMap.encounterType === "") {
-          errorsList["unselectedData"]["encounterType" + index] = "Please select encounter type.";
+        if (formMap.encounterTypeUuid === "") {
+          errorsList["unselectedData"]["encounterTypeUuid" + index] =
+            "Please select encounter type.";
         }
       }
       if (existingMapping.includes(uniqueString)) {
@@ -117,22 +119,7 @@ class FormSettings extends Component {
     const validateFormStatus = this.validateForm();
     if (validateFormStatus) {
       const existFormUUID = this.props.uuid;
-
-      if (
-        this.state.formType === "IndividualProfile" ||
-        this.state.formType === "Encounter" ||
-        this.state.formType === "ChecklistItem"
-      ) {
-        this.setState({ programName: "" });
-      }
-
-      if (
-        this.state.formType !== "Encounter" &&
-        this.state.formType !== "ProgramEncounter" &&
-        this.state.formType !== "ProgramEncounterCancellation"
-      ) {
-        this.setState({ encounterType: "" });
-      }
+      this.setState({ errorMsg: "" });
       axios
         .put("/web/forms/" + existFormUUID + "/metadata", {
           name: this.state.name,
@@ -181,9 +168,9 @@ class FormSettings extends Component {
           if (formMapping.formUuid === this.props.formData.uuid) {
             formMappings.push({
               uuid: formMapping.uuid,
-              programName: formMapping.programUuid,
-              subjectType: formMapping.subjectTypeUuid,
-              encounterType: formMapping.encounterTypeUuid,
+              programUuid: formMapping.programUuid,
+              subjectTypeUuid: formMapping.subjectTypeUuid,
+              encounterTypeUuid: formMapping.encounterTypeUuid,
               voided: false,
               newFlag: false
             });
@@ -207,11 +194,11 @@ class FormSettings extends Component {
   programNameElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="programName">Program Name</InputLabel>
+        <InputLabel htmlFor="programUuid">Program Name</InputLabel>
         <Select
-          name="programName"
-          value={this.state.formMappings[index].programName}
-          onChange={event => this.handleChange(index, "programName", event.target.value)}
+          name="programUuid"
+          value={this.state.formMappings[index].programUuid}
+          onChange={event => this.handleChange(index, "programUuid", event.target.value)}
         >
           {this.state.data.programs != null &&
             this.state.data.programs.map(program => (
@@ -221,9 +208,9 @@ class FormSettings extends Component {
             ))}
         </Select>
         {this.state.errors.hasOwnProperty("unselectedData") &&
-          (this.state.errors["unselectedData"].hasOwnProperty("programName" + index) && (
+          (this.state.errors["unselectedData"].hasOwnProperty("programUuid" + index) && (
             <FormHelperText error>
-              {this.state.errors["unselectedData"]["programName" + index]}
+              {this.state.errors["unselectedData"]["programUuid" + index]}
             </FormHelperText>
           ))}
       </FormControl>
@@ -239,11 +226,11 @@ class FormSettings extends Component {
   subjectTypeElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="subjectType">Subject Type</InputLabel>
+        <InputLabel htmlFor="subjectTypeUuid">Subject Type</InputLabel>
         <Select
-          name="subjectType"
-          value={this.state.formMappings[index].subjectType}
-          onChange={event => this.handleChange(index, "subjectType", event.target.value)}
+          name="subjectTypeUuid"
+          value={this.state.formMappings[index].subjectTypeUuid}
+          onChange={event => this.handleChange(index, "subjectTypeUuid", event.target.value)}
         >
           {this.state.data.subjectTypes != null &&
             this.state.data.subjectTypes.map(subjectType => (
@@ -253,9 +240,9 @@ class FormSettings extends Component {
             ))}
         </Select>
         {this.state.errors.hasOwnProperty("unselectedData") &&
-          (this.state.errors["unselectedData"].hasOwnProperty("subjectType" + index) && (
+          (this.state.errors["unselectedData"].hasOwnProperty("subjectTypeUuid" + index) && (
             <FormHelperText error>
-              {this.state.errors["unselectedData"]["subjectType" + index]}
+              {this.state.errors["unselectedData"]["subjectTypeUuid" + index]}
             </FormHelperText>
           ))}
       </FormControl>
@@ -285,11 +272,11 @@ class FormSettings extends Component {
   encounterTypesElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="encounterType">Encounter Type</InputLabel>
+        <InputLabel htmlFor="encounterTypeUuid">Encounter Type</InputLabel>
         <Select
-          name="encounterType"
-          value={this.state.formMappings[index].encounterType}
-          onChange={event => this.handleChange(index, "encounterType", event.target.value)}
+          name="encounterTypeUuid"
+          value={this.state.formMappings[index].encounterTypeUuid}
+          onChange={event => this.handleChange(index, "encounterTypeUuid", event.target.value)}
         >
           {this.state.data.encounterTypes != null &&
             this.state.data.encounterTypes.map(encounterType => (
@@ -300,9 +287,9 @@ class FormSettings extends Component {
         </Select>
 
         {this.state.errors.hasOwnProperty("unselectedData") &&
-          (this.state.errors["unselectedData"].hasOwnProperty("encounterType" + index) && (
+          (this.state.errors["unselectedData"].hasOwnProperty("encounterTypeUuid" + index) && (
             <FormHelperText error>
-              {this.state.errors["unselectedData"]["encounterType" + index]}
+              {this.state.errors["unselectedData"]["encounterTypeUuid" + index]}
             </FormHelperText>
           ))}
       </FormControl>
@@ -323,9 +310,9 @@ class FormSettings extends Component {
           uuid: UUID.v4(),
           id: "",
           formUuid: this.state.uuid,
-          subjectType: "",
-          programName: program ? "" : null,
-          encounterType: encounter ? "" : null,
+          subjectTypeUuid: "",
+          programUuid: program ? "" : null,
+          encounterTypeUuid: encounter ? "" : null,
           newFlag: true
         }
       ]
@@ -412,9 +399,11 @@ class FormSettings extends Component {
                   </Grid>
                   {this.state.errors.hasOwnProperty("existingMapping") &&
                     (this.state.errors["existingMapping"].hasOwnProperty(index) && (
-                      <FormHelperText error>
-                        {this.state.errors["existingMapping"][index]}
-                      </FormHelperText>
+                      <FormControl fullWidth margin="dense">
+                        <FormHelperText error>
+                          {this.state.errors["existingMapping"][index]}
+                        </FormHelperText>
+                      </FormControl>
                     ))}
                 </div>
               )
