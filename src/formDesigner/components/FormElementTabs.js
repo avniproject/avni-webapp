@@ -77,20 +77,35 @@ function FormElementTabs(props) {
         <FormElementDetails {...props} />
       </TabPanel>
       <TabPanel className={classes.tabsPanel} value={value} index={1} propsIndex={props.indexTab}>
-        <Editor
-          value={props.formElementData.rule ? props.formElementData.rule : ""}
-          onValueChange={event => props.updateSkipLogicRule(props.groupIndex, props.index, event)}
-          highlight={code => highlight(code, languages.js)}
-          padding={10}
-          tabSize={4}
+        <div
           style={{
-            fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 14,
-            height: 300,
             borderStyle: "solid",
-            borderWidth: "1px"
+            borderWidth: "1px",
+            minHeight: "100px",
+            maxHeight: "300px",
+            overflowY: "auto"
           }}
-        />
+        >
+          <Editor
+            value={
+              props.formElementData.rule
+                ? props.formElementData.rule
+                : `use strict";
+function rule({ params, imports }) {
+       
+}
+rule;`
+            }
+            onValueChange={event => props.updateSkipLogicRule(props.groupIndex, props.index, event)}
+            highlight={code => highlight(code, languages.js)}
+            padding={10}
+            tabSize={4}
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 16
+            }}
+          />
+        </div>
       </TabPanel>
     </div>
   );
