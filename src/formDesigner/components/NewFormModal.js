@@ -34,7 +34,8 @@ class NewFormModal extends Component {
     let errorsList = {};
     if (this.state.name === "") errorsList["name"] = "Please enter form name.";
     if (this.state.formType === "") errorsList["formType"] = "Please select form type.";
-    if (this.state.subjectType === "") errorsList["subjectType"] = "Please select subject type.";
+    if (this.state.formType !== "ChecklistItem" && this.state.subjectType === "")
+      errorsList["subjectType"] = "Please select subject type.";
     if (
       (this.state.formType === "ProgramEncounter" ||
         this.state.formType === "ProgramExit" ||
@@ -70,11 +71,14 @@ class NewFormModal extends Component {
         name: this.state.name,
         formType: this.state.formType
       };
-      let mapping = {};
-      mapping["subjectTypeUuid"] = this.state.subjectType;
-      mapping["programUuid"] = this.state.programName;
-      mapping["encounterTypeUuid"] = this.state.encounterType;
-      dataSend["formMappings"] = [mapping];
+      dataSend["formMappings"] = [];
+      if (this.state.formType !== "ChecklistItem") {
+        let mapping = {};
+        mapping["subjectTypeUuid"] = this.state.subjectType;
+        mapping["programUuid"] = this.state.programName;
+        mapping["encounterTypeUuid"] = this.state.encounterType;
+        dataSend["formMappings"].push(mapping);
+      }
       axios
         .post("/web/forms", dataSend)
         .then(response => {
@@ -332,6 +336,7 @@ class NewFormModal extends Component {
       this.state.formType === "ProgramExit" ||
       this.state.formType === "ProgramEnrolment" ||
       this.state.formType === "ProgramEncounterCancellation";
+    const subjectTypeBased = this.state.formType !== "" && this.state.formType !== "ChecklistItem";
     const submitButtonName = this.props.isCreateFrom ? "Add" : "Update";
 
     return (
@@ -371,7 +376,7 @@ class NewFormModal extends Component {
               <FormHelperText error>{this.state.errors.name}</FormHelperText>
             )}
           </FormControl>
-          {this.subjectTypeElement()}
+          {subjectTypeBased && this.subjectTypeElement()}
           {programBased && this.programNameElement()}
           {encounterTypes && this.encounterTypesElement()}
         </form>

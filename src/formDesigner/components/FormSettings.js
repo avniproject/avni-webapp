@@ -43,57 +43,67 @@ class FormSettings extends Component {
     errorsList["existingMapping"] = {};
     errorsList["unselectedData"] = {};
 
+    if (this.state.formType !== "ChecklistItem") {
+      let count = 0;
+      _.forEach(this.state.formMappings, function(formMap, index) {
+        if (!formMap.voided) count += 1;
+      });
+      if (count == 0) errorsList["name"] = "Please add atleast one form mapping.";
+    }
+
     _.forEach(formMapping, (formMap, index) => {
       let uniqueString;
-      if (this.state.formType === "ChecklistItem" || this.state.formType === "IndividualProfile") {
-        uniqueString = formMap.subjectTypeUuid;
-        if (formMap.subjectTypeUuid === "") {
-          errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
-        }
-      }
-
-      if (
-        this.state.formType === "ProgramEncounterCancellation" ||
-        this.state.formType === "ProgramEncounter"
-      ) {
-        uniqueString = formMap.subjectTypeUuid + formMap.programUuid + formMap.encounterTypeUuid;
-        if (formMap.subjectTypeUuid === "") {
-          errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
-        }
-        if (formMap.programUuid === "") {
-          errorsList["unselectedData"]["programUuid" + index] = "Please select program type.";
-        }
-        if (formMap.encounterTypeUuid === "") {
-          errorsList["unselectedData"]["encounterTypeUuid" + index] =
-            "Please select encounter type.";
-        }
-      }
-
-      if (this.state.formType === "ProgramExit" || this.state.formType === "ProgramEnrolment") {
-        uniqueString = formMap.subjectTypeUuid + formMap.programUuid;
-        if (formMap.subjectTypeUuid === "") {
-          errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
-        }
-        if (formMap.programUuid === "") {
-          errorsList["unselectedData"]["programUuid" + index] = "Please select program type.";
-        }
-      }
-
-      if (this.state.formType === "Encounter") {
-        uniqueString = formMap.subjectTypeUuid + formMap.encounterTypeUuid;
-        if (formMap.subjectTypeUuid === "") {
-          errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
+      if (!formMap.voided) {
+        if (this.state.formType === "IndividualProfile") {
+          uniqueString = formMap.subjectTypeUuid;
+          if (formMap.subjectTypeUuid === "") {
+            errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
+          }
         }
 
-        if (formMap.encounterTypeUuid === "") {
-          errorsList["unselectedData"]["encounterTypeUuid" + index] =
-            "Please select encounter type.";
+        if (
+          this.state.formType === "ProgramEncounterCancellation" ||
+          this.state.formType === "ProgramEncounter"
+        ) {
+          uniqueString = formMap.subjectTypeUuid + formMap.programUuid + formMap.encounterTypeUuid;
+          if (formMap.subjectTypeUuid === "") {
+            errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
+          }
+          if (formMap.programUuid === "") {
+            errorsList["unselectedData"]["programUuid" + index] = "Please select program type.";
+          }
+          if (formMap.encounterTypeUuid === "") {
+            errorsList["unselectedData"]["encounterTypeUuid" + index] =
+              "Please select encounter type.";
+          }
         }
+
+        if (this.state.formType === "ProgramExit" || this.state.formType === "ProgramEnrolment") {
+          uniqueString = formMap.subjectTypeUuid + formMap.programUuid;
+          if (formMap.subjectTypeUuid === "") {
+            errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
+          }
+          if (formMap.programUuid === "") {
+            errorsList["unselectedData"]["programUuid" + index] = "Please select program type.";
+          }
+        }
+
+        if (this.state.formType === "Encounter") {
+          uniqueString = formMap.subjectTypeUuid + formMap.encounterTypeUuid;
+          if (formMap.subjectTypeUuid === "") {
+            errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
+          }
+
+          if (formMap.encounterTypeUuid === "") {
+            errorsList["unselectedData"]["encounterTypeUuid" + index] =
+              "Please select encounter type.";
+          }
+        }
+        if (existingMapping.includes(uniqueString)) {
+          errorsList["existingMapping"][index] = "Same mapping already exist";
+        }
+        existingMapping.push(uniqueString);
       }
-      if (existingMapping.includes(uniqueString)) {
-        errorsList["existingMapping"][index] = "Same mapping already exist";
-      }
-      !formMap.voided && existingMapping.push(uniqueString);
     });
 
     if (Object.keys(errorsList["unselectedData"]).length === 0) {
@@ -188,7 +198,24 @@ class FormSettings extends Component {
   }
 
   onChangeField(event) {
-    this.setState(Object.assign({}, this.state, { [event.target.name]: event.target.value }));
+    if (event.target.name === "formType" && event.target.value !== this.state.formType) {
+      const voidedMessage = `Are you sure you want to change form type? It may result in your form not showing up in client application so please do it only if you aware of the consequences.`;
+      if (window.confirm(voidedMessage)) {
+        const formMappings = this.state.formMappings;
+        _.forEach(formMappings, function(formMap, index) {
+          console.log(index);
+          formMap["voided"] = true;
+        });
+        this.setState(
+          Object.assign({}, this.state, {
+            [event.target.name]: event.target.value,
+            formMappings: formMappings
+          })
+        );
+      }
+    } else {
+      this.setState(Object.assign({}, this.state, { [event.target.name]: event.target.value }));
+    }
   }
 
   programNameElement(index) {
@@ -329,6 +356,8 @@ class FormSettings extends Component {
       this.state.formType === "ProgramExit" ||
       this.state.formType === "ProgramEnrolment" ||
       this.state.formType === "ProgramEncounterCancellation";
+    const checklistItemBased =
+      this.state.formType !== "" && this.state.formType !== "ChecklistItem";
     const submitButtonName = "Save";
     return (
       <div>
@@ -368,55 +397,58 @@ class FormSettings extends Component {
             )}
           </FormControl>
 
-          {this.state.formMappings.map((mapping, index) => {
-            return (
-              !mapping.voided && (
-                <div key={index}>
-                  <Grid container item sm={12} spacing={2}>
-                    <Grid item sm={3}>
-                      {this.subjectTypeElement(index)}
-                    </Grid>
-                    {programBased && (
-                      <Grid item sm={4}>
-                        {this.programNameElement(index)}
+          {checklistItemBased &&
+            this.state.formMappings.map((mapping, index) => {
+              return (
+                !mapping.voided && (
+                  <div key={index}>
+                    <Grid container item sm={12} spacing={2}>
+                      <Grid item sm={3}>
+                        {this.subjectTypeElement(index)}
                       </Grid>
-                    )}
-                    {encounterTypes && (
-                      <Grid item sm={4}>
-                        {this.encounterTypesElement(index)}
-                      </Grid>
-                    )}
+                      {programBased && (
+                        <Grid item sm={4}>
+                          {this.programNameElement(index)}
+                        </Grid>
+                      )}
+                      {encounterTypes && (
+                        <Grid item sm={4}>
+                          {this.encounterTypesElement(index)}
+                        </Grid>
+                      )}
 
-                    <Grid item sm={1}>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={event => this.removeMapping(index)}
-                        style={{ marginTop: 10 }}
-                      >
-                        <DeleteIcon fontSize="inherit" />
-                      </IconButton>
+                      <Grid item sm={1}>
+                        <IconButton
+                          aria-label="delete"
+                          onClick={event => this.removeMapping(index)}
+                          style={{ marginTop: 10 }}
+                        >
+                          <DeleteIcon fontSize="inherit" />
+                        </IconButton>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                  {this.state.errors.hasOwnProperty("existingMapping") &&
-                    (this.state.errors["existingMapping"].hasOwnProperty(index) && (
-                      <FormControl fullWidth margin="dense">
-                        <FormHelperText error>
-                          {this.state.errors["existingMapping"][index]}
-                        </FormHelperText>
-                      </FormControl>
-                    ))}
-                </div>
-              )
-            );
-          })}
+                    {this.state.errors.hasOwnProperty("existingMapping") &&
+                      (this.state.errors["existingMapping"].hasOwnProperty(index) && (
+                        <FormControl fullWidth margin="dense">
+                          <FormHelperText error>
+                            {this.state.errors["existingMapping"][index]}
+                          </FormHelperText>
+                        </FormControl>
+                      ))}
+                  </div>
+                )
+              );
+            })}
         </form>
-        <Button
-          color="primary"
-          onClick={event => this.addMapping(programBased, encounterTypes)}
-          style={{ marginTop: 10 }}
-        >
-          Add mapping
-        </Button>
+        {checklistItemBased && (
+          <Button
+            color="primary"
+            onClick={event => this.addMapping(programBased, encounterTypes)}
+            style={{ marginTop: 10 }}
+          >
+            Add mapping
+          </Button>
+        )}
         <div>
           <Button
             variant="contained"
