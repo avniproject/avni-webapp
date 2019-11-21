@@ -1,10 +1,11 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
 import axios from "axios";
 import _ from "lodash";
-import { withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
+import Button from "@material-ui/core/Button";
 
 const Concepts = ({ history }) => {
   const columns = [
@@ -12,6 +13,8 @@ const Concepts = ({ history }) => {
     { title: "DataType", field: "dataType" },
     { title: "OrganisationId", field: "organisationId", type: "numeric" }
   ];
+
+  const [redirect, setRedirect] = useState(false);
 
   const tableRef = React.createRef();
   const refreshTable = ref => ref.current && ref.current.onQueryChange();
@@ -74,39 +77,51 @@ const Concepts = ({ history }) => {
     disabled: rowData.organisationId === 1 || rowData.voided
   });
 
-  const addNewConcept = {
-    icon: "add",
-    tooltip: "Create Concept",
-    isFreeAction: true,
-    onClick: event => history.push(`/admin/concept/create`)
+  const addNewConcept = () => {
+    setRedirect(true);
   };
 
   return (
-    <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title="Concepts" />
-      <MaterialTable
-        title=""
-        components={{
-          Container: props => <Fragment>{props.children}</Fragment>
-        }}
-        tableRef={tableRef}
-        columns={columns}
-        data={fetchData}
-        options={{
-          pageSize: 10,
-          pageSizeOptions: [10, 15, 20],
-          addRowPosition: "first",
-          sorting: true,
-          debounceInterval: 500,
-          searchFieldAlignment: "left",
-          searchFieldStyle: { width: "100%", marginLeft: "-8%" },
-          rowStyle: rowData => ({
-            backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
-          })
-        }}
-        actions={[voidConcept, editConcept, addNewConcept]}
-      />
-    </Box>
+    <>
+      <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Title title="Concepts" />
+
+        <div className="container">
+          <div>
+            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+              <Button variant="outlined" color="secondary" onClick={addNewConcept}>
+                {" "}
+                New Concept{" "}
+              </Button>
+            </div>
+
+            <MaterialTable
+              title=""
+              components={{
+                Container: props => <Fragment>{props.children}</Fragment>
+              }}
+              tableRef={tableRef}
+              columns={columns}
+              data={fetchData}
+              options={{
+                pageSize: 10,
+                pageSizeOptions: [10, 15, 20],
+                addRowPosition: "first",
+                sorting: true,
+                debounceInterval: 500,
+                searchFieldAlignment: "left",
+                searchFieldStyle: { width: "100%", marginLeft: "-8%" },
+                rowStyle: rowData => ({
+                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                })
+              }}
+              actions={[editConcept, voidConcept]}
+            />
+          </div>
+        </div>
+      </Box>
+      {redirect && <Redirect to={"/admin/concept/create"} />}s
+    </>
   );
 };
 

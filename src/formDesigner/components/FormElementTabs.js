@@ -77,20 +77,33 @@ function FormElementTabs(props) {
         <FormElementDetails {...props} />
       </TabPanel>
       <TabPanel className={classes.tabsPanel} value={value} index={1} propsIndex={props.indexTab}>
+        {/*
+          Below div is used to control scroll if you want scroll then uncomment div tag.
+        */}
+
+        {/* <div
+          style={{
+            borderStyle: "solid",
+            borderWidth: "1px",
+            minHeight: "100px",
+            maxHeight: "300px",
+            overflowY: "auto"
+          }}
+        > */}
         <Editor
           value={props.formElementData.rule ? props.formElementData.rule : ""}
           onValueChange={event => props.updateSkipLogicRule(props.groupIndex, props.index, event)}
           highlight={code => highlight(code, languages.js)}
           padding={10}
-          tabSize={4}
           style={{
             fontFamily: '"Fira code", "Fira Mono", monospace',
-            fontSize: 14,
-            height: 300,
+            fontSize: 15,
+            height: "auto",
             borderStyle: "solid",
             borderWidth: "1px"
           }}
         />
+        {/* </div> */}
       </TabPanel>
     </div>
   );
