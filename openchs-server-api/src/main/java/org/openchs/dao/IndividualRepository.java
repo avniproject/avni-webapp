@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -20,6 +21,7 @@ import static org.openchs.domain.OperatingIndividualScope.ByFacility;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
     Page<Individual> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime,

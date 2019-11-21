@@ -1,6 +1,8 @@
 package org.openchs.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.openchs.application.Form;
+import org.openchs.application.FormElement;
 import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.EncounterTypeRepository;
@@ -17,7 +19,10 @@ import org.openchs.web.request.webapp.FormMappingRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FormMappingService {
@@ -43,10 +48,10 @@ public class FormMappingService {
     public void createOrUpdateFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
         validateRequest(createUpdateFormRequest, form.getFormType());
         List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
-        for (FormMappingRequest formMappingRequest : createUpdateFormRequest.getFormMappings()){
+        for (FormMappingRequest formMappingRequest : createUpdateFormRequest.getFormMappings()) {
             FormMapping formMapping = null;
-            for(FormMapping fromMap : formMappings){
-                if(fromMap.getUuid().equals(formMappingRequest.getUuid())){
+            for (FormMapping fromMap : formMappings) {
+                if (fromMap.getUuid().equals(formMappingRequest.getUuid())) {
                     formMapping = fromMap;
                 }
             }
@@ -105,6 +110,16 @@ public class FormMappingService {
         //SubjectType subjectType = subjectTypeRepository.findByNameIgnoreCase(requestSubjectType);
         if (subjectType == null) throw new ApiException("Subject type %s not found", requestSubjectType);
         formMapping.setSubjectType(subjectType);
+    }
+
+    @Transactional(readOnly = true)
+    public LinkedHashMap<String, FormElement> getFormMapping(String subjectTypeUUID, String programUUID, String  encounterTypeUUID, FormType formType) {
+        return getEntityConceptMap(formMappingRepository.getRequiredFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, formType));
+    }
+
+    private LinkedHashMap<String, FormElement> getEntityConceptMap(FormMapping formMapping) {
+        List<FormElement> formElements = formMapping == null ? Collections.emptyList() : formMapping.getForm().getApplicableFormElements();
+        return formElements.stream().collect(Collectors.toMap(f -> f.getConcept().getUuid(), f -> f, (a, b) -> b, LinkedHashMap::new));
     }
 
 }

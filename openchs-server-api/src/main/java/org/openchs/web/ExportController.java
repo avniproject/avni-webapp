@@ -10,7 +10,8 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,20 +26,19 @@ import java.util.UUID;
 public class ExportController {
 
     private final Logger logger;
-    private Job readCSVFilesJob;
+    private Job exportVisitJob;
 
-    @Qualifier("jobLauncher")
-    private JobLauncher jobLauncher;
+    private JobLauncher bgJobLauncher;
 
-    public ExportController(Job readCSVFilesJob, JobLauncher jobLauncher) {
-        this.jobLauncher = jobLauncher;
-        this.readCSVFilesJob = readCSVFilesJob;
+    @Autowired
+    public ExportController(Job exportVisitJob, JobLauncher bgJobLauncher) {
+        this.bgJobLauncher = bgJobLauncher;
+        this.exportVisitJob = exportVisitJob;
         logger = LoggerFactory.getLogger(getClass());
     }
 
     @RequestMapping(value = "/export", method = RequestMethod.GET)
-    ///TODO:remove user
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity<?> getVisitData(@RequestParam String encounterTypeUUID,
                                           @RequestParam(required = false) String programUUID,
                                           @RequestParam String subjectTypeUUID,
@@ -57,7 +57,7 @@ public class ExportController {
                         .toJobParameters();
 
         try {
-            jobLauncher.run(readCSVFilesJob, jobParameters);
+            bgJobLauncher.run(exportVisitJob, jobParameters);
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

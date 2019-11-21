@@ -1,13 +1,14 @@
 package org.openchs.exporter;
 
 import org.openchs.application.FormElement;
+import org.openchs.application.FormElementType;
 import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramEncounterRepository;
-import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.*;
+import org.openchs.service.FormMappingService;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.transform.FieldExtractor;
@@ -40,7 +41,6 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     @Value("#{jobParameters['programUUID']}")
     private String programUUID;
 
-    private FormMappingRepository formMappingRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private EncounterRepository encounterRepository;
     private ProgramEncounterRepository programEncounterRepository;
@@ -52,27 +52,25 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private LinkedHashMap<String, FormElement> encounterMap;
     private String encounterTypeName;
     private Long maxVisitCount;
+    private FormMappingService formMappingService;
 
-    public ExportCSVFieldExtractor(FormMappingRepository formMappingRepository, EncounterTypeRepository encounterTypeRepository,
-                                   EncounterRepository encounterRepository, ProgramEncounterRepository programEncounterRepository) {
-        this.formMappingRepository = formMappingRepository;
+    public ExportCSVFieldExtractor(EncounterTypeRepository encounterTypeRepository,
+                                   EncounterRepository encounterRepository,
+                                   ProgramEncounterRepository programEncounterRepository,
+                                   FormMappingService formMappingService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
         this.programEncounterRepository = programEncounterRepository;
+        this.formMappingService = formMappingService;
     }
 
     @PostConstruct
     public void init() {
-        FormMapping programEncounterFormMapping = formMappingRepository.findByEncounterType_UuidAndProgram_UuidAndIsVoidedFalseAndSubjectType_UuidAndForm_FormType(encounterTypeUUID, programUUID, subjectTypeUUID, FormType.ProgramEncounter);
-        FormMapping registrationFormMapping = formMappingRepository.findBySubjectType_UuidAndForm_FormType(subjectTypeUUID, FormType.IndividualProfile);
-        FormMapping programEnrolmentFormMapping = formMappingRepository.findByProgram_UuidAndSubjectType_UuidAndForm_FormType(programUUID, subjectTypeUUID, FormType.ProgramEnrolment);
-        FormMapping programEnrolmentExitFormMapping = formMappingRepository.findByProgram_UuidAndSubjectType_UuidAndForm_FormType(programUUID, subjectTypeUUID, FormType.ProgramEnrolment);
-        FormMapping encounterFormMapping = formMappingRepository.findByEncounterType_UuidAndSubjectType_UuidAndForm_FormType(encounterTypeUUID, subjectTypeUUID, FormType.Encounter);
-        this.registrationMap = getEntityConceptMap(registrationFormMapping);
-        this.enrolmentMap = getEntityConceptMap(programEnrolmentFormMapping);
-        this.exitEnrolmentMap = getEntityConceptMap(programEnrolmentExitFormMapping);
-        this.programEncounterMap = getEntityConceptMap(programEncounterFormMapping);
-        this.encounterMap = getEntityConceptMap(encounterFormMapping);
+        this.registrationMap = formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile);
+        this.enrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
+        this.exitEnrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
+        this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
+        this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
         this.encounterTypeName = encounterTypeRepository.getEncounterTypeName(encounterTypeUUID);
         this.maxVisitCount = programUUID == null ? encounterRepository.getMaxEncounterCount(encounterTypeUUID) :
                 programEncounterRepository.getMaxProgramEncounterCount(encounterTypeUUID);
@@ -183,7 +181,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private void appendObsColumns(StringBuilder sb, String prefix, LinkedHashMap<String, FormElement> map) {
         map.forEach((uuid, fe) -> {
             Concept concept = fe.getConcept();
-            if (concept.getDataType().equals(ConceptDataType.Coded.toString())) {
+            if (concept.getDataType().equals(ConceptDataType.Coded.toString()) && fe.getType().equals(FormElementType.MultiSelect.toString())) {
                 concept.getSortedAnswers().map(ca -> ca.getAnswerConcept().getName()).forEach(can ->
                         sb.append(",")
                                 .append(prefix)
@@ -207,15 +205,32 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         obsMap.forEach((conceptUUID, formElement) -> {
             Object val = observations.getOrDefault(conceptUUID, null);
             if (formElement.getConcept().getDataType().equals(ConceptDataType.Coded.toString())) {
-                List<Object> codedObs = val == null ?
-                        Collections.emptyList() :
-                        val instanceof List ? (List<Object>) val : Collections.singletonList(val);
-                values.addAll(getAns(formElement.getConcept(), codedObs));
+                values.addAll(processCodedObs(formElement.getType(), val, formElement));
             } else {
                 values.add(val);
             }
         });
         return values;
+    }
+
+    private List<Object> processCodedObs(String formType, Object val, FormElement formElement) {
+        List<Object> values = new ArrayList<>();
+        if (formType.equals(FormElementType.MultiSelect.toString())) {
+            List<Object> codedObs = val == null ?
+                    Collections.emptyList() :
+                    val instanceof List ? (List<Object>) val : Collections.singletonList(val);
+            values.addAll(getAns(formElement.getConcept(), codedObs));
+        } else {
+            values.add(val == null ? "" : getAnsName(formElement.getConcept(), val));
+        }
+        return values;
+    }
+
+    private String getAnsName(Concept concept, Object val) {
+        return concept.getSortedAnswers()
+                .filter(ca -> ca.getAnswerConcept().getUuid().equals(val))
+                .map(ca -> ca.getAnswerConcept().getName())
+                .findFirst().orElse("");
     }
 
     private List<String> getAns(Concept concept, List<Object> val) {

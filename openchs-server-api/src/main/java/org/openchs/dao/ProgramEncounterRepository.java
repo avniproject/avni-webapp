@@ -6,10 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter", exported = false)
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface ProgramEncounterRepository extends TransactionalDataRepository<ProgramEncounter>, FindByLastModifiedDateTime<ProgramEncounter>, OperatingIndividualScopeAwareRepository<ProgramEncounter> {
 
     Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
@@ -31,7 +33,7 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     @Query(value = "select count(enc.id) as count " +
             "from program_encounter enc " +
             "join encounter_type t on t.id = enc.encounter_type_id " +
-            "where t.uuid = :programEncounterTypeUUID " +
+            "where t.uuid = :programEncounterTypeUUID and enc.encounter_date_time notnull " +
             "group by enc.program_enrolment_id " +
             "order by count desc " +
             "limit 1", nativeQuery = true)

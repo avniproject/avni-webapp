@@ -9,12 +9,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "formMapping", path = "formMapping")
+@PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface FormMappingRepository extends ReferenceDataRepository<FormMapping>, FindByLastModifiedDateTime<FormMapping> {
 
     Page<FormMapping> findByProgramId(Long programId, Pageable pageable);
@@ -40,11 +42,20 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
         throw new UnsupportedOperationException("No field 'name' in FormMapping");
     }
 
-    FormMapping findByEncounterType_UuidAndProgram_UuidAndIsVoidedFalseAndSubjectType_UuidAndForm_FormType(String encounterTypeUUID, String programUUID, String subjectTypeUUID, FormType formType);
-
-    FormMapping findByProgram_UuidAndSubjectType_UuidAndForm_FormType(String programUUID, String subjectTypeUUID, FormType formType);
-
-    FormMapping findBySubjectType_UuidAndForm_FormType(String subjectTypeUuid, FormType formType);
-
-    FormMapping findByEncounterType_UuidAndSubjectType_UuidAndForm_FormType(String encounterTypeUUID, String subjectTypeUuid, FormType formType);
+    //left join to fetch eagerly in first select
+    @Query("select fm from FormMapping fm " +
+            "left join fetch fm.form f " +
+            "left join fetch f.formElementGroups fg " +
+            "left join fetch fg.formElements fe " +
+            "left join fetch fe.concept q " +
+            "left join fetch q.conceptAnswers ca " +
+            "left join fetch ca.answerConcept a " +
+            "left join fetch fm.encounterType et " +
+            "left join fetch fm.program p " +
+            "left join fetch fm.subjectType s " +
+            "where (:encounterTypeUUID is null or fm.encounterType.uuid = :encounterTypeUUID) " +
+            "and (:programUUID is null or fm.program.uuid = :programUUID) " +
+            "and fm.subjectType.uuid = :subjectTypeUUID " +
+            "and f.formType = :formType")
+    FormMapping getRequiredFormMapping(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType);
 }
