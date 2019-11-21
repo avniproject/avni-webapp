@@ -16,6 +16,7 @@ import { App, SecureApp } from "./rootApp";
 import { ThemeProvider, StylesProvider, createGenerateClassName } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 import * as Colors from "@material-ui/core/colors";
+import { httpClient } from "./common/utils/httpClient";
 
 const theme = createMuiTheme({
   palette: {
@@ -27,6 +28,8 @@ const theme = createMuiTheme({
 const generateClassName = createGenerateClassName({
   productionPrefix: "avnijss"
 });
+
+httpClient.initHeadersForDevEnv();
 
 ReactDOM.render(
   <StylesProvider generateClassName={generateClassName}>

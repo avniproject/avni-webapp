@@ -4,6 +4,7 @@ import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
+import { devEnvUserName } from "../constants";
 
 class HttpClient {
   static instance;
@@ -22,6 +23,12 @@ class HttpClient {
     if (authParams.token) axios.defaults.headers.common["AUTH-TOKEN"] = authParams.token;
   }
 
+  initHeadersForDevEnv() {
+    if (devEnvUserName) {
+      axios.defaults.headers.common["user-name"] = devEnvUserName;
+    }
+  }
+
   setHeaders(options) {
     const authParams = this.authContext.get();
     if (!options.headers) options.headers = new Headers({ Accept: "application/json" });
@@ -34,6 +41,10 @@ class HttpClient {
     if (!isEmpty(authParams)) {
       options.headers.set("user-name", authParams.username);
       if (authParams.token) options.headers.set("AUTH-TOKEN", authParams.token);
+    }
+
+    if (devEnvUserName) {
+      options.headers.set("user-name", devEnvUserName);
     }
   }
 
