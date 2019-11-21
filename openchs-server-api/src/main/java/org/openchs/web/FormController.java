@@ -133,7 +133,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 .withUUID(UUID.randomUUID().toString())
                 .build();
         formRepository.save(form);
-        formMappingService.createFormMapping(request, form);
+        if (request.getFormMappings().size() > 0) {
+            formMappingService.createOrUpdateFormMapping(request, form);
+        }
         return ResponseEntity.ok(form);
     }
 
@@ -168,7 +170,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         form.setFormType(FormType.valueOf(request.getFormType()));
         formRepository.save(form);
         if (request.getFormMappings().size() > 0) {
-            formMappingService.updateFormMapping(request, form);
+            formMappingService.createOrUpdateFormMapping(request, form);
         }
         return ResponseEntity.ok(null);
     }
@@ -236,23 +238,6 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
 
         FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString());
         formContract.setOrganisationId(form.getOrganisationId());
-
-        List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
-        if (formMappings.size() > 0) {
-            FormMapping firstFormMapping = formMappings.get(0);
-            String subjectType = firstFormMapping.getSubjectType() == null ? null : firstFormMapping.getSubjectType().getName();
-            String programName = firstFormMapping.getProgram() == null ? null : firstFormMapping.getProgram().getName();
-            formContract.setSubjectType(subjectType);
-            formContract.setProgramName(programName);
-            List<String> encounterTypes = null;
-            if (form.getFormType().isLinkedToEncounterType()) {
-                encounterTypes = formMappings.stream()
-                        .map(fm -> fm.getEncounterType().getName())
-                        .collect(Collectors.toList());
-            }
-            formContract.setEncounterTypes(encounterTypes);
-        }
-
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());

@@ -40,7 +40,7 @@ public class FormMappingService {
         this.subjectTypeRepository = subjectTypeRepository;
     }
 
-    public void updateFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
+    public void createOrUpdateFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
         validateRequest(createUpdateFormRequest, form.getFormType());
         List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
         for (FormMappingRequest formMappingRequest : createUpdateFormRequest.getFormMappings()){
@@ -64,53 +64,23 @@ public class FormMappingService {
         }
     }
 
-    public void createFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
-        FormType formType = form.getFormType();
-
-        if (formType == FormType.ChecklistItem)
-            return;
-        validateRequest(createUpdateFormRequest, formType);
-        FormMapping formMapping = new FormMapping();
-        formMapping.assignUUID();
-        formMapping.setForm(form);
-
-        setSubjectTypeIfRequired(formMapping, createUpdateFormRequest.getFormMappingByIndex(0).getSubjectTypeUuid());
-        setProgramNameIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getFormMappingByIndex(0).getProgramUuid());
-        setEncounterTypeIfRequired(formMapping, form.getFormType(), createUpdateFormRequest.getFormMappingByIndex(0).getEncounterTypeUuid());
-        formMappingRepository.save(formMapping);
-    }
-
     private void validateRequest(CreateUpdateFormRequest createUpdateFormRequest, FormType formType) {
-        if (formType.isLinkedToEncounterType() && createUpdateFormRequest.getFormMappingByIndex(0).getEncounterTypeUuid() == null) {
-            throw new ApiException("Form of type %s must pass encounterType", formType);
-        }
+        for (FormMappingRequest formMappingRequest : createUpdateFormRequest.getFormMappings()) {
+            if(!formMappingRequest.getVoided()) {
+                if (formType.isLinkedToEncounterType() && formMappingRequest.getEncounterTypeUuid() == null) {
+                    throw new ApiException("Form of type %s must pass encounterType", formType);
+                }
 
-        if (createUpdateFormRequest.getFormMappingByIndex(0).getSubjectTypeUuid() == null) {
-            throw new ApiException("Subject type must be specified");
-        }
+                if (formMappingRequest.getSubjectTypeUuid() == null) {
+                    throw new ApiException("Subject type must be specified");
+                }
 
-        if (formType.isLinkedToProgram() && createUpdateFormRequest.getFormMappingByIndex(0).getProgramUuid() == null) {
-            throw new ApiException("Form of type %s must pass programName", formType);
+                if (formType.isLinkedToProgram() && formMappingRequest.getProgramUuid() == null) {
+                    throw new ApiException("Form of type %s must pass programName", formType);
+                }
+            }
         }
     }
-
-    private void createFormMapping(Form form, String subjectType, String programName, String encounterType) {
-        FormMapping formMapping = new FormMapping();
-        formMapping.assignUUID();
-        formMapping.setForm(form);
-        setSubjectTypeIfRequired(formMapping, subjectType);
-        setProgramNameIfRequired(formMapping, form.getFormType(), programName);
-        setEncounterTypeIfRequired(formMapping, form.getFormType(), encounterType);
-        formMappingRepository.save(formMapping);
-    }
-
-    private void updateFormMapping(FormMapping formMapping, FormType formType, String subjectType, String programName, String encounterType) {
-        setSubjectTypeIfRequired(formMapping, subjectType);
-        setProgramNameIfRequired(formMapping, formType, programName);
-        setEncounterTypeIfRequired(formMapping, formType, encounterType);
-        formMappingRepository.save(formMapping);
-    }
-
 
     private void setEncounterTypeIfRequired(FormMapping formMapping, FormType formType, String requestEncounterType) {
         if (formType.isLinkedToEncounterType() && requestEncounterType != null) {
