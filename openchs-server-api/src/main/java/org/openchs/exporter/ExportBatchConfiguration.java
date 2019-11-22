@@ -29,6 +29,8 @@ import java.util.Map;
 @EnableBatchProcessing
 public class ExportBatchConfiguration {
 
+    private final int CHUNK_SIZE = 100;
+
     private JobBuilderFactory jobBuilderFactory;
 
     private StepBuilderFactory stepBuilderFactory;
@@ -70,7 +72,7 @@ public class ExportBatchConfiguration {
     public Step step1(RepositoryItemReader<Object> reader,
                       ExportProcessor exportProcessor,
                       FlatFileItemWriter<ExportItemRow> fileWriter) {
-        return stepBuilderFactory.get("step1").<Object, ExportItemRow>chunk(5)
+        return stepBuilderFactory.get("step1").<Object, ExportItemRow>chunk(CHUNK_SIZE)
                 .reader(reader)
                 .processor(exportProcessor)
                 .writer(fileWriter)
@@ -104,6 +106,7 @@ public class ExportBatchConfiguration {
                     .name("reader")
                     .repository(programEnrolmentRepository)
                     .methodName("findEnrolments")
+                    .pageSize(CHUNK_SIZE)
                     .sorts(sorts)
                     .build();
         } else {
@@ -111,6 +114,7 @@ public class ExportBatchConfiguration {
                     .name("reader")
                     .repository(individualRepository)
                     .methodName("findIndividuals")
+                    .pageSize(CHUNK_SIZE)
                     .sorts(sorts)
                     .build();
         }

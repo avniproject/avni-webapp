@@ -41,7 +41,8 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     }
 
     @Query("select enl from ProgramEnrolment enl " +
+            "join enl.individual i " +
             "where enl.isVoided = false and " +
-            "enl.individual.isVoided = false ")
+            "i.isVoided = false ")
     Page<ProgramEnrolment> findEnrolments(Pageable pageable);
 }

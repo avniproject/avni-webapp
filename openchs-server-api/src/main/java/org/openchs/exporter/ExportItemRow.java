@@ -2,29 +2,29 @@ package org.openchs.exporter;
 
 import org.openchs.domain.*;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 public class ExportItemRow {
 
     private Individual individual;
     private ProgramEnrolment programEnrolment;
-    private List<ProgramEncounter> programEncounters;
-    private List<Encounter> encounters;
+    private Stream<ProgramEncounter> programEncounters;
+    private Stream<Encounter> encounters;
 
 
-    public List<Encounter> getEncounters() {
+    public Stream<Encounter> getEncounters() {
         return encounters;
     }
 
-    public void setEncounters(List<Encounter> encounters) {
+    public void setEncounters(Stream<Encounter> encounters) {
         this.encounters = encounters;
     }
 
-    public List<ProgramEncounter> getProgramEncounters() {
+    public Stream<ProgramEncounter> getProgramEncounters() {
         return programEncounters;
     }
 
-    public void setProgramEncounters(List<ProgramEncounter> programEncounters) {
+    public void setProgramEncounters(Stream<ProgramEncounter> programEncounters) {
         this.programEncounters = programEncounters;
     }
 

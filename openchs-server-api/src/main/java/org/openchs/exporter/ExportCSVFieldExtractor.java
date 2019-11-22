@@ -76,11 +76,6 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
                 programEncounterRepository.getMaxProgramEncounterCount(encounterTypeUUID);
     }
 
-    private LinkedHashMap<String, FormElement> getEntityConceptMap(FormMapping formMapping) {
-        List<FormElement> formElements = formMapping == null ? Collections.emptyList() : formMapping.getForm().getApplicableFormElements();
-        return formElements.stream().collect(Collectors.toMap(f -> f.getConcept().getUuid(), f -> f, (a, b) -> b, LinkedHashMap::new));
-    }
-
     @Override
     public Object[] extract(ExportItemRow exportItemRow) {
         List<Object> row = new ArrayList<>();
@@ -88,12 +83,12 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         //Registration
         row.add(exportItemRow.getIndividual().getId());
         row.add(exportItemRow.getIndividual().getUuid());
-        row.add(exportItemRow.getIndividual().getFirstName());
-        row.add(exportItemRow.getIndividual().getLastName());
+        row.add(massageStringValue(exportItemRow.getIndividual().getFirstName()));
+        row.add(massageStringValue(exportItemRow.getIndividual().getLastName()));
         row.add(exportItemRow.getIndividual().getDateOfBirth());
         row.add(exportItemRow.getIndividual().getRegistrationDate());
         row.add(exportItemRow.getIndividual().getGender().getName());
-        row.add(exportItemRow.getIndividual().getAddressLevel().getTitle());
+        row.add(massageStringValue(exportItemRow.getIndividual().getAddressLevel().getTitle()));
         row.addAll(getObs(exportItemRow.getIndividual().getObservations(), registrationMap));
         if (programUUID == null) {
             addGeneralEncounterRelatedFields(exportItemRow, row);
@@ -117,14 +112,12 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
 
     private void addGeneralEncounterRelatedFields(ExportItemRow exportItemRow, List<Object> row) {
         //Encounter
-        for (Encounter encounter : exportItemRow.getEncounters())
-            addEncounter(row, encounter, encounterMap);
+        exportItemRow.getEncounters().forEach(encounter -> addEncounter(row, encounter, encounterMap));
     }
 
     private void addProgramEncounterRelatedFields(ExportItemRow exportItemRow, List<Object> row) {
         //ProgramEncounter
-        for (ProgramEncounter programEncounter : exportItemRow.getProgramEncounters())
-            addEncounter(row, programEncounter, programEncounterMap);
+        exportItemRow.getProgramEncounters().forEach(programEncounter -> addEncounter(row, programEncounter, programEncounterMap));
     }
 
     private <T extends AbstractEncounter> void addEncounter(List<Object> row, T encounter, LinkedHashMap<String, FormElement> map) {
@@ -206,6 +199,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             Object val = observations.getOrDefault(conceptUUID, null);
             if (formElement.getConcept().getDataType().equals(ConceptDataType.Coded.toString())) {
                 values.addAll(processCodedObs(formElement.getType(), val, formElement));
+            } else if (formElement.getConcept().getDataType().equals(ConceptDataType.Text.toString())) {
+                values.add(massageStringValue((String) val));
             } else {
                 values.add(val);
             }
@@ -229,7 +224,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private String getAnsName(Concept concept, Object val) {
         return concept.getSortedAnswers()
                 .filter(ca -> ca.getAnswerConcept().getUuid().equals(val))
-                .map(ca -> ca.getAnswerConcept().getName())
+                .map(ca -> massageStringValue(ca.getAnswerConcept().getName()))
                 .findFirst().orElse("");
     }
 

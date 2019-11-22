@@ -12,9 +12,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @StepScope
@@ -57,15 +56,14 @@ public class ExportProcessor implements ItemProcessor<Object, ExportItemRow> {
         return exportItemRow;
     }
 
-    private <T extends AbstractEncounter> List<T> getFilteredEncounters(Set<T> programEncounters) {
+    private <T extends AbstractEncounter> Stream<T> getFilteredEncounters(Set<T> programEncounters) {
         return programEncounters.stream()
                 .filter(enc -> enc.getEncounterDateTime() != null &&
                         !enc.isVoided() &&
                         enc.getEncounterType().getUuid().equals(encounterTypeUUID) &&
                         enc.getEncounterDateTime().isAfter(startDateTime) &&
                         enc.getEncounterDateTime().isBefore(endDateTime))
-                .sorted(Comparator.comparing(AbstractEncounter::getEncounterDateTime))
-                .collect(Collectors.toList());
+                .sorted(Comparator.comparing(AbstractEncounter::getEncounterDateTime));
     }
 
     public DateTime getStartDateTime() {

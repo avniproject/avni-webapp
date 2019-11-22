@@ -12,7 +12,7 @@ import static java.lang.String.format;
 @Service
 public class ExportS3Service {
 
-    public static final String FILE_NAME_EXTENSION = ".xlsx";
+    public static final String FILE_NAME_EXTENSION = ".csv";
     private S3Service s3Service;
 
     public ExportS3Service(S3Service s3Service) {
@@ -29,8 +29,8 @@ public class ExportS3Service {
         return s3Service.uploadFile(tempSourceFile, format("%s%s", uuid, FILE_NAME_EXTENSION), "exports");
     }
 
-    public InputStream downloadFile(String jobUuid) {
-        return s3Service.downloadFile("/exports", format("%s%s", jobUuid, FILE_NAME_EXTENSION));
+    public InputStream downloadFile(String fileName) {
+        return s3Service.downloadFile("/exports", fileName);
     }
 
 }
