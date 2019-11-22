@@ -50,7 +50,9 @@ class OrgManager extends Component {
   render() {
     const { organisation, user } = this.props;
     const uiDesignerToggle =
-      window.location.href.includes("localhost") || window.location.href.includes("staging");
+      window.location.href.includes("localhost") ||
+      window.location.href.includes("staging") ||
+      window.location.href.includes("uat");
     const csvUploadToggle =
       window.location.href.includes("localhost") || window.location.href.includes("staging");
     return (
