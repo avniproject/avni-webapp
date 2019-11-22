@@ -151,34 +151,6 @@ class NewFormModal extends Component {
       ) {
         this.setState({ encounterType: "" });
       }
-      axios
-        .put("/web/forms/" + existFormUUID + "/metadata", {
-          name: this.state.name,
-          formType: this.state.formType,
-          encounterType: this.state.encounterType,
-          subjectType: this.state.subjectType,
-          programName: this.state.programName
-        })
-        .then(response => {
-          if (!this.props.isCreateFrom) {
-            this.setState({
-              showUpdateAlert: true,
-              defaultSnackbarStatus: true
-            });
-            this.props.onUpdateFormName(this.state.name);
-          }
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            this.setState({
-              showUpdateAlert: true,
-              defaultSnackbarStatus: true
-            });
-            this.props.onUpdateFormName(this.state.name);
-          } else {
-            this.setState({ errorMsg: error.response.data, showUpdateAlert: false });
-          }
-        });
     }
   }
 
