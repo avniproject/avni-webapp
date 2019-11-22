@@ -74,6 +74,7 @@ class NewFormModal extends Component {
       dataSend["formMappings"] = [];
       if (this.state.formType !== "ChecklistItem") {
         let mapping = {};
+        mapping["uuid"] = UUID.v4();
         mapping["subjectTypeUuid"] = this.state.subjectType;
         mapping["programUuid"] = this.state.programName;
         mapping["encounterTypeUuid"] = this.state.encounterType;
