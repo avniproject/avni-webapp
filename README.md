@@ -23,26 +23,19 @@ This will start the server and make it accessible at port 8021.
 
 ### To start webapp for Admin tasks like adding a form or adding a catchment etc...
 
-In .env.development.local file set value of REACT_APP_DEV_ENV_USER to admin user of your implementation. E.g. if you are running Ayu implementation then your .env.development file should look like:
-
-`REACT_APP_DEV_ENV_USER=admin@ayu`
-
-After setting this variable run following command:
+Set value of REACT_APP_DEV_ENV_USER enviornment variable to admin user of your implementation and run `yarn start` after that. E.g. if you are running Ayu implementation then you can run command like:
 
 ```
-yarn start
+REACT_APP_DEV_ENV_USER=admin@ayu yarn start
 ```
+
 
 ### To start webapp for Data Entry
 
-In .env.development.local file set value of REACT_APP_DEV_ENV_USER to dev user of your implementation. E.g. if you are running Ayu implementation then your .env.development file should look like:
-
-`REACT_APP_DEV_ENV_USER=dev@ayu`
-
-After setting this variable run following command:
+Set value of REACT_APP_DEV_ENV_USER enviornment variable to dev user of your implementation and run `yarn start` after that. E.g. if you are running Ayu implementation then you can run command like:
 
 ```
-yarn start
+REACT_APP_DEV_ENV_USER=dev@ayu yarn start
 ```
 
 ### To enable Cognito authentication in dev environment [Optional]
@@ -66,3 +59,6 @@ This requires the following env variables to be set as well:
 ### Code Style
 
 - We use Prettier for javascript/jsx formatting. You can use your IDE/Editor specific Plugin to format code using Prettier. Alternatively there is also a command `yarn prettier-all` that will format all files in src folder using Prettier. And there also is a git precommit hook that formats staged files using prettier before commiting.
+
+### Continuous Integration
+All commits are built and tested and deployed to staging if tests succeed. Build status can be seen at https://circleci.com/gh/OpenCHS/openchs-webapp. Please run tests using `yarn test` before you push your code so you don't end up breaking things unnecessarily.
