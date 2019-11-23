@@ -95,7 +95,7 @@ const FormListing = ({ history }) => {
   };
   const cloneForm = rowData => ({
     icon: "library_add",
-    tooltip: "clone Form",
+    tooltip: "Clone Form",
     onClick: (event, form) => onSetUuidAndIndicator(true, rowData["uuid"]),
     disabled: rowData.voided
   });
