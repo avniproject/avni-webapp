@@ -3,6 +3,7 @@ package org.openchs.importer.batch;
 import org.joda.time.DateTime;
 import org.openchs.dao.JobStatus;
 import org.openchs.service.S3Service;
+import org.openchs.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.*;
@@ -31,13 +32,15 @@ public class JobService {
     private JobRepository jobRepository;
     private Job importJob;
     private JobLauncher bgJobLauncher;
+    private UserService userService;
 
     @Autowired
-    public JobService(JobExplorer jobExplorer, JobRepository jobRepository, Job importJob, JobLauncher bgJobLauncher) {
+    public JobService(JobExplorer jobExplorer, JobRepository jobRepository, Job importJob, JobLauncher bgJobLauncher, UserService userService) {
         this.jobExplorer = jobExplorer;
         this.jobRepository = jobRepository;
         this.importJob = importJob;
         this.bgJobLauncher = bgJobLauncher;
+        this.userService = userService;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -77,6 +80,7 @@ public class JobService {
     }
 
     public List<JobStatus> getAll() {
+        Long currentUserId = userService.getCurrentUser().getId();
         List<JobInstance> importJobInstances = jobExplorer.findJobInstancesByJobName(importJob.getName(), 0, Integer.MAX_VALUE);
         return importJobInstances.stream()
                 .flatMap(x -> jobExplorer.getJobExecutions(x).stream())
@@ -105,6 +109,7 @@ public class JobService {
                             });
                     return jobStatus;
                 })
+                .filter(status-> currentUserId.equals(status.getUserId()))
                 .sorted(Comparator.comparing(JobStatus::getCreateTime).reversed())
                 .collect(Collectors.toList());
     }
