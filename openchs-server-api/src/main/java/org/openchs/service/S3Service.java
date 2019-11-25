@@ -120,8 +120,8 @@ public class S3Service {
                 getOrgDirectoryName(),
                 destFileName.replace(" ", "_")
         );
-        String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
         long noOfLines = Files.lines(Paths.get(tempSourceFile.getAbsolutePath())).count();
+        String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
         return new ObjectInfo(actualS3Key, noOfLines);
     }
 
