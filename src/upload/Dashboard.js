@@ -32,7 +32,11 @@ const Dashboard = () => {
   const selectFile = (content, userfile) => setFile(userfile);
 
   const uploadFile = async () => {
-    await api.bulkUpload(Types.getCode(entity), file).then(() => setFile());
+    const [okay, error] = await api.bulkUpload(Types.getCode(entity), file);
+    if (error) {
+      alert(error);
+    }
+    setFile();
     setEntity("");
   };
 
