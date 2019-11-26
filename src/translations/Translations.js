@@ -78,11 +78,7 @@ export const Translations = ({
   }
 
   return (
-    <ScreenWithAppBar
-      appbarTitle={`Translations`}
-      enableLeftMenuButton={true}
-      renderAllOptions={false}
-    >
+    <ScreenWithAppBar appbarTitle={`Translations`}>
       <div id={"margin"}>
         <Box border={1} borderColor={"#ddd"} p={2}>
           <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
