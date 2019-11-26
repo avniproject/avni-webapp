@@ -335,20 +335,15 @@ class FormDetails extends Component {
   handleGroupElementKeyValueChange = (index, propertyName, value, elementIndex) => {
     this.setState(
       produce(draft => {
+        const formElement = draft.form.formElementGroups[index].formElements[elementIndex];
         if (propertyName === "editable") {
           if (value === "undefined") {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              propertyName
-            ] = true;
+            formElement.keyValues[propertyName] = true;
           } else {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              propertyName
-            ] = !value;
+            formElement.keyValues[propertyName] = !value;
           }
         } else if (propertyName === "datePickerMode") {
-          draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-            propertyName
-          ] = value;
+          formElement.keyValues[propertyName] = value;
         } else if (
           propertyName === "maxHeight" ||
           propertyName === "maxWidth" ||
@@ -356,9 +351,7 @@ class FormDetails extends Component {
           propertyName === "durationLimitInSecs" ||
           propertyName === "videoQuality"
         ) {
-          draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-            propertyName
-          ] = value;
+          formElement.keyValues[propertyName] = value;
         } else if (
           propertyName === "years" ||
           propertyName === "months" ||
@@ -366,33 +359,22 @@ class FormDetails extends Component {
           propertyName === "weeks" ||
           propertyName === "hours"
         ) {
-          if (
-            !Object.keys(
-              draft.form.formElementGroups[index].formElements[elementIndex].keyValues
-            ).includes("durationOptions")
-          ) {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              "durationOptions"
-            ] = [];
+          if (!Object.keys(formElement.keyValues).includes("durationOptions")) {
+            formElement.keyValues["durationOptions"] = [];
           }
-          if (
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              "durationOptions"
-            ].includes(propertyName)
-          ) {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              "durationOptions"
-            ].splice(
-              draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-                "durationOptions"
-              ].indexOf(propertyName),
+          if (formElement.keyValues["durationOptions"].includes(propertyName)) {
+            formElement.keyValues["durationOptions"].splice(
+              formElement.keyValues["durationOptions"].indexOf(propertyName),
               1
             );
           } else {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              "durationOptions"
-            ].push(value);
+            formElement.keyValues["durationOptions"].push(value);
           }
+        } else if (propertyName === "regex" || propertyName === "descriptionKey") {
+          if (!formElement.validFormat) {
+            formElement.validFormat = {};
+          }
+          formElement.validFormat[propertyName] = value;
         }
 
         draft.detectBrowserCloseEvent = true;
