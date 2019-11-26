@@ -45,6 +45,7 @@ export const LocationList = props => (
     <Datagrid rowClick="show">
       <TextField label="Name" source="title" />
       <TextField label="Type" source="typeString" />
+      <TextField label="Full Address" source="titleLineage" />
     </Datagrid>
   </List>
 );
