@@ -6,6 +6,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.base.Strings;
@@ -98,12 +99,12 @@ public class CognitoAuthServiceImpl implements CognitoAuthService {
         } catch (MalformedURLException | InvalidPublicKeyException e) {
             logger.error("Check the settings for public key " + getIssuer(), e);
             throw new RuntimeException(e);
-        } catch (JWTDecodeException decodeException) {
-            logger.debug("Could not decode token " + token, decodeException);
-            return null;
+        } catch (JWTDecodeException e) {
+            logger.error("Could not decode token " + token, e);
+            throw new RuntimeException(e);
         } catch (JWTVerificationException e) {
             logger.error("Could not verify token " + token, e);
-            return null;
+            throw new RuntimeException(e);
         } catch (JwkException e) {
             logger.error("Could not get public key for key specified in jwt token " + token, e);
             throw new RuntimeException(e);
