@@ -8,7 +8,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getStatuses } from "./reducers";
-import { get, isNil, map } from "lodash";
+import { get, isNil, map, capitalize } from "lodash";
 import Types from "./Types";
 import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
@@ -67,7 +67,11 @@ const Status = ({ viewVersion, statuses, getStatuses }) => {
             <TableCell align="right">{formatDate(jobStatus.createTime)}</TableCell>
             <TableCell align="right">{formatDate(jobStatus.startTime)}</TableCell>
             <TableCell align="right">{formatDate(jobStatus.endTime)}</TableCell>
-            <TableCell align="right">{jobStatus.status}</TableCell>
+            <TableCell align="right">
+              {jobStatus.status === "COMPLETED" && 0 < jobStatus.skipped
+                ? "Completed with errors"
+                : capitalize(jobStatus.status)}
+            </TableCell>
             <TableCell align="right">{jobStatus.total}</TableCell>
             <TableCell align="right">{jobStatus.completed}</TableCell>
             <TableCell align="right">{jobStatus.skipped}</TableCell>
