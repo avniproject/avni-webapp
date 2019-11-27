@@ -1,6 +1,5 @@
 package org.openchs.dao;
 
-import org.openchs.web.request.ExportJobRequest;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 
@@ -16,7 +15,51 @@ public class ExportJobStatus {
     private Date startTime;
     private Date endTime;
     private Date createTime;
-    private ExportJobRequest request;
+    private String encounterTypeName;
+    private String programName;
+    private String subjectTypeName;
+    private String startDateParam;
+    private String endDateParam;
+
+    public String getEncounterTypeName() {
+        return encounterTypeName;
+    }
+
+    public void setEncounterTypeName(String encounterTypeName) {
+        this.encounterTypeName = encounterTypeName;
+    }
+
+    public String getProgramName() {
+        return programName;
+    }
+
+    public void setProgramName(String programName) {
+        this.programName = programName;
+    }
+
+    public String getSubjectTypeName() {
+        return subjectTypeName;
+    }
+
+    public void setSubjectTypeName(String subjectTypeName) {
+        this.subjectTypeName = subjectTypeName;
+    }
+
+    public String getStartDateParam() {
+        return startDateParam;
+    }
+
+    public void setStartDateParam(String startDateParam) {
+        this.startDateParam = startDateParam;
+    }
+
+    public String getEndDateParam() {
+        return endDateParam;
+    }
+
+    public void setEndDateParam(String endDateParam) {
+        this.endDateParam = endDateParam;
+    }
 
     public String getUuid() {
         return uuid;
@@ -80,14 +123,6 @@ public class ExportJobStatus {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    public ExportJobRequest getRequest() {
-        return request;
-    }
-
-    public void setRequest(ExportJobRequest request) {
-        this.request = request;
     }
 
 }

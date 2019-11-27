@@ -1,11 +1,15 @@
 package org.openchs.exporter;
 
 
+import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ExportJobStatus;
-import org.openchs.dao.JobStatus;
+import org.openchs.dao.ProgramRepository;
+import org.openchs.dao.SubjectTypeRepository;
+import org.openchs.domain.EncounterType;
+import org.openchs.domain.Program;
+import org.openchs.domain.SubjectType;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.web.request.ExportJobRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -24,11 +28,17 @@ public class ExportJobService {
     private Logger logger;
     private JobExplorer jobExplorer;
     private Job exportVisitJob;
+    private SubjectTypeRepository subjectTypeRepository;
+    private ProgramRepository programRepository;
+    private EncounterTypeRepository encounterTypeRepository;
 
     @Autowired
-    public ExportJobService(JobExplorer jobExplorer, Job exportVisitJob) {
+    public ExportJobService(JobExplorer jobExplorer, Job exportVisitJob, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository) {
         this.jobExplorer = jobExplorer;
         this.exportVisitJob = exportVisitJob;
+        this.subjectTypeRepository = subjectTypeRepository;
+        this.programRepository = programRepository;
+        this.encounterTypeRepository = encounterTypeRepository;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -39,14 +49,12 @@ public class ExportJobService {
                 .flatMap(x -> jobExplorer.getJobExecutions(x).stream())
                 .map(execution -> {
                     ExportJobStatus jobStatus = new ExportJobStatus();
-                    ExportJobRequest request = new ExportJobRequest();
                     JobParameters parameters = execution.getJobParameters();
-                    request.setEncounterTypeUUID(parameters.getString("encounterTypeUUID"));
-                    request.setProgramUUID(parameters.getString("programUUID"));
-                    request.setSubjectTypeUUID(parameters.getString("subjectTypeUUID"));
-                    request.setEndDate(parameters.getString("endDate"));
-                    request.setStartDate(parameters.getString("startDate"));
-                    jobStatus.setRequest(request);
+                    jobStatus.setStartDateParam(parameters.getString("startDate"));
+                    jobStatus.setEndDateParam(parameters.getString("endDate"));
+                    jobStatus.setSubjectTypeName(getSubjectName(parameters.getString("subjectTypeUUID")));
+                    jobStatus.setProgramName(getProgramName(parameters.getString("programUUID")));
+                    jobStatus.setEncounterTypeName(getEncounterName(parameters.getString("encounterTypeUUID")));
                     jobStatus.setUuid(parameters.getString("uuid"));
                     jobStatus.setFileName(parameters.getString("fileName"));
                     jobStatus.setUserId(parameters.getLong("userId"));
@@ -60,5 +68,20 @@ public class ExportJobService {
                 .filter(status -> user.getId().equals(status.getUserId()))
                 .sorted(Comparator.comparing(ExportJobStatus::getCreateTime).reversed())
                 .collect(Collectors.toList());
+    }
+
+    private String getSubjectName(String subjectTypeUUID) {
+        SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeUUID);
+        return subjectType == null ? "" : subjectType.getOperationalSubjectTypeName();
+    }
+
+    private String getProgramName(String programUUID) {
+        Program program = programRepository.findByUuid(programUUID);
+        return program == null ? "" : program.getOperationalProgramName();
+    }
+
+    private String getEncounterName(String encounterTypeUUID) {
+        EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUUID);
+        return encounterType == null ? "" : encounterType.getOperationalEncounterTypeName();
     }
 }
