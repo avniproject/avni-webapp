@@ -48,7 +48,7 @@ class FormSettings extends Component {
       _.forEach(this.state.formMappings, function(formMap, index) {
         if (!formMap.voided) count += 1;
       });
-      if (count == 0) errorsList["name"] = "Please add atleast one form mapping.";
+      if (count === 0) errorsList["name"] = "Please add atleast one form mapping.";
     }
 
     _.forEach(formMapping, (formMap, index) => {

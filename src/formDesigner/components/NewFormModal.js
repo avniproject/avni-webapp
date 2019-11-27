@@ -134,8 +134,6 @@ class NewFormModal extends Component {
           this.setState({ errorMsg: error.response.data });
         });
     } else if (validateFormStatus && !this.props.isCreateFrom) {
-      const existFormUUID = this.props.uuid;
-
       if (
         this.state.formType === "IndividualProfile" ||
         this.state.formType === "Encounter" ||

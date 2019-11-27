@@ -12,7 +12,7 @@ export default {
       .uploadFile(http.withParams("/import/new", { type }), file)
       //returns [response, error]
       .then(r => [r.text, null])
-      .catch(r => [null, get(r, "response.data") || get(r, "message") || "unknown error"]),
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   async downloadSample(type) {
     const file = await fetch(`/bulkuploads/sample/${type}.csv`);
     const content = await file.text();
