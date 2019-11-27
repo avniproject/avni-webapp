@@ -2,12 +2,14 @@ package org.openchs.exporter;
 
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementType;
-import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramEncounterRepository;
-import org.openchs.domain.*;
+import org.openchs.domain.AbstractEncounter;
+import org.openchs.domain.Concept;
+import org.openchs.domain.ConceptDataType;
+import org.openchs.domain.ObservationCollection;
 import org.openchs.service.FormMappingService;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
@@ -72,7 +74,12 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
         this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
         this.encounterTypeName = encounterTypeRepository.getEncounterTypeName(encounterTypeUUID);
-        this.maxVisitCount = programUUID == null ? encounterRepository.getMaxEncounterCount(encounterTypeUUID) :
+        Long maxVisitCount = getMaxVisitCount();
+        this.maxVisitCount = maxVisitCount == null ? 0 : maxVisitCount;
+    }
+
+    private Long getMaxVisitCount() {
+        return programUUID == null ? encounterRepository.getMaxEncounterCount(encounterTypeUUID) :
                 programEncounterRepository.getMaxProgramEncounterCount(encounterTypeUUID);
     }
 

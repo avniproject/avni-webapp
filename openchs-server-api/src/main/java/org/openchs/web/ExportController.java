@@ -1,8 +1,8 @@
 package org.openchs.web;
 
 
+import org.apache.commons.io.IOUtils;
 import org.openchs.dao.ExportJobStatus;
-import org.openchs.dao.JobStatus;
 import org.openchs.domain.User;
 import org.openchs.exporter.ExportJobService;
 import org.openchs.framework.security.UserContextHolder;
@@ -19,7 +19,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
@@ -98,12 +98,12 @@ public class ExportController {
     @RequestMapping(value = "/export/download", method = RequestMethod.GET)
     public ResponseEntity<?> downloadFile(@RequestParam String fileName) throws IOException {
         InputStream inputStream = exportS3Service.downloadFile(fileName);
-        InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
+        byte[] bytes = IOUtils.toByteArray(inputStream);
         return ResponseEntity.ok()
                 .headers(getHttpHeaders(fileName))
-                .contentLength(inputStream.available())
+                .contentLength(bytes.length)
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(inputStreamResource);
+                .body(new ByteArrayResource(bytes));
     }
 
     private HttpHeaders getHttpHeaders(String filename) {
