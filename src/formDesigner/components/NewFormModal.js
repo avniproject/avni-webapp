@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
@@ -80,7 +80,7 @@ class NewFormModal extends Component {
         mapping["encounterTypeUuid"] = this.state.encounterType;
         dataSend["formMappings"].push(mapping);
       }
-      axios
+      http
         .post("/web/forms", dataSend)
         .then(response => {
           if (this.props.isCloneForm === false) {
@@ -90,7 +90,7 @@ class NewFormModal extends Component {
           } else {
             const newUUID = response.data.uuid;
             let editResponse;
-            axios
+            http
               .get(`/forms/export?formUUID=${this.props.uuid}`)
               .then(response => {
                 editResponse = response.data;
@@ -109,7 +109,7 @@ class NewFormModal extends Component {
                 });
                 promise.then(
                   result => {
-                    axios
+                    http
                       .post("/forms", editResponse)
                       .then(response => {
                         if (response.status === 200) {
@@ -156,7 +156,7 @@ class NewFormModal extends Component {
 
   componentDidMount() {
     if (!this.props.isCreateFrom) {
-      axios
+      http
         .get(`/forms/export?formUUID=${this.props.uuid}`)
         .then(response => {
           this.setState({
@@ -176,7 +176,7 @@ class NewFormModal extends Component {
           console.log(error);
         });
     }
-    axios
+    http
       .get("/web/operationalModules")
       .then(response => {
         let data = Object.assign({}, response.data);

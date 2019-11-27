@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { httpClient } from "./httpClient";
+import { httpClient } from "common/utils/httpClient";
 
 describe("httpClient", () => {
   const idToken = "deui3rehd32ouih23iou34o82ud";

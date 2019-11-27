@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import _, { cloneDeep, filter, map } from "lodash";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
 import Button from "@material-ui/core/Button";
@@ -77,7 +77,7 @@ class FormDetails extends Component {
 
   componentDidMount() {
     this.setupBeforeUnloadListener();
-    return axios
+    return http
       .get(`/forms/export?formUUID=${this.props.match.params.formUUID}`)
       .then(response => response.data)
       .then(form => {
@@ -522,7 +522,7 @@ class FormDetails extends Component {
     _.forEach(dataSend.formElementGroups, (group, index) => {
       this.reOrderSequence(dataSend, index);
     });
-    axios
+    http
       .post("/forms", dataSend)
       .then(response => {
         if (response.status === 200) {

@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import _ from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
@@ -27,7 +27,7 @@ const Concepts = ({ history }) => {
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
       if (!_.isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
-      axios
+      http
         .get(apiUrl)
         .then(response => response.data)
         .then(result => {
@@ -53,7 +53,7 @@ const Concepts = ({ history }) => {
         ? "Do you want to unvoid the concept " + rowData.name + " ?"
         : "Do you want to void the concept " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
-        axios
+        http
           .post("/concepts", [
             {
               uuid: rowData.uuid,
