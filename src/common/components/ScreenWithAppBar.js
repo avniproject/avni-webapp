@@ -1,19 +1,17 @@
 import React from "react";
 import Body from "./Body";
 import AppBar from "./AppBar";
-import ListAltIcon from "@material-ui/icons/ListAlt";
-import DescriptionIcon from "@material-ui/icons/Description";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import PropTypes from "prop-types";
+import _ from "lodash";
 
 /**
  * This is the typical view you will need for most of your screens.
@@ -100,7 +98,7 @@ const applyLeftMenu = (
   selectedIndex,
   handleListItemClick,
   children,
-  renderAllOptions
+  sidebarOptions
 ) => {
   return (
     <>
@@ -121,46 +119,21 @@ const applyLeftMenu = (
         <div className={classes.toolbar}>
           <IconButton onClick={handleDrawer} />
         </div>
-
         <List>
-          {renderAllOptions === false ? (
-            <div />
-          ) : (
-            <>
+          {_.map(sidebarOptions, (option, index) => {
+            return (
               <ListItem
                 button
                 component="a"
-                href="/#/forms"
-                key="Forms"
-                selected={selectedIndex === 1}
-                onClick={event => handleListItemClick(event, 1)}
+                href={option.href}
+                key={option.name}
+                selected={selectedIndex === index}
+                onClick={event => handleListItemClick(event, index)}
               >
-                {applyListIcon(open, <DescriptionIcon />, "Forms")}
+                {applyListIcon(open, <option.Icon />, option.name)}
               </ListItem>
-              <Divider />
-              <ListItem
-                button
-                component="a"
-                href="/#/concepts"
-                key="Concepts"
-                selected={selectedIndex === 2}
-                onClick={event => handleListItemClick(event, 2)}
-              >
-                {applyListIcon(open, <ListAltIcon />, "Concepts")}
-              </ListItem>
-              <Divider />
-              <ListItem
-                button
-                component="a"
-                href="/#/upload"
-                key="Upload"
-                selected={selectedIndex === 3}
-                onClick={event => handleListItemClick(event, 3)}
-              >
-                {applyListIcon(open, <ListAltIcon />, "Bundle")}
-              </ListItem>
-            </>
-          )}
+            );
+          })}
         </List>
       </Drawer>
       <main
@@ -174,25 +147,26 @@ const applyLeftMenu = (
   );
 };
 
-const getSelectedListItem = () => {
-  switch (true) {
-    case window.location.href.includes("/#/forms"):
-      return 1;
-    case window.location.href.includes("/#/concept"):
-      return 2;
-    case window.location.href.includes("/#/upload"):
-      return 3;
-    default:
-      return;
-  }
+const getSelectedListItem = sidebarOptions => {
+  return _.isEmpty(sidebarOptions)
+    ? 0
+    : _.map(sidebarOptions, (option, i) => ({
+        selected: window.location.href.includes(option.href),
+        index: i
+      })).filter(option => option.selected)[0].index;
 };
+
 const ScreenWithAppBar = props => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const [selectedIndex, setSelectedIndex] = React.useState(getSelectedListItem());
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    getSelectedListItem(props.sidebarOptions)
+  );
+
   function handleListItemClick(event, index) {
     setSelectedIndex(index);
   }
+
   function handleDrawer() {
     setOpen(!open);
   }
@@ -212,7 +186,7 @@ const ScreenWithAppBar = props => {
           selectedIndex,
           handleListItemClick,
           props.children,
-          props.renderAllOptions
+          props.sidebarOptions
         )}
 
       {!props.enableLeftMenuButton && <Body>{props.children}</Body>}
