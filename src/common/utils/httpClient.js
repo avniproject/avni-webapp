@@ -72,6 +72,10 @@ class HttpClient {
   withParams(url, params) {
     return url + "?" + stringify(params);
   }
+
+  async postJson(url, body) {
+    return axios.post(url, body);
+  }
 }
 
 export const httpClient = new HttpClient();

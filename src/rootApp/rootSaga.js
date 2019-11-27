@@ -3,6 +3,7 @@ import { adminSaga, defaultI18nProvider } from "react-admin";
 import dataEntrySaga from "../dataEntryApp/sagas";
 import translationsSaga from "../translations/sagas";
 import uploadSagas from "../upload/sagas";
+import reportSagas from "../reports/sagas";
 
 import {
   authProvider,
@@ -23,7 +24,8 @@ export default function* rootSaga() {
       userInfoWatcher,
       dataEntrySaga,
       translationsSaga,
-      uploadSagas
+      uploadSagas,
+      reportSagas
     ].map(fork)
   );
 }

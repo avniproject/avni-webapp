@@ -51,6 +51,7 @@ const Homepage = () => {
       <Grid container justify="center">
         {renderCard("/#/admin/user", "Admin")}
         {renderCard("/#/translations", "Translations")}
+        {renderCard("/#/export", "Reports")}
       </Grid>
     </ScreenWithAppBar>
   );

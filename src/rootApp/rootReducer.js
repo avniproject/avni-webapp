@@ -5,6 +5,7 @@ import { adminReducer, defaultI18nProvider, i18nReducer } from "react-admin";
 import dataEntry from "../dataEntryApp/reducers/dataEntryReducer";
 import bulkUpload from "../upload/reducers";
 import translations from "../translations/reducers";
+import reports from "../reports/reducers";
 
 import app from "./ducks";
 
@@ -18,5 +19,6 @@ export default combineReducers({
   app,
   dataEntry,
   bulkUpload,
-  translations
+  translations,
+  reports
 });

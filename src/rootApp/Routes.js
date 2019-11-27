@@ -9,6 +9,7 @@ import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
 import Translations from "../translations";
+import Export from "../reports/Export";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -53,6 +54,13 @@ const Routes = ({ user, organisation }) => (
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Translations)}
     />
+    <RestrictedRoute
+      exact
+      path="/export"
+      allowedRoles={[ROLES.ORG_ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, Export)}
+    />
     <Route exact path="/">
       <Redirect to={includes(user.roles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
     </Route>
@@ -87,4 +95,7 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default connect(mapStateToProps, null)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);
+export default connect(
+  mapStateToProps,
+  null
+)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);
