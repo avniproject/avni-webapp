@@ -4,14 +4,14 @@ import org.joda.time.DateTime;
 import org.openchs.domain.AbstractEncounter;
 import org.openchs.domain.Individual;
 import org.openchs.domain.ProgramEnrolment;
-import org.openchs.util.O;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Comparator;
+import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -23,13 +23,13 @@ public class ExportProcessor implements ItemProcessor<Object, ExportItemRow> {
     private String encounterTypeUUID;
 
     @Value("#{jobParameters['startDate']}")
-    private String startDate;
+    private Date startDate;
 
     @Value("#{jobParameters['programUUID']}")
     private String programUUID;
 
     @Value("#{jobParameters['endDate']}")
-    private String endDate;
+    private Date endDate;
 
     private DateTime startDateTime;
 
@@ -37,8 +37,8 @@ public class ExportProcessor implements ItemProcessor<Object, ExportItemRow> {
 
     @PostConstruct
     public void init() {
-        this.startDateTime = O.getDateTimeDbFormat(startDate);
-        this.endDateTime = O.getDateTimeDbFormat(endDate);
+        this.startDateTime = new DateTime(startDate);
+        this.endDateTime = new DateTime(endDate);
     }
 
     public ExportItemRow process(Object exportItem) {
@@ -58,12 +58,14 @@ public class ExportProcessor implements ItemProcessor<Object, ExportItemRow> {
 
     private <T extends AbstractEncounter> Stream<T> getFilteredEncounters(Set<T> programEncounters) {
         return programEncounters.stream()
-                .filter(enc -> enc.getEncounterDateTime() != null &&
-                        !enc.isVoided() &&
+                .filter(enc -> !enc.isVoided() &&
                         enc.getEncounterType().getUuid().equals(encounterTypeUUID) &&
-                        enc.getEncounterDateTime().isAfter(startDateTime) &&
-                        enc.getEncounterDateTime().isBefore(endDateTime))
-                .sorted(Comparator.comparing(AbstractEncounter::getEncounterDateTime));
+                        enc.isEncounteredOrCancelledBetween(startDateTime, endDateTime))
+                .sorted((enc1, enc2) -> {
+                    DateTime t1 = Optional.ofNullable(enc1.getEncounterDateTime()).orElse(enc1.getCancelDateTime());
+                    DateTime t2 = Optional.ofNullable(enc2.getEncounterDateTime()).orElse(enc2.getCancelDateTime());
+                    return t1.compareTo(t2);
+                });
     }
 
     public DateTime getStartDateTime() {

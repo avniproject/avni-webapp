@@ -50,8 +50,8 @@ public class ExportJobService {
                 .map(execution -> {
                     ExportJobStatus jobStatus = new ExportJobStatus();
                     JobParameters parameters = execution.getJobParameters();
-                    jobStatus.setStartDateParam(parameters.getString("startDate"));
-                    jobStatus.setEndDateParam(parameters.getString("endDate"));
+                    jobStatus.setStartDateParam(parameters.getDate("startDate"));
+                    jobStatus.setEndDateParam(parameters.getDate("endDate"));
                     jobStatus.setSubjectTypeName(getSubjectName(parameters.getString("subjectTypeUUID")));
                     jobStatus.setProgramName(getProgramName(parameters.getString("programUUID")));
                     jobStatus.setEncounterTypeName(getEncounterName(parameters.getString("encounterTypeUUID")));

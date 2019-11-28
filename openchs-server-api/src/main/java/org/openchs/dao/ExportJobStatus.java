@@ -18,8 +18,8 @@ public class ExportJobStatus {
     private String encounterTypeName;
     private String programName;
     private String subjectTypeName;
-    private String startDateParam;
-    private String endDateParam;
+    private Date startDateParam;
+    private Date endDateParam;
 
     public String getEncounterTypeName() {
         return encounterTypeName;
@@ -45,19 +45,19 @@ public class ExportJobStatus {
         this.subjectTypeName = subjectTypeName;
     }
 
-    public String getStartDateParam() {
+    public Date getStartDateParam() {
         return startDateParam;
     }
 
-    public void setStartDateParam(String startDateParam) {
+    public void setStartDateParam(Date startDateParam) {
         this.startDateParam = startDateParam;
     }
 
-    public String getEndDateParam() {
+    public Date getEndDateParam() {
         return endDateParam;
     }
 
-    public void setEndDateParam(String endDateParam) {
+    public void setEndDateParam(Date endDateParam) {
         this.endDateParam = endDateParam;
     }
 

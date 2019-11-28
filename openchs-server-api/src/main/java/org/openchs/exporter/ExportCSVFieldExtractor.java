@@ -11,6 +11,8 @@ import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.ObservationCollection;
 import org.openchs.service.FormMappingService;
+import org.openchs.util.O;
+import org.openchs.web.request.ReportType;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.transform.FieldExtractor;
@@ -21,10 +23,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -43,17 +42,28 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     @Value("#{jobParameters['programUUID']}")
     private String programUUID;
 
+    @Value("#{jobParameters['reportType']}")
+    private String reportType;
+
+    @Value("#{jobParameters['startDate']}")
+    private Date startDate;
+
+    @Value("#{jobParameters['endDate']}")
+    private Date endDate;
+
     private EncounterTypeRepository encounterTypeRepository;
     private EncounterRepository encounterRepository;
     private ProgramEncounterRepository programEncounterRepository;
 
     private LinkedHashMap<String, FormElement> registrationMap;
-    private LinkedHashMap<String, FormElement> enrolmentMap;
-    private LinkedHashMap<String, FormElement> exitEnrolmentMap;
-    private LinkedHashMap<String, FormElement> programEncounterMap;
-    private LinkedHashMap<String, FormElement> encounterMap;
+    private LinkedHashMap<String, FormElement> enrolmentMap = new LinkedHashMap<>();
+    private LinkedHashMap<String, FormElement> exitEnrolmentMap = new LinkedHashMap<>();
+    private LinkedHashMap<String, FormElement> programEncounterMap = new LinkedHashMap<>();
+    private LinkedHashMap<String, FormElement> programEncounterCancelMap = new LinkedHashMap<>();
+    private LinkedHashMap<String, FormElement> encounterMap = new LinkedHashMap<>();
+    private LinkedHashMap<String, FormElement> encounterCancelMap = new LinkedHashMap<>();
     private String encounterTypeName;
-    private Long maxVisitCount;
+    private Long maxVisitCount = 0L;
     private FormMappingService formMappingService;
 
     public ExportCSVFieldExtractor(EncounterTypeRepository encounterTypeRepository,
@@ -69,18 +79,28 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     @PostConstruct
     public void init() {
         this.registrationMap = formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile);
-        this.enrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
-        this.exitEnrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
-        this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
-        this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
-        this.encounterTypeName = encounterTypeRepository.getEncounterTypeName(encounterTypeUUID);
-        Long maxVisitCount = getMaxVisitCount();
-        this.maxVisitCount = maxVisitCount == null ? 0 : maxVisitCount;
+        if (reportType.equals(ReportType.All.name())) {
+            this.enrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
+            this.exitEnrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
+            this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
+            this.programEncounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounterCancellation);
+            this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
+            this.encounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.IndividualEncounterCancellation);
+            this.encounterTypeName = encounterTypeRepository.getEncounterTypeName(encounterTypeUUID);
+            Long maxVisitCount = getMaxVisitCount();
+            this.maxVisitCount = maxVisitCount == null ? 0 : maxVisitCount;
+        }
     }
 
     private Long getMaxVisitCount() {
-        return programUUID == null ? encounterRepository.getMaxEncounterCount(encounterTypeUUID) :
-                programEncounterRepository.getMaxProgramEncounterCount(encounterTypeUUID);
+        return programUUID == null ? encounterRepository.getMaxEncounterCount(encounterTypeUUID, getCalendarTime(startDate), getCalendarTime(endDate)) :
+                programEncounterRepository.getMaxProgramEncounterCount(encounterTypeUUID, getCalendarTime(startDate), getCalendarTime(endDate));
+    }
+
+    private Calendar getCalendarTime(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
     }
 
     @Override
@@ -119,21 +139,23 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
 
     private void addGeneralEncounterRelatedFields(ExportItemRow exportItemRow, List<Object> row) {
         //Encounter
-        exportItemRow.getEncounters().forEach(encounter -> addEncounter(row, encounter, encounterMap));
+        exportItemRow.getEncounters().forEach(encounter -> addEncounter(row, encounter, encounterMap, encounterCancelMap));
     }
 
     private void addProgramEncounterRelatedFields(ExportItemRow exportItemRow, List<Object> row) {
         //ProgramEncounter
-        exportItemRow.getProgramEncounters().forEach(programEncounter -> addEncounter(row, programEncounter, programEncounterMap));
+        exportItemRow.getProgramEncounters().forEach(programEncounter -> addEncounter(row, programEncounter, programEncounterMap, programEncounterCancelMap));
     }
 
-    private <T extends AbstractEncounter> void addEncounter(List<Object> row, T encounter, LinkedHashMap<String, FormElement> map) {
+    private <T extends AbstractEncounter> void addEncounter(List<Object> row, T encounter, LinkedHashMap<String, FormElement> map, LinkedHashMap<String, FormElement> cancelMap) {
         row.add(encounter.getId());
         row.add(encounter.getUuid());
         row.add(encounter.getEarliestVisitDateTime());
         row.add(encounter.getMaxVisitDateTime());
         row.add(encounter.getEncounterDateTime());
         row.addAll(getObs(encounter.getObservations(), map));
+        row.add(encounter.getCancelDateTime());
+        row.addAll(getObs(encounter.getCancelObservations(), cancelMap));
     }
 
     @Override
@@ -174,6 +196,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             sb.append(",").append(encounterTypeName).append("_").append(visit).append(".max_visit_date_time");
             sb.append(",").append(encounterTypeName).append("_").append(visit).append(".encounter_date_time");
             appendObsColumns(sb, encounterTypeName + "_" + visit, programUUID != null ? programEncounterMap : encounterMap);
+            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".cancel_date_time");
+            appendObsColumns(sb, encounterTypeName + "_" + visit, programUUID != null ? programEncounterCancelMap : encounterCancelMap);
         }
         return sb.toString();
     }

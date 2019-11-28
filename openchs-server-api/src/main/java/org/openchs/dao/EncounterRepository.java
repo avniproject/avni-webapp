@@ -9,6 +9,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.Calendar;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
@@ -35,9 +37,10 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     @Query(value = "select count(enc.id) as count " +
             "from encounter enc " +
             "join encounter_type t on t.id = enc.encounter_type_id " +
-            "where t.uuid = :encounterTypeUUID and enc.encounter_date_time notnull " +
+            "where t.uuid = :encounterTypeUUID and (enc.encounter_date_time notnull or enc.cancel_date_time notnull) " +
+            "and ((enc.encounter_date_time BETWEEN :startDate and :endDate) or (enc.cancel_date_time BETWEEN :startDate and :endDate)) " +
             "group by enc.individual_id " +
             "order by count desc " +
             "limit 1", nativeQuery = true)
-    Long getMaxEncounterCount(String encounterTypeUUID);
+    Long getMaxEncounterCount(String encounterTypeUUID, Calendar startDate, Calendar endDate);
 }

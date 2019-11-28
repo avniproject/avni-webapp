@@ -1,12 +1,23 @@
 package org.openchs.web.request;
 
+import java.util.Date;
+
 public class ExportJobRequest {
 
     private String encounterTypeUUID;
     private String programUUID;
     private String subjectTypeUUID;
-    private String startDate;
-    private String endDate;
+    private Date startDate;
+    private Date endDate;
+    private ReportType reportType;
+
+    public ReportType getReportType() {
+        return reportType;
+    }
+
+    public void setReportType(ReportType reportType) {
+        this.reportType = reportType;
+    }
 
     public String getEncounterTypeUUID() {
         return encounterTypeUUID;
@@ -32,19 +43,19 @@ public class ExportJobRequest {
         this.subjectTypeUUID = subjectTypeUUID;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 

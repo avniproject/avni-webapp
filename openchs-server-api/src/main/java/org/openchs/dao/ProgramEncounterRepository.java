@@ -9,6 +9,10 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Calendar;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
@@ -33,9 +37,10 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     @Query(value = "select count(enc.id) as count " +
             "from program_encounter enc " +
             "join encounter_type t on t.id = enc.encounter_type_id " +
-            "where t.uuid = :programEncounterTypeUUID and enc.encounter_date_time notnull " +
+            "where t.uuid = :programEncounterTypeUUID and (enc.encounter_date_time notnull or enc.cancel_date_time notnull) " +
+            "and ((enc.encounter_date_time BETWEEN :startDate and :endDate) or (enc.cancel_date_time BETWEEN :startDate and :endDate)) " +
             "group by enc.program_enrolment_id " +
             "order by count desc " +
             "limit 1", nativeQuery = true)
-    Long getMaxProgramEncounterCount(String programEncounterTypeUUID);
+    Long getMaxProgramEncounterCount(String programEncounterTypeUUID, Calendar startDate, Calendar endDate);
 }

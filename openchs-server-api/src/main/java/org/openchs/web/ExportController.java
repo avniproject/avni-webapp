@@ -69,8 +69,9 @@ public class ExportController {
                         .addString("programUUID", exportJobRequest.getProgramUUID(), false)
                         .addString("subjectTypeUUID", exportJobRequest.getSubjectTypeUUID(), false)
                         .addString("encounterTypeUUID", exportJobRequest.getEncounterTypeUUID(), false)
-                        .addString("startDate", exportJobRequest.getStartDate(), false)
-                        .addString("endDate", exportJobRequest.getEndDate(), false)
+                        .addDate("startDate", exportJobRequest.getStartDate(), false)
+                        .addDate("endDate", exportJobRequest.getEndDate(), false)
+                        .addString("reportType", exportJobRequest.getReportType().name())
                         .toJobParameters();
 
         try {

@@ -22,7 +22,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -102,10 +104,13 @@ public class ExportBatchConfiguration {
         final Map<String, Sort.Direction> sorts = new HashMap<>();
         sorts.put("id", Sort.Direction.ASC);
         if (programUUID != null) {
+            List<String> params = new ArrayList<>();
+            params.add(programUUID);
             return new RepositoryItemReaderBuilder<Object>()
                     .name("reader")
                     .repository(programEnrolmentRepository)
                     .methodName("findEnrolments")
+                    .arguments(params)
                     .pageSize(CHUNK_SIZE)
                     .sorts(sorts)
                     .build();

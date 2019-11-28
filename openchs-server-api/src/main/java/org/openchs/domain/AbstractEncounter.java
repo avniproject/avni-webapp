@@ -128,4 +128,9 @@ public class AbstractEncounter extends OrganisationAwareEntity {
     public boolean dateFallsWithIn(DateTime encounterDateTime) {
         return encounterDateTime.isAfter(this.getEarliestVisitDateTime()) && encounterDateTime.isBefore(this.getMaxVisitDateTime());
     }
+
+    public boolean isEncounteredOrCancelledBetween(DateTime startDate, DateTime endDate) {
+        return (getEncounterDateTime() != null && getEncounterDateTime().isAfter(startDate) && getEncounterDateTime().isBefore(endDate)) ||
+                (getCancelDateTime() != null && getCancelDateTime().isAfter(startDate) && getCancelDateTime().isBefore(endDate));
+    }
 }
