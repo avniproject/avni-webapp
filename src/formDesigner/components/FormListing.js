@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
 import { constFormType } from "../common/constants";
@@ -52,7 +52,7 @@ const FormListing = ({ history }) => {
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
       if (!_.isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
-      axios
+      http
         .get(apiUrl)
         .then(response => response.data)
         .then(result => {
@@ -108,7 +108,7 @@ const FormListing = ({ history }) => {
         ? "Do you want to unvoid the form " + rowData.name + " ?"
         : "Do you want to void the form " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
-        axios.delete("/web/forms/" + rowData.uuid).then(response => {
+        http.delete("/web/forms/" + rowData.uuid).then(response => {
           if (response.status === 200) {
             refreshTable(tableRef);
           }

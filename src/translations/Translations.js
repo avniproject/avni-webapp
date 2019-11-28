@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
 import { find, isEmpty } from "lodash";
 import DropDown from "../common/components/DropDown";
@@ -35,11 +35,8 @@ export const Translations = ({
 
   const onDownloadPressedHandler = () => {
     const platformId = find(platforms, p => p.name === platform).id;
-    return axios({
-      url: "/translation",
-      method: "GET",
-      params: { platform: platformId }
-    })
+    return http
+      .get(http.withParams("/translation", { platform: platformId }))
       .then(response => {
         const zip = new JSZip();
         const folder = zip.folder("locale");

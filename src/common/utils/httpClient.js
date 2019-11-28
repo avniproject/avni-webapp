@@ -4,16 +4,23 @@ import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
-import { devEnvUserName } from "../constants";
+import { devEnvUserName, isDevEnv } from "../constants";
+import Auth from "@aws-amplify/auth";
 
 class HttpClient {
   static instance;
+
   constructor() {
     if (HttpClient.instance) return HttpClient.instance;
     this.authContext = _authContext;
     this.initAuthContext = this.initAuthContext.bind(this);
     this.setHeaders = this.setHeaders.bind(this);
     this.fetchJson = this.fetchJson.bind(this);
+    this.get = this._wrapAxiosMethod("get");
+    this.post = this._wrapAxiosMethod("post");
+    this.put = this._wrapAxiosMethod("put");
+    this.patch = this._wrapAxiosMethod("patch");
+    this.delete = this._wrapAxiosMethod("delete");
     HttpClient.instance = this;
   }
 
@@ -54,9 +61,7 @@ class HttpClient {
   }
 
   async downloadFile(url, filename) {
-    return await axios({
-      method: "GET",
-      url: url,
+    return await this.get(url, {
       responseType: "blob"
     }).then(response => {
       files.download(filename, response.data);
@@ -66,11 +71,21 @@ class HttpClient {
   async uploadFile(url, file) {
     const formData = new FormData();
     formData.append("file", file);
-    return await axios.post(url, formData);
+    return await this.post(url, formData);
   }
 
   withParams(url, params) {
     return url + "?" + stringify(params);
+  }
+
+  _wrapAxiosMethod(methodname) {
+    return async (...args) => {
+      if (!isDevEnv) {
+        const currentSession = await Auth.currentSession();
+        axios.defaults.headers.common["AUTH-TOKEN"] = currentSession.idToken.jwtToken;
+      }
+      return axios[methodname](...args);
+    };
   }
 
   async postJson(url, body) {
@@ -79,3 +94,4 @@ class HttpClient {
 }
 
 export const httpClient = new HttpClient();
+export default httpClient;

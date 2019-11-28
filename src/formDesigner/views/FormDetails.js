@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _, { cloneDeep, filter, map } from "lodash";
-import axios from "axios";
+import _, { cloneDeep, filter, isEmpty, map } from "lodash";
+import http from "common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
 import Button from "@material-ui/core/Button";
@@ -17,6 +17,8 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import produce from "immer";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
+
+import FormLevelRules from "../components/FormLevelRules";
 
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
@@ -77,10 +79,22 @@ class FormDetails extends Component {
 
   componentDidMount() {
     this.setupBeforeUnloadListener();
-    return axios
+    return http
       .get(`/forms/export?formUUID=${this.props.match.params.formUUID}`)
       .then(response => response.data)
       .then(form => {
+        /*
+        Below visitScheduleRule, decisionRule, validationRule are for handling form level rules and
+        decisionExpand, visitScheduleExpand, validationExpand are for handling expand button.
+
+        */
+        form["visitScheduleRule"] = form.visitScheduleRule ? form.visitScheduleRule : "";
+        form["decisionRule"] = form.decisionRule ? form.decisionRule : "";
+        form["validationRule"] = form.validationRule ? form.validationRule : "";
+        form["decisionExpand"] = false;
+        form["visitScheduleExpand"] = false;
+        form["validationExpand"] = false;
+
         _.forEach(form.formElementGroups, group => {
           group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
           group.expanded = false;
@@ -140,7 +154,7 @@ class FormDetails extends Component {
         console.log(error);
       });
   }
-
+  ter;
   countGroupElements(form) {
     let groupFlag = true;
     _.forEach(form.formElementGroups, (groupElement, index) => {
@@ -335,20 +349,15 @@ class FormDetails extends Component {
   handleGroupElementKeyValueChange = (index, propertyName, value, elementIndex) => {
     this.setState(
       produce(draft => {
+        const formElement = draft.form.formElementGroups[index].formElements[elementIndex];
         if (propertyName === "editable") {
           if (value === "undefined") {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              propertyName
-            ] = true;
+            formElement.keyValues[propertyName] = true;
           } else {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              propertyName
-            ] = !value;
+            formElement.keyValues[propertyName] = !value;
           }
         } else if (propertyName === "datePickerMode") {
-          draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-            propertyName
-          ] = value;
+          formElement.keyValues[propertyName] = value;
         } else if (
           propertyName === "maxHeight" ||
           propertyName === "maxWidth" ||
@@ -356,9 +365,7 @@ class FormDetails extends Component {
           propertyName === "durationLimitInSecs" ||
           propertyName === "videoQuality"
         ) {
-          draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-            propertyName
-          ] = value;
+          formElement.keyValues[propertyName] = value;
         } else if (
           propertyName === "years" ||
           propertyName === "months" ||
@@ -366,33 +373,22 @@ class FormDetails extends Component {
           propertyName === "weeks" ||
           propertyName === "hours"
         ) {
-          if (
-            !Object.keys(
-              draft.form.formElementGroups[index].formElements[elementIndex].keyValues
-            ).includes("durationOptions")
-          ) {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              "durationOptions"
-            ] = [];
+          if (!Object.keys(formElement.keyValues).includes("durationOptions")) {
+            formElement.keyValues["durationOptions"] = [];
           }
-          if (
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              "durationOptions"
-            ].includes(propertyName)
-          ) {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              "durationOptions"
-            ].splice(
-              draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-                "durationOptions"
-              ].indexOf(propertyName),
+          if (formElement.keyValues["durationOptions"].includes(propertyName)) {
+            formElement.keyValues["durationOptions"].splice(
+              formElement.keyValues["durationOptions"].indexOf(propertyName),
               1
             );
           } else {
-            draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
-              "durationOptions"
-            ].push(value);
+            formElement.keyValues["durationOptions"].push(value);
           }
+        } else if (propertyName === "regex" || propertyName === "descriptionKey") {
+          if (!formElement.validFormat) {
+            formElement.validFormat = {};
+          }
+          formElement.validFormat[propertyName] = value;
         }
 
         draft.detectBrowserCloseEvent = true;
@@ -424,6 +420,7 @@ class FormDetails extends Component {
           name: "",
           type: "",
           keyValues: {},
+
           mandatory: false,
           voided: false,
           expanded: true,
@@ -510,7 +507,7 @@ class FormDetails extends Component {
 
   updateForm = event => {
     /*Have to deep clone state.form here as we want to modify this data before we send it to server.
-     * Modifying this data will give an error as Immer freezes the state object for direct modifications.
+     * Modifying this data directly will give an error as Immer freezes the state object for direct modifications.
      */
 
     // this.setState({
@@ -522,7 +519,7 @@ class FormDetails extends Component {
       _.forEach(group.formElements, (element, index1) => {
         if (element.concept.dataType === "Coded") {
           const excluded = map(filter(element.concept.answers, "voided"), "name");
-          element.keyValues["ExcludedAnswers"] = excluded;
+          if (!isEmpty(excluded)) element.keyValues["ExcludedAnswers"] = excluded;
         }
 
         if (Object.keys(element.keyValues).length !== 0) {
@@ -540,7 +537,7 @@ class FormDetails extends Component {
     _.forEach(dataSend.formElementGroups, (group, index) => {
       this.reOrderSequence(dataSend, index);
     });
-    axios
+    http
       .post("/forms", dataSend)
       .then(response => {
         if (response.status === 200) {
@@ -598,6 +595,23 @@ class FormDetails extends Component {
     }
   };
 
+  onRuleUpdate = (name, value) => {
+    this.setState(
+      produce(draft => {
+        draft.form[name] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
+  onToggleExpandPanel = name => {
+    this.setState(
+      produce(draft => {
+        draft.form[name] = !draft.form[name];
+      })
+    );
+  };
+
   render() {
     const form = (
       <Grid container justify="center">
@@ -609,6 +623,7 @@ class FormDetails extends Component {
           >
             <Tab label="Details" />
             <Tab label="Settings" />
+            {/* <Tab label="Rules" /> */}
           </Tabs>
           <TabContainer hidden={this.state.activeTabIndex !== 0}>
             <div name="divGroup">
@@ -677,6 +692,18 @@ class FormDetails extends Component {
               />
             </Grid>
           </Grid>
+
+          {/*
+            Uncomment the below div to show rules at form level
+            */}
+
+          {/* <div hidden={this.state.activeTabIndex !== 2}>
+            <FormLevelRules
+              form={this.state.form}
+              onRuleUpdate={this.onRuleUpdate}
+              onToggleExpandPanel={this.onToggleExpandPanel}
+            />
+          </div> */}
         </Grid>
       </Grid>
     );

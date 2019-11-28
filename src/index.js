@@ -16,7 +16,7 @@ import { App, SecureApp } from "./rootApp";
 import { ThemeProvider, StylesProvider, createGenerateClassName } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 import * as Colors from "@material-ui/core/colors";
-import { httpClient } from "./common/utils/httpClient";
+import { httpClient } from "common/utils/httpClient";
 
 const theme = createMuiTheme({
   palette: {

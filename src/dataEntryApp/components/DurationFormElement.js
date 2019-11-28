@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { FormControlLabel, TextField } from "@material-ui/core";
 import { isEmpty } from "lodash";
-import { CompositeDuration } from "openchs-models";
+import { CompositeDuration } from "avni-models";
 
 const DurationFormElement = ({ duration, mandatory, name, update }) => {
   const [localVal, setLocalVal] = useState((duration && duration.durationValue) || "");

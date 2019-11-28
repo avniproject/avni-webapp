@@ -6,13 +6,12 @@ import {
   isDevEnv,
   isProdEnv
 } from "../common/constants";
-import { httpClient } from "../common/utils/httpClient";
+import http from "common/utils/httpClient";
 import { configureAuth } from "./utils";
 
 const api = {
-  fetchCognitoDetails: () =>
-    httpClient.fetchJson("/cognito-details").then(response => response.json),
-  fetchUserInfo: () => httpClient.fetchJson("/me").then(response => response.json)
+  fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
+  fetchUserInfo: () => http.fetchJson("/me").then(response => response.json)
 };
 
 export function* initialiseCognito() {
@@ -34,7 +33,7 @@ export function* initialiseCognito() {
 
 export function* onSetCognitoUser() {
   const action = yield take(types.SET_COGNITO_USER);
-  yield call(httpClient.initAuthContext, {
+  yield call(http.initAuthContext, {
     username: action.payload.authData.username,
     idToken: action.payload.authData.signInUserSession.idToken.jwtToken
   });
@@ -49,7 +48,7 @@ function* setUserDetails() {
   const userDetails = yield call(api.fetchUserInfo);
   yield put(setUserInfo(userDetails));
   if (isDevEnv && !cognitoInDev) {
-    yield call(httpClient.initAuthContext, { username: userDetails.username });
+    yield call(http.initAuthContext, { username: userDetails.username });
   }
   yield put(sendInitComplete());
 }

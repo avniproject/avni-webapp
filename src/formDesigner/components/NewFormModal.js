@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
@@ -20,8 +20,6 @@ class NewFormModal extends Component {
       programName: "",
       subjectType: "",
       encounterType: "",
-      open: false,
-      onClose: false,
       data: {},
       toFormDetails: "",
       errors: { name: "", formType: "", programName: "", subjectType: "", encounterType: "" },
@@ -64,9 +62,10 @@ class NewFormModal extends Component {
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
     this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
   };
-  addFields() {
+
+  onSubmitForm() {
     const validateFormStatus = this.validateForm();
-    if (validateFormStatus && this.props.isCreateFrom) {
+    if (validateFormStatus) {
       let dataSend = {
         name: this.state.name,
         formType: this.state.formType
@@ -80,7 +79,7 @@ class NewFormModal extends Component {
         mapping["encounterTypeUuid"] = this.state.encounterType;
         dataSend["formMappings"].push(mapping);
       }
-      axios
+      http
         .post("/web/forms", dataSend)
         .then(response => {
           if (this.props.isCloneForm === false) {
@@ -90,7 +89,7 @@ class NewFormModal extends Component {
           } else {
             const newUUID = response.data.uuid;
             let editResponse;
-            axios
+            http
               .get(`/forms/export?formUUID=${this.props.uuid}`)
               .then(response => {
                 editResponse = response.data;
@@ -109,7 +108,7 @@ class NewFormModal extends Component {
                 });
                 promise.then(
                   result => {
-                    axios
+                    http
                       .post("/forms", editResponse)
                       .then(response => {
                         if (response.status === 200) {
@@ -133,50 +132,11 @@ class NewFormModal extends Component {
         .catch(error => {
           this.setState({ errorMsg: error.response.data });
         });
-    } else if (validateFormStatus && !this.props.isCreateFrom) {
-      const existFormUUID = this.props.uuid;
-
-      if (
-        this.state.formType === "IndividualProfile" ||
-        this.state.formType === "Encounter" ||
-        this.state.formType === "ChecklistItem"
-      ) {
-        this.setState({ programName: "" });
-      }
-
-      if (
-        this.state.formType !== "Encounter" &&
-        this.state.formType !== "ProgramEncounter" &&
-        this.state.formType !== "ProgramEncounterCancellation"
-      ) {
-        this.setState({ encounterType: "" });
-      }
     }
   }
 
   componentDidMount() {
-    if (!this.props.isCreateFrom) {
-      axios
-        .get(`/forms/export?formUUID=${this.props.uuid}`)
-        .then(response => {
-          this.setState({
-            name: response.data.name,
-            formType: response.data.formType,
-            subjectType: response.data.subjectType
-          });
-
-          if (response.data.encounterTypes) {
-            this.setState({ encounterType: response.data.encounterTypes[0] });
-          }
-          if (response.data.programName) {
-            this.setState({ programName: response.data.programName });
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-    axios
+    http
       .get("/web/operationalModules")
       .then(response => {
         let data = Object.assign({}, response.data);
@@ -199,8 +159,7 @@ class NewFormModal extends Component {
       formType: "",
       subjectType: "",
       programName: "",
-      encounterType: "",
-      open: true
+      encounterType: ""
     });
   }
 
@@ -310,7 +269,6 @@ class NewFormModal extends Component {
       this.state.formType === "ProgramEnrolment" ||
       this.state.formType === "ProgramEncounterCancellation";
     const subjectTypeBased = this.state.formType !== "" && this.state.formType !== "ChecklistItem";
-    const submitButtonName = this.props.isCreateFrom ? "Add" : "Update";
 
     return (
       <div>
@@ -320,6 +278,7 @@ class NewFormModal extends Component {
               <li style={{ color: "red" }}>{this.state.errorMsg}</li>
             </FormControl>
           )}
+
           <FormControl fullWidth margin="dense">
             <InputLabel htmlFor="formType">Form Type</InputLabel>
             <Select
@@ -356,10 +315,10 @@ class NewFormModal extends Component {
         <Button
           variant="contained"
           color="primary"
-          onClick={this.addFields.bind(this)}
+          onClick={this.onSubmitForm.bind(this)}
           style={{ marginTop: 10 }}
         >
-          {submitButtonName}
+          Add
         </Button>
         {this.state.showUpdateAlert && (
           <CustomizedSnackbar
@@ -376,7 +335,6 @@ class NewFormModal extends Component {
 NewFormModal.defaultProps = {
   name: "",
   uuid: "",
-  isCreateFrom: true,
   isCloneForm: false
 };
 

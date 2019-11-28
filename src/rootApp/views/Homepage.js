@@ -47,7 +47,7 @@ const Homepage = () => {
   );
 
   return (
-    <ScreenWithAppBar appbarTitle={"OpenCHS Web Console"}>
+    <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justify="center">
         {renderCard("/#/admin/user", "Admin")}
         {renderCard("/#/translations", "Translations")}

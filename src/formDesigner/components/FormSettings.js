@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import _ from "lodash";
@@ -48,7 +48,7 @@ class FormSettings extends Component {
       _.forEach(this.state.formMappings, function(formMap, index) {
         if (!formMap.voided) count += 1;
       });
-      if (count == 0) errorsList["name"] = "Please add atleast one form mapping.";
+      if (count === 0) errorsList["name"] = "Please add atleast one form mapping.";
     }
 
     _.forEach(formMapping, (formMap, index) => {
@@ -125,12 +125,13 @@ class FormSettings extends Component {
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
     this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
   };
-  addFields() {
+
+  onFormSubmit() {
     const validateFormStatus = this.validateForm();
     if (validateFormStatus) {
       const existFormUUID = this.props.uuid;
       this.setState({ errorMsg: "" });
-      axios
+      http
         .put("/web/forms/" + existFormUUID + "/metadata", {
           name: this.state.name,
           formType: this.state.formType,
@@ -169,7 +170,7 @@ class FormSettings extends Component {
       formType: this.props.formData.formType,
       uuid: this.props.formData.uuid
     });
-    axios
+    http
       .get("/web/operationalModules")
       .then(response => {
         let data = Object.assign({}, response.data);
@@ -358,7 +359,7 @@ class FormSettings extends Component {
       this.state.formType === "ProgramEncounterCancellation";
     const checklistItemBased =
       this.state.formType !== "" && this.state.formType !== "ChecklistItem";
-    const submitButtonName = "Save";
+
     return (
       <div>
         <form>
@@ -453,10 +454,10 @@ class FormSettings extends Component {
           <Button
             variant="contained"
             color="primary"
-            onClick={this.addFields.bind(this)}
+            onClick={this.onFormSubmit.bind(this)}
             style={{ marginTop: 10 }}
           >
-            {submitButtonName}
+            Save
           </Button>
         </div>
         {this.state.showUpdateAlert && (

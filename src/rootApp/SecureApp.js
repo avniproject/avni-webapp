@@ -32,7 +32,7 @@ class SecureApp extends Component {
       <App />
     ) : (
       <div className="centerContainer">
-        <img src={logo} alt="OpenCHS" />
+        <img src={logo} alt="Avni" />
         {this.props.authConfigured && (
           <Authenticator
             hide={[Greetings, SignUp]}

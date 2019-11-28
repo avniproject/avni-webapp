@@ -2,7 +2,7 @@ import React from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField } from "@material-ui/core";
-import { ObservationsHolder } from "openchs-models";
+import { ObservationsHolder } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,

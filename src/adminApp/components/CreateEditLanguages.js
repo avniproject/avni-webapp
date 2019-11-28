@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { localeChoices } from "../../common/constants";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import _ from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
@@ -24,7 +24,7 @@ export const CreateEditLanguages = props => {
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 
   const saveLanguage = () => {
-    axios
+    http
       .post("/organisationConfig", {
         uuid: setting.uuid,
         settings: {

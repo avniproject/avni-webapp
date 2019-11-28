@@ -12,7 +12,7 @@ import {
   OrganisationConfig,
   Program,
   SubjectType
-} from "openchs-models";
+} from "avni-models";
 import { get, isEmpty, isNil, map } from "lodash";
 
 export const mapConceptAnswer = json => {

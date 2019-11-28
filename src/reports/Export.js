@@ -56,7 +56,7 @@ const Export = ({ operationalModules, getOperationalModules }) => {
       subjectTypeUUID: selectedSubjectType.uuid,
       programUUID: selectedProgram.uuid,
       encounterTypeUUID: selectedEncounterType.uuid,
-      startDate: startDate,
+      startDate: startDate.setHours(0, 0, 0, 0),
       endDate: endDate.setHours(23, 59, 59, 999),
       reportType: ReportTypes.getCode(reportType.name)
     };

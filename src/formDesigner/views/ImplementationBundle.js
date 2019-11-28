@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import JSZip from "jszip";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import { LineBreak } from "../../common/components/utils";
 import fileDownload from "js-file-download";
 import { connect } from "react-redux";
@@ -19,7 +19,7 @@ function ImplementationBundle({ organisation }) {
   };
 
   function post(url, jsonText) {
-    return axios.post(url, jsonText, {
+    return http.post(url, jsonText, {
       headers: {
         "Content-Type": "application/json"
       }
@@ -52,7 +52,7 @@ function ImplementationBundle({ organisation }) {
   }
 
   function onDownloadHandler() {
-    axios
+    http
       .get("/implementation/export", {
         responseType: "blob"
       })
@@ -100,4 +100,7 @@ const mapStateToProps = state => ({
   organisation: state.app.organisation
 });
 
-export default connect(mapStateToProps, null)(ImplementationBundle);
+export default connect(
+  mapStateToProps,
+  null
+)(ImplementationBundle);
