@@ -16,8 +16,8 @@ export function* getExportJobStatusesWatcher() {
   yield takeLatest(types.GET_UPLOAD_JOB_STATUSES, getExportJobStatusesWorker);
 }
 
-export function* getExportJobStatusesWorker() {
-  const jobStatus = yield call(api.fetchUploadJobStatuses);
+export function* getExportJobStatusesWorker({ page }) {
+  const jobStatus = yield call(api.fetchUploadJobStatuses, { page });
   yield put(setUploadStatus(jobStatus));
 }
 

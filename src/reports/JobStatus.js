@@ -15,13 +15,20 @@ import Box from "@material-ui/core/Box";
 import { Grid } from "@material-ui/core";
 import Refresh from "@material-ui/icons/Refresh";
 import IconButton from "@material-ui/core/IconButton";
+import TablePagination from "@material-ui/core/TablePagination";
 
 const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
   React.useEffect(() => {
-    getUploadStatuses();
+    getUploadStatuses(0);
   }, []);
-
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = React.useState(0);
   const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+    getUploadStatuses(newPage);
+  };
 
   const onDownloadHandler = fileName => {
     axios
@@ -93,6 +100,16 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
           ))}
         </TableBody>
       </Table>
+      <TablePagination
+        rowsPerPageOptions={[10]}
+        component="div"
+        count={get(exportJobStatuses, "page.totalElements")}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        backIconButtonProps={{ "aria-label": "previous page" }}
+        nextIconButtonProps={{ "aria-label": "next page" }}
+        onChangePage={handleChangePage}
+      />
     </Box>
   );
 };

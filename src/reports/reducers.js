@@ -12,8 +12,9 @@ export const setUploadStatus = exportJobStatuses => ({
   exportJobStatuses
 });
 
-export const getUploadStatuses = () => ({
-  type: types.GET_UPLOAD_JOB_STATUSES
+export const getUploadStatuses = page => ({
+  type: types.GET_UPLOAD_JOB_STATUSES,
+  page
 });
 
 export const setOperationalModules = operationalModules => ({
