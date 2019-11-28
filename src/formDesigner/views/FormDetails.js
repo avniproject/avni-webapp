@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _, { cloneDeep, filter, map } from "lodash";
+import _, { cloneDeep, filter, isEmpty, map } from "lodash";
 import http from "common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
@@ -492,7 +492,7 @@ class FormDetails extends Component {
 
   updateForm = event => {
     /*Have to deep clone state.form here as we want to modify this data before we send it to server.
-     * Modifying this data will give an error as Immer freezes the state object for direct modifications.
+     * Modifying this data directly will give an error as Immer freezes the state object for direct modifications.
      */
 
     // this.setState({
@@ -504,7 +504,7 @@ class FormDetails extends Component {
       _.forEach(group.formElements, (element, index1) => {
         if (element.concept.dataType === "Coded") {
           const excluded = map(filter(element.concept.answers, "voided"), "name");
-          element.keyValues["ExcludedAnswers"] = excluded;
+          if (!isEmpty(excluded)) element.keyValues["ExcludedAnswers"] = excluded;
         }
 
         if (Object.keys(element.keyValues).length !== 0) {

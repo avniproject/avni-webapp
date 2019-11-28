@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import {
   Datagrid,
   List,
@@ -17,7 +17,6 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
-import { isEmpty } from "lodash";
 import { change } from "redux-form";
 import FormLabel from "@material-ui/core/FormLabel";
 import Box from "@material-ui/core/Box";
