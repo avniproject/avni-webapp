@@ -1,4 +1,4 @@
-import { httpClient } from "../../common/utils/httpClient";
+import { httpClient } from "common/utils/httpClient";
 
 export default {
   search(params) {

@@ -1,7 +1,7 @@
 import DropDown from "../common/components/DropDown";
 import FileUpload from "../common/components/FileUpload";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import { filter, find, isEmpty, isString, reject, size } from "lodash";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
@@ -42,7 +42,7 @@ export default ({ locales = [], onSuccessfulImport }) => {
 
   const onUploadPressedHandler = () => {
     const languageId = find(locales, local => local.name === language).id;
-    axios
+    http
       .post("/translation", { translations: file.json, language: languageId })
       .then(res => {
         if (res.status === 200) {

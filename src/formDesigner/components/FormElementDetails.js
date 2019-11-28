@@ -12,7 +12,7 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import MenuItem from "@material-ui/core/MenuItem";
-import { isEqual } from "lodash";
+import { isEqual, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -73,10 +73,9 @@ function FormElementDetails(props) {
   return (
     <Grid container item sm={12}>
       <Grid item sm={12}>
-        {props.formElementData.errorMessage &&
-          (props.formElementData.errorMessage.name && (
-            <div style={{ color: "red" }}>Please enter name</div>
-          ))}
+        {props.formElementData.errorMessage && props.formElementData.errorMessage.name && (
+          <div style={{ color: "red" }}>Please enter name</div>
+        )}
         <FormControl fullWidth>
           <InputLabel htmlFor="elementNameDetails">Name</InputLabel>
           <Input
@@ -94,10 +93,9 @@ function FormElementDetails(props) {
         </FormControl>
       </Grid>
       <Grid item sm={12}>
-        {props.formElementData.errorMessage &&
-          (props.formElementData.errorMessage.concept && (
-            <div style={{ color: "red" }}>Please enter concept </div>
-          ))}
+        {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
+          <div style={{ color: "red" }}>Please enter concept </div>
+        )}
 
         <FormControl fullWidth>
           <AutoSuggestSingleSelection
@@ -125,10 +123,9 @@ function FormElementDetails(props) {
       {/* {show && onShowDialogueForConcept()} */}
       {props.formElementData.concept.dataType === "Coded" && (
         <Grid item sm={6}>
-          {props.formElementData.errorMessage &&
-            (props.formElementData.errorMessage.type && (
-              <div style={{ color: "red" }}>Please select type</div>
-            ))}
+          {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
+            <div style={{ color: "red" }}>Please select type</div>
+          )}
           <FormControl fullWidth>
             <InputLabel>Type</InputLabel>
             <Select
@@ -486,6 +483,41 @@ function FormElementDetails(props) {
             })}
           </Grid>
         </>
+      )}
+
+      {["Numeric", "Text"].includes(props.formElementData.concept.dataType) && (
+        <Grid item sm={12}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="validFormatRegex">Validation Regex</InputLabel>
+            <Input
+              id="validFormatRegex"
+              value={get(props.formElementData, "validFormat.regex", "")}
+              onChange={event =>
+                props.handleGroupElementKeyValueChange(
+                  props.groupIndex,
+                  "regex",
+                  event.target.value,
+                  props.index
+                )
+              }
+            />
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="validFormatRegex">Validation Description Key</InputLabel>
+            <Input
+              id="validFormatDescriptionKey"
+              value={get(props.formElementData, "validFormat.descriptionKey", "")}
+              onChange={event =>
+                props.handleGroupElementKeyValueChange(
+                  props.groupIndex,
+                  "descriptionKey",
+                  event.target.value,
+                  props.index
+                )
+              }
+            />
+          </FormControl>
+        </Grid>
       )}
 
       <Grid container item sm={12}>

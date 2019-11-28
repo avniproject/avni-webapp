@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import AutoSuggestSingleSelection from "../../formDesigner/components/AutoSuggestSingleSelection";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
 
@@ -56,7 +56,7 @@ export const CreateEditFilters = props => {
   const [selectedSubjectType, setSelectedSubjectType] = useState({});
 
   useEffect(() => {
-    axios.get("/subjectType").then(res => {
+    http.get("/subjectType").then(res => {
       const response = res.data._embedded.subjectType;
       setSubjectTypes(response);
       const selected = response.filter(st => st.uuid === subjectTypeUUID);
@@ -106,7 +106,7 @@ export const CreateEditFilters = props => {
       }
     };
     const data = getNewFilterData(newFilter);
-    axios
+    http
       .post("/organisationConfig", data)
       .then(response => {
         if (response.status === 201) {

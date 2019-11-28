@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { localeChoices } from "../common/constants";
 import _, { isEmpty } from "lodash";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import MaterialTable from "material-table";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -45,7 +45,7 @@ export const customConfig = ({ history, organisation }) => {
   };
 
   useEffect(() => {
-    axios.get("/organisationConfig").then(res => {
+    http.get("/organisationConfig").then(res => {
       const settings = _.filter(
         res.data._embedded.organisationConfig,
         config => config.organisationId === organisation.id
@@ -56,17 +56,17 @@ export const customConfig = ({ history, organisation }) => {
   }, []);
 
   useEffect(() => {
-    axios.get("/codedConcepts").then(res => {
+    http.get("/codedConcepts").then(res => {
       setConcepts(res.data);
     });
   }, []);
 
   useEffect(() => {
-    axios.get("/web/programs").then(res => setPrograms(res.data));
+    http.get("/web/programs").then(res => setPrograms(res.data));
   }, []);
 
   useEffect(() => {
-    axios.get("/web/encounterTypes").then(res => setEncounterTypes(res.data));
+    http.get("/web/encounterTypes").then(res => setEncounterTypes(res.data));
   }, []);
 
   const styles = useStyles();
@@ -125,7 +125,7 @@ export const customConfig = ({ history, organisation }) => {
               filterType === "searchFilters" ? filteredFilters : settings.settings.searchFilters
           }
         };
-        axios.post("/organisationConfig", newSettings).then(response => {
+        http.post("/organisationConfig", newSettings).then(response => {
           if (response.status === 201) {
             setSettings(newSettings);
           }

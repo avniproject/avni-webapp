@@ -7,7 +7,7 @@ import parse from "autosuggest-highlight/parse";
 import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
-import axios from "axios";
+import http from "common/utils/httpClient";
 
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
@@ -97,7 +97,7 @@ export default function AutoSuggestSingleSelection(props) {
       : `name=${inputValue}&dataType=${dataType}`;
     const inputLength = inputValue.length;
 
-    axios
+    http
       .get(`/search/concept?${queryString}`)
       .then(response => {
         const suggestions = response.data;

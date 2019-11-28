@@ -34,7 +34,7 @@ import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
 import { localeChoices, phoneCountryPrefix, datePickerModes } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import { filter } from "lodash";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
@@ -247,7 +247,7 @@ const validatePhone = [isRequired, regex(/[0-9]{12}/, "Enter a 10 digit number (
 const UserForm = ({ edit, user, nameSuffix, ...props }) => {
   const [languages, setLanguages] = useState([]);
   useEffect(() => {
-    axios.get("/organisationConfig").then(res => {
+    http.get("/organisationConfig").then(res => {
       const organisationLocales = isEmpty(res.data._embedded.organisationConfig)
         ? [localeChoices[0]]
         : filter(localeChoices, l =>

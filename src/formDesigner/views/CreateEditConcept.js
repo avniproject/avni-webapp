@@ -3,7 +3,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import Button from "@material-ui/core/Button";
 import { default as UUID } from "uuid";
 import NumericConcept from "../components/NumericConcept";
@@ -49,7 +49,7 @@ class CreateEditConcept extends Component {
 
   componentDidMount() {
     if (this.props.isCreatePage) {
-      axios
+      http
         .get("/concept/dataTypes")
         .then(response => {
           this.setState({
@@ -60,7 +60,7 @@ class CreateEditConcept extends Component {
           console.log(error);
         });
     } else {
-      axios
+      http
         .get("/web/concept/" + this.props.match.params.uuid)
         .then(response => {
           let answers = [];
@@ -106,7 +106,7 @@ class CreateEditConcept extends Component {
       answers[index].voided = true;
       const encodedURL = `/web/concept?name=${encodeURIComponent(answers[index].name)}`;
 
-      axios
+      http
         .get(encodedURL)
         .then(response => {
           this.setState({
@@ -176,7 +176,7 @@ class CreateEditConcept extends Component {
         answers: answers
       },
       () => {
-        axios
+        http
           .post("/concepts", [
             {
               name: this.state.name,
@@ -213,7 +213,7 @@ class CreateEditConcept extends Component {
     const conceptName = this.state.name;
     let error = {};
     var promise = new Promise((resolve, reject) => {
-      axios
+      http
         .get(`/web/concept?name=${encodeURIComponent(conceptName)}`)
         .then(response => {
           if (response.status === 200 && this.props.isCreatePage) {
@@ -295,7 +295,7 @@ class CreateEditConcept extends Component {
       let index = 0;
       if (length !== 0) {
         answers.forEach(answer => {
-          return axios
+          return http
             .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
             .then(response => {
               if (response.status === 200) {
@@ -310,7 +310,7 @@ class CreateEditConcept extends Component {
             .catch(error => {
               if (error.response.status === 404) {
                 answer.uuid = UUID.v4();
-                axios
+                http
                   .post("/concepts", [
                     {
                       name: answer.name,
@@ -343,7 +343,7 @@ class CreateEditConcept extends Component {
       }
     } else {
       if (!this.state.error.absoluteValidation || !this.state.error.normalValidation) {
-        axios
+        http
           .post("/concepts", [
             {
               name: this.state.name,

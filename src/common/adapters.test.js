@@ -14,7 +14,7 @@ import {
   FormElementGroup,
   Program,
   SubjectType
-} from "openchs-models";
+} from "avni-models";
 
 describe("adapters", () => {
   it("can map concept", () => {

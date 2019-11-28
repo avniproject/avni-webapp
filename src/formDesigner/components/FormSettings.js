@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "./CustomizedSnackbar";
 import _ from "lodash";
@@ -131,7 +131,7 @@ class FormSettings extends Component {
     if (validateFormStatus) {
       const existFormUUID = this.props.uuid;
       this.setState({ errorMsg: "" });
-      axios
+      http
         .put("/web/forms/" + existFormUUID + "/metadata", {
           name: this.state.name,
           formType: this.state.formType,
@@ -170,7 +170,7 @@ class FormSettings extends Component {
       formType: this.props.formData.formType,
       uuid: this.props.formData.uuid
     });
-    axios
+    http
       .get("/web/operationalModules")
       .then(response => {
         let data = Object.assign({}, response.data);
