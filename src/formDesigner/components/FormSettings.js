@@ -48,7 +48,7 @@ class FormSettings extends Component {
       _.forEach(this.state.formMappings, function(formMap, index) {
         if (!formMap.voided) count += 1;
       });
-      if (count == 0) errorsList["name"] = "Please add atleast one form mapping.";
+      if (count === 0) errorsList["name"] = "Please add atleast one form mapping.";
     }
 
     _.forEach(formMapping, (formMap, index) => {
@@ -125,7 +125,8 @@ class FormSettings extends Component {
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
     this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
   };
-  addFields() {
+
+  onFormSubmit() {
     const validateFormStatus = this.validateForm();
     if (validateFormStatus) {
       const existFormUUID = this.props.uuid;
@@ -358,7 +359,7 @@ class FormSettings extends Component {
       this.state.formType === "ProgramEncounterCancellation";
     const checklistItemBased =
       this.state.formType !== "" && this.state.formType !== "ChecklistItem";
-    const submitButtonName = "Save";
+
     return (
       <div>
         <form>
@@ -453,10 +454,10 @@ class FormSettings extends Component {
           <Button
             variant="contained"
             color="primary"
-            onClick={this.addFields.bind(this)}
+            onClick={this.onFormSubmit.bind(this)}
             style={{ marginTop: 10 }}
           >
-            {submitButtonName}
+            Save
           </Button>
         </div>
         {this.state.showUpdateAlert && (
