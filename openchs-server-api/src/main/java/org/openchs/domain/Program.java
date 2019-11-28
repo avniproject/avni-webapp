@@ -24,6 +24,9 @@ public class Program extends OrganisationAwareEntity {
 
     private String colour;
 
+    @Column(name = "enrolment_summary_rule")
+    private String enrolmentSummaryRule;
+
     public String getName() {
         return name;
     }
@@ -65,6 +68,14 @@ public class Program extends OrganisationAwareEntity {
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(getOperationalProgramName());
+    }
+
+    public String getEnrolmentSummaryRule() {
+        return enrolmentSummaryRule;
+    }
+
+    public void setEnrolmentSummaryRule(String enrolmentSummaryRule) {
+        this.enrolmentSummaryRule = enrolmentSummaryRule;
     }
 
     @Projection(name = "ProgramProjection", types = {Program.class})

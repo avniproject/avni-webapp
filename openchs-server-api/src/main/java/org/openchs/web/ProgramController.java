@@ -66,6 +66,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         program.assignUUIDIfRequired();
         program.setName(request.getName());
         program.setColour(request.getColour());
+        program.setEnrolmentSummaryRule(request.getEnrolmentSummaryRule());
         programRepository.save(program);
         OperationalProgram operationalProgram = new OperationalProgram();
         operationalProgram.assignUUIDIfRequired();
@@ -95,6 +96,8 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
 
         program.setName(programContractWeb.getName());
         program.setColour(programContractWeb.getColour());
+        program.setEnrolmentSummaryRule(programContractWeb.getEnrolmentSummaryRule());
+
         programRepository.save(program);
 
         operationalProgram.setProgramSubjectLabel(programContractWeb.getProgramSubjectLabel());

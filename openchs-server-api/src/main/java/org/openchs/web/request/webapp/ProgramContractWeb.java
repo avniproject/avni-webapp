@@ -15,6 +15,7 @@ public class ProgramContractWeb {
     private Long organisationId;
     private Long programOrganisationId;
     private boolean voided;
+    private String enrolmentSummaryRule;
 
     public String getName() {
         return name;
@@ -66,6 +67,7 @@ public class ProgramContractWeb {
         contract.setOrganisationId(operationalProgram.getOrganisationId());
         contract.setVoided(operationalProgram.isVoided());
         contract.setProgramOrganisationId(operationalProgram.getProgram().getOrganisationId());
+        contract.setEnrolmentSummaryRule(operationalProgram.getProgram().getEnrolmentSummaryRule());
 
         return contract;
     }
@@ -85,5 +87,13 @@ public class ProgramContractWeb {
 
     public void setProgramOrganisationId(Long programOrganisationId) {
         this.programOrganisationId = programOrganisationId;
+    }
+
+    public String getEnrolmentSummaryRule() {
+        return enrolmentSummaryRule;
+    }
+
+    public void setEnrolmentSummaryRule(String enrolmentSummaryRule) {
+        this.enrolmentSummaryRule = enrolmentSummaryRule;
     }
 }
