@@ -137,4 +137,10 @@ public class FormElementContract extends ReferenceDataContract {
     public void setRule(String rule) {
         this.rule = rule;
     }
+
+    @Override
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public boolean isVoided() {
+        return super.isVoided();
+    }
 }

@@ -60,4 +60,10 @@ public class FormMappingContract extends ReferenceDataContract {
     public String toString() {
         return String.format("UUID: %s, formUUID: %s, programUUID: %s, encounterTypeUUID: %s", this.getUuid(), this.getFormUUID(), this.getProgramUUID(), this.getEncounterTypeUUID());
     }
+
+    @Override
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public boolean isVoided() {
+        return super.isVoided();
+    }
 }

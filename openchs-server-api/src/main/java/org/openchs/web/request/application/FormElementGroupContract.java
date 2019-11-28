@@ -84,4 +84,10 @@ public class FormElementGroupContract extends ReferenceDataContract {
         fegContract.setFormElements(feContracts);
         return fegContract;
     }
+
+    @Override
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public boolean isVoided() {
+        return super.isVoided();
+    }
 }

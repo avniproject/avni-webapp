@@ -121,4 +121,10 @@ public class FormContract extends ReferenceDataContract {
         formContract.setFormElementGroups(fegContracts);
         return formContract;
     }
+
+    @Override
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public boolean isVoided() {
+        return super.isVoided();
+    }
 }
