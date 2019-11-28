@@ -14,8 +14,9 @@ import fileDownload from "js-file-download";
 import Box from "@material-ui/core/Box";
 import { Grid } from "@material-ui/core";
 import Refresh from "@material-ui/icons/Refresh";
-import IconButton from "@material-ui/core/IconButton";
 import TablePagination from "@material-ui/core/TablePagination";
+import Button from "@material-ui/core/Button";
+import CloudDownload from "@material-ui/icons/CloudDownload";
 
 const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
   React.useEffect(() => {
@@ -24,58 +25,55 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [page, setPage] = React.useState(0);
   const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
+  const IsoDateFormat = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     getUploadStatuses(newPage);
   };
 
-  const onDownloadHandler = fileName => {
+  const onDownloadHandler = ({
+    fileName,
+    subjectTypeName,
+    programName,
+    encounterTypeName,
+    startDateParam,
+    endDateParam
+  }) => {
+    const outFileName = [
+      subjectTypeName,
+      programName,
+      encounterTypeName,
+      IsoDateFormat(startDateParam),
+      IsoDateFormat(endDateParam)
+    ]
+      .filter(Boolean)
+      .join("_");
     axios
       .get(`/export/download?fileName=${fileName}`, {
         responseType: "blob"
       })
       .then(response => {
-        fileDownload(response.data, fileName);
+        fileDownload(response.data, `${outFileName}.csv`);
       })
       .catch(error => alert("Error occurred while downloading file"));
-  };
-
-  const downloadableFile = fileName => {
-    return (
-      <span
-        style={{ cursor: "pointer", color: "blue", textDecorationLine: "underline" }}
-        onClick={() => onDownloadHandler(fileName)}
-      >
-        {fileName}
-      </span>
-    );
-  };
-
-  const parseParams = status => {
-    return `{Subject:${status.subjectTypeName}, Program:${status.programName}, EncounterType:${
-      status.encounterTypeName
-    },
-     Range:(${status.startDateParam} to ${status.endDateParam})}`;
   };
 
   return (
     <Box>
       <Grid container direction="row" justify="flex-end">
-        <IconButton color="primary" aria-label="refresh" onClick={() => getUploadStatuses()}>
+        <Button color="primary" onClick={() => getUploadStatuses(0)}>
           <Refresh />
-        </IconButton>
+          {" Refresh"}
+        </Button>
       </Grid>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Params</TableCell>
-            <TableCell align="right" style={{ minWidth: 180 }}>
-              Created at
-            </TableCell>
-            <TableCell align="right" style={{ minWidth: 180 }}>
-              Started at
-            </TableCell>
+            <TableCell>Subject type</TableCell>
+            <TableCell>Program</TableCell>
+            <TableCell>Encounter type</TableCell>
+            <TableCell>Date range</TableCell>
             <TableCell align="right" style={{ minWidth: 180 }}>
               Ended at
             </TableCell>
@@ -86,15 +84,23 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
         <TableBody>
           {map(get(exportJobStatuses, "_embedded.exportJobStatuses"), status => (
             <TableRow key={status.uuid}>
-              <TableCell>{parseParams(status)}</TableCell>
-              <TableCell align="right">{formatDate(status.createTime)}</TableCell>
-              <TableCell align="right">{formatDate(status.startTime)}</TableCell>
+              <TableCell>{status.subjectTypeName}</TableCell>
+              <TableCell>{status.programName}</TableCell>
+              <TableCell>{status.encounterTypeName}</TableCell>
+              <TableCell>{`${IsoDateFormat(status.startDateParam)} to ${IsoDateFormat(
+                status.endDateParam
+              )}`}</TableCell>
               <TableCell align="right">{formatDate(status.endTime)}</TableCell>
               <TableCell align="right">{status.status}</TableCell>
               <TableCell align="right">
-                {status.status === "COMPLETED"
-                  ? downloadableFile(status.fileName)
-                  : status.fileName}
+                <Button
+                  color="primary"
+                  onClick={() => onDownloadHandler(status)}
+                  disabled={status.status !== "COMPLETED"}
+                >
+                  <CloudDownload disabled={status.status !== "COMPLETED"} />
+                  {" Download"}
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -103,7 +109,7 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
       <TablePagination
         rowsPerPageOptions={[10]}
         component="div"
-        count={get(exportJobStatuses, "page.totalElements")}
+        count={get(exportJobStatuses, "page.totalElements") || 0}
         rowsPerPage={rowsPerPage}
         page={page}
         backIconButtonProps={{ "aria-label": "previous page" }}

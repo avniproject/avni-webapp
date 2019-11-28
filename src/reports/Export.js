@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import { FormControl, FormLabel, makeStyles } from "@material-ui/core";
 import React from "react";
 import api from "../reports/api";
 import Grid from "@material-ui/core/Grid";
@@ -16,6 +16,10 @@ import Box from "@material-ui/core/Box";
 import { DateSelector } from "./DateSelector";
 import { ExportOptions } from "./ExportOptions";
 import DescriptionIcon from "@material-ui/icons/Description";
+import ReportTypes from "./ReportTypes";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Radio from "../dataEntryApp/components/Radio";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -32,6 +36,7 @@ const Export = ({ operationalModules, getOperationalModules }) => {
   }, []);
 
   const currentDate = new Date();
+  const [reportType, setReportType] = React.useState({});
   const [selectedSubjectType, setSelectedSubjectType] = React.useState({});
   const [selectedProgram, setSelectedProgram] = React.useState({});
   const [selectedEncounterType, setSelectedEncounterType] = React.useState({});
@@ -51,10 +56,16 @@ const Export = ({ operationalModules, getOperationalModules }) => {
       subjectTypeUUID: selectedSubjectType.uuid,
       programUUID: selectedProgram.uuid,
       encounterTypeUUID: selectedEncounterType.uuid,
-      startDate: startDate.toISOString().split("T")[0],
-      endDate: endDate.toISOString().split("T")[0]
+      startDate: startDate,
+      endDate: endDate.setHours(23, 59, 59, 999),
+      reportType: ReportTypes.getCode(reportType.name)
     };
     api.startExportJob(request).catch(error => alert("Error while submitting job"));
+    resetAllParams();
+  };
+
+  const onReportTypeChangeHandler = type => {
+    setReportType(type);
     resetAllParams();
   };
 
@@ -63,13 +74,13 @@ const Export = ({ operationalModules, getOperationalModules }) => {
       <>
         <ExportOptions
           options={programs}
-          label={"Programs"}
+          label={"Program"}
           selectedOption={selectedProgram}
           onChange={setSelectedProgram}
         />
         <ExportOptions
           options={encounters}
-          label={"Encounter Types"}
+          label={"Encounter Type"}
           selectedOption={selectedEncounterType}
           onChange={setSelectedEncounterType}
         />
@@ -114,7 +125,69 @@ const Export = ({ operationalModules, getOperationalModules }) => {
     }
   };
 
+  const subjectTypes = () => {
+    return (
+      <ExportOptions
+        options={operationalModules.subjectTypes}
+        label={"Subject Type"}
+        selectedOption={selectedSubjectType}
+        onChange={setSelectedSubjectType}
+      />
+    );
+  };
+
+  const renderAllTypes = () => {
+    return (
+      <Grid>
+        {subjectTypes()}
+        {renderProgramOrEncounters()}
+        {!_.isEmpty(selectedEncounterType) && (
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container direction="row" justify="flex-start">
+              <DateSelector label={"Visit start date"} value={startDate} onChange={setStartDate} />
+              <DateSelector label={"Visit end date"} value={endDate} onChange={setEndDate} />
+            </Grid>
+          </MuiPickersUtilsProvider>
+        )}
+      </Grid>
+    );
+  };
+
+  const ReportOptions = () => {
+    return (
+      <FormControl component="fieldset">
+        <FormLabel component="legend">Report Type</FormLabel>
+        <FormGroup row>
+          {ReportTypes.names.map(type => (
+            <FormControlLabel
+              key={type.name}
+              control={
+                <Radio
+                  checked={type.name === reportType.name}
+                  onChange={() => onReportTypeChangeHandler(type)}
+                  value={type.name}
+                />
+              }
+              label={type.name}
+            />
+          ))}
+        </FormGroup>
+      </FormControl>
+    );
+  };
+
   const sideBarOptions = [{ href: "#/export", name: "Longitudinal Export", Icon: DescriptionIcon }];
+
+  const enableReportGeneration = () => {
+    switch (reportType.name) {
+      case ReportTypes.getName("Registration"):
+        return !_.isEmpty(selectedSubjectType);
+      case ReportTypes.getName("All"):
+        return !_.isEmpty(selectedEncounterType);
+      default:
+        return false;
+    }
+  };
 
   return (
     <ScreenWithAppBar
@@ -125,25 +198,9 @@ const Export = ({ operationalModules, getOperationalModules }) => {
       {operationalModules && (
         <Box m={2}>
           <Grid>
-            <ExportOptions
-              options={operationalModules.subjectTypes}
-              label={"Subject Types"}
-              selectedOption={selectedSubjectType}
-              onChange={setSelectedSubjectType}
-            />
-            {renderProgramOrEncounters()}
-            {!_.isEmpty(selectedEncounterType) && (
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Grid container direction="row" justify="flex-start">
-                  <DateSelector
-                    label={"Visit start date"}
-                    value={startDate}
-                    onChange={setStartDate}
-                  />
-                  <DateSelector label={"Visit end date"} value={endDate} onChange={setEndDate} />
-                </Grid>
-              </MuiPickersUtilsProvider>
-            )}
+            <ReportOptions />
+            {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}
+            {reportType.name === ReportTypes.getName("All") && renderAllTypes()}
           </Grid>
           <Grid container direction="row" justify="flex-start">
             <Button
@@ -151,7 +208,7 @@ const Export = ({ operationalModules, getOperationalModules }) => {
               color="primary"
               aria-haspopup="false"
               onClick={onStartExportHandler}
-              disabled={_.isEmpty(selectedEncounterType)}
+              disabled={!enableReportGeneration()}
               className={classes.item}
             >
               Generate Report
