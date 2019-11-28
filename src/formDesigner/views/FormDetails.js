@@ -18,6 +18,8 @@ import produce from "immer";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 
+import FormLevelRules from "../components/FormLevelRules";
+
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
   return (
@@ -81,6 +83,18 @@ class FormDetails extends Component {
       .get(`/forms/export?formUUID=${this.props.match.params.formUUID}`)
       .then(response => response.data)
       .then(form => {
+        /*
+        Below visitScheduleRule, decisionRule, validationRule are for handling form level rules and
+        decisionExpand, visitScheduleExpand, validationExpand are for handling expand button.
+
+        */
+        form["visitScheduleRule"] = form.visitScheduleRule ? form.visitScheduleRule : "";
+        form["decisionRule"] = form.decisionRule ? form.decisionRule : "";
+        form["validationRule"] = form.validationRule ? form.validationRule : "";
+        form["decisionExpand"] = false;
+        form["visitScheduleExpand"] = false;
+        form["validationExpand"] = false;
+
         _.forEach(form.formElementGroups, group => {
           group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
           group.expanded = false;
@@ -140,7 +154,7 @@ class FormDetails extends Component {
         console.log(error);
       });
   }
-
+  ter;
   countGroupElements(form) {
     let groupFlag = true;
     _.forEach(form.formElementGroups, (groupElement, index) => {
@@ -424,6 +438,7 @@ class FormDetails extends Component {
           name: "",
           type: "",
           keyValues: {},
+
           mandatory: false,
           voided: false,
           expanded: true,
@@ -598,6 +613,23 @@ class FormDetails extends Component {
     }
   };
 
+  onRuleUpdate = (name, value) => {
+    this.setState(
+      produce(draft => {
+        draft.form[name] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
+  onToggleExpandPanel = name => {
+    this.setState(
+      produce(draft => {
+        draft.form[name] = !draft.form[name];
+      })
+    );
+  };
+
   render() {
     const form = (
       <Grid container justify="center">
@@ -609,6 +641,7 @@ class FormDetails extends Component {
           >
             <Tab label="Details" />
             <Tab label="Settings" />
+            {/* <Tab label="Rules" /> */}
           </Tabs>
           <TabContainer hidden={this.state.activeTabIndex !== 0}>
             <div name="divGroup">
@@ -677,6 +710,18 @@ class FormDetails extends Component {
               />
             </Grid>
           </Grid>
+
+          {/*
+            Uncomment the below div to show rules at form level
+            */}
+
+          {/* <div hidden={this.state.activeTabIndex !== 2}>
+            <FormLevelRules
+              form={this.state.form}
+              onRuleUpdate={this.onRuleUpdate}
+              onToggleExpandPanel={this.onToggleExpandPanel}
+            />
+          </div> */}
         </Grid>
       </Grid>
     );
