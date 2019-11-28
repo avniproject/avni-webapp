@@ -4,7 +4,7 @@ import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
-import { devEnvUserName } from "../constants";
+import { devEnvUserName, isDevEnv } from "../constants";
 import Auth from "@aws-amplify/auth";
 
 class HttpClient {
@@ -79,8 +79,10 @@ class HttpClient {
 
   _wrapAxiosMethod(methodname) {
     return async (...args) => {
-      const currentSession = await Auth.currentSession();
-      axios.defaults.headers.common["AUTH-TOKEN"] = currentSession.idToken.jwtToken;
+      if (!isDevEnv) {
+        const currentSession = await Auth.currentSession();
+        axios.defaults.headers.common["AUTH-TOKEN"] = currentSession.idToken.jwtToken;
+      }
       return axios[methodname](...args);
     };
   }
