@@ -1,5 +1,5 @@
 import { loadRegistrationPageWorker, saveSubjectWorker } from "./subjectSaga";
-import { Individual } from "openchs-models";
+import { Individual } from "avni-models";
 import { assert } from "chai";
 import { select, call } from "redux-saga/effects";
 import { selectRegistrationSubject } from "./selectors";

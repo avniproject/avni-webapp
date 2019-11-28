@@ -1,4 +1,4 @@
-import { Individual, ObservationsHolder } from "openchs-models";
+import { Individual, ObservationsHolder } from "avni-models";
 import {
   setSubject,
   getRegistrationForm,
