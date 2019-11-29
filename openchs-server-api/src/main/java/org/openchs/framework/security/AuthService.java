@@ -78,6 +78,7 @@ public class AuthService {
     }
 
     private void becomeSuperUser() {
+        UserContextHolder.clear();
         SecurityContextHolder.getContext().setAuthentication(createTempAuth(ALL_AUTHORITIES));
     }
 
