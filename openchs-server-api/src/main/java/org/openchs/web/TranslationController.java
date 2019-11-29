@@ -44,6 +44,7 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
     private final FormRepository formRepository;
     private final OrganisationConfigRepository organisationConfigRepository;
     private final PlatformTranslationRepository platformTranslationRepository;
+    private final AddressLevelTypeRepository addressLevelTypeRepository;
 
     @Autowired
     TranslationController(TranslationRepository translationRepository,
@@ -60,7 +61,8 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
                           LocationRepository locationRepository,
                           OrganisationConfigRepository organisationConfigRepository,
                           FormRepository formRepository,
-                          PlatformTranslationRepository platformTranslationRepository) {
+                          PlatformTranslationRepository platformTranslationRepository,
+                          AddressLevelTypeRepository addressLevelTypeRepository) {
         this.translationRepository = translationRepository;
         this.formElementGroupRepository = formElementGroupRepository;
         this.formElementRepository = formElementRepository;
@@ -76,6 +78,7 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
         this.organisationConfigRepository = organisationConfigRepository;
         this.formRepository = formRepository;
         this.platformTranslationRepository = platformTranslationRepository;
+        this.addressLevelTypeRepository = addressLevelTypeRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -142,7 +145,8 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
                 locationRepository.getAllNames(),
                 conceptAnswerRepository.getAllConceptNames(),
                 conceptAnswerRepository.getAllNames(),
-                formRepository.getAllNames()
+                formRepository.getAllNames(),
+                addressLevelTypeRepository.getAllNames()
         ).forEach(list -> list.forEach(e -> result.put(e, valueForEmptyKey)));
         return result;
     }
