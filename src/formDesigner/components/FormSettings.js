@@ -21,14 +21,12 @@ class FormSettings extends Component {
       name: "",
       formType: "",
       formMappings: [],
-      programName: "",
-      subjectType: "",
-      encounterType: "",
-      open: false,
       onClose: false,
       data: {},
       toFormDetails: "",
       errors: {},
+      warningFlag: false,
+      dirtyFlag: false,
       showUpdateAlert: false,
       defaultSnackbarStatus: true
     };
@@ -128,39 +126,42 @@ class FormSettings extends Component {
 
   onFormSubmit() {
     const validateFormStatus = this.validateForm();
+    const voidedMessage = `Are you sure you want to change form details? It may result in your form not showing up in AVNI application so please do it only if you aware of the consequences.`;
     if (validateFormStatus) {
-      const existFormUUID = this.props.uuid;
-      this.setState({ errorMsg: "" });
-      http
-        .put("/web/forms/" + existFormUUID + "/metadata", {
-          name: this.state.name,
-          formType: this.state.formType,
-          formMappings: this.state.formMappings
-        })
-        .then(response => {
-          let formMapping = this.state.formMappings;
-          _.forEach(formMapping, (formMap, index) => {
-            formMap.newFlag = false;
-          });
-          this.setState({
-            showUpdateAlert: true,
-            defaultSnackbarStatus: true,
-            formMapping: formMapping
-          });
-
-          this.props.onUpdateFormName(this.state.name);
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
+      if (!this.state.warningFlag || (this.state.warningFlag && window.confirm(voidedMessage))) {
+        const existFormUUID = this.props.uuid;
+        this.setState({ errorMsg: "" });
+        http
+          .put("/web/forms/" + existFormUUID + "/metadata", {
+            name: this.state.name,
+            formType: this.state.formType,
+            formMappings: this.state.formMappings
+          })
+          .then(response => {
+            let formMapping = this.state.formMappings;
+            _.forEach(formMapping, (formMap, index) => {
+              formMap.newFlag = false;
+            });
             this.setState({
               showUpdateAlert: true,
-              defaultSnackbarStatus: true
+              defaultSnackbarStatus: true,
+              formMapping: formMapping
             });
+
             this.props.onUpdateFormName(this.state.name);
-          } else {
-            this.setState({ errorMsg: error.response.data, showUpdateAlert: false });
-          }
-        });
+          })
+          .catch(error => {
+            if (error.response.status === 404) {
+              this.setState({
+                showUpdateAlert: true,
+                defaultSnackbarStatus: true
+              });
+              this.props.onUpdateFormName(this.state.name);
+            } else {
+              this.setState({ errorMsg: error.response.data, showUpdateAlert: false });
+            }
+          });
+      }
     }
   }
 
@@ -183,7 +184,8 @@ class FormSettings extends Component {
               subjectTypeUuid: formMapping.subjectTypeUuid,
               encounterTypeUuid: formMapping.encounterTypeUuid,
               voided: false,
-              newFlag: false
+              newFlag: false,
+              updatedFlag: false
             });
           }
         });
@@ -200,22 +202,27 @@ class FormSettings extends Component {
 
   onChangeField(event) {
     if (event.target.name === "formType" && event.target.value !== this.state.formType) {
-      const voidedMessage = `Are you sure you want to change form type? It may result in your form not showing up in client application so please do it only if you aware of the consequences.`;
-      if (window.confirm(voidedMessage)) {
-        const formMappings = this.state.formMappings;
-        _.forEach(formMappings, function(formMap, index) {
-          console.log(index);
-          formMap["voided"] = true;
-        });
+      const formMappings = [...this.state.formMappings];
+      _.forEach(formMappings, function(formMap, index) {
+        formMap["voided"] = true;
+      });
+      this.setState(
+        Object.assign({}, this.state, {
+          [event.target.name]: event.target.value,
+          formMappings: formMappings,
+          warningFlag: true,
+          dirtyFlag: true
+        })
+      );
+    } else {
+      if (event.target.value !== this.state.formType) {
         this.setState(
           Object.assign({}, this.state, {
             [event.target.name]: event.target.value,
-            formMappings: formMappings
+            dirtyFlag: true
           })
         );
       }
-    } else {
-      this.setState(Object.assign({}, this.state, { [event.target.name]: event.target.value }));
     }
   }
 
@@ -226,7 +233,7 @@ class FormSettings extends Component {
         <Select
           name="programUuid"
           value={this.state.formMappings[index].programUuid}
-          onChange={event => this.handleChange(index, "programUuid", event.target.value)}
+          onChange={event => this.handleMappingChange(index, "programUuid", event.target.value)}
         >
           {this.state.data.programs != null &&
             this.state.data.programs.map(program => (
@@ -245,10 +252,15 @@ class FormSettings extends Component {
     );
   }
 
-  handleChange = (index, property, value) => {
-    const changeMapping = this.state.formMappings;
-    changeMapping[index][property] = value;
-    this.setState({ formMappings: changeMapping });
+  handleMappingChange = (index, property, value) => {
+    const formMappings = [...this.state.formMappings];
+    if (formMappings[index][property] !== value) {
+      if (!formMappings[index]["newFlag"]) {
+        this.setState({ warningFlag: true });
+      }
+      formMappings[index][property] = value;
+      this.setState({ formMappings, dirtyFlag: true });
+    }
   };
 
   subjectTypeElement(index) {
@@ -258,7 +270,7 @@ class FormSettings extends Component {
         <Select
           name="subjectTypeUuid"
           value={this.state.formMappings[index].subjectTypeUuid}
-          onChange={event => this.handleChange(index, "subjectTypeUuid", event.target.value)}
+          onChange={event => this.handleMappingChange(index, "subjectTypeUuid", event.target.value)}
         >
           {this.state.data.subjectTypes != null &&
             this.state.data.subjectTypes.map(subjectType => (
@@ -304,7 +316,9 @@ class FormSettings extends Component {
         <Select
           name="encounterTypeUuid"
           value={this.state.formMappings[index].encounterTypeUuid}
-          onChange={event => this.handleChange(index, "encounterTypeUuid", event.target.value)}
+          onChange={event =>
+            this.handleMappingChange(index, "encounterTypeUuid", event.target.value)
+          }
         >
           {this.state.data.encounterTypes != null &&
             this.state.data.encounterTypes.map(encounterType => (
@@ -324,14 +338,24 @@ class FormSettings extends Component {
     );
   }
   removeMapping = index => {
-    const mapping = this.state.formMappings;
-    mapping[index].newFlag ? mapping.splice(index, 1) : (mapping[index]["voided"] = true);
-    this.setState({
-      formMappings: mapping
-    });
+    const formMappings = [...this.state.formMappings];
+    if (formMappings[index].newFlag) {
+      formMappings.splice(index, 1);
+      this.setState({
+        formMappings
+      });
+    } else {
+      formMappings[index]["voided"] = true;
+      this.setState({
+        formMappings,
+        dirtyFlag: true,
+        warningFlag: true
+      });
+    }
   };
   addMapping = (program, encounter) => {
     this.setState({
+      dirtyFlag: true,
       formMappings: [
         ...this.state.formMappings,
         {
@@ -454,6 +478,7 @@ class FormSettings extends Component {
           <Button
             variant="contained"
             color="primary"
+            disabled={!this.state.dirtyFlag}
             onClick={this.onFormSubmit.bind(this)}
             style={{ marginTop: 10 }}
           >
