@@ -15,7 +15,9 @@ import {
   SimpleShowLayout,
   TextField,
   TextInput,
-  Toolbar
+  Toolbar,
+  required,
+  number
 } from "react-admin";
 import { None } from "../common/components/utils";
 import { isNil } from "lodash";
@@ -93,8 +95,8 @@ const CreateEditToolbar = ({ edit, ...props }) => (
 const LocationTypeForm = ({ edit, ...props }) => {
   return (
     <SimpleForm toolbar={<CreateEditToolbar edit={edit} />} {...props} redirect="show">
-      <TextInput source="name" label="Name" />
-      <TextInput source="level" label="Level" />
+      <TextInput source="name" label="Name" validate={required()} />
+      <TextInput source="level" label="Level" validate={[required(), number()]} />
       {edit ? (
         <ParentReferenceField label="Parent Type" />
       ) : (

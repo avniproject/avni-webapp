@@ -9,7 +9,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import { get, isNil, map } from "lodash";
 import moment from "moment";
-import axios from "axios";
+import http from "common/utils/httpClient";
 import fileDownload from "js-file-download";
 import Box from "@material-ui/core/Box";
 import { Grid } from "@material-ui/core";
@@ -49,7 +49,7 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
     ]
       .filter(Boolean)
       .join("_");
-    axios
+    http
       .get(`/export/download?fileName=${fileName}`, {
         responseType: "blob"
       })
