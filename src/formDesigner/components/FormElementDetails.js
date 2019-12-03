@@ -25,7 +25,7 @@ const FormControl = withStyles({
 })(MuiFormControl);
 const useStyles = makeStyles(theme => ({
   formControl: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(2),
     minWidth: 120
   }
 }));
@@ -201,11 +201,12 @@ function FormElementDetails(props) {
       )}
       {props.formElementData.concept.dataType === "Video" && (
         <Grid container item sm={12}>
-          <Grid item sm={3}>
+          <Grid item sm={4}>
             <TextField
               type="number"
               name="durationLimitInSecs"
-              label="Duration limit (seconds)"
+              label="Duration limit(seconds)"
+              placeholder="60"
               value={props.formElementData.keyValues.durationLimitInSecs}
               onChange={event =>
                 props.handleGroupElementKeyValueChange(
@@ -218,6 +219,10 @@ function FormElementDetails(props) {
               margin="normal"
               InputProps={{ inputProps: { min: 0 } }}
             />
+            {props.formElementData.errorMessage &&
+              props.formElementData.errorMessage.durationLimitInSecs && (
+                <div style={{ color: "red" }}>Please enter positive number</div>
+              )}
           </Grid>
           <Grid item sm={1} />
           <Grid item sm={3}>
@@ -226,7 +231,11 @@ function FormElementDetails(props) {
               <Select
                 name="videoQuality"
                 classes={cssClasses.dropDown}
-                value={props.formElementData.keyValues.videoQuality}
+                value={
+                  props.formElementData.keyValues.videoQuality === undefined
+                    ? "high"
+                    : props.formElementData.keyValues.videoQuality
+                }
                 onChange={event =>
                   props.handleGroupElementKeyValueChange(
                     props.groupIndex,
@@ -251,6 +260,7 @@ function FormElementDetails(props) {
               name="maxHeight"
               type="number"
               label="Max Height"
+              placeholder="960"
               value={props.formElementData.keyValues.maxHeight}
               onChange={event =>
                 props.handleGroupElementKeyValueChange(
@@ -263,6 +273,9 @@ function FormElementDetails(props) {
               margin="normal"
               InputProps={{ inputProps: { min: 0 } }}
             />
+            {props.formElementData.errorMessage && props.formElementData.errorMessage.maxHeight && (
+              <div style={{ color: "red" }}>Please enter positive number</div>
+            )}
           </Grid>
           <Grid item sm={1} />
           <Grid item sm={3}>
@@ -270,6 +283,7 @@ function FormElementDetails(props) {
               type="number"
               name="maxWidth"
               label="Max Width"
+              placeholder="1280"
               value={props.formElementData.keyValues.maxWidth}
               onChange={event =>
                 props.handleGroupElementKeyValueChange(
@@ -282,6 +296,9 @@ function FormElementDetails(props) {
               margin="normal"
               InputProps={{ inputProps: { min: 0 } }}
             />
+            {props.formElementData.errorMessage && props.formElementData.errorMessage.maxWidth && (
+              <div style={{ color: "red" }}>Please enter positive number</div>
+            )}
           </Grid>
           <Grid item sm={1} />
           <Grid item sm={3}>
@@ -289,7 +306,11 @@ function FormElementDetails(props) {
               <InputLabel>Image Quality</InputLabel>
               <Select
                 name="imageQuality"
-                value={props.formElementData.keyValues.imageQuality}
+                value={
+                  props.formElementData.keyValues.imageQuality === undefined
+                    ? 1
+                    : props.formElementData.keyValues.imageQuality
+                }
                 onChange={event =>
                   props.handleGroupElementKeyValueChange(
                     props.groupIndex,
@@ -549,7 +570,11 @@ function FormElementDetails(props) {
               control={
                 <Checkbox
                   id="editable"
-                  checked={props.formElementData.keyValues.editable}
+                  checked={
+                    props.formElementData.keyValues.editable === undefined
+                      ? false
+                      : !props.formElementData.keyValues.editable
+                  }
                   onChange={event =>
                     props.handleGroupElementKeyValueChange(
                       props.groupIndex,
@@ -560,7 +585,7 @@ function FormElementDetails(props) {
                   }
                 />
               }
-              label="Editable"
+              label="Read Only"
             />
           </Grid>
         )}

@@ -468,6 +468,7 @@ class FormDetails extends Component {
           }
           let groupError = false;
           group.formElements.forEach(fe => {
+            fe.errorMessage = {};
             fe.error = false;
             fe.expanded = false;
             if (
@@ -475,16 +476,26 @@ class FormDetails extends Component {
               (fe.name === "" ||
                 fe.concept.dataType === "" ||
                 fe.concept.dataType === "NA" ||
-                (fe.concept.dataType === "Coded" && fe.type === ""))
+                (fe.concept.dataType === "Coded" && fe.type === "") ||
+                (fe.concept.dataType === "Video" &&
+                  parseInt(fe.keyValues.durationLimitInSecs) < 0) ||
+                (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxHeight) < 0) ||
+                (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0))
             ) {
               numberElementError = numberElementError + 1;
               fe.error = true;
-              fe.errorMessage = {};
+
               fe.expanded = true;
               flag = groupError = true;
               if (fe.name === "") fe.errorMessage.name = true;
               if (fe.concept.dataType === "") fe.errorMessage.concept = true;
               if (fe.concept.dataType === "Coded" && fe.type === "") fe.errorMessage.type = true;
+              if (fe.concept.dataType === "Video" && parseInt(fe.keyValues.durationLimitInSecs) < 0)
+                fe.errorMessage.durationLimitInSecs = true;
+              if (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxHeight) < 0)
+                fe.errorMessage.maxHeight = true;
+              if (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0)
+                fe.errorMessage.maxWidth = true;
             }
           });
           if (groupError || group.error) {
@@ -520,6 +531,15 @@ class FormDetails extends Component {
         if (element.concept.dataType === "Coded") {
           const excluded = map(filter(element.concept.answers, "voided"), "name");
           if (!isEmpty(excluded)) element.keyValues["ExcludedAnswers"] = excluded;
+        }
+
+        if (element.concept.dataType === "Video" && element.keyValues.durationLimitInSecs === "") {
+          delete element.keyValues.durationLimitInSecs;
+        }
+
+        if (element.concept.dataType === "Image") {
+          element.keyValues.maxHeight === "" && delete element.keyValues.maxHeight;
+          element.keyValues.maxWidth === "" && delete element.keyValues.maxWidth;
         }
 
         if (Object.keys(element.keyValues).length !== 0) {
