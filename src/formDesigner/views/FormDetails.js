@@ -20,6 +20,18 @@ import { Title } from "react-admin";
 
 import FormLevelRules from "../components/FormLevelRules";
 
+export const isNumeric = concept => concept.dataType === "Numeric";
+
+export const isText = concept => concept.dataType === "Text";
+
+export const areValidFormatValuesValid = formElement => {
+  if (!isNumeric(formElement.concept) && !isText(formElement.concept)) return true;
+  if (!formElement.validFormat) return true;
+  const result =
+    isEmpty(formElement.validFormat.regex) === isEmpty(formElement.validFormat.descriptionKey);
+  return result;
+};
+
 function TabContainer(props) {
   const typographyCSS = { padding: 8 * 3 };
   return (
@@ -388,6 +400,7 @@ class FormDetails extends Component {
           if (!formElement.validFormat) {
             formElement.validFormat = {};
           }
+          if (value) value = value.trim();
           formElement.validFormat[propertyName] = value;
         }
 
@@ -471,6 +484,11 @@ class FormDetails extends Component {
             fe.errorMessage = {};
             fe.error = false;
             fe.expanded = false;
+            if (fe.errorMessage) {
+              Object.keys(fe.errorMessage).forEach(key => {
+                fe.errorMessage[key] = false;
+              });
+            }
             if (
               !fe.voided &&
               (fe.name === "" ||
@@ -480,7 +498,8 @@ class FormDetails extends Component {
                 (fe.concept.dataType === "Video" &&
                   parseInt(fe.keyValues.durationLimitInSecs) < 0) ||
                 (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxHeight) < 0) ||
-                (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0))
+                (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0) ||
+                !areValidFormatValuesValid(fe))
             ) {
               numberElementError = numberElementError + 1;
               fe.error = true;
@@ -496,6 +515,7 @@ class FormDetails extends Component {
                 fe.errorMessage.maxHeight = true;
               if (fe.concept.dataType === "Image" && parseInt(fe.keyValues.maxWidth) < 0)
                 fe.errorMessage.maxWidth = true;
+              if (!areValidFormatValuesValid(fe)) fe.errorMessage.validFormat = true;
             }
           });
           if (groupError || group.error) {
@@ -525,8 +545,7 @@ class FormDetails extends Component {
     //   form: keyValueForm
     // });
     let dataSend = cloneDeep(this.state.form);
-    let keyValueForm = dataSend;
-    _.forEach(keyValueForm.formElementGroups, (group, index) => {
+    _.forEach(dataSend.formElementGroups, (group, index) => {
       _.forEach(group.formElements, (element, index1) => {
         if (element.concept.dataType === "Coded") {
           const excluded = map(filter(element.concept.answers, "voided"), "name");
@@ -540,6 +559,14 @@ class FormDetails extends Component {
         if (element.concept.dataType === "Image") {
           element.keyValues.maxHeight === "" && delete element.keyValues.maxHeight;
           element.keyValues.maxWidth === "" && delete element.keyValues.maxWidth;
+        }
+
+        if (
+          element.validFormat &&
+          isEmpty(element.validFormat.regex) &&
+          isEmpty(element.validFormat.descriptionKey)
+        ) {
+          delete element.validFormat;
         }
 
         if (Object.keys(element.keyValues).length !== 0) {
