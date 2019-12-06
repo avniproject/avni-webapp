@@ -47,4 +47,8 @@ public class OperationalEncounterType extends OrganisationAwareEntity {
     public DateTime getLastModifiedDateTime() {
         return getEncounterType().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getEncounterType().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }
+
+    public String getEncounterEligibilityCheckRule() {
+        return getEncounterType().getEncounterEligibilityCheckRule();
+    }
 }

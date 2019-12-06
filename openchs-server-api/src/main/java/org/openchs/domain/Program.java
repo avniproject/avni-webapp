@@ -27,6 +27,12 @@ public class Program extends OrganisationAwareEntity {
     @Column(name = "enrolment_summary_rule")
     private String enrolmentSummaryRule;
 
+    @Column(name = "enrolment_eligibility_check_rule")
+    private String enrolmentEligibilityCheckRule;
+
+    @Column(name = "checklists_rule")
+    private String checklistsRule;
+
     public String getName() {
         return name;
     }
@@ -76,6 +82,22 @@ public class Program extends OrganisationAwareEntity {
 
     public void setEnrolmentSummaryRule(String enrolmentSummaryRule) {
         this.enrolmentSummaryRule = enrolmentSummaryRule;
+    }
+
+    public String getEnrolmentEligibilityCheckRule() {
+        return enrolmentEligibilityCheckRule;
+    }
+
+    public void setEnrolmentEligibilityCheckRule(String enrolmentEligibilityCheckRule) {
+        this.enrolmentEligibilityCheckRule = enrolmentEligibilityCheckRule;
+    }
+
+    public String getChecklistsRule() {
+        return checklistsRule;
+    }
+
+    public void setChecklistsRule(String checklistsRule) {
+        this.checklistsRule = checklistsRule;
     }
 
     @Projection(name = "ProgramProjection", types = {Program.class})

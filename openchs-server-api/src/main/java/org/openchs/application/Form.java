@@ -24,6 +24,15 @@ public class Form extends OrganisationAwareEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "form")
     private Set<FormElementGroup> formElementGroups = new HashSet<>();
 
+    @Column(name = "decision_rule")
+    private String decisionRule;
+
+    @Column(name = "visit_schedule_rule")
+    private String visitScheduleRule;
+
+    @Column(name = "validation_rule")
+    private String validationRule;
+
     public Form() {
     }
 
@@ -81,4 +90,27 @@ public class Form extends OrganisationAwareEntity {
         return getAllFormElements().stream().filter(fe->!fe.isVoided()).collect(Collectors.toList());
     }
 
+    public String getDecisionRule() {
+        return decisionRule;
+    }
+
+    public void setDecisionRule(String decisionRule) {
+        this.decisionRule = decisionRule;
+    }
+
+    public String getVisitScheduleRule() {
+        return visitScheduleRule;
+    }
+
+    public void setVisitScheduleRule(String visitScheduleRule) {
+        this.visitScheduleRule = visitScheduleRule;
+    }
+
+    public String getValidationRule() {
+        return validationRule;
+    }
+
+    public void setValidationRule(String validationRule) {
+        this.validationRule = validationRule;
+    }
 }

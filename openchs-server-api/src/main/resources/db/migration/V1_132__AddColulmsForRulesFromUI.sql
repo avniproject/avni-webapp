@@ -1,0 +1,2 @@
+ALTER TABLE encounter DROP COLUMN encounter_eligibility_check_rule;
+ALTER TABLE encounter_type ADD COLUMN encounter_eligibility_check_rule text;

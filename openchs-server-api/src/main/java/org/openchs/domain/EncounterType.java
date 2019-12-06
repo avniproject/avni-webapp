@@ -26,6 +26,9 @@ public class EncounterType extends OrganisationAwareEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "encounterType")
     private Set<OperationalEncounterType> operationalEncounterTypes = new HashSet<>();
 
+    @Column(name = "encounter_eligibility_check_rule")
+    private String encounterEligibilityCheckRule;
+
     public String getName() {
         return name;
     }
@@ -63,6 +66,14 @@ public class EncounterType extends OrganisationAwareEntity {
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public String getEncounterEligibilityCheckRule() {
+        return encounterEligibilityCheckRule;
+    }
+
+    public void setEncounterEligibilityCheckRule(String encounterEligibilityCheckRule) {
+        this.encounterEligibilityCheckRule = encounterEligibilityCheckRule;
     }
 
     @Projection(name = "EncounterTypeProjection", types = {EncounterType.class})

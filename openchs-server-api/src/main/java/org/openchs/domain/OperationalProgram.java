@@ -51,16 +51,23 @@ public class OperationalProgram extends OrganisationAwareEntity {
         return getProgram().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getProgram().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }
 
-    public String getEnrolmentSummaryRule() {
-        return getProgram().getEnrolmentSummaryRule();
-    }
-
-
     public void setProgramSubjectLabel(String programSubjectLabel) {
         this.programSubjectLabel = programSubjectLabel;
     }
 
     public String getProgramSubjectLabel() {
         return programSubjectLabel;
+    }
+
+    public String getEnrolmentSummaryRule() {
+        return getProgram().getEnrolmentSummaryRule();
+    }
+
+    public String getEnrolmentEligibilityCheckRule() {
+        return getProgram().getEnrolmentEligibilityCheckRule();
+    }
+
+    public String getChecklistsRule() {
+        return getProgram().getChecklistsRule();
     }
 }
