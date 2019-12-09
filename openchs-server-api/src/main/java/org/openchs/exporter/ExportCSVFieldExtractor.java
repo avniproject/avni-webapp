@@ -228,6 +228,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             Object val = observations.getOrDefault(conceptUUID, null);
             if (formElement.getConcept().getDataType().equals(ConceptDataType.Coded.toString())) {
                 values.addAll(processCodedObs(formElement.getType(), val, formElement));
+            } else if(formElement.getConcept().getDataType().equals(ConceptDataType.Numeric.toString())){
+                values.add(val);
             } else {
                 values.add(massageStringValue((String) val));
             }
