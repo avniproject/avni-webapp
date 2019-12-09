@@ -138,11 +138,6 @@ public class ViewGenService {
                     return String.format("multi_select_coded(%s->'%s')::TEXT as \"%s.%s\"",
                             obsColumn, conceptUUID, columnPrefix, conceptName);
                 }
-                case Duration: {
-                    String valueSQL = String.format("((%s->>'%s')::JSONB#>> '{durations,0,_durationValue}')", obsColumn, conceptUUID);
-                    String unitSQL = String.format("((%s->>'%s')::JSONB#>>'{durations,0,durationUnit}')", obsColumn, conceptUUID);
-                    return String.format("( %s || ' ' || %s )::TEXT as \"%s.%s\"", valueSQL, unitSQL, columnPrefix, conceptName);
-                }
                 case Date: case DateTime: {
                     return String.format("(%s->>'%s')::DATE as \"%s.%s\"", obsColumn, conceptUUID, columnPrefix, conceptName);
                 }
