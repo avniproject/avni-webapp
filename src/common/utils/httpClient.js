@@ -89,7 +89,7 @@ class HttpClient {
   }
 
   async postJson(url, body) {
-    return axios.post(url, body);
+    return await this.post(url, body);
   }
 }
 

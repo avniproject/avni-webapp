@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import ScreenWithAppBar from "../common/components/ScreenWithAppBar";
-import { getOperationalModules } from "./reducers";
+import { getOperationalModules, getUploadStatuses } from "./reducers";
 import JobStatus from "./JobStatus";
 import Paper from "@material-ui/core/Paper";
 import _ from "lodash";
@@ -28,7 +28,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Export = ({ operationalModules, getOperationalModules }) => {
+const Export = ({
+  operationalModules,
+  getOperationalModules,
+  getUploadStatuses,
+  exportJobStatuses
+}) => {
   const classes = useStyles();
 
   React.useEffect(() => {
@@ -60,8 +65,11 @@ const Export = ({ operationalModules, getOperationalModules }) => {
       endDate: endDate.setHours(23, 59, 59, 999),
       reportType: ReportTypes.getCode(reportType.name)
     };
-    api.startExportJob(request).catch(error => alert("Error while submitting job"));
-    resetAllParams();
+    const [ok, error] = await api.startExportJob(request);
+    if (!ok && error) {
+      alert(error);
+    }
+    setTimeout(() => getUploadStatuses(0), 1000);
   };
 
   const onReportTypeChangeHandler = type => {
@@ -125,13 +133,19 @@ const Export = ({ operationalModules, getOperationalModules }) => {
     }
   };
 
+  const onSubjectTypeChange = option => {
+    setSelectedProgram({});
+    setSelectedEncounterType({});
+    setSelectedSubjectType(option);
+  };
+
   const subjectTypes = () => {
     return (
       <ExportOptions
         options={operationalModules.subjectTypes}
         label={"Subject Type"}
         selectedOption={selectedSubjectType}
-        onChange={setSelectedSubjectType}
+        onChange={onSubjectTypeChange}
       />
     );
   };
@@ -196,7 +210,7 @@ const Export = ({ operationalModules, getOperationalModules }) => {
       sidebarOptions={sideBarOptions}
     >
       {operationalModules && (
-        <Box m={2}>
+        <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
           <Grid>
             <ReportOptions />
             {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}
@@ -211,14 +225,14 @@ const Export = ({ operationalModules, getOperationalModules }) => {
               disabled={!enableReportGeneration()}
               className={classes.item}
             >
-              Generate Report
+              Generate Export
             </Button>
           </Grid>
         </Box>
       )}
       <Grid item>
         <Paper>
-          <JobStatus />
+          <JobStatus exportJobStatuses={exportJobStatuses} />
         </Paper>
       </Grid>
     </ScreenWithAppBar>
@@ -226,12 +240,13 @@ const Export = ({ operationalModules, getOperationalModules }) => {
 };
 
 const mapStateToProps = state => ({
-  operationalModules: state.reports.operationalModules
+  operationalModules: state.reports.operationalModules,
+  exportJobStatuses: state.reports.exportJobStatuses
 });
 
 export default withRouter(
   connect(
     mapStateToProps,
-    { getOperationalModules }
+    { getOperationalModules, getUploadStatuses }
   )(Export)
 );

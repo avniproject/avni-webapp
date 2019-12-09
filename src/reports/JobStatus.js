@@ -22,7 +22,7 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
   React.useEffect(() => {
     getUploadStatuses(0);
   }, []);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const rowsPerPage = 10;
   const [page, setPage] = React.useState(0);
   const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
   const IsoDateFormat = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
@@ -70,15 +70,19 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Subject type</TableCell>
-            <TableCell>Program</TableCell>
-            <TableCell>Encounter type</TableCell>
-            <TableCell>Date range</TableCell>
-            <TableCell align="right" style={{ minWidth: 180 }}>
+            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Subject type</TableCell>
+            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Program</TableCell>
+            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Encounter type</TableCell>
+            <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>Date range</TableCell>
+            <TableCell align="right" style={{ minWidth: 180, fontWeight: "bold", fontSize: 17 }}>
               Ended at
             </TableCell>
-            <TableCell align="right">Status</TableCell>
-            <TableCell align="right">File name</TableCell>
+            <TableCell align="right" style={{ fontWeight: "bold", fontSize: 17 }}>
+              Status
+            </TableCell>
+            <TableCell align="right" style={{ fontWeight: "bold", fontSize: 17 }}>
+              File name
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
