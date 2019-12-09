@@ -97,6 +97,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     @Query("select ind from Individual ind " +
-            "where ind.isVoided = false")
-    Page<Individual> findIndividuals(Pageable pageable);
+            "where ind.isVoided = false " +
+            "and ind.subjectType.uuid = :subjectTypeUUID")
+    Page<Individual> findIndividuals(String subjectTypeUUID, Pageable pageable);
 }

@@ -4,6 +4,7 @@ package org.openchs.web;
 import org.apache.commons.io.IOUtils;
 import org.openchs.dao.ExportJobStatus;
 import org.openchs.domain.User;
+import org.openchs.domain.UserContext;
 import org.openchs.exporter.ExportJobService;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.ExportS3Service;
@@ -58,7 +59,14 @@ public class ExportController {
     @RequestMapping(value = "/export", method = RequestMethod.POST)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> getVisitData(@RequestBody ExportJobRequest exportJobRequest) {
-        User user = UserContextHolder.getUserContext().getUser();
+        UserContext userContext = UserContextHolder.getUserContext();
+        User user = userContext.getUser();
+        String mediaDirectory = userContext.getOrganisation().getMediaDirectory();
+        if (mediaDirectory == null) {
+            String errorMessage = "Information missing. Media Directory for Implementation absent";
+            logger.error(errorMessage);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+        }
         String jobUUID = UUID.randomUUID().toString();
         JobParameters jobParameters =
                 new JobParametersBuilder()

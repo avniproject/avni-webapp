@@ -6,10 +6,7 @@ import org.openchs.application.FormType;
 import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramEncounterRepository;
-import org.openchs.domain.AbstractEncounter;
-import org.openchs.domain.Concept;
-import org.openchs.domain.ConceptDataType;
-import org.openchs.domain.ObservationCollection;
+import org.openchs.domain.*;
 import org.openchs.service.FormMappingService;
 import org.openchs.util.O;
 import org.openchs.web.request.ReportType;
@@ -108,13 +105,14 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
         List<Object> row = new ArrayList<>();
 
         //Registration
+        Gender gender = exportItemRow.getIndividual().getGender();
         row.add(exportItemRow.getIndividual().getId());
         row.add(exportItemRow.getIndividual().getUuid());
         row.add(massageStringValue(exportItemRow.getIndividual().getFirstName()));
         row.add(massageStringValue(exportItemRow.getIndividual().getLastName()));
         row.add(exportItemRow.getIndividual().getDateOfBirth());
         row.add(exportItemRow.getIndividual().getRegistrationDate());
-        row.add(exportItemRow.getIndividual().getGender().getName());
+        row.add(gender == null ? "" : gender.getName());
         row.add(massageStringValue(exportItemRow.getIndividual().getAddressLevel().getTitle()));
         row.addAll(getObs(exportItemRow.getIndividual().getObservations(), registrationMap));
         if (programUUID == null) {
@@ -230,10 +228,8 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             Object val = observations.getOrDefault(conceptUUID, null);
             if (formElement.getConcept().getDataType().equals(ConceptDataType.Coded.toString())) {
                 values.addAll(processCodedObs(formElement.getType(), val, formElement));
-            } else if (formElement.getConcept().getDataType().equals(ConceptDataType.Text.toString())) {
-                values.add(massageStringValue((String) val));
             } else {
-                values.add(val);
+                values.add(massageStringValue((String) val));
             }
         });
         return values;

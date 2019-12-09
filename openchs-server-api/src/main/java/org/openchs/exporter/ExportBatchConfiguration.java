@@ -99,7 +99,8 @@ public class ExportBatchConfiguration {
     @Bean
     @StepScope
     public RepositoryItemReader<Object> reader(@Value("#{jobParameters['userId']}") Long userId,
-                                               @Value("#{jobParameters['programUUID']}") String programUUID) {
+                                               @Value("#{jobParameters['programUUID']}") String programUUID,
+                                               @Value("#{jobParameters['subjectTypeUUID']}") String subjectTypeUUID) {
         authService.authenticateByUserId(userId);
         final Map<String, Sort.Direction> sorts = new HashMap<>();
         sorts.put("id", Sort.Direction.ASC);
@@ -115,10 +116,13 @@ public class ExportBatchConfiguration {
                     .sorts(sorts)
                     .build();
         } else {
+            List<String> params = new ArrayList<>();
+            params.add(subjectTypeUUID);
             return new RepositoryItemReaderBuilder<Object>()
                     .name("reader")
                     .repository(individualRepository)
                     .methodName("findIndividuals")
+                    .arguments(params)
                     .pageSize(CHUNK_SIZE)
                     .sorts(sorts)
                     .build();
