@@ -5,6 +5,8 @@ import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
 import { getOperationalModules } from "./reducers/metadataReducer";
 import Loading from "./components/Loading";
+import dashboardNew from "./views/dashboardNew/dashboardNew";
+import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
 
 const DataEntry = ({
   match: { path },
@@ -17,8 +19,10 @@ const DataEntry = ({
 
   return operationalModules ? (
     <div>
-      <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
+       <Route path={[path,`${path}/dashboardNew`]} component={dashboardNew} />
+      <Route exact path={`${path}/search`} component={SubjectSearch} />
       <Route path={`${path}/register`} component={SubjectRegister} />
+      <Route path={`${path}/SubjectDashboard`} component={SubjectDashboard} />
     </div>
   ) : (
     <Loading />
