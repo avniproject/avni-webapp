@@ -56,13 +56,15 @@ const Export = ({
     setEndDate(currentDate);
   };
 
+  const dateParamsRequired = () => reportType.name === ReportTypes.getName("All");
+
   const onStartExportHandler = async () => {
     const request = {
       subjectTypeUUID: selectedSubjectType.uuid,
       programUUID: selectedProgram.uuid,
       encounterTypeUUID: selectedEncounterType.uuid,
-      startDate: startDate.setHours(0, 0, 0, 0),
-      endDate: endDate.setHours(23, 59, 59, 999),
+      startDate: dateParamsRequired() ? startDate.setHours(0, 0, 0, 0) : null,
+      endDate: dateParamsRequired() ? endDate.setHours(23, 59, 59, 999) : null,
       reportType: ReportTypes.getCode(reportType.name)
     };
     const [ok, error] = await api.startExportJob(request);
