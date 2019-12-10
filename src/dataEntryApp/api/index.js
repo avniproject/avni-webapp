@@ -1,4 +1,5 @@
 import httpClient from "common/utils/httpClient";
+import response from './response';
 
 export default {
   fetchOperationalModules: () =>
@@ -9,5 +10,8 @@ export default {
     httpClient.fetchJson("/individuals", {
       method: "POST",
       body: JSON.stringify(subject)
-    })
+    }),
+    fetchSubjectProfile: async ()=>{
+      return response.data;
+    }
 };
