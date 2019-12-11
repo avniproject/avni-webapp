@@ -9,8 +9,6 @@ assignees: ''
 
 ### Motivation
 
-### Endpoint
-
 ### Request
 
 ### Happy path Response
