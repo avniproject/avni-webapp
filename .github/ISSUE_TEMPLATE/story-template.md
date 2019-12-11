@@ -16,3 +16,7 @@ assignees: ''
 ### Happy path Response
 
 ### Exception path Response
+
+### Tech Approach
+
+### Visual Design
