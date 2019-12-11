@@ -23,6 +23,9 @@ public class FormContract extends ReferenceDataContract {
     private String subjectType;
     private String programName;
     private List<String> encounterTypes;
+    private String decisionRule;
+    private String visitScheduleRule;
+    private String validationRule;
 
     public FormContract() {
     }
@@ -114,6 +117,9 @@ public class FormContract extends ReferenceDataContract {
         formContract.setName(form.getName());
         formContract.setUuid(form.getUuid());
         formContract.setVoided(form.isVoided());
+        formContract.setDecisionRule(form.getDecisionRule());
+        formContract.setVisitScheduleRule(form.getVisitScheduleRule());
+        formContract.setValidationRule(form.getValidationRule());
         List<FormElementGroupContract> fegContracts = form.getFormElementGroups().stream()
                 .map(FormElementGroupContract::fromFormElementGroup)
                 .sorted(Comparator.comparingDouble(FormElementGroupContract::getDisplayOrder))
@@ -126,5 +132,29 @@ public class FormContract extends ReferenceDataContract {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public boolean isVoided() {
         return super.isVoided();
+    }
+
+    public String getDecisionRule() {
+        return decisionRule;
+    }
+
+    public void setDecisionRule(String decisionRule) {
+        this.decisionRule = decisionRule;
+    }
+
+    public String getVisitScheduleRule() {
+        return visitScheduleRule;
+    }
+
+    public void setVisitScheduleRule(String visitScheduleRule) {
+        this.visitScheduleRule = visitScheduleRule;
+    }
+
+    public String getValidationRule() {
+        return validationRule;
+    }
+
+    public void setValidationRule(String validationRule) {
+        this.validationRule = validationRule;
     }
 }

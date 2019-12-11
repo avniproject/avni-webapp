@@ -22,6 +22,21 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         return this;
     }
 
+    public FormBuilder withDecisionRule(String decisionRule) {
+        this.get().setDecisionRule(decisionRule);
+        return this;
+    }
+
+    public FormBuilder withVisitScheduleRule(String visitScheduleRule) {
+        this.get().setVisitScheduleRule(visitScheduleRule);
+        return this;
+    }
+
+    public FormBuilder withValidationRule(String validationRule) {
+        this.get().setValidationRule(validationRule);
+        return this;
+    }
+
     public FormBuilder withName(String name) {
         this.set("Name", name, String.class);
         return this;

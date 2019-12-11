@@ -194,6 +194,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 .withType(formRequest.getFormType())
                 .withUUID(formRequest.getUuid())
                 .withFormElementGroups(formRequest.getFormElementGroups())
+                .withDecisionRule(formRequest.getDecisionRule())
+                .withVisitScheduleRule(formRequest.getVisitScheduleRule())
+                .withValidationRule(formRequest.getValidationRule())
                 .build();
         return formRepository.save(form);
     }
