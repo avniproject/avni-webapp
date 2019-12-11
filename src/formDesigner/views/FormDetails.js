@@ -643,7 +643,7 @@ class FormDetails extends Component {
           >
             <Tab label="Details" />
             <Tab label="Settings" />
-            {/* <Tab label="Rules" /> */}
+            <Tab label="Rules" />
           </Tabs>
           <TabContainer hidden={this.state.activeTabIndex !== 0}>
             <div name="divGroup">
@@ -713,17 +713,15 @@ class FormDetails extends Component {
             </Grid>
           </Grid>
 
-          {/*
-            Uncomment the below div to show rules at form level
-            */}
 
-          {/* <div hidden={this.state.activeTabIndex !== 2}>
+
+          <div hidden={this.state.activeTabIndex !== 2}>
             <FormLevelRules
               form={this.state.form}
               onRuleUpdate={this.onRuleUpdate}
               onToggleExpandPanel={this.onToggleExpandPanel}
             />
-          </div> */}
+          </div>
         </Grid>
       </Grid>
     );
