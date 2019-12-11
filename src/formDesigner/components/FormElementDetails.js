@@ -508,6 +508,12 @@ function FormElementDetails(props) {
 
       {["Numeric", "Text"].includes(props.formElementData.concept.dataType) && (
         <Grid item sm={12}>
+          {props.formElementData.errorMessage && props.formElementData.errorMessage.validFormat && (
+            <div style={{ color: "red" }}>
+              {" "}
+              Validation Regex and description key both must be empty or both must be filled
+            </div>
+          )}
           <FormControl fullWidth>
             <InputLabel htmlFor="validFormatRegex">Validation Regex</InputLabel>
             <Input
