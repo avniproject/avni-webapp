@@ -18,7 +18,7 @@ export const CreateEditFilters = props => {
   }
 
   const scopeOptions = _.values(CustomFilter.scope).map(s => ({ label: _.startCase(s), value: s }));
-  const typeOptions = _.values(CustomFilter.type).map(t => ({ label: t, value: t }));
+  const typeOptions = _.values(CustomFilter.type).map(t => ({ label: _.startCase(t), value: t }));
   const widgetOptions = _.values(CustomFilter.widget).map(t => ({ label: t, value: t }));
 
   const emptyFilter = {
@@ -92,7 +92,7 @@ export const CreateEditFilters = props => {
   const [snackBarStatus, setSnackBarStatus] = useState(true);
 
   const saveDisabled = () => {
-    if (selectedType.label === CustomFilter.type.Concept) {
+    if (selectedType.value === CustomFilter.type.Concept) {
       const allRequiredStatus =
         _.isEmpty(filterName) ||
         _.isEmpty(selectedScope) ||
@@ -125,7 +125,7 @@ export const CreateEditFilters = props => {
     const newFilter = {
       titleKey: filterName,
       subjectTypeUUID: selectedSubject.value,
-      type: selectedType.label,
+      type: selectedType.value,
       scope: (!_.isEmpty(selectedScope) && selectedScope.value) || null,
       conceptName: (!_.isEmpty(selectedConcept) && selectedConcept.label) || null,
       conceptUUID: (!_.isEmpty(selectedConcept) && selectedConcept.value.uuid) || null,
