@@ -26,7 +26,7 @@ const DefaultPage = props => {
   }, []);
 
   return (
-    <ScreenWithAppBar appbarTitle={`${get(props, "subject.subjectType.name")} Registration`}>
+    <div>
       {props.subject && (
         <div>
           <h3>Register and enroll - Mother Program</h3>
@@ -120,7 +120,7 @@ const DefaultPage = props => {
           </Box>
         </div>
       )}
-    </ScreenWithAppBar>
+    </div>
   );
 };
 

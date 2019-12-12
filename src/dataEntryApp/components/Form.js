@@ -29,16 +29,14 @@ const Form = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto,
 
   const current = form.formElementGroupAt(currentPageNumber);
   return (
-    <ScreenWithAppBar appbarTitle={title}>
-      <div>
-        <FormElementGroup key={current.uuid} obs={obs} updateObs={updateObs}>
-          {current}
-        </FormElementGroup>
-        {saved && <Redirect to={onSaveGoto} />}
-        <Paginator pageDetails={pageDetails} onSave={onSave} />
-        <div />
-      </div>
-    </ScreenWithAppBar>
+    <div>
+      <FormElementGroup key={current.uuid} obs={obs} updateObs={updateObs}>
+        {current}
+      </FormElementGroup>
+      {saved && <Redirect to={onSaveGoto} />}
+      <Paginator pageDetails={pageDetails} onSave={onSave} />
+      <div />
+    </div>
   );
 };
 

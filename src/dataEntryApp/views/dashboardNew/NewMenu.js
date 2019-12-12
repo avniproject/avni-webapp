@@ -43,7 +43,7 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-function SideNav({ operationalModules }) {
+function NewMenu({ operationalModules }) {
     const classes = useStyle();
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState('female');
@@ -74,7 +74,7 @@ function SideNav({ operationalModules }) {
                         <React.Fragment>
                             <InternalLink
                                 key={key}
-                                to={`/app/register?element=${element.name}`}
+                                to={`/app/register?type=${element.name}`}
                                 onClick={handleClickRoute(element)}
                                 style={{ color: 'blue' }} 
                             >
@@ -123,5 +123,5 @@ const mapStateToProps = state => {
 export default withRouter(
     connect(
         mapStateToProps
-    )(SideNav)
+    )(NewMenu)
 );
