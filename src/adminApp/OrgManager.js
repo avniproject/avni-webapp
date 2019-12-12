@@ -54,7 +54,9 @@ class OrgManager extends Component {
       window.location.href.includes("staging") ||
       window.location.href.includes("uat");
     const csvUploadToggle =
-      window.location.href.includes("localhost") || window.location.href.includes("staging");
+      window.location.href.includes("localhost") ||
+      window.location.href.includes("staging") ||
+      window.location.href.includes("uat");
     return (
       <Admin
         title="Manage Organisation"
