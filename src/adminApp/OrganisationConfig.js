@@ -10,6 +10,9 @@ import { Add, Edit } from "@material-ui/icons";
 import { Title } from "react-admin";
 import { default as UUID } from "uuid";
 import Box from "@material-ui/core/Box";
+import { connect } from "react-redux";
+import { getOperationalModules } from "../reports/reducers";
+import { withRouter } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
@@ -18,18 +21,17 @@ const useStyles = makeStyles({
   }
 });
 
-export const customConfig = ({ history, organisation }) => {
+const customConfig = ({ operationalModules, getOperationalModules, history, organisation }) => {
+  React.useEffect(() => {
+    getOperationalModules();
+  }, []);
+
   const emptyOrgSettings = {
     uuid: UUID.v4(),
     settings: { languages: [], myDashboardFilters: [], searchFilters: [] }
   };
 
   const [settings, setSettings] = useState(emptyOrgSettings);
-  const [concepts, setConcepts] = useState([]);
-  const [programs, setPrograms] = useState([]);
-  const [encounterTypes, setEncounterTypes] = useState([]);
-
-  useEffect(_.noop, [settings]);
 
   const createOrgSettings = setting => {
     const { uuid, settings } = setting;
@@ -55,26 +57,14 @@ export const customConfig = ({ history, organisation }) => {
     });
   }, []);
 
-  useEffect(() => {
-    http.get("/codedConcepts").then(res => {
-      setConcepts(res.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    http.get("/web/programs").then(res => setPrograms(res.data));
-  }, []);
-
-  useEffect(() => {
-    http.get("/web/encounterTypes").then(res => setEncounterTypes(res.data));
-  }, []);
-
   const styles = useStyles();
 
   const columns = [
     { title: "Filter Name", field: "titleKey" },
     { title: "Concept Name", field: "conceptName" },
-    { title: "Search Scope", field: "scope" }
+    { title: "Filter Type", field: "Filter Type" },
+    { title: "Widget", field: "widget" },
+    { title: "Search Scope", field: "Scope" }
   ];
 
   const renderLanguage = languages => {
@@ -85,33 +75,42 @@ export const customConfig = ({ history, organisation }) => {
   };
 
   const filterData = filters => {
-    return _.isEmpty(concepts)
-      ? filters
-      : _.map(filters, filter => {
-          filter["conceptName"] = _.find(concepts, c => c.uuid === filter.conceptUUID).name;
-          filter["scope"] = _.startCase(filter.searchType);
-          return filter;
-        });
+    return _.map(filters, filter => {
+      filter["widget"] = filter["widget"] || "Default";
+      filter["Scope"] = _.startCase(filter["scope"]);
+      filter["Filter Type"] = _.startCase(filter["type"]);
+      return filter;
+    });
   };
 
-  const editFilter = filterType => ({
+  const editFilter = (filterType, title) => ({
     icon: "edit",
     tooltip: "Edit Filter",
     onClick: (event, filter) => {
       history.push({
-        pathname: "/filters",
-        state: { filterType, selectedFilter: filter, concepts, programs, encounterTypes, settings }
+        pathname: "/admin/filters",
+        state: {
+          filterType,
+          selectedFilter: filter,
+          settings,
+          omitTableData,
+          operationalModules,
+          title
+        }
       });
     }
   });
+
+  const omitTableData = filters =>
+    _.map(filters, filter => _.omit(filter, ["tableData", "Scope", "Filter Type"]));
 
   const deleteFilter = filterType => ({
     icon: "delete_outline",
     onClick: (event, rowData) => {
       const voidedMessage = `Do you want to delete ${rowData.titleKey} filter ?`;
       if (window.confirm(voidedMessage)) {
-        const filteredFilters = settings.settings[filterType].filter(
-          f => f.titleKey !== rowData.titleKey
+        const filteredFilters = omitTableData(
+          settings.settings[filterType].filter(f => f.titleKey !== rowData.titleKey)
         );
         const newSettings = {
           uuid: settings.uuid,
@@ -120,9 +119,11 @@ export const customConfig = ({ history, organisation }) => {
             myDashboardFilters:
               filterType === "myDashboardFilters"
                 ? filteredFilters
-                : settings.settings.myDashboardFilters,
+                : omitTableData(settings.settings.myDashboardFilters),
             searchFilters:
-              filterType === "searchFilters" ? filteredFilters : settings.settings.searchFilters
+              filterType === "searchFilters"
+                ? filteredFilters
+                : omitTableData(settings.settings.searchFilters)
           }
         };
         http.post("/organisationConfig", newSettings).then(response => {
@@ -134,14 +135,21 @@ export const customConfig = ({ history, organisation }) => {
     }
   });
 
-  const addFilter = filterType => ({
+  const addFilter = (filterType, title) => ({
     icon: "add_outline",
     tooltip: "Add Filter",
     isFreeAction: true,
     onClick: event => {
       history.push({
-        pathname: "/filters",
-        state: { filterType, selectedFilter: null, concepts, programs, encounterTypes, settings }
+        pathname: "/admin/filters",
+        state: {
+          filterType,
+          selectedFilter: null,
+          settings,
+          omitTableData,
+          operationalModules,
+          title
+        }
       });
     }
   });
@@ -151,7 +159,7 @@ export const customConfig = ({ history, organisation }) => {
       label="Edit"
       onClick={() =>
         history.push({
-          pathname: "/languages",
+          pathname: "/admin/languages",
           state: { settings }
         })
       }
@@ -170,7 +178,11 @@ export const customConfig = ({ history, organisation }) => {
         columns={columns}
         data={filterData(settings.settings[filterType])}
         options={{ search: false, paging: false }}
-        actions={[addFilter(filterType), deleteFilter(filterType), editFilter(filterType)]}
+        actions={[
+          addFilter(filterType, `Add ${_.startCase(filterType)}`),
+          deleteFilter(filterType),
+          editFilter(filterType, `Edit ${_.startCase(filterType)}`)
+        ]}
       />
     </Box>
   );
@@ -196,3 +208,13 @@ export const customConfig = ({ history, organisation }) => {
     </Box>
   );
 };
+const mapStateToProps = state => ({
+  operationalModules: state.reports.operationalModules
+});
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { getOperationalModules }
+  )(customConfig)
+);

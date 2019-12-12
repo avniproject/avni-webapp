@@ -1,111 +1,140 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl, Input, InputLabel, Select as SingleSelect } from "@material-ui/core";
+import { FormControl, Input, InputLabel } from "@material-ui/core";
 import Select from "react-select";
-import _ from "lodash";
+import _, { deburr } from "lodash";
 import Grid from "@material-ui/core/Grid";
-import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
-import AutoSuggestSingleSelection from "../../formDesigner/components/AutoSuggestSingleSelection";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import http from "common/utils/httpClient";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
+import AsyncSelect from "react-select/async";
+import { CustomFilter, Concept } from "avni-models";
 
 export const CreateEditFilters = props => {
-  if (_.isNil(props.location.state)) {
+  if (_.isNil(props.history.location.state)) {
     return <div />;
   }
 
-  const scopes = ["programEncounter", "programEnrolment", "registration", "encounter"];
+  const scopeOptions = _.values(CustomFilter.scope).map(s => ({ label: _.startCase(s), value: s }));
+  const typeOptions = _.values(CustomFilter.type).map(t => ({ label: t, value: t }));
+  const widgetOptions = _.values(CustomFilter.widget).map(t => ({ label: t, value: t }));
 
   const emptyFilter = {
-    conceptName: "",
-    searchType: "",
     titleKey: "",
-    searchParameters: "",
-    subjectTypeUUID: ""
+    subjectTypeUUID: "",
+    type: "",
+    scope: "",
+    conceptName: "",
+    conceptUUID: "",
+    widget: "",
+    scopeParameters: {}
   };
-  const { programs, encounterTypes, concepts } = props.location.state;
-  const { conceptName, searchType, titleKey, searchParameters, subjectTypeUUID } =
-    props.location.state.selectedFilter || emptyFilter;
 
-  const programOptions = programs.map(p => ({ label: p.name, value: p.program.uuid }));
-  const encounterTypeOptions = encounterTypes.map(e => ({
-    label: e.name,
-    value: e.encounterType.uuid
-  }));
+  const { omitTableData, selectedFilter, title } = props.history.location.state;
+  const {
+    conceptName,
+    conceptUUID,
+    scope,
+    titleKey,
+    scopeParameters,
+    subjectTypeUUID,
+    widget,
+    type,
+    conceptDataType
+  } = selectedFilter || emptyFilter;
+  const { programs, subjectTypes, encounterTypes } =
+    props.history.location.state.operationalModules || {};
+
+  const mapToOptions = entity => _.map(entity, ({ name, uuid }) => ({ label: name, value: uuid }));
+
+  const programOptions = mapToOptions(programs);
+  const encounterTypeOptions = mapToOptions(encounterTypes);
+  const subjectTypeOptions = mapToOptions(subjectTypes);
+
+  const mapPreviousParamsToOptions = (scopeKey, options) => {
+    return (
+      (scopeParameters &&
+        scopeParameters[scopeKey] &&
+        options.filter(({ value }) => scopeParameters[scopeKey].includes(value))) ||
+      []
+    );
+  };
+
+  const mapPreviousToOptions = (prevValue, options) => {
+    return (
+      (!_.isEmpty(prevValue) && _.head(options.filter(({ value }) => prevValue === value))) || ""
+    );
+  };
 
   const [filterName, setFilterName] = useState(titleKey);
-  const [conceptNameState, setConceptName] = useState({ conceptName, error: "" });
-  const [scope, setScope] = useState(searchType);
-  const encNames =
-    (searchParameters.encounterTypeUUIDs &&
-      encounterTypeOptions.filter(l => searchParameters.encounterTypeUUIDs.includes(l.value))) ||
-    [];
-  const progNames =
-    (searchParameters.programUUIDs &&
-      programOptions.filter(l => searchParameters.programUUIDs.includes(l.value))) ||
-    [];
-  const [encounterNameState, setEncounterName] = useState(encNames);
-  const [programNameState, setProgramName] = useState(progNames);
+  const [selectedSubject, setSubject] = useState(
+    mapPreviousToOptions(subjectTypeUUID, subjectTypeOptions)
+  );
+  const [selectedType, setType] = useState(mapPreviousToOptions(type, typeOptions));
+  const [selectedConcept, setConcept] = React.useState(
+    (conceptName && {
+      label: conceptName,
+      value: { uuid: conceptUUID, dataType: conceptDataType }
+    }) ||
+      ""
+  );
+  const [selectedScope, setScope] = useState(mapPreviousToOptions(scope, scopeOptions));
+  const [selectedEncounter, setEncounter] = useState(
+    mapPreviousParamsToOptions("encounterTypeUUIDs", encounterTypeOptions)
+  );
+  const [selectedProgram, setProgram] = useState(
+    mapPreviousParamsToOptions("programUUIDs", programOptions)
+  );
+  const [selectedWidget, setWidget] = useState(mapPreviousToOptions(widget, widgetOptions));
   const [messageStatus, setMessageStatus] = useState({ message: "", display: false });
   const [snackBarStatus, setSnackBarStatus] = useState(true);
-  const [subjectTypes, setSubjectTypes] = useState([]);
-  const [selectedSubjectType, setSelectedSubjectType] = useState({});
-
-  useEffect(() => {
-    http.get("/subjectType").then(res => {
-      const response = res.data._embedded.subjectType;
-      setSubjectTypes(response);
-      const selected = response.filter(st => st.uuid === subjectTypeUUID);
-      _.isEmpty(selected) ? setSelectedSubjectType({}) : setSelectedSubjectType(selected[0]);
-    });
-  }, []);
-
-  const checkForConceptError = conceptName => {
-    const error = "Only coded concepts are allowed";
-    _.isEmpty(concepts.filter(c => c.name === conceptName))
-      ? setConceptName({ conceptName, error })
-      : setConceptName({ conceptName, error: "" });
-  };
 
   const saveDisabled = () => {
-    const allRequiredStatus =
-      _.isEmpty(filterName) ||
-      _.isEmpty(scope) ||
-      _.isEmpty(conceptNameState.conceptName) ||
-      _.isEmpty(selectedSubjectType) ||
-      !_.isEmpty(conceptNameState.error);
-    switch (scope) {
-      case "registration":
-        return allRequiredStatus;
-      case "programEnrolment":
-        return allRequiredStatus || _.isEmpty(programNameState);
-      case "programEncounter":
-        return allRequiredStatus || _.isEmpty(programNameState) || _.isEmpty(encounterNameState);
-      case "encounter":
-        return allRequiredStatus || _.isEmpty(encounterNameState);
-      default:
-        return true;
+    if (selectedType.label === CustomFilter.type.Concept) {
+      const allRequiredStatus =
+        _.isEmpty(filterName) ||
+        _.isEmpty(selectedScope) ||
+        _.isEmpty(selectedConcept) ||
+        _.isEmpty(selectedSubject);
+      switch (selectedScope.value) {
+        case CustomFilter.scope.Registration:
+          return allRequiredStatus;
+        case CustomFilter.scope.ProgramEnrolment:
+          return allRequiredStatus || _.isEmpty(selectedProgram);
+        case CustomFilter.scope.ProgramEncounter:
+          return allRequiredStatus || _.isEmpty(selectedProgram) || _.isEmpty(selectedEncounter);
+        case CustomFilter.scope.Encounter:
+          return allRequiredStatus || _.isEmpty(selectedEncounter);
+        default:
+          return true;
+      }
+    } else {
+      return _.isEmpty(filterName) || _.isEmpty(selectedSubject) || _.isEmpty(selectedType);
     }
   };
 
   const saveFilter = () => {
-    const encType = _.isNil(encounterNameState) ? [] : encounterNameState.map(l => l.value);
-    const prog = _.isNil(programNameState) ? [] : programNameState.map(l => l.value);
+    const encType = _.isEmpty(selectedEncounter) ? [] : selectedEncounter.map(l => l.value);
+    const prog = _.isEmpty(selectedProgram) ? [] : selectedProgram.map(l => l.value);
+    const scopeParams = {
+      programUUIDs: prog,
+      encounterTypeUUIDs: encType
+    };
     const newFilter = {
       titleKey: filterName,
-      searchType: scope,
-      subjectTypeUUID: selectedSubjectType.uuid,
-      conceptUUID: concepts.find(concept => concept.name === conceptNameState.conceptName).uuid,
-      searchParameters: {
-        programUUIDs: scope === "registration" ? [] : prog,
-        encounterTypeUUIDs: scope === "registration" || scope === "programEnrolment" ? [] : encType
-      }
+      subjectTypeUUID: selectedSubject.value,
+      type: selectedType.label,
+      scope: (!_.isEmpty(selectedScope) && selectedScope.value) || null,
+      conceptName: (!_.isEmpty(selectedConcept) && selectedConcept.label) || null,
+      conceptUUID: (!_.isEmpty(selectedConcept) && selectedConcept.value.uuid) || null,
+      conceptDataType: (!_.isEmpty(selectedConcept) && selectedConcept.value.dataType) || null,
+      widget: (!_.isEmpty(selectedWidget) && selectedWidget.label) || null,
+      scopeParameters: !_.isEmpty(selectedConcept) ? scopeParams : null
     };
-    const data = getNewFilterData(newFilter);
+    const data = getNewFilterData(_.pickBy(newFilter, _.identity));
+
     http
       .post("/organisationConfig", data)
       .then(response => {
@@ -121,10 +150,10 @@ export const CreateEditFilters = props => {
   };
 
   const getNewFilterData = newFilter => {
-    const setting = props.location.state.settings;
-    const filterType = props.location.state.filterType;
+    const setting = props.history.location.state.settings;
+    const filterType = props.history.location.state.filterType;
     const oldFilters = setting.settings[filterType];
-    const newFilters = _.isNil(props.location.state.selectedFilter)
+    const newFilters = _.isNil(props.history.location.state.selectedFilter)
       ? [...oldFilters, newFilter]
       : [...oldFilters.filter(f => f.titleKey !== titleKey), newFilter];
     return {
@@ -132,10 +161,106 @@ export const CreateEditFilters = props => {
       settings: {
         languages: setting.settings.languages,
         myDashboardFilters:
-          filterType === "myDashboardFilters" ? newFilters : setting.settings.myDashboardFilters,
-        searchFilters: filterType === "searchFilters" ? newFilters : setting.settings.searchFilters
+          filterType === "myDashboardFilters"
+            ? omitTableData(newFilters)
+            : omitTableData(setting.settings.myDashboardFilters),
+        searchFilters:
+          filterType === "searchFilters"
+            ? omitTableData(newFilters)
+            : omitTableData(setting.settings.searchFilters)
       }
     };
+  };
+
+  const renderSelect = (name, placeholder, value, options, onChange) => {
+    return (
+      <Grid item sm={12}>
+        <div>
+          <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>{name}</div>
+          <Select placeholder={placeholder} value={value} options={options} onChange={onChange} />
+        </div>
+      </Grid>
+    );
+  };
+
+  const renderMultiSelect = (name, placeholder, value, options, onChange) => {
+    return (
+      <Grid item sm={12}>
+        <div>
+          <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>{name}</div>
+          <Select
+            isMulti
+            placeholder={placeholder}
+            value={value}
+            options={options}
+            onChange={onChange}
+          />
+        </div>
+      </Grid>
+    );
+  };
+
+  const [suggestions, setSuggestions] = React.useState([]);
+  const loadConcept = (value, callback) => {
+    if (!value) {
+      return callback([]);
+    }
+    const inputValue = deburr(value.trim()).toLowerCase();
+    http
+      .get(`/search/concept?name=${inputValue}`)
+      .then(response => {
+        const concepts = response.data;
+        const filteredConcepts = concepts.filter(
+          concept => concept.dataType !== "NA" && concept.dataType !== "Duration"
+        );
+        const conceptOptions = _.map(filteredConcepts, ({ name, uuid, dataType }) => ({
+          label: name,
+          value: { uuid, dataType }
+        }));
+        setSuggestions(conceptOptions);
+        callback(conceptOptions);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+  const resetState = () => {
+    setEncounter("");
+    setProgram("");
+    setWidget("");
+  };
+
+  const onTypeChange = type => {
+    setType(type);
+    setConcept("");
+    setScope("");
+    resetState();
+  };
+
+  const onScopeChange = scope => {
+    setScope(scope);
+    resetState();
+  };
+
+  const widgetRequired = () => {
+    const {
+      RegistrationDate,
+      EnrolmentDate,
+      ProgramEncounterDate,
+      EncounterDate
+    } = CustomFilter.type;
+    const widgetConceptDataTypes = [
+      Concept.dataType.Date,
+      Concept.dataType.DateTime,
+      Concept.dataType.Time,
+      Concept.dataType.Numeric
+    ];
+    return (
+      [RegistrationDate, EnrolmentDate, ProgramEncounterDate, EncounterDate].includes(
+        selectedType.value
+      ) ||
+      (selectedConcept.value && widgetConceptDataTypes.includes(selectedConcept.value.dataType))
+    );
   };
 
   return (
@@ -146,8 +271,12 @@ export const CreateEditFilters = props => {
           {!_.isEmpty(programs) && !_.isEmpty(encounterTypes) && (
             <Grid container justify="flex-start">
               <Grid item sm={12}>
+                <div style={{ fontSize: 20, color: "rgba(0, 0, 0)" }}>{title}</div>
+              </Grid>
+              <Box mb={5} />
+              <Grid item sm={12}>
                 <FormControl fullWidth>
-                  <InputLabel>Name</InputLabel>
+                  <InputLabel>Filter Name</InputLabel>
                   <Input
                     disableUnderline={false}
                     value={filterName}
@@ -156,108 +285,78 @@ export const CreateEditFilters = props => {
                 </FormControl>
               </Grid>
               <Box m={0.5} />
-              <Grid item sm={12}>
-                <FormControl fullWidth>
-                  <AutoSuggestSingleSelection
-                    visibility={false}
-                    showAnswer={{ name: conceptNameState.conceptName }}
-                    onChangeAnswerName={concept => checkForConceptError(concept)}
-                    finalReturn={true}
-                    index={0}
-                    label="Concept"
-                    dataType={"Coded"}
-                  />
-                  {!_.isEmpty(conceptNameState.error) && (
-                    <FormHelperText error>{conceptNameState.error}</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
+              {renderSelect(
+                "Subject Type",
+                "Select Subject Type",
+                selectedSubject,
+                subjectTypeOptions,
+                sub => setSubject(sub)
+              )}
               <Box m={0.5} />
-              <Grid item sm={12}>
-                <FormControl fullWidth>
-                  <InputLabel htmlFor="subjectType">Subject Type</InputLabel>
-                  <SingleSelect
-                    id="subjectType"
-                    name="subjectType"
-                    value={selectedSubjectType.name || ""}
-                    onChange={event => {
-                      const subjectType = _.filter(
-                        subjectTypes,
-                        s => s.name === event.target.value
-                      );
-                      setSelectedSubjectType((subjectType && subjectType[0]) || []);
-                    }}
-                  >
-                    {subjectTypes.map(subjectType => (
-                      <MenuItem key={subjectType.uuid} value={subjectType.name}>
-                        {subjectType.name}
-                      </MenuItem>
-                    ))}
-                  </SingleSelect>
-                </FormControl>
-              </Grid>
+              {renderSelect("Type", "Filter Type", selectedType, typeOptions, type =>
+                onTypeChange(type)
+              )}
               <Box m={0.5} />
-              <Grid item sm={12}>
-                <FormControl fullWidth>
-                  <InputLabel htmlFor="Scope">Search Scope</InputLabel>
-                  <SingleSelect
-                    id="Scope"
-                    name="Scope"
-                    value={scope}
-                    onChange={event => setScope(_.camelCase(event.target.value))}
-                  >
-                    {scopes.map(scope => (
-                      <MenuItem key={scope} value={scope}>
-                        {_.startCase(scope)}
-                      </MenuItem>
-                    ))}
-                  </SingleSelect>
-                </FormControl>
-              </Grid>
-              <Box m={0.5} />
-              {scope === "programEnrolment" && (
+              {selectedType.value === "Concept" && (
                 <Grid item sm={12}>
                   <div>
-                    <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>Progam</div>
-                    <Select
-                      isMulti
-                      placeholder={"Select Program"}
-                      value={programNameState}
-                      options={programOptions}
-                      onChange={name => setProgramName(name)}
+                    <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>Select Concept</div>
+                    <AsyncSelect
+                      cacheOptions
+                      defaultOptions={suggestions}
+                      value={selectedConcept}
+                      placeholder={"Type to search"}
+                      onChange={value => setConcept(value)}
+                      loadOptions={loadConcept}
                     />
                   </div>
                 </Grid>
               )}
               <Box m={0.5} />
-              {scope === "programEncounter" && (
-                <Grid item sm={12}>
-                  <div>
-                    <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>Progam</div>
-                    <Select
-                      placeholder={"Select Program"}
-                      value={programNameState}
-                      options={programOptions}
-                      onChange={name => setProgramName([name])}
-                    />
-                  </div>
-                </Grid>
-              )}
+              {selectedType.value === "Concept" &&
+                renderSelect("Search Scope", "Scope", selectedScope, scopeOptions, scope =>
+                  onScopeChange(scope)
+                )}
               <Box m={0.5} />
-              {(scope === "programEncounter" || scope === "encounter") && (
-                <Grid item sm={12}>
-                  <div>
-                    <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>Encounter Type</div>
-                    <Select
-                      isMulti
-                      placeholder={"Select Encounter Type"}
-                      value={encounterNameState}
-                      options={encounterTypeOptions}
-                      onChange={name => setEncounterName(name)}
-                    />
-                  </div>
-                </Grid>
-              )}
+              {selectedType.value === "Concept" &&
+                selectedScope.value === CustomFilter.scope.ProgramEnrolment &&
+                renderMultiSelect(
+                  "Program",
+                  "Select Program",
+                  selectedProgram,
+                  programOptions,
+                  program => setProgram(program)
+                )}
+              <Box m={0.5} />
+              {selectedType.value === "Concept" &&
+                selectedScope.value === CustomFilter.scope.ProgramEncounter &&
+                renderSelect(
+                  "Program",
+                  "Select Program",
+                  selectedProgram,
+                  programOptions,
+                  program => setProgram([program])
+                )}
+              <Box m={0.5} />
+              {selectedType.value === "Concept" &&
+                (selectedScope.value === CustomFilter.scope.ProgramEncounter ||
+                  selectedScope.value === CustomFilter.scope.Encounter) &&
+                renderMultiSelect(
+                  "Encounter Type",
+                  "Select Encounter Type",
+                  selectedEncounter,
+                  encounterTypeOptions,
+                  enc => setEncounter(enc)
+                )}
+              <Box m={0.5} />
+              {widgetRequired() &&
+                renderSelect(
+                  "Widget Type",
+                  "Select Widget Type",
+                  selectedWidget,
+                  widgetOptions,
+                  w => setWidget(w)
+                )}
               <Box mt={2} display="flex" justifyContent="center">
                 <Button
                   variant="contained"

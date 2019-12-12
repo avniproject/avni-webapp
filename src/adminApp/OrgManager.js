@@ -28,7 +28,7 @@ import {
   EncounterTypeEdit,
   EncounterTypeList
 } from "./EncounterTypes";
-import { customConfig } from "./OrganisationConfig";
+import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 
 import { Dashboard as UploadDashboard } from "../upload";
@@ -149,4 +149,9 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(connect(mapStateToProps, null)(OrgManager));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    null
+  )(OrgManager)
+);

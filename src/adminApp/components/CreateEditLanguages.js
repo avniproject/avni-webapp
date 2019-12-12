@@ -12,11 +12,11 @@ import { Title } from "react-admin";
 const options = localeChoices.map(l => ({ label: l.name, value: l.id }));
 
 export const CreateEditLanguages = props => {
-  if (_.isNil(props.location.state)) {
+  if (_.isNil(props.history.location.state)) {
     return <div />;
   }
 
-  const setting = props.location.state.settings;
+  const setting = props.history.location.state.settings;
   const [lang, setLang] = useState(
     options.filter(l => setting.settings.languages.includes(l.value))
   );
