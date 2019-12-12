@@ -42,8 +42,6 @@ export function* dataEntryLoadRegistrationFormWatcher() {
 export function* saveSubjectWorker() {
   const subject = yield select(selectRegistrationSubject);
   let resource = subject.toResource;
-  // resource.addressLevelUUID = "60dcab2f-68f4-4171-abf1-92c531f296a7";
-  // resource.addressLevelUUID = "f8069440-a8c0-492a-add2-67f1c3ded40f";
   yield call(api.saveSubject, resource);
   yield put(saveComplete());
 }

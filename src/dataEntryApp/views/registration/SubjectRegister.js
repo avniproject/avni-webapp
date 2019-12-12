@@ -18,6 +18,7 @@ import Form from "../../components/Form";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
 import PrimaryButton from "../../components/PrimaryButton";
+import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 
 const DefaultPage = props => {
   React.useEffect(() => {
@@ -28,83 +29,93 @@ const DefaultPage = props => {
     <ScreenWithAppBar appbarTitle={`${get(props, "subject.subjectType.name")} Registration`}>
       {props.subject && (
         <div>
-          <TextField
-            label="Date of Registration"
-            type="date"
-            required
-            name="registrationDate"
-            value={props.subject.registrationDate.toISOString().substr(0, 10)}
-            onChange={e => {
-              props.updateSubject("registrationDate", new Date(e.target.value));
-            }}
-          />
-          <LineBreak num={2} />
-          {get(props, "subject.subjectType.name") === "Individual" && (
-            <React.Fragment>
-              <TextField
-                label="First Name"
-                type="text"
-                required
-                name="firstName"
-                value={props.subject.firstName}
-                onChange={e => {
-                  props.updateSubject("firstName", e.target.value);
-                }}
-              />
-              <TextField
-                label="Last Name"
-                type="text"
-                required
-                name="lastName"
-                value={props.subject.lastName}
-                onChange={e => {
-                  props.updateSubject("lastName", e.target.value);
-                }}
-              />
-              <LineBreak num={2} />
-              <DateOfBirth
-                dateOfBirth={props.subject.dateOfBirth}
-                dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                onChange={date => props.updateSubject("dateOfBirth", date)}
-                markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
-              />
-              <LineBreak num={2} />
-              <CodedFormElement
-                groupName="Gender"
-                items={sortBy(props.genders, "name")}
-                isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
-                onChange={selected => props.updateSubject("gender", selected)}
-              />
-            </React.Fragment>
-          )}
+          <h3>Register and enroll - Mother Program</h3>
+          <Box display="flex" flexDirection="column">
+            <TextField
+              style={{ width: "30%" }}
+              label="Date of Registration"
+              type="date"
+              required
+              name="registrationDate"
+              value={props.subject.registrationDate.toISOString().substr(0, 10)}
+              onChange={e => {
+                props.updateSubject("registrationDate", new Date(e.target.value));
+              }}
+            />
+            <LineBreak num={1} />
+            {get(props, "subject.subjectType.name") === "Individual" && (
+              <React.Fragment>
+                <TextField
+                  style={{ width: "30%" }}
+                  label="First Name"
+                  type="text"
+                  required
+                  name="firstName"
+                  value={props.subject.firstName}
+                  onChange={e => {
+                    props.updateSubject("firstName", e.target.value);
+                  }}
+                />
+                <LineBreak num={1} />
+                <TextField
+                  style={{ width: "30%" }}
+                  label="Last Name"
+                  type="text"
+                  required
+                  name="lastName"
+                  value={props.subject.lastName}
+                  onChange={e => {
+                    props.updateSubject("lastName", e.target.value);
+                  }}
+                />
+                <LineBreak num={1} />
+                <DateOfBirth
+                  dateOfBirth={props.subject.dateOfBirth}
+                  dateOfBirthVerified={props.subject.dateOfBirthVerified}
+                  onChange={date => props.updateSubject("dateOfBirth", date)}
+                  markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
+                />
+                <LineBreak num={1} />
+                <CodedFormElement
+                  groupName="Gender"
+                  items={sortBy(props.genders, "name")}
+                  isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
+                  onChange={selected => props.updateSubject("gender", selected)}
+                />
+                <LocationAutosuggest
+                  onSelect={location => props.updateSubject("lowestAddressLevel", location)}
+                />
+              </React.Fragment>
+            )}
 
-          {get(props, "subject.subjectType.name") !== "Individual" && (
-            <React.Fragment>
-              <TextField
-                label="Name"
-                type="text"
-                required
-                name="firstName"
-                value={props.subject.firstName}
-                onChange={e => {
-                  props.updateSubject("firstName", e.target.value);
-                }}
-              />
-            </React.Fragment>
-          )}
-          <LineBreak num={4} />
-          <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-end">
-            <Box>
-              <RelativeLink
-                to="form"
-                params={{
-                  type: props.subject.subjectType.name,
-                  from: props.location.pathname + props.location.search
-                }}
-                noUnderline
-              >
-                <PrimaryButton>Next</PrimaryButton>
-              </RelativeLink>
+            {get(props, "subject.subjectType.name") !== "Individual" && (
+              <React.Fragment>
+                <TextField
+                  label="Name"
+                  type="text"
+                  required
+                  name="firstName"
+                  value={props.subject.firstName}
+                  onChange={e => {
+                    props.updateSubject("firstName", e.target.value);
+                  }}
+                />
+              </React.Fragment>
+            )}
+            <LineBreak num={4} />
+            <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-end">
+              <Box>
+                <RelativeLink
+                  to="form"
+                  params={{
+                    type: props.subject.subjectType.name,
+                    from: props.location.pathname + props.location.search
+                  }}
+                  noUnderline
+                >
+                  <PrimaryButton>Next</PrimaryButton>
+                </RelativeLink>
+              </Box>
             </Box>
           </Box>
         </div>
