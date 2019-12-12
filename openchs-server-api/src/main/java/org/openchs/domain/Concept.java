@@ -217,18 +217,18 @@ public class Concept extends OrganisationAwareEntity {
 
         if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
             conceptContract.setAnswers(new ArrayList<>());
-        }
-        for (ConceptAnswer answer : this.getConceptAnswers()) {
-            Concept answerConcept = answer.getAnswerConcept();
+            for (ConceptAnswer answer : this.getConceptAnswers()) {
+                Concept answerConcept = answer.getAnswerConcept();
 
-            ConceptContract answerConceptContract = new ConceptContract();
-            answerConceptContract.setUuid(answerConcept.getUuid());
-            answerConceptContract.setName(answerConcept.getName());
-            answerConceptContract.setOrder(answer.getOrder());
-            answerConceptContract.setAbnormal(answer.isAbnormal());
-            answerConceptContract.setUnique(answer.isUnique());
+                ConceptContract answerConceptContract = new ConceptContract();
+                answerConceptContract.setUuid(answerConcept.getUuid());
+                answerConceptContract.setName(answerConcept.getName());
+                answerConceptContract.setOrder(answer.getOrder());
+                answerConceptContract.setAbnormal(answer.isAbnormal());
+                answerConceptContract.setUnique(answer.isUnique());
 
-            conceptContract.getAnswers().add(answerConceptContract);
+                conceptContract.getAnswers().add(answerConceptContract);
+            }
         }
         return conceptContract;
     }
