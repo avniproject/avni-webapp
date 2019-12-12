@@ -3,6 +3,7 @@ package org.openchs.web.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 
 import java.util.List;
@@ -21,6 +22,14 @@ public class ConceptContract extends ReferenceDataContract {
     private boolean abnormal;
     private boolean unique = false;
     private Double order;
+
+    public static ConceptContract create(Concept concept) {
+        ConceptContract conceptContract = new ConceptContract();
+        conceptContract.setUuid(concept.getUuid());
+        conceptContract.setName(concept.getName());
+        conceptContract.setDataType(concept.getDataType());
+        return conceptContract;
+    }
 
     public String getDataType() {
         return dataType == null ? null : dataType.trim();

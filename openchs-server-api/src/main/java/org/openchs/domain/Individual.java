@@ -1,12 +1,11 @@
 package org.openchs.domain;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.LocalDate;
+import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.geo.Point;
 
 import javax.persistence.*;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "individual")
-@JsonIgnoreProperties({"programEnrolments", "encounters"})
+@JsonIgnoreProperties({"programEnrolments", "encounters", "relationships"})
 @BatchSize(size = 100)
 public class Individual extends OrganisationAwareEntity {
 
@@ -33,6 +32,9 @@ public class Individual extends OrganisationAwareEntity {
     private LocalDate dateOfBirth;
 
     private boolean dateOfBirthVerified;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "individuala")
+    private Set<IndividualRelationship> relationships = new HashSet<>();
 
     @NotNull
     private LocalDate registrationDate;
@@ -182,6 +184,14 @@ public class Individual extends OrganisationAwareEntity {
 
     public void setSubjectType(SubjectType subjectType) {
         this.subjectType = subjectType;
+    }
+
+    public Set<IndividualRelationship> getRelationships() {
+        return relationships;
+    }
+
+    public void setRelationships(Set<IndividualRelationship> relationships) {
+        this.relationships = relationships;
     }
 
     @JsonIgnore
