@@ -8,8 +8,10 @@ import org.openchs.domain.Individual;
 import org.openchs.domain.SubjectType;
 import org.openchs.geo.Point;
 import org.openchs.projection.IndividualWebProjection;
+import org.openchs.service.IndividualService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.web.request.IndividualContract;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.PointRequest;
 import org.slf4j.LoggerFactory;
@@ -21,10 +23,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,11 +42,12 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final GenderRepository genderRepository;
     private final ObservationService observationService;
     private final UserService userService;
-    private SubjectTypeRepository subjectTypeRepository;
-    private ProjectionFactory projectionFactory;
+    private final SubjectTypeRepository subjectTypeRepository;
+    private final ProjectionFactory projectionFactory;
+    private final IndividualService individualService;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -50,6 +55,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.userService = userService;
         this.subjectTypeRepository = subjectTypeRepository;
         this.projectionFactory = projectionFactory;
+        this.individualService = individualService;
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -108,6 +114,14 @@ public class IndividualController extends AbstractController<Individual> impleme
     @ResponseBody
     public IndividualWebProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(IndividualWebProjection.class, individualRepository.findByUuid(uuid));
+    }
+
+    @GetMapping(value = "/web/subjectProfile")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<IndividualContract> getSubjectProfile(@RequestParam("uuid") String uuid) {
+        IndividualContract individualContract =  individualService.getSubjectInfo(uuid);
+        return ResponseEntity.ok(individualContract);
     }
 
     @Override
