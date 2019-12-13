@@ -29,7 +29,7 @@ const SubjectDashboard = ({ match, getSubjectProfile, subjectProfile }) => {
       <Breadcrumbs />
       <Paper className={classes.root}>
         <ProfileDetails />
-        <SubjectDashboardTabs />
+        <SubjectDashboardTabs profile={subjectProfile} />
       </Paper>
     </Fragment>
   );

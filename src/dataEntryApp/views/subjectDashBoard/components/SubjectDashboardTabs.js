@@ -6,8 +6,18 @@ import Tab from "@material-ui/core/Tab";
 import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import TabViewFirst from "./TabView";
+import SubjectDashboardProfileTab from "./SubjectDashboardProfileTab";
 import Box from "@material-ui/core/Box";
+
+const useStyles = makeStyles(theme => ({
+  tabsDisplay: {
+    margin: theme.spacing(1)
+  },
+  tabView: {
+    backgroundColor: "white",
+    boxShadow: "none"
+  }
+}));
 
 function TabContent(props) {
   const { children, value, index, ...other } = props;
@@ -32,24 +42,7 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-function a11yProps(index) {
-  return {
-    id: `scrollable-auto-tab-${index}`,
-    "aria-controls": `scrollable-auto-tabpanel-${index}`
-  };
-}
-
-const useStyles = makeStyles(theme => ({
-  tabsDisplay: {
-    margin: theme.spacing(1)
-  },
-  tabView: {
-    backgroundColor: "white",
-    boxShadow: "none"
-  }
-}));
-
-export default () => {
+export default ({ profile }) => {
   const classes = useStyles();
 
   const [value, setValue] = React.useState(0);
@@ -57,6 +50,13 @@ export default () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  function a11yProps(index) {
+    return {
+      id: `scrollable-auto-tab-${index}`,
+      "aria-controls": `scrollable-auto-tabpanel-${index}`
+    };
+  }
 
   return (
     <Fragment>
@@ -80,7 +80,7 @@ export default () => {
       </TabContent>
       <TabContent value={value} index={1}>
         <Paper className={classes.tabsDisplay}>
-          <TabViewFirst />
+          <SubjectDashboardProfileTab profile={profile} />
         </Paper>
       </TabContent>
       <TabContent value={value} index={2}>
