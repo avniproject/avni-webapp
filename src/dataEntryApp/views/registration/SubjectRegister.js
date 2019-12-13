@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField } from "@material-ui/core";
@@ -22,6 +22,7 @@ import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Stepper from "dataEntryApp/views/registration/Stepper";
+import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -191,11 +192,14 @@ const SubjectRegister = ({ match: { path } }) => {
   const classes = useStyles();
 
   return (
-    <Paper className={classes.root}>
-      <Stepper />
-      <Route exact path={`${path}`} component={ConnectedDefaultPage} />
-      <Route path={`${path}/form`} component={RegistrationForm} />
-    </Paper>
+    <Fragment>
+      <Breadcrumbs path={path} />
+      <Paper className={classes.root}>
+        <Stepper />
+        <Route exact path={`${path}`} component={ConnectedDefaultPage} />
+        <Route path={`${path}/form`} component={RegistrationForm} />
+      </Paper>
+    </Fragment>
   );
 };
 
