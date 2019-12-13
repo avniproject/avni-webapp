@@ -9,6 +9,8 @@ assignees: ''
 
 ### Motivation
 
+### Acceptance Criteria
+
 ### Request
 
 ### Happy path Response
