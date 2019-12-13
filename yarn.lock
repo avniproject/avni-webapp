@@ -7045,10 +7045,10 @@ open@^6.3.0:
   dependencies:
     is-wsl "^1.1.0"
 
-openchs-models@0.2.5:
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.5.tgz#d1192c84d8e94b88d63637350f351219b0308d8e"
-  integrity sha512-izRTq6SKLqc/dvx5LD6KjTY7eMeTtBNSIYo6/LTqqN3WWqLcJYKOtcN9dcf0reYPK2Uy9K6Hc+Krm9Yf15QWSw==
+openchs-models@0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.6.tgz#826405782721f36775f40d95a894552144e40b5d"
+  integrity sha512-sPLRhorUySO5ibjiKqMedzunbbf7e/+kDf6Z9lSvpcd8OG/frd52jlLU59uZg/oeC6QCY5rXtbZ25Jj7k6cGbA==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"

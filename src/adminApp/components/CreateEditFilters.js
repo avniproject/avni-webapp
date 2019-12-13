@@ -17,8 +17,17 @@ export const CreateEditFilters = props => {
     return <div />;
   }
 
+  const { omitTableData, selectedFilter, title, filterType } = props.history.location.state;
+  const allTypes = _.values(CustomFilter.type);
+  const getFilterTypes =
+    filterType === "myDashboardFilters"
+      ? _.reject(allTypes, t =>
+          [CustomFilter.type.Name, CustomFilter.type.Age, CustomFilter.type.SearchAll].includes(t)
+        )
+      : allTypes;
+  const typeOptions = getFilterTypes.map(t => ({ label: _.startCase(t), value: t }));
+
   const scopeOptions = _.values(CustomFilter.scope).map(s => ({ label: _.startCase(s), value: s }));
-  const typeOptions = _.values(CustomFilter.type).map(t => ({ label: _.startCase(t), value: t }));
   const widgetOptions = _.values(CustomFilter.widget).map(t => ({ label: t, value: t }));
 
   const emptyFilter = {
@@ -32,7 +41,6 @@ export const CreateEditFilters = props => {
     scopeParameters: {}
   };
 
-  const { omitTableData, selectedFilter, title } = props.history.location.state;
   const {
     conceptName,
     conceptUUID,
