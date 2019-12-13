@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import ProfileDetails from "./components/ProfileDetails";
-import TabsPanel from "./components/TabsPanel";
+import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
 import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -29,7 +29,7 @@ const SubjectDashboard = ({ match, getSubjectProfile, subjectProfile }) => {
       <Breadcrumbs />
       <Paper className={classes.root}>
         <ProfileDetails />
-        <TabsPanel />
+        <SubjectDashboardTabs />
       </Paper>
     </Fragment>
   );
