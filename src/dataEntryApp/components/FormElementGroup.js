@@ -6,7 +6,6 @@ import { FormElement } from "./FormElement";
 export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
   return (
     <div>
-      <h4>{feg.name}</h4>
       <LineBreak num={1} />
       {feg.getFormElements().map(fe => (
         <FormElement

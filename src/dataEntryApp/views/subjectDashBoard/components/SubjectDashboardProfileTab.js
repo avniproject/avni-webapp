@@ -58,7 +58,7 @@ const SubjectDashboardProfileTab = ({ profile }) => {
                         {["Numeric", "Text"].includes(element.concept.dataType) ? (
                           <div>{element.value}</div>
                         ) : "Coded" === element.concept.dataType ? (
-                          <div>{element.value.map(it => it.name).join(" ,")}</div>
+                          <div>{element.value.map(it => it.name).join(", ")}</div>
                         ) : (
                           <div />
                         )}
