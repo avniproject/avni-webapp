@@ -16,6 +16,8 @@ public class ProgramContractWeb {
     private Long programOrganisationId;
     private boolean voided;
     private String enrolmentSummaryRule;
+    private String enrolmentEligibilityCheckRule;
+    private String checklistsRule;
 
     public String getName() {
         return name;
@@ -67,7 +69,9 @@ public class ProgramContractWeb {
         contract.setOrganisationId(operationalProgram.getOrganisationId());
         contract.setVoided(operationalProgram.isVoided());
         contract.setProgramOrganisationId(operationalProgram.getProgram().getOrganisationId());
-        contract.setEnrolmentSummaryRule(operationalProgram.getProgram().getEnrolmentSummaryRule());
+        contract.setEnrolmentSummaryRule(operationalProgram.getEnrolmentSummaryRule());
+        contract.setEnrolmentEligibilityCheckRule(operationalProgram.getEnrolmentEligibilityCheckRule());
+        contract.setChecklistsRule(operationalProgram.getChecklistsRule());
 
         return contract;
     }
@@ -95,5 +99,21 @@ public class ProgramContractWeb {
 
     public void setEnrolmentSummaryRule(String enrolmentSummaryRule) {
         this.enrolmentSummaryRule = enrolmentSummaryRule;
+    }
+
+    public String getEnrolmentEligibilityCheckRule() {
+        return enrolmentEligibilityCheckRule;
+    }
+
+    public void setEnrolmentEligibilityCheckRule(String enrolmentEligibilityCheckRule) {
+        this.enrolmentEligibilityCheckRule = enrolmentEligibilityCheckRule;
+    }
+
+    public String getChecklistsRule() {
+        return checklistsRule;
+    }
+
+    public void setChecklistsRule(String checklistsRule) {
+        this.checklistsRule = checklistsRule;
     }
 }
