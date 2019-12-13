@@ -15,15 +15,25 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default () => {
+const dictionary = {
+  app: "Home",
+  register: "Register"
+};
+
+export default ({ path }) => {
   const classes = useStyles();
+  const parts = path.split(/\/+/g).filter(Boolean);
+  const clickableParts = parts.slice(0, parts.length - 1);
+  const currentpage = parts[parts.length - 1];
 
   return (
     <Breadcrumbs className={classes.Breadcrumbs} aria-label="breadcrumb">
-      <Link color="inherit" href="/" onClick={() => {}}>
-        Home
-      </Link>
-      <Typography color="textPrimary">Shilpa Ingle's Profile</Typography>
+      {clickableParts.map(part => (
+        <Link color="inherit" href="/">
+          {part}
+        </Link>
+      ))}
+      <Typography color="textPrimary">{currentpage}</Typography>
     </Breadcrumbs>
   );
 };

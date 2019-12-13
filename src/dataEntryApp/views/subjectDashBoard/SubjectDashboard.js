@@ -26,7 +26,7 @@ const SubjectDashboard = ({ match, getSubjectProfile, subjectProfile }) => {
 
   return (
     <Fragment>
-      <Breadcrumbs />
+      <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <ProfileDetails />
         <SubjectDashboardTabs profile={subjectProfile} />
