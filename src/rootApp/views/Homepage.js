@@ -47,7 +47,9 @@ const Homepage = () => {
   );
 
   const reportToggle =
-    window.location.href.includes("localhost") || window.location.href.includes("staging");
+    window.location.href.includes("localhost") ||
+    window.location.href.includes("staging") ||
+    window.location.href.includes("uat");
 
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
