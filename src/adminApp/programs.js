@@ -35,28 +35,55 @@ export const RuleEditor = props => {
   const [ruleCode, setRuleCode] = useState(
     props.record.enrolmentSummaryRule ? props.record.enrolmentSummaryRule : ""
   );
+
+  const [ruleCodeForEnrolmentEligibilityCheck, setRuleCodeForEnrolmentEligibilityCheck] = useState(
+    props.record.enrolmentEligibilityCheckRule ? props.record.enrolmentEligibilityCheckRule : ""
+  );
+
   return (
     <FormDataConsumer>
       {({ formData, dispatch, ...rest }) => (
-        <Box mt={3}>
-          <FormLabel component="legend">Enrolment Summary Rule</FormLabel>
-          <Editor
-            value={ruleCode}
-            onValueChange={value => {
-              dispatch(change(REDUX_FORM_NAME, "enrolmentSummaryRule", value));
-              setRuleCode(value);
-            }}
-            highlight={code => highlight(code, languages.js)}
-            padding={10}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 15,
-              height: "auto",
-              borderStyle: "solid",
-              borderWidth: "1px"
-            }}
-          />
-        </Box>
+        <>
+          <Box mt={3}>
+            <FormLabel component="legend">Enrolment Summary Rule</FormLabel>
+            <Editor
+              value={ruleCode}
+              onValueChange={value => {
+                dispatch(change(REDUX_FORM_NAME, "enrolmentSummaryRule", value));
+                setRuleCode(value);
+              }}
+              highlight={code => highlight(code, languages.js)}
+              padding={10}
+              style={{
+                fontFamily: '"Fira code", "Fira Mono", monospace',
+                fontSize: 15,
+                height: "auto",
+                borderStyle: "solid",
+                borderWidth: "1px"
+              }}
+            />
+          </Box>
+
+          <Box mt={3}>
+            <FormLabel component="legend">Enrolment Eligibility Check Rule</FormLabel>
+            <Editor
+              value={ruleCodeForEnrolmentEligibilityCheck}
+              onValueChange={value => {
+                dispatch(change(REDUX_FORM_NAME, "enrolmentEligibilityCheckRule", value));
+                setRuleCodeForEnrolmentEligibilityCheck(value);
+              }}
+              highlight={code => highlight(code, languages.js)}
+              padding={10}
+              style={{
+                fontFamily: '"Fira code", "Fira Mono", monospace',
+                fontSize: 15,
+                height: "auto",
+                borderStyle: "solid",
+                borderWidth: "1px"
+              }}
+            />
+          </Box>
+        </>
       )}
     </FormDataConsumer>
   );
@@ -64,22 +91,41 @@ export const RuleEditor = props => {
 
 export const RuleDisplay = props => {
   return (
-    <Box mt={3}>
-      <FormLabel component="legend">Enrolment Summary Rule</FormLabel>
-      <Editor
-        value={props.record.enrolmentSummaryRule ? props.record.enrolmentSummaryRule : ""}
-        readOnly={true}
-        highlight={code => highlight(code, languages.js)}
-        padding={10}
-        style={{
-          fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 15,
-          height: "auto",
-          borderStyle: "solid",
-          borderWidth: "1px"
-        }}
-      />
-    </Box>
+    <>
+      <Box mt={3}>
+        <FormLabel component="legend">Enrolment Summary Rule</FormLabel>
+        <Editor
+          value={props.record.enrolmentSummaryRule ? props.record.enrolmentSummaryRule : ""}
+          readOnly={true}
+          highlight={code => highlight(code, languages.js)}
+          padding={10}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 15,
+            height: "auto",
+            borderStyle: "solid",
+            borderWidth: "1px"
+          }}
+        />
+      </Box>
+
+      <Box mt={3}>
+        <FormLabel component="legend">Enrolment Eligibility Check Rule</FormLabel>
+        <Editor
+          value={props.record.enrolmentEligibilityCheckRule ? props.record.enrolmentEligibilityCheckRule : ""}
+          readOnly={true}
+          highlight={code => highlight(code, languages.js)}
+          padding={10}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 15,
+            height: "auto",
+            borderStyle: "solid",
+            borderWidth: "1px"
+          }}
+        />
+      </Box>
+    </>
   );
 };
 
@@ -116,6 +162,7 @@ export const ProgramCreate = props => {
         <TextInput source="colour" />
         <TextInput source="programSubjectLabel" />
         <TextInput source="enrolmentSummaryRule" hidden={true} />
+        <TextInput source="enrolmentEligibilityCheckRule" hidden={true} />
         <RuleEditor {...props} />
       </SimpleForm>
     </Create>
@@ -130,6 +177,7 @@ export const ProgramEdit = props => {
         <TextInput source="colour" />
         <TextInput source="programSubjectLabel" />
         <TextInput source="enrolmentSummaryRule" hidden={true} />
+        <TextInput source="enrolmentEligibilityCheckRule" hidden={true} />
         <RuleEditor {...props} />
       </SimpleForm>
     </Edit>
