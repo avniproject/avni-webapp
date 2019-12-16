@@ -56,6 +56,7 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
             "where (:encounterTypeUUID is null or fm.encounterType.uuid = :encounterTypeUUID) " +
             "and (:programUUID is null or fm.program.uuid = :programUUID) " +
             "and fm.subjectType.uuid = :subjectTypeUUID " +
-            "and f.formType = :formType")
+            "and f.formType = :formType " +
+            "and fm.voided = false ")
     FormMapping getRequiredFormMapping(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType);
 }
