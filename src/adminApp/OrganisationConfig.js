@@ -57,11 +57,20 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
     });
   }, []);
 
+  const [subjectTypes, setSubjectTypes] = React.useState();
+
+  useEffect(() => {
+    http.get("/subjectType").then(res => {
+      res.data && setSubjectTypes(res.data._embedded.subjectType);
+    });
+  }, []);
+
   const styles = useStyles();
 
   const columns = [
     { title: "Filter Name", field: "titleKey" },
     { title: "Concept Name", field: "conceptName" },
+    { title: "Subject Type", field: "Subject" },
     { title: "Filter Type", field: "Filter Type" },
     { title: "Widget", field: "widget" },
     { title: "Search Scope", field: "Scope" }
@@ -76,9 +85,11 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
 
   const filterData = filters => {
     return _.map(filters, filter => {
+      const subject = _.head(subjectTypes.filter(s => s.uuid === filter.subjectTypeUUID));
       filter["widget"] = filter["widget"] || "Default";
       filter["Scope"] = _.startCase(filter["scope"]);
       filter["Filter Type"] = _.startCase(filter["type"]);
+      filter["Subject"] = (subject && subject.name) || "";
       return filter;
     });
   };
@@ -102,7 +113,7 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
   });
 
   const omitTableData = filters =>
-    _.map(filters, filter => _.omit(filter, ["tableData", "Scope", "Filter Type"]));
+    _.map(filters, filter => _.omit(filter, ["tableData", "Scope", "Filter Type", "Subject"]));
 
   const deleteFilter = filterType => ({
     icon: "delete_outline",
@@ -187,7 +198,9 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
     </Box>
   );
 
-  return (
+  return _.isNil(subjectTypes) ? (
+    <div />
+  ) : (
     <Box>
       <Title title="Organisation Config" />
       <Paper className={styles.root}>
