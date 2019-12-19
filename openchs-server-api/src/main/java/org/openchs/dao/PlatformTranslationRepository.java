@@ -14,6 +14,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "platformTranslation", path = "platformTranslation")
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
@@ -23,6 +25,8 @@ public interface PlatformTranslationRepository extends PagingAndSortingRepositor
     <S extends PlatformTranslation> S save(S entity);
 
     PlatformTranslation findByPlatformAndLanguage(Platform platform, Locale language);
+
+    PlatformTranslation findByLanguage(Locale language);
 
     @RestResource(path = "lastModified", rel = "lastModified")
     Page<PlatformTranslation> findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
