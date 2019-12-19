@@ -48,7 +48,9 @@ This requires the following env variables to be set as well:
 - REACT_APP_COGNITO_USER_POOL_ID
 - REACT_APP_COGNITO_APP_CLIENT_ID
 
-## Implementing new features
+## Contributing:
+
+- Raise a pull request to contribute. Please make sure that your code follows guidelines given in https://avni.readme.io/v2.0/docs/contribution-guide.
 
 ### File/folder structure
 
