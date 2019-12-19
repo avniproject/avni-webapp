@@ -462,7 +462,7 @@ function FormElementDetails(props) {
             row
           >
             <FormControlLabel value="Default" control={<Radio />} label="Default" />
-            <FormControlLabel value="Calender" control={<Radio />} label="Calender" />
+            <FormControlLabel value="Calendar" control={<Radio />} label="Calendar" />
             <FormControlLabel value="Spinner" control={<Radio />} label="Spinner" />
           </RadioGroup>
         </Grid>
