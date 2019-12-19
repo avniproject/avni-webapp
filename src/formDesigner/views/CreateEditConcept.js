@@ -180,7 +180,7 @@ class CreateEditConcept extends Component {
           .post("/concepts", [
             {
               name: this.state.name,
-              uuid: UUID.v4(),
+              uuid: this.props.isCreatePage ? UUID.v4() : this.state.uuid,
               dataType: this.state.dataType,
               answers: this.state.answers
             }
@@ -347,7 +347,7 @@ class CreateEditConcept extends Component {
           .post("/concepts", [
             {
               name: this.state.name,
-              uuid: UUID.v4(),
+              uuid: this.props.isCreatePage ? UUID.v4() : this.state.uuid,
               dataType: this.state.dataType,
               lowAbsolute: this.state.lowAbsolute,
               highAbsolute: this.state.highAbsolute,
