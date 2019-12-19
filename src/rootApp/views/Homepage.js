@@ -46,15 +46,12 @@ const Homepage = () => {
     </CardActionArea>
   );
 
-  const reportToggle =
-    window.location.href.includes("localhost") || window.location.href.includes("staging");
-
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justify="center">
         {renderCard("/#/admin/user", "Admin")}
         {renderCard("/#/translations", "Translations")}
-        {reportToggle && renderCard("/#/export", "Reports")}
+        {renderCard("/#/export", "Reports")}
       </Grid>
     </ScreenWithAppBar>
   );
