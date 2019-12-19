@@ -23,7 +23,7 @@ class CreateEditConcept extends Component {
     this.state = {
       dataTypes: [],
       name: "",
-      uuid: UUID.v4(),
+      uuid: "",
       dataType: "",
       lowAbsolute: null,
       highAbsolute: null,
@@ -73,7 +73,7 @@ class CreateEditConcept extends Component {
               order: conceptAnswer.order,
               voided: conceptAnswer.voided
             }));
-            answers.sort(function(conceptOrder1, conceptOrder2) {
+            answers.sort(function (conceptOrder1, conceptOrder2) {
               return conceptOrder1.order - conceptOrder2.order;
             });
           }
@@ -167,7 +167,7 @@ class CreateEditConcept extends Component {
   };
 
   postCodedData(answers) {
-    answers.map(function(answer, index) {
+    answers.map(function (answer, index) {
       return (answer.order = index);
     });
 
@@ -180,7 +180,7 @@ class CreateEditConcept extends Component {
           .post("/concepts", [
             {
               name: this.state.name,
-              uuid: this.state.uuid,
+              uuid: UUID.v4(),
               dataType: this.state.dataType,
               answers: this.state.answers
             }
@@ -256,7 +256,7 @@ class CreateEditConcept extends Component {
 
         Object.keys(error).length === 0 && this.afterSuccessfullValidation();
       },
-      function(error) {
+      function (error) {
         console.log(error);
       }
     );
@@ -347,7 +347,7 @@ class CreateEditConcept extends Component {
           .post("/concepts", [
             {
               name: this.state.name,
-              uuid: this.state.uuid,
+              uuid: UUID.v4(),
               dataType: this.state.dataType,
               lowAbsolute: this.state.lowAbsolute,
               highAbsolute: this.state.highAbsolute,
@@ -360,7 +360,10 @@ class CreateEditConcept extends Component {
             if (response.status === 200) {
               this.setState({
                 conceptCreationAlert: true,
-                defaultSnackbarStatus: true
+                defaultSnackbarStatus: true,
+                name: "",
+                uuid: "",
+                dataType: "",
               });
             }
           })
