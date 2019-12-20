@@ -11,7 +11,15 @@ export default {
       method: "POST",
       body: JSON.stringify(subject)
     }),
-    fetchSubjectProfile: async ()=>{
+    fetchSubjectProfile: async (uuid)=>
+    {
       return response.data;
     }
+
+
+     // httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
+    //   console.log(response);
+    //   return response.json})
+
+    //httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => response.json)
 };
