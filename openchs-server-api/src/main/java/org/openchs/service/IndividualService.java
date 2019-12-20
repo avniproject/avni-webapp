@@ -32,6 +32,18 @@ public class IndividualService {
         this.individualRepository = individualRepository;
     }
 
+    public  IndividualContract getSubjectProgramEnrollment(String individualUuid){
+        Individual individual = individualRepository.findByUuid(individualUuid);
+        List<EnrolmentContract> enrolmentContractList = constructEnrolmentsMetadata(individual);
+        if (enrolmentContractList.isEmpty() ) {
+            return null;
+        }
+        IndividualContract individualContract = new IndividualContract();
+        individualContract.setUuid(individual.getUuid());
+        individualContract.setEnrolments(enrolmentContractList);
+        return individualContract;
+    }
+
     public IndividualContract getSubjectInfo(String individualUuid) {
         Individual individual = individualRepository.findByUuid(individualUuid);
         IndividualContract individualContract = new IndividualContract();
@@ -53,6 +65,39 @@ public class IndividualService {
         individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
         individualContract.setFullAddress(individual.getAddressLevel().getTitleLineage());
         return individualContract;
+    }
+
+    public List<EnrolmentContract> constructEnrolmentsMetadata(Individual individual) {
+        return individual.getProgramEnrolments().stream().map(programEnrolment -> {
+            EnrolmentContract enrolmentContract = new EnrolmentContract();
+            enrolmentContract.setUuid(programEnrolment.getUuid());
+            enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getName());
+            enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
+            enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
+            enrolmentContract.setProgramEncounters(constructEncounters(programEnrolment.getProgramEncounters()));
+            List<ObservationContract> observationContractsList = constructObservations(programEnrolment.getObservations());
+            enrolmentContract.setObservations(observationContractsList);
+            if (programEnrolment.getProgramExitObservations() != null) {
+                enrolmentContract.setExitObservations(constructObservations(programEnrolment.getProgramExitObservations()));
+            }
+            return enrolmentContract;
+        }).collect(Collectors.toList());
+    }
+
+
+
+    public Set <ProgramEncountersContract> constructEncounters(Set<ProgramEncounter> programEncounters) {
+        return programEncounters.stream().map(programEncounter -> {
+            ProgramEncountersContract programEncountersContract = new ProgramEncountersContract();
+            programEncountersContract.setUuid(programEncounter.getUuid());
+            programEncountersContract.setName(programEncounter.getName());
+            programEncountersContract.setOperationalEncounterTypeName(programEncounter.getEncounterType().getName());
+            programEncountersContract.setEncounterDateTime(programEncounter.getEncounterDateTime());
+            programEncountersContract.setCancelDateTime(programEncounter.getCancelDateTime());
+            programEncountersContract.setEarliestVisitDateTime(programEncounter.getEarliestVisitDateTime());
+            programEncountersContract.setMaxVisitDateTime(programEncounter.getMaxVisitDateTime());
+            return  programEncountersContract;
+        }).collect(Collectors.toSet());
     }
 
     public List<EnrolmentContract> constructEnrolments(Individual individual) {

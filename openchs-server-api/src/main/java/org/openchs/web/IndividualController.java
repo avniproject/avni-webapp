@@ -11,6 +11,7 @@ import org.openchs.projection.IndividualWebProjection;
 import org.openchs.service.IndividualService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.IndividualContract;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.PointRequest;
@@ -122,6 +123,17 @@ public class IndividualController extends AbstractController<Individual> impleme
     public ResponseEntity<IndividualContract> getSubjectProfile(@RequestParam("uuid") String uuid) {
         IndividualContract individualContract =  individualService.getSubjectInfo(uuid);
         return ResponseEntity.ok(individualContract);
+    }
+
+    @GetMapping(value = "/web/subject/{subjectUuid}/programs")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<IndividualContract> getSubjectProgramEnrollment(@PathVariable("subjectUuid") String uuid) {
+        IndividualContract individualEnrolmentContract =  individualService.getSubjectProgramEnrollment(uuid);
+        if(Objects.isNull(individualEnrolmentContract)){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(individualEnrolmentContract);
     }
 
     @Override
