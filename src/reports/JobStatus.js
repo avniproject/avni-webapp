@@ -85,7 +85,7 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
               Status
             </TableCell>
             <TableCell align="right" style={{ fontWeight: "bold", fontSize: 17 }}>
-              File name
+              Download
             </TableCell>
           </TableRow>
         </TableHead>
