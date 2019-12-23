@@ -120,7 +120,7 @@ const Concepts = ({ history }) => {
           </div>
         </div>
       </Box>
-      {redirect && <Redirect to={"/admin/concept/create"} />}s
+      {redirect && <Redirect to={"/admin/concept/create"} />}
     </>
   );
 };

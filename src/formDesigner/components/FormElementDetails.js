@@ -472,7 +472,7 @@ function FormElementDetails(props) {
           <Grid container item sm={12}>
             <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
             {props.formElementData.concept.answers.map(function(d) {
-              if (!d.voided) {
+              if (!d.excluded && !d.voided) {
                 return (
                   <Chip
                     key={d.name}
@@ -489,7 +489,7 @@ function FormElementDetails(props) {
           <Grid container item sm={12}>
             <InputLabel style={{ paddingTop: 10 }}>Excluded Answers:</InputLabel>{" "}
             {props.formElementData.concept.answers.map(function(d) {
-              if (d.voided) {
+              if (d.excluded && !d.voided) {
                 return (
                   <Chip
                     key={d.name}
@@ -577,15 +577,13 @@ function FormElementDetails(props) {
                 <Checkbox
                   id="editable"
                   checked={
-                    props.formElementData.keyValues.editable === undefined
-                      ? false
-                      : !props.formElementData.keyValues.editable
+                    typeof props.formElementData.keyValues.editable === "undefined" ? false : true
                   }
                   onChange={event =>
                     props.handleGroupElementKeyValueChange(
                       props.groupIndex,
                       "editable",
-                      props.formElementData.keyValues.editable,
+                      typeof props.formElementData.keyValues.editable,
                       props.index
                     )
                   }

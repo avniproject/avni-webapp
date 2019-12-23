@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import _, { cloneDeep, filter, isEmpty, map } from "lodash";
+import _, { cloneDeep, isEmpty } from "lodash";
 import http from "common/utils/httpClient";
 import Grid from "@material-ui/core/Grid";
 import FormElementGroup from "../components/FormElementGroup";
@@ -147,8 +147,8 @@ class FormDetails extends Component {
               keyValueObject["ExcludedAnswers"] !== undefined
             ) {
               _.forEach(fe.concept.answers, answer => {
-                if (keyValueObject["ExcludedAnswers"].includes(answer.name)) {
-                  answer["voided"] = true;
+                if (keyValueObject["ExcludedAnswers"].includes(answer.name) && !answer.voided) {
+                  answer["excluded"] = true;
                 }
               });
             }
@@ -166,7 +166,6 @@ class FormDetails extends Component {
         console.log(error);
       });
   }
-  ter;
   countGroupElements(form) {
     let groupFlag = true;
     _.forEach(form.formElementGroups, (groupElement, index) => {
@@ -347,8 +346,8 @@ class FormDetails extends Component {
           draft.form.formElementGroups[index].formElements[elementIndex].concept.answers,
           answer => {
             if (answer.name === name) {
-              if (status !== false) answer["voided"] = status;
-              else delete answer.voided;
+              if (status !== false) answer["excluded"] = status;
+              else delete answer.excluded;
               return answer;
             }
           }
@@ -363,11 +362,9 @@ class FormDetails extends Component {
       produce(draft => {
         const formElement = draft.form.formElementGroups[index].formElements[elementIndex];
         if (propertyName === "editable") {
-          if (value === "undefined") {
-            formElement.keyValues[propertyName] = true;
-          } else {
-            formElement.keyValues[propertyName] = !value;
-          }
+          value === "undefined"
+            ? (formElement.keyValues[propertyName] = false)
+            : delete formElement.keyValues[propertyName];
         } else if (propertyName === "datePickerMode") {
           formElement.keyValues[propertyName] = value;
         } else if (
@@ -548,13 +545,22 @@ class FormDetails extends Component {
     _.forEach(dataSend.formElementGroups, (group, index) => {
       _.forEach(group.formElements, (element, index1) => {
         if (element.concept.dataType === "Coded") {
-          const excluded = map(filter(element.concept.answers, "voided"), "name");
-          if (!isEmpty(excluded)) element.keyValues["ExcludedAnswers"] = excluded;
+          const excluded = element.concept.answers.map(answer => {
+            return answer.excluded && !answer.voided && answer.name;
+          });
+          const excludedAnswers = excluded.filter(obj => obj);
+          if (!isEmpty(excludedAnswers)) {
+            element.keyValues["ExcludedAnswers"] = excludedAnswers;
+          } else if (element.keyValues["ExcludedAnswers"]) delete element.keyValues.ExcludedAnswers;
         }
 
         if (element.concept.dataType === "Video" && element.keyValues.durationLimitInSecs === "") {
           delete element.keyValues.durationLimitInSecs;
         }
+
+        (element.concept.dataType === "Date" || element.concept.dataType === "Duration") &&
+          element.keyValues["durationOptions"].length === 0 &&
+          delete element.keyValues["durationOptions"];
 
         if (element.concept.dataType === "Image") {
           element.keyValues.maxHeight === "" && delete element.keyValues.maxHeight;
@@ -739,8 +745,6 @@ class FormDetails extends Component {
               />
             </Grid>
           </Grid>
-
-
 
           <div hidden={this.state.activeTabIndex !== 2}>
             <FormLevelRules

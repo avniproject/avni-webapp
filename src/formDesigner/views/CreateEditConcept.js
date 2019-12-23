@@ -73,7 +73,7 @@ class CreateEditConcept extends Component {
               order: conceptAnswer.order,
               voided: conceptAnswer.voided
             }));
-            answers.sort(function (conceptOrder1, conceptOrder2) {
+            answers.sort(function(conceptOrder1, conceptOrder2) {
               return conceptOrder1.order - conceptOrder2.order;
             });
           }
@@ -167,7 +167,7 @@ class CreateEditConcept extends Component {
   };
 
   postCodedData(answers) {
-    answers.map(function (answer, index) {
+    answers.map(function(answer, index) {
       return (answer.order = index);
     });
 
@@ -189,15 +189,15 @@ class CreateEditConcept extends Component {
             if (response.status === 200) {
               this.setState({
                 conceptCreationAlert: true,
-                name: "",
-                uuid: "",
-                dataType: "",
+                name: this.props.isCreatePage ? "" : this.state.name,
+                uuid: this.props.isCreatePage ? "" : this.state.uuid,
+                dataType: this.props.isCreatePage ? "" : this.state.dataType,
                 lowAbsolute: null,
                 highAbsolute: null,
                 lowNormal: null,
                 highNormal: null,
                 unit: null,
-                answers: [],
+                answers: this.props.isCreatePage ? [] : this.state.answers,
                 defaultSnackbarStatus: true
               });
             }
@@ -256,7 +256,7 @@ class CreateEditConcept extends Component {
 
         Object.keys(error).length === 0 && this.afterSuccessfullValidation();
       },
-      function (error) {
+      function(error) {
         console.log(error);
       }
     );
@@ -361,9 +361,14 @@ class CreateEditConcept extends Component {
               this.setState({
                 conceptCreationAlert: true,
                 defaultSnackbarStatus: true,
-                name: "",
-                uuid: "",
-                dataType: "",
+                name: this.props.isCreatePage ? "" : this.state.name,
+                uuid: this.props.isCreatePage ? "" : this.state.uuid,
+                dataType: this.props.isCreatePage ? "" : this.state.dataType,
+                lowAbsolute: this.props.isCreatePage ? "" : this.state.lowAbsolute,
+                highAbsolute: this.props.isCreatePage ? "" : this.state.highAbsolute,
+                lowNormal: this.props.isCreatePage ? "" : this.state.lowNormal,
+                highNormal: this.props.isCreatePage ? "" : this.state.highNormal,
+                unit: this.props.isCreatePage ? "" : this.state.unit
               });
             }
           })
