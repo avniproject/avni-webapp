@@ -34,10 +34,10 @@ public class IndividualService {
 
     public  IndividualContract getSubjectProgramEnrollment(String individualUuid){
         Individual individual = individualRepository.findByUuid(individualUuid);
-        List<EnrolmentContract> enrolmentContractList = constructEnrolmentsMetadata(individual);
-        if (enrolmentContractList.isEmpty() ) {
+        if (!Objects.nonNull(individual)) {
             return null;
         }
+        List<EnrolmentContract> enrolmentContractList = constructEnrolmentsMetadata(individual);
         IndividualContract individualContract = new IndividualContract();
         individualContract.setUuid(individual.getUuid());
         individualContract.setEnrolments(enrolmentContractList);
