@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.openchs.application.FormElement.PLACEHOLDER_CONCEPT_NAME;
 import static org.openchs.application.FormElement.PLACEHOLDER_CONCEPT_UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -77,7 +78,11 @@ public class FormContract extends ReferenceDataContract {
         for (FormElementGroupContract formElementGroup : getFormElementGroups()) {
             for (FormElementContract formElement : formElementGroup.getFormElements()) {
                 String conceptUuid = formElement.getConcept().getUuid();
-                if (!formElement.isVoided() && !conceptUuid.equals(PLACEHOLDER_CONCEPT_UUID) && !uniqueConcepts.add(conceptUuid)) {
+                String conceptName = formElement.getConcept().getName();
+                if (!formElement.isVoided() &&
+                        !PLACEHOLDER_CONCEPT_NAME.matcher(conceptName == null ? "" : conceptName).matches() &&
+                        !conceptUuid.equals(PLACEHOLDER_CONCEPT_UUID) &&
+                        !uniqueConcepts.add(conceptUuid)) {
                     throw new InvalidObjectException(String.format(
                             "Cannot use same concept twice. Form{uuid='%s',..} uses Concept{uuid='%s',..} twice",
                             getUuid(),

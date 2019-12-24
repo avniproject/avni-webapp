@@ -14,12 +14,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "form_element")
 @BatchSize(size = 100)
 public class FormElement extends OrganisationAwareEntity {
     public static final String SINGLE_SELECT = "SingleSelect";
+    public static final Pattern PLACEHOLDER_CONCEPT_NAME = Pattern.compile("Placeholder.*");
     public static final String PLACEHOLDER_CONCEPT_UUID = "b4e5a662-97bf-4846-b9b7-9baeab4d89c4";
 
     @NotNull
