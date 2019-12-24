@@ -1,5 +1,6 @@
 import httpClient from "common/utils/httpClient";
-import response from './response';
+import response from "./response";
+import generalResponse from "./generalSubjectDashboardResponse";
 
 export default {
   fetchOperationalModules: () =>
@@ -11,7 +12,10 @@ export default {
       method: "POST",
       body: JSON.stringify(subject)
     }),
-    fetchSubjectProfile: async ()=>{
-      return response.data;
-    }
+  fetchSubjectProfile: async () => {
+    return response.data;
+  },
+  fetchSubjectGeneral: async () => {
+    return generalResponse;
+  }
 };
