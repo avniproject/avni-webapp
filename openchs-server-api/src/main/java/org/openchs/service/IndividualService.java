@@ -32,6 +32,17 @@ public class IndividualService {
         this.individualRepository = individualRepository;
     }
 
+    public  IndividualContract getSubjectEncounters(String individualUuid){
+        Individual individual = individualRepository.findByUuid(individualUuid);
+        if (!Objects.nonNull(individual)) {
+            return null;
+        }
+        Set<EncounterContract> encountersContractList = constructEncounters(individual.getEncounters());
+        IndividualContract individualContract = new IndividualContract();
+        individualContract.setEncounters(encountersContractList);
+        return individualContract;
+    }
+
     public  IndividualContract getSubjectProgramEnrollment(String individualUuid){
         Individual individual = individualRepository.findByUuid(individualUuid);
         if (!Objects.nonNull(individual)) {
@@ -63,18 +74,19 @@ public class IndividualService {
         individualContract.setDateOfBirth(individual.getDateOfBirth());
         individualContract.setGender(individual.getGender().getName());
         individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
+        individualContract.setRegistrationDate(individual.getRegistrationDate());
         individualContract.setFullAddress(individual.getAddressLevel().getTitleLineage());
         return individualContract;
     }
 
     public List<EnrolmentContract> constructEnrolmentsMetadata(Individual individual) {
-        return individual.getProgramEnrolments().stream().map(programEnrolment -> {
+        return individual.getProgramEnrolments().stream().filter(x -> !x.isVoided()).map(programEnrolment -> {
             EnrolmentContract enrolmentContract = new EnrolmentContract();
             enrolmentContract.setUuid(programEnrolment.getUuid());
             enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getName());
             enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
             enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
-            enrolmentContract.setProgramEncounters(constructEncounters(programEnrolment.getProgramEncounters()));
+            enrolmentContract.setProgramEncounters(constructProgramEncounters(programEnrolment.getProgramEncounters()));
             List<ObservationContract> observationContractsList = constructObservations(programEnrolment.getObservations());
             enrolmentContract.setObservations(observationContractsList);
             if (programEnrolment.getProgramExitObservations() != null) {
@@ -84,9 +96,21 @@ public class IndividualService {
         }).collect(Collectors.toList());
     }
 
+    public Set<EncounterContract> constructEncounters(Set<Encounter> encounters) {
+        return encounters.stream().map(programEncounter -> {
+            EncounterContract encountersContract = new EncounterContract();
+            encountersContract.setUuid(programEncounter.getUuid());
+            encountersContract.setName(programEncounter.getName());
+            encountersContract.setOperationalEncounterTypeName(programEncounter.getEncounterType().getOperationalEncounterTypeName());
+            encountersContract.setEncounterDateTime(programEncounter.getEncounterDateTime());
+            encountersContract.setEarliestVisitDateTime(programEncounter.getEarliestVisitDateTime());
+            encountersContract.setMaxVisitDateTime(programEncounter.getMaxVisitDateTime());
+            return encountersContract;
+        }).collect(Collectors.toSet());
+    }
 
 
-    public Set <ProgramEncountersContract> constructEncounters(Set<ProgramEncounter> programEncounters) {
+    public Set <ProgramEncountersContract> constructProgramEncounters(Set<ProgramEncounter> programEncounters) {
         return programEncounters.stream().map(programEncounter -> {
             ProgramEncountersContract programEncountersContract = new ProgramEncountersContract();
             programEncountersContract.setUuid(programEncounter.getUuid());

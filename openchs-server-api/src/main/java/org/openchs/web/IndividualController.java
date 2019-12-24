@@ -136,6 +136,17 @@ public class IndividualController extends AbstractController<Individual> impleme
         return ResponseEntity.ok(individualEnrolmentContract);
     }
 
+    @GetMapping(value = "/web/subject/{uuid}/encounters")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<IndividualContract> getSubjectEncounters(@PathVariable("uuid") String uuid) {
+        IndividualContract individualEncounterContract =  individualService.getSubjectEncounters(uuid);
+        if(Objects.isNull(individualEncounterContract)){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(individualEncounterContract);
+    }
+
     @Override
     public Resource<Individual> process(Resource<Individual> resource) {
         Individual individual = resource.getContent();
