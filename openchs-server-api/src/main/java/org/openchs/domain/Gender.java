@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "gender")
-public class Gender extends CHSEntity {
+public class Gender extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
