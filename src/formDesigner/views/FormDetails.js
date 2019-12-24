@@ -66,6 +66,7 @@ class FormDetails extends Component {
     this.handleGroupElementKeyValueChange = this.handleGroupElementKeyValueChange.bind(this);
     this.handleExcludedAnswers = this.handleExcludedAnswers.bind(this);
     this.updateConceptElementData = this.updateConceptElementData.bind(this);
+    this.handleModeForDate = this.handleModeForDate.bind(this);
     this.validateForm = this.validateForm.bind(this);
   }
 
@@ -114,6 +115,7 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
+            fe.showDateOrDuration = "durationOptions";
             //             if (fe["rule"]) {
             //               let ruleExtraction = fe["rule"];
             //               ruleExtraction = ruleExtraction.replace(
@@ -133,6 +135,7 @@ class FormDetails extends Component {
             let keyValueObject = {};
 
             fe.keyValues.map(keyValue => {
+              if (keyValue.key === "datePickerMode") fe.showDateOrDuration = "datePickerMode";
               return (keyValueObject[keyValue.key] = keyValue.value);
             });
 
@@ -220,6 +223,22 @@ class FormDetails extends Component {
         })
       );
     }
+  }
+
+  handleModeForDate(index, propertyName, value, elementIndex) {
+    this.setState(
+      produce(draft => {
+        value === "durationOptions"
+          ? delete draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+              "datePickerMode"
+            ]
+          : delete draft.form.formElementGroups[index].formElements[elementIndex].keyValues[
+              "durationOptions"
+            ];
+
+        draft.form.formElementGroups[index].formElements[elementIndex][propertyName] = value;
+      })
+    );
   }
 
   updateConceptElementData(index, propertyName, value, elementIndex = -1) {
@@ -331,7 +350,8 @@ class FormDetails extends Component {
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
           handleExcludedAnswers: this.handleExcludedAnswers,
-          updateSkipLogicRule: this.updateSkipLogicRule
+          updateSkipLogicRule: this.updateSkipLogicRule,
+          handleModeForDate: this.handleModeForDate
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -430,7 +450,7 @@ class FormDetails extends Component {
           name: "",
           type: "",
           keyValues: {},
-
+          showDateOrDuration: "durationOptions",
           mandatory: false,
           voided: false,
           expanded: true,
@@ -559,6 +579,7 @@ class FormDetails extends Component {
         }
 
         (element.concept.dataType === "Date" || element.concept.dataType === "Duration") &&
+          element.keyValues["durationOptions"] &&
           element.keyValues["durationOptions"].length === 0 &&
           delete element.keyValues["durationOptions"];
 
