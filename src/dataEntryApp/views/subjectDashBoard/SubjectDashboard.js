@@ -19,6 +19,13 @@ const useStyles = makeStyles(theme => ({
 
 const SubjectDashboard = ({ match, getSubjectProfile, subjectProfile }) => {
   const classes = useStyles();
+  let paperInfo;
+  if(subjectProfile != undefined){
+    paperInfo = (<Paper className={classes.root}>
+      <ProfileDetails profileDetails={subjectProfile} />
+      <SubjectDashboardTabs profile={subjectProfile} />
+    </Paper>)
+  }
 
   useEffect(() => {
     getSubjectProfile(match.queryParams.uuid);
@@ -27,10 +34,7 @@ const SubjectDashboard = ({ match, getSubjectProfile, subjectProfile }) => {
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
-      <Paper className={classes.root}>
-        <ProfileDetails />
-        <SubjectDashboardTabs profile={subjectProfile} />
-      </Paper>
+      {paperInfo}
     </Fragment>
   );
 };

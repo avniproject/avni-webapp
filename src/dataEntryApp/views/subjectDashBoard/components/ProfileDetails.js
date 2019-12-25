@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const ProfileDetails = () => {
+const ProfileDetails = ({ profileDetails }) => {
     const classes = useStyles();
 
     function createData(name, gender, age, village) {
@@ -50,7 +50,7 @@ const ProfileDetails = () => {
     return (
         <Fragment className={classes.tableView}>
             <Typography className={classes.mainHeading}>
-                Shilpa Ingle's Dashboard
+            {`${profileDetails.firstName} ${profileDetails.lastName}`} Dashboard
          </Typography>
             <Grid justify="center"
                 alignItems="center" container spacing={2}>
@@ -69,14 +69,16 @@ const ProfileDetails = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody >
-                            {rows.map(row => (
-                                <TableRow key={row.name}>
-                                    <TableCell className={classes.tableCell}>{row.name}</TableCell>
-                                    <TableCell className={classes.tableCell}>{row.gender}</TableCell>
-                                    <TableCell className={classes.tableCell}>{row.age}</TableCell>
-                                    <TableCell className={classes.tableCell}>{row.village}</TableCell>
-                                </TableRow>
-                            ))}
+                            <TableRow>
+                                <TableCell className={classes.tableCell}>{`${profileDetails.firstName} ${profileDetails.lastName}`}</TableCell>
+                                <TableCell className={classes.tableCell}>{profileDetails.gender}</TableCell>
+                                <TableCell className={classes.tableCell}>
+                                    {
+                                        new Date().getFullYear() - new Date(profileDetails.dateOfBirth).getFullYear() + " Year"
+                                    }
+                                </TableCell>
+                                <TableCell className={classes.tableCell}>{profileDetails.addressLevel}</TableCell>
+                            </TableRow>
                         </TableBody>
                     </Table>
                 </Grid>

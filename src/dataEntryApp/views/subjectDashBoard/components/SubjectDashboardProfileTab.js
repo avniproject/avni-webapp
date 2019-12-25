@@ -14,12 +14,23 @@ import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
+import { bold } from "ansi-colors";
+import moment from "moment/moment";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import { TableContainer } from '@material-ui/core';
+
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
     fontSize: theme.typography.pxToRem(15),
     flexBasis: "33.33%",
-    flexShrink: 0
+    flexShrink: 0,
+    fontWeight: bold
   },
   expansionSecondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
@@ -41,11 +52,17 @@ const useStyles = makeStyles(theme => ({
   title: {
     fontSize: 14
   },
-
+  headingBold: {
+    fontWeight: bold
+  },
   gridBottomBorder: {
     borderBottom: "1px solid rgba(0,0,0,0.12)",
     paddingBottom: "10px"
+  },
+  table: {
+    border: "1px solid rgba(224, 224, 224, 1)"
   }
+ 
 }));
 
 const SubjectDashboardProfileTab = ({ profile }) => {
@@ -64,8 +81,10 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography className={classes.expansionHeading}>Registartion Details</Typography>
-          <Typography className={classes.expansionSecondaryHeading}>Registartion Date:</Typography>
+          <div >
+            <h5>Registartion Details</h5>
+            <p>Registartion Date: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}</p>
+          </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Grid item xs={12}>
@@ -73,18 +92,24 @@ const SubjectDashboardProfileTab = ({ profile }) => {
               {profile.observations.map(element => {
                 return (
                   <Fragment>
-                    <ListItem className={classes.listItemView}>
-                      <ListItemIcon>{element.concept["name"]}</ListItemIcon>
-                      <ListItemText>
-                        {["Numeric", "Text"].includes(element.concept.dataType) ? (
-                          <div>{element.value}</div>
-                        ) : "Coded" === element.concept.dataType ? (
-                          <div>{element.value.map(it => it.name).join(", ")}</div>
-                        ) : (
-                          <div />
-                        )}
-                      </ListItemText>
-                    </ListItem>
+                    <Table className={classes.table} size="small" aria-label="a dense table">
+                      <TableBody>
+                        <TableRow >
+                          <TableCell component="th" scope="row" width="50%">
+                            {element.concept["name"]}
+                          </TableCell>
+                          <TableCell align="left" width="50%">
+                            {["Numeric", "Text"].includes(element.concept.dataType) ? (
+                              <div>{element.value}</div>
+                            ) : "Coded" === element.concept.dataType ? (
+                              <div>{element.value.map(it => it.name).join(", ")}</div>
+                            ) : (
+                                  <div></div>
+                                )}</TableCell>
+
+                        </TableRow>
+                      </TableBody>
+                    </Table>
                   </Fragment>
                 );
               })}
@@ -103,31 +128,31 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           <Typography className={classes.expansionHeading}>Relatives</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-       
+
           <Grid item xs={12} container className={classes.gridBottomBorder}>
-          {profile.relationships.map(relative => {
-        return(
-            <Grid item xs={3}>
-              <Card className={classes.card}>
-                <CardContent>
-                  <Typography color="primary">{relative.firstName +" "+ relative.lastName}</Typography>
-                  <Typography className={classes.title} color="textSecondary" gutterBottom>
-                     {relative.individualBIsToARelation}
-                  </Typography>
-                  <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    {
-                      new Date().getFullYear() - new Date(relative.dateOfBirth).getFullYear() + " Year"
-                    }
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button color="primary">REMOVE</Button>
-                  <Button color="primary">EDIT</Button>
-                </CardActions>
-              </Card>
-            </Grid>
-        )
-        })}
+            {profile.relationships.map(relative => {
+              return (
+                <Grid item xs={3}>
+                  <Card className={classes.card}>
+                    <CardContent>
+                      <Typography color="primary">{relative.firstName + " " + relative.lastName}</Typography>
+                      <Typography className={classes.title} color="textSecondary" gutterBottom>
+                        {relative.individualBIsToARelation}
+                      </Typography>
+                      <Typography className={classes.title} color="textSecondary" gutterBottom>
+                        {
+                          new Date().getFullYear() - new Date(relative.dateOfBirth).getFullYear() + " Year"
+                        }
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button color="primary">REMOVE</Button>
+                      <Button color="primary">EDIT</Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              )
+            })}
           </Grid>
 
         </ExpansionPanelDetails>
