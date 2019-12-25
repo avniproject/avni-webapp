@@ -67,6 +67,7 @@ class FormDetails extends Component {
     this.handleExcludedAnswers = this.handleExcludedAnswers.bind(this);
     this.updateConceptElementData = this.updateConceptElementData.bind(this);
     this.handleModeForDate = this.handleModeForDate.bind(this);
+    this.handleRegex = this.handleRegex.bind(this);
     this.validateForm = this.validateForm.bind(this);
   }
 
@@ -116,6 +117,7 @@ class FormDetails extends Component {
             fe.expanded = false;
             fe.error = false;
             fe.showDateOrDuration = "durationOptions";
+            fe.validationRegex = "no";
             //             if (fe["rule"]) {
             //               let ruleExtraction = fe["rule"];
             //               ruleExtraction = ruleExtraction.replace(
@@ -223,6 +225,17 @@ class FormDetails extends Component {
         })
       );
     }
+  }
+
+  handleRegex(index, propertyName, value, elementIndex) {
+    this.setState(
+      produce(draft => {
+        value === "no" &&
+          delete draft.form.formElementGroups[index].formElements[elementIndex].validFormat;
+
+        draft.form.formElementGroups[index].formElements[elementIndex][propertyName] = value;
+      })
+    );
   }
 
   handleModeForDate(index, propertyName, value, elementIndex) {
@@ -351,7 +364,8 @@ class FormDetails extends Component {
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
           handleExcludedAnswers: this.handleExcludedAnswers,
           updateSkipLogicRule: this.updateSkipLogicRule,
-          handleModeForDate: this.handleModeForDate
+          handleModeForDate: this.handleModeForDate,
+          handleRegex: this.handleRegex
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -451,6 +465,7 @@ class FormDetails extends Component {
           type: "",
           keyValues: {},
           showDateOrDuration: "durationOptions",
+          validationRegex: "no",
           mandatory: false,
           voided: false,
           expanded: true,
