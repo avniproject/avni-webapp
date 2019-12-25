@@ -16,14 +16,13 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import { bold } from "ansi-colors";
 import moment from "moment/moment";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import { TableContainer } from '@material-ui/core';
-
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import { TableContainer } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -61,8 +60,10 @@ const useStyles = makeStyles(theme => ({
   },
   table: {
     border: "1px solid rgba(224, 224, 224, 1)"
+  },
+  abnormalColor: {
+    color: "red"
   }
-
 }));
 
 const SubjectDashboardProfileTab = ({ profile }) => {
@@ -81,9 +82,11 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <div >
+          <div>
             <h5>Registartion Details</h5>
-            <p>Registartion Date: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}</p>
+            <p>
+              Registartion Date: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
+            </p>
           </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
@@ -94,19 +97,29 @@ const SubjectDashboardProfileTab = ({ profile }) => {
                   <Fragment>
                     <Table className={classes.table} size="small" aria-label="a dense table">
                       <TableBody>
-                        <TableRow >
+                        <TableRow>
                           <TableCell component="th" scope="row" width="50%">
                             {element.concept["name"]}
                           </TableCell>
                           <TableCell align="left" width="50%">
                             {"Coded" === element.concept.dataType ? (
-                              <div>{element.value.map(it => it.name).join(", ")}</div>
-                            ) : (["Date", "DateTime", "Time", "Duration"].includes(element.concept.dataType) ?
-                              <div>{moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}</div>
-                              :
+                              element.value.abnormal === true ? (
+                                <div className={classes.abnormalColor}>
+                                  {element.value.map(it => it.name).join(", ")}
+                                </div>
+                              ) : (
+                                <div>{element.value.map(it => it.name).join(", ")}</div>
+                              )
+                            ) : ["Date", "DateTime", "Time", "Duration"].includes(
+                                element.concept.dataType
+                              ) ? (
+                              <div>
+                                {moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}
+                              </div>
+                            ) : (
                               <div>{element.value}</div>
-                              )}</TableCell>
-
+                            )}
+                          </TableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
@@ -128,21 +141,22 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           <Typography className={classes.expansionHeading}>Relatives</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-
           <Grid item xs={12} container className={classes.gridBottomBorder}>
             {profile.relationships.map(relative => {
               return (
                 <Grid item xs={3}>
                   <Card className={classes.card}>
                     <CardContent>
-                      <Typography color="primary">{relative.firstName + " " + relative.lastName}</Typography>
+                      <Typography color="primary">
+                        {relative.firstName + " " + relative.lastName}
+                      </Typography>
                       <Typography className={classes.title} color="textSecondary" gutterBottom>
                         {relative.individualBIsToARelation}
                       </Typography>
                       <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        {
-                          new Date().getFullYear() - new Date(relative.dateOfBirth).getFullYear() + " Year"
-                        }
+                        {new Date().getFullYear() -
+                          new Date(relative.dateOfBirth).getFullYear() +
+                          " Year"}
                       </Typography>
                     </CardContent>
                     <CardActions>
@@ -151,10 +165,9 @@ const SubjectDashboardProfileTab = ({ profile }) => {
                     </CardActions>
                   </Card>
                 </Grid>
-              )
+              );
             })}
           </Grid>
-
         </ExpansionPanelDetails>
         <Button color="primary">ADD RELATIVE</Button>
       </ExpansionPanel>
