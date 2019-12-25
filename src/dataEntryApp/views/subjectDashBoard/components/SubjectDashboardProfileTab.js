@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => ({
   table: {
     border: "1px solid rgba(224, 224, 224, 1)"
   }
- 
+
 }));
 
 const SubjectDashboardProfileTab = ({ profile }) => {
@@ -99,13 +99,13 @@ const SubjectDashboardProfileTab = ({ profile }) => {
                             {element.concept["name"]}
                           </TableCell>
                           <TableCell align="left" width="50%">
-                            {["Numeric", "Text"].includes(element.concept.dataType) ? (
-                              <div>{element.value}</div>
-                            ) : "Coded" === element.concept.dataType ? (
+                            {"Coded" === element.concept.dataType ? (
                               <div>{element.value.map(it => it.name).join(", ")}</div>
-                            ) : (
-                                  <div></div>
-                                )}</TableCell>
+                            ) : (["Date", "DateTime", "Time", "Duration"].includes(element.concept.dataType) ?
+                              <div>{moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}</div>
+                              :
+                              <div>{element.value}</div>
+                              )}</TableCell>
 
                         </TableRow>
                       </TableBody>
