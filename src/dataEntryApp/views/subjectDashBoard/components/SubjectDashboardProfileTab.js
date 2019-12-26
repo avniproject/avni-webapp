@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid rgba(224, 224, 224, 1)"
   },
   abnormalColor: {
-    color: "red"
+    color: "#ff4f33"
   }
 }));
 
@@ -102,7 +102,7 @@ const SubjectDashboardProfileTab = ({ profile }) => {
                                 <div>
                                   {element.value.map(it => it.abnormal ? 
                                   <span className={classes.abnormalColor}>
-                                    <ErrorIcon />
+                                    <ErrorIcon  fontSize="small"/>
                                     {it.name}
                                   </span>
                                   :<span>{it.name}</span>)
