@@ -125,6 +125,7 @@ public class FormElementContract extends ReferenceDataContract {
         feContract.setVoided(formElement.isVoided());
         feContract.setRule(formElement.getRule());
         ConceptContract conceptContract = new ConceptContract();
+        conceptContract.setName(formElement.getConcept().getName());
         conceptContract.setUuid(formElement.getConcept().getUuid());
         feContract.setConcept(conceptContract);
         return feContract;
