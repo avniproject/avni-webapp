@@ -6,9 +6,6 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
@@ -19,10 +16,9 @@ import moment from "moment/moment";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-import { TableContainer } from "@material-ui/core";
+import ErrorIcon from '@material-ui/icons/Error';
+
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -103,13 +99,15 @@ const SubjectDashboardProfileTab = ({ profile }) => {
                           </TableCell>
                           <TableCell align="left" width="50%">
                             {"Coded" === element.concept.dataType ? (
-                              element.value.abnormal === true ? (
-                                <div className={classes.abnormalColor}>
-                                  {element.value.map(it => it.name).join(", ")}
+                                <div>
+                                  {element.value.map(it => it.abnormal ? 
+                                  <span className={classes.abnormalColor}>
+                                    <ErrorIcon />
+                                    {it.name}
+                                  </span>
+                                  :<span>{it.name}</span>)
+                                  .reduce((prev, curr) => [prev, ', ', curr])}
                                 </div>
-                              ) : (
-                                <div>{element.value.map(it => it.name).join(", ")}</div>
-                              )
                             ) : ["Date", "DateTime", "Time", "Duration"].includes(
                                 element.concept.dataType
                               ) ? (
