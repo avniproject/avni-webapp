@@ -8,6 +8,11 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({
   enrollButtonStyle: {
@@ -17,6 +22,24 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     padding: theme.spacing(2)
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: "left"
+  },
+  programStatusStyle: {
+    color: "red",
+    backgroundColor: "#FFB6C1",
+    borderRadius: "5px"
+  },
+  expansionHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: "33.33%",
+    flexShrink: 0
+  },
+  listItem: {
+    paddingBottom: "0px",
+    paddingTop: "0px"
   }
 }));
 
@@ -28,13 +51,13 @@ const ProgramView = ({ programData }) => {
     setExpanded(isExpanded ? panel : false);
   };
 
+  console.log("program data::", programData);
+  debugger;
   return (
     <div>
       <Grid container spacing={3}>
         <Grid item xs={6}>
-          <label>
-            {programData.ProgramName} program details - {programData.programType}
-          </label>
+          <label>{programData.operationalProgramName} program details</label>
         </Grid>
         <Grid item xs={6}>
           <Fab
@@ -82,7 +105,42 @@ const ProgramView = ({ programData }) => {
           >
             <Typography className={classes.expansionHeading}>Planned visits</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails />
+          <ExpansionPanelDetails>
+            <Grid container spacing={2}>
+              {programData
+                ? programData.programEncounters.map(row =>
+                    !row.encounterDateTime ? (
+                      <Grid key={row.name} item xs={6} sm={3}>
+                        <Paper
+                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
+                          className={classes.paper}
+                        >
+                          <List>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText primary={row.name} />
+                            </ListItem>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText primary={row.encounterDateTime} />
+                            </ListItem>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText>
+                                <label className={classes.programStatusStyle}>
+                                  {row.operationalEncounterTypeName}
+                                </label>
+                              </ListItemText>
+                            </ListItem>
+                          </List>
+                          <Button color="primary">DO VISIT</Button>
+                          <Button color="primary">CANCEL VISIT</Button>
+                        </Paper>
+                      </Grid>
+                    ) : (
+                      ""
+                    )
+                  )
+                : ""}
+            </Grid>
+          </ExpansionPanelDetails>
         </ExpansionPanel>
         <ExpansionPanel expanded={expanded === "panel3"} onChange={handleChange("panel3")}>
           <ExpansionPanelSummary
@@ -92,7 +150,42 @@ const ProgramView = ({ programData }) => {
           >
             <Typography className={classes.expansionHeading}>Completed visit</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails />
+          <ExpansionPanelDetails>
+            <Grid container spacing={2}>
+              {programData
+                ? programData.programEncounters.map(row =>
+                    row.encounterDateTime ? (
+                      <Grid key={row.name} item xs={6} sm={3}>
+                        <Paper
+                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
+                          className={classes.paper}
+                        >
+                          <List>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText primary={row.name} />
+                            </ListItem>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText primary={row.encounterDateTime} />
+                            </ListItem>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText>
+                                <label className={classes.programStatusStyle}>
+                                  {row.operationalEncounterTypeName}
+                                </label>
+                              </ListItemText>
+                            </ListItem>
+                          </List>
+                          <Button color="primary">DO VISIT</Button>
+                          <Button color="primary">CANCEL VISIT</Button>
+                        </Paper>
+                      </Grid>
+                    ) : (
+                      ""
+                    )
+                  )
+                : ""}
+            </Grid>
+          </ExpansionPanelDetails>
         </ExpansionPanel>
       </Paper>
     </div>

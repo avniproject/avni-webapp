@@ -22,37 +22,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const useProgramJSON = {
-  activePrograms: [
-    {
-      ProgramName: "Pregnancy",
-      programType: "Active Program"
-    },
-    {
-      ProgramName: "Polio",
-      programType: "Active Program"
-    },
-    {
-      ProgramName: "Shyam",
-      programType: "Active Program"
-    },
-    {
-      ProgramName: "Ram",
-      programType: "Active Program"
-    }
-  ],
-  exiedPrograms: [
-    {
-      ProgramName: "Raju",
-      programType: "Exited Program"
-    },
-    {
-      ProgramName: "Gaju",
-      programType: "Exited Program"
-    }
-  ]
-};
-
 function TabPanel(props) {
   const { children, value, index } = props;
 
@@ -121,9 +90,13 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 aria-label="scrollable auto tabs example"
               >
                 {program
-                  ? program.enrolments.map((element, index) => (
-                      <Tab label={element.operationalProgramName} />
-                    ))
+                  ? program.enrolments.map((element, index) =>
+                      element.programExitDateTime == null ? (
+                        <Tab label={element.operationalProgramName} />
+                      ) : (
+                        ""
+                      )
+                    )
                   : ""}
               </Tabs>
             </AppBar>
@@ -142,15 +115,21 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 scrollButtons="auto"
                 aria-label="scrollable auto tabs example"
               >
-                {useProgramJSON.exiedPrograms.map(element => (
-                  <Tab label={element.ProgramName} />
-                ))}
+                {program
+                  ? program.enrolments.map((element, index) =>
+                      element.programExitDateTime != null ? (
+                        <Tab label={element.operationalProgramName} />
+                      ) : (
+                        ""
+                      )
+                    )
+                  : ""}
               </Tabs>
             </AppBar>
           </Grid>
         </Grid>
-        {flagActive
-          ? useProgramJSON.activePrograms.map((element, index) => (
+        {flagActive && program
+          ? program.enrolments.map((element, index) => (
               <Fragment>
                 <TabPanel value={value} index={index}>
                   <ProgramView programData={element} />
@@ -158,8 +137,8 @@ const SubjectDashboardProgramTab = ({ program }) => {
               </Fragment>
             ))
           : ""}
-        {!flagActive
-          ? useProgramJSON.exiedPrograms.map((element, index) => (
+        {!flagActive && program
+          ? program.enrolments.map((element, index) => (
               <Fragment>
                 <TabPanel value={value1} index={index}>
                   <ProgramView programData={element} />
