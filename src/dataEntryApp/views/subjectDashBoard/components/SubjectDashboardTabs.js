@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import SubjectDashboardProfileTab from "./SubjectDashboardProfileTab";
 import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
+import SubjectDashboardProgramTab from "./subjectDashboardProgramTab";
 import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles(theme => ({
@@ -43,7 +44,7 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export default ({ profile, general }) => {
+export default ({ profile, general, program }) => {
   const classes = useStyles();
 
   const [value, setValue] = React.useState(0);
@@ -77,7 +78,9 @@ export default ({ profile, general }) => {
         </Tabs>
       </MUAppBar>
       <TabContent value={value} index={0}>
-        <div />
+        <Paper className={classes.tabsDisplay}>
+          <SubjectDashboardProgramTab program={program} />
+        </Paper>
       </TabContent>
       <TabContent value={value} index={1}>
         <Paper className={classes.tabsDisplay}>

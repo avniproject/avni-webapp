@@ -5,6 +5,7 @@ import ProfileDetails from "./components/ProfileDetails";
 import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
 import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../../reducers/generalSubjectDashboardReducer";
+import { getSubjectProgram } from "../../reducers/programSubjectDashboardReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -23,13 +24,16 @@ const SubjectDashboard = ({
   getSubjectProfile,
   subjectProfile,
   getSubjectGeneral,
-  subjectGeneral
+  subjectGeneral,
+  getSubjectProgram,
+  subjectProgram
 }) => {
   const classes = useStyles();
 
   useEffect(() => {
     getSubjectProfile(match.queryParams.uuid);
     getSubjectGeneral(match.queryParams.uuid);
+    getSubjectProgram(match.queryParams.uuid);
   }, []);
 
   return (
@@ -37,7 +41,11 @@ const SubjectDashboard = ({
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <ProfileDetails />
-        <SubjectDashboardTabs profile={subjectProfile} general={subjectGeneral} />
+        <SubjectDashboardTabs
+          profile={subjectProfile}
+          general={subjectGeneral}
+          program={subjectProgram}
+        />
       </Paper>
     </Fragment>
   );
@@ -45,12 +53,14 @@ const SubjectDashboard = ({
 
 const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral
+  subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
+  subjectProgram: state.dataEntry.subjectProgram.subjectProgram
 });
 
 const mapDispatchToProps = {
   getSubjectProfile,
-  getSubjectGeneral
+  getSubjectGeneral,
+  getSubjectProgram
 };
 
 export default withRouter(
