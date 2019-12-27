@@ -19,7 +19,7 @@ export default {
     return generalResponse;
   },
   fetchSubjectProgram: uuid => {
-    httpClient.fetchJson(`/web/subject/${uuid}/programs/`).then(response => response.json);
+    return httpClient.fetchJson(`/web/subject/${uuid}/programs/`).then(response => response.json);
   }
 
   // fetchSubjectGeneral: (uuid) => {

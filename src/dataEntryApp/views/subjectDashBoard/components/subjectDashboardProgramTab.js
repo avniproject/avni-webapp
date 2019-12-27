@@ -73,6 +73,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
 
   const handleChangeActive = (event, newValue) => {
     console.log("Hello Program", program);
+    debugger;
     flagActive = true;
     setValue(newValue);
   };
@@ -88,7 +89,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
     <Fragment>
       <Paper className={classes.root}>
         <Grid className={classes.tabView} container spacing={1}>
-          <Grid xs={6}>
+          {/* <Grid xs={6}>
             <label>Active Programs</label>
             <AppBar position="static" color="default">
               <Tabs
@@ -105,7 +106,29 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 ))}
               </Tabs>
             </AppBar>
+          </Grid> */}
+
+          <Grid xs={6}>
+            <label>Active Programs</label>
+            <AppBar position="static" color="default">
+              <Tabs
+                onChange={handleChangeActive}
+                value={value}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="scrollable"
+                scrollButtons="auto"
+                aria-label="scrollable auto tabs example"
+              >
+                {program
+                  ? program.enrolments.map((element, index) => (
+                      <Tab label={element.operationalProgramName} />
+                    ))
+                  : ""}
+              </Tabs>
+            </AppBar>
           </Grid>
+
           <Grid xs={2} />
           <Grid xs={4}>
             <label>Exited Programs</label>
