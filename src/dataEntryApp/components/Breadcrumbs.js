@@ -15,11 +15,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const dictionary = {
-  app: "Home",
-  register: "Register"
-};
-
 export default ({ path }) => {
   const classes = useStyles();
   const parts = path.split(/\/+/g).filter(Boolean);

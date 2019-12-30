@@ -8,9 +8,6 @@ import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
 import { bold } from "ansi-colors";
 import moment from "moment/moment";
 import Table from "@material-ui/core/Table";
@@ -18,7 +15,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import ErrorIcon from '@material-ui/icons/Error';
-
+import GridCommonList from "../components/GridCommonList";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -139,33 +136,7 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           <Typography className={classes.expansionHeading}>Relatives</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Grid item xs={12} container className={classes.gridBottomBorder}>
-            {profile.relationships.map(relative => {
-              return (
-                <Grid item xs={3}>
-                  <Card className={classes.card}>
-                    <CardContent>
-                      <Typography color="primary">
-                        {relative.firstName + " " + relative.lastName}
-                      </Typography>
-                      <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        {relative.individualBIsToARelation}
-                      </Typography>
-                      <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        {new Date().getFullYear() -
-                          new Date(relative.dateOfBirth).getFullYear() +
-                          " Year"}
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button color="primary">REMOVE</Button>
-                      <Button color="primary">EDIT</Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
+          <GridCommonList gridListDetails = {profile.relationships}/>
         </ExpansionPanelDetails>
         <Button color="primary">ADD RELATIVE</Button>
       </ExpansionPanel>

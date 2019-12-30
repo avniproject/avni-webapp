@@ -1,10 +1,9 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import Divider from '@material-ui/core/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Radio from '@material-ui/core/Radio';
@@ -14,9 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { AddIcon, InternalLink } from "../../../common/components/utils";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import { InternalLink } from "../../../common/components/utils";
 
 const useStyle = makeStyles(theme => ({
     container: {
@@ -45,7 +42,6 @@ const useStyle = makeStyles(theme => ({
 
 function NewMenu({ operationalModules }) {
     const classes = useStyle();
-    const [open, setOpen] = React.useState(false);
     const [value, setValue] = React.useState('female');
 
     const handleChange = event => {
@@ -53,12 +49,12 @@ function NewMenu({ operationalModules }) {
         console.log(operationalModules);
     };
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [setAnchorEl] = React.useState(null);
     const handleClickRoute = () => event => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleCloseRoute = () => setAnchorEl(null);
+    // const handleCloseRoute = () => setAnchorEl(null);
 
 
     return (

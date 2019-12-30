@@ -11,7 +11,6 @@ import {
   updateSubject
 } from "../../reducers/registrationReducer";
 import { getGenders } from "../../reducers/metadataReducer";
-import ScreenWithAppBar from "../../../common/components/ScreenWithAppBar";
 import { get, sortBy } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import Form from "../../components/Form";

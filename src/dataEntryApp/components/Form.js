@@ -4,7 +4,6 @@ import { withParams } from "../../common/components/utils";
 import { FormElementGroup } from "./FormElementGroup";
 import Paginator from "./Paginator";
 import { withRouter, Redirect } from "react-router-dom";
-import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import { makeStyles } from "@material-ui/styles";
 import Paper from "@material-ui/core/Paper";
 

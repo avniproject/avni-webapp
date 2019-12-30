@@ -1,5 +1,4 @@
 import httpClient from "common/utils/httpClient";
-import response from './response';
 
 export default {
   fetchOperationalModules: () =>

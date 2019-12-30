@@ -82,12 +82,7 @@ export default function PrimarySearchAppBar() {
     setOpen(false);
   };
 
-  function handleListKeyDown(event) {
-    if (event.key === "Tab") {
-      event.preventDefault();
-      setOpen(false);
-    }
-  }
+ 
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);

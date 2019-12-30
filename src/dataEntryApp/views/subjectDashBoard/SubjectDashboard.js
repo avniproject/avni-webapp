@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 const SubjectDashboard = ({ match, getSubjectProfile, subjectProfile }) => {
   const classes = useStyles();
   let paperInfo;
-  if(subjectProfile != undefined){
+  if(subjectProfile !== undefined){
     paperInfo = (<Paper className={classes.root}>
       <ProfileDetails profileDetails={subjectProfile} />
       <SubjectDashboardTabs profile={subjectProfile} />
