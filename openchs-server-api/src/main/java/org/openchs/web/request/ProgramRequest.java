@@ -8,6 +8,8 @@ public class ProgramRequest {
     private String uuid;
     private String colour;
     private boolean voided;
+    private String enrolmentEligibilityCheckRule;
+    private String enrolmentSummaryRule;
 
     public String getName() {
         return name;
@@ -39,6 +41,8 @@ public class ProgramRequest {
         programRequest.setName(program.getName());
         programRequest.setColour(program.getColour());
         programRequest.setVoided(program.isVoided());
+        programRequest.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
+        programRequest.setEnrolmentSummaryRule(program.getEnrolmentSummaryRule());
         return programRequest;
     }
 
@@ -48,5 +52,21 @@ public class ProgramRequest {
 
     public void setVoided(boolean voided) {
         this.voided = voided;
+    }
+
+    public String getEnrolmentEligibilityCheckRule() {
+        return enrolmentEligibilityCheckRule;
+    }
+
+    public void setEnrolmentEligibilityCheckRule(String enrolmentEligibilityCheckRule) {
+        this.enrolmentEligibilityCheckRule = enrolmentEligibilityCheckRule;
+    }
+
+    public String getEnrolmentSummaryRule() {
+        return enrolmentSummaryRule;
+    }
+
+    public void setEnrolmentSummaryRule(String enrolmentSummaryRule) {
+        this.enrolmentSummaryRule = enrolmentSummaryRule;
     }
 }
