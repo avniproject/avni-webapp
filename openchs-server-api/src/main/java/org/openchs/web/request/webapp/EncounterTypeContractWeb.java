@@ -13,6 +13,7 @@ public class EncounterTypeContractWeb {
     private Long organisationId;
     private Long encounterTypeOrganisationId;
     private boolean voided;
+    private String encounterEligibilityCheckRule;
 
     public String getName() {
         return name;
@@ -45,6 +46,7 @@ public class EncounterTypeContractWeb {
         contract.setOrganisationId(operationalEncounterType.getOrganisationId());
         contract.setEncounterTypeOrganisationId(operationalEncounterType.getEncounterType().getOrganisationId());
         contract.setVoided(operationalEncounterType.isVoided());
+        contract.setEncounterEligibilityCheckRule(operationalEncounterType.getEncounterEligibilityCheckRule());
         return contract;
     }
 
@@ -62,5 +64,13 @@ public class EncounterTypeContractWeb {
 
     public void setEncounterTypeOrganisationId(Long encounterTypeOrganisationId) {
         this.encounterTypeOrganisationId = encounterTypeOrganisationId;
+    }
+
+    public String getEncounterEligibilityCheckRule() {
+        return encounterEligibilityCheckRule;
+    }
+
+    public void setEncounterEligibilityCheckRule(String encounterEligibilityCheckRule) {
+        this.encounterEligibilityCheckRule = encounterEligibilityCheckRule;
     }
 }
