@@ -34,7 +34,7 @@ const DataEntry = ({ match: { path }, getOperationalModules, operationalModules 
           <Route path={[path, `${path}/dashboard`]} component={DataEntryDashboard} />
           <Route path={`${path}/search`} component={SubjectSearch} />
           <Route path={`${path}/register`} component={SubjectRegister} />
-          <Route path={`${path}/subjectprofile`} component={SubjectDashboard} />
+          <Route path={`${path}/subject`} component={SubjectDashboard} />
         </Grid>
       </Grid>
     </div>

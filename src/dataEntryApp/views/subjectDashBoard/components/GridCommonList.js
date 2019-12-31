@@ -37,29 +37,31 @@ const GridCommonList = ({ gridListDetails }) => {
   return (
     <Grid item xs={12} container className={classes.gridBottomBorder}>
       {gridListDetails.map(relative => {
-        return (
-          <Grid item xs={3} className={classes.rightBorder}>
-            <Card className={classes.card}>
-              <CardContent>
-                <Typography color="primary">
-                  {relative.firstName + " " + relative.lastName}
-                </Typography>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                  {relative.individualBIsToARelation}
-                </Typography>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                  {new Date().getFullYear() -
-                    new Date(relative.dateOfBirth).getFullYear() +
-                    " Year"}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button color="primary">REMOVE</Button>
-                <Button color="primary">EDIT</Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        );
+        if (relative !== undefined) {
+          return (
+            <Grid item xs={3} className={classes.rightBorder}>
+              <Card className={classes.card}>
+                <CardContent>
+                  <Typography color="primary">
+                    {relative.firstName + " " + relative.lastName}
+                  </Typography>
+                  <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    {relative.individualBIsToARelation}
+                  </Typography>
+                  <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    {new Date().getFullYear() -
+                      new Date(relative.dateOfBirth).getFullYear() +
+                      " Year"}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button color="primary">REMOVE</Button>
+                  <Button color="primary">EDIT</Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          );
+        }
       })}
     </Grid>
   );
