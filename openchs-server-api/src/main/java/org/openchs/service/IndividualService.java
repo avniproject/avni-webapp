@@ -32,7 +32,6 @@ public class IndividualService {
         this.individualRepository = individualRepository;
     }
 
-    //Get Progam Enrollment Information
     public  IndividualContract getSubjectProgramEnrollment(String individualUuid){
         Individual individual = individualRepository.findByUuid(individualUuid);
         if (!Objects.nonNull(individual)) {
