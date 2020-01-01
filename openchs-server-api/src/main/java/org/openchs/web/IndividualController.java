@@ -130,10 +130,21 @@ public class IndividualController extends AbstractController<Individual> impleme
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectProgramEnrollment(@PathVariable("subjectUuid") String uuid) {
         IndividualContract individualEnrolmentContract =  individualService.getSubjectProgramEnrollment(uuid);
-        if(Objects.isNull(individualEnrolmentContract)){
+        if(individualEnrolmentContract == null){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(individualEnrolmentContract);
+    }
+
+    @GetMapping(value = "/web/subject/{uuid}/encounters")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<IndividualContract> getSubjectEncounters(@PathVariable("uuid") String uuid) {
+        IndividualContract individualEncounterContract =  individualService.getSubjectEncounters(uuid);
+        if(individualEncounterContract == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(individualEncounterContract);
     }
 
     @Override
