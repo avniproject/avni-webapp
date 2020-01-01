@@ -28,6 +28,7 @@ public class ConceptContract extends ReferenceDataContract {
         conceptContract.setUuid(concept.getUuid());
         conceptContract.setName(concept.getName());
         conceptContract.setDataType(concept.getDataType());
+        conceptContract.setVoided(concept.isVoided());
         return conceptContract;
     }
 
