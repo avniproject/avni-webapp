@@ -41,8 +41,6 @@ const SubjectDashboardProgramTab = ({ program }) => {
   const [value1, setValue1] = React.useState(0);
 
   const handleChangeActive = (event, newValue) => {
-    console.log("Hello Program", program);
-    debugger;
     flagActive = true;
     setValue(newValue);
   };

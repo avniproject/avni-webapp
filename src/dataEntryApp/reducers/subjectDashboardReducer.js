@@ -16,7 +16,6 @@ export const setSubjectProfile = subjectProfile => ({
 });
 
 export default function(state = {}, action) {
-  console.log("subject dashboard...");
   switch (action.type) {
     case types.SET_SUBJECT_PROFILE: {
       return {

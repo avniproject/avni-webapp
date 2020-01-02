@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import Grid from "@material-ui/core/Grid";
 import Fab from "@material-ui/core/Fab";
 import { makeStyles } from "@material-ui/core/styles";
@@ -11,6 +11,13 @@ import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import { bold } from "ansi-colors";
+import moment from "moment/moment";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableRow from "@material-ui/core/TableRow";
+import ErrorIcon from "@material-ui/icons/Error";
 
 import Button from "@material-ui/core/Button";
 
@@ -40,6 +47,12 @@ const useStyles = makeStyles(theme => ({
   listItem: {
     paddingBottom: "0px",
     paddingTop: "0px"
+  },
+  table: {
+    border: "1px solid rgba(224, 224, 224, 1)"
+  },
+  abnormalColor: {
+    color: "#ff4f33"
   }
 }));
 
@@ -51,8 +64,6 @@ const ProgramView = ({ programData }) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  console.log("program data::", programData);
-  debugger;
   return (
     <div>
       <Grid container spacing={3}>
@@ -95,7 +106,57 @@ const ProgramView = ({ programData }) => {
           >
             <Typography className={classes.expansionHeading}>Enrollment details</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails />
+          <ExpansionPanelDetails>
+            <Grid item xs={12}>
+              <List>
+                {programData
+                  ? programData.observations.map(element => {
+                      return (
+                        <Fragment>
+                          <Table className={classes.table} size="small" aria-label="a dense table">
+                            <TableBody>
+                              <TableRow>
+                                <TableCell component="th" scope="row" width="50%">
+                                  {element.concept["name"]}
+                                </TableCell>
+                                <TableCell align="left" width="50%">
+                                  {"Coded" === element.concept.dataType ? (
+                                    <div>
+                                      {element.value
+                                        .map(it =>
+                                          it.abnormal ? (
+                                            <span className={classes.abnormalColor}>
+                                              <ErrorIcon fontSize="small" />
+                                              {it.name}
+                                            </span>
+                                          ) : (
+                                            <span>{it.name}</span>
+                                          )
+                                        )
+                                        .reduce((prev, curr) => [prev, ", ", curr])}
+                                    </div>
+                                  ) : ["Date", "DateTime", "Time", "Duration"].includes(
+                                      element.concept.dataType
+                                    ) ? (
+                                    <div>
+                                      {moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}
+                                    </div>
+                                  ) : (
+                                    <div>{element.value}</div>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </Fragment>
+                      );
+                    })
+                  : ""}
+              </List>
+              <Button color="primary">VOID</Button>
+              <Button color="primary">EDIT</Button>
+            </Grid>
+          </ExpansionPanelDetails>
         </ExpansionPanel>
         <ExpansionPanel expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
           <ExpansionPanelSummary
@@ -120,7 +181,11 @@ const ProgramView = ({ programData }) => {
                               <ListItemText primary={row.name} />
                             </ListItem>
                             <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.encounterDateTime} />
+                              <ListItemText
+                                primary={moment(new Date(row.earliestVisitDateTime)).format(
+                                  "DD-MM-YYYY"
+                                )}
+                              />
                             </ListItem>
                             <ListItem className={classes.listItem}>
                               <ListItemText>
@@ -165,14 +230,18 @@ const ProgramView = ({ programData }) => {
                               <ListItemText primary={row.name} />
                             </ListItem>
                             <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.encounterDateTime} />
+                              <ListItemText
+                                primary={moment(new Date(row.encounterDateTime)).format(
+                                  "DD-MM-YYYY"
+                                )}
+                              />
                             </ListItem>
                             <ListItem className={classes.listItem}>
-                              <ListItemText>
-                                <label className={classes.programStatusStyle}>
-                                  {row.operationalEncounterTypeName}
-                                </label>
-                              </ListItemText>
+                              <label style={{ fontSize: "14px" }}>
+                                {`Scheduled on :${moment(new Date(row.maxVisitDateTime)).format(
+                                  "DD-MM-YYYY"
+                                )}`}{" "}
+                              </label>
                             </ListItem>
                           </List>
                           <Button color="primary">DO VISIT</Button>

@@ -100,30 +100,34 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                         </TableBody>
                     </Table> */}
             <Grid container spacing={2}>
-              {general.plannedVisits.map(row => (
-                <Grid key={row.programName} item xs={6} sm={3}>
-                  <Paper
-                    style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                    className={classes.paper}
-                  >
-                    <List>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText primary={row.programName} />
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText primary={row.programDate} />
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>
-                          <label className={classes.programStatusStyle}>{row.programStatus}</label>
-                        </ListItemText>
-                      </ListItem>
-                    </List>
-                    <Button color="primary">DO VISIT</Button>
-                    <Button color="primary">CANCEL VISIT</Button>
-                  </Paper>
-                </Grid>
-              ))}
+              {general
+                ? general.encounters.map(row => (
+                    <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
+                      <Paper
+                        style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
+                        className={classes.paper}
+                      >
+                        <List>
+                          <ListItem className={classes.listItem}>
+                            <ListItemText primary={row.operationalEncounterTypeName} />
+                          </ListItem>
+                          <ListItem className={classes.listItem}>
+                            <ListItemText primary={row.encounterDateTime} />
+                          </ListItem>
+                          <ListItem className={classes.listItem}>
+                            <ListItemText>
+                              <label className={classes.programStatusStyle}>
+                                {row.encounterDateTime}
+                              </label>
+                            </ListItemText>
+                          </ListItem>
+                        </List>
+                        <Button color="primary">DO VISIT</Button>
+                        <Button color="primary">CANCEL VISIT</Button>
+                      </Paper>
+                    </Grid>
+                  ))
+                : ""}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -155,29 +159,31 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                         </TableBody>
                     </Table> */}
             <Grid container spacing={2}>
-              {general.completedVisits.map(row => (
-                <Grid key={row.programName} item xs={6} sm={3}>
-                  <Paper
-                    style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                    className={classes.paper}
-                  >
-                    <List>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText primary={row.programName} />
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText primary={row.programDate} />
-                      </ListItem>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText>
-                          <label>{row.programStatus}</label>
-                        </ListItemText>
-                      </ListItem>
-                    </List>
-                    <Button color="primary">EDIT VISIT</Button>
-                  </Paper>
-                </Grid>
-              ))}
+              {general
+                ? general.encounters.map(row => (
+                    <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
+                      <Paper
+                        style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
+                        className={classes.paper}
+                      >
+                        <List>
+                          <ListItem className={classes.listItem}>
+                            <ListItemText primary={row.operationalEncounterTypeName} />
+                          </ListItem>
+                          <ListItem className={classes.listItem}>
+                            <ListItemText primary={row.encounterDateTime} />
+                          </ListItem>
+                          <ListItem className={classes.listItem}>
+                            <ListItemText>
+                              <label>{row.encounterDateTime}</label>
+                            </ListItemText>
+                          </ListItem>
+                        </List>
+                        <Button color="primary">EDIT VISIT</Button>
+                      </Paper>
+                    </Grid>
+                  ))
+                : ""}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>

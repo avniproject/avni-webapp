@@ -11,9 +11,6 @@ export function* subjectGeneralFetchWatcher() {
 }
 
 export function* subjectGeneralFetchWorker({ subjectGeneralUUID }) {
-  console.log("bit pain subjectGeneralUUID", subjectGeneralUUID);
   const subjectGeneral = yield call(api.fetchSubjectGeneral, subjectGeneralUUID);
-
-  console.log("subject General", subjectGeneral);
   yield put(setSubjectGeneral(subjectGeneral));
 }

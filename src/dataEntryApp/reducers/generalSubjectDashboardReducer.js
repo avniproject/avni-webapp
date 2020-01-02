@@ -16,7 +16,6 @@ export const setSubjectGeneral = subjectGeneral => ({
 });
 
 export default function(state = {}, action) {
-  console.log("action.type");
   switch (action.type) {
     case types.SET_SUBJECT_GENERAL: {
       return {

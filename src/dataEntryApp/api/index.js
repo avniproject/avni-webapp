@@ -15,14 +15,13 @@ export default {
   fetchSubjectProfile: async () => {
     return response.data;
   },
-  fetchSubjectGeneral: async () => {
-    return generalResponse;
-  },
+  //fetchSubjectGeneral: async () => {
+  // return generalResponse;
+  //},
   fetchSubjectProgram: uuid => {
     return httpClient.fetchJson(`/web/subject/${uuid}/programs/`).then(response => response.json);
+  },
+  fetchSubjectGeneral: uuid => {
+    return httpClient.fetchJson(`/web/subject/${uuid}/encounters/`).then(response => response.json);
   }
-
-  // fetchSubjectGeneral: (uuid) => {
-  //   httpClient.fetchJson(`/web/subject/${uuid}/encounters/`).then(response => response.json)
-  // }
 };

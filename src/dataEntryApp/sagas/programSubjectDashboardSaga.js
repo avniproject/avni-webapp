@@ -11,9 +11,6 @@ export function* subjectProgramFetchWatcher() {
 }
 
 export function* subjectProgramFetchWorker({ subjectProgramUUID }) {
-  console.log("bit pain subjectProgramUUID", subjectProgramUUID);
   const subjectProgram = yield call(api.fetchSubjectProgram, subjectProgramUUID);
-
-  console.log("subject Program", subjectProgram);
   yield put(setSubjectProgram(subjectProgram));
 }
