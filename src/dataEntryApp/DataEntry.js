@@ -5,20 +5,38 @@ import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
 import { getOperationalModules } from "./reducers/metadataReducer";
 import Loading from "./components/Loading";
+import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
+import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
+import AppBar from 'dataEntryApp/components/AppBar';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 
-const DataEntry = ({
-  match: { path },
-  getOperationalModules,
-  operationalModules
-}) => {
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+  }
+}));
+
+const DataEntry = ({ match: { path }, getOperationalModules, operationalModules }) => {
+  const classes = useStyles();
+
   useEffect(() => {
     getOperationalModules();
   }, []);
 
   return operationalModules ? (
-    <div>
-      <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
-      <Route path={`${path}/register`} component={SubjectRegister} />
+    <div className={classes.root}>
+      <Grid container spacing={2} justify="center">
+        <Grid item xs={12}>
+          <AppBar />
+        </Grid>
+        <Grid item xs={12}>
+          <Route path={[path, `${path}/dashboard`]} component={DataEntryDashboard} />
+          <Route path={`${path}/search`} component={SubjectSearch} />
+          <Route path={`${path}/register`} component={SubjectRegister} />
+          <Route path={`${path}/subject`} component={SubjectDashboard} />
+        </Grid>
+      </Grid>
     </div>
   ) : (
     <Loading />

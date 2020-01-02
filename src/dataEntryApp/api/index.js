@@ -9,5 +9,10 @@ export default {
     httpClient.fetchJson("/individuals", {
       method: "POST",
       body: JSON.stringify(subject)
+    }),
+
+  fetchSubjectProfile: (uuid) =>
+    httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
+      return response.json
     })
 };
