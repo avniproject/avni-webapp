@@ -14,7 +14,7 @@ import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
-import ErrorIcon from '@material-ui/icons/Error';
+import ErrorIcon from "@material-ui/icons/Error";
 import GridCommonList from "../components/GridCommonList";
 
 const useStyles = makeStyles(theme => ({
@@ -85,42 +85,49 @@ const SubjectDashboardProfileTab = ({ profile }) => {
         <ExpansionPanelDetails>
           <Grid item xs={12}>
             <List>
-              {profile.observations.map(element => {
-                return (
-                  <Fragment>
-                    <Table className={classes.table} size="small" aria-label="a dense table">
-                      <TableBody>
-                        <TableRow>
-                          <TableCell component="th" scope="row" width="50%">
-                            {element.concept["name"]}
-                          </TableCell>
-                          <TableCell align="left" width="50%">
-                            {"Coded" === element.concept.dataType ? (
-                                <div>
-                                  {element.value.map(it => it.abnormal ? 
-                                  <span className={classes.abnormalColor}>
-                                    <ErrorIcon  fontSize="small"/>
-                                    {it.name}
-                                  </span>
-                                  :<span>{it.name}</span>)
-                                  .reduce((prev, curr) => [prev, ', ', curr])}
-                                </div>
-                            ) : ["Date", "DateTime", "Time", "Duration"].includes(
-                                element.concept.dataType
-                              ) ? (
-                              <div>
-                                {moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}
-                              </div>
-                            ) : (
-                              <div>{element.value}</div>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </Fragment>
-                );
-              })}
+              {profile.observations
+                ? profile.observations.map(element => {
+                    return (
+                      <Fragment>
+                        <Table className={classes.table} size="small" aria-label="a dense table">
+                          <TableBody>
+                            <TableRow>
+                              <TableCell component="th" scope="row" width="50%">
+                                {element.concept["name"]}
+                              </TableCell>
+                              <TableCell align="left" width="50%">
+                                {"Coded" === element.concept.dataType ? (
+                                  <div>
+                                    {element.value
+                                      .map(it =>
+                                        it.abnormal ? (
+                                          <span className={classes.abnormalColor}>
+                                            <ErrorIcon fontSize="small" />
+                                            {it.name}
+                                          </span>
+                                        ) : (
+                                          <span>{it.name}</span>
+                                        )
+                                      )
+                                      .reduce((prev, curr) => [prev, ", ", curr])}
+                                  </div>
+                                ) : ["Date", "DateTime", "Time", "Duration"].includes(
+                                    element.concept.dataType
+                                  ) ? (
+                                  <div>
+                                    {moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}
+                                  </div>
+                                ) : (
+                                  <div>{element.value}</div>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </Fragment>
+                    );
+                  })
+                : ""}
             </List>
             <Button color="primary">VOID</Button>
             <Button color="primary">EDIT</Button>
@@ -136,7 +143,7 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           <Typography className={classes.expansionHeading}>Relatives</Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <GridCommonList gridListDetails = {profile.relationships}/>
+          <GridCommonList gridListDetails={profile.relationships} />
         </ExpansionPanelDetails>
         <Button color="primary">ADD RELATIVE</Button>
       </ExpansionPanel>

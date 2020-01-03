@@ -4,6 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import ProfileDetails from "./components/ProfileDetails";
 import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
 import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
+import { getSubjectGeneral } from "../../reducers/generalSubjectDashboardReducer";
+import { getSubjectProgram } from "../../reducers/programSubjectDashboardReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -17,18 +19,34 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboard = ({ match, getSubjectProfile, subjectProfile }) => {
+const SubjectDashboard = ({
+  match,
+  getSubjectProfile,
+  subjectProfile,
+  getSubjectGeneral,
+  subjectGeneral,
+  getSubjectProgram,
+  subjectProgram
+}) => {
   const classes = useStyles();
   let paperInfo;
-  if(subjectProfile !== undefined){
-    paperInfo = (<Paper className={classes.root}>
-      <ProfileDetails profileDetails={subjectProfile} />
-      <SubjectDashboardTabs profile={subjectProfile} />
-    </Paper>)
+  if (subjectProfile !== undefined) {
+    paperInfo = (
+      <Paper className={classes.root}>
+        <ProfileDetails profileDetails={subjectProfile} />
+        <SubjectDashboardTabs
+          profile={subjectProfile}
+          general={subjectGeneral}
+          program={subjectProgram}
+        />
+      </Paper>
+    );
   }
 
   useEffect(() => {
     getSubjectProfile(match.queryParams.uuid);
+    getSubjectGeneral(match.queryParams.uuid);
+    getSubjectProgram(match.queryParams.uuid);
   }, []);
 
   return (
@@ -40,11 +58,15 @@ const SubjectDashboard = ({ match, getSubjectProfile, subjectProfile }) => {
 };
 
 const mapStateToProps = state => ({
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
+  subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
+  subjectProgram: state.dataEntry.subjectProgram.subjectProgram
 });
 
 const mapDispatchToProps = {
-  getSubjectProfile
+  getSubjectProfile,
+  getSubjectGeneral,
+  getSubjectProgram
 };
 
 export default withRouter(
