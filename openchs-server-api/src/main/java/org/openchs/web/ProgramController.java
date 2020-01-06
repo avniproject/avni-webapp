@@ -47,6 +47,9 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
 
             program.setName(programRequest.getName());
             program.setColour(programRequest.getColour());
+            program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
+            program.setChecklistsRule(program.getChecklistsRule());
+            program.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
 
             programRepository.save(program);
         });
@@ -60,7 +63,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
                 programRepository.findByNameIgnoreCase(request.getName());
         OperationalProgram existingOperationalProgram =
                 operationalProgramRepository.findByNameIgnoreCase(request.getName());
-        if(existingProgram != null || existingOperationalProgram != null)
+        if (existingProgram != null || existingOperationalProgram != null)
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Program %s already exists", request.getName())));
         Program program = new Program();
         program.assignUUIDIfRequired();

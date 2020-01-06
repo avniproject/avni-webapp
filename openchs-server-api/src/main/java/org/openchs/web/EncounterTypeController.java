@@ -41,6 +41,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
         for (EncounterTypeContract encounterTypeRequest : encounterTypeRequests) {
             EncounterType encounterType = newOrExistingEntity(encounterTypeRepository, encounterTypeRequest, new EncounterType());
             encounterType.setName(encounterTypeRequest.getName());
+            encounterType.setEncounterEligibilityCheckRule(encounterTypeRequest.getEncounterEligibilityCheckRule());
             encounterType.setVoided(encounterTypeRequest.isVoided());
             encounterTypeRepository.save(encounterType);
         }
