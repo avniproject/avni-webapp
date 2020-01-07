@@ -11,7 +11,6 @@ import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { bold } from "ansi-colors";
 import moment from "moment/moment";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -187,13 +186,16 @@ const ProgramView = ({ programData }) => {
                                 )}
                               />
                             </ListItem>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText>
-                                <label className={classes.programStatusStyle}>
-                                  {row.operationalEncounterTypeName}
-                                </label>
-                              </ListItemText>
-                            </ListItem>
+                            {new Date().toString() >
+                            moment(new Date(row.maxVisitDateTime)).format("DD-MM-YYYY") ? (
+                              <ListItem className={classes.listItem}>
+                                <ListItemText>
+                                  <label className={classes.programStatusStyle}>Overdue</label>
+                                </ListItemText>
+                              </ListItem>
+                            ) : (
+                              ""
+                            )}
                           </List>
                           <Button color="primary">DO VISIT</Button>
                           <Button color="primary">CANCEL VISIT</Button>

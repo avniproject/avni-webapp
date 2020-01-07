@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Paper } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
-import PropTypes, { element } from "prop-types";
+import PropTypes from "prop-types";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -68,7 +68,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 scrollButtons="auto"
                 aria-label="scrollable auto tabs example"
               >
-                {program
+                {program && program.enrolments
                   ? program.enrolments.map((element, index) =>
                       element.programExitDateTime == null ? (
                         <Tab label={element.operationalProgramName} />
@@ -94,7 +94,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 scrollButtons="auto"
                 aria-label="scrollable auto tabs example"
               >
-                {program
+                {program && program.enrolments
                   ? program.enrolments.map((element, index) =>
                       element.programExitDateTime != null ? (
                         <Tab label={element.operationalProgramName} />
@@ -107,7 +107,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
             </AppBar>
           </Grid>
         </Grid>
-        {flagActive && program.enrolments
+        {flagActive && program && program.enrolments
           ? program.enrolments.map((element, index) => (
               <Fragment>
                 <TabPanel value={value} index={index}>
@@ -116,7 +116,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
               </Fragment>
             ))
           : ""}
-        {!flagActive && program.enrolments
+        {!flagActive && program && program.enrolments
           ? program.enrolments.map((element, index) => (
               <Fragment>
                 <TabPanel value={value1} index={index}>

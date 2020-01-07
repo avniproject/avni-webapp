@@ -1,10 +1,5 @@
 import React, { Fragment } from "react";
 import { Paper } from "@material-ui/core";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
@@ -17,6 +12,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
 import Fab from "@material-ui/core/Fab";
+import moment from "moment/moment";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -49,6 +45,8 @@ const useStyles = makeStyles(theme => ({
     paddingTop: "0px"
   }
 }));
+
+const date1 = new Date();
 
 const SubjectDashboardGeneralTab = ({ general }) => {
   const [expanded, setExpanded] = React.useState(false);
@@ -83,32 +81,44 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
               {general.encounters
-                ? general.encounters.map(row => (
-                    <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
-                      <Paper
-                        style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                        className={classes.paper}
-                      >
-                        <List>
-                          <ListItem className={classes.listItem}>
-                            <ListItemText primary={row.operationalEncounterTypeName} />
-                          </ListItem>
-                          <ListItem className={classes.listItem}>
-                            <ListItemText primary={row.encounterDateTime} />
-                          </ListItem>
-                          <ListItem className={classes.listItem}>
-                            <ListItemText>
-                              <label className={classes.programStatusStyle}>
-                                {row.encounterDateTime}
-                              </label>
-                            </ListItemText>
-                          </ListItem>
-                        </List>
-                        <Button color="primary">DO VISIT</Button>
-                        <Button color="primary">CANCEL VISIT</Button>
-                      </Paper>
-                    </Grid>
-                  ))
+                ? general.encounters.map(row =>
+                    !row.encounterDateTime ? (
+                      <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
+                        <Paper
+                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
+                          className={classes.paper}
+                        >
+                          <List>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText primary={row.operationalEncounterTypeName} />
+                            </ListItem>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText
+                                primary={moment(new Date(row.maxVisitDateTime)).format(
+                                  "DD-MM-YYYY"
+                                )}
+                              />
+                            </ListItem>
+
+                            {date1.toString() >
+                            moment(new Date(row.maxVisitDateTime)).format("DD-MM-YYYY") ? (
+                              <ListItem className={classes.listItem}>
+                                <ListItemText>
+                                  <label className={classes.programStatusStyle}>Overdue</label>
+                                </ListItemText>
+                              </ListItem>
+                            ) : (
+                              ""
+                            )}
+                          </List>
+                          <Button color="primary">DO VISIT</Button>
+                          <Button color="primary">CANCEL VISIT</Button>
+                        </Paper>
+                      </Grid>
+                    ) : (
+                      ""
+                    )
+                  )
                 : ""}
             </Grid>
           </ExpansionPanelDetails>
@@ -124,29 +134,39 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
               {general.encounters
-                ? general.encounters.map(row => (
-                    <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
-                      <Paper
-                        style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                        className={classes.paper}
-                      >
-                        <List>
-                          <ListItem className={classes.listItem}>
-                            <ListItemText primary={row.operationalEncounterTypeName} />
-                          </ListItem>
-                          <ListItem className={classes.listItem}>
-                            <ListItemText primary={row.encounterDateTime} />
-                          </ListItem>
-                          <ListItem className={classes.listItem}>
-                            <ListItemText>
-                              <label>{row.encounterDateTime}</label>
-                            </ListItemText>
-                          </ListItem>
-                        </List>
-                        <Button color="primary">EDIT VISIT</Button>
-                      </Paper>
-                    </Grid>
-                  ))
+                ? general.encounters.map(row =>
+                    row.encounterDateTime ? (
+                      <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
+                        <Paper
+                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
+                          className={classes.paper}
+                        >
+                          <List>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText primary={row.operationalEncounterTypeName} />
+                            </ListItem>
+                            <ListItem className={classes.listItem}>
+                              <ListItemText
+                                primary={moment(new Date(row.encounterDateTime)).format(
+                                  "DD-MM-YYYY"
+                                )}
+                              />
+                            </ListItem>
+                            <ListItem className={classes.listItem}>
+                              <label style={{ fontSize: "14px" }}>
+                                {`Scheduled on :${moment(new Date(row.maxVisitDateTime)).format(
+                                  "DD-MM-YYYY"
+                                )}`}{" "}
+                              </label>
+                            </ListItem>
+                          </List>
+                          <Button color="primary">EDIT VISIT</Button>
+                        </Paper>
+                      </Grid>
+                    ) : (
+                      ""
+                    )
+                  )
                 : ""}
             </Grid>
           </ExpansionPanelDetails>
