@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const date1 = new Date();
+const currentDate = new Date();
 
 const SubjectDashboardGeneralTab = ({ general }) => {
   const [expanded, setExpanded] = React.useState(false);
@@ -100,7 +100,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                               />
                             </ListItem>
 
-                            {date1.toString() >
+                            {currentDate.toString() >
                             moment(new Date(row.maxVisitDateTime)).format("DD-MM-YYYY") ? (
                               <ListItem className={classes.listItem}>
                                 <ListItemText>

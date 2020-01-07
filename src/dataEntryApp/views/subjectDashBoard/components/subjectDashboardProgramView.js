@@ -12,11 +12,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment/moment";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
-import ErrorIcon from "@material-ui/icons/Error";
+import DataTable from "../../../../common/components/dataTable";
 
 import Button from "@material-ui/core/Button";
 
@@ -57,7 +53,7 @@ const useStyles = makeStyles(theme => ({
 
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
+  const [expandedPanel, setExpanded] = React.useState(false);
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -97,7 +93,7 @@ const ProgramView = ({ programData }) => {
         </Grid>
       </Grid>
       <Paper className={classes.root}>
-        <ExpansionPanel expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+        <ExpansionPanel expanded={expandedPanel === "panel1"} onChange={handleChange("panel1")}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1bh-content"
@@ -108,56 +104,14 @@ const ProgramView = ({ programData }) => {
           <ExpansionPanelDetails>
             <Grid item xs={12}>
               <List>
-                {programData
-                  ? programData.observations.map(element => {
-                      return (
-                        <Fragment>
-                          <Table className={classes.table} size="small" aria-label="a dense table">
-                            <TableBody>
-                              <TableRow>
-                                <TableCell component="th" scope="row" width="50%">
-                                  {element.concept["name"]}
-                                </TableCell>
-                                <TableCell align="left" width="50%">
-                                  {"Coded" === element.concept.dataType ? (
-                                    <div>
-                                      {element.value
-                                        .map(it =>
-                                          it.abnormal ? (
-                                            <span className={classes.abnormalColor}>
-                                              <ErrorIcon fontSize="small" />
-                                              {it.name}
-                                            </span>
-                                          ) : (
-                                            <span>{it.name}</span>
-                                          )
-                                        )
-                                        .reduce((prev, curr) => [prev, ", ", curr])}
-                                    </div>
-                                  ) : ["Date", "DateTime", "Time", "Duration"].includes(
-                                      element.concept.dataType
-                                    ) ? (
-                                    <div>
-                                      {moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}
-                                    </div>
-                                  ) : (
-                                    <div>{element.value}</div>
-                                  )}
-                                </TableCell>
-                              </TableRow>
-                            </TableBody>
-                          </Table>
-                        </Fragment>
-                      );
-                    })
-                  : ""}
+                <DataTable tableDataToShow={programData} />
               </List>
               <Button color="primary">VOID</Button>
               <Button color="primary">EDIT</Button>
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
+        <ExpansionPanel expanded={expandedPanel === "panel2"} onChange={handleChange("panel2")}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1bh-content"
@@ -209,7 +163,7 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel expanded={expanded === "panel3"} onChange={handleChange("panel3")}>
+        <ExpansionPanel expanded={expandedPanel === "panel3"} onChange={handleChange("panel3")}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1bh-content"

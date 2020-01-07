@@ -34,20 +34,20 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-let flagActive = true;
+let flagToCheckActivePrograms = true;
 
 const SubjectDashboardProgramTab = ({ program }) => {
-  const [value, setValue] = React.useState(0);
-  const [value1, setValue1] = React.useState(0);
+  const [activeValue, setActiveValue] = React.useState(0);
+  const [exitedValue, setExitedValue] = React.useState(0);
 
   const handleChangeActive = (event, newValue) => {
-    flagActive = true;
-    setValue(newValue);
+    flagToCheckActivePrograms = true;
+    setActiveValue(newValue);
   };
 
   const handleChangeExited = (event, newvalue) => {
-    setValue1(newvalue);
-    flagActive = false;
+    setExitedValue(newvalue);
+    flagToCheckActivePrograms = false;
   };
 
   const classes = useStyles();
@@ -61,7 +61,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
             <AppBar position="static" color="default">
               <Tabs
                 onChange={handleChangeActive}
-                value={value}
+                value={activeValue}
                 indicatorColor="primary"
                 textColor="primary"
                 variant="scrollable"
@@ -86,7 +86,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
             <label>Exited Programs</label>
             <AppBar position="static" color="default">
               <Tabs
-                value={value1}
+                value={exitedValue}
                 onChange={handleChangeExited}
                 indicatorColor="primary"
                 textColor="primary"
@@ -107,19 +107,19 @@ const SubjectDashboardProgramTab = ({ program }) => {
             </AppBar>
           </Grid>
         </Grid>
-        {flagActive && program && program.enrolments
+        {flagToCheckActivePrograms && program && program.enrolments
           ? program.enrolments.map((element, index) => (
               <Fragment>
-                <TabPanel value={value} index={index}>
+                <TabPanel value={activeValue} index={index}>
                   <ProgramView programData={element} />
                 </TabPanel>
               </Fragment>
             ))
           : ""}
-        {!flagActive && program && program.enrolments
+        {!flagToCheckActivePrograms && program && program.enrolments
           ? program.enrolments.map((element, index) => (
               <Fragment>
-                <TabPanel value={value1} index={index}>
+                <TabPanel value={exitedValue} index={index}>
                   <ProgramView programData={element} />
                 </TabPanel>
               </Fragment>
