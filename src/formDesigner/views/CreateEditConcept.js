@@ -435,74 +435,78 @@ class CreateEditConcept extends Component {
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={appBarTitle} />
-        <form onSubmit={this.handleSubmit}>
-          <Grid container justify="flex-start">
-            <Grid item sm={12}>
-              <TextField
-                required
-                id="name"
-                label="Name"
-                value={this.state.name}
-                onChange={this.handleChange("name")}
-                style={classes.textField}
-                margin="normal"
-              />
-              {this.state.error.nameError && (
-                <FormHelperText error>Same name concept already exist.</FormHelperText>
-              )}
-            </Grid>
-
-            <Grid>
-              {this.props.isCreatePage && (
-                <FormControl>
-                  <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
-                  <Select
-                    id="dataType"
-                    label="DataType"
-                    value={this.state.dataType}
-                    onChange={this.handleChange("dataType")}
-                    style={classes.select}
-                  >
-                    {this.state.dataTypes.map(datatype => {
-                      return (
-                        <MenuItem value={datatype} key={datatype}>
-                          {datatype}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                  {this.state.error.dataTypeSelectionAlert && (
-                    <FormHelperText error>*Required</FormHelperText>
-                  )}
-                </FormControl>
-              )}
-              {!this.props.isCreatePage && (
-                <TextField
-                  id="dataType"
-                  label="DataType"
-                  value={this.state.dataType}
-                  style={classes.select}
-                  disabled={true}
-                />
-              )}
-            </Grid>
-            {dataType}
+        <Grid container justify="flex-start">
+          <Grid item sm={12}>
+            <TextField
+              required
+              id="name"
+              label="Name"
+              value={this.state.name}
+              onChange={this.handleChange("name")}
+              style={classes.textField}
+              margin="normal"
+            />
+            {this.state.error.nameError && (
+              <FormHelperText error>Same name concept already exist.</FormHelperText>
+            )}
           </Grid>
 
           <Grid>
-            <Button type="submit" color="primary" variant="contained" style={classes.button}>
-              Submit
-            </Button>
+            {this.props.isCreatePage && (
+              <FormControl>
+                <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
+                <Select
+                  id="dataType"
+                  label="DataType"
+                  value={this.state.dataType}
+                  onChange={this.handleChange("dataType")}
+                  style={classes.select}
+                >
+                  {this.state.dataTypes.map(datatype => {
+                    return (
+                      <MenuItem value={datatype} key={datatype}>
+                        {datatype}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+                {this.state.error.dataTypeSelectionAlert && (
+                  <FormHelperText error>*Required</FormHelperText>
+                )}
+              </FormControl>
+            )}
+            {!this.props.isCreatePage && (
+              <TextField
+                id="dataType"
+                label="DataType"
+                value={this.state.dataType}
+                style={classes.select}
+                disabled={true}
+              />
+            )}
           </Grid>
+          {dataType}
+        </Grid>
 
-          {this.state.conceptCreationAlert && (
-            <CustomizedSnackbar
-              message={conceptCreationMessage}
-              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
-              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
-            />
-          )}
-        </form>
+        <Grid>
+          <Button
+            type="button"
+            color="primary"
+            variant="contained"
+            style={classes.button}
+            onClick={this.handleSubmit}
+          >
+            Submit
+          </Button>
+        </Grid>
+
+        {this.state.conceptCreationAlert && (
+          <CustomizedSnackbar
+            message={conceptCreationMessage}
+            getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+            defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+          />
+        )}
       </Box>
     );
   }
