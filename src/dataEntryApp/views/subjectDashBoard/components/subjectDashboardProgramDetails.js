@@ -33,22 +33,3 @@ const programDetails = ({ tabPanelValue, programData }) => {
 };
 
 export default programDetails;
-
-// {flagToCheckActivePrograms && program && program.enrolments
-//     ? program.enrolments.map((element, index) => (
-//         <Fragment>
-//           <TabPanel value={activeValue} index={index}>
-//             <ProgramView programData={element} />
-//           </TabPanel>
-//         </Fragment>
-//       ))
-//     : ""}
-//   {!flagToCheckActivePrograms && program && program.enrolments
-//     ? program.enrolments.map((element, index) => (
-//         <Fragment>
-//           <TabPanel value={exitedValue} index={index}>
-//             <ProgramView programData={element} />
-//           </TabPanel>
-//         </Fragment>
-//       ))
-//     : ""}
