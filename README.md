@@ -1,5 +1,7 @@
 ## Run app
 
+[![Join the chat at https://gitter.im/avniproject/avni-webapp](https://badges.gitter.im/avniproject/avni-webapp.svg)](https://gitter.im/avniproject/avni-webapp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 You will need yarn package mananger to be installed globally to run this project. Follow the instructions on https://yarnpkg.com/en/docs/install to install yarn if it is not already installed on your machine.
 
 ### Install dependencies
