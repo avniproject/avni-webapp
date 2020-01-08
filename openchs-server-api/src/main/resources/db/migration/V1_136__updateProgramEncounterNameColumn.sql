@@ -1,0 +1,1 @@
+ALTER table program_encounter ALTER COLUMN name TYPE varchar(255);
