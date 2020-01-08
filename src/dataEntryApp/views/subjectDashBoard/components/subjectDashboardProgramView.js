@@ -121,7 +121,7 @@ const ProgramView = ({ programData }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {programData
+              {programData && programData.programEncounters
                 ? programData.programEncounters.map(row =>
                     !row.encounterDateTime ? (
                       <Grid key={row.name} item xs={6} sm={3}>
@@ -173,7 +173,7 @@ const ProgramView = ({ programData }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {programData
+              {programData && programData.programEncounters
                 ? programData.programEncounters.map(row =>
                     row.encounterDateTime ? (
                       <Grid key={row.name} item xs={6} sm={3}>
