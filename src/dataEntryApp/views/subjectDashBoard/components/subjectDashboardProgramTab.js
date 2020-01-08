@@ -1,15 +1,11 @@
 import React, { Fragment } from "react";
 import { Paper } from "@material-ui/core";
-
 import { makeStyles } from "@material-ui/core/styles";
-import PropTypes from "prop-types";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
-import ProgramView from "./subjectDashboardProgramView";
+import ProgramDetails from "./subjectDashboardProgramDetails";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,18 +17,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2)
   }
 }));
-
-function TabPanel(props) {
-  const { children, value, index } = props;
-
-  return <Typography>{value == index && <Box p={3}>{children}</Box>}</Typography>;
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
-};
 
 let flagToCheckActivePrograms = true;
 
@@ -80,7 +64,6 @@ const SubjectDashboardProgramTab = ({ program }) => {
               </Tabs>
             </AppBar>
           </Grid>
-
           <Grid xs={2} />
           <Grid xs={4}>
             <label>Exited Programs</label>
@@ -107,24 +90,10 @@ const SubjectDashboardProgramTab = ({ program }) => {
             </AppBar>
           </Grid>
         </Grid>
-        {flagToCheckActivePrograms && program && program.enrolments
-          ? program.enrolments.map((element, index) => (
-              <Fragment>
-                <TabPanel value={activeValue} index={index}>
-                  <ProgramView programData={element} />
-                </TabPanel>
-              </Fragment>
-            ))
-          : ""}
-        {!flagToCheckActivePrograms && program && program.enrolments
-          ? program.enrolments.map((element, index) => (
-              <Fragment>
-                <TabPanel value={exitedValue} index={index}>
-                  <ProgramView programData={element} />
-                </TabPanel>
-              </Fragment>
-            ))
-          : ""}
+        <ProgramDetails
+          tabPanelValue={flagToCheckActivePrograms ? activeValue : exitedValue}
+          programData={program}
+        />
       </Paper>
     </Fragment>
   );

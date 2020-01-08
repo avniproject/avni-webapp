@@ -10,7 +10,7 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { bold } from "ansi-colors";
 import moment from "moment/moment";
-import DataTable from "../../../../common/components/dataTable";
+import Observations from "../../../../common/components/Observations";
 import GridCommonList from "../components/GridCommonList";
 
 const useStyles = makeStyles(theme => ({
@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
 
 const SubjectDashboardProfileTab = ({ profile }) => {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -75,7 +75,7 @@ const SubjectDashboardProfileTab = ({ profile }) => {
         <ExpansionPanelDetails>
           <Grid item xs={12}>
             <List>
-              <DataTable tableDataToShow={profile} />
+              <Observations observations={profile ? profile.observations : ""} />
             </List>
             <Button color="primary">VOID</Button>
             <Button color="primary">EDIT</Button>

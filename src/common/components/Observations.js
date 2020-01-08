@@ -20,12 +20,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const dataTable = ({ tableDataToShow }) => {
+const Observations = ({ observations }) => {
   const classes = useStyles();
   return (
     <div>
-      {tableDataToShow
-        ? tableDataToShow.observations.map(element => {
+      {observations
+        ? observations.map(element => {
             return (
               <Fragment>
                 <Table className={classes.table} size="small" aria-label="a dense table">
@@ -69,4 +69,4 @@ const dataTable = ({ tableDataToShow }) => {
   );
 };
 
-export default dataTable;
+export default Observations;

@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 const currentDate = new Date();
 
 const SubjectDashboardGeneralTab = ({ general }) => {
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);

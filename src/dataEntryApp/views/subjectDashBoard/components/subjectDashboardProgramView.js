@@ -12,7 +12,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment/moment";
-import DataTable from "../../../../common/components/dataTable";
+import Observations from "../../../../common/components/Observations";
 
 import Button from "@material-ui/core/Button";
 
@@ -53,7 +53,7 @@ const useStyles = makeStyles(theme => ({
 
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
-  const [expandedPanel, setExpanded] = React.useState(false);
+  const [expandedPanel, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -104,7 +104,7 @@ const ProgramView = ({ programData }) => {
           <ExpansionPanelDetails>
             <Grid item xs={12}>
               <List>
-                <DataTable tableDataToShow={programData} />
+                <Observations observations={programData ? programData.observations : ""} />
               </List>
               <Button color="primary">VOID</Button>
               <Button color="primary">EDIT</Button>
