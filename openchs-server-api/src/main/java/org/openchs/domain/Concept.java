@@ -7,8 +7,10 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
 import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Parameter;
 import org.hibernate.search.annotations.*;
+import org.openchs.application.KeyValues;
 import org.openchs.web.request.ConceptContract;
 
 import javax.persistence.*;
@@ -51,6 +53,10 @@ public class Concept extends OrganisationAwareEntity {
     @Field
     @NotNull
     private String dataType;
+
+    @Column
+    @Type(type = "keyValues")
+    private KeyValues keyValues;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "concept")
     private Set<ConceptAnswer> conceptAnswers = new HashSet<>();
@@ -134,6 +140,14 @@ public class Concept extends OrganisationAwareEntity {
 
     public void setConceptAnswers(Set<ConceptAnswer> conceptAnswers) {
         this.conceptAnswers = conceptAnswers;
+    }
+
+    public KeyValues getKeyValues() {
+        return keyValues;
+    }
+
+    public void setKeyValues(KeyValues keyValues) {
+        this.keyValues = keyValues;
     }
 
     public ConceptAnswer findConceptAnswerByName(String answerConceptName) {

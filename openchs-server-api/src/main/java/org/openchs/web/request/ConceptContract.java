@@ -3,6 +3,7 @@ package org.openchs.web.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.application.KeyValues;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 
@@ -22,6 +23,7 @@ public class ConceptContract extends ReferenceDataContract {
     private boolean abnormal;
     private boolean unique = false;
     private Double order;
+    private KeyValues keyValues;
 
     public static ConceptContract create(Concept concept) {
         ConceptContract conceptContract = new ConceptContract();
@@ -29,20 +31,29 @@ public class ConceptContract extends ReferenceDataContract {
         conceptContract.setName(concept.getName());
         conceptContract.setDataType(concept.getDataType());
         conceptContract.setVoided(concept.isVoided());
+        conceptContract.setKeyValues(concept.getKeyValues());
         return conceptContract;
+    }
+
+    public KeyValues getKeyValues() {
+        return keyValues;
+    }
+
+    public void setKeyValues(KeyValues keyValues) {
+        this.keyValues = keyValues;
     }
 
     public String getDataType() {
         return dataType == null ? null : dataType.trim();
     }
 
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
     @JsonIgnore
     public boolean isCoded() {
         return ConceptDataType.Coded.toString().equals(this.getDataType());
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
     }
 
     public List<ConceptContract> getAnswers() {

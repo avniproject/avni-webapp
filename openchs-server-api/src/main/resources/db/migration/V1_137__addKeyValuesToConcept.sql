@@ -1,0 +1,1 @@
+ALTER TABLE concept ADD COLUMN key_values jsonb
