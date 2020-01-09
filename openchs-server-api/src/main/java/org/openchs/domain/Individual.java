@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "individual")
-@JsonIgnoreProperties({"programEnrolments", "encounters", "relationships"})
+@JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsWithB", "relationshipsWithA"})
 @BatchSize(size = 100)
 public class Individual extends OrganisationAwareEntity {
 
@@ -34,7 +34,10 @@ public class Individual extends OrganisationAwareEntity {
     private boolean dateOfBirthVerified;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "individuala")
-    private Set<IndividualRelationship> relationships = new HashSet<>();
+    private Set<IndividualRelationship> relationshipsWithB = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "individualB")
+    private Set<IndividualRelationship> relationshipsWithA = new HashSet<>();
 
     @NotNull
     private LocalDate registrationDate;
@@ -186,12 +189,20 @@ public class Individual extends OrganisationAwareEntity {
         this.subjectType = subjectType;
     }
 
-    public Set<IndividualRelationship> getRelationships() {
-        return relationships;
+    public Set<IndividualRelationship> getRelationshipsWithB() {
+        return relationshipsWithB;
     }
 
-    public void setRelationships(Set<IndividualRelationship> relationships) {
-        this.relationships = relationships;
+    public void setRelationshipsWithB(Set<IndividualRelationship> relationshipsWithB) {
+        this.relationshipsWithB = relationshipsWithB;
+    }
+
+    public Set<IndividualRelationship> getRelationshipsWithA() {
+        return relationshipsWithA;
+    }
+
+    public void setRelationshipsWithA(Set<IndividualRelationship> relationshipsWithA) {
+        this.relationshipsWithA = relationshipsWithA;
     }
 
     @JsonIgnore
