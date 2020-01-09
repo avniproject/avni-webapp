@@ -112,7 +112,11 @@ export const RuleDisplay = props => {
       <Box mt={3}>
         <FormLabel component="legend">Enrolment Eligibility Check Rule</FormLabel>
         <Editor
-          value={props.record.enrolmentEligibilityCheckRule ? props.record.enrolmentEligibilityCheckRule : ""}
+          value={
+            props.record.enrolmentEligibilityCheckRule
+              ? props.record.enrolmentEligibilityCheckRule
+              : ""
+          }
           readOnly={true}
           highlight={code => highlight(code, languages.js)}
           padding={10}
@@ -149,6 +153,10 @@ export const ProgramDetail = props => {
         <TextField source="programSubjectLabel" label="Program Subject Label" />
         <TextField label="Organisation Id" source="programOrganisationId" />
         <RuleDisplay {...props} />
+        <TextField label="Created by" source="createdBy" />
+        <TextField label="Last modified by" source="lastModifiedBy" />
+        <TextField label="Created On(datetime)" source="createdDateTime" />
+        <TextField label="Last modified On(datetime)" source="modifiedDateTime" />
       </SimpleShowLayout>
     </Show>
   );

@@ -17,6 +17,7 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import produce from "immer";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
+import InputLabel from "@material-ui/core/InputLabel";
 
 import FormLevelRules from "../components/FormLevelRules";
 
@@ -702,6 +703,13 @@ class FormDetails extends Component {
   };
 
   render() {
+    const classes = {
+      inputLabel: {
+        marginTop: 15,
+        fontSize: 12
+      }
+    };
+
     const form = (
       <Grid container justify="center">
         <Grid item sm={12}>
@@ -765,6 +773,34 @@ class FormDetails extends Component {
                   )}
                 </Droppable>
               </DragDropContext>
+              {/* <div style={{marginTop:"50px"}}> */}
+              <Grid container item sm={12}>
+                <Grid item sm={3}>
+                  {" "}
+                  <InputLabel style={classes.inputLabel}>
+                    Created by : {this.state.form.createdBy}{" "}
+                  </InputLabel>
+                </Grid>
+                <Grid item sm={3}>
+                  {" "}
+                  <InputLabel style={classes.inputLabel}>
+                    Last modified by : {this.state.form.lastModifiedBy}{" "}
+                  </InputLabel>
+                </Grid>
+                <Grid item sm={3}>
+                  {" "}
+                  <InputLabel style={classes.inputLabel}>
+                    Creation datetime : {this.state.form.createdDateTime}{" "}
+                  </InputLabel>
+                </Grid>
+                <Grid item sm={3}>
+                  {" "}
+                  <InputLabel style={classes.inputLabel}>
+                    Last modified datetime : {this.state.form.modifiedDateTime}{" "}
+                  </InputLabel>
+                </Grid>
+              </Grid>
+              {/* </div> */}
             </div>
           </TabContainer>
           <Grid container item sm={12} hidden={this.state.activeTabIndex !== 1}>

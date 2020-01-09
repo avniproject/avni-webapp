@@ -101,6 +101,10 @@ export const LocationDetail = props => {
         <ReferenceManyField label="Contains locations" reference="locations" target="parentId">
           <SubLocationsGrid />
         </ReferenceManyField>
+        <TextField label="Created by" source="createdBy" />
+        <TextField label="Last modified by" source="lastModifiedBy" />
+        <TextField label="Created On(datetime)" source="createdDateTime" />
+        <TextField label="Last modified On(datetime)" source="lastModifiedDateTime" />
       </SimpleShowLayout>
     </Show>
   );
