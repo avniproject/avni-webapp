@@ -54,7 +54,7 @@ public class IndividualImporter extends Importer<IndividualRequest> {
                     break;
                 case "Last Name":
                     String lastName = importField.getTextValue(row, header, importSheetMetaData);
-                    individualRequest.setLastName(StringUtils.isEmpty(lastName) ? "." : lastName);
+                    individualRequest.setLastName(StringUtils.isEmpty(lastName) ? "" : lastName);
                     break;
                 case "Age":
                     String ageInYearsOrMonths = importField.getTextValue(row, header, importSheetMetaData);
