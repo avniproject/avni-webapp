@@ -3,6 +3,8 @@ package org.openchs.service;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.*;
+import org.openchs.domain.individualRelationship.IndividualRelation;
+import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.web.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,23 +145,37 @@ public class IndividualService {
     }
 
     public List<RelationshipContract> constructRelationships(Individual individual) {
-        return individual.getRelationships().stream().map(individualRelationship -> {
-            RelationshipContract relationshipContract = new RelationshipContract();
-            relationshipContract.setUuid(individualRelationship.getUuid());
-            relationshipContract.setIndividualBUuid(individualRelationship.getIndividualB().getUuid());
-            relationshipContract.setIndividualBIsToARelation(individualRelationship.getRelationship().getIndividualBIsToA().getName());
-            relationshipContract.setRelationshipTypeUuid(individualRelationship.getRelationship().getUuid());
-            relationshipContract.setEnterDateTime(individualRelationship.getEnterDateTime());
-            relationshipContract.setExitDateTime(individualRelationship.getExitDateTime());
-            relationshipContract.setFirstName(individualRelationship.getIndividualB().getFirstName());
-            relationshipContract.setLastName(individualRelationship.getIndividualB().getLastName());
-            relationshipContract.setDateOfBirth(individualRelationship.getIndividualB().getDateOfBirth());
-            relationshipContract.setVoided(individualRelationship.isVoided());
-            if (individualRelationship.getExitObservations() != null) {
-                relationshipContract.setExitObservations(constructObservations(individualRelationship.getExitObservations()));
-            }
-            return relationshipContract;
+        List<RelationshipContract> relationshipContractFromSelfToOthers = individual.getRelationshipsFromSelfToOthers().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
+            Individual individualB = individualRelationship.getIndividualB();
+            IndividualRelation individualRelation = individualRelationship.getRelationship().getIndividualBIsToA();
+            return constructCommonRelationship(individualRelationship,individualB,individualRelation);
         }).collect(Collectors.toList());
+
+        List<RelationshipContract> relationshipContractFromOthersToSelf = individual.getRelationshipsFromOthersToSelf().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
+            Individual individualA = individualRelationship.getIndividuala();
+            IndividualRelation individualRelation = individualRelationship.getRelationship().getIndividualAIsToB();
+            return constructCommonRelationship(individualRelationship,individualA,individualRelation);
+        }).collect(Collectors.toList());
+        relationshipContractFromSelfToOthers.addAll(relationshipContractFromOthersToSelf);
+        return relationshipContractFromSelfToOthers;
+    }
+
+    private RelationshipContract constructCommonRelationship(IndividualRelationship individualRelationship,Individual individual,IndividualRelation individualRelation) {
+        RelationshipContract relationshipContract = new RelationshipContract();
+        relationshipContract.setIndividualBUuid(individual.getUuid());
+        relationshipContract.setIndividualBIsToARelation(individualRelation.getName());
+        relationshipContract.setFirstName(individual.getFirstName());
+        relationshipContract.setLastName(individual.getLastName());
+        relationshipContract.setDateOfBirth(individual.getDateOfBirth());
+        relationshipContract.setUuid(individualRelationship.getUuid());
+        relationshipContract.setRelationshipTypeUuid(individualRelationship.getRelationship().getUuid());
+        relationshipContract.setEnterDateTime(individualRelationship.getEnterDateTime());
+        relationshipContract.setExitDateTime(individualRelationship.getExitDateTime());
+        relationshipContract.setVoided(individualRelationship.isVoided());
+        if (individualRelationship.getExitObservations() != null) {
+            relationshipContract.setExitObservations(constructObservations(individualRelationship.getExitObservations()));
+        }
+        return relationshipContract;
     }
 
     public List<ObservationContract> constructObservations(@NotNull ObservationCollection observationCollection) {

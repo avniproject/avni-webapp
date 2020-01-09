@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "individual")
-@JsonIgnoreProperties({"programEnrolments", "encounters", "relationships"})
+@JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsFromSelfToOthers", "relationshipsFromOthersToSelf"})
 @BatchSize(size = 100)
 public class Individual extends OrganisationAwareEntity {
 
@@ -34,7 +34,10 @@ public class Individual extends OrganisationAwareEntity {
     private boolean dateOfBirthVerified;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "individuala")
-    private Set<IndividualRelationship> relationships = new HashSet<>();
+    private Set<IndividualRelationship> relationshipsFromSelfToOthers = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "individualB")
+    private Set<IndividualRelationship> relationshipsFromOthersToSelf = new HashSet<>();
 
     @NotNull
     private LocalDate registrationDate;
@@ -186,12 +189,20 @@ public class Individual extends OrganisationAwareEntity {
         this.subjectType = subjectType;
     }
 
-    public Set<IndividualRelationship> getRelationships() {
-        return relationships;
+    public Set<IndividualRelationship> getRelationshipsFromSelfToOthers() {
+        return relationshipsFromSelfToOthers;
     }
 
-    public void setRelationships(Set<IndividualRelationship> relationships) {
-        this.relationships = relationships;
+    public void setRelationshipsFromSelfToOthers(Set<IndividualRelationship> relationshipsFromSelfToOthers) {
+        this.relationshipsFromSelfToOthers = relationshipsFromSelfToOthers;
+    }
+
+    public Set<IndividualRelationship> getRelationshipsFromOthersToSelf() {
+        return relationshipsFromOthersToSelf;
+    }
+
+    public void setRelationshipsFromOthersToSelf(Set<IndividualRelationship> relationshipsFromOthersToSelf) {
+        this.relationshipsFromOthersToSelf = relationshipsFromOthersToSelf;
     }
 
     @JsonIgnore
