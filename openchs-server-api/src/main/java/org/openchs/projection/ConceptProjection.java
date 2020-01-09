@@ -7,6 +7,7 @@ import org.openchs.application.projections.BaseProjection;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer.ConceptAnswerProjection;
 import org.springframework.data.rest.core.config.Projection;
+import org.joda.time.DateTime;
 
 import java.util.Set;
 
@@ -29,6 +30,14 @@ public interface ConceptProjection extends BaseProjection {
     String getUnit();
 
     Boolean getVoided();
+
+    String getLastModifiedBy();
+
+    String getCreatedBy();
+
+    DateTime getCreatedDateTime();
+
+    DateTime getLastModifiedDateTime();
 
     @JsonInclude(Include.NON_EMPTY)
     Set<ConceptAnswerProjection> getConceptAnswers();
