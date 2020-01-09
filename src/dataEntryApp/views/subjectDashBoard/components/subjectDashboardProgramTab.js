@@ -40,7 +40,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
     <Fragment>
       <Paper className={classes.root}>
         <Grid className={classes.tabView} container spacing={1}>
-          <Grid xs={6}>
+          <Grid item xs={6}>
             <label>Active Programs</label>
             <AppBar position="static" color="default">
               <Tabs
@@ -55,7 +55,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 {program && program.enrolments
                   ? program.enrolments.map((element, index) =>
                       element.programExitDateTime == null ? (
-                        <Tab label={element.operationalProgramName} />
+                        <Tab key={index} label={element.operationalProgramName} />
                       ) : (
                         ""
                       )
@@ -64,8 +64,8 @@ const SubjectDashboardProgramTab = ({ program }) => {
               </Tabs>
             </AppBar>
           </Grid>
-          <Grid xs={2} />
-          <Grid xs={4}>
+          <Grid item xs={2} />
+          <Grid item xs={4}>
             <label>Exited Programs</label>
             <AppBar position="static" color="default">
               <Tabs
@@ -80,7 +80,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 {program && program.enrolments
                   ? program.enrolments.map((element, index) =>
                       element.programExitDateTime != null ? (
-                        <Tab label={element.operationalProgramName} />
+                        <Tab key={index} label={element.operationalProgramName} />
                       ) : (
                         ""
                       )

@@ -76,7 +76,9 @@ const SubjectDashboardGeneralTab = ({ general }) => {
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
-            <Typography className={classes.expansionHeading}>Planned visits</Typography>
+            <Typography component={"span"} className={classes.expansionHeading}>
+              Planned visits
+            </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
@@ -129,7 +131,9 @@ const SubjectDashboardGeneralTab = ({ general }) => {
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
-            <Typography className={classes.expansionHeading}>Completed visits</Typography>
+            <Typography component={"span"} className={classes.expansionHeading}>
+              Completed visits
+            </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>

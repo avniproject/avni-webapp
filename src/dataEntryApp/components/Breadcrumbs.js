@@ -23,12 +23,14 @@ export default ({ path }) => {
 
   return (
     <Breadcrumbs className={classes.Breadcrumbs} aria-label="breadcrumb">
-      {clickableParts.map(part => (
-        <Link color="inherit" href="/">
+      {clickableParts.map((part, index) => (
+        <Link key={index} color="inherit" href="/">
           {part}
         </Link>
       ))}
-      <Typography color="textPrimary">{currentpage}</Typography>
+      <Typography component={"span"} color="textPrimary">
+        {currentpage}
+      </Typography>
     </Breadcrumbs>
   );
 };

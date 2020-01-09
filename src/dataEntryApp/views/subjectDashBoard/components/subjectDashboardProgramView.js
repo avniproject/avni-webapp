@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Fab from "@material-ui/core/Fab";
 import { makeStyles } from "@material-ui/core/styles";
@@ -99,7 +99,9 @@ const ProgramView = ({ programData }) => {
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
-            <Typography className={classes.expansionHeading}>Enrollment details</Typography>
+            <Typography component={"span"} className={classes.expansionHeading}>
+              Enrollment details
+            </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid item xs={12}>
@@ -117,7 +119,9 @@ const ProgramView = ({ programData }) => {
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
-            <Typography className={classes.expansionHeading}>Planned visits</Typography>
+            <Typography component={"span"} className={classes.expansionHeading}>
+              Planned visits
+            </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
@@ -169,7 +173,9 @@ const ProgramView = ({ programData }) => {
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
-            <Typography className={classes.expansionHeading}>Completed visit</Typography>
+            <Typography component={"span"} className={classes.expansionHeading}>
+              Completed visit
+            </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>

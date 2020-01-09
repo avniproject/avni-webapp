@@ -88,7 +88,9 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           aria-controls="panel2bh-content"
           id="panel2bh-header"
         >
-          <Typography className={classes.expansionHeading}>Relatives</Typography>
+          <Typography component={"span"} className={classes.expansionHeading}>
+            Relatives
+          </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <GridCommonList gridListDetails={profile.relationships} />

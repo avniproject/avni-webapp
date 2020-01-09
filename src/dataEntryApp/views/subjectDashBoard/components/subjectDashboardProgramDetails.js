@@ -7,7 +7,9 @@ import Box from "@material-ui/core/Box";
 function TabPanel(props) {
   const { children, value, index } = props;
 
-  return <Typography>{value == index && <Box p={3}>{children}</Box>}</Typography>;
+  return (
+    <Typography component={"span"}>{value === index && <Box p={3}>{children}</Box>}</Typography>
+  );
 }
 
 TabPanel.propTypes = {
@@ -21,7 +23,7 @@ const programDetails = ({ tabPanelValue, programData }) => {
     <div>
       {programData && programData.enrolments
         ? programData.enrolments.map((element, index) => (
-            <Fragment>
+            <Fragment key={index}>
               <TabPanel value={tabPanelValue} index={index}>
                 <ProgramView programData={element} />
               </TabPanel>
