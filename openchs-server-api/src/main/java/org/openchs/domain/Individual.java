@@ -34,10 +34,10 @@ public class Individual extends OrganisationAwareEntity {
     private boolean dateOfBirthVerified;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "individuala")
-    private Set<IndividualRelationship> relationshipsWithB = new HashSet<>();
+    private Set<IndividualRelationship> relationshipsFromSelfToOthers = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "individualB")
-    private Set<IndividualRelationship> relationshipsWithA = new HashSet<>();
+    private Set<IndividualRelationship> relationshipsFromOthersToSelf = new HashSet<>();
 
     @NotNull
     private LocalDate registrationDate;
@@ -189,20 +189,20 @@ public class Individual extends OrganisationAwareEntity {
         this.subjectType = subjectType;
     }
 
-    public Set<IndividualRelationship> getRelationshipsWithB() {
-        return relationshipsWithB;
+    public Set<IndividualRelationship> getRelationshipsFromSelfToOthers() {
+        return relationshipsFromSelfToOthers;
     }
 
-    public void setRelationshipsWithB(Set<IndividualRelationship> relationshipsWithB) {
-        this.relationshipsWithB = relationshipsWithB;
+    public void setRelationshipsFromSelfToOthers(Set<IndividualRelationship> relationshipsFromSelfToOthers) {
+        this.relationshipsFromSelfToOthers = relationshipsFromSelfToOthers;
     }
 
-    public Set<IndividualRelationship> getRelationshipsWithA() {
-        return relationshipsWithA;
+    public Set<IndividualRelationship> getRelationshipsFromOthersToSelf() {
+        return relationshipsFromOthersToSelf;
     }
 
-    public void setRelationshipsWithA(Set<IndividualRelationship> relationshipsWithA) {
-        this.relationshipsWithA = relationshipsWithA;
+    public void setRelationshipsFromOthersToSelf(Set<IndividualRelationship> relationshipsFromOthersToSelf) {
+        this.relationshipsFromOthersToSelf = relationshipsFromOthersToSelf;
     }
 
     @JsonIgnore

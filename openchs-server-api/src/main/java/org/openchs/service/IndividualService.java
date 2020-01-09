@@ -145,19 +145,19 @@ public class IndividualService {
     }
 
     public List<RelationshipContract> constructRelationships(Individual individual) {
-        List<RelationshipContract> relationshipContractList1 = individual.getRelationshipsWithB().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
+        List<RelationshipContract> relationshipContractFromSelfToOthers = individual.getRelationshipsFromSelfToOthers().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
             Individual individualB = individualRelationship.getIndividualB();
             IndividualRelation individualRelation = individualRelationship.getRelationship().getIndividualBIsToA();
             return constructCommonRelationship(individualRelationship,individualB,individualRelation);
         }).collect(Collectors.toList());
 
-        List<RelationshipContract> relationshipContractList2 = individual.getRelationshipsWithA().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
+        List<RelationshipContract> relationshipContractFromOthersToSelf = individual.getRelationshipsFromOthersToSelf().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
             Individual individualA = individualRelationship.getIndividuala();
             IndividualRelation individualRelation = individualRelationship.getRelationship().getIndividualAIsToB();
             return constructCommonRelationship(individualRelationship,individualA,individualRelation);
         }).collect(Collectors.toList());
-        relationshipContractList1.addAll(relationshipContractList2);
-        return relationshipContractList1;
+        relationshipContractFromSelfToOthers.addAll(relationshipContractFromOthersToSelf);
+        return relationshipContractFromSelfToOthers;
     }
 
     private RelationshipContract constructCommonRelationship(IndividualRelationship individualRelationship,Individual individual,IndividualRelation individualRelation) {
