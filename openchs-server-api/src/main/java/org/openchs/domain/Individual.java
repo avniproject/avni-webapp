@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "individual")
-@JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsWithB", "relationshipsWithA"})
+@JsonIgnoreProperties({"programEnrolments", "encounters", "relationshipsFromSelfToOthers", "relationshipsFromOthersToSelf"})
 @BatchSize(size = 100)
 public class Individual extends OrganisationAwareEntity {
 
