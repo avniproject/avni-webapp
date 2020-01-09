@@ -3,6 +3,7 @@ package org.openchs.projection;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.openchs.application.KeyValues;
 import org.openchs.application.projections.BaseProjection;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer.ConceptAnswerProjection;
@@ -11,7 +12,7 @@ import org.springframework.data.rest.core.config.Projection;
 import java.util.Set;
 
 @Projection(name = "ConceptProjection", types = {Concept.class})
-@JsonPropertyOrder({"id", "uuid", "name", "dataType", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "conceptAnswers"})
+@JsonPropertyOrder({"id", "uuid", "name", "dataType", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "conceptAnswers", "KeyValues"})
 public interface ConceptProjection extends BaseProjection {
 
     String getName();
@@ -27,6 +28,8 @@ public interface ConceptProjection extends BaseProjection {
     Double getHighNormal();
 
     String getUnit();
+
+    KeyValues getKeyValues();
 
     Boolean getVoided();
 
