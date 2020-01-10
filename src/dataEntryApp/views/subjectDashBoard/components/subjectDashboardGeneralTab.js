@@ -46,8 +46,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const currentDate = new Date();
-
 const SubjectDashboardGeneralTab = ({ general }) => {
   const [expanded, setExpanded] = React.useState("");
 
@@ -102,8 +100,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                               />
                             </ListItem>
 
-                            {currentDate.toString() >
-                            moment(new Date(row.maxVisitDateTime)).format("DD-MM-YYYY") ? (
+                            {new Date() > new Date(row.maxVisitDateTime) ? (
                               <ListItem className={classes.listItem}>
                                 <ListItemText>
                                   <label className={classes.programStatusStyle}>Overdue</label>
@@ -158,9 +155,9 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                             </ListItem>
                             <ListItem className={classes.listItem}>
                               <label style={{ fontSize: "14px" }}>
-                                {`Scheduled on :${moment(new Date(row.maxVisitDateTime)).format(
-                                  "DD-MM-YYYY"
-                                )}`}{" "}
+                                {`Scheduled on :${moment(
+                                  new Date(row.earliestVisitDateTime)
+                                ).format("DD-MM-YYYY")}`}{" "}
                               </label>
                             </ListItem>
                           </List>
