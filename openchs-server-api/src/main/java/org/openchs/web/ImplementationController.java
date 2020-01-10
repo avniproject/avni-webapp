@@ -177,10 +177,8 @@ public class ImplementationController implements RestControllerResourceProcessor
                 .map(OperationalSubjectTypeContract::fromOperationalSubjectType)
                 .collect(Collectors.toList());
         OperationalSubjectTypesContract operationalSubjectTypesContract = new OperationalSubjectTypesContract();
-        operationalSubjectTypesContract.setOrganisationUUID(org.getUuid());
         operationalSubjectTypesContract.setOperationalSubjectTypes(operationalSubjectTypeContracts);
         addFileToZip(zos, "operationalSubjectTypes.json", operationalSubjectTypesContract);
-
     }
 
     private void addSubjectTypesJson(Long orgId, ZipOutputStream zos) throws IOException {
