@@ -30,6 +30,10 @@ class CreateEditConcept extends Component {
       lowNormal: null,
       highNormal: null,
       unit: null,
+      createdBy: "",
+      lastModifiedBy: "",
+      creationDateTime: "",
+      lastModifiedDateTime: "",
       answers: [
         {
           name: "",
@@ -87,6 +91,10 @@ class CreateEditConcept extends Component {
             lowNormal: response.data.lowNormal,
             highNormal: response.data.highNormal,
             unit: response.data.unit,
+            createdBy: response.data.createdBy,
+            lastModifiedBy: response.data.lastModifiedBy,
+            creationDateTime: response.data.createdDateTime,
+            lastModifiedDateTime: response.data.lastModifiedDateTime,
             answers
           });
         })
@@ -400,7 +408,8 @@ class CreateEditConcept extends Component {
         marginTop: 40
       },
       inputLabel: {
-        marginTop: 15
+        marginTop: 15,
+        fontSize: 12
       }
     };
 
@@ -499,6 +508,22 @@ class CreateEditConcept extends Component {
             Submit
           </Button>
         </Grid>
+
+        {!this.props.isCreatePage && (
+          <div style={{ marginTop: "50px" }}>
+            <InputLabel style={classes.inputLabel}>Created by </InputLabel>
+            {this.state.createdBy}
+
+            <InputLabel style={classes.inputLabel}>Last modified by </InputLabel>
+            {this.state.lastModifiedBy}
+
+            <InputLabel style={classes.inputLabel}>Creation datetime </InputLabel>
+            {this.state.creationDateTime}
+
+            <InputLabel style={classes.inputLabel}>Last modified datetime </InputLabel>
+            {this.state.lastModifiedDateTime}
+          </div>
+        )}
 
         {this.state.conceptCreationAlert && (
           <CustomizedSnackbar

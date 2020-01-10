@@ -207,6 +207,10 @@ export const UserDetail = ({ user, ...props }) => (
           !isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : ""
         }
       />
+      <TextField label="Created by" source="createdBy" />
+      <TextField label="Last modified by" source="lastModifiedBy" />
+      <TextField label="Created On(datetime)" source="createdDateTime" />
+      <TextField label="Last modified On(datetime)" source="lastModifiedDateTime" />
     </SimpleShowLayout>
   </Show>
 );
