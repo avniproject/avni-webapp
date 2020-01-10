@@ -2,6 +2,8 @@ package org.openchs.web.request.webapp;
 
 import org.openchs.domain.OperationalEncounterType;
 import org.springframework.hateoas.core.Relation;
+import org.joda.time.DateTime;
+
 
 /**
  * This class represents a combined entity representing one to one mapping of EncounterType and OperationalEncounterType.
@@ -14,6 +16,10 @@ public class EncounterTypeContractWeb {
     private Long encounterTypeOrganisationId;
     private boolean voided;
     private String encounterEligibilityCheckRule;
+    private String createdBy;
+    private String lastModifiedBy;
+    private DateTime createdDateTime;
+    private DateTime lastModifiedDateTime;
 
     public String getName() {
         return name;
@@ -47,6 +53,10 @@ public class EncounterTypeContractWeb {
         contract.setEncounterTypeOrganisationId(operationalEncounterType.getEncounterType().getOrganisationId());
         contract.setVoided(operationalEncounterType.isVoided());
         contract.setEncounterEligibilityCheckRule(operationalEncounterType.getEncounterEligibilityCheckRule());
+        contract.setCreatedBy(operationalEncounterType.getAudit().getCreatedBy().getUsername());
+        contract.setLastModifiedBy(operationalEncounterType.getAudit().getLastModifiedBy().getUsername());
+        contract.setCreatedDateTime(operationalEncounterType.getAudit().getCreatedDateTime());
+        contract.setModifiedDateTime(operationalEncounterType.getAudit().getLastModifiedDateTime());
         return contract;
     }
 
@@ -72,5 +82,37 @@ public class EncounterTypeContractWeb {
 
     public void setEncounterEligibilityCheckRule(String encounterEligibilityCheckRule) {
         this.encounterEligibilityCheckRule = encounterEligibilityCheckRule;
+    }
+
+    public void setCreatedBy(String username){
+        this.createdBy = username;
+    }
+    public String getCreatedBy(){
+        return createdBy;
+    }
+
+    public void setLastModifiedBy(String username){
+        this.lastModifiedBy = username;
+    }
+
+    public String getLastModifiedBy(){
+        return lastModifiedBy;
+    }
+
+
+    public void setCreatedDateTime(DateTime createDateTime){
+        this.createdDateTime = createDateTime;
+    }
+
+    public DateTime getCreatedDateTime(){
+        return createdDateTime;
+    }
+
+    public void setModifiedDateTime(DateTime lastModifiedDateTime){
+        this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public DateTime getModifiedDateTime(){
+        return lastModifiedDateTime;
     }
 }
