@@ -1,0 +1,2 @@
+ALTER TABLE checklist_item_detail DROP CONSTRAINT IF EXISTS checklist_item_detail_uuid_key;
+ALTER TABLE checklist_item_detail ADD CONSTRAINT checklist_item_detail_uuid_org_id_key UNIQUE (uuid, organisation_id);
