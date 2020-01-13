@@ -148,6 +148,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private <T extends AbstractEncounter> void addEncounter(List<Object> row, T encounter, LinkedHashMap<String, FormElement> map, LinkedHashMap<String, FormElement> cancelMap) {
         row.add(encounter.getId());
         row.add(encounter.getUuid());
+        row.add(encounter.getName());
         row.add(encounter.getEarliestVisitDateTime());
         row.add(encounter.getMaxVisitDateTime());
         row.add(encounter.getEncounterDateTime());
@@ -190,6 +191,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
             visit++;
             sb.append(",").append(encounterTypeName).append("_").append(visit).append(".id");
             sb.append(",").append(encounterTypeName).append("_").append(visit).append(".uuid");
+            sb.append(",").append(encounterTypeName).append("_").append(visit).append(".name");
             sb.append(",").append(encounterTypeName).append("_").append(visit).append(".earliest_visit_date_time");
             sb.append(",").append(encounterTypeName).append("_").append(visit).append(".max_visit_date_time");
             sb.append(",").append(encounterTypeName).append("_").append(visit).append(".encounter_date_time");
