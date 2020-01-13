@@ -11,8 +11,14 @@ export default {
       body: JSON.stringify(subject)
     }),
 
-  fetchSubjectProfile: (uuid) =>
+  fetchSubjectProfile: uuid =>
     httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
-      return response.json
-    })
+      return response.json;
+    }),
+  fetchSubjectProgram: uuid => {
+    return httpClient.fetchJson(`/web/subject/${uuid}/programs/`).then(response => response.json);
+  },
+  fetchSubjectGeneral: uuid => {
+    return httpClient.fetchJson(`/web/subject/${uuid}/encounters/`).then(response => response.json);
+  }
 };
