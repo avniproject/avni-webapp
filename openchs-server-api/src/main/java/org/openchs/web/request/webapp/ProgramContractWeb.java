@@ -2,8 +2,6 @@ package org.openchs.web.request.webapp;
 
 import org.openchs.domain.OperationalProgram;
 import org.springframework.hateoas.core.Relation;
-import org.joda.time.DateTime;
-
 
 /**
  * This class represents a combined entity representing one to one mapping of Program and OperationalProgram.
@@ -20,10 +18,6 @@ public class ProgramContractWeb {
     private String enrolmentSummaryRule;
     private String enrolmentEligibilityCheckRule;
     private String checklistsRule;
-    private String createdBy;
-    private String lastModifiedBy;
-    private DateTime createdDateTime;
-    private DateTime lastModifiedDateTime;
 
     public String getName() {
         return name;
@@ -78,10 +72,6 @@ public class ProgramContractWeb {
         contract.setEnrolmentSummaryRule(operationalProgram.getEnrolmentSummaryRule());
         contract.setEnrolmentEligibilityCheckRule(operationalProgram.getEnrolmentEligibilityCheckRule());
         contract.setChecklistsRule(operationalProgram.getChecklistsRule());
-        contract.setCreatedBy(operationalProgram.getAudit().getCreatedBy().getUsername());
-        contract.setLastModifiedBy(operationalProgram.getAudit().getLastModifiedBy().getUsername());
-        contract.setCreatedDateTime(operationalProgram.getAudit().getCreatedDateTime());
-        contract.setModifiedDateTime(operationalProgram.getAudit().getLastModifiedDateTime());
 
         return contract;
     }
@@ -125,37 +115,5 @@ public class ProgramContractWeb {
 
     public void setChecklistsRule(String checklistsRule) {
         this.checklistsRule = checklistsRule;
-    }
-
-    public void setCreatedBy(String username){
-        this.createdBy = username;
-    }
-    public String getCreatedBy(){
-        return createdBy;
-    }
-
-    public void setLastModifiedBy(String username){
-        this.lastModifiedBy = username;
-    }
-
-    public String getLastModifiedBy(){
-        return lastModifiedBy;
-    }
-
-
-    public void setCreatedDateTime(DateTime createDateTime){
-        this.createdDateTime = createDateTime;
-    }
-
-    public DateTime getCreatedDateTime(){
-        return createdDateTime;
-    }
-
-    public void setModifiedDateTime(DateTime lastModifiedDateTime){
-        this.lastModifiedDateTime = lastModifiedDateTime;
-    }
-
-    public DateTime getModifiedDateTime(){
-        return lastModifiedDateTime;
     }
 }

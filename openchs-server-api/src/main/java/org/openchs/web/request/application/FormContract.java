@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.joda.time.DateTime;
 
 import static org.openchs.application.FormElement.PLACEHOLDER_CONCEPT_NAME;
 import static org.openchs.application.FormElement.PLACEHOLDER_CONCEPT_UUID;
@@ -28,10 +27,6 @@ public class FormContract extends ReferenceDataContract {
     private String decisionRule;
     private String visitScheduleRule;
     private String validationRule;
-    private String createdBy;
-    private String lastModifiedBy;
-    private DateTime createdDateTime;
-    private DateTime lastModifiedDateTime;
 
     public FormContract() {
     }
@@ -130,7 +125,6 @@ public class FormContract extends ReferenceDataContract {
         formContract.setDecisionRule(form.getDecisionRule());
         formContract.setVisitScheduleRule(form.getVisitScheduleRule());
         formContract.setValidationRule(form.getValidationRule());
-      
         List<FormElementGroupContract> fegContracts = form.getFormElementGroups().stream()
                 .map(FormElementGroupContract::fromFormElementGroup)
                 .sorted(Comparator.comparingDouble(FormElementGroupContract::getDisplayOrder))
@@ -167,37 +161,5 @@ public class FormContract extends ReferenceDataContract {
 
     public void setValidationRule(String validationRule) {
         this.validationRule = validationRule;
-    }
-
-    public void setCreatedBy(String username){
-        this.createdBy = username;
-    }
-    public String getCreatedBy(){
-        return createdBy;
-    }
-
-    public void setLastModifiedBy(String username){
-        this.lastModifiedBy = username;
-    }
-
-    public String getLastModifiedBy(){
-        return lastModifiedBy;
-    }
-
-
-    public void setCreatedDateTime(DateTime createDateTime){
-        this.createdDateTime = createDateTime;
-    }
-
-    public DateTime getCreatedDateTime(){
-        return createdDateTime;
-    }
-
-    public void setModifiedDateTime(DateTime lastModifiedDateTime){
-        this.lastModifiedDateTime = lastModifiedDateTime;
-    }
-
-    public DateTime getModifiedDateTime(){
-        return lastModifiedDateTime;
     }
 }

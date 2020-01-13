@@ -14,10 +14,9 @@ public class CHSEntity extends CHSBaseEntity {
     @JoinColumn(name = "audit_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Audit audit = new Audit();
-    
+
     @Column(name = "version")
     private int version;
-
 
     public Audit getAudit() {
         if (audit == null) {
@@ -46,22 +45,9 @@ public class CHSEntity extends CHSBaseEntity {
         return getAudit().getLastModifiedDateTime();
     }
 
-    public DateTime getCreatedDateTime() {
-        return getAudit().getCreatedDateTime();
-    }
-
-    public String getCreatedBy() {
-        return getAudit().getCreatedBy().getUsername();
-    }
-
-    public String getLastModifiedBy() {
-        return getAudit().getLastModifiedBy().getUsername();
-    }
     public Long getAuditId() {
         return getAudit().getId();
     }
-
-
 
     @JsonIgnore
     public boolean isNew() {
