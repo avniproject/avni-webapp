@@ -30,6 +30,10 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     Page<User> findByOrganisationIdAndIsVoidedFalse(@Param("organisationId") Long organisationId,
                                                     Pageable pageable);
 
+    @PreAuthorize("hasAnyAuthority('admin')")
+    @RestResource(path = "findOrgAdmins", rel = "findOrgAdmins")
+    Page<User> findAllByIsOrgAdminTrueAndIsVoidedFalse(Pageable pageable);
+
     Page<User> findByOrganisationIdAndIsVoidedFalseAndUsernameIgnoreCaseContaining(Long organisationId,
                                                                String username,
                                                                Pageable pageable);
