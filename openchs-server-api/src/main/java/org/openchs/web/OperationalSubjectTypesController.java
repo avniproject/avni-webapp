@@ -6,6 +6,7 @@ import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.OperationalSubjectType;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.SubjectType;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.OperationalSubjectTypeContract;
 import org.openchs.web.request.OperationalSubjectTypesContract;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class OperationalSubjectTypesController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     void saveOperationalSubjectTypes(@RequestBody OperationalSubjectTypesContract request) {
-        Organisation organisation = organisationRepository.findByUuid(request.getOrganisationUUID());
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         request.getOperationalSubjectTypes().forEach(operationalSubjectTypeContract -> {
             createOperationalSubjectType(operationalSubjectTypeContract, organisation);
         });

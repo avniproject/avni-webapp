@@ -7,6 +7,7 @@ import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Catchment;
 import org.openchs.domain.Organisation;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.AddressLevelContract;
 import org.openchs.web.request.CatchmentContract;
@@ -123,7 +124,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     @Transactional
     ResponseEntity<?> save(@RequestBody CatchmentsContract catchmentsContract) {
         try {
-            Organisation organisation = organisationRepository.findByName(catchmentsContract.getOrganisation());
+            Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
             saveAll(catchmentsContract, organisation);
         } catch (BuilderException e) {
             e.printStackTrace();

@@ -2,6 +2,7 @@ package org.openchs.web;
 
 import org.openchs.dao.*;
 import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.OperationalEncounterTypesContract;
 import org.openchs.web.request.OperationalEncounterTypeContract;
 import org.openchs.web.request.OperationalProgramsContract;
@@ -36,7 +37,7 @@ public class OperationalEncounterTypesController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     void saveOperationalEncounterTypes(@RequestBody OperationalEncounterTypesContract request) {
-        Organisation organisation = organisationRepository.findByName(request.getOrganisationName());
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         request.getOperationalEncounterTypes().forEach(operationalEncounterTypeContract -> {
             createOperationalEncounterType(operationalEncounterTypeContract, organisation);
         });

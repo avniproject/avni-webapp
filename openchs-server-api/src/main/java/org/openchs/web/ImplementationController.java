@@ -139,7 +139,6 @@ public class ImplementationController implements RestControllerResourceProcessor
                 .map(OperationalProgramContract::fromOperationalProgram)
                 .collect(Collectors.toList());
         OperationalProgramsContract operationalProgramsContract = new OperationalProgramsContract();
-        operationalProgramsContract.setOrganisationName(organisation.getName());
         operationalProgramsContract.setOperationalPrograms(contracts);
         addFileToZip(zos, "operationalPrograms.json", operationalProgramsContract);
     }
@@ -158,7 +157,6 @@ public class ImplementationController implements RestControllerResourceProcessor
                 .map(OperationalEncounterTypeContract::fromOperationalEncounterType)
                 .collect(Collectors.toList());
         OperationalEncounterTypesContract operationalEncounterTypesContract = new OperationalEncounterTypesContract();
-        operationalEncounterTypesContract.setOrganisationName(organisation.getName());
         operationalEncounterTypesContract.setOperationalEncounterTypes(contracts);
         addFileToZip(zos, "operationalEncounterTypes.json", operationalEncounterTypesContract);
     }
@@ -177,7 +175,6 @@ public class ImplementationController implements RestControllerResourceProcessor
                 .map(OperationalSubjectTypeContract::fromOperationalSubjectType)
                 .collect(Collectors.toList());
         OperationalSubjectTypesContract operationalSubjectTypesContract = new OperationalSubjectTypesContract();
-        operationalSubjectTypesContract.setOrganisationUUID(org.getUuid());
         operationalSubjectTypesContract.setOperationalSubjectTypes(operationalSubjectTypeContracts);
         addFileToZip(zos, "operationalSubjectTypes.json", operationalSubjectTypesContract);
 
@@ -194,7 +191,6 @@ public class ImplementationController implements RestControllerResourceProcessor
         Stream<Catchment> allCatchments = catchmentRepository.findAllByOrganisationId(organisation.getId()).stream();
         List<CatchmentExport> catchmentExports = allCatchments.map(CatchmentExport::fromCatchment).collect(Collectors.toList());
         CatchmentsExport catchmentsExport = new CatchmentsExport();
-        catchmentsExport.setOrganisation(organisation.getName());
         catchmentsExport.setCatchments(catchmentExports);
         addFileToZip(zos, "catchments.json", catchmentsExport);
     }

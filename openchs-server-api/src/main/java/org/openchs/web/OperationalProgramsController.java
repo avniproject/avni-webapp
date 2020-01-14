@@ -6,6 +6,7 @@ import org.openchs.dao.ProgramRepository;
 import org.openchs.domain.OperationalProgram;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.Program;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.OperationalProgramContract;
 import org.openchs.web.request.OperationalProgramsContract;
 import org.slf4j.Logger;
@@ -38,7 +39,7 @@ public class OperationalProgramsController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     void saveOperationalPrograms(@RequestBody OperationalProgramsContract request) {
-        Organisation organisation = organisationRepository.findByName(request.getOrganisationName());
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         request.getOperationalPrograms().forEach(operationalProgramContract -> {
             createOperationalProgram(operationalProgramContract, organisation);
         });
