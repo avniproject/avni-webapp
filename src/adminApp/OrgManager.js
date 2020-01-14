@@ -36,7 +36,9 @@ import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
 import Forms from "../formDesigner/views/Forms";
 import Concepts from "../formDesigner/views/Concepts";
+import Checklist from "../formDesigner/views/Checklist";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
+import WebDesignerFeedback from "../formDesigner/components/WebDesignerFeedback";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -136,6 +138,8 @@ class OrgManager extends Component {
           options={{ label: "Concepts" }}
           list={uiDesignerToggle && Concepts}
         />
+        <Resource name="checklist" options={{ label: "Checklist" }} list={Checklist} />
+        <Resource name="feedback" options={{ label: "Feedback" }} list={WebDesignerFeedback} />
         <Resource
           name="bundle"
           options={{ label: "Bundle" }}
@@ -151,9 +155,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(OrgManager)
-);
+export default withRouter(connect(mapStateToProps, null)(OrgManager));
