@@ -3,8 +3,17 @@ package org.openchs.web.request;
 public class OrganisationRequest extends CHSRequest {
     private String parentUuid;
     private String name;
-    private String dbUserName;
+    private String dbUser;
     private String mediaDirectory;
+    private String usernameSuffix;
+
+    public String getUsernameSuffix() {
+        return usernameSuffix;
+    }
+
+    public void setUsernameSuffix(String usernameSuffix) {
+        this.usernameSuffix = usernameSuffix;
+    }
 
     public String getParentUuid() {
         return parentUuid;
@@ -22,12 +31,12 @@ public class OrganisationRequest extends CHSRequest {
         this.name = name;
     }
 
-    public String getDbUserName() {
-        return dbUserName;
+    public String getDbUser() {
+        return dbUser;
     }
 
-    public void setDbUserName(String dbUserName) {
-        this.dbUserName = dbUserName;
+    public void setDbUser(String dbUser) {
+        this.dbUser = dbUser;
     }
 
     public String getMediaDirectory() {

@@ -32,13 +32,14 @@ public class OrganisationController implements RestControllerResourceProcessor<O
 //        todo: generate random password and send it as response.
         String tempPassword = "password";
         Organisation org = organisationRepository.findByUuid(request.getUuid());
-        organisationRepository.createDBUser(request.getDbUserName(), tempPassword);
+        organisationRepository.createDBUser(request.getDbUser(), tempPassword);
         if (org == null) {
             org = new Organisation();
         }
         org.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
         org.setName(request.getName());
-        org.setDbUser(request.getDbUserName());
+        org.setDbUser(request.getDbUser());
+        org.setUsernameSuffix(request.getUsernameSuffix());
         Organisation parentOrg = organisationRepository.findByUuid(request.getParentUuid());
         if (parentOrg != null) {
             org.setParentOrganisationId(parentOrg.getId());
