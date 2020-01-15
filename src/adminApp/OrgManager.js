@@ -36,9 +36,7 @@ import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
 import Forms from "../formDesigner/views/Forms";
 import Concepts from "../formDesigner/views/Concepts";
-import Checklist from "../formDesigner/views/Checklist";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
-import WebDesignerFeedback from "../formDesigner/components/WebDesignerFeedback";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -60,92 +58,107 @@ class OrgManager extends Component {
       window.location.href.includes("staging") ||
       window.location.href.includes("uat");
     return (
-      <Admin
-        title="Manage Organisation"
-        authProvider={authProvider}
-        history={adminHistory}
-        logoutButton={WithProps({ user }, LogoutButton)}
-        customRoutes={customRoutes}
-        appLayout={AdminLayout}
-      >
-        <Resource
-          name="organisationConfig"
-          options={{ label: "Organisation Config" }}
-          list={WithProps({ organisation }, customConfig)}
-        />
-        <Resource
-          name="addressLevelType"
-          options={{ label: "Location Types" }}
-          list={LocationTypeList}
-          show={LocationTypeDetail}
-          create={LocationTypeCreate}
-          edit={LocationTypeEdit}
-        />
-        <Resource
-          name="locations"
-          options={{ label: "Locations" }}
-          list={LocationList}
-          show={LocationDetail}
-          create={LocationCreate}
-          edit={LocationEdit}
-        />
-        <Resource
-          name="catchment"
-          list={CatchmentList}
-          show={CatchmentDetail}
-          create={CatchmentCreate}
-          edit={CatchmentEdit}
-        />
-        <Resource
-          name="user"
-          list={WithProps({ organisation }, UserList)}
-          create={WithProps({ organisation }, UserCreate)}
-          show={WithProps({ user }, UserDetail)}
-          edit={WithProps({ user }, UserEdit)}
-        />
-        <Resource
-          name="upload"
-          options={{ label: "Upload" }}
-          list={csvUploadToggle && UploadDashboard}
-        />
-        <Resource
-          name="subjectType"
-          options={{ label: "Subject Types" }}
-          list={uiDesignerToggle && SubjectTypeList}
-          show={SubjectTypeDetail}
-          create={SubjectTypeCreate}
-          edit={SubjectTypeEdit}
-        />
-        <Resource
-          name="program"
-          options={{ label: "Programs" }}
-          list={uiDesignerToggle && ProgramList}
-          show={ProgramDetail}
-          create={ProgramCreate}
-          edit={ProgramEdit}
-        />
-        <Resource
-          name="encounterType"
-          options={{ label: "Encounter Types" }}
-          list={uiDesignerToggle && EncounterTypeList}
-          show={EncounterTypeDetail}
-          create={EncounterTypeCreate}
-          edit={EncounterTypeEdit}
-        />
-        <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
-        <Resource
-          name="concepts"
-          options={{ label: "Concepts" }}
-          list={uiDesignerToggle && Concepts}
-        />
-        <Resource name="checklist" options={{ label: "Checklist" }} list={Checklist} />
-        <Resource name="feedback" options={{ label: "Feedback" }} list={WebDesignerFeedback} />
-        <Resource
-          name="bundle"
-          options={{ label: "Bundle" }}
-          list={uiDesignerToggle && ImplementationBundle}
-        />
-      </Admin>
+      <>
+        <Admin
+          title="Manage Organisation"
+          authProvider={authProvider}
+          history={adminHistory}
+          logoutButton={WithProps({ user }, LogoutButton)}
+          customRoutes={customRoutes}
+          appLayout={AdminLayout}
+        >
+          <Resource
+            name="organisationConfig"
+            options={{ label: "Organisation Config" }}
+            list={WithProps({ organisation }, customConfig)}
+          />
+          <Resource
+            name="addressLevelType"
+            options={{ label: "Location Types" }}
+            list={LocationTypeList}
+            show={LocationTypeDetail}
+            create={LocationTypeCreate}
+            edit={LocationTypeEdit}
+          />
+          <Resource
+            name="locations"
+            options={{ label: "Locations" }}
+            list={LocationList}
+            show={LocationDetail}
+            create={LocationCreate}
+            edit={LocationEdit}
+          />
+          <Resource
+            name="catchment"
+            list={CatchmentList}
+            show={CatchmentDetail}
+            create={CatchmentCreate}
+            edit={CatchmentEdit}
+          />
+          <Resource
+            name="user"
+            list={WithProps({ organisation }, UserList)}
+            create={WithProps({ organisation }, UserCreate)}
+            show={WithProps({ user }, UserDetail)}
+            edit={WithProps({ user }, UserEdit)}
+          />
+          <Resource
+            name="upload"
+            options={{ label: "Upload" }}
+            list={csvUploadToggle && UploadDashboard}
+          />
+          <Resource
+            name="subjectType"
+            options={{ label: "Subject Types" }}
+            list={uiDesignerToggle && SubjectTypeList}
+            show={SubjectTypeDetail}
+            create={SubjectTypeCreate}
+            edit={SubjectTypeEdit}
+          />
+          <Resource
+            name="program"
+            options={{ label: "Programs" }}
+            list={uiDesignerToggle && ProgramList}
+            show={ProgramDetail}
+            create={ProgramCreate}
+            edit={ProgramEdit}
+          />
+          <Resource
+            name="encounterType"
+            options={{ label: "Encounter Types" }}
+            list={uiDesignerToggle && EncounterTypeList}
+            show={EncounterTypeDetail}
+            create={EncounterTypeCreate}
+            edit={EncounterTypeEdit}
+          />
+          <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
+          <Resource
+            name="concepts"
+            options={{ label: "Concepts" }}
+            list={uiDesignerToggle && Concepts}
+          />
+          <Resource
+            name="bundle"
+            options={{ label: "Bundle" }}
+            list={uiDesignerToggle && ImplementationBundle}
+          />
+        </Admin>
+        <div
+          style={{
+            position: "fixed",
+            right: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 100,
+            padding: 6,
+            backgroundColor: "#efefef",
+            textAlign: "center"
+          }}
+        >
+          This app is in beta. Please share your feedback by clicking{" "}
+          <a href="https://forms.gle/65q4DkxbS4onroys9">here</a>.
+        </div>
+      </>
     );
   }
 }
@@ -155,4 +168,9 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(connect(mapStateToProps, null)(OrgManager));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    null
+  )(OrgManager)
+);
