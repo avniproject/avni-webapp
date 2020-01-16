@@ -1,10 +1,14 @@
 package org.openchs;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.CacheControl;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.concurrent.TimeUnit;
+
 
 @Configuration
 public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
@@ -16,7 +20,10 @@ public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         if (staticPath != null) {
-            registry.addResourceHandler("/**").addResourceLocations("file:" + staticPath);
+            registry
+                    .addResourceHandler("/**")
+                    .addResourceLocations("file:" + staticPath)
+                    .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
         }
     }
 
