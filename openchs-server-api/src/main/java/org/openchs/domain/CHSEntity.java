@@ -18,6 +18,7 @@ public class CHSEntity extends CHSBaseEntity {
     @Column(name = "version")
     private int version;
 
+
     public Audit getAudit() {
         if (audit == null) {
             audit = new Audit();
@@ -45,9 +46,22 @@ public class CHSEntity extends CHSBaseEntity {
         return getAudit().getLastModifiedDateTime();
     }
 
+    public DateTime getCreatedDateTime() {
+        return getAudit().getCreatedDateTime();
+    }
+
+    public String getCreatedBy() {
+        return getAudit().getCreatedBy().getUsername();
+    }
+
+    public String getLastModifiedBy() {
+        return getAudit().getLastModifiedBy().getUsername();
+    }
+
     public Long getAuditId() {
         return getAudit().getId();
     }
+
 
     @JsonIgnore
     public boolean isNew() {

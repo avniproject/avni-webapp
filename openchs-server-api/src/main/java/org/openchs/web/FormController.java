@@ -240,6 +240,10 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         Form form = formRepository.findByUuid(formUUID);
 
         FormContract formContract = new FormContract(formUUID, form.getAudit().getLastModifiedBy().getUuid(), form.getName(), form.getFormType().toString());
+        formContract.setCreatedBy(form.getAudit().getCreatedBy().getUsername());
+        formContract.setLastModifiedBy(form.getAudit().getLastModifiedBy().getUsername());
+        formContract.setCreatedDateTime(form.getAudit().getCreatedDateTime());
+        formContract.setModifiedDateTime(form.getAudit().getLastModifiedDateTime());
         formContract.setDecisionRule(form.getDecisionRule());
         formContract.setVisitScheduleRule(form.getVisitScheduleRule());
         formContract.setValidationRule(form.getValidationRule());
