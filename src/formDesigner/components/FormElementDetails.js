@@ -543,70 +543,44 @@ function FormElementDetails(props) {
         </>
       )}
       {["Numeric", "Text"].includes(props.formElementData.concept.dataType) && (
-        <>
-          <Grid container item sm={12}>
-            <InputLabel style={cssClasses.label}>Do you want validation Regex? </InputLabel>
-
-            <RadioGroup
-              aria-label="Select Mode"
-              name="validationRegex"
-              value={props.formElementData.validationRegex}
+        <Grid item sm={12}>
+          {props.formElementData.errorMessage && props.formElementData.errorMessage.validFormat && (
+            <div style={{ color: "red" }}>
+              {" "}
+              Validation Regex and description key both must be empty or both must be filled
+            </div>
+          )}
+          <FormControl fullWidth>
+            <InputLabel htmlFor="validFormatRegex">Validation Regex</InputLabel>
+            <Input
+              id="validFormatRegex"
+              value={get(props.formElementData, "validFormat.regex", "")}
               onChange={event =>
-                props.handleRegex(
+                props.handleGroupElementKeyValueChange(
                   props.groupIndex,
-                  "validationRegex",
+                  "regex",
                   event.target.value,
                   props.index
                 )
               }
-              row
-            >
-              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="no" control={<Radio />} label="No" />
-            </RadioGroup>
-          </Grid>
-          {props.formElementData.validationRegex === "yes" && (
-            <Grid item sm={12}>
-              {props.formElementData.errorMessage &&
-                props.formElementData.errorMessage.validFormat && (
-                  <div style={{ color: "red" }}>
-                    {" "}
-                    Validation Regex and description key both must be empty or both must be filled
-                  </div>
-                )}
-              <FormControl fullWidth>
-                <InputLabel htmlFor="validFormatRegex">Validation Regex</InputLabel>
-                <Input
-                  id="validFormatRegex"
-                  value={get(props.formElementData, "validFormat.regex", "")}
-                  onChange={event =>
-                    props.handleGroupElementKeyValueChange(
-                      props.groupIndex,
-                      "regex",
-                      event.target.value,
-                      props.index
-                    )
-                  }
-                />
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="validFormatRegex">Validation Description Key</InputLabel>
-                <Input
-                  id="validFormatDescriptionKey"
-                  value={get(props.formElementData, "validFormat.descriptionKey", "")}
-                  onChange={event =>
-                    props.handleGroupElementKeyValueChange(
-                      props.groupIndex,
-                      "descriptionKey",
-                      event.target.value,
-                      props.index
-                    )
-                  }
-                />
-              </FormControl>
-            </Grid>
-          )}
-        </>
+            />
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="validFormatRegex">Validation Description Key</InputLabel>
+            <Input
+              id="validFormatDescriptionKey"
+              value={get(props.formElementData, "validFormat.descriptionKey", "")}
+              onChange={event =>
+                props.handleGroupElementKeyValueChange(
+                  props.groupIndex,
+                  "descriptionKey",
+                  event.target.value,
+                  props.index
+                )
+              }
+            />
+          </FormControl>
+        </Grid>
       )}
       <Grid container item sm={12}>
         <Grid item sm={6}>
