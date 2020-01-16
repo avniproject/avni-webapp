@@ -3,7 +3,7 @@ import { includes, intersection, isEmpty } from "lodash";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
-import { OrgManager } from "../adminApp";
+import { OrgManager, SuperAdmin } from "../adminApp";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
@@ -23,15 +23,15 @@ const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest
     }
   />
 );
-
+//TODO: remove unnecessary roles
 const Routes = ({ user, organisation }) => (
   <Switch>
     <Route path="/admin">
       <RestrictedRoute
         path="/"
-        allowedRoles={[ROLES.ORG_ADMIN]}
+        allowedRoles={[ROLES.ADMIN]}
         currentUserRoles={user.roles}
-        component={OrgManager}
+        component={SuperAdmin}
       />
     </Route>
     <RestrictedRoute

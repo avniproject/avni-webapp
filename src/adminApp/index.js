@@ -1,2 +1,3 @@
 import OrgManager from "./OrgManager";
-export { OrgManager };
+import SuperAdmin from "./SuperAdmin";
+export { OrgManager, SuperAdmin };

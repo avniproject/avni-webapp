@@ -9,22 +9,18 @@ import rootReducer from "../../rootApp/rootReducer";
 import rootSaga from "../../rootApp/rootSaga";
 
 export const adminHistory = createHashHistory({ basename: "/admin" });
+export const superAdminHistory = createHashHistory({ basename: "/superAdmin" });
 
 const configureStore = initialState => {
   const sagaMiddleware = createSagaMiddleware();
 
-  const composeEnhancers =
-    (isDevEnv && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
+  const composeEnhancers = (isDevEnv && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
   const store = createStore(
     rootReducer,
     initialState,
     composeEnhancers(
-      applyMiddleware(
-        sagaMiddleware,
-        formMiddleware,
-        routerMiddleware(adminHistory)
-      )
+      applyMiddleware(sagaMiddleware, formMiddleware, routerMiddleware(adminHistory))
     )
   );
 
@@ -34,3 +30,4 @@ const configureStore = initialState => {
 };
 
 export const store = configureStore();
+export const superAdminStore = configureStore();
