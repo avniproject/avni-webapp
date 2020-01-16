@@ -151,12 +151,16 @@ class OrgManager extends Component {
             left: 0,
             zIndex: 100,
             padding: 6,
-            backgroundColor: "#efefef",
+            backgroundColor: "#2196f3",
             textAlign: "center"
           }}
         >
-          This app is in beta. Please share your feedback by clicking{" "}
-          <a href="https://forms.gle/65q4DkxbS4onroys9">here</a>.
+          <div style={{ color: "white" }}>
+            This app is in beta. Please share your feedback by clicking{" "}
+            <a href="https://forms.gle/65q4DkxbS4onroys9">
+              <span style={{ color: "black" }}>here</span>
+            </a>
+          </div>
         </div>
       </>
     );
@@ -168,9 +172,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(OrgManager)
-);
+export default withRouter(connect(mapStateToProps, null)(OrgManager));
