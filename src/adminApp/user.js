@@ -1,4 +1,4 @@
-import { isEmpty, isFinite, isNil } from "lodash";
+import { filter, isEmpty, isFinite, isNil } from "lodash";
 import React, { Fragment, useEffect, useState } from "react";
 import {
   BooleanInput,
@@ -7,35 +7,41 @@ import {
   DisabledInput,
   Edit,
   EditButton,
-  email,
-  Filter,
   FormDataConsumer,
   FunctionField,
   List,
-  SelectInput,
   RadioButtonGroupInput,
   REDUX_FORM_NAME,
   ReferenceField,
   ReferenceInput,
-  regex,
   required,
-  SaveButton,
+  SelectInput,
   Show,
   SimpleForm,
   SimpleShowLayout,
   TextField,
-  TextInput,
-  Toolbar
+  TextInput
 } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import { LineBreak } from "../common/components/utils";
-import { localeChoices, phoneCountryPrefix, datePickerModes } from "../common/constants";
+import { datePickerModes, localeChoices } from "../common/constants";
 import EnableDisableButton from "./components/EnableDisableButton";
 import http from "common/utils/httpClient";
-import { filter } from "lodash";
+import {
+  CustomToolbar,
+  formatRoles,
+  isRequired,
+  mobileNumberFormatter,
+  mobileNumberParser,
+  PasswordTextField,
+  UserFilter,
+  UserTitle,
+  validateEmail,
+  validatePhone
+} from "./UserHelper";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
   <Create {...props}>
@@ -43,40 +49,10 @@ export const UserCreate = ({ user, organisation, ...props }) => (
   </Create>
 );
 
-const UserTitle = ({ record, titlePrefix }) => {
-  return (
-    record && (
-      <span>
-        {titlePrefix} user <b>{record.username}</b>
-      </span>
-    )
-  );
-};
-
 export const UserEdit = ({ user, ...props }) => (
   <Edit {...props} title={<UserTitle titlePrefix="Edit" />} undoable={false}>
     <UserForm edit user={user} />
   </Edit>
-);
-
-const formatRoles = roles =>
-  !isEmpty(roles) && // check required thanks to optimistic rendering shenanigans
-  roles
-    .map(role =>
-      role
-        .split("_")
-        .map(word => word.replace(word[0], word[0].toUpperCase()))
-        .join(" ")
-    )
-    .join(", ");
-
-const UserFilter = props => (
-  <Filter {...props} style={{ marginBottom: "2em" }}>
-    <TextInput label="Login ID" source="username" resettable alwaysOn />
-    <TextInput label="Name" source="name" resettable alwaysOn />
-    <TextInput label="Email Address" source="email" resettable alwaysOn />
-    <TextInput label="Phone Number" source="phoneNumber" resettable alwaysOn />
-  </Filter>
 );
 
 export const UserList = ({ organisation, ...props }) => (
@@ -215,22 +191,6 @@ export const UserDetail = ({ user, ...props }) => (
   </Show>
 );
 
-//To remove delete button from the toolbar
-const CustomToolbar = props => (
-  <Toolbar {...props}>
-    <SaveButton />
-  </Toolbar>
-);
-
-const PasswordTextField = props => (
-  <sub>
-    <br />
-    Default temporary password is "password". User will
-    <br />
-    be prompted to set their own password on first login
-  </sub>
-);
-
 const operatingScopes = Object.freeze({
   NONE: "None",
   FACILITY: "ByFacility",
@@ -239,14 +199,6 @@ const operatingScopes = Object.freeze({
 
 const catchmentChangeMessage = `Please ensure that the user has already synced all 
 data for their previous catchment, and has deleted all local data from their app`;
-
-const mobileNumberFormatter = (v = "") => (isNil(v) ? v : v.substring(phoneCountryPrefix.length));
-const mobileNumberParser = v =>
-  v.startsWith(phoneCountryPrefix) ? v : phoneCountryPrefix.concat(v);
-
-const isRequired = required("This field is required");
-const validateEmail = [isRequired, email("Please enter a valid email address")];
-const validatePhone = [isRequired, regex(/[0-9]{12}/, "Enter a 10 digit number (eg. 9820324567)")];
 
 const UserForm = ({ edit, user, nameSuffix, ...props }) => {
   const [languages, setLanguages] = useState([]);

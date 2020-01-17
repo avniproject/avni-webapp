@@ -10,7 +10,9 @@ import {
   SimpleShowLayout,
   TextField,
   TextInput,
-  required
+  required,
+  Toolbar,
+  SaveButton
 } from "react-admin";
 
 export const OrganisationList = props => (
@@ -60,7 +62,7 @@ const isRequired = required("This field is required");
 export const OrganisationEdit = props => {
   return (
     <Edit undoable={false} title="Edit Organisation Details" {...props}>
-      <SimpleForm redirect="show">
+      <SimpleForm toolbar={<CustomToolbar />} redirect="show">
         <TextInput source="name" validate={isRequired} />
         <TextInput source="dbUser" validate={isRequired} />
         <TextInput source="mediaDirectory" />
@@ -69,6 +71,13 @@ export const OrganisationEdit = props => {
     </Edit>
   );
 };
+
+//To remove delete button from the toolbar
+const CustomToolbar = props => (
+  <Toolbar {...props}>
+    <SaveButton />
+  </Toolbar>
+);
 
 export const OrganisationCreate = props => {
   return (
