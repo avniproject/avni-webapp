@@ -9,6 +9,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import { default as UUID } from "uuid";
+import FormSettings from "../components/FormSettings";
 import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
@@ -17,8 +18,6 @@ import produce from "immer";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import InputLabel from "@material-ui/core/InputLabel";
-import TextField from "@material-ui/core/TextField";
-import FormHelperText from "@material-ui/core/FormHelperText";
 
 import FormLevelRules from "../components/FormLevelRules";
 
@@ -59,8 +58,7 @@ class FormDetails extends Component {
       activeTabIndex: 0,
       successAlert: false,
       defaultSnackbarStatus: true,
-      detectBrowserCloseEvent: false,
-      nameError: false
+      detectBrowserCloseEvent: false
     };
     this.btnGroupClick = this.btnGroupClick.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
@@ -76,7 +74,7 @@ class FormDetails extends Component {
 
   onUpdateFormName = name => {
     // this function is because of we are using name in this component.
-    this.setState({ name: name, detectBrowserCloseEvent: true });
+    this.setState({ name: name });
   };
 
   onTabHandleChange = (event, value) => {
@@ -101,7 +99,6 @@ class FormDetails extends Component {
       .then(response => response.data)
       .then(form => {
         /*
-        
         Below visitScheduleRule, decisionRule, validationRule are for handling form level rules and
         decisionExpand, visitScheduleExpand, validationExpand are for handling expand button.
 
@@ -121,6 +118,7 @@ class FormDetails extends Component {
             fe.expanded = false;
             fe.error = false;
             fe.showDateOrDuration = "durationOptions";
+            fe.validationRegex = "no";
             //             if (fe["rule"]) {
             //               let ruleExtraction = fe["rule"];
             //               ruleExtraction = ruleExtraction.replace(
@@ -468,6 +466,7 @@ class FormDetails extends Component {
           type: "",
           keyValues: {},
           showDateOrDuration: "durationOptions",
+          validationRegex: "no",
           mandatory: false,
           voided: false,
           expanded: true,
@@ -505,7 +504,6 @@ class FormDetails extends Component {
     let numberElementError = 0;
     this.setState(
       produce(draft => {
-        draft.nameError = draft.name === "" ? true : false;
         _.forEach(draft.form.formElementGroups, group => {
           group.error = false;
           group.expanded = false;
@@ -580,7 +578,6 @@ class FormDetails extends Component {
     //   form: keyValueForm
     // });
     let dataSend = cloneDeep(this.state.form);
-    dataSend.name = this.state.name;
     _.forEach(dataSend.formElementGroups, (group, index) => {
       _.forEach(group.formElements, (element, index1) => {
         if (element.concept.dataType === "Coded") {
@@ -714,48 +711,7 @@ class FormDetails extends Component {
     };
 
     const form = (
-      <Grid container>
-        <Grid container alignContent="flex-end">
-          {this.state.createFlag && (
-            <div>
-              <Grid item sm={10} />
-              <Grid item sm={2}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="secondary"
-                  onClick={this.btnGroupClick}
-                  style={{ marginTop: "2px", marginBottom: "2px" }}
-                >
-                  Add Group
-                </Button>
-              </Grid>
-            </div>
-          )}
-
-          {!this.state.createFlag && (
-            <div>
-              <Grid item sm={10} />
-              <Grid item sm={2}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="secondary"
-                  margin="normal"
-                  onClick={this.validateForm}
-                  style={{
-                    marginTop: "2px",
-                    marginBottom: "2px"
-                  }}
-                  disabled={!this.state.detectBrowserCloseEvent}
-                >
-                  <SaveIcon />
-                  &nbsp;Save
-                </Button>
-              </Grid>
-            </div>
-          )}
-        </Grid>
+      <Grid container justify="center">
         <Grid item sm={12}>
           <Tabs
             style={{ background: "#2196f3", color: "white" }}
@@ -763,26 +719,41 @@ class FormDetails extends Component {
             onChange={this.onTabHandleChange}
           >
             <Tab label="Details" />
+            <Tab label="Settings" />
             <Tab label="Rules" />
           </Tabs>
           <TabContainer hidden={this.state.activeTabIndex !== 0}>
-            {this.state.nameError && <FormHelperText error>Form name is empty</FormHelperText>}
             <div name="divGroup">
-              <Grid container sm={12}>
+              <Grid container item sm={12} direction="row-reverse">
+                {this.state.createFlag && (
+                  <Grid item sm={2}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      onClick={this.btnGroupClick}
+                    >
+                      Add Group
+                    </Button>
+                  </Grid>
+                )}
+                {!this.state.createFlag && (
+                  <Grid item sm={2} style={{ paddingBottom: 20 }}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="secondary"
+                      onClick={this.validateForm}
+                      disabled={!this.state.detectBrowserCloseEvent}
+                    >
+                      <SaveIcon />
+                      &nbsp;Save
+                    </Button>
+                  </Grid>
+                )}
                 <Grid item sm={10}>
-                  <TextField
-                    type="string"
-                    id="name"
-                    label="Form name"
-                    placeholder="Enter form name"
-                    margin="normal"
-                    onChange={event => this.onUpdateFormName(event.target.value)}
-                    value={this.state.name}
-                    style={{ width: "50%" }}
-                  />
+                  <b>Form : {this.state.name}</b>
                 </Grid>
-              </Grid>
-              <Grid container item sm={12}>
                 <Grid item sm={12}>
                   {this.state.errorMsg !== "" && (
                     <FormControl fullWidth margin="dense">
@@ -832,8 +803,22 @@ class FormDetails extends Component {
               {/* </div> */}
             </div>
           </TabContainer>
+          <Grid container item sm={12} hidden={this.state.activeTabIndex !== 1}>
+            <Grid item sm={8}>
+              <FormSettings
+                formData={{
+                  name: this.state.form.name,
+                  uuid: this.state.form.uuid,
+                  formType: this.state.form.formType
+                }}
+                name={this.state.name}
+                onUpdateFormName={this.onUpdateFormName}
+                uuid={this.props.match.params.formUUID}
+              />
+            </Grid>
+          </Grid>
 
-          <div hidden={this.state.activeTabIndex !== 1}>
+          <div hidden={this.state.activeTabIndex !== 2}>
             <FormLevelRules
               form={this.state.form}
               onRuleUpdate={this.onRuleUpdate}
@@ -846,7 +831,6 @@ class FormDetails extends Component {
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title="Form Details" />
-
         {this.state.dataLoaded ? form : <div>Loading</div>}
         {this.state.successAlert && (
           <CustomizedSnackbar
@@ -855,7 +839,7 @@ class FormDetails extends Component {
             defaultSnackbarStatus={this.state.defaultSnackbarStatus}
           />
         )}
-        {this.state.saveCall && !this.state.nameError && this.updateForm()}
+        {this.state.saveCall && this.updateForm()}
       </Box>
     );
   }

@@ -71,13 +71,6 @@ const FormListing = ({ history }) => {
     disabled: rowData.voided
   });
 
-  const formSettings = rowData => ({
-    icon: "settings",
-    tooltip: "Form Setting",
-    onClick: (event, form) => history.push(`/admin/forms/${form.uuid}/settings`),
-    disabled: rowData.voided
-  });
-
   const showCloneForm = () => {
     return (
       <Dialog
@@ -148,7 +141,7 @@ const FormListing = ({ history }) => {
             width: "100%"
           })
         }}
-        actions={[editForm, cloneForm, formSettings, voidForm]}
+        actions={[editForm, cloneForm, voidForm]}
       />
       {cloneFormIndicator && showCloneForm()}
     </>
