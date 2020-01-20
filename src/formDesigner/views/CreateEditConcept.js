@@ -16,6 +16,8 @@ import PropTypes from "prop-types";
 import { DragDropContext } from "react-beautiful-dnd";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
+import KeyValues from "../components/KeyValues";
+import { filter, trim } from "lodash";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -30,6 +32,10 @@ class CreateEditConcept extends Component {
       lowNormal: null,
       highNormal: null,
       unit: null,
+      createdBy: "",
+      lastModifiedBy: "",
+      creationDateTime: "",
+      lastModifiedDateTime: "",
       answers: [
         {
           name: "",
@@ -43,7 +49,8 @@ class CreateEditConcept extends Component {
       ],
       conceptCreationAlert: false,
       error: {},
-      defaultSnackbarStatus: true
+      defaultSnackbarStatus: true,
+      keyValues: []
     };
   }
 
@@ -87,6 +94,11 @@ class CreateEditConcept extends Component {
             lowNormal: response.data.lowNormal,
             highNormal: response.data.highNormal,
             unit: response.data.unit,
+            createdBy: response.data.createdBy,
+            lastModifiedBy: response.data.lastModifiedBy,
+            creationDateTime: response.data.createdDateTime,
+            lastModifiedDateTime: response.data.lastModifiedDateTime,
+            keyValues: response.data.keyValues,
             answers
           });
         })
@@ -182,6 +194,7 @@ class CreateEditConcept extends Component {
               name: this.state.name,
               uuid: this.props.isCreatePage ? UUID.v4() : this.state.uuid,
               dataType: this.state.dataType,
+              keyValues: this.state.keyValues,
               answers: this.state.answers
             }
           ])
@@ -192,6 +205,7 @@ class CreateEditConcept extends Component {
                 name: this.props.isCreatePage ? "" : this.state.name,
                 uuid: this.props.isCreatePage ? "" : this.state.uuid,
                 dataType: this.props.isCreatePage ? "" : this.state.dataType,
+                keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
                 lowAbsolute: null,
                 highAbsolute: null,
                 lowNormal: null,
@@ -249,6 +263,13 @@ class CreateEditConcept extends Component {
         if (parseInt(this.state.lowNormal) > parseInt(this.state.highNormal)) {
           error["normalValidation"] = true;
         }
+        const emptyKeyValues = filter(
+          this.state.keyValues,
+          ({ key, value }) => key === "" || value === ""
+        );
+        if (emptyKeyValues.length > 0) {
+          error["keyValueError"] = true;
+        }
 
         this.setState({
           error
@@ -300,7 +321,7 @@ class CreateEditConcept extends Component {
             .then(response => {
               if (response.status === 200) {
                 answer.uuid = response.data.uuid;
-
+                answer.keyValues = response.data.keyValues;
                 index = index + 1;
                 if (index === length) {
                   this.postCodedData(answers);
@@ -349,6 +370,7 @@ class CreateEditConcept extends Component {
               name: this.state.name,
               uuid: this.props.isCreatePage ? UUID.v4() : this.state.uuid,
               dataType: this.state.dataType,
+              keyValues: this.state.keyValues,
               lowAbsolute: this.state.lowAbsolute,
               highAbsolute: this.state.highAbsolute,
               lowNormal: this.state.lowNormal,
@@ -364,6 +386,7 @@ class CreateEditConcept extends Component {
                 name: this.props.isCreatePage ? "" : this.state.name,
                 uuid: this.props.isCreatePage ? "" : this.state.uuid,
                 dataType: this.props.isCreatePage ? "" : this.state.dataType,
+                keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
                 lowAbsolute: this.props.isCreatePage ? "" : this.state.lowAbsolute,
                 highAbsolute: this.props.isCreatePage ? "" : this.state.highAbsolute,
                 lowNormal: this.props.isCreatePage ? "" : this.state.lowNormal,
@@ -384,6 +407,34 @@ class CreateEditConcept extends Component {
     });
   };
 
+  castValueToBooleanOrInt = ({ key, value }) => {
+    let castedValue;
+    try {
+      castedValue = JSON.parse(value.toLowerCase());
+    } catch (e) {
+      castedValue = trim(value);
+    }
+    return { key: trim(key), value: castedValue };
+  };
+
+  onKeyValueChange = (keyValue, index) => {
+    const keyValues = this.state.keyValues;
+    keyValues[index] = this.castValueToBooleanOrInt(keyValue);
+    this.setState({ ...this.state, keyValues });
+  };
+
+  onAddNewKeyValue = () => {
+    const keyValues = this.state.keyValues || [];
+    keyValues.push({ key: "", value: "" });
+    this.setState({ ...this.state, keyValues });
+  };
+
+  onDeleteKeyValue = index => {
+    const keyValues = this.state.keyValues;
+    keyValues.splice(index, 1);
+    this.setState({ ...this.state, keyValues });
+  };
+
   render() {
     let dataType;
     const classes = {
@@ -400,7 +451,8 @@ class CreateEditConcept extends Component {
         marginTop: 40
       },
       inputLabel: {
-        marginTop: 15
+        marginTop: 15,
+        fontSize: 12
       }
     };
 
@@ -487,7 +539,13 @@ class CreateEditConcept extends Component {
           </Grid>
           {dataType}
         </Grid>
-
+        <KeyValues
+          keyValues={this.state.keyValues}
+          onKeyValueChange={this.onKeyValueChange}
+          onAddNewKeyValue={this.onAddNewKeyValue}
+          onDeleteKeyValue={this.onDeleteKeyValue}
+          error={this.state.error.keyValueError}
+        />
         <Grid>
           <Button
             type="button"
@@ -499,6 +557,22 @@ class CreateEditConcept extends Component {
             Submit
           </Button>
         </Grid>
+
+        {!this.props.isCreatePage && (
+          <div style={{ marginTop: "50px" }}>
+            <InputLabel style={classes.inputLabel}>Created by </InputLabel>
+            {this.state.createdBy}
+
+            <InputLabel style={classes.inputLabel}>Last modified by </InputLabel>
+            {this.state.lastModifiedBy}
+
+            <InputLabel style={classes.inputLabel}>Creation datetime </InputLabel>
+            {this.state.creationDateTime}
+
+            <InputLabel style={classes.inputLabel}>Last modified datetime </InputLabel>
+            {this.state.lastModifiedDateTime}
+          </div>
+        )}
 
         {this.state.conceptCreationAlert && (
           <CustomizedSnackbar

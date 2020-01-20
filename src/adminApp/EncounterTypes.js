@@ -20,7 +20,6 @@ import { change } from "redux-form";
 import FormLabel from "@material-ui/core/FormLabel";
 import Box from "@material-ui/core/Box";
 
-
 const Title = ({ record }) => {
   return (
     record && (
@@ -35,7 +34,6 @@ export const RuleEditor = props => {
   const [ruleCode, setRuleCode] = useState(
     props.record.encounterEligibilityCheckRule ? props.record.encounterEligibilityCheckRule : ""
   );
-
 
   return (
     <FormDataConsumer>
@@ -72,7 +70,11 @@ export const RuleDisplay = props => {
       <Box mt={3}>
         <FormLabel component="legend">Encounter Eligibility Check Rule</FormLabel>
         <Editor
-          value={props.record.encounterEligibilityCheckRule ? props.record.encounterEligibilityCheckRule : ""}
+          value={
+            props.record.encounterEligibilityCheckRule
+              ? props.record.encounterEligibilityCheckRule
+              : ""
+          }
           readOnly={true}
           highlight={code => highlight(code, languages.js)}
           padding={10}
@@ -88,7 +90,6 @@ export const RuleDisplay = props => {
     </>
   );
 };
-
 
 export const EncounterTypeList = props => (
   <List {...props} bulkActions={false}>
@@ -106,6 +107,10 @@ export const EncounterTypeDetail = props => {
         <TextField source="name" label="Name" />
         <TextField label="Organisation Id" source="encounterTypeOrganisationId" />
         <RuleDisplay {...props} />
+        <TextField label="Created by" source="createdBy" />
+        <TextField label="Last modified by" source="lastModifiedBy" />
+        <TextField label="Created On(datetime)" source="createdDateTime" />
+        <TextField label="Last modified On(datetime)" source="modifiedDateTime" />
       </SimpleShowLayout>
     </Show>
   );

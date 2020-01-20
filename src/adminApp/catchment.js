@@ -63,6 +63,10 @@ export const CatchmentDetail = props => {
             <TitleChip source="title" />
           </SingleFieldList>
         </ReferenceArrayField>
+        <TextField label="Created by" source="createdBy" />
+        <TextField label="Last modified by" source="lastModifiedBy" />
+        <TextField label="Created On(datetime)" source="createdDateTime" />
+        <TextField label="Last modified On(datetime)" source="modifiedDateTime" />
       </SimpleShowLayout>
     </Show>
   );

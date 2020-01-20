@@ -81,6 +81,10 @@ export const LocationTypeDetail = props => (
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
       <ParentReferenceField label="Parent Type" />
+      <TextField label="Created by" source="createdBy" />
+      <TextField label="Last modified by" source="lastModifiedBy" />
+      <TextField label="Created On(datetime)" source="createdDateTime" />
+      <TextField label="Last modified On(datetime)" source="lastModifiedDateTime" />
     </SimpleShowLayout>
   </Show>
 );

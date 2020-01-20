@@ -36,6 +36,10 @@ export const SubjectTypeDetail = props => {
       <SimpleShowLayout>
         <TextField source="name" label="Name" />
         <TextField label="Organisation Id" source="subjectTypeOrganisationId" />
+        <TextField label="Created by" source="createdBy" />
+        <TextField label="Last modified by" source="lastModifiedBy" />
+        <TextField label="Created On(datetime)" source="createdDateTime" />
+        <TextField label="Last modified On(datetime)" source="modifiedDateTime" />
       </SimpleShowLayout>
     </Show>
   );
