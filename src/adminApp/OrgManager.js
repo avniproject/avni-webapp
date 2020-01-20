@@ -17,6 +17,12 @@ import {
 import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
 import { ProgramCreate, ProgramDetail, ProgramEdit, ProgramList } from "./programs";
 import {
+  IdentifierSourceCreate,
+  IdentifierSourceList,
+  IdentifierSourceDetail,
+  IdentifierSourceEdit
+} from "./IdentifierSource";
+import {
   SubjectTypeCreate,
   SubjectTypeDetail,
   SubjectTypeEdit,
@@ -129,6 +135,14 @@ class OrgManager extends Component {
           show={EncounterTypeDetail}
           create={EncounterTypeCreate}
           edit={EncounterTypeEdit}
+        />
+        <Resource
+          name="identifierSource"
+          options={{ label: "Identifier source" }}
+          list={IdentifierSourceList}
+          show={IdentifierSourceDetail}
+          create={IdentifierSourceCreate}
+          edit={IdentifierSourceEdit}
         />
         <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
         <Resource
