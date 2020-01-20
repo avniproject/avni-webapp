@@ -400,6 +400,11 @@ class FormSettings extends Component {
                 <li style={{ color: "red" }}>{this.state.errorMsg}</li>
               </FormControl>
             )}
+            <InputLabel htmlFor="formname" style={{ fontSize: "12px" }}>
+              Form name
+            </InputLabel>
+            {this.state.name}
+
             <FormControl fullWidth margin="dense">
               <InputLabel htmlFor="formType">Form Type</InputLabel>
               <Select

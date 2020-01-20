@@ -717,7 +717,7 @@ class FormDetails extends Component {
       <Grid container>
         <Grid container alignContent="flex-end">
           {this.state.createFlag && (
-            <div>
+            <>
               <Grid item sm={10} />
               <Grid item sm={2}>
                 <Button
@@ -730,11 +730,11 @@ class FormDetails extends Component {
                   Add Group
                 </Button>
               </Grid>
-            </div>
+            </>
           )}
 
           {!this.state.createFlag && (
-            <div>
+            <>
               <Grid item sm={10} />
               <Grid item sm={2}>
                 <Button
@@ -753,7 +753,7 @@ class FormDetails extends Component {
                   &nbsp;Save
                 </Button>
               </Grid>
-            </div>
+            </>
           )}
         </Grid>
         <Grid item sm={12}>
