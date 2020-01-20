@@ -169,7 +169,7 @@ public class UserController {
         user.setSettings(userContract.getSettings());
 
         User currentUser = userService.getCurrentUser();
-        user.setOrganisationId(currentUser.getOrganisationId());
+        user.setOrganisationId(userContract.getOrganisationId() == null ? currentUser.getOrganisationId() : userContract.getOrganisationId());
         user.setAuditInfo(currentUser);
         return user;
     }

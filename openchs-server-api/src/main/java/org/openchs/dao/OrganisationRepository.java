@@ -3,6 +3,7 @@ package org.openchs.dao;
 import org.openchs.domain.Organisation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -31,9 +32,12 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Lon
         return findById(organisationId).orElse(null);
     }
 
+    @Query("SELECT o from Organisation o where o.isVoided = false ")
     @PreAuthorize("hasAnyAuthority('admin')")
     @RestResource(path = "findAll", rel = "findAll")
-    Page<Organisation> findAllByIsVoidedFalse(Pageable pageable);
+    Page<Organisation> getAllPageable(Pageable pageable);
+
+    List<Organisation> findAllByIsVoidedFalse();
 
     @PreAuthorize("hasAnyAuthority('admin')")
     @RestResource(path = "findAllById", rel = "findAllById")
