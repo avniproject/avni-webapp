@@ -711,6 +711,48 @@ class FormDetails extends Component {
     };
 
     const form = (
+      <Grid container>
+        <Grid container alignContent="flex-end">
+          {this.state.createFlag && (
+            <>
+              <Grid item sm={10} />
+              <Grid item sm={2}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  onClick={this.btnGroupClick}
+                  style={{ marginTop: "2px", marginBottom: "2px" }}
+                >
+                  Add Group
+                </Button>
+              </Grid>
+            </>
+          )}
+
+          {!this.state.createFlag && (
+            <>
+              <Grid item sm={10} />
+              <Grid item sm={2}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  margin="normal"
+                  onClick={this.validateForm}
+                  style={{
+                    marginTop: "2px",
+                    marginBottom: "2px"
+                  }}
+                  disabled={!this.state.detectBrowserCloseEvent}
+                >
+                  <SaveIcon />
+                  &nbsp;Save
+                </Button>
+              </Grid>
+            </>
+          )}
+        </Grid>
       <Grid container justify="center">
         <Grid item sm={12}>
           <Tabs

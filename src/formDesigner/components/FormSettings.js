@@ -385,8 +385,18 @@ class FormSettings extends Component {
       this.state.formType !== "" && this.state.formType !== "ChecklistItem";
 
     return (
-      <div>
-        <form>
+      <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <div>
+          <form>
+            {this.state.errorMsg && (
+              <FormControl fullWidth margin="dense">
+                <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+              </FormControl>
+            )}
+            <InputLabel htmlFor="formname" style={{ fontSize: "12px" }}>
+              Form name
+            </InputLabel>
+            {this.state.name}
           {this.state.errorMsg && (
             <FormControl fullWidth margin="dense">
               <li style={{ color: "red" }}>{this.state.errorMsg}</li>
