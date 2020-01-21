@@ -54,7 +54,7 @@ _build_db:
 
 # <db>
 ## Drops the database
-clean_db:  _clean_db_server _clean_test_server _drop_roles
+clean_db: _clean_db_server
 
 build_db: ## Creates new empty database
 	make _build_db database=$(DB)

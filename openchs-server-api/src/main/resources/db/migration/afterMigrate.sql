@@ -45,8 +45,3 @@ $body$ LANGUAGE plpgsql;
 SELECT grant_all_on_all(a.rolname)
 FROM pg_roles a
 WHERE pg_has_role('openchs', a.oid, 'member');
-
-GRANT ALL ON DATABASE openchs to organisation_user;
-GRANT ALL ON ALL TABLES IN SCHEMA public to organisation_user WITH GRANT OPTION;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public to organisation_user WITH GRANT OPTION;
-GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to organisation_user WITH GRANT OPTION;
