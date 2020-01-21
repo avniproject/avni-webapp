@@ -11,6 +11,7 @@ import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "checklistDetail", path = "checklistDetail")
+@PreAuthorize("hasAnyAuthority('user', 'organisation_admin')")
 public interface ChecklistDetailRepository extends ImplReferenceDataRepository<ChecklistDetail>, FindByLastModifiedDateTime<ChecklistDetail> {
 
     @Query("select c.name from ChecklistDetail c where c.isVoided = false")
