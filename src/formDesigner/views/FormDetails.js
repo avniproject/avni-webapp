@@ -716,44 +716,51 @@ class FormDetails extends Component {
     const form = (
       <Grid container>
         <Grid container alignContent="flex-end">
+          <Grid item sm={10}>
+            {this.state.nameError && <FormHelperText error>Form name is empty</FormHelperText>}
+            <TextField
+              type="string"
+              id="name"
+              label="Form name"
+              placeholder="Enter form name"
+              margin="normal"
+              onChange={event => this.onUpdateFormName(event.target.value)}
+              value={this.state.name}
+              style={{ width: "50%" }}
+            />
+          </Grid>
           {this.state.createFlag && (
-            <>
-              <Grid item sm={10} />
-              <Grid item sm={2}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="secondary"
-                  onClick={this.btnGroupClick}
-                  style={{ marginTop: "2px", marginBottom: "2px" }}
-                >
-                  Add Group
-                </Button>
-              </Grid>
-            </>
+            <Grid item sm={2}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                onClick={this.btnGroupClick}
+                style={{ marginTop: "30px", marginBottom: "2px" }}
+              >
+                Add Group
+              </Button>
+            </Grid>
           )}
 
           {!this.state.createFlag && (
-            <>
-              <Grid item sm={10} />
-              <Grid item sm={2}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="secondary"
-                  margin="normal"
-                  onClick={this.validateForm}
-                  style={{
-                    marginTop: "2px",
-                    marginBottom: "2px"
-                  }}
-                  disabled={!this.state.detectBrowserCloseEvent}
-                >
-                  <SaveIcon />
-                  &nbsp;Save
-                </Button>
-              </Grid>
-            </>
+            <Grid item sm={2}>
+              <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                margin="normal"
+                onClick={this.validateForm}
+                style={{
+                  marginTop: "30px",
+                  marginBottom: "2px"
+                }}
+                disabled={!this.state.detectBrowserCloseEvent}
+              >
+                <SaveIcon />
+                &nbsp;Save
+              </Button>
+            </Grid>
           )}
         </Grid>
 
@@ -767,71 +774,53 @@ class FormDetails extends Component {
             <Tab label="Rules" />
           </Tabs>
           <TabContainer hidden={this.state.activeTabIndex !== 0}>
-            {this.state.nameError && <FormHelperText error>Form name is empty</FormHelperText>}
-            <div name="divGroup">
-              <Grid container sm={12}>
-                <Grid item sm={10}>
-                  <TextField
-                    type="string"
-                    id="name"
-                    label="Form name"
-                    placeholder="Enter form name"
-                    margin="normal"
-                    onChange={event => this.onUpdateFormName(event.target.value)}
-                    value={this.state.name}
-                    style={{ width: "50%" }}
-                  />
-                </Grid>
+            <Grid container item sm={12}>
+              <Grid item sm={12}>
+                {this.state.errorMsg !== "" && (
+                  <FormControl fullWidth margin="dense">
+                    <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+                  </FormControl>
+                )}
               </Grid>
-              <Grid container item sm={12}>
-                <Grid item sm={12}>
-                  {this.state.errorMsg !== "" && (
-                    <FormControl fullWidth margin="dense">
-                      <li style={{ color: "red" }}>{this.state.errorMsg}</li>
-                    </FormControl>
-                  )}
-                </Grid>
-              </Grid>
+            </Grid>
 
-              <DragDropContext onDragEnd={this.onDragEnd}>
-                <Droppable droppableId="all-columns" direction="vertical" type="row">
-                  {provided => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {this.renderGroups()}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-              {/* <div style={{marginTop:"50px"}}> */}
-              <Grid container item sm={12}>
-                <Grid item sm={3}>
-                  {" "}
-                  <InputLabel style={classes.inputLabel}>
-                    Created by : {this.state.form.createdBy}{" "}
-                  </InputLabel>
-                </Grid>
-                <Grid item sm={3}>
-                  {" "}
-                  <InputLabel style={classes.inputLabel}>
-                    Last modified by : {this.state.form.lastModifiedBy}{" "}
-                  </InputLabel>
-                </Grid>
-                <Grid item sm={3}>
-                  {" "}
-                  <InputLabel style={classes.inputLabel}>
-                    Creation datetime : {this.state.form.createdDateTime}{" "}
-                  </InputLabel>
-                </Grid>
-                <Grid item sm={3}>
-                  {" "}
-                  <InputLabel style={classes.inputLabel}>
-                    Last modified datetime : {this.state.form.modifiedDateTime}{" "}
-                  </InputLabel>
-                </Grid>
+            <DragDropContext onDragEnd={this.onDragEnd}>
+              <Droppable droppableId="all-columns" direction="vertical" type="row">
+                {provided => (
+                  <div ref={provided.innerRef} {...provided.droppableProps}>
+                    {this.renderGroups()}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+            <Grid container item sm={12}>
+              <Grid item sm={3}>
+                {" "}
+                <InputLabel style={classes.inputLabel}>
+                  Created by : {this.state.form.createdBy}{" "}
+                </InputLabel>
               </Grid>
-              {/* </div> */}
-            </div>
+              <Grid item sm={3}>
+                {" "}
+                <InputLabel style={classes.inputLabel}>
+                  Last modified by : {this.state.form.lastModifiedBy}{" "}
+                </InputLabel>
+              </Grid>
+              <Grid item sm={3}>
+                {" "}
+                <InputLabel style={classes.inputLabel}>
+                  Creation datetime : {this.state.form.createdDateTime}{" "}
+                </InputLabel>
+              </Grid>
+              <Grid item sm={3}>
+                {" "}
+                <InputLabel style={classes.inputLabel}>
+                  Last modified datetime : {this.state.form.modifiedDateTime}{" "}
+                </InputLabel>
+              </Grid>
+            </Grid>
+            {/* </div> */}
           </TabContainer>
 
           <div hidden={this.state.activeTabIndex !== 1}>

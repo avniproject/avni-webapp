@@ -12,6 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { default as UUID } from "uuid";
 import { constFormType } from "../common/constants";
 import Box from "@material-ui/core/Box";
+import { Title } from "react-admin";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -393,6 +394,7 @@ class FormSettings extends Component {
 
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Title title={this.state.name} />
         <div>
           <form>
             {this.state.errorMsg && (
@@ -404,7 +406,6 @@ class FormSettings extends Component {
               Form name
             </InputLabel>
             {this.state.name}
-
             <FormControl fullWidth margin="dense">
               <InputLabel htmlFor="formType">Form Type</InputLabel>
               <Select

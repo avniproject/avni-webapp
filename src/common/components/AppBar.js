@@ -74,7 +74,11 @@ const AppBar = props => {
             <div style={{ marginTop: "2%" }}>
               <b>{props.organisation.name} </b> ({props.user.username})
             </div>
-            <IconButton onClick={() => props.history.push("/")} aria-label="Home" color="inherit">
+            <IconButton
+              onClick={() => props.history.push("/home")}
+              aria-label="Home"
+              color="inherit"
+            >
               <HomeIcon />
             </IconButton>
             <IconButton

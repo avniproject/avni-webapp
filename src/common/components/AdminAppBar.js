@@ -24,7 +24,7 @@ const AdminAppBar = withStyles(styles)(({ classes, ...props }) => {
       <div>
         <b>{organisation.name} </b> ({user.username})
       </div>
-      <IconButton onClick={() => history.push("/")} aria-label="Home" color="inherit">
+      <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
         <HomeIcon />
       </IconButton>
     </AppBar>
