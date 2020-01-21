@@ -30,7 +30,7 @@ class SuperAdmin extends Component {
   }
 
   render() {
-    const { organisation, user } = this.props;
+    const { user } = this.props;
     return (
       <Admin
         title="Create Organisation"
@@ -41,16 +41,16 @@ class SuperAdmin extends Component {
         <Resource
           name="organisation"
           options={{ label: "Organisations" }}
-          list={WithProps({ organisation }, OrganisationList)}
-          create={WithProps({ organisation }, OrganisationCreate)}
-          show={WithProps({ user }, OrganisationDetails)}
-          edit={WithProps({ user }, OrganisationEdit)}
+          list={OrganisationList}
+          create={OrganisationCreate}
+          show={OrganisationDetails}
+          edit={OrganisationEdit}
         />
         <Resource
           name="user"
           options={{ label: "Org Admin Users" }}
-          list={WithProps({ organisation }, OrgAdminUserList)}
-          create={WithProps({ organisation }, OrgAdminUserCreate)}
+          list={OrgAdminUserList}
+          create={WithProps({ user }, OrgAdminUserCreate)}
           show={WithProps({ user }, OrgAdminUserDetail)}
           edit={WithProps({ user }, OrgAdminUserEdit)}
         />

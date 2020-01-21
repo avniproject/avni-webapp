@@ -24,43 +24,36 @@ const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest
   />
 );
 
-const AdminApp = ({ roles }) => {
-  if (includes(roles, ROLES.ADMIN)) {
-    return (
-      <Route path="/admin">
-        <RestrictedRoute
-          path="/"
-          allowedRoles={[ROLES.ADMIN]}
-          currentUserRoles={roles}
-          component={SuperAdmin}
-        />
-      </Route>
-    );
-  } else
-    return (
-      <Route path="/admin">
-        <RestrictedRoute
-          path="/"
-          allowedRoles={[ROLES.ORG_ADMIN]}
-          currentUserRoles={roles}
-          component={OrgManager}
-        />
-      </Route>
-    );
-};
-
 const Routes = ({ user, organisation }) => (
   <Switch>
-    <AdminApp roles={user.roles} />
+    <Route path="/admin">
+      <RestrictedRoute
+        path="/"
+        allowedRoles={includes(user.roles, ROLES.ADMIN) ? [ROLES.ADMIN] : [ROLES.ORG_ADMIN]}
+        currentUserRoles={user.roles}
+        component={includes(user.roles, ROLES.ADMIN) ? SuperAdmin : OrgManager}
+      />
+    </Route>
     <RestrictedRoute
       path="/app"
       allowedRoles={[ROLES.USER]}
       currentUserRoles={user.roles}
       component={DataEntry}
     />
+    <Route exact path="/">
+      <Redirect
+        to={
+          includes(user.roles, ROLES.ADMIN)
+            ? "/admin"
+            : includes(user.roles, ROLES.ORG_ADMIN)
+            ? "/home"
+            : "/app"
+        }
+      />
+    </Route>
     <RestrictedRoute
       exact
-      path="/"
+      path="/home"
       allowedRoles={[ROLES.ORG_ADMIN]}
       currentUserRoles={user.roles}
       component={Homepage}
@@ -79,9 +72,6 @@ const Routes = ({ user, organisation }) => (
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Export)}
     />
-    <Route exact path="/">
-      <Redirect to={includes(user.roles, ROLES.ORG_ADMIN) ? "/admin" : "/app"} />
-    </Route>
     <Route
       component={() => (
         <div>
@@ -94,7 +84,14 @@ const Routes = ({ user, organisation }) => (
 
 const RoutesWithoutDataEntry = ({ user }) => (
   <Switch>
-    <AdminApp roles={user.roles} />
+    <Route path="/admin">
+      <RestrictedRoute
+        path="/"
+        allowedRoles={includes(user.roles, ROLES.ADMIN) ? [ROLES.ADMIN] : [ROLES.ORG_ADMIN]}
+        currentUserRoles={user.roles}
+        component={includes(user.roles, ROLES.ADMIN) ? SuperAdmin : OrgManager}
+      />
+    </Route>
     <Route exact path="/">
       <Redirect to="/admin" />
     </Route>
