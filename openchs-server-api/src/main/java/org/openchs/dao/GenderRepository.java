@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "gender", path = "gender")
-@PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
 public interface GenderRepository extends CHSRepository<Gender>, PagingAndSortingRepository<Gender, Long>, FindByLastModifiedDateTime<Gender> {
     Gender findByName(String name);
     Gender findByNameIgnoreCase(String name);

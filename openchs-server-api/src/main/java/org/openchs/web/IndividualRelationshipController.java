@@ -37,7 +37,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
     }
 
     @RequestMapping(value = "/individualRelationships", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     public void save(@RequestBody IndividualRelationshipRequest request) {
         IndividualRelationshipType relationshipType = individualRelationshipTypeRepository.findByUuid(request.getRelationshipTypeUUID());
@@ -56,7 +56,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
     }
 
     @RequestMapping(value = "/individualRelationship/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<IndividualRelationship>> getByIndividualsOfCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
@@ -66,7 +66,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
     }
 
     @RequestMapping(value = "/individualRelationship/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<IndividualRelationship>> getByLastModified(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -76,7 +76,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
 
 
     @RequestMapping(value = "/individualRelationship", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<IndividualRelationship>> getIndividualRelationshipsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

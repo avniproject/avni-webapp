@@ -28,7 +28,7 @@ public class SyncTelemetryController implements RestControllerResourceProcessor<
     }
 
     @RequestMapping(value = "syncTelemetry", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<SyncTelemetry>> getEmpty(Pageable pageable) {
         return empty(pageable);
     }
@@ -36,7 +36,7 @@ public class SyncTelemetryController implements RestControllerResourceProcessor<
 
     @RequestMapping(value = "syncTelemetry", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void saveSyncTelemetry(@RequestBody SyncTelemetryRequest request) {
         User user = UserContextHolder.getUserContext().getUser();
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();

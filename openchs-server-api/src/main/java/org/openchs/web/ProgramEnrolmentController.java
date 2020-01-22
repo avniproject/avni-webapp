@@ -48,7 +48,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @RequestMapping(value = "/programEnrolments", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
         logger.info(String.format("Saving programEnrolment with uuid %s", request.getUuid()));
@@ -86,7 +86,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     }
 
     @GetMapping(value = {"/programEnrolment", /* Deprecated -> */ "/programEnrolment/search/lastModified", "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified"})
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEnrolment>> getProgramEnrolmentsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,

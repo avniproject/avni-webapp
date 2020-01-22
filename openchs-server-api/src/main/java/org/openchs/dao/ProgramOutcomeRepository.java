@@ -10,6 +10,5 @@ import javax.transaction.Transactional;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programOutcome", path = "programOutcome")
-@PreAuthorize("hasAnyAuthority('organisation_admin', 'user')")
 public interface ProgramOutcomeRepository extends TransactionalDataRepository<ProgramOutcome>, FindByLastModifiedDateTime<ProgramOutcome> {
 }

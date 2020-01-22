@@ -55,7 +55,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
 
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public void save(@RequestBody ProgramEncounterRequest request) {
         logger.info(String.format("Saving programEncounter with uuid %s", request.getUuid()));
         checkForSchedulingCompleteConstraintViolation(request);
@@ -86,7 +86,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     }
 
     @RequestMapping(value = "/programEncounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     @Deprecated()
     public PagedResources<Resource<ProgramEncounter>> getByIndividualsOfCatchmentAndLastModified(
             @RequestParam("catchmentId") long catchmentId,
@@ -97,7 +97,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     }
 
     @RequestMapping(value = "/programEncounter/search/lastModified", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEncounter>> getByLastModified(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -106,7 +106,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     }
 
     @RequestMapping(value = "/programEncounter", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public PagedResources<Resource<ProgramEncounter>> getProgramEncountersByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
