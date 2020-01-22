@@ -19,7 +19,19 @@ import Button from "@material-ui/core/Button";
 const useStyles = makeStyles(theme => ({
   enrollButtonStyle: {
     marginBottom: theme.spacing(2),
-    marginRight: theme.spacing(2)
+    //marginRight: theme.spacing(2),
+    marginRight: "10px",
+    height: "28px"
+  },
+  programLabel: {
+    fontSize: "18px"
+  },
+  growthButtonStyle: {
+    marginBottom: theme.spacing(2),
+    //marginRight: theme.spacing(2),
+    marginRight: "10px",
+    height: "28px",
+    marginLeft: "37px"
   },
   root: {
     flexGrow: 1,
@@ -31,11 +43,13 @@ const useStyles = makeStyles(theme => ({
   },
   programStatusStyle: {
     color: "red",
-    backgroundColor: "#FFB6C1",
-    borderRadius: "5px"
+    backgroundColor: "#ffeaea",
+    fontSize: "12px",
+    padding: "2px 5px"
+    // borderRadius: "5px"
   },
   expansionHeading: {
-    fontSize: theme.typography.pxToRem(15),
+    fontSize: theme.typography.pxToRem(16),
     flexBasis: "33.33%",
     flexShrink: 0
   },
@@ -43,13 +57,32 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: "0px",
     paddingTop: "0px"
   },
+  ListItemText: {
+    "& span": {
+      fontSize: "14px"
+    }
+  },
+  listItemTextDate: {
+    "& span": {
+      fontSize: "15px",
+      color: "#555555"
+    }
+  },
   table: {
     border: "1px solid rgba(224, 224, 224, 1)"
   },
   abnormalColor: {
     color: "#ff4f33"
+  },
+  expandMoreIcon: {
+    color: "#0e6eff"
   }
 }));
+
+function truncate(input) {
+  if (input && input.length > 20) return input.substring(0, 20) + "...";
+  else return input;
+}
 
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
@@ -63,11 +96,13 @@ const ProgramView = ({ programData }) => {
     <div>
       <Grid container spacing={3}>
         <Grid item xs={6}>
-          <label>{programData.operationalProgramName} program details</label>
+          <label className={classes.programLabel}>
+            {programData.operationalProgramName} program details
+          </label>
         </Grid>
         <Grid item xs={6}>
           <Fab
-            className={classes.enrollButtonStyle}
+            className={classes.growthButtonStyle}
             variant="extended"
             color="primary"
             aria-label="add"
@@ -95,7 +130,7 @@ const ProgramView = ({ programData }) => {
       <Paper className={classes.root}>
         <ExpansionPanel expanded={expandedPanel === "panel1"} onChange={handleChange("panel1")}>
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
@@ -103,7 +138,7 @@ const ProgramView = ({ programData }) => {
               Enrollment details
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid item xs={12}>
               <List>
                 <Observations observations={programData ? programData.observations : ""} />
@@ -115,7 +150,7 @@ const ProgramView = ({ programData }) => {
         </ExpansionPanel>
         <ExpansionPanel expanded={expandedPanel === "panel2"} onChange={handleChange("panel2")}>
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
@@ -123,22 +158,36 @@ const ProgramView = ({ programData }) => {
               Planned visits
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid container spacing={2}>
               {programData && programData.programEncounters
-                ? programData.programEncounters.map(row =>
+                ? programData.programEncounters.map((row, index) =>
                     !row.encounterDateTime ? (
-                      <Grid key={row.name} item xs={6} sm={3}>
+                      <Grid key={index} item xs={6} sm={3}>
                         <Paper
-                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                          className={classes.paper}
+                          style={{
+                            boxShadow: "none",
+                            borderRadius: "0px",
+                            borderRight: "1px solid #dcdcdc"
+                          }}
                         >
-                          <List>
+                          <List style={{ paddingBottom: "0px" }}>
                             <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.name} />
+                              <ListItemText
+                                className={classes.ListItemText}
+                                style={{
+                                  color: "#2196f3",
+                                  fontSize: "14px",
+                                  textTransform: "uppercase"
+                                }}
+                                title={row.name}
+                                primary={truncate(row.name)}
+                              />
                             </ListItem>
                             <ListItem className={classes.listItem}>
                               <ListItemText
+                                className={classes.listItemTextDate}
+                                style={{ color: "#555555", fontSize: "14px" }}
                                 primary={moment(new Date(row.earliestVisitDateTime)).format(
                                   "DD-MM-YYYY"
                                 )}
@@ -154,8 +203,10 @@ const ProgramView = ({ programData }) => {
                               ""
                             )}
                           </List>
-                          <Button color="primary">DO VISIT</Button>
-                          <Button color="primary">CANCEL VISIT</Button>
+                          <div style={{ marginLeft: "8px", fontSize: "14px" }}>
+                            <Button color="primary">DO VISIT</Button>
+                            <Button color="primary">CANCEL VISIT</Button>
+                          </div>
                         </Paper>
                       </Grid>
                     ) : (
@@ -168,7 +219,7 @@ const ProgramView = ({ programData }) => {
         </ExpansionPanel>
         <ExpansionPanel expanded={expandedPanel === "panel3"} onChange={handleChange("panel3")}>
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
@@ -176,22 +227,40 @@ const ProgramView = ({ programData }) => {
               Completed visit
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid container spacing={2}>
               {programData && programData.programEncounters
-                ? programData.programEncounters.map(row =>
+                ? programData.programEncounters.map((row, index) =>
                     row.encounterDateTime ? (
-                      <Grid key={row.name} item xs={6} sm={3}>
+                      <Grid key={index} item xs={6} sm={3}>
                         <Paper
-                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
+                          style={{
+                            boxShadow: "none",
+                            padding: "0px",
+                            borderRadius: "0px",
+                            borderRight: "1px solid #dcdcdc"
+                          }}
                           className={classes.paper}
                         >
-                          <List>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.name} />
-                            </ListItem>
+                          <List style={{ paddingBottom: "0px" }}>
                             <ListItem className={classes.listItem}>
                               <ListItemText
+                                className={classes.ListItemText}
+                                style={{
+                                  color: "#2196f3",
+                                  fontSize: "14px",
+                                  textTransform: "uppercase"
+                                }}
+                                title={row.name}
+                                primary={truncate(row.name)}
+                              />
+                            </ListItem>
+                            <ListItem
+                              className={classes.listItem}
+                              style={{ color: "#555555", fontSize: "14px" }}
+                            >
+                              <ListItemText
+                                className={classes.listItemTextDate}
                                 primary={moment(new Date(row.encounterDateTime)).format(
                                   "DD-MM-YYYY"
                                 )}
@@ -199,14 +268,16 @@ const ProgramView = ({ programData }) => {
                             </ListItem>
                             <ListItem className={classes.listItem}>
                               <label style={{ fontSize: "14px" }}>
-                                {`Scheduled on :${moment(
+                                {`Scheduled on : ${moment(
                                   new Date(row.earliestVisitDateTime)
                                 ).format("DD-MM-YYYY")}`}{" "}
                               </label>
                             </ListItem>
                           </List>
-                          <Button color="primary">DO VISIT</Button>
-                          <Button color="primary">CANCEL VISIT</Button>
+                          <div style={{ marginLeft: "8px", fontSize: "14px" }}>
+                            <Button color="primary">DO VISIT</Button>
+                            <Button color="primary">CANCEL VISIT</Button>
+                          </div>
                         </Paper>
                       </Grid>
                     ) : (

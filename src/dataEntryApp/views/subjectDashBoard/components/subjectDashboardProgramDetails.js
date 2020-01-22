@@ -19,13 +19,14 @@ TabPanel.propTypes = {
 };
 
 const programDetails = ({ tabPanelValue, programData }) => {
+  console.log(tabPanelValue, programData.enrolments);
   return (
     <div>
       {programData && programData.enrolments
         ? programData.enrolments.map((element, index) => (
             <Fragment key={index}>
               <TabPanel value={tabPanelValue} index={index}>
-                <ProgramView programData={element} />
+                <ProgramView programData={element} key={index} />
               </TabPanel>
             </Fragment>
           ))

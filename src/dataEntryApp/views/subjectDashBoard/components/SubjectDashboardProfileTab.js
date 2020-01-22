@@ -66,9 +66,9 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           id="panel1bh-header"
         >
           <div>
-            <h5>Registartion Details</h5>
+            <h5>Registration Details</h5>
             <p>
-              Registartion Date: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
+              Registration Date: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
             </p>
           </div>
         </ExpansionPanelSummary>

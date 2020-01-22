@@ -19,6 +19,7 @@ import Input from "@material-ui/core/Input";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { Auth } from "aws-amplify";
 import { connect } from "react-redux";
+import logo from "../../formDesigner/styles/images/avniLogo.png";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -47,14 +48,14 @@ const useStyles = makeStyles(theme => ({
     }
   },
   inputSearch: {
-    borderBottom: "1px solid blue",
-    color: "white",
+    borderBottom: "1px solid #dcdcdc",
+    color: "#0e6eff",
     marginRight: theme.spacing(2),
     marginLeft: 0,
     width: "100%",
     [theme.breakpoints.up("sm")]: {
       marginLeft: theme.spacing(1),
-      width: "600px"
+      width: "715px"
     }
   },
   headerMenu: {
@@ -144,7 +145,6 @@ const PrimarySearchAppBar = ({ logout }) => {
           aria-label="account of current user"
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
-          color="inherit"
         >
           <AccountCircle />
         </IconButton>
@@ -155,10 +155,10 @@ const PrimarySearchAppBar = ({ logout }) => {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static" style={{ background: "black" }}>
+      <AppBar position="static" style={{ background: "white" }}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            Avni
+            <img src={logo} />
           </Typography>
           <form noValidate autoComplete="off">
             <Input
@@ -183,7 +183,7 @@ const PrimarySearchAppBar = ({ logout }) => {
               aria-controls={open ? "menu-list-grow" : undefined}
               aria-haspopup="true"
               onClick={handleToggle}
-              style={{ color: "white" }}
+              style={{ color: "#0e6eff" }}
             >
               New
               <ExpandMoreIcon />
@@ -219,7 +219,6 @@ const PrimarySearchAppBar = ({ logout }) => {
               aria-controls={menuId}
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
-              color="inherit"
             >
               <AccountCircle />
             </IconButton>
@@ -230,7 +229,6 @@ const PrimarySearchAppBar = ({ logout }) => {
               aria-controls={mobileMenuId}
               aria-haspopup="true"
               onClick={handleMobileMenuOpen}
-              color="inherit"
             >
               <MoreIcon />
             </IconButton>
