@@ -30,6 +30,7 @@ import {
 } from "./EncounterTypes";
 import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
+import Link from "@material-ui/core/Link";
 
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
@@ -58,7 +59,7 @@ class OrgManager extends Component {
       window.location.href.includes("staging") ||
       window.location.href.includes("uat");
     return (
-      <>
+      <React.Fragment>
         <Admin
           title="Manage Organisation"
           authProvider={authProvider}
@@ -157,12 +158,19 @@ class OrgManager extends Component {
         >
           <div style={{ color: "white" }}>
             This app is in beta. Please share your feedback by clicking{" "}
-            <a href="https://forms.gle/65q4DkxbS4onroys9">
-              <span style={{ color: "black" }}>here</span>
-            </a>
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => {
+                window.open("https://forms.gle/65q4DkxbS4onroys9", "_blank");
+              }}
+              style={{ color: "black", fontSize: 18 }}
+            >
+              here
+            </Link>
           </div>
         </div>
-      </>
+      </React.Fragment>
     );
   }
 }
