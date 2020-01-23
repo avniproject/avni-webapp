@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Datagrid,
   List,
@@ -8,18 +8,10 @@ import {
   Create,
   Edit,
   SimpleForm,
-  TextInput,
-  REDUX_FORM_NAME,
-  FormDataConsumer
+  TextInput
 } from "react-admin";
-import { ColorField } from "react-admin-color-input";
-import Editor from "react-simple-code-editor";
-import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
-import { change } from "redux-form";
-import FormLabel from "@material-ui/core/FormLabel";
-import Box from "@material-ui/core/Box";
 
 const Title = ({ record }) => {
   return (
