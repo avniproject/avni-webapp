@@ -11,6 +11,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import { default as UUID } from "uuid";
 import { constFormType } from "../common/constants";
+import Box from "@material-ui/core/Box";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -397,112 +398,113 @@ class FormSettings extends Component {
               Form name
             </InputLabel>
             {this.state.name}
-          {this.state.errorMsg && (
+            {this.state.errorMsg && (
+              <FormControl fullWidth margin="dense">
+                <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+              </FormControl>
+            )}
             <FormControl fullWidth margin="dense">
-              <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+              <InputLabel htmlFor="formType">Form Type</InputLabel>
+              <Select
+                id="formType"
+                name="formType"
+                value={this.state.formType}
+                onChange={this.onChangeField.bind(this)}
+                required
+              >
+                {this.formTypeElement()}
+              </Select>
+              {this.state.errors.formType && (
+                <FormHelperText error>{this.state.errors.formType}</FormHelperText>
+              )}
             </FormControl>
-          )}
-          <FormControl fullWidth margin="dense">
-            <InputLabel htmlFor="formType">Form Type</InputLabel>
-            <Select
-              id="formType"
-              name="formType"
-              value={this.state.formType}
-              onChange={this.onChangeField.bind(this)}
-              required
+            <FormControl fullWidth margin="dense">
+              <InputLabel htmlFor="name">Name</InputLabel>
+              <Input
+                type="text"
+                id="formName"
+                name="name"
+                value={this.state.name}
+                onChange={this.onChangeField.bind(this)}
+                fullWidth
+              />
+              {this.state.errors.name && (
+                <FormHelperText error>{this.state.errors.name}</FormHelperText>
+              )}
+            </FormControl>
+
+            {checklistItemBased &&
+              this.state.formMappings.map((mapping, index) => {
+                return (
+                  !mapping.voided && (
+                    <div key={index}>
+                      <Grid container item sm={12} spacing={2}>
+                        <Grid item sm={3}>
+                          {this.subjectTypeElement(index)}
+                        </Grid>
+                        {programBased && (
+                          <Grid item sm={4}>
+                            {this.programNameElement(index)}
+                          </Grid>
+                        )}
+                        {encounterTypes && (
+                          <Grid item sm={4}>
+                            {this.encounterTypesElement(index)}
+                          </Grid>
+                        )}
+
+                        <Grid item sm={1}>
+                          <IconButton
+                            aria-label="delete"
+                            onClick={event => this.removeMapping(index)}
+                            style={{ marginTop: 10 }}
+                          >
+                            <DeleteIcon fontSize="inherit" />
+                          </IconButton>
+                        </Grid>
+                      </Grid>
+                      {this.state.errors.hasOwnProperty("existingMapping") &&
+                        (this.state.errors["existingMapping"].hasOwnProperty(index) && (
+                          <FormControl fullWidth margin="dense">
+                            <FormHelperText error>
+                              {this.state.errors["existingMapping"][index]}
+                            </FormHelperText>
+                          </FormControl>
+                        ))}
+                    </div>
+                  )
+                );
+              })}
+          </form>
+          {checklistItemBased && (
+            <Button
+              color="primary"
+              onClick={event => this.addMapping(programBased, encounterTypes)}
+              style={{ marginTop: 10 }}
             >
-              {this.formTypeElement()}
-            </Select>
-            {this.state.errors.formType && (
-              <FormHelperText error>{this.state.errors.formType}</FormHelperText>
-            )}
-          </FormControl>
-          <FormControl fullWidth margin="dense">
-            <InputLabel htmlFor="name">Name</InputLabel>
-            <Input
-              type="text"
-              id="formName"
-              name="name"
-              value={this.state.name}
-              onChange={this.onChangeField.bind(this)}
-              fullWidth
+              Add mapping
+            </Button>
+          )}
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!this.state.dirtyFlag}
+              onClick={this.onFormSubmit.bind(this)}
+              style={{ marginTop: 10 }}
+            >
+              Save
+            </Button>
+          </div>
+          {this.state.showUpdateAlert && (
+            <CustomizedSnackbar
+              message="Form settings updated successfully!"
+              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
             />
-            {this.state.errors.name && (
-              <FormHelperText error>{this.state.errors.name}</FormHelperText>
-            )}
-          </FormControl>
-
-          {checklistItemBased &&
-            this.state.formMappings.map((mapping, index) => {
-              return (
-                !mapping.voided && (
-                  <div key={index}>
-                    <Grid container item sm={12} spacing={2}>
-                      <Grid item sm={3}>
-                        {this.subjectTypeElement(index)}
-                      </Grid>
-                      {programBased && (
-                        <Grid item sm={4}>
-                          {this.programNameElement(index)}
-                        </Grid>
-                      )}
-                      {encounterTypes && (
-                        <Grid item sm={4}>
-                          {this.encounterTypesElement(index)}
-                        </Grid>
-                      )}
-
-                      <Grid item sm={1}>
-                        <IconButton
-                          aria-label="delete"
-                          onClick={event => this.removeMapping(index)}
-                          style={{ marginTop: 10 }}
-                        >
-                          <DeleteIcon fontSize="inherit" />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
-                    {this.state.errors.hasOwnProperty("existingMapping") &&
-                      (this.state.errors["existingMapping"].hasOwnProperty(index) && (
-                        <FormControl fullWidth margin="dense">
-                          <FormHelperText error>
-                            {this.state.errors["existingMapping"][index]}
-                          </FormHelperText>
-                        </FormControl>
-                      ))}
-                  </div>
-                )
-              );
-            })}
-        </form>
-        {checklistItemBased && (
-          <Button
-            color="primary"
-            onClick={event => this.addMapping(programBased, encounterTypes)}
-            style={{ marginTop: 10 }}
-          >
-            Add mapping
-          </Button>
-        )}
-        <div>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={!this.state.dirtyFlag}
-            onClick={this.onFormSubmit.bind(this)}
-            style={{ marginTop: 10 }}
-          >
-            Save
-          </Button>
+          )}
         </div>
-        {this.state.showUpdateAlert && (
-          <CustomizedSnackbar
-            message="Form settings updated successfully!"
-            getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
-            defaultSnackbarStatus={this.state.defaultSnackbarStatus}
-          />
-        )}
-      </div>
+      </Box>
     );
   }
 }

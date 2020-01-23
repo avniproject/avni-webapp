@@ -753,120 +753,121 @@ class FormDetails extends Component {
             </>
           )}
         </Grid>
-      <Grid container justify="center">
-        <Grid item sm={12}>
-          <Tabs
-            style={{ background: "#2196f3", color: "white" }}
-            value={this.state.activeTabIndex}
-            onChange={this.onTabHandleChange}
-          >
-            <Tab label="Details" />
-            <Tab label="Settings" />
-            <Tab label="Rules" />
-          </Tabs>
-          <TabContainer hidden={this.state.activeTabIndex !== 0}>
-            <div name="divGroup">
-              <Grid container item sm={12} direction="row-reverse">
-                {this.state.createFlag && (
-                  <Grid item sm={2}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                      onClick={this.btnGroupClick}
-                    >
-                      Add Group
-                    </Button>
-                  </Grid>
-                )}
-                {!this.state.createFlag && (
-                  <Grid item sm={2} style={{ paddingBottom: 20 }}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      color="secondary"
-                      onClick={this.validateForm}
-                      disabled={!this.state.detectBrowserCloseEvent}
-                    >
-                      <SaveIcon />
-                      &nbsp;Save
-                    </Button>
-                  </Grid>
-                )}
-                <Grid item sm={10}>
-                  <b>Form : {this.state.name}</b>
-                </Grid>
-                <Grid item sm={12}>
-                  {this.state.errorMsg !== "" && (
-                    <FormControl fullWidth margin="dense">
-                      <li style={{ color: "red" }}>{this.state.errorMsg}</li>
-                    </FormControl>
+        <Grid container justify="center">
+          <Grid item sm={12}>
+            <Tabs
+              style={{ background: "#2196f3", color: "white" }}
+              value={this.state.activeTabIndex}
+              onChange={this.onTabHandleChange}
+            >
+              <Tab label="Details" />
+              <Tab label="Settings" />
+              <Tab label="Rules" />
+            </Tabs>
+            <TabContainer hidden={this.state.activeTabIndex !== 0}>
+              <div name="divGroup">
+                <Grid container item sm={12} direction="row-reverse">
+                  {this.state.createFlag && (
+                    <Grid item sm={2}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        onClick={this.btnGroupClick}
+                      >
+                        Add Group
+                      </Button>
+                    </Grid>
                   )}
+                  {!this.state.createFlag && (
+                    <Grid item sm={2} style={{ paddingBottom: 20 }}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="secondary"
+                        onClick={this.validateForm}
+                        disabled={!this.state.detectBrowserCloseEvent}
+                      >
+                        <SaveIcon />
+                        &nbsp;Save
+                      </Button>
+                    </Grid>
+                  )}
+                  <Grid item sm={10}>
+                    <b>Form : {this.state.name}</b>
+                  </Grid>
+                  <Grid item sm={12}>
+                    {this.state.errorMsg !== "" && (
+                      <FormControl fullWidth margin="dense">
+                        <li style={{ color: "red" }}>{this.state.errorMsg}</li>
+                      </FormControl>
+                    )}
+                  </Grid>
                 </Grid>
-              </Grid>
 
-              <DragDropContext onDragEnd={this.onDragEnd}>
-                <Droppable droppableId="all-columns" direction="vertical" type="row">
-                  {provided => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {this.renderGroups()}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-              {/* <div style={{marginTop:"50px"}}> */}
-              <Grid container item sm={12}>
-                <Grid item sm={3}>
-                  {" "}
-                  <InputLabel style={classes.inputLabel}>
-                    Created by : {this.state.form.createdBy}{" "}
-                  </InputLabel>
+                <DragDropContext onDragEnd={this.onDragEnd}>
+                  <Droppable droppableId="all-columns" direction="vertical" type="row">
+                    {provided => (
+                      <div ref={provided.innerRef} {...provided.droppableProps}>
+                        {this.renderGroups()}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+                {/* <div style={{marginTop:"50px"}}> */}
+                <Grid container item sm={12}>
+                  <Grid item sm={3}>
+                    {" "}
+                    <InputLabel style={classes.inputLabel}>
+                      Created by : {this.state.form.createdBy}{" "}
+                    </InputLabel>
+                  </Grid>
+                  <Grid item sm={3}>
+                    {" "}
+                    <InputLabel style={classes.inputLabel}>
+                      Last modified by : {this.state.form.lastModifiedBy}{" "}
+                    </InputLabel>
+                  </Grid>
+                  <Grid item sm={3}>
+                    {" "}
+                    <InputLabel style={classes.inputLabel}>
+                      Creation datetime : {this.state.form.createdDateTime}{" "}
+                    </InputLabel>
+                  </Grid>
+                  <Grid item sm={3}>
+                    {" "}
+                    <InputLabel style={classes.inputLabel}>
+                      Last modified datetime : {this.state.form.modifiedDateTime}{" "}
+                    </InputLabel>
+                  </Grid>
                 </Grid>
-                <Grid item sm={3}>
-                  {" "}
-                  <InputLabel style={classes.inputLabel}>
-                    Last modified by : {this.state.form.lastModifiedBy}{" "}
-                  </InputLabel>
-                </Grid>
-                <Grid item sm={3}>
-                  {" "}
-                  <InputLabel style={classes.inputLabel}>
-                    Creation datetime : {this.state.form.createdDateTime}{" "}
-                  </InputLabel>
-                </Grid>
-                <Grid item sm={3}>
-                  {" "}
-                  <InputLabel style={classes.inputLabel}>
-                    Last modified datetime : {this.state.form.modifiedDateTime}{" "}
-                  </InputLabel>
-                </Grid>
+                {/* </div> */}
+              </div>
+            </TabContainer>
+            <Grid container item sm={12} hidden={this.state.activeTabIndex !== 1}>
+              <Grid item sm={8}>
+                <FormSettings
+                  formData={{
+                    name: this.state.form.name,
+                    uuid: this.state.form.uuid,
+                    formType: this.state.form.formType
+                  }}
+                  name={this.state.name}
+                  onUpdateFormName={this.onUpdateFormName}
+                  uuid={this.props.match.params.formUUID}
+                />
               </Grid>
-              {/* </div> */}
-            </div>
-          </TabContainer>
-          <Grid container item sm={12} hidden={this.state.activeTabIndex !== 1}>
-            <Grid item sm={8}>
-              <FormSettings
-                formData={{
-                  name: this.state.form.name,
-                  uuid: this.state.form.uuid,
-                  formType: this.state.form.formType
-                }}
-                name={this.state.name}
-                onUpdateFormName={this.onUpdateFormName}
-                uuid={this.props.match.params.formUUID}
-              />
             </Grid>
-          </Grid>
 
-          <div hidden={this.state.activeTabIndex !== 2}>
-            <FormLevelRules
-              form={this.state.form}
-              onRuleUpdate={this.onRuleUpdate}
-              onToggleExpandPanel={this.onToggleExpandPanel}
-            />
-          </div>
+            <div hidden={this.state.activeTabIndex !== 2}>
+              <FormLevelRules
+                form={this.state.form}
+                onRuleUpdate={this.onRuleUpdate}
+                onToggleExpandPanel={this.onToggleExpandPanel}
+              />
+            </div>
+          </Grid>
         </Grid>
       </Grid>
     );

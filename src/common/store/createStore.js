@@ -13,18 +13,13 @@ export const adminHistory = createHashHistory({ basename: "/admin" });
 const configureStore = initialState => {
   const sagaMiddleware = createSagaMiddleware();
 
-  const composeEnhancers =
-    (isDevEnv && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
+  const composeEnhancers = (isDevEnv && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
   const store = createStore(
     rootReducer,
     initialState,
     composeEnhancers(
-      applyMiddleware(
-        sagaMiddleware,
-        formMiddleware,
-        routerMiddleware(adminHistory)
-      )
+      applyMiddleware(sagaMiddleware, formMiddleware, routerMiddleware(adminHistory))
     )
   );
 
