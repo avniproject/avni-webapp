@@ -16,7 +16,6 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 
 const useStyles = makeStyles(theme => ({
   tabsDisplay: {
-    //margin: theme.spacing(1)
     margin: "-23px"
   },
   tabView: {
@@ -30,7 +29,6 @@ const useStyles = makeStyles(theme => ({
   },
   wrapper: {
     "& span": {
-      //backgroundColor: 'red',
       flexDirection: "row",
       "& svg": {
         marginRight: "6px",

@@ -36,13 +36,30 @@ const AntTab = withStyles(theme => ({
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
-    //padding: theme.spacing(1)
   },
-  tabView: {
-    //padding: theme.spacing(2)
+  programBar: {
+    height: "100px",
+    backgroundColor: "#f9f9f9"
   },
-  padding: {
-    //padding: theme.spacing(3),
+  activeProgramBar: {
+    maxWidth: "600px",
+    marginTop: "14px",
+    marginLeft: "20px",
+    height: "18px"
+  },
+  activeProgramLabel: {
+    fontSize: "12px",
+    fontFamily: "Roboto Reg",
+    color: "#555555"
+  },
+  exitedProgramBar: {
+    maxWidth: "372px",
+    marginTop: "14px"
+  },
+  exitedProgramLabel: {
+    fontSize: "12px",
+    fontFamily: "Roboto Reg",
+    color: "#555555"
   }
 }));
 
@@ -56,13 +73,15 @@ const SubjectDashboardProgramTab = ({ program }) => {
     setValue(newValue);
   };
 
-  program.enrolments.sort(function(left, right) {
-    return left.hasOwnProperty("programExitDateTime")
-      ? 1
-      : right.hasOwnProperty("programExitDateTime")
-      ? -1
-      : 0;
-  });
+  if (program && program.enrolments) {
+    program.enrolments.sort(function(left, right) {
+      return left.hasOwnProperty("programExitDateTime")
+        ? 1
+        : right.hasOwnProperty("programExitDateTime")
+        ? -1
+        : 0;
+    });
+  }
 
   const classes = useStyles();
 
@@ -75,22 +94,12 @@ const SubjectDashboardProgramTab = ({ program }) => {
   return (
     <Fragment>
       <Paper className={classes.root}>
-        <div style={{ height: "100px", backgroundColor: "#f9f9f9" }}>
+        <div className={classes.programBar}>
           <Grid container spacing={1}>
             {flagActive ? (
               <Fragment>
-                <Grid
-                  item
-                  style={{
-                    maxWidth: "600px",
-                    marginTop: "14px",
-                    marginLeft: "20px",
-                    height: "18px"
-                  }}
-                >
-                  <label style={{ fontSize: "12px", fontFamily: "Roboto Reg", color: "#555555" }}>
-                    Active Programs
-                  </label>
+                <Grid item className={classes.activeProgramBar}>
+                  <label className={classes.activeProgramLabel}>Active Programs</label>
 
                   <AppBar style={{ minHeight: "35px" }} position="static" color="default">
                     <AntTabs
@@ -125,10 +134,8 @@ const SubjectDashboardProgramTab = ({ program }) => {
             )}
 
             {flagExited ? (
-              <Grid item style={{ maxWidth: "372px", marginTop: "14px" }}>
-                <label style={{ fontSize: "12px", fontFamily: "Roboto Reg", color: "#555555" }}>
-                  Exited Programs
-                </label>
+              <Grid item className={classes.exitedProgramBar}>
+                <label className={classes.exitedProgramLabel}>Exited Programs</label>
 
                 <AppBar position="static" color="default">
                   <AntTabs

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Fragment } from "react";
 import Table from "@material-ui/core/Table";
 import { withRouter } from "react-router-dom";
 import TableBody from "@material-ui/core/TableBody";
@@ -16,6 +16,7 @@ import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchRed
 import RegistrationMenu from "./RegistrationMenu";
 import ScreenWithAppBar from "../../../common/components/ScreenWithAppBar";
 import PrimaryButton from "../../components/PrimaryButton";
+import Paper from "@material-ui/core/Paper";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -41,6 +42,10 @@ const useStyle = makeStyles(theme => ({
   },
   createButtonHolder: {
     flex: 1
+  },
+  searchBox: {
+    padding: "1.5rem",
+    margin: "2rem 1rem"
   }
 }));
 
@@ -104,7 +109,8 @@ const SubjectSearch = props => {
   }, []);
 
   return (
-    <ScreenWithAppBar appbarTitle={`Search ${props.subjectType.name}`}>
+    <Paper className={classes.searchBox}>
+      {/* <ScreenWithAppBar appbarTitle={`Search ${props.subjectType.name}`}> */}
       <div className={classes.searchCreateToolbar}>
         <form onSubmit={handleSubmit} className={classes.searchForm}>
           <FormControl className={classes.searchFormItem}>
@@ -126,7 +132,8 @@ const SubjectSearch = props => {
         <RegistrationMenu className={classes.createButtonHolder} />
       </div>
       <SubjectsTable subjects={props.subjects} type={props.subjectType} />
-    </ScreenWithAppBar>
+      {/* </ScreenWithAppBar> */}
+    </Paper>
   );
 };
 

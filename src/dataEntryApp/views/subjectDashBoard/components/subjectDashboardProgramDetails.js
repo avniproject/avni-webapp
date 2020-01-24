@@ -19,7 +19,6 @@ TabPanel.propTypes = {
 };
 
 const programDetails = ({ tabPanelValue, programData }) => {
-  console.log(tabPanelValue, programData.enrolments);
   return (
     <div>
       {programData && programData.enrolments

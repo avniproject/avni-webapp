@@ -19,7 +19,6 @@ import Button from "@material-ui/core/Button";
 const useStyles = makeStyles(theme => ({
   enrollButtonStyle: {
     marginBottom: theme.spacing(2),
-    //marginRight: theme.spacing(2),
     marginRight: "10px",
     height: "28px"
   },
@@ -28,7 +27,6 @@ const useStyles = makeStyles(theme => ({
   },
   growthButtonStyle: {
     marginBottom: theme.spacing(2),
-    //marginRight: theme.spacing(2),
     marginRight: "10px",
     height: "28px",
     marginLeft: "37px"
@@ -38,15 +36,17 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2)
   },
   paper: {
-    padding: theme.spacing(2),
-    textAlign: "left"
+    textAlign: "left",
+    boxShadow: "none",
+    borderRadius: "0px",
+    borderRight: "1px solid #dcdcdc",
+    padding: "0px"
   },
   programStatusStyle: {
     color: "red",
     backgroundColor: "#ffeaea",
     fontSize: "12px",
     padding: "2px 5px"
-    // borderRadius: "5px"
   },
   expansionHeading: {
     fontSize: theme.typography.pxToRem(16),
@@ -60,7 +60,10 @@ const useStyles = makeStyles(theme => ({
   ListItemText: {
     "& span": {
       fontSize: "14px"
-    }
+    },
+    color: "#2196f3",
+    fontSize: "14px",
+    textTransform: "uppercase"
   },
   listItemTextDate: {
     "& span": {
@@ -76,13 +79,17 @@ const useStyles = makeStyles(theme => ({
   },
   expandMoreIcon: {
     color: "#0e6eff"
+  },
+  visitButton: {
+    marginLeft: "8px",
+    fontSize: "14px"
   }
 }));
 
-function truncate(input) {
+const truncate = input => {
   if (input && input.length > 20) return input.substring(0, 20) + "...";
   else return input;
-}
+};
 
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
@@ -164,22 +171,11 @@ const ProgramView = ({ programData }) => {
                 ? programData.programEncounters.map((row, index) =>
                     !row.encounterDateTime ? (
                       <Grid key={index} item xs={6} sm={3}>
-                        <Paper
-                          style={{
-                            boxShadow: "none",
-                            borderRadius: "0px",
-                            borderRight: "1px solid #dcdcdc"
-                          }}
-                        >
+                        <Paper className={classes.paper}>
                           <List style={{ paddingBottom: "0px" }}>
                             <ListItem className={classes.listItem}>
                               <ListItemText
                                 className={classes.ListItemText}
-                                style={{
-                                  color: "#2196f3",
-                                  fontSize: "14px",
-                                  textTransform: "uppercase"
-                                }}
                                 title={row.name}
                                 primary={truncate(row.name)}
                               />
@@ -187,7 +183,6 @@ const ProgramView = ({ programData }) => {
                             <ListItem className={classes.listItem}>
                               <ListItemText
                                 className={classes.listItemTextDate}
-                                style={{ color: "#555555", fontSize: "14px" }}
                                 primary={moment(new Date(row.earliestVisitDateTime)).format(
                                   "DD-MM-YYYY"
                                 )}
@@ -203,7 +198,7 @@ const ProgramView = ({ programData }) => {
                               ""
                             )}
                           </List>
-                          <div style={{ marginLeft: "8px", fontSize: "14px" }}>
+                          <div className={classes.visitButton}>
                             <Button color="primary">DO VISIT</Button>
                             <Button color="primary">CANCEL VISIT</Button>
                           </div>
@@ -231,34 +226,18 @@ const ProgramView = ({ programData }) => {
             <Grid container spacing={2}>
               {programData && programData.programEncounters
                 ? programData.programEncounters.map((row, index) =>
-                    row.encounterDateTime ? (
+                    row.encounterDateTime && row.name ? (
                       <Grid key={index} item xs={6} sm={3}>
-                        <Paper
-                          style={{
-                            boxShadow: "none",
-                            padding: "0px",
-                            borderRadius: "0px",
-                            borderRight: "1px solid #dcdcdc"
-                          }}
-                          className={classes.paper}
-                        >
+                        <Paper className={classes.paper}>
                           <List style={{ paddingBottom: "0px" }}>
                             <ListItem className={classes.listItem}>
                               <ListItemText
                                 className={classes.ListItemText}
-                                style={{
-                                  color: "#2196f3",
-                                  fontSize: "14px",
-                                  textTransform: "uppercase"
-                                }}
                                 title={row.name}
                                 primary={truncate(row.name)}
                               />
                             </ListItem>
-                            <ListItem
-                              className={classes.listItem}
-                              style={{ color: "#555555", fontSize: "14px" }}
-                            >
+                            <ListItem className={classes.listItem}>
                               <ListItemText
                                 className={classes.listItemTextDate}
                                 primary={moment(new Date(row.encounterDateTime)).format(
@@ -274,7 +253,7 @@ const ProgramView = ({ programData }) => {
                               </label>
                             </ListItem>
                           </List>
-                          <div style={{ marginLeft: "8px", fontSize: "14px" }}>
+                          <div className={classes.visitButton}>
                             <Button color="primary">DO VISIT</Button>
                             <Button color="primary">CANCEL VISIT</Button>
                           </div>

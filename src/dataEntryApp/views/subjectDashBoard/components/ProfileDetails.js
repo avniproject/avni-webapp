@@ -22,7 +22,6 @@ const useStyles = makeStyles(theme => ({
   bigAvatar: {
     width: 42,
     height: 42
-    //marginLeft: theme.spacing(1)
   },
   tableView: {
     flexGrow: 1,
