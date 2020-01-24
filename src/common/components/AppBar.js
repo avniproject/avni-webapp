@@ -110,9 +110,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(AppBar)
-);
+export default withRouter(connect(mapStateToProps, null)(AppBar));

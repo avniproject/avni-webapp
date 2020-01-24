@@ -38,6 +38,7 @@ import AdminLayout from "../common/components/AdminLayout";
 import Forms from "../formDesigner/views/Forms";
 import Concepts from "../formDesigner/views/Concepts";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
+import FormSettings from "../formDesigner/components/FormSettings";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -132,7 +133,12 @@ class OrgManager extends Component {
             create={EncounterTypeCreate}
             edit={EncounterTypeEdit}
           />
-          <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
+          <Resource
+            name="forms"
+            options={{ label: "Forms" }}
+            list={uiDesignerToggle && Forms}
+            edit={FormSettings}
+          />
           <Resource
             name="concepts"
             options={{ label: "Concepts" }}

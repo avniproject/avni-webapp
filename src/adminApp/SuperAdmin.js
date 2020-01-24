@@ -64,9 +64,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(SuperAdmin)
-);
+export default withRouter(connect(mapStateToProps, null)(SuperAdmin));

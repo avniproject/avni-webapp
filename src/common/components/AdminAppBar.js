@@ -36,9 +36,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    null
-  )(AdminAppBar)
-);
+export default withRouter(connect(mapStateToProps, null)(AdminAppBar));

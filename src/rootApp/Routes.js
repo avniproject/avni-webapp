@@ -103,7 +103,4 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default connect(
-  mapStateToProps,
-  null
-)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);
+export default connect(mapStateToProps, null)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);
