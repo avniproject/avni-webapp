@@ -21,9 +21,12 @@ public class StaticResourceConfiguration extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         if (staticPath != null) {
             registry
-                    .addResourceHandler("/**")
-                    .addResourceLocations("file:" + staticPath)
+                    .addResourceHandler("/static/**")
+                    .addResourceLocations("file:" + staticPath + "static/")
                     .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS));
+            registry
+                    .addResourceHandler("/**")
+                    .addResourceLocations("file:" + staticPath);
         }
     }
 
