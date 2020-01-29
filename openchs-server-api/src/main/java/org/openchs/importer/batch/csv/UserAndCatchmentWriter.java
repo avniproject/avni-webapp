@@ -1,4 +1,4 @@
-package org.openchs.importer.batch;
+package org.openchs.importer.batch.csv;
 
 import org.openchs.dao.LocationRepository;
 import org.openchs.dao.UserRepository;

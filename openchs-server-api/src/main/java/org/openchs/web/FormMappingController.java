@@ -1,15 +1,8 @@
 package org.openchs.web;
 
-import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
-import org.openchs.dao.EncounterTypeRepository;
-import org.openchs.dao.ProgramRepository;
-import org.openchs.dao.SubjectTypeRepository;
-import org.openchs.dao.application.FormMappingRepository;
-import org.openchs.dao.application.FormRepository;
+import org.openchs.service.FormMappingService;
 import org.openchs.web.request.FormMappingContract;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,27 +14,14 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
-public class FormMappingController extends AbstractController<FormMapping>{
-    private final Logger logger;
-    private final ProgramRepository programRepository;
-    private SubjectTypeRepository subjectTypeRepository;
-    private FormMappingRepository formMappingRepository;
-    private EncounterTypeRepository encounterTypeRepository;
-    private FormRepository formRepository;
+public class FormMappingController extends AbstractController<FormMapping> {
+
+    private final FormMappingService formMappingService;
 
     @Autowired
-    public FormMappingController(FormMappingRepository formMappingRepository,
-                                 EncounterTypeRepository encounterTypeRepository,
-                                 FormRepository formRepository,
-                                 ProgramRepository programRepository,
-                                 SubjectTypeRepository subjectTypeRepository
-    ) {
-        this.formMappingRepository = formMappingRepository;
-        this.encounterTypeRepository = encounterTypeRepository;
-        this.formRepository = formRepository;
-        this.programRepository = programRepository;
-        this.subjectTypeRepository = subjectTypeRepository;
-        logger = LoggerFactory.getLogger(this.getClass());
+    public FormMappingController(FormMappingService formMappingService) {
+
+        this.formMappingService = formMappingService;
     }
 
     @RequestMapping(value = "/formMappings", method = RequestMethod.POST)
@@ -49,40 +29,8 @@ public class FormMappingController extends AbstractController<FormMapping>{
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     void save(@RequestBody List<FormMappingContract> formMappingRequests) {
         for (FormMappingContract formMappingRequest : formMappingRequests) {
-            createOrUpdateFormMapping(formMappingRequest);
+            formMappingService.createOrUpdateFormMapping(formMappingRequest);
         }
 
-    }
-
-    private void createOrUpdateFormMapping(FormMappingContract formMappingRequest) {
-
-        if(formMappingRequest.getFormUUID() == null){
-            throw new RuntimeException("FormMappingRequest without form uuid! "+formMappingRequest);
-        }
-        Form form = formRepository.findByUuid(formMappingRequest.getFormUUID());
-        if(form == null){
-            throw new RuntimeException("Form not found!"+formMappingRequest);
-        }
-        FormMapping formMapping = newOrExistingEntity(formMappingRepository, formMappingRequest, new FormMapping());
-        formMapping.setForm(form);
-
-        if (formMappingRequest.getProgramUUID()!= null){
-            formMapping.setProgram(programRepository.findByUuid(formMappingRequest.getProgramUUID()));
-        }
-
-        if (formMappingRequest.getEncounterTypeUUID()!= null){
-            formMapping.setEncounterType(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()));
-        }
-
-        if (formMappingRequest.getSubjectTypeUUID() != null) {
-            formMapping.setSubjectType(
-                    subjectTypeRepository.findByUuid(
-                            formMappingRequest.getSubjectTypeUUID()));
-        } else {
-            formMapping.setSubjectType(subjectTypeRepository.individualSubjectType());
-        }
-
-        formMapping.setVoided(formMappingRequest.isVoided());
-        formMappingRepository.save(formMapping);
     }
 }

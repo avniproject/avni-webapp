@@ -115,18 +115,32 @@ public class S3Service {
     }
 
     public ObjectInfo uploadFile(File tempSourceFile, String destFileName, String directory) throws IOException {
-        String suggestedS3Key = format("%s/%s/%s",
-                directory,
-                getOrgDirectoryName(),
-                destFileName.replace(" ", "_")
-        );
+        String suggestedS3Key = getS3Key(destFileName, directory);
         long noOfLines = Files.lines(Paths.get(tempSourceFile.getAbsolutePath())).count();
         String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
         return new ObjectInfo(actualS3Key, noOfLines);
     }
 
+    private String getS3Key(String destFileName, String directory) {
+        return format("%s/%s/%s",
+                directory,
+                getOrgDirectoryName(),
+                destFileName.replace(" ", "_")
+        );
+    }
+
     public ObjectInfo uploadFile(MultipartFile source, String destFileName, String directory) throws IOException {
         return uploadFile(convertMultiPartToFile(source), destFileName, directory);
+    }
+
+    public ObjectInfo uploadZipFile(MultipartFile source, String destFileName, String directory) throws IOException {
+        return uploadZip(convertMultiPartToZip(source), destFileName, directory);
+    }
+
+    private ObjectInfo uploadZip(File tempSourceFile, String destFileName, String directory) throws IOException {
+        String suggestedS3Key = getS3Key(destFileName, directory);
+        String actualS3Key = putObject(suggestedS3Key, tempSourceFile);
+        return new ObjectInfo(actualS3Key, 0L);
     }
 
     private Date getExpireDate(long expireDuration) {
@@ -153,8 +167,12 @@ public class S3Service {
         return mediaDirectory;
     }
 
-    private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".csv");
+    private File convertMultiPartToZip(MultipartFile file) throws IOException {
+        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".zip");
+        return getFile(file, tempFile);
+    }
+
+    private File getFile(MultipartFile file, File tempFile) throws IOException {
         try {
             FileOutputStream fos;
             fos = new FileOutputStream(tempFile);
@@ -166,6 +184,11 @@ public class S3Service {
                     format("Unable to create temp file %s. Error: %s", file.getOriginalFilename(), e.getMessage()));
         }
         return tempFile;
+    }
+
+    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".csv");
+        return getFile(file, tempFile);
     }
 
     private String putObject(String objectKey, File tempFile) {
