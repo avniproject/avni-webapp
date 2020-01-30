@@ -19,7 +19,6 @@ public class ProgramContractWeb {
     private boolean voided;
     private String enrolmentSummaryRule;
     private String enrolmentEligibilityCheckRule;
-    private String checklistsRule;
     private String createdBy;
     private String lastModifiedBy;
     private DateTime createdDateTime;
@@ -77,7 +76,6 @@ public class ProgramContractWeb {
         contract.setProgramOrganisationId(operationalProgram.getProgram().getOrganisationId());
         contract.setEnrolmentSummaryRule(operationalProgram.getEnrolmentSummaryRule());
         contract.setEnrolmentEligibilityCheckRule(operationalProgram.getEnrolmentEligibilityCheckRule());
-        contract.setChecklistsRule(operationalProgram.getChecklistsRule());
         contract.setCreatedBy(operationalProgram.getAudit().getCreatedBy().getUsername());
         contract.setLastModifiedBy(operationalProgram.getAudit().getLastModifiedBy().getUsername());
         contract.setCreatedDateTime(operationalProgram.getAudit().getCreatedDateTime());
@@ -117,14 +115,6 @@ public class ProgramContractWeb {
 
     public void setEnrolmentEligibilityCheckRule(String enrolmentEligibilityCheckRule) {
         this.enrolmentEligibilityCheckRule = enrolmentEligibilityCheckRule;
-    }
-
-    public String getChecklistsRule() {
-        return checklistsRule;
-    }
-
-    public void setChecklistsRule(String checklistsRule) {
-        this.checklistsRule = checklistsRule;
     }
 
     public void setCreatedBy(String username){

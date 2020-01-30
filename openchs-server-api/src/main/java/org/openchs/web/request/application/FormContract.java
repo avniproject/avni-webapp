@@ -28,6 +28,7 @@ public class FormContract extends ReferenceDataContract {
     private String decisionRule;
     private String visitScheduleRule;
     private String validationRule;
+    private String checklistsRule;
     private String createdBy;
     private String lastModifiedBy;
     private DateTime createdDateTime;
@@ -130,6 +131,7 @@ public class FormContract extends ReferenceDataContract {
         formContract.setDecisionRule(form.getDecisionRule());
         formContract.setVisitScheduleRule(form.getVisitScheduleRule());
         formContract.setValidationRule(form.getValidationRule());
+        formContract.setChecklistsRule(form.getChecklistsRule());
       
         List<FormElementGroupContract> fegContracts = form.getFormElementGroups().stream()
                 .map(FormElementGroupContract::fromFormElementGroup)
@@ -165,8 +167,16 @@ public class FormContract extends ReferenceDataContract {
         return validationRule;
     }
 
+    public String getChecklistsRule(){
+        return checklistsRule;
+    }
+
     public void setValidationRule(String validationRule) {
         this.validationRule = validationRule;
+    }
+
+    public void setChecklistsRule(String checklistsRule){
+        this.checklistsRule = checklistsRule;
     }
 
     public void setCreatedBy(String username){

@@ -48,7 +48,6 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
             program.setName(programRequest.getName());
             program.setColour(programRequest.getColour());
             program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
-            program.setChecklistsRule(program.getChecklistsRule());
             program.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
 
             programRepository.save(program);
@@ -71,7 +70,6 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         program.setColour(request.getColour());
         program.setEnrolmentSummaryRule(request.getEnrolmentSummaryRule());
         program.setEnrolmentEligibilityCheckRule(request.getEnrolmentEligibilityCheckRule());
-        program.setChecklistsRule(request.getChecklistsRule());
         programRepository.save(program);
         OperationalProgram operationalProgram = new OperationalProgram();
         operationalProgram.assignUUIDIfRequired();
@@ -103,7 +101,6 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         program.setColour(programContractWeb.getColour());
         program.setEnrolmentSummaryRule(programContractWeb.getEnrolmentSummaryRule());
         program.setEnrolmentEligibilityCheckRule(programContractWeb.getEnrolmentEligibilityCheckRule());
-        program.setChecklistsRule(programContractWeb.getChecklistsRule());
 
         programRepository.save(program);
 
