@@ -153,10 +153,11 @@ class OrgManager extends Component {
             options={{ label: "Identifier user assignment" }}
             list={IdentifierUserAssignmentList}
           />
-          <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
-          name="forms" options={{ label: "Forms" }}
-          list={uiDesignerToggle && Forms}
-          edit={FormSettings}
+          <Resource
+            name="forms"
+            options={{ label: "Forms" }}
+            list={uiDesignerToggle && Forms}
+            edit={FormSettings}
           />
           <Resource
             name="concepts"
