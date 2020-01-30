@@ -61,7 +61,7 @@ public class IndividualController extends AbstractController<Individual> impleme
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody IndividualRequest individualRequest) {
         logger.info(String.format("Saving individual with UUID %s", individualRequest.getUuid()));
 
@@ -72,7 +72,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = {"/individual", /*-->Both are Deprecated */ "/individual/search/byCatchmentAndLastModified", "/individual/search/lastModified"})
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public PagedResources<Resource<Individual>> getIndividualsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
@@ -81,7 +81,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = "/individual/search")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public Page<IndividualWebProjection> search(
             @RequestParam(value = "query", required = false) String query,

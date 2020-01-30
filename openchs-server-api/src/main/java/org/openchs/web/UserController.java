@@ -23,7 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
@@ -167,7 +169,7 @@ public class UserController {
         user.setSettings(userContract.getSettings());
 
         User currentUser = userService.getCurrentUser();
-        user.setOrganisationId(currentUser.getOrganisationId());
+        user.setOrganisationId(userContract.getOrganisationId() == null ? currentUser.getOrganisationId() : userContract.getOrganisationId());
         user.setAuditInfo(currentUser);
         return user;
     }
@@ -230,19 +232,39 @@ public class UserController {
         Long organisationId = userService.getCurrentUser().getOrganisationId();
         return userRepository.findAll((root, query, builder) -> {
             Predicate predicate = builder.equal(root.get("organisationId"), organisationId);
-            if (username != null) {
-                predicate = builder.and(predicate, builder.like(builder.upper(root.get("username")), "%" + username.toUpperCase() + "%"));
-            }
-            if (name != null) {
-                predicate = builder.and(predicate, builder.like(builder.upper(root.get("name")), "%" + name.toUpperCase() + "%"));
-            }
-            if (email != null) {
-                predicate = builder.and(predicate, builder.like(builder.upper(root.get("email")), "%" + email.toUpperCase() + "%"));
-            }
-            if (phoneNumber != null) {
-                predicate = builder.and(predicate, builder.like(root.get("phoneNumber"), "%" + phoneNumber + "%"));
-            }
-            return predicate;
+            return applyUserPredicates(username, name, email, phoneNumber, root, builder, predicate);
+        }, pageable);
+    }
+
+    private Predicate applyUserPredicates(@RequestParam(value = "username", required = false) String username, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "phoneNumber", required = false) String phoneNumber, Root<User> root, CriteriaBuilder builder, Predicate predicate) {
+        if (username != null) {
+            predicate = builder.and(predicate, builder.like(builder.upper(root.get("username")), "%" + username.toUpperCase() + "%"));
+        }
+        if (name != null) {
+            predicate = builder.and(predicate, builder.like(builder.upper(root.get("name")), "%" + name.toUpperCase() + "%"));
+        }
+        if (email != null) {
+            predicate = builder.and(predicate, builder.like(builder.upper(root.get("email")), "%" + email.toUpperCase() + "%"));
+        }
+        if (phoneNumber != null) {
+            predicate = builder.and(predicate, builder.like(root.get("phoneNumber"), "%" + phoneNumber + "%"));
+        }
+        return predicate;
+    }
+
+    @GetMapping(value = "/user/search/findOrgAdmins")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @ResponseBody
+    public Page<User> findOrgAdmin(@RequestParam(value = "username", required = false) String username,
+                           @RequestParam(value = "name", required = false) String name,
+                           @RequestParam(value = "email", required = false) String email,
+                           @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+                           Pageable pageable) {
+        return userRepository.findAll((root, query, builder) -> {
+            Predicate nonVoided = builder.equal(root.get("isVoided"), false);
+            Predicate isOrgAdmin = builder.equal(root.get("isOrgAdmin"), true);
+            Predicate predicate = builder.and(isOrgAdmin, nonVoided);
+            return applyUserPredicates(username, name, email, phoneNumber, root, builder, predicate);
         }, pageable);
     }
 }

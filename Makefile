@@ -22,11 +22,19 @@ su:=$(shell id -un)
 DB=openchs
 
 # <postgres>
-clean_db_server:
+clean_db_server: _clean_db_server _clean_test_server _drop_roles
+
+_clean_db_server:
 	make _clean_db database=$(DB)
+
+_clean_test_server:
 	make _clean_db database=openchs_test
+
+_drop_roles:
 	-psql -h localhost -U $(su) -d postgres -c 'drop role openchs';
 	-psql -h localhost -U $(su) -d postgres -c 'drop role demo';
+	-psql -h localhost -U $(su) -d postgres -c 'drop role openchs_impl';
+	-psql -h localhost -U $(su) -d postgres -c 'drop role organisation_user';
 
 _clean_db:
 	-psql -h localhost -U $(su) -d postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$(database)' AND pid <> pg_backend_pid()"
@@ -39,11 +47,14 @@ _build_db:
 	-psql -h localhost -U $(su) -d $(database) -c 'create extension if not exists "ltree"';
 	-psql -h localhost -U $(su) -d postgres  -c 'create role demo with NOINHERIT NOLOGIN';
 	-psql -h localhost -U $(su) -d postgres  -c 'grant demo to openchs';
+	-psql -h localhost -U $(su) -d postgres  -c 'create role openchs_impl';
+	-psql -h localhost -U $(su) -d postgres  -c 'grant openchs_impl to openchs';
+	-psql -h localhost -U $(su) -d postgres  -c 'create role organisation_user createrole admin openchs_impl';
 # </postgres>
 
 # <db>
-clean_db: ## Drops the database
-	make _clean_db database=$(DB)
+## Drops the database
+clean_db: _clean_db_server
 
 build_db: ## Creates new empty database
 	make _build_db database=$(DB)

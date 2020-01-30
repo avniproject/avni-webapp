@@ -18,14 +18,31 @@ public class UserContract extends ReferenceDataContract {
     private boolean admin = false;
     private String operatingIndividualScope = OperatingIndividualScope.None.toString();
     private JsonObject settings;
+    private Long organisationId;
 
-    public String getUsername() { return username; }
+    public Long getOrganisationId() {
+        return organisationId;
+    }
 
-    public void setUsername(String username) { this.username = username; }
+    public void setOrganisationId(Long organisationId) {
+        this.organisationId = organisationId;
+    }
 
-    public long getCatchmentId() { return catchmentId; }
+    public String getUsername() {
+        return username;
+    }
 
-    public void setCatchmentId(long catchmentId) { this.catchmentId = catchmentId; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public long getCatchmentId() {
+        return catchmentId;
+    }
+
+    public void setCatchmentId(long catchmentId) {
+        this.catchmentId = catchmentId;
+    }
 
     public List<UserFacilityMappingContract> getFacilities() {
         return facilities == null ? new ArrayList<>() : facilities;
