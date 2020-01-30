@@ -272,35 +272,33 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
       </FormDataConsumer>
       <LineBreak />
       <FormDataConsumer>
-        {({ formData, dispatch, ...rest }) =>
-          !formData.orgAdmin && (
-            <Fragment>
-              <Typography variant="title" component="h3">
-                Catchment
-              </Typography>
-              <ReferenceInput
-                source="catchmentId"
-                reference="catchment"
-                label="Which catchment?"
-                validate={required("Please select a catchment")}
-                onChange={(e, newVal) => {
-                  if (edit) alert(catchmentChangeMessage);
-                  dispatch(
-                    change(
-                      REDUX_FORM_NAME,
-                      "operatingIndividualScope",
-                      isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
-                    )
-                  );
-                }}
-                {...rest}
-              >
-                <CatchmentSelectInput source="name" resettable />
-              </ReferenceInput>
-              <LineBreak num={3} />
-            </Fragment>
-          )
-        }
+        {({ formData, dispatch, ...rest }) => (
+          <Fragment>
+            <Typography variant="title" component="h3">
+              Catchment
+            </Typography>
+            <ReferenceInput
+              source="catchmentId"
+              reference="catchment"
+              label="Which catchment?"
+              validate={!formData.orgAdmin && required("Please select a catchment")}
+              onChange={(e, newVal) => {
+                if (edit) alert(catchmentChangeMessage);
+                dispatch(
+                  change(
+                    REDUX_FORM_NAME,
+                    "operatingIndividualScope",
+                    isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
+                  )
+                );
+              }}
+              {...rest}
+            >
+              <CatchmentSelectInput source="name" resettable />
+            </ReferenceInput>
+            <LineBreak num={3} />
+          </Fragment>
+        )}
       </FormDataConsumer>
       <DisabledInput
         source="operatingIndividualScope"
