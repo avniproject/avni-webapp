@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
-import { FormControl, Input, InputLabel, Select } from "@material-ui/core";
+import { FormControl, InputLabel, Select } from "@material-ui/core";
 import MenuItem from "@material-ui/core/MenuItem";
 import http from "common/utils/httpClient";
 import FormHelperText from "@material-ui/core/FormHelperText";
@@ -12,6 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { default as UUID } from "uuid";
 import { constFormType } from "../common/constants";
 import Box from "@material-ui/core/Box";
+import { Title } from "react-admin";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -37,7 +38,7 @@ class FormSettings extends Component {
     let errorsList = {};
     let formMapping = this.state.formMappings;
     let existingMapping = [];
-    if (this.state.name === "") errorsList["name"] = "Please enter form name.";
+
     if (this.state.formType === "") errorsList["formType"] = "Please select form type.";
     errorsList["existingMapping"] = {};
     errorsList["unselectedData"] = {};
@@ -130,7 +131,7 @@ class FormSettings extends Component {
     const voidedMessage = `Are you sure you want to change form details? It may result in your form not showing up in AVNI application so please do it only if you aware of the consequences.`;
     if (validateFormStatus) {
       if (!this.state.warningFlag || (this.state.warningFlag && window.confirm(voidedMessage))) {
-        const existFormUUID = this.props.uuid;
+        const existFormUUID = this.state.uuid;
         this.setState({ errorMsg: "" });
         http
           .put("/web/forms/" + existFormUUID + "/metadata", {
@@ -148,16 +149,14 @@ class FormSettings extends Component {
               defaultSnackbarStatus: true,
               formMapping: formMapping
             });
-
-            this.props.onUpdateFormName(this.state.name);
           })
           .catch(error => {
+            console.log(error);
             if (error.response.status === 404) {
               this.setState({
                 showUpdateAlert: true,
                 defaultSnackbarStatus: true
               });
-              this.props.onUpdateFormName(this.state.name);
             } else {
               this.setState({ errorMsg: error.response.data, showUpdateAlert: false });
             }
@@ -167,18 +166,26 @@ class FormSettings extends Component {
   }
 
   componentDidMount() {
-    this.setState({
-      name: this.props.formData.name,
-      formType: this.props.formData.formType,
-      uuid: this.props.formData.uuid
-    });
+    http
+      .get(`/forms/export?formUUID=${this.props.match.params.id}`)
+      .then(response => {
+        this.setState({
+          name: response.data.name,
+          formType: response.data.formType,
+          uuid: response.data.uuid
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
     http
       .get("/web/operationalModules")
       .then(response => {
         let data = Object.assign({}, response.data);
         let formMappings = [];
         _.forEach(data.formMappings, formMapping => {
-          if (formMapping.formUuid === this.props.formData.uuid) {
+          if (formMapping.formUuid === this.props.match.params.id) {
             formMappings.push({
               uuid: formMapping.uuid,
               programUuid: formMapping.programUuid,
@@ -244,11 +251,11 @@ class FormSettings extends Component {
             ))}
         </Select>
         {this.state.errors.hasOwnProperty("unselectedData") &&
-          (this.state.errors["unselectedData"].hasOwnProperty("programUuid" + index) && (
+          this.state.errors["unselectedData"].hasOwnProperty("programUuid" + index) && (
             <FormHelperText error>
               {this.state.errors["unselectedData"]["programUuid" + index]}
             </FormHelperText>
-          ))}
+          )}
       </FormControl>
     );
   }
@@ -281,11 +288,11 @@ class FormSettings extends Component {
             ))}
         </Select>
         {this.state.errors.hasOwnProperty("unselectedData") &&
-          (this.state.errors["unselectedData"].hasOwnProperty("subjectTypeUuid" + index) && (
+          this.state.errors["unselectedData"].hasOwnProperty("subjectTypeUuid" + index) && (
             <FormHelperText error>
               {this.state.errors["unselectedData"]["subjectTypeUuid" + index]}
             </FormHelperText>
-          ))}
+          )}
       </FormControl>
     );
   }
@@ -330,11 +337,11 @@ class FormSettings extends Component {
         </Select>
 
         {this.state.errors.hasOwnProperty("unselectedData") &&
-          (this.state.errors["unselectedData"].hasOwnProperty("encounterTypeUuid" + index) && (
+          this.state.errors["unselectedData"].hasOwnProperty("encounterTypeUuid" + index) && (
             <FormHelperText error>
               {this.state.errors["unselectedData"]["encounterTypeUuid" + index]}
             </FormHelperText>
-          ))}
+          )}
       </FormControl>
     );
   }
@@ -387,6 +394,7 @@ class FormSettings extends Component {
 
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
+        <Title title={this.state.name} />
         <div>
           <form>
             {this.state.errorMsg && (
@@ -398,11 +406,6 @@ class FormSettings extends Component {
               Form name
             </InputLabel>
             {this.state.name}
-            {this.state.errorMsg && (
-              <FormControl fullWidth margin="dense">
-                <li style={{ color: "red" }}>{this.state.errorMsg}</li>
-              </FormControl>
-            )}
             <FormControl fullWidth margin="dense">
               <InputLabel htmlFor="formType">Form Type</InputLabel>
               <Select
@@ -416,20 +419,6 @@ class FormSettings extends Component {
               </Select>
               {this.state.errors.formType && (
                 <FormHelperText error>{this.state.errors.formType}</FormHelperText>
-              )}
-            </FormControl>
-            <FormControl fullWidth margin="dense">
-              <InputLabel htmlFor="name">Name</InputLabel>
-              <Input
-                type="text"
-                id="formName"
-                name="name"
-                value={this.state.name}
-                onChange={this.onChangeField.bind(this)}
-                fullWidth
-              />
-              {this.state.errors.name && (
-                <FormHelperText error>{this.state.errors.name}</FormHelperText>
               )}
             </FormControl>
 
@@ -464,13 +453,13 @@ class FormSettings extends Component {
                         </Grid>
                       </Grid>
                       {this.state.errors.hasOwnProperty("existingMapping") &&
-                        (this.state.errors["existingMapping"].hasOwnProperty(index) && (
+                        this.state.errors["existingMapping"].hasOwnProperty(index) && (
                           <FormControl fullWidth margin="dense">
                             <FormHelperText error>
                               {this.state.errors["existingMapping"][index]}
                             </FormHelperText>
                           </FormControl>
-                        ))}
+                        )}
                     </div>
                   )
                 );

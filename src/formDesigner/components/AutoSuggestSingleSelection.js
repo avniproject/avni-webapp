@@ -106,7 +106,10 @@ export default function AutoSuggestSingleSelection(props) {
         });
         if (props.showSuggestionStartsWith) {
           const filteredSuggestions = suggestions.filter(suggestion => {
-            return suggestion.name.slice(0, inputLength).toLowerCase() === inputValue;
+            return (
+              !suggestion.voided &&
+              suggestion.name.slice(0, inputLength).toLowerCase() === inputValue
+            );
           });
           setSuggestions(filteredSuggestions);
         } else {

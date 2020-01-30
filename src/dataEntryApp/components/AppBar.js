@@ -17,6 +17,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewMenu from "../views/dashboardNew/NewMenu";
 import Input from "@material-ui/core/Input";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import { Auth } from "aws-amplify";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -60,7 +62,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function PrimarySearchAppBar() {
+const PrimarySearchAppBar = ({ logout }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -81,8 +83,6 @@ export default function PrimarySearchAppBar() {
 
     setOpen(false);
   };
-
- 
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
@@ -124,6 +124,7 @@ export default function PrimarySearchAppBar() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={logout}>Logout</MenuItem>
     </Menu>
   );
 
@@ -240,4 +241,13 @@ export default function PrimarySearchAppBar() {
       {renderMenu}
     </div>
   );
-}
+};
+
+const mapDispatchToProps = dispatch => ({
+  logout: () => Auth.signOut().then(() => (document.location.href = "/"))
+});
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(PrimarySearchAppBar);

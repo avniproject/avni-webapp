@@ -37,6 +37,7 @@ import {
 } from "./EncounterTypes";
 import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
+import Link from "@material-ui/core/Link";
 
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
@@ -44,6 +45,7 @@ import AdminLayout from "../common/components/AdminLayout";
 import Forms from "../formDesigner/views/Forms";
 import Concepts from "../formDesigner/views/Concepts";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
+import FormSettings from "../formDesigner/components/FormSettings";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -65,7 +67,7 @@ class OrgManager extends Component {
       window.location.href.includes("staging") ||
       window.location.href.includes("uat");
     return (
-      <>
+      <React.Fragment>
         <Admin
           title="Manage Organisation"
           authProvider={authProvider}
@@ -152,6 +154,10 @@ class OrgManager extends Component {
             list={IdentifierUserAssignmentList}
           />
           <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
+          name="forms" options={{ label: "Forms" }}
+          list={uiDesignerToggle && Forms}
+          edit={FormSettings}
+          />
           <Resource
             name="concepts"
             options={{ label: "Concepts" }}
@@ -177,12 +183,19 @@ class OrgManager extends Component {
         >
           <div style={{ color: "white" }}>
             This app is in beta. Please share your feedback by clicking{" "}
-            <a href="https://forms.gle/65q4DkxbS4onroys9">
-              <span style={{ color: "black" }}>here</span>
-            </a>
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => {
+                window.open("https://forms.gle/65q4DkxbS4onroys9", "_blank");
+              }}
+              style={{ color: "black", fontSize: 18 }}
+            >
+              here
+            </Link>
           </div>
         </div>
-      </>
+      </React.Fragment>
     );
   }
 }
