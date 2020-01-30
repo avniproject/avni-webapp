@@ -22,6 +22,7 @@ import {
   IdentifierSourceDetail,
   IdentifierSourceEdit
 } from "./IdentifierSource";
+import { IdentifierUserAssignmentList } from "./IdentifierUserAssignment";
 import {
   SubjectTypeCreate,
   SubjectTypeDetail,
@@ -144,6 +145,11 @@ class OrgManager extends Component {
             show={IdentifierSourceDetail}
             create={IdentifierSourceCreate}
             edit={IdentifierSourceEdit}
+          />
+          <Resource
+            name="identifierUserAssignment"
+            options={{ label: "Identifier user assignment" }}
+            list={IdentifierUserAssignmentList}
           />
           <Resource name="forms" options={{ label: "Forms" }} list={uiDesignerToggle && Forms} />
           <Resource
