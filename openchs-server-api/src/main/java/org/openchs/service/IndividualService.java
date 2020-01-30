@@ -78,7 +78,7 @@ public class IndividualService {
         individualContract.setGender(individual.getGender().getName());
         individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
         individualContract.setRegistrationDate(individual.getRegistrationDate());
-        individualContract.setFullAddress(individual.getAddressLevel().getTitleLineage());
+        individualContract.setLowestAddressLevel(individual.getAddressLevel().getTitleLineage());
         individualContract.setVoided(individual.isVoided());
         return individualContract;
     }
@@ -104,9 +104,11 @@ public class IndividualService {
     public Set<EncounterContract> constructEncounters(Set<Encounter> encounters) {
         return encounters.stream().map(encounter -> {
             EncounterContract encountersContract = new EncounterContract();
+            EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
+            encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
             encountersContract.setUuid(encounter.getUuid());
             encountersContract.setName(encounter.getName());
-            encountersContract.setOperationalEncounterTypeName(encounter.getEncounterType().getOperationalEncounterTypeName());
+            encountersContract.setEncounterType(encounterTypeContract);
             encountersContract.setEncounterDateTime(encounter.getEncounterDateTime());
             encountersContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
             encountersContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
@@ -119,9 +121,11 @@ public class IndividualService {
     public Set <ProgramEncountersContract> constructProgramEncounters(Set<ProgramEncounter> programEncounters) {
         return programEncounters.stream().map(programEncounter -> {
             ProgramEncountersContract programEncountersContract = new ProgramEncountersContract();
+            EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
+            encounterTypeContract.setName(programEncounter.getEncounterType().getName());
             programEncountersContract.setUuid(programEncounter.getUuid());
             programEncountersContract.setName(programEncounter.getName());
-            programEncountersContract.setOperationalEncounterTypeName(programEncounter.getEncounterType().getName());
+            programEncountersContract.setEncounterType(encounterTypeContract);
             programEncountersContract.setEncounterDateTime(programEncounter.getEncounterDateTime());
             programEncountersContract.setCancelDateTime(programEncounter.getCancelDateTime());
             programEncountersContract.setEarliestVisitDateTime(programEncounter.getEarliestVisitDateTime());
@@ -148,27 +152,33 @@ public class IndividualService {
         List<RelationshipContract> relationshipContractFromSelfToOthers = individual.getRelationshipsFromSelfToOthers().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
             Individual individualB = individualRelationship.getIndividualB();
             IndividualRelation individualRelation = individualRelationship.getRelationship().getIndividualBIsToA();
-            return constructCommonRelationship(individualRelationship,individualB,individualRelation);
+            return constructCommonRelationship(individualRelationship,individualB,individualRelation,individualRelationship.getRelationship().getIndividualAIsToB());
         }).collect(Collectors.toList());
 
         List<RelationshipContract> relationshipContractFromOthersToSelf = individual.getRelationshipsFromOthersToSelf().stream().filter(individualRelationship -> !individualRelationship.isVoided()).map(individualRelationship -> {
             Individual individualA = individualRelationship.getIndividuala();
             IndividualRelation individualRelation = individualRelationship.getRelationship().getIndividualAIsToB();
-            return constructCommonRelationship(individualRelationship,individualA,individualRelation);
+            return constructCommonRelationship(individualRelationship,individualA,individualRelation,individualRelationship.getRelationship().getIndividualBIsToA());
         }).collect(Collectors.toList());
         relationshipContractFromSelfToOthers.addAll(relationshipContractFromOthersToSelf);
         return relationshipContractFromSelfToOthers;
     }
 
-    private RelationshipContract constructCommonRelationship(IndividualRelationship individualRelationship,Individual individual,IndividualRelation individualRelation) {
+    private RelationshipContract constructCommonRelationship(IndividualRelationship individualRelationship,Individual individual,IndividualRelation individualRelation,IndividualRelation individualAIsToBRelation) {
         RelationshipContract relationshipContract = new RelationshipContract();
-        relationshipContract.setIndividualBUuid(individual.getUuid());
-        relationshipContract.setIndividualBIsToARelation(individualRelation.getName());
-        relationshipContract.setFirstName(individual.getFirstName());
-        relationshipContract.setLastName(individual.getLastName());
-        relationshipContract.setDateOfBirth(individual.getDateOfBirth());
+        IndividualContract individualBContract = new IndividualContract();
+        individualBContract.setUuid(individual.getUuid());
+        individualBContract.setFirstName(individual.getFirstName());
+        individualBContract.setLastName(individual.getLastName());
+        individualBContract.setDateOfBirth(individual.getDateOfBirth());
+        relationshipContract.setIndividualB(individualBContract);
+
+        IndividualRelationshipTypeContract individualRelationshipTypeContract = new IndividualRelationshipTypeContract();
+        individualRelationshipTypeContract.setUuid(individualRelationship.getRelationship().getUuid());
+        individualRelationshipTypeContract.getIndividualBIsToARelation().setName(individualRelation.getName());
+        individualRelationshipTypeContract.getIndividualAIsToBRelation().setName(individualAIsToBRelation.getName());
+        relationshipContract.setRelationshipType(individualRelationshipTypeContract);
         relationshipContract.setUuid(individualRelationship.getUuid());
-        relationshipContract.setRelationshipTypeUuid(individualRelationship.getRelationship().getUuid());
         relationshipContract.setEnterDateTime(individualRelationship.getEnterDateTime());
         relationshipContract.setExitDateTime(individualRelationship.getExitDateTime());
         relationshipContract.setVoided(individualRelationship.isVoided());
@@ -195,7 +205,7 @@ public class IndividualService {
                             cc.setAbnormal(it.isAbnormal());
                             return cc;
                         }).collect(Collectors.toList());
-                observationContract.setValue(answerConceptList);
+                observationContract.setValue(answerConceptList != null && answerConceptList.size() == 1 ? answerConceptList.get(0) : answerConceptList);
             } else {
                 observationContract.setValue(value);
             }
