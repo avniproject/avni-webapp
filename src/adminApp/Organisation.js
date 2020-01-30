@@ -12,7 +12,8 @@ import {
   TextInput,
   required,
   Toolbar,
-  SaveButton
+  SaveButton,
+  DisabledInput
 } from "react-admin";
 
 export const OrganisationList = props => (
@@ -63,9 +64,13 @@ export const OrganisationEdit = props => {
   return (
     <Edit undoable={false} title="Edit Organisation Details" {...props}>
       <SimpleForm toolbar={<CustomToolbar />} redirect="show">
-        <TextInput source="name" validate={isRequired} />
-        <TextInput source="dbUser" validate={isRequired} />
-        <TextInput source="mediaDirectory" />
+        {props && props.id === "1" ? (
+          <DisabledInput source="name" validate={isRequired} />
+        ) : (
+          <TextInput source="name" validate={isRequired} />
+        )}
+        <DisabledInput source="dbUser" validate={isRequired} />
+        <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
       </SimpleForm>
     </Edit>
