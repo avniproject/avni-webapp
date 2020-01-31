@@ -58,7 +58,7 @@ export const OrgAdminUserList = ({ ...props }) => (
   <List
     {...props}
     bulkActions={false}
-    filter={{ searchURI: "findOrgAdmins" }}
+    filter={{ searchURI: "find" }}
     filters={<UserFilter />}
     title={`Organisation Admin Users`}
   >
