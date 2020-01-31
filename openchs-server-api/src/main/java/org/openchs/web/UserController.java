@@ -7,6 +7,7 @@ import org.openchs.dao.*;
 import org.openchs.domain.OperatingIndividualScope;
 import org.openchs.domain.User;
 import org.openchs.domain.UserFacilityMapping;
+import org.openchs.projection.OrgAdminUserProjection;
 import org.openchs.service.CognitoIdpService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.UserContract;
@@ -76,7 +77,7 @@ public class UserController {
         return errorMap;
     }
 
-    @RequestMapping(value = "/user", method = RequestMethod.POST)
+    @RequestMapping(value = {"/user", "/user/orgAdmin"}, method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity createUser(@RequestBody UserContract userContract) {
@@ -105,7 +106,7 @@ public class UserController {
         }
     }
 
-    @PutMapping(value = "/user/{id}")
+    @PutMapping(value = {"/user/{id}", "/user/orgAdmin/{id}"})
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable("id") Long id) {
@@ -192,7 +193,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/user/{id}/disable", method = RequestMethod.PUT)
+    @RequestMapping(value = {"/user/{id}/disable", "/user/orgAdmin/{id}/disable"}, method = RequestMethod.PUT)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity disableUser(@PathVariable("id") Long id,
@@ -252,19 +253,21 @@ public class UserController {
         return predicate;
     }
 
-    @GetMapping(value = "/user/search/findOrgAdmins")
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @GetMapping(value = "/user/orgAdmin/search/find")
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
     @ResponseBody
-    public Page<User> findOrgAdmin(@RequestParam(value = "username", required = false) String username,
-                           @RequestParam(value = "name", required = false) String name,
-                           @RequestParam(value = "email", required = false) String email,
-                           @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
-                           Pageable pageable) {
-        return userRepository.findAll((root, query, builder) -> {
-            Predicate nonVoided = builder.equal(root.get("isVoided"), false);
-            Predicate isOrgAdmin = builder.equal(root.get("isOrgAdmin"), true);
-            Predicate predicate = builder.and(isOrgAdmin, nonVoided);
-            return applyUserPredicates(username, name, email, phoneNumber, root, builder, predicate);
-        }, pageable);
+    public Page<OrgAdminUserProjection> findOrgAdmin(@RequestParam(value = "username", required = false) String username,
+                                                     @RequestParam(value = "name", required = false) String name,
+                                                     @RequestParam(value = "email", required = false) String email,
+                                                     @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+                                                     Pageable pageable) {
+        return userRepository.findOrgAdmins(username, name, email, phoneNumber, pageable);
+    }
+
+    @GetMapping(value = "/user/orgAdmin/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @ResponseBody
+    public OrgAdminUserProjection getOne(@PathVariable("id") Long id) {
+        return userRepository.getOne(id);
     }
 }
