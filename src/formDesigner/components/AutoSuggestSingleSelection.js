@@ -114,7 +114,7 @@ export default function AutoSuggestSingleSelection(props) {
           setSuggestions(filteredSuggestions);
         } else {
           const filteredSuggestions = suggestions.filter(suggestion => {
-            return suggestion.dataType !== "NA";
+            return !suggestion.voided && suggestion.dataType !== "NA";
           });
           setSuggestions(filteredSuggestions);
         }
