@@ -47,7 +47,7 @@ class SuperAdmin extends Component {
           edit={OrganisationEdit}
         />
         <Resource
-          name="user"
+          name="orgAdmin"
           options={{ label: "Org Admin Users" }}
           list={OrgAdminUserList}
           create={WithProps({ user }, OrgAdminUserCreate)}
@@ -64,4 +64,9 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default withRouter(connect(mapStateToProps, null)(SuperAdmin));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    null
+  )(SuperAdmin)
+);

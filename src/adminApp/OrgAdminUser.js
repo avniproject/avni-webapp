@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import {
   Create,
   Datagrid,
@@ -35,6 +35,7 @@ import {
   validateEmail,
   validatePhone
 } from "./UserHelper";
+import http from "common/utils/httpClient";
 
 export const OrgAdminUserCreate = ({ user, ...props }) => (
   <Create {...props}>
@@ -43,7 +44,12 @@ export const OrgAdminUserCreate = ({ user, ...props }) => (
 );
 
 export const OrgAdminUserEdit = ({ user, ...props }) => (
-  <Edit {...props} title={<UserTitle titlePrefix="Edit" />} undoable={false}>
+  <Edit
+    {...props}
+    title={<UserTitle titlePrefix="Edit" />}
+    undoable={false}
+    filter={{ searchURI: "orgAdmin" }}
+  >
     <UserForm edit user={user} />
   </Edit>
 );
@@ -52,7 +58,7 @@ export const OrgAdminUserList = ({ ...props }) => (
   <List
     {...props}
     bulkActions={false}
-    filter={{ searchURI: "findOrgAdmins" }}
+    filter={{ searchURI: "find" }}
     filters={<UserFilter />}
     title={`Organisation Admin Users`}
   >
@@ -120,6 +126,13 @@ export const OrgAdminUserDetail = ({ user, ...props }) => (
 );
 
 const UserForm = ({ edit, user, ...props }) => {
+  const [nameSuffix, setNameSuffix] = useState("");
+  const getOrgData = id =>
+    id &&
+    http.get(`/organisation/${id}`).then(res => {
+      res && setNameSuffix(res.data.usernameSuffix);
+    });
+
   const sanitizeProps = ({ record, resource, save }) => ({
     record,
     resource,
@@ -127,24 +140,40 @@ const UserForm = ({ edit, user, ...props }) => {
   });
   return (
     <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="show">
+      <ReferenceInput
+        resource="organisation"
+        source="organisationId"
+        reference="organisation"
+        label="Organisation Name"
+        validate={required("Please select a organisation")}
+      >
+        <OrganisationSelectInput source="name" resettable disabled={edit} />
+      </ReferenceInput>
       {edit ? (
         <DisabledInput source="username" label="Login ID (admin username)" />
       ) : (
-        <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) => (
-            <Fragment>
-              <TextInput
-                source="ignored"
-                validate={isRequired}
-                label={"Login ID (username)"}
-                onChange={(e, newVal) =>
-                  !isEmpty(newVal) && dispatch(change(REDUX_FORM_NAME, "username", newVal))
-                }
-                {...rest}
-              />
-            </Fragment>
-          )}
-        </FormDataConsumer>
+        <Fragment>
+          <FormDataConsumer>
+            {({ formData, dispatch, ...rest }) => {
+              formData && getOrgData(formData.organisationId);
+              return (
+                <Fragment>
+                  <TextInput
+                    source="ignored"
+                    validate={isRequired}
+                    label={"Login ID (username)"}
+                    onChange={(e, newVal) =>
+                      !isEmpty(newVal) &&
+                      dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))
+                    }
+                    {...rest}
+                  />
+                  <span>@{nameSuffix}</span>
+                </Fragment>
+              );
+            }}
+          </FormDataConsumer>
+        </Fragment>
       )}
       {!edit && <PasswordTextField />}
       <TextInput source="name" label="Name of the Person" validate={isRequired} />
@@ -156,14 +185,6 @@ const UserForm = ({ edit, user, ...props }) => {
         format={mobileNumberFormatter}
         parse={mobileNumberParser}
       />
-      <ReferenceInput
-        source="organisationId"
-        reference="organisation"
-        label="Which organisation?"
-        validate={required("Please select a organisation")}
-      >
-        <OrganisationSelectInput source="name" resettable />
-      </ReferenceInput>
       <DisabledInput source="orgAdmin" defaultValue={true} hidden={true} />
     </SimpleForm>
   );
