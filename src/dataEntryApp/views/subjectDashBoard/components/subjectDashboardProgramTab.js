@@ -55,7 +55,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 {program && program.enrolments
                   ? program.enrolments.map((element, index) =>
                       element.programExitDateTime == null ? (
-                        <Tab key={index} label={element.operationalProgramName} />
+                        <Tab key={index} label={element.program.operationalProgramName} />
                       ) : (
                         ""
                       )
@@ -80,7 +80,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
                 {program && program.enrolments
                   ? program.enrolments.map((element, index) =>
                       element.programExitDateTime != null ? (
-                        <Tab key={index} label={element.operationalProgramName} />
+                        <Tab key={index} label={element.program.operationalProgramName} />
                       ) : (
                         ""
                       )
