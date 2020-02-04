@@ -108,37 +108,39 @@ function FormLevelRules(props) {
         </ExpansionPanelDetails>
       </ExpansionPanel>
 
-      <ExpansionPanel expanded={props.form.checklistExpand}>
-        <ExpansionPanelSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          style={{ marginTop: "3%" }}
-        >
-          <Grid container item sm={12}>
-            <span onClick={event => props.onToggleExpandPanel("checklistExpand")}>
-              {props.form.checklistExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </span>
+      {props.form.formType === "ProgramEnrolment" && (
+        <ExpansionPanel expanded={props.form.checklistExpand}>
+          <ExpansionPanelSummary
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+            style={{ marginTop: "3%" }}
+          >
+            <Grid container item sm={12}>
+              <span onClick={event => props.onToggleExpandPanel("checklistExpand")}>
+                {props.form.checklistExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </span>
 
-            <Typography>Checklist Rule</Typography>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Editor
-            value={props.form.checklistsRule}
-            onValueChange={event => props.onRuleUpdate("checklistsRule", event)}
-            highlight={code => highlight(code, languages.js)}
-            padding={10}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 15,
-              width: "100%",
-              height: "auto",
-              borderStyle: "solid",
-              borderWidth: "1px"
-            }}
-          />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+              <Typography>Checklist Rule</Typography>
+            </Grid>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <Editor
+              value={props.form.checklistsRule}
+              onValueChange={event => props.onRuleUpdate("checklistsRule", event)}
+              highlight={code => highlight(code, languages.js)}
+              padding={10}
+              style={{
+                fontFamily: '"Fira code", "Fira Mono", monospace',
+                fontSize: 15,
+                width: "100%",
+                height: "auto",
+                borderStyle: "solid",
+                borderWidth: "1px"
+              }}
+            />
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      )}
     </div>
   );
 }
