@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from "react";
+import React, { useEffect } from "react";
 import Table from "@material-ui/core/Table";
 import { withRouter } from "react-router-dom";
 import TableBody from "@material-ui/core/TableBody";
@@ -14,7 +14,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
-import ScreenWithAppBar from "../../../common/components/ScreenWithAppBar";
 import PrimaryButton from "../../components/PrimaryButton";
 import Paper from "@material-ui/core/Paper";
 

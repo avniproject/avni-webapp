@@ -158,7 +158,7 @@ const PrimarySearchAppBar = ({ logout }) => {
       <AppBar position="static" style={{ background: "white" }}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            <img src={logo} />
+            <img src={logo} alt="logo" />
           </Typography>
           <form noValidate autoComplete="off">
             <Input

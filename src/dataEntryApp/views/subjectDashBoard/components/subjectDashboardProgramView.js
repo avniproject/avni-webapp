@@ -14,9 +14,6 @@ import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 
 const useStyles = makeStyles(theme => ({
-  growthButtonStyle: {
-    marginLeft: "37px"
-  },
   programLabel: {
     fontSize: "18px"
   },
