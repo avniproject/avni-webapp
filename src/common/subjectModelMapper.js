@@ -1,3 +1,5 @@
+import {store} from '../../src/common/utils/reduxStoreUtilty';
+
 import {
   Individual,
   ModelGeneral as General,
@@ -10,6 +12,9 @@ import {
   IndividualRelationshipType
 } from "avni-models";
 
+
+
+
 export const mapProfile = subjectProfile => {
  // debugger;
   let individual = General.assignFields(
@@ -20,7 +25,7 @@ export const mapProfile = subjectProfile => {
   );
   individual.lowestAddressLevel = subjectProfile["fullAddress"];
   individual.observations = mapObservation(subjectProfile["observations"]);
-  //individual.relationships = mapRelationships(subjectProfile["relationships"]);
+ // individual.relationships = mapRelationships(subjectProfile["relationships"]);
   console.log(individual);
   return individual;
 };
@@ -57,9 +62,23 @@ export const mapConcept = observationJson => {
   const observation = new Observation();
   const concept = General.assignFields(observationJson.concept, new Concept(), ["uuid", "name"]);
   concept.datatype = observationJson.concept["dataType"];
-  const value = JSON.stringify(concept.getValueWrapperFor(observationJson.value));
+  let valueuuid;
+  if(Array.isArray()){
+    observationJson.value.map(observation => {
+      valueuuid.push(observation.uuid);
+    });
+  }else{
+    valueuuid = observationJson.value.uuid;
+  }
+
+  store.dispatch({
+    type: "INCREMENT",
+    json: observationJson.value 
+  });
+  const value = JSON.stringify(concept.getValueWrapperFor(valueuuid));
   observation.concept = concept;
   observation.valueJSON = value;
+  console.log(observation);
   return observation;
 };
 //1 Utility - generic mapping models object.
@@ -82,9 +101,10 @@ export const mapProgram = subjectProgram => {
 
 
  export const mapEnrolment = enrolmentList => {
+  if(enrolmentList != null)
   return enrolmentList.map(enrolments => {
     let  programEnrolment = General.assignFields(
-      enrolments,new ProgramEncounter(),["enrolmentDateTime","programExitDateTime"]      
+      enrolments,new ProgramEnrolment(),["enrolmentDateTime","programExitDateTime"]      
     );
     programEnrolment.observations = mapObservation(enrolments["observations"]);
     programEnrolment.encounters = mapProgramEncounters(enrolments["programEncounters"]);
@@ -94,6 +114,7 @@ export const mapProgram = subjectProgram => {
 };
 
 export const mapProgramEncounters = programEncountersList => {
+  if(programEncountersList != null)
   return programEncountersList.map(programEncounters => {
     return General.assignFields(
       programEncounters,new ProgramEncounter(),["uuid","name","maxVisitDateTime","earliestVisitDateTime","encounterDateTime"]      
@@ -108,3 +129,6 @@ export const mapOperationalProgramName = operationalProgramName => {
     );
    
 }
+
+
+
