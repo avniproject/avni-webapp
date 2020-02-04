@@ -30,9 +30,6 @@ public class Program extends OrganisationAwareEntity {
     @Column(name = "enrolment_eligibility_check_rule")
     private String enrolmentEligibilityCheckRule;
 
-    @Column(name = "checklists_rule")
-    private String checklistsRule;
-
     public String getName() {
         return name;
     }
@@ -92,13 +89,6 @@ public class Program extends OrganisationAwareEntity {
         this.enrolmentEligibilityCheckRule = enrolmentEligibilityCheckRule;
     }
 
-    public String getChecklistsRule() {
-        return checklistsRule;
-    }
-
-    public void setChecklistsRule(String checklistsRule) {
-        this.checklistsRule = checklistsRule;
-    }
 
     @Projection(name = "ProgramProjection", types = {Program.class})
     public interface ProgramProjection extends BaseProjection {

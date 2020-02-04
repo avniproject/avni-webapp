@@ -33,6 +33,10 @@ public class Form extends OrganisationAwareEntity {
     @Column(name = "validation_rule")
     private String validationRule;
 
+    @Column(name = "checklists_rule")
+    private String checklistsRule;
+
+
     public Form() {
     }
 
@@ -113,4 +117,14 @@ public class Form extends OrganisationAwareEntity {
     public void setValidationRule(String validationRule) {
         this.validationRule = validationRule;
     }
+
+    public String getChecklistsRule() {
+        return checklistsRule;
+        
+    }
+    
+    public void setChecklistsRule(String checklistsRule) {
+        this.checklistsRule = checklistsRule;
+    }
+    
 }

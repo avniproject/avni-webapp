@@ -197,6 +197,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 .withDecisionRule(formRequest.getDecisionRule())
                 .withVisitScheduleRule(formRequest.getVisitScheduleRule())
                 .withValidationRule(formRequest.getValidationRule())
+                .withChecklistRule(formRequest.getChecklistsRule())
                 .build();
         return formRepository.save(form);
     }
@@ -247,6 +248,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         formContract.setDecisionRule(form.getDecisionRule());
         formContract.setVisitScheduleRule(form.getVisitScheduleRule());
         formContract.setValidationRule(form.getValidationRule());
+        formContract.setChecklistsRule(form.getChecklistsRule());
         formContract.setOrganisationId(form.getOrganisationId());
 
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {

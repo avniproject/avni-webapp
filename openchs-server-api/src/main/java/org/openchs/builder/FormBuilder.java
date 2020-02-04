@@ -37,6 +37,11 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         return this;
     }
 
+    public FormBuilder withChecklistRule(String checklistsRule) {
+        this.get().setChecklistsRule(checklistsRule);
+        return this;
+    }
+
     public FormBuilder withName(String name) {
         this.set("Name", name, String.class);
         return this;
