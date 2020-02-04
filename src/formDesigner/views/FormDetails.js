@@ -109,9 +109,11 @@ class FormDetails extends Component {
         form["visitScheduleRule"] = form.visitScheduleRule ? form.visitScheduleRule : "";
         form["decisionRule"] = form.decisionRule ? form.decisionRule : "";
         form["validationRule"] = form.validationRule ? form.validationRule : "";
+        form["checklistsRule"] = form.checklistsRule ? form.checklistsRule : "";
         form["decisionExpand"] = false;
         form["visitScheduleExpand"] = false;
         form["validationExpand"] = false;
+        form["checklistExpand"] = false;
 
         _.forEach(form.formElementGroups, group => {
           group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
