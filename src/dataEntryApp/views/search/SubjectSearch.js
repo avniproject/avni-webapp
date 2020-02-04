@@ -110,7 +110,6 @@ const SubjectSearch = props => {
 
   return (
     <Paper className={classes.searchBox}>
-      {/* <ScreenWithAppBar appbarTitle={`Search ${props.subjectType.name}`}> */}
       <div className={classes.searchCreateToolbar}>
         <form onSubmit={handleSubmit} className={classes.searchForm}>
           <FormControl className={classes.searchFormItem}>
@@ -132,7 +131,6 @@ const SubjectSearch = props => {
         <RegistrationMenu className={classes.createButtonHolder} />
       </div>
       <SubjectsTable subjects={props.subjects} type={props.subjectType} />
-      {/* </ScreenWithAppBar> */}
     </Paper>
   );
 };
