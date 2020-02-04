@@ -23,7 +23,7 @@ const AntTab = withStyles(theme => ({
       borderRight: "2px solid #1890ff",
       height: "36px"
     },
-    color: "#0e6eff",
+    color: "#2196f3",
     fontSize: "14px",
     minHeight: "35px",
     fontFamily: "Roboto Reg",

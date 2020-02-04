@@ -27,6 +27,9 @@ const useStyles = makeStyles(theme => ({
   listItemView: {
     border: "1px solid lightGrey"
   },
+  expansionPanel: {
+    marginBottom: "11px"
+  },
   card: {
     boxShadow: "0px 0px 0px 0px rgba(0,0,0,0.12)",
     borderRight: "1px solid rgba(0,0,0,0.12)",
@@ -49,7 +52,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProfileTab = ({ profile }) => {
+const SubjectDashboardProfileTab = ({ profile, path }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState("");
 
@@ -59,7 +62,11 @@ const SubjectDashboardProfileTab = ({ profile }) => {
 
   return (
     <Fragment>
-      <ExpansionPanel expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+      <ExpansionPanel
+        className={classes.expansionPanel}
+        expanded={expanded === "panel1"}
+        onChange={handleChange("panel1")}
+      >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
@@ -82,7 +89,11 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           </Grid>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanel expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
+      <ExpansionPanel
+        className={classes.expansionPanel}
+        expanded={expanded === "panel2"}
+        onChange={handleChange("panel2")}
+      >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel2bh-content"
@@ -93,7 +104,7 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <GridCommonList gridListDetails={profile.relationships} />
+          <GridCommonList gridListDetails={profile.relationships} path={path} />
         </ExpansionPanelDetails>
         <Button color="primary">ADD RELATIVE</Button>
       </ExpansionPanel>

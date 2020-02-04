@@ -17,7 +17,8 @@ const useStyles = makeStyles(theme => ({
   },
   enrollButtonStyle: {
     backgroundColor: "#fc9153",
-    height: "38px"
+    height: "38px",
+    zIndex: 1
   },
   bigAvatar: {
     width: 42,
