@@ -29,7 +29,6 @@ public class ZipErrorFileWriterListener {
     @OnSkipInWrite
     public void onSkipInWrite(JsonFile jsonFile, Throwable throwable) {
         writeError(jsonFile, throwable);
-       // throw throwable;
     }
 
     public void writeError(JsonFile jsonFile, Throwable t) {
@@ -38,11 +37,9 @@ public class ZipErrorFileWriterListener {
                     .map(StackTraceElement::toString)
                     .collect(Collectors.joining("\n"));
             FileWriter fileWriter = new FileWriter(bulkUploadS3Service.getLocalErrorFile(uuid), true);
-            fileWriter.append(jsonFile.getErrorFileHeaders());
-            fileWriter.append("\n");
             fileWriter.append(jsonFile.getName());
             fileWriter.append(",\"");
-            fileWriter.append(t.getMessage());
+            fileWriter.append(t.getMessage().replaceAll("\"", "\"\""));
             fileWriter.append("\n");
             fileWriter.append(stackTrace);
             fileWriter.append("\"\n");

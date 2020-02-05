@@ -10,10 +10,6 @@ public class JsonFile {
         this.jsonData = jsonData;
     }
 
-    public String getErrorFileHeaders() {
-        return "FileName,Error";
-    }
-
     public String getName() {
         return name;
     }
