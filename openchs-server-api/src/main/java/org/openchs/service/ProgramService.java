@@ -34,7 +34,6 @@ public class ProgramService {
         program.setName(programRequest.getName());
         program.setColour(programRequest.getColour());
         program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
-        program.setChecklistsRule(program.getChecklistsRule());
         program.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
         programRepository.save(program);
     }
