@@ -18,10 +18,9 @@ export const mapProfile = subjectProfile => {
   let individual = General.assignFields(
     subjectProfile,
     new Individual(),
-    ["uuid", "firstName", "lastName", "dateOfBirth", "gender"],
+    ["uuid", "firstName", "lastName", "dateOfBirth", "gender","lowestAddressLevel"],
     ["registrationDate"]
   );
-  individual.lowestAddressLevel = subjectProfile["fullAddress"];
   individual.observations = mapObservation(subjectProfile["observations"]);
   // individual.relationships = mapRelationships(subjectProfile["relationships"]);
   console.log(individual);
@@ -60,6 +59,7 @@ export const mapConcept = observationJson => {
   const observation = new Observation();
   const concept = General.assignFields(observationJson.concept, new Concept(), ["uuid", "name"]);
   concept.datatype = observationJson.concept["dataType"];
+  //debugger
   let valueuuid;
   if (Array.isArray(observationJson.value) && concept.datatype === "Coded") {
     valueuuid = [];
@@ -71,15 +71,19 @@ export const mapConcept = observationJson => {
     valueuuid = observationJson.value.uuid;
     storeDispachObservations(types.OBSERVATIONS_VALUE, observationJson.value);
   }
+  else{
+    valueuuid = observationJson.value;
+  }
 
   const value = JSON.stringify(concept.getValueWrapperFor(valueuuid));
   observation.concept = concept;
   observation.valueJSON = value;
   return observation;
 };
-//1 Utility - generic mapping models object.
-//2 UI bind - as pwer current structure.
-//3 Common component - generic for all support.
+
+
+
+// program Tab subject Dashboard
 
 export const mapProgram = subjectProgram => {
   let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);

@@ -1,11 +1,14 @@
 import { store } from "../../common/utils/reduxStoreUtilty";
 
 export class ConceptService {
+  
   getConceptByUUID(conceptUuid) {
-    debugger;
+    if(conceptUuid != null || conceptUuid != undefined){
+   // debugger;
     let conceptList = store.getState().concept;
     let concept = conceptList.find(x => x.uuid === conceptUuid);
     return concept;
+    }
   }
 }
 

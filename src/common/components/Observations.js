@@ -24,7 +24,7 @@ const Observations = ({ observations }) => {
   const conceptService = new ConceptService();
   const i = new i18n();
   const classes = useStyles();
-  debugger
+ // debugger
   return (
     <div>
       {observations
