@@ -16,7 +16,7 @@ subprojects {
         mavenLocal()
 
         maven { url "https://dl.bintray.com/openchs/maven" }
-        maven { url "http://repo.maven.apache.org/maven2" }
+        maven { url "https://repo.maven.apache.org/maven2" }
     }
 
 
