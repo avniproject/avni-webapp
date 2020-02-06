@@ -91,9 +91,9 @@ public class ImplementationController implements RestControllerResourceProcessor
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         //ZipOutputStream will be automatically closed because we are using try-with-resources.
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            addAddressLevelTypesJson(orgId, zos);
-            addAddressLevelsJson(orgId, zos);
-            addCatchmentsJson(organisation, zos);
+            //addAddressLevelTypesJson(orgId, zos);
+            //addAddressLevelsJson(orgId, zos);
+            //addCatchmentsJson(organisation, zos);
             addSubjectTypesJson(orgId, zos);
             addOperationalSubjectTypesJson(organisation, zos);
             addEncounterTypesJson(organisation, zos);
