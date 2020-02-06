@@ -164,8 +164,6 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                 break;
             case "concepts.json":
                 ConceptContract[] conceptContracts = convertString(fileData, ConceptContract[].class);
-                //deploy two times so that missed concept answers get deployed
-                conceptService.saveOrUpdateConcepts(Arrays.asList(conceptContracts));
                 conceptService.saveOrUpdateConcepts(Arrays.asList(conceptContracts));
                 break;
             case "form":
