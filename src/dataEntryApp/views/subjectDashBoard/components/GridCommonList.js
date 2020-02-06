@@ -43,11 +43,11 @@ const GridCommonList = ({ gridListDetails }) => {
                 <Grid item xs={3} className={classes.rightBorder}>
                   <Card className={classes.card}>
                     <CardContent>
-                      <Typography component={"span"} color="primary">
+                      <Typography component={"div"} color="primary">
                         {relative.individualB.firstName + " " + relative.individualB.lastName}
                       </Typography>
                       <Typography
-                        component={"span"}
+                        component={"div"}
                         className={classes.title}
                         color="textSecondary"
                         gutterBottom
@@ -55,7 +55,7 @@ const GridCommonList = ({ gridListDetails }) => {
                         {relative.relationship.individualBIsToARelation.name}
                       </Typography>
                       <Typography
-                        component={"span"}
+                        component={"div"}
                         className={classes.title}
                         color="textSecondary"
                         gutterBottom
