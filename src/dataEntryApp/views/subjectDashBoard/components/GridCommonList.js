@@ -44,7 +44,7 @@ const GridCommonList = ({ gridListDetails }) => {
                   <Card className={classes.card}>
                     <CardContent>
                       <Typography component={"span"} color="primary">
-                        {relative.firstName + " " + relative.lastName}
+                        {relative.individualB.firstName + " " + relative.individualB.lastName}
                       </Typography>
                       <Typography
                         component={"span"}
@@ -52,7 +52,7 @@ const GridCommonList = ({ gridListDetails }) => {
                         color="textSecondary"
                         gutterBottom
                       >
-                        {relative.individualBIsToARelation}
+                        {relative.relationship.individualBIsToARelation.name}
                       </Typography>
                       <Typography
                         component={"span"}
@@ -61,7 +61,7 @@ const GridCommonList = ({ gridListDetails }) => {
                         gutterBottom
                       >
                         {new Date().getFullYear() -
-                          new Date(relative.dateOfBirth).getFullYear() +
+                          new Date(relative.individualB.dateOfBirth).getFullYear() +
                           " Year"}
                       </Typography>
                     </CardContent>
