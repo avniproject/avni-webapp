@@ -9,7 +9,7 @@ public class SubjectRelationshipResponse extends HashMap<String, Object> {
     public static SubjectRelationshipResponse fromSubjectRelationship(IndividualRelationship individualRelationship) {
         SubjectRelationshipResponse subjectRelationshipResponse = new SubjectRelationshipResponse();
         subjectRelationshipResponse.put("Relationship type", individualRelationship.getRelationship().getName());
-        subjectRelationshipResponse.put("Relative id", individualRelationship.getIndividualB().getUuid());
+        subjectRelationshipResponse.put("Relative ID", individualRelationship.getIndividualB().getUuid());
         subjectRelationshipResponse.put("Enter date", individualRelationship.getEnterDateTime());
         subjectRelationshipResponse.put("Exit date", individualRelationship.getExitDateTime());
         return subjectRelationshipResponse;

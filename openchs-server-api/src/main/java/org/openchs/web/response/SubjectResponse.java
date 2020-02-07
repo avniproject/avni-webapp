@@ -3,7 +3,6 @@ package org.openchs.web.response;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.CHSBaseEntity;
-import org.openchs.domain.Concept;
 import org.openchs.domain.Individual;
 import org.openchs.service.ConceptService;
 
@@ -17,32 +16,23 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
         SubjectResponse subjectResponse = new SubjectResponse();
         if (includeSubjectType) subjectResponse.put("Subject type", subject.getSubjectType().getName());
         subjectResponse.put("ID", subject.getUuid());
-        putIfPresent(subjectResponse, "Registration location", subject.getRegistrationLocation());
+        Response.putIfPresent(subjectResponse, "Registration location", subject.getRegistrationLocation());
         subjectResponse.put("Registration date", subject.getRegistrationDate());
         putLocation(subject, subjectResponse);
         if (subject.getFacility() != null) subjectResponse.put("Facility", subject.getFacility().getName());
         putRelatives(subject, subjectResponse);
 
         LinkedHashMap<String, Object> observations = new LinkedHashMap<>();
-        putIfPresent(observations, "First name", subject.getFirstName());
-        putIfPresent(observations, "Last name", subject.getLastName());
-        putIfPresent(observations, "Date of birth", subject.getDateOfBirth());
+        Response.putIfPresent(observations, "First name", subject.getFirstName());
+        Response.putIfPresent(observations, "Last name", subject.getLastName());
+        Response.putIfPresent(observations, "Date of birth", subject.getDateOfBirth());
         if (subject.getGender() != null) observations.put("Gender", subject.getGender().getName());
-        subject.getObservations().forEach((key, value) -> {
-            Concept concept = conceptRepository.findByUuid(key);
-            observations.put(concept.getName(), conceptService.getObservationValue(concept, value));
-        });
-        subjectResponse.put("observations", observations);
+        Response.putObservations(conceptRepository, conceptService, subjectResponse, observations, subject.getObservations());
 
         subjectResponse.put("encounters", new ArrayList<>(subject.getEncounters().stream().map(CHSBaseEntity::getUuid).collect(Collectors.toList())));
         subjectResponse.put("enrolments", new ArrayList<>(subject.getProgramEnrolments().stream().map(CHSBaseEntity::getUuid).collect(Collectors.toList())));
 
-        LinkedHashMap<String, Object> audit = new LinkedHashMap<>();
-        audit.put("Created at", subject.getCreatedDateTime());
-        audit.put("Last modified at", subject.getLastModifiedDateTime());
-        audit.put("Created by", subject.getCreatedBy());
-        audit.put("Last modified by", subject.getLastModifiedBy());
-        subjectResponse.put("audit", audit);
+        Response.putAudit(subject, subjectResponse);
 
         return subjectResponse;
     }
@@ -68,9 +58,5 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
 
     private static void putAddressLevel(Map<String, String> map, AddressLevel addressLevel) {
         map.put(addressLevel.getTypeString(), addressLevel.getTitle());
-    }
-
-    private static void putIfPresent(Map<String, Object> map, String name, Object value) {
-        if (value != null) map.put(name, value);
     }
 }
