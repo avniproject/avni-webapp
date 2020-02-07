@@ -4,14 +4,14 @@ import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Organisation;
 import org.openchs.web.request.OrganisationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -54,6 +54,25 @@ public class OrganisationController implements RestControllerResourceProcessor<O
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public List<Organisation> findAll() {
         return organisationRepository.findAllByIsVoidedFalse();
+    }
+
+
+    @RequestMapping(value = "/organisation/search/findAll", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @ResponseBody
+    public Page<Organisation> find(@RequestParam(value = "name", required = false) String name,
+                                   @RequestParam(value = "dbUser", required = false) String dbUser,
+                                   Pageable pageable) {
+        return organisationRepository.findAll((root, query, builder) -> {
+            Predicate predicate = builder.equal(root.get("isVoided"), false);
+            if (name != null) {
+                predicate = builder.and(predicate, builder.like(builder.upper(root.get("name")), "%" + name.toUpperCase() + "%"));
+            }
+            if (dbUser != null) {
+                predicate = builder.and(predicate, builder.like(builder.upper(root.get("dbUser")), "%" + dbUser.toUpperCase() + "%"));
+            }
+            return predicate;
+        }, pageable);
     }
 
 }
