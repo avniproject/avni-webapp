@@ -13,11 +13,24 @@ import {
   required,
   Toolbar,
   SaveButton,
-  DisabledInput
+  DisabledInput,
+  Filter
 } from "react-admin";
 
+export const OrganisationFilter = props => (
+  <Filter {...props} style={{ marginBottom: "2em" }}>
+    <TextInput label="Organisation Name" source="name" resettable alwaysOn />
+    <TextInput label="Db User" source="dbUser" resettable alwaysOn />
+  </Filter>
+);
+
 export const OrganisationList = props => (
-  <List {...props} bulkActions={false} filter={{ searchURI: "findAll" }}>
+  <List
+    {...props}
+    bulkActions={false}
+    filter={{ searchURI: "findAll" }}
+    filters={<OrganisationFilter />}
+  >
     <Datagrid rowClick="show">
       <TextField source="name" label="Name" />
       <ReferenceField
