@@ -4,6 +4,7 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.service.ConceptService;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 public class ProgramEnrolmentResponse extends LinkedHashMap<String, Object> {
@@ -19,9 +20,11 @@ public class ProgramEnrolmentResponse extends LinkedHashMap<String, Object> {
         Response.putIfPresent(programEnrolmentResponse, "Enrolment location", programEnrolment.getEnrolmentLocation());
         Response.putIfPresent(programEnrolmentResponse, "Exit location", programEnrolment.getExitLocation());
 
-        LinkedHashMap<String, Object> observationsResponse = new LinkedHashMap<>();
-        Response.putObservations(conceptRepository, conceptService, programEnrolmentResponse, observationsResponse, programEnrolment.getObservations());
-        Response.putObservations(conceptRepository, conceptService, programEnrolmentResponse, observationsResponse, programEnrolment.getObservations(), "exitObservations");
+        Response.putObservations(conceptRepository, conceptService, programEnrolmentResponse, new LinkedHashMap<>(), programEnrolment.getObservations());
+        Response.putObservations(conceptRepository, conceptService, programEnrolmentResponse, new LinkedHashMap<>(), programEnrolment.getObservations(), "exitObservations");
+
+        Response.putChildren(programEnrolmentResponse, "encounters", new HashSet<>(programEnrolment.getProgramEncounters()));
+
         Response.putAudit(programEnrolment, programEnrolmentResponse);
         return programEnrolmentResponse;
     }

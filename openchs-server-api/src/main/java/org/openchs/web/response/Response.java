@@ -1,13 +1,17 @@
 package org.openchs.web.response;
 
 import org.openchs.dao.ConceptRepository;
+import org.openchs.domain.CHSBaseEntity;
 import org.openchs.domain.CHSEntity;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ObservationCollection;
 import org.openchs.service.ConceptService;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Response {
     static void putIfPresent(Map<String, Object> map, String name, Object value) {
@@ -33,5 +37,9 @@ public class Response {
         audit.put("Created by", avniEntity.getCreatedBy());
         audit.put("Last modified by", avniEntity.getLastModifiedBy());
         objectMap.put("audit", audit);
+    }
+
+    static void putChildren(LinkedHashMap<String, Object> parentMap, String key, Set<CHSBaseEntity> children) {
+        parentMap.put(key, new ArrayList<>(children.stream().map(CHSBaseEntity::getUuid).collect(Collectors.toList())));
     }
 }

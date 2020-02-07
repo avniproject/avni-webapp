@@ -6,9 +6,7 @@ import org.openchs.domain.CHSBaseEntity;
 import org.openchs.domain.Individual;
 import org.openchs.service.ConceptService;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SubjectResponse extends LinkedHashMap<String, Object> {
@@ -29,8 +27,8 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
         if (subject.getGender() != null) observations.put("Gender", subject.getGender().getName());
         Response.putObservations(conceptRepository, conceptService, subjectResponse, observations, subject.getObservations());
 
-        subjectResponse.put("encounters", new ArrayList<>(subject.getEncounters().stream().map(CHSBaseEntity::getUuid).collect(Collectors.toList())));
-        subjectResponse.put("enrolments", new ArrayList<>(subject.getProgramEnrolments().stream().map(CHSBaseEntity::getUuid).collect(Collectors.toList())));
+        Response.putChildren(subjectResponse, "encounters", new HashSet<>(subject.getEncounters()));
+        Response.putChildren(subjectResponse, "enrolments", new HashSet<>(subject.getProgramEnrolments()));
 
         Response.putAudit(subject, subjectResponse);
 
