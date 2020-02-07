@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -194,5 +195,22 @@ public class ConceptService {
         Concept concept = this.get(conceptUUID);
         Concept answerConcept = this.get(conceptAnswerUUID);
         return conceptAnswerRepository.findByConceptAndAnswerConcept(concept, answerConcept);
+    }
+
+    public Object getObservationValue(Concept concept, Object value) {
+        if (ConceptDataType.isPrimitiveType(concept.getDataType()) || ConceptDataType.matches(concept.getDataType(), ConceptDataType.Id, ConceptDataType.Video, ConceptDataType.Image)) {
+            return value;
+        } else if (ConceptDataType.matches(ConceptDataType.Coded, concept.getDataType())) {
+            if (value instanceof String) {
+                return conceptRepository.findByUuid((String) value).getName();
+            } else {
+                List<String> answerUUIDs = (List<String>) value;
+                return answerUUIDs.stream().map(answerUUID -> conceptRepository.findByUuid(answerUUID).getName()).toArray();
+            }
+        } else if (ConceptDataType.matches(ConceptDataType.Coded, concept.getDataType())) {
+            return value;
+        } else {
+            return value;
+        }
     }
 }
