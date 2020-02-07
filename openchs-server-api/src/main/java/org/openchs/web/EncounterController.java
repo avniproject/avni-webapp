@@ -6,13 +6,19 @@ import org.openchs.dao.*;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
+import org.openchs.domain.ProgramEncounter;
 import org.openchs.geo.Point;
+import org.openchs.service.ConceptService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.PointRequest;
+import org.openchs.web.response.EncounterResponse;
+import org.openchs.web.response.ProgramEncounterResponse;
+import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -22,6 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 
 @RestController
 public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter>, OperatingIndividualScopeAwareController<Encounter> {
@@ -33,15 +40,39 @@ public class EncounterController extends AbstractController<Encounter> implement
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private Bugsnag bugsnag;
+    private final ConceptRepository conceptRepository;
+    private final ConceptService conceptService;
 
     @Autowired
-    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService, UserService userService, Bugsnag bugsnag) {
+    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService, UserService userService, Bugsnag bugsnag, ConceptRepository conceptRepository, ConceptService conceptService) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.userService = userService;
         this.bugsnag = bugsnag;
+        this.conceptRepository = conceptRepository;
+        this.conceptService = conceptService;
+    }
+
+    @RequestMapping(value = "/api/encounters", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+                                      @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+                                      Pageable pageable) {
+        Page<Encounter> encounters = encounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();
+        encounters.forEach(encounter -> {
+            encounterResponses.add(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService));
+        });
+        return new ResponsePage(encounterResponses, encounters.getNumberOfElements(), encounters.getTotalPages(), encounters.getSize());
+    }
+
+    @GetMapping(value = "/api/encounter/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public EncounterResponse get(@PathVariable("id") String uuid) {
+        return EncounterResponse.fromEncounter(encounterRepository.findByUuid(uuid), conceptRepository, conceptService);
     }
 
     private void checkForSchedulingCompleteConstraintViolation(EncounterRequest request) {

@@ -17,6 +17,7 @@ public class ProgramEncounterResponse extends LinkedHashMap<String, Object> {
         programEncounterResponse.put("Earliest scheduled date", programEncounter.getEarliestVisitDateTime());
         programEncounterResponse.put("Max scheduled date", programEncounter.getMaxVisitDateTime());
         Response.putObservations(conceptRepository, conceptService, programEncounterResponse, new LinkedHashMap<>(), programEncounter.getObservations());
+        Response.putIfPresent(programEncounterResponse, "Cancel location", programEncounter.getCancelLocation());
         programEncounterResponse.put("Cancel date time", programEncounter.getCancelDateTime());
         Response.putObservations(conceptRepository, conceptService, programEncounterResponse, new LinkedHashMap<>(), programEncounter.getCancelObservations(), "cancelObservations");
         Response.putAudit(programEncounter, programEncounterResponse);
