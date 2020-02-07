@@ -106,12 +106,12 @@ const ProgramView = ({ programData }) => {
       <Paper className={classes.root}>
         <ExpansionPanel
           className={classes.expansionPanel}
-          expanded={expandedPanel === "panel1"}
-          onChange={handleChange("panel1")}
+          expanded={expandedPanel === "enrollmentPanel"}
+          onChange={handleChange("enrollmentPanel")}
         >
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-            aria-controls="panel1bh-content"
+            aria-controls="enrollmentPanelbh-content"
             id="panel1bh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
@@ -130,13 +130,13 @@ const ProgramView = ({ programData }) => {
         </ExpansionPanel>
         <ExpansionPanel
           className={classes.expansionPanel}
-          expanded={expandedPanel === "panel2"}
-          onChange={handleChange("panel2")}
+          expanded={expandedPanel === "plannedVisitPanel"}
+          onChange={handleChange("plannedVisitPanel")}
         >
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
+            aria-controls="plannedVisitPanelbh-content"
+            id="plannedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Planned visits
@@ -164,13 +164,13 @@ const ProgramView = ({ programData }) => {
         </ExpansionPanel>
         <ExpansionPanel
           className={classes.expansionPanel}
-          expanded={expandedPanel === "panel3"}
-          onChange={handleChange("panel3")}
+          expanded={expandedPanel === "completedVisitPanel"}
+          onChange={handleChange("completedVisitPanel")}
         >
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
+            aria-controls="completedVisitPanelbh-content"
+            id="completedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Completed visit

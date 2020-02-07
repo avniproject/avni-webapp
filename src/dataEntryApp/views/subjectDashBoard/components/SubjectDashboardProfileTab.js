@@ -64,13 +64,13 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
     <Fragment>
       <ExpansionPanel
         className={classes.expansionPanel}
-        expanded={expanded === "panel1"}
-        onChange={handleChange("panel1")}
+        expanded={expanded === "registrationPanel"}
+        onChange={handleChange("registrationPanel")}
       >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
+          aria-controls="registrationPanelbh-content"
+          id="registrationPanelbh-header"
         >
           <div>
             <h5>Registration Details</h5>
@@ -91,13 +91,13 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
       </ExpansionPanel>
       <ExpansionPanel
         className={classes.expansionPanel}
-        expanded={expanded === "panel2"}
-        onChange={handleChange("panel2")}
+        expanded={expanded === "relativesPanel"}
+        onChange={handleChange("relativesPanel")}
       >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
+          aria-controls="relativesPanelbh-content"
+          id="relativesPanelbh-header"
         >
           <Typography component={"span"} className={classes.expansionHeading}>
             Relatives

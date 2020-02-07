@@ -59,13 +59,13 @@ const SubjectDashboardGeneralTab = ({ general }) => {
         </Grid>
         <ExpansionPanel
           className={classes.expansionPanel}
-          expanded={expanded === "panel1"}
-          onChange={handleChange("panel1")}
+          expanded={expanded === "plannedVisitPanel"}
+          onChange={handleChange("plannedVisitPanel")}
         >
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
+            aria-controls="plannedVisitPanelbh-content"
+            id="plannedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Planned visits
@@ -93,13 +93,13 @@ const SubjectDashboardGeneralTab = ({ general }) => {
         </ExpansionPanel>
         <ExpansionPanel
           className={classes.expansionPanel}
-          expanded={expanded === "panel2"}
-          onChange={handleChange("panel2")}
+          expanded={expanded === "completedVisitPanel"}
+          onChange={handleChange("completedVisitPanel")}
         >
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
+            aria-controls="completedVisitPanelbh-content"
+            id="completedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Completed visits
