@@ -17,34 +17,22 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
         SubjectResponse subjectResponse = new SubjectResponse();
         if (includeSubjectType) subjectResponse.put("Subject type", subject.getSubjectType().getName());
         subjectResponse.put("ID", subject.getUuid());
-        subjectResponse.put("Registration date", subject.getRegistrationDate());
-        putIfPresent(subjectResponse, "First name", subject.getFirstName());
-        putIfPresent(subjectResponse, "Last name", subject.getLastName());
-        putIfPresent(subjectResponse, "Date of birth", subject.getDateOfBirth());
-        if (subject.getGender() != null) subjectResponse.put("Gender", subject.getGender().getName());
-
-        LinkedHashMap<String, String> location = new LinkedHashMap<>();
-        AddressLevel addressLevel = subject.getAddressLevel();
-        while (addressLevel != null) {
-            putAddressLevel(location, addressLevel);
-            addressLevel = addressLevel.getParent();
-        }
-        subjectResponse.put("location", location);
-
-        if (subject.getFacility() != null) subjectResponse.put("Facility", subject.getFacility().getName());
         putIfPresent(subjectResponse, "Registration location", subject.getRegistrationLocation());
+        subjectResponse.put("Registration date", subject.getRegistrationDate());
+        putLocation(subject, subjectResponse);
+        if (subject.getFacility() != null) subjectResponse.put("Facility", subject.getFacility().getName());
+        putRelatives(subject, subjectResponse);
 
-        ArrayList<SubjectRelationshipResponse> relatives = new ArrayList<>();
-        subject.getRelationshipsFromSelfToOthers().forEach(individualRelationship -> {
-            relatives.add(SubjectRelationshipResponse.fromSubjectRelationship(individualRelationship));
-        });
-        if (relatives.size() != 0)
-            subjectResponse.put("relatives", relatives);
-
+        LinkedHashMap<String, Object> observations = new LinkedHashMap<>();
+        putIfPresent(observations, "First name", subject.getFirstName());
+        putIfPresent(observations, "Last name", subject.getLastName());
+        putIfPresent(observations, "Date of birth", subject.getDateOfBirth());
+        if (subject.getGender() != null) observations.put("Gender", subject.getGender().getName());
         subject.getObservations().forEach((key, value) -> {
             Concept concept = conceptRepository.findByUuid(key);
-            subjectResponse.put(concept.getName(), conceptService.getObservationValue(concept, value));
+            observations.put(concept.getName(), conceptService.getObservationValue(concept, value));
         });
+        subjectResponse.put("observations", observations);
 
         subjectResponse.put("encounters", new ArrayList<>(subject.getEncounters().stream().map(CHSBaseEntity::getUuid).collect(Collectors.toList())));
         subjectResponse.put("enrolments", new ArrayList<>(subject.getProgramEnrolments().stream().map(CHSBaseEntity::getUuid).collect(Collectors.toList())));
@@ -59,11 +47,30 @@ public class SubjectResponse extends LinkedHashMap<String, Object> {
         return subjectResponse;
     }
 
+    private static void putRelatives(Individual subject, SubjectResponse subjectResponse) {
+        ArrayList<SubjectRelationshipResponse> relatives = new ArrayList<>();
+        subject.getRelationshipsFromSelfToOthers().forEach(individualRelationship -> {
+            relatives.add(SubjectRelationshipResponse.fromSubjectRelationship(individualRelationship));
+        });
+        if (relatives.size() != 0)
+            subjectResponse.put("relatives", relatives);
+    }
+
+    private static void putLocation(Individual subject, SubjectResponse subjectResponse) {
+        LinkedHashMap<String, String> location = new LinkedHashMap<>();
+        AddressLevel addressLevel = subject.getAddressLevel();
+        while (addressLevel != null) {
+            putAddressLevel(location, addressLevel);
+            addressLevel = addressLevel.getParent();
+        }
+        subjectResponse.put("location", location);
+    }
+
     private static void putAddressLevel(Map<String, String> map, AddressLevel addressLevel) {
         map.put(addressLevel.getTypeString(), addressLevel.getTitle());
     }
 
-    private static void putIfPresent(SubjectResponse subjectResponse, String name, Object value) {
-        if (value != null) subjectResponse.put(name, value);
+    private static void putIfPresent(Map<String, Object> map, String name, Object value) {
+        if (value != null) map.put(name, value);
     }
 }
