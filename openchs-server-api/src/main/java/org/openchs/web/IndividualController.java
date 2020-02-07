@@ -69,6 +69,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponsePage getSubjects(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                     @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
                                     @RequestParam(value = "subjectType", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String subjectType,
@@ -84,6 +85,13 @@ public class IndividualController extends AbstractController<Individual> impleme
             subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService));
         });
         return new ResponsePage(subjectResponses, subjects.getNumberOfElements(), subjects.getTotalPages(), subjects.getSize());
+    }
+
+    @GetMapping(value = "/api/subject/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public SubjectResponse get(@PathVariable("id") String uuid) {
+        return SubjectResponse.fromSubject(individualRepository.findByUuid(uuid), true, conceptRepository, conceptService);
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
