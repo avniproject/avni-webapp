@@ -32,9 +32,11 @@ export const mapProfile = subjectProfile => {
 };
 
 export const mapRelationships = relationshipList => {
+  if(relationshipList != null){
   return relationshipList.map(relationship => {
     return mapRelations(relationship);
   });
+}
 };
 
 export const mapRelations = relationShipJson => {
@@ -107,7 +109,9 @@ export const mapConcept = observationJson => {
 // program Tab subject Dashboard
 
 export const mapProgram = subjectProgram => {
-  let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);
+  let programIndividual = General.assignFields(
+    subjectProgram, new Individual(), ["uuid"]
+    );
   programIndividual.enrolments = mapEnrolment(subjectProgram.enrolments);
   console.log(programIndividual);
   return programIndividual;
@@ -116,10 +120,9 @@ export const mapProgram = subjectProgram => {
 export const mapEnrolment = enrolmentList => {
   if (enrolmentList != null)
     return enrolmentList.map(enrolments => {
-      let programEnrolment = General.assignFields(enrolments, new ProgramEnrolment(), [
-        "enrolmentDateTime",
-        "programExitDateTime"
-      ]);
+      let programEnrolment = General.assignFields(
+        enrolments, new ProgramEnrolment(), [],
+        [ "enrolmentDateTime", "programExitDateTime"]);
       programEnrolment.observations = mapObservation(enrolments["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolments["programEncounters"]);
       programEnrolment.program = mapOperationalProgramName(enrolments);
@@ -130,16 +133,15 @@ export const mapEnrolment = enrolmentList => {
 export const mapProgramEncounters = programEncountersList => {
   if (programEncountersList != null)
     return programEncountersList.map(programEncounters => {
-      return General.assignFields(programEncounters, new ProgramEncounter(), [
-        "uuid",
-        "name",
-        "maxVisitDateTime",
-        "earliestVisitDateTime",
-        "encounterDateTime"
-      ]);
+      return General.assignFields(
+        programEncounters, new ProgramEncounter(), 
+        ["uuid", "name", ],
+        ["maxVisitDateTime","earliestVisitDateTime", "encounterDateTime"]
+      );
     });
 };
 
 export const mapOperationalProgramName = operationalProgramName => {
-  return General.assignFields(operationalProgramName, new Program(), ["operationalProgramName"]);
+  return General.assignFields(operationalProgramName, new Program(), 
+  ["operationalProgramName"]);
 };
