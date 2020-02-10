@@ -10,6 +10,7 @@ import org.openchs.domain.ProgramEncounter;
 import org.openchs.geo.Point;
 import org.openchs.service.ConceptService;
 import org.openchs.service.UserService;
+import org.openchs.util.S;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.PointRequest;
@@ -25,6 +26,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -59,8 +61,15 @@ public class EncounterController extends AbstractController<Encounter> implement
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                       @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+                                      @RequestParam(value = "encounterType", required = false) String encounterType,
                                       Pageable pageable) {
-        Page<Encounter> encounters = encounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        Page<Encounter> encounters;
+        if (S.isEmpty(encounterType)) {
+            encounters = encounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        } else {
+            encounters = encounterRepository.findByAuditLastModifiedDateTimeIsBetweenAndEncounterTypeNameOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, encounterType, pageable);
+        }
+
         ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();
         encounters.forEach(encounter -> {
             encounterResponses.add(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService));
@@ -100,7 +109,7 @@ public class EncounterController extends AbstractController<Encounter> implement
 
         Encounter encounter = newOrExistingEntity(encounterRepository, request, new Encounter());
         //Planned visit can not overwrite completed encounter
-        if(encounter.isCompleted() && request.isPlanned())
+        if (encounter.isCompleted() && request.isPlanned())
             return;
 
         encounter.setEncounterDateTime(request.getEncounterDateTime());
@@ -114,10 +123,10 @@ public class EncounterController extends AbstractController<Encounter> implement
         encounter.setCancelObservations(observationService.createObservations(request.getCancelObservations()));
         encounter.setVoided(request.isVoided());
         PointRequest encounterLocation = request.getEncounterLocation();
-        if(encounterLocation != null)
+        if (encounterLocation != null)
             encounter.setEncounterLocation(new Point(encounterLocation.getX(), encounterLocation.getY()));
         PointRequest cancelLocation = request.getCancelLocation();
-        if(cancelLocation != null)
+        if (cancelLocation != null)
             encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
 
         encounterRepository.save(encounter);

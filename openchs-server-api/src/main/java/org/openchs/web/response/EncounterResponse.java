@@ -11,8 +11,11 @@ public class EncounterResponse extends LinkedHashMap<String, Object> {
     public static EncounterResponse fromEncounter(Encounter encounter, ConceptRepository conceptRepository, ConceptService conceptService) {
         EncounterResponse encounterResponse = new EncounterResponse();
         encounterResponse.put("ID", encounter.getUuid());
-        encounterResponse.put("Subject type", encounter.getIndividual().getSubjectType().getName());
         encounterResponse.put("Encounter type", encounter.getEncounterType().getName());
+
+        encounterResponse.put("Subject ID", encounter.getUuid());
+        encounterResponse.put("Subject type", encounter.getIndividual().getSubjectType().getName());
+
         Response.putIfPresent(encounterResponse, "Encounter location", encounter.getEncounterLocation());
         encounterResponse.put("Encounter date time", encounter.getEncounterDateTime());
         encounterResponse.put("Earliest scheduled date", encounter.getEarliestVisitDateTime());

@@ -12,6 +12,7 @@ import org.openchs.service.ConceptService;
 import org.openchs.service.IndividualService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.util.S;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.IndividualContract;
 import org.openchs.web.request.IndividualRequest;
@@ -75,7 +76,7 @@ public class IndividualController extends AbstractController<Individual> impleme
                                     @RequestParam(value = "subjectType", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String subjectType,
                                     Pageable pageable) {
         Page<Individual> subjects;
-        boolean subjectTypeRequested = subjectType == null || subjectType.trim().isEmpty();
+        boolean subjectTypeRequested = S.isEmpty(subjectType);
         if (subjectTypeRequested) {
             subjects = individualRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
         } else

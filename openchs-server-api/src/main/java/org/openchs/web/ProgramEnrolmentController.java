@@ -11,6 +11,7 @@ import org.openchs.projection.ProgramEnrolmentProjection;
 import org.openchs.service.ConceptService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.util.S;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.openchs.web.response.ProgramEnrolmentResponse;
@@ -26,6 +27,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -60,9 +62,15 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @RequestMapping(value = "/api/enrolments", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponsePage getEnrolments(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-                                    @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-                                    Pageable pageable) {
-        Page<ProgramEnrolment> programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+                                      @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+                                      @RequestParam(value = "program", required = false) String program,
+                                      Pageable pageable) {
+        Page<ProgramEnrolment> programEnrolments;
+        if (S.isEmpty(program)) {
+            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        } else {
+            programEnrolments = programEnrolmentRepository.findByAuditLastModifiedDateTimeIsBetweenAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, program, pageable);
+        }
         ArrayList<ProgramEnrolmentResponse> programEnrolmentResponses = new ArrayList<>();
         programEnrolments.forEach(programEnrolment -> {
             programEnrolmentResponses.add(ProgramEnrolmentResponse.fromProgramEnrolment(programEnrolment, conceptRepository, conceptService));

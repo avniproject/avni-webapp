@@ -9,6 +9,7 @@ import org.openchs.geo.Point;
 import org.openchs.service.ConceptService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.util.S;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.response.ProgramEncounterResponse;
@@ -22,6 +23,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -57,8 +59,15 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
                                       @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+                                      @RequestParam(value = "encounterType", required = false) String encounterType,
                                       Pageable pageable) {
-        Page<ProgramEncounter> programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        Page<ProgramEncounter> programEncounters;
+        if (S.isEmpty(encounterType)) {
+            programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        } else {
+            programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenAndEncounterTypeNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, encounterType, pageable);
+        }
+
         ArrayList<ProgramEncounterResponse> programEncounterResponses = new ArrayList<>();
         programEncounters.forEach(programEncounter -> {
             programEncounterResponses.add(ProgramEncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService));

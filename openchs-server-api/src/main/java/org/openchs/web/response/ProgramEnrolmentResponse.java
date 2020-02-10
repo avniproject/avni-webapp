@@ -12,12 +12,12 @@ public class ProgramEnrolmentResponse extends LinkedHashMap<String, Object> {
         ProgramEnrolmentResponse programEnrolmentResponse = new ProgramEnrolmentResponse();
         programEnrolmentResponse.put("ID", programEnrolment.getUuid());
         programEnrolmentResponse.put("Subject type", programEnrolment.getIndividual().getSubjectType().getName());
-        programEnrolmentResponse.put("Program", programEnrolment.getProgram().getName());
-        programEnrolmentResponse.put("Enrolment date-time", programEnrolment.getEnrolmentDateTime());
-        programEnrolmentResponse.put("Exit date-time", programEnrolment.getProgramExitDateTime());
-
         programEnrolmentResponse.put("Subject ID", programEnrolment.getIndividual().getUuid());
+        programEnrolmentResponse.put("Program", programEnrolment.getProgram().getName());
+        programEnrolmentResponse.put("Enrolment datetime", programEnrolment.getEnrolmentDateTime());
         Response.putIfPresent(programEnrolmentResponse, "Enrolment location", programEnrolment.getEnrolmentLocation());
+
+        programEnrolmentResponse.put("Exit datetime", programEnrolment.getProgramExitDateTime());
         Response.putIfPresent(programEnrolmentResponse, "Exit location", programEnrolment.getExitLocation());
 
         Response.putObservations(conceptRepository, conceptService, programEnrolmentResponse, new LinkedHashMap<>(), programEnrolment.getObservations());
