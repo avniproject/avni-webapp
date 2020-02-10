@@ -29,6 +29,7 @@ public class FormService {
                 .withDecisionRule(formRequest.getDecisionRule())
                 .withVisitScheduleRule(formRequest.getVisitScheduleRule())
                 .withValidationRule(formRequest.getValidationRule())
+                .withChecklistRule(formRequest.getChecklistsRule())
                 .build();
         formRepository.save(form);
     }
