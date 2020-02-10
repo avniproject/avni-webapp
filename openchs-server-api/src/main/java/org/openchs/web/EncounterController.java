@@ -25,6 +25,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
@@ -80,8 +82,11 @@ public class EncounterController extends AbstractController<Encounter> implement
     @GetMapping(value = "/api/encounter/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public EncounterResponse get(@PathVariable("id") String uuid) {
-        return EncounterResponse.fromEncounter(encounterRepository.findByUuid(uuid), conceptRepository, conceptService);
+    public ResponseEntity<EncounterResponse> get(@PathVariable("id") String uuid) {
+        Encounter encounter = encounterRepository.findByUuid(uuid);
+        if (encounter == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     private void checkForSchedulingCompleteConstraintViolation(EncounterRequest request) {

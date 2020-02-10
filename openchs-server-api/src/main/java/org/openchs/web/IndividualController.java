@@ -29,6 +29,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -91,8 +92,11 @@ public class IndividualController extends AbstractController<Individual> impleme
     @GetMapping(value = "/api/subject/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public SubjectResponse get(@PathVariable("id") String uuid) {
-        return SubjectResponse.fromSubject(individualRepository.findByUuid(uuid), true, conceptRepository, conceptService);
+    public ResponseEntity<SubjectResponse> get(@PathVariable("id") String uuid) {
+        Individual subject = individualRepository.findByUuid(uuid);
+        if (subject == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)

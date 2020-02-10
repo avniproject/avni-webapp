@@ -22,6 +22,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
@@ -78,8 +80,11 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     @GetMapping(value = "/api/programEncounter/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
-    public ProgramEncounterResponse get(@PathVariable("id") String uuid) {
-        return ProgramEncounterResponse.fromProgramEncounter(programEncounterRepository.findByUuid(uuid), conceptRepository, conceptService);
+    public ResponseEntity<ProgramEncounterResponse> get(@PathVariable("id") String uuid) {
+        ProgramEncounter programEncounter = programEncounterRepository.findByUuid(uuid);
+        if (programEncounter == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ProgramEncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     private void checkForSchedulingCompleteConstraintViolation(ProgramEncounterRequest request) {
