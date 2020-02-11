@@ -10,6 +10,7 @@ import org.openchs.dao.UserRepository;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
+import org.openchs.domain.AccountAdmin;
 import org.openchs.framework.security.AuthService;
 
 import java.io.UnsupportedEncodingException;
@@ -32,6 +33,7 @@ public class AuthServiceTest {
     private CognitoAuthServiceImpl cognitoAuthService;
     private User user;
     private AuthService authService;
+    private AccountAdmin accountAdmin;
 
     @Before
     public void setup() {
@@ -42,6 +44,8 @@ public class AuthServiceTest {
         user = new User();
         user.setUuid(uuid);
         user.setOrganisationId(1L);
+        accountAdmin = new AccountAdmin();
+        accountAdmin.setUser(user);
     }
 
     @Test
@@ -80,26 +84,26 @@ public class AuthServiceTest {
         assertThat(userContext.getRoles(), contains(User.USER));
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
 
-        user.setAdmin(false);
+        user.setAccountAdmin(null);
         user.setOrgAdmin(true);
 
         userContext = authService.authenticateByToken("some token");
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
         assertThat(userContext.getRoles(), contains(User.ORGANISATION_ADMIN));
 
-        user.setAdmin(true);
+        user.setAccountAdmin(accountAdmin);
         user.setOrgAdmin(false);
         userContext = authService.authenticateByToken("some token");
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
         assertThat(userContext.getRoles(), contains(User.ADMIN));
 
-        user.setAdmin(false);
+        user.setAccountAdmin(null);
         user.setOrgAdmin(false);
         userContext = authService.authenticateByToken("some token");
         assertThat(userContext.getRoles().size(), is(equalTo(1)));
         assertThat(userContext.getRoles(), contains(User.USER));
 
-        user.setAdmin(true);
+        user.setAccountAdmin(accountAdmin);
         user.setOrgAdmin(true);
         userContext = authService.authenticateByToken("some token");
         assertThat(userContext.getRoles().size(), is(equalTo(2)));

@@ -70,8 +70,10 @@ public class User {
 
     @Column
     private boolean isOrgAdmin;
-    @Column
-    private boolean isAdmin;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "user")
+    private AccountAdmin accountAdmin;
 
     @JsonIgnore
     @ManyToOne
@@ -245,8 +247,8 @@ public class User {
 
     public String[] getRoles() {
         ArrayList<String> roles = new ArrayList<>();
-        if (!(isOrgAdmin || isAdmin)) roles.add(USER);
-        if (isAdmin) roles.add(ADMIN);
+        if (!(isOrgAdmin || isAdmin())) roles.add(USER);
+        if (isAdmin()) roles.add(ADMIN);
         if (isOrgAdmin) roles.add(ORGANISATION_ADMIN);
         return roles.toArray(new String[0]);
     }
@@ -255,12 +257,16 @@ public class User {
         isOrgAdmin = orgAdmin;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setAccountAdmin(AccountAdmin accountAdmin) {
+        this.accountAdmin = accountAdmin;
+    }
+
+    public AccountAdmin getAccountAdmin() {
+        return accountAdmin;
     }
 
     public boolean isAdmin() {
-        return isAdmin;
+        return accountAdmin != null;
     }
 
     public boolean isOrgAdmin() {

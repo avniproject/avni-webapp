@@ -165,7 +165,6 @@ public class UserController {
         user.addUserFacilityMappings(userFacilityMappings);
 
         user.setOrgAdmin(userContract.isOrgAdmin());
-        user.setAdmin(userContract.isAdmin());
         user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
         user.setSettings(userContract.getSettings());
 

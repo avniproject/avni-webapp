@@ -141,7 +141,6 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             Long organisationId = getOrganisationId(userContract);
             user.setOrganisationId(organisationId);
             user.setOrgAdmin(userContract.isOrgAdmin());
-            user.setAdmin(userContract.isAdmin());
             user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
             user.setSettings(userContract.getSettings());
             user.setPhoneNumber(userContract.getPhoneNumber());

@@ -46,6 +46,8 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         }
         org.setMediaDirectory(request.getMediaDirectory());
         org.setVoided(request.isVoided());
+        //TODO: adding this so that current org creating does not break. Will be changed after creating account APIs
+        org.setAccountId(1L);
         organisationRepository.save(org);
         return new ResponseEntity<>(org, HttpStatus.CREATED);
     }
