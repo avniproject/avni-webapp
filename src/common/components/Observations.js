@@ -31,7 +31,12 @@ const Observations = ({ observations }) => {
                 <Table className={classes.table} size="small" aria-label="a dense table">
                   <TableBody>
                     <TableRow>
-                      <TableCell component="th" scope="row" width="50%">
+                      <TableCell
+                        style={{ color: "#555555" }}
+                        component="th"
+                        scope="row"
+                        width="50%"
+                      >
                         {element.concept["name"]}
                       </TableCell>
                       <TableCell align="left" width="50%">
