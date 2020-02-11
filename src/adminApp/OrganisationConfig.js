@@ -13,6 +13,16 @@ import Box from "@material-ui/core/Box";
 import { connect } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import SaveIcon from "@material-ui/icons/Save";
 
 const useStyles = makeStyles({
   root: {
@@ -28,10 +38,13 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
 
   const emptyOrgSettings = {
     uuid: UUID.v4(),
-    settings: { languages: [], myDashboardFilters: [], searchFilters: [] }
+    settings: { languages: [], myDashboardFilters: [], searchFilters: [] },
+    worklistUpdationRule: ""
   };
 
   const [settings, setSettings] = useState(emptyOrgSettings);
+  const [worklistUpdationRuleExpand, setWorklistUpdationRuleExpand] = useState(false);
+  const [worklistUpdationRule, setWorklistUpdationRule] = useState("");
 
   const createOrgSettings = setting => {
     const { uuid, settings } = setting;
@@ -54,6 +67,7 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
       );
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
+      setWorklistUpdationRule(res.data._embedded.organisationConfig[0].worklistUpdationRule);
     });
   }, []);
 
@@ -106,7 +120,8 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
           settings,
           omitTableData,
           operationalModules,
-          title
+          title,
+          worklistUpdationRule
         }
       });
     }
@@ -135,7 +150,8 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
               filterType === "searchFilters"
                 ? filteredFilters
                 : omitTableData(settings.settings.searchFilters)
-          }
+          },
+          worklistUpdationRule: worklistUpdationRule
         };
         http.post("/organisationConfig", newSettings).then(response => {
           if (response.status === 201) {
@@ -159,7 +175,8 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
           settings,
           omitTableData,
           operationalModules,
-          title
+          title,
+          worklistUpdationRule
         }
       });
     }
@@ -171,7 +188,7 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
       onClick={() =>
         history.push({
           pathname: "/admin/languages",
-          state: { settings }
+          state: { settings, worklistUpdationRule }
         })
       }
     >
@@ -198,6 +215,19 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
     </Box>
   );
 
+  const onSaveWorklistUpdationRule = event =>
+    http
+      .post("/organisationConfig", {
+        uuid: settings.uuid,
+        settings: settings.settings,
+        worklistUpdationRule: worklistUpdationRule
+      })
+      .then(response => {
+        if (response.status === 201) {
+          setWorklistUpdationRuleExpand(false);
+        }
+      });
+
   return _.isNil(subjectTypes) ? (
     <div />
   ) : (
@@ -217,6 +247,60 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
         <p />
         {renderFilterTable("myDashboardFilters")}
         {renderFilterTable("searchFilters")}
+
+        <ExpansionPanel expanded={worklistUpdationRuleExpand}>
+          <ExpansionPanelSummary
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+            style={{ marginTop: "3%" }}
+          >
+            <Grid container item sm={12}>
+              <Grid item sm={2}>
+                <span onClick={event => setWorklistUpdationRuleExpand(!worklistUpdationRuleExpand)}>
+                  {worklistUpdationRuleExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </span>
+                {/* </Grid>
+            <Grid item sm={2}> */}
+
+                <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>
+                  Worklist updation rule
+                </span>
+              </Grid>
+              <Grid item sm={8} />
+
+              <Grid item sm={2}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={event => onSaveWorklistUpdationRule(event)}
+                  style={{
+                    marginLeft: "60%"
+                  }}
+                  // disabled={!this.state.detectBrowserCloseEvent}
+                >
+                  <SaveIcon />
+                  &nbsp;Save
+                </Button>
+              </Grid>
+            </Grid>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <Editor
+              value={worklistUpdationRule ? worklistUpdationRule : ""}
+              onValueChange={event => setWorklistUpdationRule(event)}
+              highlight={code => highlight(code, languages.js)}
+              padding={10}
+              style={{
+                fontFamily: '"Fira code", "Fira Mono", monospace',
+                fontSize: 15,
+                width: "100%",
+                height: "auto",
+                borderStyle: "solid",
+                borderWidth: "1px"
+              }}
+            />
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
       </Paper>
     </Box>
   );
@@ -225,9 +309,4 @@ const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getOperationalModules }
-  )(customConfig)
-);
+export default withRouter(connect(mapStateToProps, { getOperationalModules })(customConfig));

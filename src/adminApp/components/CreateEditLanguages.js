@@ -17,6 +17,7 @@ export const CreateEditLanguages = props => {
   }
 
   const setting = props.history.location.state.settings;
+  const worklistUpdationRule = props.history.location.state.worklistUpdationRule;
   const [lang, setLang] = useState(
     options.filter(l => setting.settings.languages.includes(l.value))
   );
@@ -31,7 +32,8 @@ export const CreateEditLanguages = props => {
           languages: _.isNil(lang) ? [] : lang.map(l => l.value),
           myDashboardFilters: setting.settings.myDashboardFilters,
           searchFilters: setting.settings.searchFilters
-        }
+        },
+        worklistUpdationRule: worklistUpdationRule
       })
       .then(response => {
         if (response.status === 201) {
