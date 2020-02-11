@@ -19,11 +19,17 @@ let flagActive = false;
 let flagExited = false;
 
 const SubjectDashboardProgramTab = ({ program }) => {
-  const [selectedTab, setValue] = React.useState(0);
+  const [selectedTab, setSelectedTab] = React.useState(0);
+  const [selectedTabExited, setSelectedTabExited] = React.useState(false);
 
   const handleTabChange = (event, newValue) => {
-    console.log("handle tab change", newValue);
-    setValue(newValue);
+    setSelectedTabExited(false);
+    setSelectedTab(newValue);
+  };
+
+  const handleTabChangeExited = (event, newValue) => {
+    setSelectedTab(false);
+    setSelectedTabExited(newValue);
   };
 
   if (program && program.enrolments) {
@@ -38,10 +44,17 @@ const SubjectDashboardProgramTab = ({ program }) => {
 
   const classes = useStyles();
 
+  function isActive(element) {
+    return element.programExitDateTime == null;
+  }
+
+  function isExited(element) {
+    return element.programExitDateTime != null;
+  }
+
   if (program && program.enrolments) {
-    program.enrolments.map((element, index) =>
-      element.programExitDateTime == null ? (flagActive = true) : (flagExited = true)
-    );
+    flagActive = program && program.enrolments && program.enrolments.some(isActive);
+    flagExited = program && program.enrolments && program.enrolments.some(isExited);
   }
 
   return (
@@ -67,15 +80,19 @@ const SubjectDashboardProgramTab = ({ program }) => {
               <Program
                 type="exited"
                 program={program}
-                selectedTab={selectedTab}
-                handleTabChange={handleTabChange}
+                selectedTab={selectedTabExited}
+                handleTabChange={handleTabChangeExited}
               />
             ) : (
               ""
             )}
           </Grid>
         </div>
-        <ProgramDetails tabPanelValue={selectedTab} programData={program} />
+        {selectedTab !== false ? (
+          <ProgramDetails tabPanelValue={selectedTab} programData={program} />
+        ) : (
+          <ProgramDetails tabPanelValue={selectedTabExited} programData={program} />
+        )}
       </Paper>
     </Fragment>
   );
