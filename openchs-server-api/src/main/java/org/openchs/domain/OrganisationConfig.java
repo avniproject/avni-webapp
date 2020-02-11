@@ -15,12 +15,22 @@ public class OrganisationConfig extends OrganisationAwareEntity {
     @Type(type = "jsonObject")
     private JsonObject settings;
 
+    @Column(name = "worklistupdation_rule")
+    private String worklistUpdationRule;
+
     public JsonObject getSettings() {
         return settings;
     }
 
     public void setSettings(JsonObject settings) {
         this.settings = settings;
+    }
+    public String getWorklistUpdationRule(){
+        return worklistUpdationRule;
+    }
+
+    public void setWorklistUpdationRule(String worklistUpdationRule){
+        this.worklistUpdationRule = worklistUpdationRule;
     }
 
 }
