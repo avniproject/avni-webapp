@@ -12,6 +12,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,7 +36,12 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
                              HttpServletResponse response, Object object) throws Exception {
         if (request.getMethod().equals(RequestMethod.GET.name())) {
             ((MutableRequestWrapper) request).addParameter("now", getNowMinus10Seconds().toString(ISODateTimeFormat.dateTime()));
-            Long catchmentId = getCatchmentId();
+            User user = UserContextHolder.getUser();
+            if (user == null) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "User not available from UserContext. Check for Auth errors");
+                return false;
+            }
+            Long catchmentId = getCatchmentId(response);
             ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(catchmentId));
         }
         return true;
@@ -53,7 +59,7 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
         return new DateTime().minusSeconds(nowMap.getOrDefault(environment.getActiveProfiles()[0], 0));
     }
 
-    private Long getCatchmentId() {
+    private Long getCatchmentId(HttpServletResponse response) throws IOException {
         User user = UserContextHolder.getUser();
         Objects.requireNonNull(user, "User not available from UserContext. Check for Auth errors");
         return user.getCatchmentId().orElse(isDev() ? DEFAULT_CATCHMENT_ID_FOR_DEV : null);
