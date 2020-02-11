@@ -1,6 +1,5 @@
 package org.openchs.service;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormMapping;
@@ -14,10 +13,12 @@ import org.openchs.domain.EncounterType;
 import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
 import org.openchs.util.ApiException;
+import org.openchs.web.request.FormMappingContract;
 import org.openchs.web.request.webapp.CreateUpdateFormRequest;
 import org.openchs.web.request.webapp.FormMappingRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -31,18 +32,20 @@ public class FormMappingService {
     private SubjectTypeRepository subjectTypeRepository;
     private FormMappingRepository formMappingRepository;
     private EncounterTypeRepository encounterTypeRepository;
+    private FormRepository formRepository;
 
     @Autowired
     public FormMappingService(FormMappingRepository formMappingRepository,
                               EncounterTypeRepository encounterTypeRepository,
                               FormRepository formRepository,
                               ProgramRepository programRepository,
-                              SubjectTypeRepository subjectTypeRepository
-    ) {
+                              SubjectTypeRepository subjectTypeRepository,
+                              FormRepository formRepository1) {
         this.formMappingRepository = formMappingRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.programRepository = programRepository;
         this.subjectTypeRepository = subjectTypeRepository;
+        this.formRepository = formRepository1;
     }
 
     public void createOrUpdateFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
@@ -69,9 +72,45 @@ public class FormMappingService {
         }
     }
 
+    public void createOrUpdateFormMapping(FormMappingContract formMappingRequest) {
+
+        if (formMappingRequest.getFormUUID() == null) {
+            throw new RuntimeException("FormMappingRequest without form uuid! " + formMappingRequest);
+        }
+        Form form = formRepository.findByUuid(formMappingRequest.getFormUUID());
+        if (form == null) {
+            throw new RuntimeException("Form not found!" + formMappingRequest);
+        }
+        FormMapping formMapping = formMappingRepository.findByUuid(formMappingRequest.getUuid());
+        if (formMapping == null) {
+            formMapping = new FormMapping();
+            formMapping.setUuid(formMappingRequest.getUuid());
+        }
+        formMapping.setForm(form);
+
+        if (formMappingRequest.getProgramUUID() != null) {
+            formMapping.setProgram(programRepository.findByUuid(formMappingRequest.getProgramUUID()));
+        }
+
+        if (formMappingRequest.getEncounterTypeUUID() != null) {
+            formMapping.setEncounterType(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()));
+        }
+
+        if (formMappingRequest.getSubjectTypeUUID() != null) {
+            formMapping.setSubjectType(
+                    subjectTypeRepository.findByUuid(
+                            formMappingRequest.getSubjectTypeUUID()));
+        } else {
+            formMapping.setSubjectType(subjectTypeRepository.individualSubjectType());
+        }
+
+        formMapping.setVoided(formMappingRequest.isVoided());
+        formMappingRepository.save(formMapping);
+    }
+
     private void validateRequest(CreateUpdateFormRequest createUpdateFormRequest, FormType formType) {
         for (FormMappingRequest formMappingRequest : createUpdateFormRequest.getFormMappings()) {
-            if(!formMappingRequest.getVoided()) {
+            if (!formMappingRequest.getVoided()) {
                 if (formType.isLinkedToEncounterType() && formMappingRequest.getEncounterTypeUuid() == null) {
                     throw new ApiException("Form of type %s must pass encounterType", formType);
                 }
@@ -113,7 +152,7 @@ public class FormMappingService {
     }
 
     @Transactional(readOnly = true)
-    public LinkedHashMap<String, FormElement> getFormMapping(String subjectTypeUUID, String programUUID, String  encounterTypeUUID, FormType formType) {
+    public LinkedHashMap<String, FormElement> getFormMapping(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType) {
         return getEntityConceptMap(formMappingRepository.getRequiredFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, formType));
     }
 

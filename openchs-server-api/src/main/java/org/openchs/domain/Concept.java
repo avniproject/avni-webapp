@@ -229,7 +229,7 @@ public class Concept extends OrganisationAwareEntity {
         conceptContract.setUnit(this.getUnit());
         conceptContract.setVoided(this.isVoided());
 
-        if (ConceptDataType.Coded.toString().equals(this.getDataType())) {
+        if (dataTypeMatches(ConceptDataType.Coded)) {
             conceptContract.setAnswers(new ArrayList<>());
             for (ConceptAnswer answer : this.getConceptAnswers()) {
                 Concept answerConcept = answer.getAnswerConcept();
@@ -245,6 +245,10 @@ public class Concept extends OrganisationAwareEntity {
             }
         }
         return conceptContract;
+    }
+
+    private boolean dataTypeMatches(ConceptDataType conceptDataType) {
+        return ConceptDataType.matches(conceptDataType, this.getDataType());
     }
 
     public Stream<ConceptAnswer> getSortedAnswers() {

@@ -1,9 +1,8 @@
 package org.openchs.web;
 
 import org.openchs.dao.AddressLevelTypeRepository;
-import org.openchs.dao.LocationRepository;
-import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
+import org.openchs.service.LocationService;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.AddressLevelTypeContract;
 import org.slf4j.Logger;
@@ -14,24 +13,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 public class AddressLevelTypeController extends AbstractController<AddressLevelType> {
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
-    private LocationRepository locationRepository;
     private Logger logger;
+    private LocationService locationService;
 
     @Autowired
-    public AddressLevelTypeController(AddressLevelTypeRepository addressLevelTypeRepository, LocationRepository locationRepository) {
+    public AddressLevelTypeController(AddressLevelTypeRepository addressLevelTypeRepository, LocationService locationService) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
-        this.locationRepository = locationRepository;
+        this.locationService = locationService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -51,20 +48,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @Transactional
     public ResponseEntity<?> createAddressLevelType(@RequestBody AddressLevelTypeContract contract) {
-        AddressLevelType addressLevelType = newOrExistingEntity(addressLevelTypeRepository, contract, new AddressLevelType());
-        if (contract.getUuid() == null)
-            addressLevelType.setUuid(UUID.randomUUID().toString());
-        addressLevelType.setName(contract.getName());
-        addressLevelType.setLevel(contract.getLevel());
-        AddressLevelType parent = null;
-        if (contract.getParent() != null) {
-            parent = addressLevelTypeRepository.findByUuid(contract.getParent().getUuid());
-        }
-        if (contract.getParentId() != null) {
-            parent = addressLevelTypeRepository.findOne(contract.getParentId());
-        }
-        addressLevelType.setParent(parent);
-        addressLevelTypeRepository.save(addressLevelType);
+        AddressLevelType addressLevelType = locationService.createAddressLevel(contract);
         return new ResponseEntity<>(addressLevelType, HttpStatus.CREATED);
     }
 
@@ -74,7 +58,7 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
     public ResponseEntity<?> save(@RequestBody List<AddressLevelTypeContract> addressLevelTypeContracts) {
         for (AddressLevelTypeContract addressLevelTypeContract : addressLevelTypeContracts) {
             logger.info(String.format("Processing addressLevelType request: %s", addressLevelTypeContract.getUuid()));
-            createAddressLevelType(addressLevelTypeContract);
+            locationService.createAddressLevel(addressLevelTypeContract);
         }
         return ResponseEntity.ok(null);
     }

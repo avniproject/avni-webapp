@@ -1,9 +1,9 @@
 package org.openchs.web;
 
-import org.openchs.dao.OrganisationConfigRepository;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.OrganisationConfig;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.OrganisationConfigService;
 import org.openchs.web.request.OrganisationConfigRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -15,15 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.transaction.Transactional;
-import java.util.UUID;
 
 @RepositoryRestController
 public class OrganisationConfigController implements RestControllerResourceProcessor<OrganisationConfig> {
-    private final OrganisationConfigRepository organisationConfigRepository;
+    private final OrganisationConfigService organisationConfigService;
 
     @Autowired
-    public OrganisationConfigController(OrganisationConfigRepository organisationConfigRepository) {
-        this.organisationConfigRepository = organisationConfigRepository;
+    public OrganisationConfigController(OrganisationConfigService organisationConfigService) {
+        this.organisationConfigService = organisationConfigService;
     }
 
     @RequestMapping(value = "/organisationConfig", method = RequestMethod.POST)
@@ -31,15 +30,7 @@ public class OrganisationConfigController implements RestControllerResourceProce
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public ResponseEntity save(@RequestBody OrganisationConfigRequest request) {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisation.getId());
-        if (organisationConfig == null) {
-            organisationConfig = new OrganisationConfig();
-        }
-        organisationConfig.setOrganisationId(organisation.getId());
-        organisationConfig.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
-        organisationConfig.setSettings(request.getSettings());
-        organisationConfig.setWorklistUpdationRule(request.getWorklistUpdationRule());
-        organisationConfigRepository.save(organisationConfig);
+        OrganisationConfig organisationConfig = organisationConfigService.saveOrganisationConfig(request, organisation);
         return new ResponseEntity<>(organisationConfig, HttpStatus.CREATED);
     }
 

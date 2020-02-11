@@ -45,4 +45,10 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             "where enl.program.uuid = :programUUID and enl.isVoided = false and " +
             "i.isVoided = false ")
     Page<ProgramEnrolment> findEnrolments(String programUUID, Pageable pageable);
+
+    Page<ProgramEnrolment> findByAuditLastModifiedDateTimeIsBetweenAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(
+            DateTime lastModifiedDateTime,
+            DateTime now,
+            String program,
+            Pageable pageable);
 }

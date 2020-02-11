@@ -12,6 +12,7 @@ import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.FormWebProjection;
 import org.openchs.service.FormMappingService;
+import org.openchs.service.FormService;
 import org.openchs.util.ApiException;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormatContract;
@@ -49,14 +50,15 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 public class FormController implements RestControllerResourceProcessor<BasicFormDetails> {
     private final Logger logger;
+    private final FormMappingRepository formMappingRepository;
+    private final FormMappingService formMappingService;
+    private final FormService formService;
     private FormRepository formRepository;
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
     private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
-    private final FormMappingRepository formMappingRepository;
     private RepositoryEntityLinks entityLinks;
     private ProjectionFactory projectionFactory;
-    private final FormMappingService formMappingService;
 
 
     @Autowired
@@ -67,7 +69,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                           OperationalEncounterTypeRepository operationalEncounterTypeRepository,
                           RepositoryEntityLinks entityLinks,
                           ProjectionFactory projectionFactory,
-                          FormMappingService formMappingService) {
+                          FormMappingService formMappingService, FormService formService) {
         this.formRepository = formRepository;
         this.programRepository = programRepository;
         this.formMappingRepository = formMappingRepository;
@@ -76,6 +78,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         this.entityLinks = entityLinks;
         this.projectionFactory = projectionFactory;
         this.formMappingService = formMappingService;
+        this.formService = formService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -113,7 +116,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         logger.info(String.format("Saving form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
             formRequest.validate();
-            saveForm(formRequest);
+            formService.saveForm(formRequest);
         } catch (InvalidObjectException | FormBuilderException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -142,13 +145,12 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     @DeleteMapping(value = "/web/forms/{formUUID}")
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public ResponseEntity deleteWeb( @PathVariable String formUUID){
+    public ResponseEntity deleteWeb(@PathVariable String formUUID) {
         try {
             Form existingForm = formRepository.findByUuid(formUUID);
             existingForm.setVoided(!existingForm.isVoided());
             formRepository.save(existingForm);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -187,28 +189,13 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         return byUuid;
     }
 
-    private Form saveForm(@RequestBody FormContract formRequest) throws FormBuilderException {
-        Form existingForm = formRepository.findByUuid(formRequest.getUuid());
-        FormBuilder formBuilder = new FormBuilder(existingForm);
-        Form form = formBuilder.withName(formRequest.getName())
-                .withType(formRequest.getFormType())
-                .withUUID(formRequest.getUuid())
-                .withFormElementGroups(formRequest.getFormElementGroups())
-                .withDecisionRule(formRequest.getDecisionRule())
-                .withVisitScheduleRule(formRequest.getVisitScheduleRule())
-                .withValidationRule(formRequest.getValidationRule())
-                .withChecklistRule(formRequest.getChecklistsRule())
-                .build();
-        return formRepository.save(form);
-    }
-
     @RequestMapping(value = "/forms", method = RequestMethod.PATCH)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> patch(@RequestBody FormContract formRequest) {
         logger.info(String.format("Patching form: %s, with UUID: %s", formRequest.getName(), formRequest.getUuid()));
         try {
-            saveForm(formRequest);
+            formService.saveForm(formRequest);
         } catch (FormBuilderException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());

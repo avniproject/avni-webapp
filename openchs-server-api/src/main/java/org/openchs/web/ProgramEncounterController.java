@@ -3,23 +3,33 @@ package org.openchs.web;
 import com.bugsnag.Bugsnag;
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.*;
+import org.openchs.domain.EncounterType;
+import org.openchs.domain.ProgramEncounter;
 import org.openchs.geo.Point;
+import org.openchs.service.ConceptService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.util.S;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
+import org.openchs.web.response.ProgramEncounterResponse;
+import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 
 @RestController
 public class ProgramEncounterController extends AbstractController<ProgramEncounter> implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter> {
@@ -28,6 +38,8 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     private ProgramEnrolmentRepository programEnrolmentRepository;
     private ObservationService observationService;
     private UserService userService;
+    private final ConceptRepository conceptRepository;
+    private final ConceptService conceptService;
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
 
@@ -35,12 +47,44 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     Bugsnag bugsnag;
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ConceptRepository conceptRepository, ConceptService conceptService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.observationService = observationService;
         this.userService = userService;
+        this.conceptRepository = conceptRepository;
+        this.conceptService = conceptService;
+    }
+
+    @RequestMapping(value = "/api/programEncounters", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+                                      @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+                                      @RequestParam(value = "encounterType", required = false) String encounterType,
+                                      Pageable pageable) {
+        Page<ProgramEncounter> programEncounters;
+        if (S.isEmpty(encounterType)) {
+            programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        } else {
+            programEncounters = programEncounterRepository.findByAuditLastModifiedDateTimeIsBetweenAndEncounterTypeNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, encounterType, pageable);
+        }
+
+        ArrayList<ProgramEncounterResponse> programEncounterResponses = new ArrayList<>();
+        programEncounters.forEach(programEncounter -> {
+            programEncounterResponses.add(ProgramEncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService));
+        });
+        return new ResponsePage(programEncounterResponses, programEncounters.getNumberOfElements(), programEncounters.getTotalPages(), programEncounters.getSize());
+    }
+
+    @GetMapping(value = "/api/programEncounter/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<ProgramEncounterResponse> get(@PathVariable("id") String uuid) {
+        ProgramEncounter programEncounter = programEncounterRepository.findByUuid(uuid);
+        if (programEncounter == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ProgramEncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     private void checkForSchedulingCompleteConstraintViolation(ProgramEncounterRequest request) {

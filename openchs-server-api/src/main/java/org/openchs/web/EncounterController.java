@@ -6,22 +6,33 @@ import org.openchs.dao.*;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
+import org.openchs.domain.ProgramEncounter;
 import org.openchs.geo.Point;
+import org.openchs.service.ConceptService;
 import org.openchs.service.UserService;
+import org.openchs.util.S;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.PointRequest;
+import org.openchs.web.response.EncounterResponse;
+import org.openchs.web.response.ProgramEncounterResponse;
+import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 
 @RestController
 public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter>, OperatingIndividualScopeAwareController<Encounter> {
@@ -33,15 +44,49 @@ public class EncounterController extends AbstractController<Encounter> implement
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
     private Bugsnag bugsnag;
+    private final ConceptRepository conceptRepository;
+    private final ConceptService conceptService;
 
     @Autowired
-    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService, UserService userService, Bugsnag bugsnag) {
+    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService, UserService userService, Bugsnag bugsnag, ConceptRepository conceptRepository, ConceptService conceptService) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
         this.observationService = observationService;
         this.userService = userService;
         this.bugsnag = bugsnag;
+        this.conceptRepository = conceptRepository;
+        this.conceptService = conceptService;
+    }
+
+    @RequestMapping(value = "/api/encounters", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public ResponsePage getEncounters(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+                                      @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+                                      @RequestParam(value = "encounterType", required = false) String encounterType,
+                                      Pageable pageable) {
+        Page<Encounter> encounters;
+        if (S.isEmpty(encounterType)) {
+            encounters = encounterRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        } else {
+            encounters = encounterRepository.findByAuditLastModifiedDateTimeIsBetweenAndEncounterTypeNameOrderByAudit_LastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, encounterType, pageable);
+        }
+
+        ArrayList<EncounterResponse> encounterResponses = new ArrayList<>();
+        encounters.forEach(encounter -> {
+            encounterResponses.add(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService));
+        });
+        return new ResponsePage(encounterResponses, encounters.getNumberOfElements(), encounters.getTotalPages(), encounters.getSize());
+    }
+
+    @GetMapping(value = "/api/encounter/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<EncounterResponse> get(@PathVariable("id") String uuid) {
+        Encounter encounter = encounterRepository.findByUuid(uuid);
+        if (encounter == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     private void checkForSchedulingCompleteConstraintViolation(EncounterRequest request) {
@@ -69,7 +114,7 @@ public class EncounterController extends AbstractController<Encounter> implement
 
         Encounter encounter = newOrExistingEntity(encounterRepository, request, new Encounter());
         //Planned visit can not overwrite completed encounter
-        if(encounter.isCompleted() && request.isPlanned())
+        if (encounter.isCompleted() && request.isPlanned())
             return;
 
         encounter.setEncounterDateTime(request.getEncounterDateTime());
@@ -83,10 +128,10 @@ public class EncounterController extends AbstractController<Encounter> implement
         encounter.setCancelObservations(observationService.createObservations(request.getCancelObservations()));
         encounter.setVoided(request.isVoided());
         PointRequest encounterLocation = request.getEncounterLocation();
-        if(encounterLocation != null)
+        if (encounterLocation != null)
             encounter.setEncounterLocation(new Point(encounterLocation.getX(), encounterLocation.getY()));
         PointRequest cancelLocation = request.getCancelLocation();
-        if(cancelLocation != null)
+        if (cancelLocation != null)
             encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
 
         encounterRepository.save(encounter);

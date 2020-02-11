@@ -4,6 +4,7 @@ import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.OperationalSubjectType;
 import org.openchs.domain.SubjectType;
+import org.openchs.service.SubjectTypeService;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.SubjectTypeContract;
 import org.openchs.web.request.webapp.SubjectTypeContractWeb;
@@ -24,13 +25,15 @@ import java.util.List;
 @RestController
 public class SubjectTypeController implements RestControllerResourceProcessor<SubjectTypeContractWeb> {
     private final Logger logger;
-    private SubjectTypeRepository subjectTypeRepository;
     private final OperationalSubjectTypeRepository operationalSubjectTypeRepository;
+    private final SubjectTypeService subjectTypeService;
+    private SubjectTypeRepository subjectTypeRepository;
 
     @Autowired
-    public SubjectTypeController(SubjectTypeRepository subjectTypeRepository, OperationalSubjectTypeRepository operationalSubjectTypeRepository) {
+    public SubjectTypeController(SubjectTypeRepository subjectTypeRepository, OperationalSubjectTypeRepository operationalSubjectTypeRepository, SubjectTypeService subjectTypeService) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
+        this.subjectTypeService = subjectTypeService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -38,24 +41,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public void save(@RequestBody List<SubjectTypeContract> subjectTypeRequests) {
-        subjectTypeRequests.forEach(subjectTypeRequest -> {
-            logger.info(String.format("Creating subjectType: %s", subjectTypeRequest.toString()));
-            SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeRequest.getUuid());
-            if (subjectType == null) {
-                subjectType = createSubjectType(subjectTypeRequest);
-            }
-
-            subjectType.setName(subjectTypeRequest.getName());
-
-            subjectTypeRepository.save(subjectType);
-        });
-    }
-
-    private SubjectType createSubjectType(SubjectTypeContract programRequest) {
-        SubjectType subjectType = new SubjectType();
-        subjectType.setUuid(programRequest.getUuid());
-        subjectType.setVoided(programRequest.isVoided());
-        return subjectType;
+        subjectTypeRequests.forEach(subjectTypeService::saveSubjectType);
     }
 
     @GetMapping(value = "/web/subjectType")
@@ -106,7 +92,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     public ResponseEntity updateSubjectTypeForWeb(@RequestBody SubjectTypeContractWeb request,
-                                              @PathVariable("id") Long id) {
+                                                  @PathVariable("id") Long id) {
         logger.info(String.format("Processing Subject Type update request: %s", request.toString()));
         if (request.getName().trim().equals(""))
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError("Name can not be empty"));

@@ -9,6 +9,7 @@ import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Organisation;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.web.request.AddressLevelTypeContract;
 import org.openchs.web.request.LocationContract;
 import org.openchs.web.request.LocationEditContract;
 import org.openchs.web.request.ReferenceDataContract;
@@ -21,7 +22,6 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class LocationService {
@@ -159,5 +159,27 @@ public class LocationService {
     private boolean titleIsValid(AddressLevel location, String title, AddressLevelType type) {
         return (location.isTopLevel() && locationRepository.findByTitleIgnoreCaseAndTypeAndParentIsNull(title, type) == null)
                 || (!location.isTopLevel() && !location.getParent().containsSubLocation(title, type));
+    }
+
+    public AddressLevelType createAddressLevel(AddressLevelTypeContract contract) {
+        AddressLevelType addressLevelType = addressLevelTypeRepository.findByUuid(contract.getUuid());
+        if (addressLevelType == null) {
+            addressLevelType = new AddressLevelType();
+            addressLevelType.setUuid(contract.getUuid());
+        }
+        if (contract.getUuid() == null)
+            addressLevelType.setUuid(UUID.randomUUID().toString());
+        addressLevelType.setName(contract.getName());
+        addressLevelType.setLevel(contract.getLevel());
+        AddressLevelType parent = null;
+        if (contract.getParent() != null) {
+            parent = addressLevelTypeRepository.findByUuid(contract.getParent().getUuid());
+        }
+        if (contract.getParentId() != null) {
+            parent = addressLevelTypeRepository.findOne(contract.getParentId());
+        }
+        addressLevelType.setParent(parent);
+        addressLevelTypeRepository.save(addressLevelType);
+        return addressLevelType;
     }
 }
