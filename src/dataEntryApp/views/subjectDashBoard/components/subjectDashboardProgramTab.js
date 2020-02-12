@@ -19,7 +19,7 @@ let flagActive = false;
 let flagExited = false;
 
 const SubjectDashboardProgramTab = ({ program }) => {
-  const [selectedTab, setSelectedTab] = React.useState(0);
+  const [selectedTab, setSelectedTab] = React.useState(1);
   const [selectedTabExited, setSelectedTabExited] = React.useState(false);
 
   const handleTabChange = (event, newValue) => {

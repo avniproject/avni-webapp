@@ -73,12 +73,12 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general.encounters
-                ? general.encounters.map((row, index) =>
+              {general
+                ? general.map((row, index) =>
                     !row.encounterDateTime ? (
                       <Visit
                         key={index}
-                        name={row.operationalEncounterTypeName}
+                        name={row.encounterType.name}
                         index={index}
                         visitDate={row.earliestVisitDateTime}
                         overdueDate={row.maxVisitDateTime}
@@ -107,12 +107,12 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general.encounters
-                ? general.encounters.map((row, index) =>
+              {general
+                ? general.map((row, index) =>
                     row.encounterDateTime ? (
                       <Visit
                         key={index}
-                        name={row.operationalEncounterTypeName}
+                        name={row.encounterType.name}
                         index={index}
                         visitDate={row.encounterDateTime}
                         earliestVisitDate={row.earliestVisitDateTime}

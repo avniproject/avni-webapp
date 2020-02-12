@@ -74,7 +74,7 @@ const ProfileDetails = ({ profileDetails }) => {
                     new Date(profileDetails.dateOfBirth).getFullYear() +
                     " Year"}
                 </TableCell>
-                <TableCell className={classes.tableCell}>{profileDetails.addressLevel}</TableCell>
+                <TableCell className={classes.tableCell}>{profileDetails.lowestAddressLevel}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
