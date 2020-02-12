@@ -1,99 +1,98 @@
 import React, { Fragment } from "react";
 import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
 import Grid from "@material-ui/core/Grid";
 import ProgramDetails from "./subjectDashboardProgramDetails";
+import Program from "./Program";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    flexGrow: 1,
-    padding: theme.spacing(1)
+    flexGrow: 1
   },
-  tabView: {
-    backgroundColor: "#f0e9e9",
-    padding: theme.spacing(2)
+  programBar: {
+    height: "100px",
+    backgroundColor: "#f9f9f9"
   }
 }));
 
-let flagToCheckActivePrograms = true;
+let flagActive = false;
+let flagExited = false;
 
 const SubjectDashboardProgramTab = ({ program }) => {
-  const [activeValue, setActiveValue] = React.useState(0);
-  const [exitedValue, setExitedValue] = React.useState(0);
+  const [selectedTab, setSelectedTab] = React.useState(0);
+  const [selectedTabExited, setSelectedTabExited] = React.useState(false);
 
-  const handleChangeActive = (event, newValue) => {
-    flagToCheckActivePrograms = true;
-    setActiveValue(newValue);
+  const handleTabChange = (event, newValue) => {
+    setSelectedTabExited(false);
+    setSelectedTab(newValue);
   };
 
-  const handleChangeExited = (event, newvalue) => {
-    setExitedValue(newvalue);
-    flagToCheckActivePrograms = false;
+  const handleTabChangeExited = (event, newValue) => {
+    setSelectedTab(false);
+    setSelectedTabExited(newValue);
   };
+
+  if (program && program.enrolments) {
+    program.enrolments.sort(function(left, right) {
+      return left.hasOwnProperty("programExitDateTime")
+        ? 1
+        : right.hasOwnProperty("programExitDateTime")
+        ? -1
+        : 0;
+    });
+  }
 
   const classes = useStyles();
+
+  function isActive(element) {
+    return element.programExitDateTime == null;
+  }
+
+  function isExited(element) {
+    return element.programExitDateTime != null;
+  }
+
+  if (program && program.enrolments) {
+    flagActive = program && program.enrolments && program.enrolments.some(isActive);
+    flagExited = program && program.enrolments && program.enrolments.some(isExited);
+  }
 
   return (
     <Fragment>
       <Paper className={classes.root}>
-        <Grid className={classes.tabView} container spacing={1}>
-          <Grid item xs={6}>
-            <label>Active Programs</label>
-            <AppBar position="static" color="default">
-              <Tabs
-                onChange={handleChangeActive}
-                value={activeValue}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="scrollable"
-                scrollButtons="auto"
-                aria-label="scrollable auto tabs example"
-              >
-                {program && program.enrolments
-                  ? program.enrolments.map((element, index) =>
-                      element.programExitDateTime == null ? (
-                        <Tab key={index} label={element.operationalProgramName} />
-                      ) : (
-                        ""
-                      )
-                    )
-                  : ""}
-              </Tabs>
-            </AppBar>
+        <div className={classes.programBar}>
+          <Grid container spacing={1}>
+            {flagActive ? (
+              <Fragment>
+                <Program
+                  type="active"
+                  program={program}
+                  selectedTab={selectedTab}
+                  handleTabChange={handleTabChange}
+                />
+                <Grid item style={{ width: "60px" }} />
+              </Fragment>
+            ) : (
+              ""
+            )}
+
+            {flagExited ? (
+              <Program
+                type="exited"
+                program={program}
+                selectedTab={selectedTabExited}
+                handleTabChange={handleTabChangeExited}
+              />
+            ) : (
+              ""
+            )}
           </Grid>
-          <Grid item xs={2} />
-          <Grid item xs={4}>
-            <label>Exited Programs</label>
-            <AppBar position="static" color="default">
-              <Tabs
-                value={exitedValue}
-                onChange={handleChangeExited}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="scrollable"
-                scrollButtons="auto"
-                aria-label="scrollable auto tabs example"
-              >
-                {program && program.enrolments
-                  ? program.enrolments.map((element, index) =>
-                      element.programExitDateTime != null ? (
-                        <Tab key={index} label={element.operationalProgramName} />
-                      ) : (
-                        ""
-                      )
-                    )
-                  : ""}
-              </Tabs>
-            </AppBar>
-          </Grid>
-        </Grid>
-        <ProgramDetails
-          tabPanelValue={flagToCheckActivePrograms ? activeValue : exitedValue}
-          programData={program}
-        />
+        </div>
+        {selectedTab !== false ? (
+          <ProgramDetails tabPanelValue={selectedTab} programData={program} />
+        ) : (
+          <ProgramDetails tabPanelValue={selectedTabExited} programData={program} />
+        )}
       </Paper>
     </Fragment>
   );

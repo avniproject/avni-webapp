@@ -14,7 +14,7 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3, 2),
-    margin: theme.spacing(4),
+    margin: theme.spacing(1, 3),
     flexGrow: 1
   }
 }));

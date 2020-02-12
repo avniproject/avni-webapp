@@ -37,17 +37,17 @@ const GridCommonList = ({ gridListDetails }) => {
   return (
     <Grid item xs={12} container className={classes.gridBottomBorder}>
       {gridListDetails
-        ? gridListDetails.map(relative => {
+        ? gridListDetails.map((relative, index) => {
             if (relative !== undefined) {
               return (
-                <Grid item xs={3} className={classes.rightBorder}>
+                <Grid key={index} item xs={3} className={classes.rightBorder}>
                   <Card className={classes.card}>
                     <CardContent>
-                      <Typography component={"span"} color="primary">
+                      <Typography component={"div"} color="primary">
                         {relative.firstName + " " + relative.lastName}
                       </Typography>
                       <Typography
-                        component={"span"}
+                        component={"div"}
                         className={classes.title}
                         color="textSecondary"
                         gutterBottom
@@ -55,7 +55,7 @@ const GridCommonList = ({ gridListDetails }) => {
                         {relative.individualBIsToARelation}
                       </Typography>
                       <Typography
-                        component={"span"}
+                        component={"div"}
                         className={classes.title}
                         color="textSecondary"
                         gutterBottom

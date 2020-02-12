@@ -27,6 +27,9 @@ const useStyles = makeStyles(theme => ({
   listItemView: {
     border: "1px solid lightGrey"
   },
+  expansionPanel: {
+    marginBottom: "11px"
+  },
   card: {
     boxShadow: "0px 0px 0px 0px rgba(0,0,0,0.12)",
     borderRight: "1px solid rgba(0,0,0,0.12)",
@@ -49,7 +52,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProfileTab = ({ profile }) => {
+const SubjectDashboardProfileTab = ({ profile, path }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState("");
 
@@ -59,16 +62,20 @@ const SubjectDashboardProfileTab = ({ profile }) => {
 
   return (
     <Fragment>
-      <ExpansionPanel expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+      <ExpansionPanel
+        className={classes.expansionPanel}
+        expanded={expanded === "registrationPanel"}
+        onChange={handleChange("registrationPanel")}
+      >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
+          aria-controls="registrationPanelbh-content"
+          id="registrationPanelbh-header"
         >
           <div>
-            <h5>Registartion Details</h5>
+            <h5>Registration Details</h5>
             <p>
-              Registartion Date: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
+              Registration Date: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
             </p>
           </div>
         </ExpansionPanelSummary>
@@ -82,18 +89,22 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           </Grid>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      <ExpansionPanel expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
+      <ExpansionPanel
+        className={classes.expansionPanel}
+        expanded={expanded === "relativesPanel"}
+        onChange={handleChange("relativesPanel")}
+      >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
+          aria-controls="relativesPanelbh-content"
+          id="relativesPanelbh-header"
         >
           <Typography component={"span"} className={classes.expansionHeading}>
             Relatives
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <GridCommonList gridListDetails={profile.relationships} />
+          <GridCommonList gridListDetails={profile.relationships} path={path} />
         </ExpansionPanelDetails>
         <Button color="primary">ADD RELATIVE</Button>
       </ExpansionPanel>
