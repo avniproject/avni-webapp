@@ -22,7 +22,7 @@ const Title = ({ record }) => {
 };
 
 export const SubjectTypeList = props => (
-  <List {...props} bulkActions={false}>
+  <List {...props} bulkActions={false} title="Subject Types">
     <Datagrid rowClick="show">
       <TextField label="Name" source="name" />
       <TextField label="Organisation Id" source="subjectTypeOrganisationId" />
