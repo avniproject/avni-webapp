@@ -80,17 +80,17 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general.encounters
-                ? general.encounters.map(row =>
+              {general
+                ? general.map(row =>
                     !row.encounterDateTime ? (
-                      <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
+                      <Grid key={row.encounterType.name} item xs={6} sm={3}>
                         <Paper
                           style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
                           className={classes.paper}
                         >
                           <List>
                             <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.operationalEncounterTypeName} />
+                              <ListItemText primary={row.name} />
                             </ListItem>
                             <ListItem className={classes.listItem}>
                               <ListItemText
@@ -134,17 +134,17 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general.encounters
-                ? general.encounters.map(row =>
+              {general
+                ? general.map(row =>
                     row.encounterDateTime ? (
-                      <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
+                      <Grid key={row.encounterType.name} item xs={6} sm={3}>
                         <Paper
                           style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
                           className={classes.paper}
                         >
                           <List>
                             <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.operationalEncounterTypeName} />
+                              <ListItemText primary={row.encounterType.name} />
                             </ListItem>
                             <ListItem className={classes.listItem}>
                               <ListItemText

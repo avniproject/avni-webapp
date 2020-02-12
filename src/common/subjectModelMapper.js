@@ -10,10 +10,13 @@ import {
   ProgramEnrolment,
   IndividualRelationship,
   IndividualRelationshipType,
-  IndividualRelation
+  IndividualRelation,
+  Encounter,
+  EncounterType
 } from "avni-models";
 import { types } from "../common/store/commonReduxStoreReducer";
 
+// subject Dashboard common functionality
 export const mapIndividual = individualDetails => {
   return General.assignFields(
     individualDetails,
@@ -22,21 +25,57 @@ export const mapIndividual = individualDetails => {
     ["registrationDate"]
   );
 };
+export const mapObservation = objservationList => {
+  if (objservationList != null)
+    return objservationList.map(observation => {
+      return mapConcept(observation);
+    });
+};
+// included redux store functionality
+export const mapConcept = observationJson => {
+  if(observationJson != null){
+  const observation = new Observation();
+  const concept = General.assignFields(observationJson.concept, new Concept(), ["uuid", "name"]);
+  concept.datatype = observationJson.concept["dataType"];
+  let valueuuid;
+  if (Array.isArray(observationJson.value) && concept.datatype === "Coded") {
+    valueuuid = [];
+    observationJson.value.map(observation => {
+      valueuuid.push(observation.uuid);
+      storeDispachObservations(types.OBSERVATIONS_VALUE, observation);
+    });
+  } else if (concept.datatype === "Coded") {
+    valueuuid = observationJson.value.uuid;
+    storeDispachObservations(types.OBSERVATIONS_VALUE, observationJson.value);
+  } else {
+    valueuuid = observationJson.value;
+  }
+  const value = JSON.stringify(concept.getValueWrapperFor(valueuuid));
+  observation.concept = concept;
+  observation.valueJSON = value;
+  return observation;
+}
+};
 
+
+
+//subject Dashboard profile Tab
 export const mapProfile = subjectProfile => {
+  if(subjectProfile != null){
   let individual = mapIndividual(subjectProfile);
   individual.observations = mapObservation(subjectProfile["observations"]);
   individual.relationships = mapRelationships(subjectProfile["relationships"]);
   console.log(individual);
   return individual;
+  }
 };
 
 export const mapRelationships = relationshipList => {
-  if(relationshipList != null){
-  return relationshipList.map(relationship => {
-    return mapRelations(relationship);
-  });
-}
+  if (relationshipList != null) {
+    return relationshipList.map(relationship => {
+      return mapRelations(relationship);
+    });
+  }
 };
 
 export const mapRelations = relationShipJson => {
@@ -75,54 +114,24 @@ export const mapIndividualRelation = individualRelation => {
   }
 };
 
-export const mapObservation = objservationList => {
-  if (objservationList != null)
-    return objservationList.map(observation => {
-      return mapConcept(observation);
-    });
-};
-
-export const mapConcept = observationJson => {
-  const observation = new Observation();
-  const concept = General.assignFields(observationJson.concept, new Concept(), ["uuid", "name"]);
-  concept.datatype = observationJson.concept["dataType"];
-  let valueuuid;
-  if (Array.isArray(observationJson.value) && concept.datatype === "Coded") {
-    valueuuid = [];
-    observationJson.value.map(observation => {
-      valueuuid.push(observation.uuid);
-      storeDispachObservations(types.OBSERVATIONS_VALUE, observation);
-    });
-  } else if (concept.datatype === "Coded") {
-    valueuuid = observationJson.value.uuid;
-    storeDispachObservations(types.OBSERVATIONS_VALUE, observationJson.value);
-  } else {
-    valueuuid = observationJson.value;
-  }
-
-  const value = JSON.stringify(concept.getValueWrapperFor(valueuuid));
-  observation.concept = concept;
-  observation.valueJSON = value;
-  return observation;
-};
-
 // program Tab subject Dashboard
-
 export const mapProgram = subjectProgram => {
-  let programIndividual = General.assignFields(
-    subjectProgram, new Individual(), ["uuid"]
-    );
+  if(subjectProgram != null){
+  let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);
   programIndividual.enrolments = mapEnrolment(subjectProgram.enrolments);
   console.log(programIndividual);
   return programIndividual;
+  }
 };
-
 export const mapEnrolment = enrolmentList => {
   if (enrolmentList != null)
     return enrolmentList.map(enrolments => {
       let programEnrolment = General.assignFields(
-        enrolments, new ProgramEnrolment(), [],
-        [ "enrolmentDateTime", "programExitDateTime"]);
+        enrolments,
+        new ProgramEnrolment(),
+        [],
+        ["enrolmentDateTime", "programExitDateTime"]
+      );
       programEnrolment.observations = mapObservation(enrolments["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolments["programEncounters"]);
       programEnrolment.program = mapOperationalProgramName(enrolments);
@@ -133,15 +142,34 @@ export const mapEnrolment = enrolmentList => {
 export const mapProgramEncounters = programEncountersList => {
   if (programEncountersList != null)
     return programEncountersList.map(programEncounters => {
-      return General.assignFields(
-        programEncounters, new ProgramEncounter(), 
-        ["uuid", "name", ],
-        ["maxVisitDateTime","earliestVisitDateTime", "encounterDateTime"]
+      const programEnconter = General.assignFields(
+        programEncounters,
+        new ProgramEncounter(),
+        ["uuid", "name"],
+        ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime"]
       );
+      programEnconter.encounterType = mapEncounterType(programEncounters["encounterType"]);
+return programEnconter;
     });
 };
 
 export const mapOperationalProgramName = operationalProgramName => {
-  return General.assignFields(operationalProgramName, new Program(), 
-  ["operationalProgramName"]);
+  return General.assignFields(operationalProgramName, new Program(), ["operationalProgramName"]);
 };
+
+export const mapEncounterType = encounterType => {
+  return General.assignFields(encounterType, new EncounterType(),["name"]);
+}
+
+// general tab subject Dashbord 
+export const mapGeneral = subjectGeneral => {
+  if(subjectGeneral != null){
+   return subjectGeneral.encounters.map((encounters)=>{
+    let generalEncounter =  General.assignFields(encounters, new Encounter(),["uuid"],["encounterDateTime","earliestVisitDateTime","maxVisitDateTime"]);
+    generalEncounter.encounterType = mapEncounterType(encounters.encounterType);
+    return generalEncounter;
+  }) 
+  }
+}
+
+
