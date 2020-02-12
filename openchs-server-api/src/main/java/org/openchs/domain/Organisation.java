@@ -38,8 +38,9 @@ public class Organisation {
     @Column
     private boolean isVoided;
 
-    @Column
-    private Long accountId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     public Organisation() {
     }
@@ -48,12 +49,12 @@ public class Organisation {
         this.name = name;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public Long getId() {

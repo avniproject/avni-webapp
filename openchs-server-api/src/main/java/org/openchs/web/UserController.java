@@ -8,6 +8,7 @@ import org.openchs.domain.OperatingIndividualScope;
 import org.openchs.domain.User;
 import org.openchs.domain.UserFacilityMapping;
 import org.openchs.projection.OrgAdminUserProjection;
+import org.openchs.service.AccountAdminService;
 import org.openchs.service.CognitoIdpService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.UserContract;
@@ -45,6 +46,7 @@ public class UserController {
     private UserService userService;
     private CognitoIdpService cognitoService;
     private FacilityRepository facilityRepository;
+    private AccountAdminService accountAdminService;
 
     @Value("${openchs.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -56,7 +58,8 @@ public class UserController {
                           OrganisationRepository organisationRepository,
                           UserService userService,
                           CognitoIdpService cognitoService,
-                          FacilityRepository facilityRepository) {
+                          FacilityRepository facilityRepository,
+                          AccountAdminService accountAdminService) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.userFacilityMappingRepository = userFacilityMappingRepository;
@@ -64,6 +67,7 @@ public class UserController {
         this.userService = userService;
         this.cognitoService = cognitoService;
         this.facilityRepository = facilityRepository;
+        this.accountAdminService = accountAdminService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -94,7 +98,7 @@ public class UserController {
 
             cognitoService.createUser(user);
             userService.save(user);
-
+            accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException | UsernameExistsException ex) {
@@ -120,7 +124,7 @@ public class UserController {
 
             cognitoService.updateUser(user);
             userService.save(user);
-
+            accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException ex) {

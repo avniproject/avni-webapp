@@ -58,10 +58,14 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
         User user = userContext.getUser();
         Organisation organisation = userContext.getOrganisation();
 
-        if (organisation == null) {
+        if (organisation == null && !user.isAdmin()) {
             logger.info(String.format("Organisation not found for user ID: %s", user.getId()));
             return new ResponseEntity<>(new UserInfo(), HttpStatus.NOT_FOUND);
         }
+        if (user.isAdmin()) {
+            organisation = new Organisation();
+        }
+
         String usernameSuffix = organisation.getUsernameSuffix() != null
                 ? organisation.getUsernameSuffix() : organisation.getDbUser();
         UserInfo userInfo = new UserInfo(

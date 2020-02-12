@@ -62,7 +62,9 @@ public class AuthService {
             return null;
         }
         userContext.setUser(user);
-        userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
+        if (user.getOrganisationId() != null) {
+            userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
+        }
 
         List<SimpleGrantedAuthority> authorities = ALL_AUTHORITIES.stream()
                 .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))

@@ -6,6 +6,15 @@ public class OrganisationRequest extends CHSRequest {
     private String dbUser;
     private String mediaDirectory;
     private String usernameSuffix;
+    private Long accountId;
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
 
     public String getUsernameSuffix() {
         return usernameSuffix;

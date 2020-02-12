@@ -15,12 +15,21 @@ public class AccountAdmin {
     @Column
     private String name;
 
-    @Column
-    private Long accountId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "admin_id", nullable = false)
     private User user;
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
 
     public User getUser() {
         return user;
@@ -44,14 +53,6 @@ public class AccountAdmin {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
     }
 
 }

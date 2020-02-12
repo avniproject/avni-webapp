@@ -1,7 +1,11 @@
 package org.openchs.web;
 
+import org.openchs.dao.AccountRepository;
 import org.openchs.dao.OrganisationRepository;
+import org.openchs.domain.Account;
 import org.openchs.domain.Organisation;
+import org.openchs.domain.User;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.OrganisationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,10 +24,12 @@ import java.util.UUID;
 public class OrganisationController implements RestControllerResourceProcessor<Organisation> {
 
     private OrganisationRepository organisationRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
-    public OrganisationController(OrganisationRepository organisationRepository) {
+    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository) {
         this.organisationRepository = organisationRepository;
+        this.accountRepository = accountRepository;
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.POST)
@@ -46,16 +52,23 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         }
         org.setMediaDirectory(request.getMediaDirectory());
         org.setVoided(request.isVoided());
-        //TODO: adding this so that current org creating does not break. Will be changed after creating account APIs
-        org.setAccountId(1L);
+        setOrgAccountByIdOrDefault(org, request.getAccountId());
         organisationRepository.save(org);
         return new ResponseEntity<>(org, HttpStatus.CREATED);
+    }
+
+    private void setOrgAccountByIdOrDefault(Organisation organisation, Long accountId) {
+        User user = UserContextHolder.getUserContext().getUser();
+        Account account = accountId == null ? accountRepository.findAllByAccountAdmin_User_IdOrderById(user.getId()).stream().findFirst().orElse(null)
+                : accountRepository.findOne(accountId);
+        organisation.setAccount(account);
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public List<Organisation> findAll() {
-        return organisationRepository.findAllByIsVoidedFalse();
+        User user = UserContextHolder.getUserContext().getUser();
+        return organisationRepository.findAllByAccount_AccountAdmin_User_Id(user.getId());
     }
 
 

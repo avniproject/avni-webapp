@@ -72,8 +72,8 @@ public class User {
     private boolean isOrgAdmin;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "user")
-    private AccountAdmin accountAdmin;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<AccountAdmin> accountAdmin = new HashSet<>();;
 
     @JsonIgnore
     @ManyToOne
@@ -257,16 +257,16 @@ public class User {
         isOrgAdmin = orgAdmin;
     }
 
-    public void setAccountAdmin(AccountAdmin accountAdmin) {
-        this.accountAdmin = accountAdmin;
-    }
-
-    public AccountAdmin getAccountAdmin() {
+    public Set<AccountAdmin> getAccountAdmin() {
         return accountAdmin;
     }
 
+    public void setAccountAdmin(AccountAdmin accountAdmin) {
+        this.accountAdmin.add(accountAdmin);
+    }
+
     public boolean isAdmin() {
-        return accountAdmin != null;
+        return accountAdmin.size() > 0;
     }
 
     public boolean isOrgAdmin() {

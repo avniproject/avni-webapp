@@ -19,6 +19,7 @@ public class UserContract extends ReferenceDataContract {
     private String operatingIndividualScope = OperatingIndividualScope.None.toString();
     private JsonObject settings;
     private Long organisationId;
+    private List<Long> accountIds;
 
     public Long getOrganisationId() {
         return organisationId;
@@ -78,5 +79,13 @@ public class UserContract extends ReferenceDataContract {
 
     public void setSettings(JsonObject settings) {
         this.settings = settings;
+    }
+
+    public List<Long> getAccountIds() {
+        return accountIds == null ? new ArrayList<>() : accountIds;
+    }
+
+    public void setAccountIds(List<Long> accountIds) {
+        this.accountIds = accountIds;
     }
 }

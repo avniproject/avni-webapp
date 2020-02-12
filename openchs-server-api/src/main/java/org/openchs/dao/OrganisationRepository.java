@@ -34,6 +34,8 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Lon
 
     List<Organisation> findAllByIsVoidedFalse();
 
+    List<Organisation> findAllByAccount_AccountAdmin_User_Id(Long userId);
+
     @PreAuthorize("hasAnyAuthority('admin')")
     @RestResource(path = "findAllById", rel = "findAllById")
     Page<Organisation> findAllByIdInAndIsVoidedFalse(List<Long> ids, Pageable pageable);

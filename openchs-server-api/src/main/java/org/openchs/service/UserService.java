@@ -35,12 +35,14 @@ public class UserService {
     }
 
     public User save(User user) {
-        Organisation organisation = organisationRepository.findOne(user.getOrganisationId());
-        user = userRepository.save(user);
-        if(organisation.getParentOrganisationId() == null && user.isOrgAdmin()) {
-            user.setCreatedBy(user);
-            user.setLastModifiedBy(user);
+        if (user.getOrganisationId() != null) {
+            Organisation organisation = organisationRepository.findOne(user.getOrganisationId());
+            if (organisation.getParentOrganisationId() == null && user.isOrgAdmin()) {
+                user.setCreatedBy(user);
+                user.setLastModifiedBy(user);
+            }
         }
+        user = userRepository.save(user);
         return userRepository.save(user);
     }
 }

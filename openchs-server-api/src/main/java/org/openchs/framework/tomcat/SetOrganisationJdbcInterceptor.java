@@ -21,6 +21,9 @@ public class SetOrganisationJdbcInterceptor extends JdbcInterceptor {
         if (userContext == null) {
             return;
         }
+        if (userContext.getUser() != null && userContext.getUser().isAdmin()) {
+            return;
+        }
         Organisation organisation = userContext.getOrganisation();
         if (organisation == null) return;
 
