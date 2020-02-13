@@ -65,7 +65,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<ConceptProjection> getOneForWebByName(@RequestParam String name) {
-        Concept concept = conceptRepository.findByNameIgnoreCase(name);
+        Concept concept = conceptRepository.findByName(name);
         if (concept == null)
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(projectionFactory.createProjection(ConceptProjection.class, concept));
