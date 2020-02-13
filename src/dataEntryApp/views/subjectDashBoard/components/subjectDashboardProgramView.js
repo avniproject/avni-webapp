@@ -180,7 +180,7 @@ const ProgramView = ({ programData }) => {
             <Grid container spacing={2}>
               {programData && programData.encounters
                 ? programData.encounters.map((row, index) =>
-                    row.encounterDateTime ? (
+                    row.encounterDateTime && row.encounterType ? (
                       <Visit
                         name={row.encounterType.name}
                         key={index}

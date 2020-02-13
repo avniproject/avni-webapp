@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, withRouter } from "react-router-dom";
+import { Route, withRouter, useLocation} from "react-router-dom";
 import { connect } from "react-redux";
 import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
@@ -10,6 +10,8 @@ import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
 import AppBar from "dataEntryApp/components/AppBar";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
+import qs from 'query-string';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,6 +21,7 @@ const useStyles = makeStyles(theme => ({
 
 const DataEntry = ({ match: { path }, getOperationalModules, operationalModules }) => {
   const classes = useStyles();
+  let location = useLocation();
 
   useEffect(() => {
     getOperationalModules();
@@ -34,7 +37,7 @@ const DataEntry = ({ match: { path }, getOperationalModules, operationalModules 
           <Route path={[path, `${path}/dashboard`]} component={DataEntryDashboard} />
           <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
           <Route path={`${path}/register`} component={SubjectRegister} />
-          <Route path={`${path}/subject`} component={SubjectDashboard} />
+          <Route exact path={`${path}/subject`} component={SubjectDashboard} key={(qs.parse(location.search)).uuid}/>
         </Grid>
       </Grid>
     </div>

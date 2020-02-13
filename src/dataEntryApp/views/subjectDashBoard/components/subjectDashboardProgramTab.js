@@ -19,7 +19,7 @@ let flagActive = false;
 let flagExited = false;
 
 const SubjectDashboardProgramTab = ({ program }) => {
-  const [selectedTab, setSelectedTab] = React.useState(1);
+  const [selectedTab, setSelectedTab] = React.useState(0);
   const [selectedTabExited, setSelectedTabExited] = React.useState(false);
 
   const handleTabChange = (event, newValue) => {
@@ -34,9 +34,9 @@ const SubjectDashboardProgramTab = ({ program }) => {
 
   if (program && program.enrolments) {
     program.enrolments.sort(function(left, right) {
-      return left.hasOwnProperty("programExitDateTime")
+      return left.programExitDateTime
         ? 1
-        : right.hasOwnProperty("programExitDateTime")
+        : right.programExitDateTime
         ? -1
         : 0;
     });
