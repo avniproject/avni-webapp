@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Table from "@material-ui/core/Table";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link} from "react-router-dom";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
@@ -65,8 +65,8 @@ const SubjectsTable = ({ type, subjects }) => {
       <TableBody>
         {subjects.map((row, id) => (
           <TableRow key={id}>
-            <TableCell component="th" scope="row">
-              {row.fullName}
+            <TableCell component="th" scope="row">            
+              <Link to={`subject?uuid=${row.uuid}`}>{row.fullName}</Link>
             </TableCell>
             {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}
             {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
