@@ -24,7 +24,7 @@ const Concepts = ({ history }) => {
       let apiUrl = "/web/concepts?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
+      if (!_.isEmpty(query.search)) apiUrl += "&name=" + encodeURIComponent(query.search);
       if (!_.isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
