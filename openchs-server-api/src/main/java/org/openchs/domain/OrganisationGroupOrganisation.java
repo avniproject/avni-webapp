@@ -14,11 +14,20 @@ public class OrganisationGroupOrganisation {
     @Column
     private String name;
 
-    @Column
-    private Long orgGroupId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "organisation_group_id", nullable = false)
+    private OrganisationGroup organisationGroup;
 
     @Column
     private Long organisationId;
+
+    public OrganisationGroup getOrganisationGroup() {
+        return organisationGroup;
+    }
+
+    public void setOrganisationGroup(OrganisationGroup organisationGroup) {
+        this.organisationGroup = organisationGroup;
+    }
 
     public Long getId() {
         return id;
@@ -34,14 +43,6 @@ public class OrganisationGroupOrganisation {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getOrgGroupId() {
-        return orgGroupId;
-    }
-
-    public void setOrgGroupId(Long orgGroupId) {
-        this.orgGroupId = orgGroupId;
     }
 
     public Long getOrganisationId() {

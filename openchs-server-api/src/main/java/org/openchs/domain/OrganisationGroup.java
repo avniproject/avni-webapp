@@ -1,7 +1,11 @@
 package org.openchs.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "organisation_group")
@@ -18,8 +22,21 @@ public class OrganisationGroup {
     @Column
     private String dbUser;
 
-    @Column
-    private Long accountId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "organisationGroup")
+    private Set<OrganisationGroupOrganisation> organisationGroupOrganisations = new HashSet<>();
+
+    public Set<OrganisationGroupOrganisation> getOrganisationGroupOrganisations() {
+        return organisationGroupOrganisations;
+    }
+
+    public void setOrganisationGroupOrganisations(Set<OrganisationGroupOrganisation> organisationGroupOrganisations) {
+        this.organisationGroupOrganisations = organisationGroupOrganisations;
+    }
 
     public Long getId() {
         return id;
@@ -45,11 +62,16 @@ public class OrganisationGroup {
         this.dbUser = dbUser;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
+
+    public void clearOrganisationGroups() {
+        getOrganisationGroupOrganisations().clear();
+    }
+
 }
