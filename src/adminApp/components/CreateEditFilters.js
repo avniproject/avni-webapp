@@ -222,7 +222,7 @@ export const CreateEditFilters = props => {
     }
     const inputValue = deburr(value.trim()).toLowerCase();
     http
-      .get("/search/concept?name=" + encodeURIComponent(inputValue))
+      .get(`/search/concept?name=${inputValue}`)
       .then(response => {
         const concepts = response.data;
         const filteredConcepts = concepts.filter(
