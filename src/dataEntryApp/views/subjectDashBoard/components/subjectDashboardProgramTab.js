@@ -15,10 +15,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-let flagActive = false;
-let flagExited = false;
+
 
 const SubjectDashboardProgramTab = ({ program }) => {
+  let flagActive = false;
+  let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [selectedTabExited, setSelectedTabExited] = React.useState(false);
 
