@@ -49,7 +49,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const SubjectsTable = ({ type, subjects }) => {
-  const classes = useStyle();
+  const classes = useStyle();  
 
   return (
     <Table className={classes.table}>
@@ -66,7 +66,7 @@ const SubjectsTable = ({ type, subjects }) => {
         {subjects.map((row, id) => (
           <TableRow key={id}>
             <TableCell component="th" scope="row">            
-              <Link to={`subject?uuid=${row.uuid}`}>{row.fullName}</Link>
+              <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
             </TableCell>
             {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}
             {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
@@ -154,3 +154,4 @@ export default withRouter(
     mapDispatchToProps
   )(SubjectSearch)
 );
+
