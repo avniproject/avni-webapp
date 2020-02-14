@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "organisation", path = "organisation")
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface OrganisationRepository extends CrudRepository<Organisation, Long> , JpaSpecificationExecutor<Organisation> {
+public interface OrganisationRepository extends CrudRepository<Organisation, Long>, JpaSpecificationExecutor<Organisation> {
     Organisation findByName(String name);
 
     Organisation findByUuid(String organisationUuid);
@@ -34,7 +34,9 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Lon
 
     List<Organisation> findAllByIsVoidedFalse();
 
-    List<Organisation> findAllByAccount_AccountAdmin_User_Id(Long userId);
+    List<Organisation> findByAccount_AccountAdmin_User_Id(Long userId);
+
+    Organisation findByIdAndAccount_AccountAdmin_User_Id(Long id, Long userId);
 
     @PreAuthorize("hasAnyAuthority('admin')")
     @RestResource(path = "findAllById", rel = "findAllById")

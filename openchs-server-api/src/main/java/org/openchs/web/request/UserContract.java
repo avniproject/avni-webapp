@@ -3,6 +3,7 @@ package org.openchs.web.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.openchs.domain.OperatingIndividualScope;
 import org.openchs.domain.JsonObject;
+import org.openchs.domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,39 @@ public class UserContract extends ReferenceDataContract {
     private JsonObject settings;
     private Long organisationId;
     private List<Long> accountIds;
+    private boolean disabledInCognito;
+    private String[] roles;
+
+    public static UserContract fromEntity(User user) {
+        UserContract userContract = new UserContract();
+        userContract.setId(user.getId());
+        userContract.setAdmin(user.isAdmin());
+        userContract.setName(user.getName());
+        userContract.setUsername(user.getUsername());
+        userContract.setEmail(user.getEmail());
+        userContract.setPhoneNumber(user.getPhoneNumber());
+        userContract.setOrganisationId(user.getOrganisationId());
+        userContract.setDisabledInCognito(user.isDisabledInCognito());
+        userContract.setOrgAdmin(user.isOrgAdmin());
+        userContract.setRoles(user.getRoles());
+        return userContract;
+    }
+
+    public String[] getRoles() {
+        return roles;
+    }
+
+    public void setRoles(String[] roles) {
+        this.roles = roles;
+    }
+
+    public boolean isDisabledInCognito() {
+        return disabledInCognito;
+    }
+
+    public void setDisabledInCognito(boolean disabledInCognito) {
+        this.disabledInCognito = disabledInCognito;
+    }
 
     public Long getOrganisationId() {
         return organisationId;
@@ -49,25 +83,45 @@ public class UserContract extends ReferenceDataContract {
         return facilities == null ? new ArrayList<>() : facilities;
     }
 
-    public void setFacilities(List<UserFacilityMappingContract> facilities) { this.facilities = facilities; }
+    public void setFacilities(List<UserFacilityMappingContract> facilities) {
+        this.facilities = facilities;
+    }
 
-    public String getPhoneNumber() { return phoneNumber; }
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public boolean isOrgAdmin() { return orgAdmin; }
+    public boolean isOrgAdmin() {
+        return orgAdmin;
+    }
 
-    public void setOrgAdmin(boolean orgAdmin) { this.orgAdmin = orgAdmin; }
+    public void setOrgAdmin(boolean orgAdmin) {
+        this.orgAdmin = orgAdmin;
+    }
 
-    public boolean isAdmin() { return admin; }
+    public boolean isAdmin() {
+        return admin;
+    }
 
-    public void setAdmin(boolean admin) { this.admin = admin; }
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
 
-    public String getOperatingIndividualScope() { return operatingIndividualScope; }
+    public String getOperatingIndividualScope() {
+        return operatingIndividualScope;
+    }
 
     public void setOperatingIndividualScope(String operatingIndividualScope) {
         this.operatingIndividualScope = operatingIndividualScope;

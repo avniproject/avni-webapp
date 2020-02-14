@@ -2,21 +2,23 @@ package org.openchs.web;
 
 import org.openchs.dao.AccountRepository;
 import org.openchs.domain.Account;
+import org.openchs.domain.AccountAdmin;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.AccountRequest;
-import org.openchs.web.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @RestController
 public class AccountController implements RestControllerResourceProcessor<Account> {
@@ -27,24 +29,57 @@ public class AccountController implements RestControllerResourceProcessor<Accoun
         this.accountRepository = accountRepository;
     }
 
-    @RequestMapping(value = "/accounts", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('admin')")
-    public List<Account> findAll() {
-        User user = UserContextHolder.getUserContext().getUser();
-        return accountRepository.findAllByAccountAdmin_User_IdOrderById(user.getId());
-    }
-
     @RequestMapping(value = "/account", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public ResponseEntity createAccount(@RequestBody AccountRequest accountRequest) {
         if (accountRepository.findByName(accountRequest.getName()) != null) {
-            throw new ValidationException(String.format("Account %s already exists", accountRequest.getName()));
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Account with name %s already exists", accountRequest.getName())));
         }
         Account account = new Account();
         account.setName(accountRequest.getName());
+        User user = UserContextHolder.getUserContext().getUser();
+        setDefaultAccountAdmin(account, user, new HashSet<>());
         accountRepository.save(account);
         return new ResponseEntity<>(account, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/account/{id}", method = RequestMethod.PUT)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    public ResponseEntity<?> updateAccount(@PathVariable Long id, @RequestBody AccountRequest accountRequest) {
+        Account account = accountRepository.findOne(id);
+        account.setName(accountRequest.getName());
+        accountRepository.save(account);
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = {"/account/search/findAll", "/account", "/account/search/find"}, method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    public Page<Account> get(@Param("name") String name, Pageable pageable) {
+        User user = UserContextHolder.getUserContext().getUser();
+        if (name != null) {
+            return accountRepository.findByAccountAdmin_User_IdAndNameIgnoreCaseContaining(user.getId(), name, pageable);
+        } else {
+            return accountRepository.findByAccountAdmin_User_Id(user.getId(), pageable);
+        }
+    }
+
+    @RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    public Account getById(@PathVariable Long id) {
+        User user = UserContextHolder.getUserContext().getUser();
+        return accountRepository.findByIdAndAccountAdmin_User_Id(id, user.getId());
+    }
+
+
+    private void setDefaultAccountAdmin(Account account, User user, Set<AccountAdmin> accountAdmins) {
+        AccountAdmin accountAdmin = new AccountAdmin();
+        accountAdmin.setName(user.getName());
+        accountAdmin.setUser(user);
+        accountAdmin.setAccount(account);
+        accountAdmins.add(accountAdmin);
+        account.setAccountAdmin(accountAdmins);
     }
 
 }

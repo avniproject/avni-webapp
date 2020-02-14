@@ -7,6 +7,8 @@ import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.OrganisationGroup;
 import org.openchs.domain.OrganisationGroupOrganisation;
+import org.openchs.domain.User;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.OrganisationGroupContract;
 import org.openchs.web.validation.ValidationException;
@@ -63,7 +65,8 @@ public class OrganisationGroupController implements RestControllerResourceProces
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public ResponseEntity<?> updateOrganisationGroup(@PathVariable("id") Long id, @RequestBody OrganisationGroupContract request) throws Exception {
-        OrganisationGroup organisationGroup = organisationGroupRepository.findOne(id);
+        User user = UserContextHolder.getUserContext().getUser();
+        OrganisationGroup organisationGroup = organisationGroupRepository.findByIdAndAccount_AccountAdmin_User_Id(id, user.getId());;
         //disable changing dbUser
         organisationGroup.setName(request.getName());
         organisationGroup.setAccount(accountRepository.findOne(request.getAccountId()));
@@ -75,14 +78,16 @@ public class OrganisationGroupController implements RestControllerResourceProces
     @RequestMapping(value = "/organisationGroup", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public Page<OrganisationGroupContract> get(Pageable pageable) {
-        Page<OrganisationGroup> organisationGroups = organisationGroupRepository.findAll(pageable);
+        User user = UserContextHolder.getUserContext().getUser();
+        Page<OrganisationGroup> organisationGroups = organisationGroupRepository.findByAccount_AccountAdmin_User_Id(user.getId(), pageable);
         return organisationGroups.map(OrganisationGroupContract::fromEntity);
     }
 
     @RequestMapping(value = "/organisationGroup/{id}", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public OrganisationGroupContract getById(@PathVariable Long id) {
-        OrganisationGroup organisationGroup = organisationGroupRepository.findOne(id);
+        User user = UserContextHolder.getUserContext().getUser();
+        OrganisationGroup organisationGroup = organisationGroupRepository.findByIdAndAccount_AccountAdmin_User_Id(id, user.getId());
         return OrganisationGroupContract.fromEntity(organisationGroup);
     }
 
@@ -90,7 +95,8 @@ public class OrganisationGroupController implements RestControllerResourceProces
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
-        OrganisationGroup organisationGroup = organisationGroupRepository.findOne(id);
+        User user = UserContextHolder.getUserContext().getUser();
+        OrganisationGroup organisationGroup = organisationGroupRepository.findByIdAndAccount_AccountAdmin_User_Id(id, user.getId());
         if (organisationGroup == null) {
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("organisationGroup with id %d not found", id)));
         }

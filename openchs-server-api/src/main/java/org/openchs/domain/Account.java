@@ -19,7 +19,7 @@ public class Account {
     private String name;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "account")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
     private Set<AccountAdmin> accountAdmin = new HashSet<>();
 
     public Set<AccountAdmin> getAccountAdmin() {
@@ -27,7 +27,10 @@ public class Account {
     }
 
     public void setAccountAdmin(Set<AccountAdmin> accountAdmin) {
-        this.accountAdmin = accountAdmin;
+        this.accountAdmin.clear();
+        if(accountAdmin != null){
+            this.accountAdmin.addAll(accountAdmin);
+        }
     }
 
     public Long getId() {

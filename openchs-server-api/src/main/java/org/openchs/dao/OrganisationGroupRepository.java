@@ -18,4 +18,8 @@ public interface OrganisationGroupRepository extends CrudRepository<Organisation
         return findById(id).orElse(null);
     }
 
+    Page<OrganisationGroup> findByAccount_AccountAdmin_User_Id(Long userId, Pageable pageable);
+
+    OrganisationGroup findByIdAndAccount_AccountAdmin_User_Id(Long id, Long userId);
+
 }

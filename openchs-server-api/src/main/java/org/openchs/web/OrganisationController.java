@@ -1,15 +1,17 @@
 package org.openchs.web;
 
 import org.openchs.dao.AccountRepository;
+import org.openchs.dao.JobStatus;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Account;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.web.request.OrganisationRequest;
+import org.openchs.web.request.OrganisationContract;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,8 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 public class OrganisationController implements RestControllerResourceProcessor<Organisation> {
@@ -35,7 +39,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
     @RequestMapping(value = "/organisation", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin')")
-    public ResponseEntity save(@RequestBody OrganisationRequest request) {
+    public ResponseEntity save(@RequestBody OrganisationContract request) {
         String tempPassword = "password";
         Organisation org = organisationRepository.findByUuid(request.getUuid());
         organisationRepository.createDBUser(request.getDbUser(), tempPassword);
@@ -43,42 +47,53 @@ public class OrganisationController implements RestControllerResourceProcessor<O
             org = new Organisation();
         }
         org.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
-        org.setName(request.getName());
         org.setDbUser(request.getDbUser());
-        org.setUsernameSuffix(request.getUsernameSuffix());
-        Organisation parentOrg = organisationRepository.findByUuid(request.getParentUuid());
-        if (parentOrg != null) {
-            org.setParentOrganisationId(parentOrg.getId());
-        }
-        org.setMediaDirectory(request.getMediaDirectory());
-        org.setVoided(request.isVoided());
+        createOrganisation(request, org);
         setOrgAccountByIdOrDefault(org, request.getAccountId());
         organisationRepository.save(org);
         return new ResponseEntity<>(org, HttpStatus.CREATED);
     }
 
-    private void setOrgAccountByIdOrDefault(Organisation organisation, Long accountId) {
-        User user = UserContextHolder.getUserContext().getUser();
-        Account account = accountId == null ? accountRepository.findAllByAccountAdmin_User_IdOrderById(user.getId()).stream().findFirst().orElse(null)
-                : accountRepository.findOne(accountId);
-        organisation.setAccount(account);
-    }
-
     @RequestMapping(value = "/organisation", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
-    public List<Organisation> findAll() {
+    public List<OrganisationContract> findAll() {
         User user = UserContextHolder.getUserContext().getUser();
-        return organisationRepository.findAllByAccount_AccountAdmin_User_Id(user.getId());
+        List<Organisation> organisations = organisationRepository.findByAccount_AccountAdmin_User_Id(user.getId());
+        return organisations.stream().map(OrganisationContract::fromEntity).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/organisation/{id}", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    public OrganisationContract findById(@PathVariable Long id) {
+        User user = UserContextHolder.getUserContext().getUser();
+        Organisation organisation = organisationRepository.findByIdAndAccount_AccountAdmin_User_Id(id, user.getId());
+        return organisation != null ? OrganisationContract.fromEntity(organisation) : null;
+    }
+
+    @RequestMapping(value = "/organisation/{id}", method = RequestMethod.PUT)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    public Organisation updateOrganisation(@PathVariable Long id, @RequestBody OrganisationContract request) throws Exception {
+        User user = UserContextHolder.getUserContext().getUser();
+        Organisation organisation = organisationRepository.findByIdAndAccount_AccountAdmin_User_Id(id, user.getId());
+        if (organisation == null) {
+            throw new Exception(String.format("Organisation %s not found", request.getName()));
+        }
+        createOrganisation(request, organisation);
+        setOrgAccountByIdOrDefault(organisation, request.getAccountId());
+        return organisationRepository.save(organisation);
     }
 
 
-    @RequestMapping(value = "/organisation/search/findAll", method = RequestMethod.GET)
+    @RequestMapping(value = "/organisation/search/find", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('admin')")
     @ResponseBody
-    public Page<Organisation> find(@RequestParam(value = "name", required = false) String name,
-                                   @RequestParam(value = "dbUser", required = false) String dbUser,
-                                   Pageable pageable) {
-        return organisationRepository.findAll((root, query, builder) -> {
+    public Page<OrganisationContract> find(@RequestParam(value = "name", required = false) String name,
+                                           @RequestParam(value = "dbUser", required = false) String dbUser,
+                                           Pageable pageable) {
+        User user = UserContextHolder.getUserContext().getUser();
+        List<Account> ownedAccounts = accountRepository.findAllByAccountAdmin_User_Id(user.getId());
+        Page<Organisation> organisations = organisationRepository.findAll((root, query, builder) -> {
             Predicate predicate = builder.equal(root.get("isVoided"), false);
             if (name != null) {
                 predicate = builder.and(predicate, builder.like(builder.upper(root.get("name")), "%" + name.toUpperCase() + "%"));
@@ -86,8 +101,30 @@ public class OrganisationController implements RestControllerResourceProcessor<O
             if (dbUser != null) {
                 predicate = builder.and(predicate, builder.like(builder.upper(root.get("dbUser")), "%" + dbUser.toUpperCase() + "%"));
             }
-            return predicate;
+            List<Predicate> predicates = new ArrayList<>();
+            ownedAccounts.forEach(account -> predicates.add(builder.equal(root.get("account"), account)));
+            Predicate accountPredicate = builder.or(predicates.toArray(new Predicate[predicates.size()]));
+            return builder.and(accountPredicate, predicate);
         }, pageable);
+        return organisations.map(OrganisationContract::fromEntity);
+    }
+
+    private void createOrganisation(@RequestBody OrganisationContract request, Organisation organisation) {
+        organisation.setName(request.getName());
+        organisation.setUsernameSuffix(request.getUsernameSuffix());
+        if (request.getParentOrganisationId() != null) {
+            Organisation parentOrg = organisationRepository.findOne(request.getParentOrganisationId());
+            organisation.setParentOrganisationId(parentOrg != null ? parentOrg.getId() : null);
+        }
+        organisation.setMediaDirectory(request.getMediaDirectory());
+        organisation.setVoided(request.isVoided());
+    }
+
+    private void setOrgAccountByIdOrDefault(Organisation organisation, Long accountId) {
+        User user = UserContextHolder.getUserContext().getUser();
+        Account account = accountId == null ? accountRepository.findAllByAccountAdmin_User_Id(user.getId()).stream().findFirst().orElse(null)
+                : accountRepository.findOne(accountId);
+        organisation.setAccount(account);
     }
 
 }

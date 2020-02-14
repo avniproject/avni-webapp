@@ -27,7 +27,7 @@ public class OrganisationGroup {
     private Account account;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "organisationGroup")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "organisationGroup")
     private Set<OrganisationGroupOrganisation> organisationGroupOrganisations = new HashSet<>();
 
     public Set<OrganisationGroupOrganisation> getOrganisationGroupOrganisations() {
@@ -35,7 +35,10 @@ public class OrganisationGroup {
     }
 
     public void setOrganisationGroupOrganisations(Set<OrganisationGroupOrganisation> organisationGroupOrganisations) {
-        this.organisationGroupOrganisations = organisationGroupOrganisations;
+        this.organisationGroupOrganisations.clear();
+        if (organisationGroupOrganisations != null) {
+            this.organisationGroupOrganisations.addAll(organisationGroupOrganisations);
+        }
     }
 
     public Long getId() {
@@ -68,10 +71,6 @@ public class OrganisationGroup {
 
     public void setAccount(Account account) {
         this.account = account;
-    }
-
-    public void clearOrganisationGroups() {
-        getOrganisationGroupOrganisations().clear();
     }
 
 }

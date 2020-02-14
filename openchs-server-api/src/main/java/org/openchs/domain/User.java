@@ -262,7 +262,10 @@ public class User {
     }
 
     public void setAccountAdmin(AccountAdmin accountAdmin) {
-        this.accountAdmin.add(accountAdmin);
+        this.accountAdmin.clear();
+        if (accountAdmin != null) {
+            this.accountAdmin.add(accountAdmin);
+        }
     }
 
     public boolean isAdmin() {
