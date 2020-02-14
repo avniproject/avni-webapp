@@ -65,7 +65,6 @@ export const mapProfile = subjectProfile => {
   let individual = mapIndividual(subjectProfile);
   individual.observations = mapObservation(subjectProfile["observations"]);
   individual.relationships = mapRelationships(subjectProfile["relationships"]);
-  console.log(individual);
   return individual;
   }
 };
