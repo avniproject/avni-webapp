@@ -12,6 +12,7 @@ import { bold } from "ansi-colors";
 import moment from "moment/moment";
 import Observations from "../../../../common/components/Observations";
 import GridCommonList from "../components/GridCommonList";
+import { Paper } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -22,6 +23,10 @@ const useStyles = makeStyles(theme => ({
   expansionSecondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary
+  },
+  root: {
+    flexGrow: 1,
+    padding: theme.spacing(2)
   },
   listItemView: {
     border: "1px solid lightGrey"
@@ -61,6 +66,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
 
   return (
     <Fragment>
+      <Paper  className={classes.root}>
       <ExpansionPanel
         className={classes.expansionPanel}
         expanded={expanded === "registrationPanel"}
@@ -107,6 +113,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
         </ExpansionPanelDetails>
         <Button color="primary">ADD RELATIVE</Button>
       </ExpansionPanel>
+      </Paper>
     </Fragment>
   );
 };
