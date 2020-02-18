@@ -103,7 +103,7 @@ export const WorklistUpdationRule = () => {
               <Grid item sm={2}>
                 <Button
                   variant="contained"
-                  color="secondary"
+                  color="primary"
                   onClick={event => onSaveWorklistUpdationRule(event)}
                   style={{
                     marginLeft: "60%"
