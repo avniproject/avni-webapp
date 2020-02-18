@@ -10,7 +10,6 @@ import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
 import Translations from "../translations";
 import Export from "../reports/Export";
-import OrgManagerAppDesigner from "../adminApp/OrgManagerAppDesigner";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -59,14 +58,6 @@ const Routes = ({ user, organisation }) => (
       currentUserRoles={user.roles}
       component={Homepage}
     />
-    <Route path="/appdesigner">
-      <RestrictedRoute
-        path="/"
-        allowedRoles={[ROLES.ORG_ADMIN]}
-        currentUserRoles={user.roles}
-        component={WithProps({ user, organisation }, OrgManagerAppDesigner)}
-      />
-    </Route>
     <RestrictedRoute
       exact
       path="/translations"

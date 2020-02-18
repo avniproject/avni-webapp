@@ -92,7 +92,7 @@ export const RuleDisplay = props => {
 };
 
 export const EncounterTypeList = props => (
-  <List {...props} bulkActions={false} title="Encounter Types">
+  <List {...props} bulkActions={false}>
     <Datagrid rowClick="show">
       <TextField label="Name" source="name" />
       <TextField label="Organisation Id" source="encounterTypeOrganisationId" />

@@ -9,7 +9,6 @@ import rootReducer from "../../rootApp/rootReducer";
 import rootSaga from "../../rootApp/rootSaga";
 
 export const adminHistory = createHashHistory({ basename: "/admin" });
-export const appDesignerHistory = createHashHistory({ basename: "/appdesigner" });
 
 const configureStore = initialState => {
   const sagaMiddleware = createSagaMiddleware();
@@ -20,11 +19,7 @@ const configureStore = initialState => {
     rootReducer,
     initialState,
     composeEnhancers(
-      applyMiddleware(
-        sagaMiddleware,
-        formMiddleware,
-        routerMiddleware(appDesignerHistory, adminHistory)
-      )
+      applyMiddleware(sagaMiddleware, formMiddleware, routerMiddleware(adminHistory))
     )
   );
 

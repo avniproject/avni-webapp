@@ -67,14 +67,14 @@ const FormListing = ({ history }) => {
   const editForm = rowData => ({
     icon: "edit",
     tooltip: "Edit Form",
-    onClick: (event, form) => history.push(`/appdesigner/forms/${form.uuid}`),
+    onClick: (event, form) => history.push(`/admin/forms/${form.uuid}`),
     disabled: rowData.voided
   });
 
   const formSettings = rowData => ({
     icon: "settings",
     tooltip: "Form Setting",
-    onClick: (event, form) => history.push(`/appdesigner/forms/${form.uuid}/settings`),
+    onClick: (event, form) => history.push(`/admin/forms/${form.uuid}/settings`),
     disabled: rowData.voided
   });
 

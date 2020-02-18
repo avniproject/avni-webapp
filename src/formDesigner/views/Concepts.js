@@ -73,7 +73,7 @@ const Concepts = ({ history }) => {
   const editConcept = rowData => ({
     icon: "edit",
     tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
-    onClick: (event, concept) => history.push(`/appdesigner/concept/${concept.uuid}/edit`),
+    onClick: (event, concept) => history.push(`/admin/concept/${concept.uuid}/edit`),
     disabled: rowData.organisationId === 1 || rowData.voided
   });
 
@@ -120,7 +120,7 @@ const Concepts = ({ history }) => {
           </div>
         </div>
       </Box>
-      {redirect && <Redirect to={"/appdesigner/concept/create"} />}
+      {redirect && <Redirect to={"/admin/concept/create"} />}
     </>
   );
 };
