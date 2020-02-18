@@ -93,8 +93,8 @@ export default function AutoSuggestSingleSelection(props) {
     const inputValue = deburr(value.trim()).toLowerCase();
     const dataType = props.dataType;
     const queryString = _.isEmpty(dataType)
-      ? `name=${inputValue}`
-      : `name=${inputValue}&dataType=${dataType}`;
+      ? "name=" + encodeURIComponent(inputValue)
+      : "name=" + encodeURIComponent(inputValue) + "&dataType=" + dataType;
     const inputLength = inputValue.length;
 
     http

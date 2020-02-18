@@ -1,2 +1,2 @@
-import { store, adminHistory } from "./createStore";
-export { store, adminHistory };
+import { store, adminHistory, appDesignerHistory } from "./createStore";
+export { store, adminHistory, appDesignerHistory };
