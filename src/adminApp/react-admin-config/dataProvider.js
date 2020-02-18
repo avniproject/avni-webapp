@@ -36,7 +36,9 @@ const urlMapping = {
   program: "web/program",
   subjectType: "web/subjectType",
   encounterType: "web/encounterType",
-  organisationConfig: "organisationConfig",
+  language: "organisationConfig",
+  myDashboardFilters: "organisationConfig",
+  searchFilters: "organisationConfig",
   organisation: "organisation",
   orgAdmin: "user/orgAdmin"
 };

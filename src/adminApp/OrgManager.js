@@ -51,8 +51,8 @@ class OrgManager extends Component {
           appLayout={AdminLayout}
         >
           <Resource
-            name="organisationConfig"
-            options={{ label: "Organisation Config" }}
+            name="language"
+            options={{ label: "Languages" }}
             list={WithProps({ organisation }, customConfig)}
           />
           <Resource
