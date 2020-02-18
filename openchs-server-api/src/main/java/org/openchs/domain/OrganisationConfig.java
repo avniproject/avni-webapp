@@ -15,7 +15,7 @@ public class OrganisationConfig extends OrganisationAwareEntity {
     @Type(type = "jsonObject")
     private JsonObject settings;
 
-    @Column(name = "worklistupdation_rule")
+    @Column(name = "worklist_updation_rule")
     private String worklistUpdationRule;
 
     public JsonObject getSettings() {
