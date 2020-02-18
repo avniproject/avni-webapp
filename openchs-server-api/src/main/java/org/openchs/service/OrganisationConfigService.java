@@ -28,6 +28,7 @@ public class OrganisationConfigService {
         organisationConfig.setOrganisationId(organisation.getId());
         organisationConfig.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
         organisationConfig.setSettings(request.getSettings());
+        organisationConfig.setWorklistUpdationRule(request.getWorklistUpdationRule());
         organisationConfigRepository.save(organisationConfig);
         return organisationConfig;
     }
