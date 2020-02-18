@@ -17,7 +17,13 @@ export const CreateEditFilters = props => {
     return <div />;
   }
 
-  const { omitTableData, selectedFilter, title, filterType } = props.history.location.state;
+  const {
+    omitTableData,
+    selectedFilter,
+    title,
+    filterType,
+    worklistUpdationRule
+  } = props.history.location.state;
   const allTypes = _.values(CustomFilter.type);
   const getFilterTypes =
     filterType === "myDashboardFilters"
@@ -166,6 +172,7 @@ export const CreateEditFilters = props => {
       : [...oldFilters.filter(f => f.titleKey !== titleKey), newFilter];
     return {
       uuid: setting.uuid,
+      worklistUpdationRule: worklistUpdationRule,
       settings: {
         languages: setting.settings.languages,
         myDashboardFilters:
