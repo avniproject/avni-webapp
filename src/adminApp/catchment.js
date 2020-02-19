@@ -17,10 +17,11 @@ import {
 } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
-import Chip from "@material-ui/core/Chip";
 import { LineBreak } from "../common/components/utils";
 import LocationUtils from "./LocationUtils";
 import _ from "lodash";
+import { TitleChip } from "./components/TitleChip";
+import { Title } from "./components/Title";
 
 export const CatchmentCreate = props => (
   <Create {...props}>
@@ -34,27 +35,9 @@ export const CatchmentEdit = props => (
   </Edit>
 );
 
-const TitleChip = props => {
-  return props.record ? (
-    <Chip label={`${props.record.title} (${props.record.typeString})`} />
-  ) : (
-    <></>
-  );
-};
-
-const Title = ({ record }) => {
-  return (
-    record && (
-      <span>
-        Catchment: <b>{record.name}</b>
-      </span>
-    )
-  );
-};
-
 export const CatchmentDetail = props => {
   return (
-    <Show title={<Title />} actions={<CustomShowActions />} {...props}>
+    <Show title={<Title title={"Catchment"} />} actions={<CustomShowActions />} {...props}>
       <SimpleShowLayout>
         <TextField label="Catchment" source="name" />
         <TextField label="Type" source="type" />

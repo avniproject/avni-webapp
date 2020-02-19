@@ -14,8 +14,11 @@ import {
   Toolbar,
   SaveButton,
   DisabledInput,
-  Filter
+  Filter,
+  ReferenceInput
 } from "react-admin";
+import { CustomSelectInput } from "./components/CustomSelectInput";
+import { Title } from "./components/Title";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -28,7 +31,7 @@ export const OrganisationList = props => (
   <List
     {...props}
     bulkActions={false}
-    filter={{ searchURI: "findAll" }}
+    filter={{ searchURI: "find" }}
     filters={<OrganisationFilter />}
   >
     <Datagrid rowClick="show">
@@ -51,12 +54,21 @@ export const OrganisationList = props => (
 
 export const OrganisationDetails = props => {
   return (
-    <Show title="Organisation Details" {...props}>
+    <Show title={<Title title={"Organisation"} />} {...props}>
       <SimpleShowLayout>
         <TextField source="name" label="Name" />
         <TextField source="dbUser" label="DB User" />
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
+        <ReferenceField
+          resource="account"
+          source="accountId"
+          reference="account"
+          label="Account Name"
+          allowEmpty
+        >
+          <TextField source="name" />
+        </ReferenceField>
         <ReferenceField
           label="Parent organisation"
           source="parentOrganisationId"
@@ -75,8 +87,8 @@ const isRequired = required("This field is required");
 
 export const OrganisationEdit = props => {
   return (
-    <Edit undoable={false} title="Edit Organisation Details" {...props}>
-      <SimpleForm toolbar={<CustomToolbar />} redirect="show">
+    <Edit undoable={false} title={<Title title={"Edit Organisation"} />} {...props}>
+      <SimpleForm toolbar={<CustomToolbar />} redirect="list">
         {props && props.id === "1" ? (
           <DisabledInput source="name" validate={isRequired} />
         ) : (
@@ -85,6 +97,15 @@ export const OrganisationEdit = props => {
         <DisabledInput source="dbUser" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
+        <ReferenceInput
+          resource="account"
+          source="accountId"
+          reference="account"
+          label="Account Name"
+          validate={required("Please select an account")}
+        >
+          <CustomSelectInput source="name" resettable />
+        </ReferenceInput>
       </SimpleForm>
     </Edit>
   );
@@ -100,11 +121,20 @@ const CustomToolbar = props => (
 export const OrganisationCreate = props => {
   return (
     <Create title="Create New Organisation" {...props}>
-      <SimpleForm redirect="show">
+      <SimpleForm redirect="list">
         <TextInput source="name" validate={isRequired} />
         <TextInput source="dbUser" validate={isRequired} />
         <TextInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />
+        <ReferenceInput
+          resource="account"
+          source="accountId"
+          reference="account"
+          label="Account Name"
+          validate={required("Please select an account")}
+        >
+          <CustomSelectInput source="name" resettable />
+        </ReferenceInput>
       </SimpleForm>
     </Create>
   );

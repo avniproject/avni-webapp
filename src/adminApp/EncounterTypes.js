@@ -19,16 +19,7 @@ import "prismjs/components/prism-javascript";
 import { change } from "redux-form";
 import FormLabel from "@material-ui/core/FormLabel";
 import Box from "@material-ui/core/Box";
-
-const Title = ({ record }) => {
-  return (
-    record && (
-      <span>
-        Program: <b>{record.name}</b>
-      </span>
-    )
-  );
-};
+import { Title } from "./components/Title";
 
 export const RuleEditor = props => {
   const [ruleCode, setRuleCode] = useState(
@@ -102,7 +93,7 @@ export const EncounterTypeList = props => (
 
 export const EncounterTypeDetail = props => {
   return (
-    <Show title={<Title />} {...props}>
+    <Show title={<Title title={"Encounter Type"} />} {...props}>
       <SimpleShowLayout>
         <TextField source="name" label="Name" />
         <TextField label="Organisation Id" source="encounterTypeOrganisationId" />
