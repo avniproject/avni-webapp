@@ -19,6 +19,14 @@ import {
   OrganisationEdit,
   OrganisationList
 } from "./Organisation";
+import { AccountCreate, AccountDetails, AccountEdit, AccountList } from "./Account";
+import {
+  OrganisationGroupList,
+  organisationGroupCreate,
+  OrganisationGroupShow,
+  organisationGroupEdit
+} from "./OrganisationGroup";
+import AdminLayout from "../common/components/AdminLayout";
 
 class SuperAdmin extends Component {
   static childContextTypes = {
@@ -39,6 +47,14 @@ class SuperAdmin extends Component {
         logoutButton={WithProps({ user }, LogoutButton)}
       >
         <Resource
+          name={"account"}
+          options={{ label: "Accounts" }}
+          list={AccountList}
+          show={AccountDetails}
+          create={AccountCreate}
+          edit={AccountEdit}
+        />
+        <Resource
           name="organisation"
           options={{ label: "Organisations" }}
           list={OrganisationList}
@@ -47,12 +63,20 @@ class SuperAdmin extends Component {
           edit={OrganisationEdit}
         />
         <Resource
-          name="orgAdmin"
-          options={{ label: "Org Admin Users" }}
+          name="accountAdmin"
+          options={{ label: "Account Admins" }}
           list={OrgAdminUserList}
           create={WithProps({ user }, OrgAdminUserCreate)}
           show={WithProps({ user }, OrgAdminUserDetail)}
           edit={WithProps({ user }, OrgAdminUserEdit)}
+        />
+        <Resource
+          name={"organisationGroup"}
+          options={{ label: "Organisation Groups" }}
+          list={OrganisationGroupList}
+          create={organisationGroupCreate}
+          show={OrganisationGroupShow}
+          edit={organisationGroupEdit}
         />
       </Admin>
     );

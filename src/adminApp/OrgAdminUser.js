@@ -22,7 +22,7 @@ import {
 import CardActions from "@material-ui/core/CardActions";
 import { change } from "redux-form";
 import EnableDisableButton from "./components/EnableDisableButton";
-import { OrganisationSelectInput } from "./components/OrganisationSelectInput";
+import { CustomSelectInput } from "./components/CustomSelectInput";
 import {
   CustomToolbar,
   formatRoles,
@@ -60,7 +60,7 @@ export const OrgAdminUserList = ({ ...props }) => (
     bulkActions={false}
     filter={{ searchURI: "find" }}
     filters={<UserFilter />}
-    title={`Organisation Admin Users`}
+    title={`Admin Users`}
   >
     <Datagrid rowClick="show">
       <TextField label="Login ID" source="username" />
@@ -145,9 +145,9 @@ const UserForm = ({ edit, user, ...props }) => {
         source="organisationId"
         reference="organisation"
         label="Organisation Name"
-        validate={required("Please select a organisation")}
+        validate={required("Please select an organisation")}
       >
-        <OrganisationSelectInput source="name" resettable disabled={edit} />
+        <CustomSelectInput source="name" resettable disabled={edit} />
       </ReferenceInput>
       {edit ? (
         <DisabledInput source="username" label="Login ID (admin username)" />
