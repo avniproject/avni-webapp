@@ -3,12 +3,13 @@ package org.openchs.web.request;
 import org.joda.time.DateTime;
 import org.openchs.web.request.common.CommonAbstractEncounterRequest;
 
-public class EncounterContract extends CommonAbstractEncounterRequest {
+public class EncounterContract extends CHSRequest {
     String name;
-    String operationalEncounterTypeName;
+    EncounterTypeContract encounterType;
     DateTime cancelDateTime;
     DateTime earliestVisitDateTime;
     DateTime maxVisitDateTime;
+    private DateTime encounterDateTime;
 
     public String getName() {
         return name;
@@ -16,14 +17,6 @@ public class EncounterContract extends CommonAbstractEncounterRequest {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getOperationalEncounterTypeName() {
-        return operationalEncounterTypeName;
-    }
-
-    public void setOperationalEncounterTypeName(String operationalEncounterTypeName) {
-        this.operationalEncounterTypeName = operationalEncounterTypeName;
     }
 
     public DateTime getCancelDateTime() {
@@ -48,5 +41,21 @@ public class EncounterContract extends CommonAbstractEncounterRequest {
 
     public void setMaxVisitDateTime(DateTime maxVisitDateTime) {
         this.maxVisitDateTime = maxVisitDateTime;
+    }
+
+    public EncounterTypeContract getEncounterType() {
+        return encounterType;
+    }
+
+    public void setEncounterType(EncounterTypeContract encounterType) {
+        this.encounterType = encounterType;
+    }
+
+    public DateTime getEncounterDateTime() {
+        return encounterDateTime;
+    }
+
+    public void setEncounterDateTime(DateTime encounterDateTime) {
+        this.encounterDateTime = encounterDateTime;
     }
 }
