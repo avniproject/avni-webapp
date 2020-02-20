@@ -1,5 +1,6 @@
 export const types = {
-  OBSERVATIONS_VALUE: `OBSERVATIONS_VALUE`
+  OBSERVATIONS_VALUE: `OBSERVATIONS_VALUE`,
+  TRANSLATION_DATA: `TRANSLATION_DATA`
 };
 
 let concepts = [];
@@ -15,6 +16,12 @@ export function setDataReduxSate(state = {}, action) {
         ...state,
         concept: concepts
       };
+      case types.TRANSLATION_DATA:
+        concepts.push(action.value);
+        return {
+          ...state,
+          concept: concepts
+        };
     default:
       return state;
   }

@@ -10,3 +10,6 @@ export const storeDispachObservations = (type, value) => {
     value: value
   });
 };
+
+
+// import react, {compionete } from 'react';

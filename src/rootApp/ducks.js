@@ -6,7 +6,10 @@ export const types = {
   INIT_COMPLETE: "app/INIT_COMPLETE",
   FETCH_ALL_LOCATIONS: "app/FETCH_ALL_LOCATIONS",
   FETCH_ALL_LOCATIONS_SUCCESS: "app/FETCH_ALL_LOCATIONS_SUCCESS",
-  AUTH_CONFIGURED: "app/AUTH_CONFIGURED"
+  AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
+  GET_TRANSLATION: "app/GET_TRANSLATION",
+  SET_TRANSLATION: "app/SET_TRANSLATION",
+  TRANSLATION_DATA: "TRANSLATION_DATA"
 };
 
 export const initCognito = () => ({
@@ -28,6 +31,16 @@ export const getUserInfo = () => ({
 export const setUserInfo = userInfo => ({
   type: types.SET_USER_INFO,
   payload: userInfo
+});
+
+
+export const getTranslation = () => ({
+  type: types.GET_TRANSLATION
+});
+
+export const setTranslation = translationData => ({
+  type: types.SET_TRANSLATION,
+  payload: translationData
 });
 
 export const sendInitComplete = () => ({
