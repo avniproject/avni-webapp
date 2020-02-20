@@ -8,11 +8,11 @@ import { authProvider, LogoutButton } from "./react-admin-config";
 import { adminHistory, store } from "../common/store";
 import { WithProps } from "../common/components/utils";
 import {
-  OrgAdminUserCreate,
-  OrgAdminUserDetail,
-  OrgAdminUserEdit,
-  OrgAdminUserList
-} from "./OrgAdminUser";
+  AccountOrgAdminUserCreate,
+  AccountOrgAdminUserDetail,
+  AccountOrgAdminUserEdit,
+  AccountOrgAdminUserList
+} from "./AccountOrgAdminUser";
 import {
   OrganisationCreate,
   OrganisationDetails,
@@ -45,6 +45,7 @@ class SuperAdmin extends Component {
         authProvider={authProvider}
         history={adminHistory}
         logoutButton={WithProps({ user }, LogoutButton)}
+        appLayout={AdminLayout}
       >
         <Resource
           name={"account"}
@@ -55,20 +56,20 @@ class SuperAdmin extends Component {
           edit={AccountEdit}
         />
         <Resource
+          name="accountOrgAdmin"
+          options={{ label: "Admins" }}
+          list={AccountOrgAdminUserList}
+          create={WithProps({ user }, AccountOrgAdminUserCreate)}
+          show={WithProps({ user }, AccountOrgAdminUserDetail)}
+          edit={WithProps({ user }, AccountOrgAdminUserEdit)}
+        />
+        <Resource
           name="organisation"
           options={{ label: "Organisations" }}
           list={OrganisationList}
           create={OrganisationCreate}
           show={OrganisationDetails}
           edit={OrganisationEdit}
-        />
-        <Resource
-          name="accountAdmin"
-          options={{ label: "Account Admins" }}
-          list={OrgAdminUserList}
-          create={WithProps({ user }, OrgAdminUserCreate)}
-          show={WithProps({ user }, OrgAdminUserDetail)}
-          edit={WithProps({ user }, OrgAdminUserEdit)}
         />
         <Resource
           name={"organisationGroup"}

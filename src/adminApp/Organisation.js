@@ -45,15 +45,6 @@ export const OrganisationList = props => (
       >
         <TextField source="name" />
       </ReferenceField>
-      <ReferenceField
-        resource="account"
-        source="accountId"
-        reference="account"
-        label="Account Name"
-        allowEmpty
-      >
-        <TextField source="name" />
-      </ReferenceField>
       <TextField source="dbUser" label="DB User" />
       <TextField source="mediaDirectory" label="Media Directory" />
       <TextField source="usernameSuffix" label="Username Suffix" />
@@ -70,19 +61,19 @@ export const OrganisationDetails = props => {
         <TextField source="mediaDirectory" label="Media Directory" />
         <TextField source="usernameSuffix" label="Username Suffix" />
         <ReferenceField
-          label="Parent organisation"
-          source="parentOrganisationId"
-          reference="organisation"
-          linkType="show"
+          resource="account"
+          source="accountId"
+          reference="account"
+          label="Account Name"
           allowEmpty
         >
           <TextField source="name" />
         </ReferenceField>
         <ReferenceField
-          resource="account"
-          source="accountId"
-          reference="account"
-          label="Account Name"
+          label="Parent organisation"
+          source="parentOrganisationId"
+          reference="organisation"
+          linkType="show"
           allowEmpty
         >
           <TextField source="name" />

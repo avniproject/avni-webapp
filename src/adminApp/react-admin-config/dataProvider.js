@@ -38,7 +38,7 @@ const urlMapping = {
   encounterType: "web/encounterType",
   organisationConfig: "organisationConfig",
   organisation: "organisation",
-  accountAdmin: "user/accountAdmin",
+  accountOrgAdmin: "user/accountOrgAdmin",
   account: "account",
   organisationGroup: "organisationGroup"
 };

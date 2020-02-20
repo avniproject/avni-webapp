@@ -39,7 +39,7 @@ export const AccountDetails = props => (
 
 export const AccountCreate = props => (
   <Create title="Add a new Account" {...props}>
-    <SimpleForm>
+    <SimpleForm redirect="list">
       <TextInput source="name" />
     </SimpleForm>
   </Create>
@@ -47,7 +47,7 @@ export const AccountCreate = props => (
 
 export const AccountEdit = props => (
   <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
-    <SimpleForm toolbar={<CustomToolbar />}>
+    <SimpleForm toolbar={<CustomToolbar />} redirect="list">
       <TextInput source="name" />
     </SimpleForm>
   </Edit>

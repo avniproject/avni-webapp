@@ -65,7 +65,7 @@ export const OrganisationGroupShow = props => (
 
 export const organisationGroupCreate = props => (
   <Create title="Add a new Account" {...props}>
-    <SimpleForm>
+    <SimpleForm redirect="list">
       <TextInput source="name" />
       <TextInput source="dbUser" />
       <ReferenceInput
@@ -92,7 +92,7 @@ export const organisationGroupCreate = props => (
 
 export const organisationGroupEdit = props => (
   <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
-    <SimpleForm>
+    <SimpleForm redirect="list">
       <TextInput source="name" />
       <DisabledInput source="dbUser" />
       <ReferenceInput
