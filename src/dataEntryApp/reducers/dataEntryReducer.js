@@ -5,6 +5,7 @@ import metadata from "./metadataReducer";
 import subjectProfile from "./subjectDashboardReducer";
 import subjectGenerel from "./generalSubjectDashboardReducer";
 import subjectProgram from "./programSubjectDashboardReducer";
+import { setDataReduxSate } from "../../common/store/commonReduxStoreReducer";
 
 export default combineReducers({
   search,
@@ -12,5 +13,6 @@ export default combineReducers({
   metadata,
   subjectProfile,
   subjectGenerel,
-  subjectProgram
+  subjectProgram,
+  setDataReduxSate
 });

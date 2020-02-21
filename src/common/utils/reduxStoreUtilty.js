@@ -1,10 +1,6 @@
-import { createStore } from "redux";
-import { setDataReduxSate } from "../../common/store/commonReduxStoreReducer";
+import { store } from "../../common/store/createStore";
 
-export const store = createStore(setDataReduxSate);
-
-export const storeDispachObservations = (type, value) => {
-  console.log("IN OBSERVATION");
+export const storeDispachEvent = (type, value) => {
   store.dispatch({
     type: type,
     value: value
