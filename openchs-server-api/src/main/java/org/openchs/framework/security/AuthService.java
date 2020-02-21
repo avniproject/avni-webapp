@@ -1,7 +1,9 @@
 package org.openchs.framework.security;
 
+import org.openchs.dao.AccountAdminRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.UserRepository;
+import org.openchs.domain.AccountAdmin;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
@@ -28,13 +30,15 @@ public class AuthService {
     private CognitoAuthService cognitoAuthService;
     private UserRepository userRepository;
     private OrganisationRepository organisationRepository;
+    private AccountAdminRepository accountAdminRepository;
     private String organisationUUID;
 
     @Autowired
-    public AuthService(CognitoAuthService cognitoAuthService, UserRepository userRepository, OrganisationRepository organisationRepository) {
+    public AuthService(CognitoAuthService cognitoAuthService, UserRepository userRepository, OrganisationRepository organisationRepository, AccountAdminRepository accountAdminRepository) {
         this.cognitoAuthService = cognitoAuthService;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
+        this.accountAdminRepository = accountAdminRepository;
     }
 
     public UserContext authenticateByUserName(String username) {
@@ -62,6 +66,8 @@ public class AuthService {
         if (user == null) {
             return null;
         }
+        List<AccountAdmin> accountAdmins = accountAdminRepository.findByUser_Id(user.getId());
+        user.setAdmin(accountAdmins.size() > 0);
         userContext.setUser(user);
         Organisation organisation = null;
         if (user.isAdmin() && organisationUUID != null) {
@@ -70,6 +76,7 @@ public class AuthService {
             organisation = organisationRepository.findOne(user.getOrganisationId());
         }
         userContext.setOrganisation(organisation);
+        userContext.setOrganisationUUID(organisationUUID);
 
         List<SimpleGrantedAuthority> authorities = ALL_AUTHORITIES.stream()
                 .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))

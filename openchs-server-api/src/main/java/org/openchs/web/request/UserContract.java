@@ -27,7 +27,6 @@ public class UserContract extends ReferenceDataContract {
     public static UserContract fromEntity(User user) {
         UserContract userContract = new UserContract();
         userContract.setId(user.getId());
-        userContract.setAdmin(user.isAdmin());
         userContract.setName(user.getName());
         userContract.setUsername(user.getUsername());
         userContract.setEmail(user.getEmail());

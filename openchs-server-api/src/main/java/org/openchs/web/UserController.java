@@ -43,6 +43,7 @@ public class UserController {
     private FacilityRepository facilityRepository;
     private AccountAdminService accountAdminService;
     private AccountRepository accountRepository;
+    private AccountAdminRepository accountAdminRepository;
 
     @Value("${openchs.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -55,7 +56,7 @@ public class UserController {
                           UserService userService,
                           CognitoIdpService cognitoService,
                           FacilityRepository facilityRepository,
-                          AccountAdminService accountAdminService, AccountRepository accountRepository) {
+                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.userFacilityMappingRepository = userFacilityMappingRepository;
@@ -65,6 +66,7 @@ public class UserController {
         this.facilityRepository = facilityRepository;
         this.accountAdminService = accountAdminService;
         this.accountRepository = accountRepository;
+        this.accountAdminRepository = accountAdminRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -285,12 +287,22 @@ public class UserController {
     }
 
     private List<Long> getOwnedAccountIds(User user) {
-        return user.getAccountAdmin().stream().map(a -> a.getAccount().getId()).collect(Collectors.toList());
+        return accountRepository.findAllByAccountAdmin_User_Id(user.getId()).stream().map(Account::getId).collect(Collectors.toList());
     }
 
     private void setAccountIds(UserContract uc) {
         List<Long> accountIds = accountRepository.findAllByAccountAdmin_User_Id(uc.getId()).stream().map(Account::getId).collect(Collectors.toList());
+        boolean isAdmin = accountAdminRepository.findByUser_Id(uc.getId()).size() > 0;
+        List<String> roles = new ArrayList<>();
+        if (isAdmin) {
+            roles.add(User.ADMIN);
+            if (uc.isOrgAdmin()) roles.add(User.ORGANISATION_ADMIN);
+        } else {
+            roles.addAll(Arrays.asList(uc.getRoles()));
+        }
         uc.setAccountIds(accountIds);
+        uc.setAdmin(isAdmin);
+        uc.setRoles(roles.toArray(new String[0]));
     }
 
     private List<Long> getOwnedOrganisationIds(User user) {

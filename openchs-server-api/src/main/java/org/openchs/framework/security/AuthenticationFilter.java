@@ -39,10 +39,7 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             String method = request.getMethod();
             String requestURI = request.getRequestURI();
             String queryString = request.getQueryString();
-
-            if (organisationUUID != null) {
-                authService.setOrganisationUUID(organisationUUID);
-            }
+            authService.setOrganisationUUID(organisationUUID);
 
             logger.info(String.format("Processing %s %s?%s Header: %s", method, requestURI, queryString, username));
             UserContext userContext = isDev

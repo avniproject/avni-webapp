@@ -8,19 +8,28 @@ public class UserContext {
     private Collection<String> roles = new HashSet<>();
     private Organisation organisation;
     private User user;
+    private String organisationUUID;
+
+    public String getOrganisationUUID() {
+        return organisationUUID;
+    }
+
+    public void setOrganisationUUID(String organisationUUID) {
+        this.organisationUUID = organisationUUID;
+    }
 
     public User getUser() {
         return user;
     }
 
-    public String getUserName() {
-        User user = this.getUser();
-        return user == null ? null : user.getUsername();
-    }
-
     public void setUser(User user) {
         this.user = user;
         this.addRolesToContext();
+    }
+
+    public String getUserName() {
+        User user = this.getUser();
+        return user == null ? null : user.getUsername();
     }
 
     private void addRolesToContext() {
@@ -58,7 +67,7 @@ public class UserContext {
     }
 
     private Organisation nullSafeGetOrganisation() {
-        return organisation == null? new Organisation(): organisation;
+        return organisation == null ? new Organisation() : organisation;
     }
 
     public String getOrganisationName() {

@@ -5,6 +5,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.validation.ValidationException;
 
 import javax.persistence.*;
@@ -72,8 +73,11 @@ public class User {
     private boolean isOrgAdmin;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<AccountAdmin> accountAdmin = new HashSet<>();;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<AccountAdmin> accountAdmin = new HashSet<>();
+
+    @Transient
+    private boolean isAdmin;
 
     @JsonIgnore
     @ManyToOne
@@ -269,7 +273,11 @@ public class User {
     }
 
     public boolean isAdmin() {
-        return accountAdmin.size() > 0;
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.isAdmin = admin;
     }
 
     public boolean isOrgAdmin() {
