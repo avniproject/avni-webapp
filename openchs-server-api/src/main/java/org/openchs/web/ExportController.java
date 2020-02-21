@@ -3,6 +3,7 @@ package org.openchs.web;
 
 import org.apache.commons.io.IOUtils;
 import org.openchs.dao.ExportJobStatus;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.openchs.exporter.ExportJobService;
@@ -61,6 +62,7 @@ public class ExportController {
     public ResponseEntity<?> getVisitData(@RequestBody ExportJobRequest exportJobRequest) {
         UserContext userContext = UserContextHolder.getUserContext();
         User user = userContext.getUser();
+        Organisation organisation = userContext.getOrganisation();
         String mediaDirectory = userContext.getOrganisation().getMediaDirectory();
         if (mediaDirectory == null) {
             String errorMessage = "Information missing. Media Directory for Implementation absent";
@@ -72,7 +74,7 @@ public class ExportController {
                 new JobParametersBuilder()
                         .addString("uuid", jobUUID)
                         .addLong("userId", user.getId(), false)
-                        .addLong("organisationId", user.getOrganisationId())
+                        .addLong("organisationId", organisation.getId())
                         .addString("fileName", jobUUID.concat(ExportS3Service.FILE_NAME_EXTENSION))
                         .addString("programUUID", exportJobRequest.getProgramUUID(), false)
                         .addString("subjectTypeUUID", exportJobRequest.getSubjectTypeUUID(), false)

@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.openchs.builder.VideoTelemetricBuilder;
 import org.openchs.dao.VideoRepository;
 import org.openchs.dao.VideoTelemetricRepository;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.Video;
 import org.openchs.domain.VideoTelemetric;
@@ -52,6 +53,7 @@ public class VideoTelemetricController implements RestControllerResourceProcesso
         VideoTelemetricBuilder builder = new VideoTelemetricBuilder(existing);
         Video video = videoRepository.findByUuid(contract.getVideoUUID());
         User user = UserContextHolder.getUserContext().getUser();
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         return builder
                 .withUUID(contract.getUuid())
                 .withPlayerOpenTime(contract.getPlayerOpenTime())
@@ -61,7 +63,7 @@ public class VideoTelemetricController implements RestControllerResourceProcesso
                 .withUser(user)
                 .withVideo(video)
                 .withCreatedDatetime(new DateTime())
-                .withOrganisationId(user.getOrganisationId())
+                .withOrganisationId(organisation.getId())
                 .build();
     }
 }

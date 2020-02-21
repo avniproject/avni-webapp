@@ -4,6 +4,7 @@ import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.O;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.validation.ValidationException;
@@ -62,6 +63,7 @@ public class ConceptService {
             throw new ValidationException("UUID missing for answer");
         }
         ConceptAnswer conceptAnswer = concept.findConceptAnswerByConceptUUID(answerConceptRequest.getUuid());
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         if (conceptAnswer == null) {
             conceptAnswer = new ConceptAnswer();
             conceptAnswer.assignUUID();
@@ -73,7 +75,7 @@ public class ConceptService {
             throw new AnswerConceptNotFoundException(message);
         }
         updateOrganisationIfNeeded(conceptAnswer, answerConceptRequest);
-        if (!conceptAnswer.editableBy(userService.getCurrentUser().getOrganisationId())) {
+        if (!conceptAnswer.editableBy(organisation.getId())) {
             return conceptAnswer;
         }
         conceptAnswer.setAnswerConcept(answerConcept);

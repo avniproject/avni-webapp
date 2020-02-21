@@ -6,6 +6,7 @@ import org.openchs.dao.LocationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.Catchment;
 import org.openchs.domain.Organisation;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.AddressLevelContract;
 import org.openchs.web.request.CatchmentContract;
 import org.openchs.web.request.CatchmentsContract;
@@ -38,6 +39,7 @@ public class CatchmentService {
     }
 
     public Catchment createOrUpdate(String catchmentName, AddressLevel location) {
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         Catchment catchment = catchmentRepository.findByNameIgnoreCase(catchmentName);
         if (catchment == null) {
             catchment = new Catchment();
@@ -46,7 +48,7 @@ public class CatchmentService {
         catchment.setName(catchmentName);
         catchment.setType(location.getTypeString());
         catchment.addAddressLevel(location);
-        catchment.setOrganisationId(userService.getCurrentUser().getOrganisationId());
+        catchment.setOrganisationId(organisation.getId());
 
         return catchmentRepository.save(catchment);
     }

@@ -230,7 +230,7 @@ public class UserController {
                            @RequestParam(value = "email", required = false) String email,
                            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
                            Pageable pageable) {
-        Long organisationId = userService.getCurrentUser().getOrganisationId();
+        Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
         return userRepository.findAll((root, query, builder) -> {
             Predicate predicate = builder.equal(root.get("organisationId"), organisationId);
             return applyUserPredicates(username, name, email, phoneNumber, root, builder, predicate);
