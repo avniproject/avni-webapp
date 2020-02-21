@@ -3,16 +3,13 @@ export const types = {
 };
 
 let concepts = [];
-export function setDataReduxSate(state = {}, action) {
-  if (typeof state === "undefined") {
-    return 0;
-  }
+export function conceptReducer(state = {}, action) {
   switch (action.type) {
     case types.ADD_CONCEPT:
       concepts.push(action.value);
       return {
         ...state,
-        concept: concepts
+        concepts: concepts
       };
     default:
       return state;

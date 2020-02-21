@@ -1,4 +1,4 @@
-import { storeDispachEvent } from "../../src/common/utils/reduxStoreUtilty";
+import { store } from "../../src/common/store/createStore";
 
 import {
   Individual,
@@ -14,7 +14,7 @@ import {
   Encounter,
   EncounterType
 } from "avni-models";
-import { types } from "../common/store/commonReduxStoreReducer";
+import { types } from "../common/store/conceptReducer";
 
 // subject Dashboard common functionality
 export const mapIndividual = individualDetails => {
@@ -42,11 +42,11 @@ export const mapConcept = observationJson => {
       valueuuid = [];
       observationJson.value.forEach(observation => {
         valueuuid.push(observation.uuid);
-        storeDispachEvent(types.ADD_CONCEPT, observation);
+        store.dispatch({ type: types.ADD_CONCEPT, value: observation });
       });
     } else if (concept.datatype === "Coded") {
       valueuuid = observationJson.value.uuid;
-      storeDispachEvent(types.ADD_CONCEPT, observationJson.value);
+      store.dispatch({ type: types.ADD_CONCEPT, value: observationJson.value });
     } else {
       valueuuid = observationJson.value;
     }
