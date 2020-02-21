@@ -264,7 +264,8 @@ public class UserController {
         User user = UserContextHolder.getUserContext().getUser();
         List<Long> userAccountIds = getOwnedAccountIds(user);
         List<Long> organisationIds = getOwnedOrganisationIds(user);
-        Page<UserContract> userContracts = userRepository.findAccountAndOrgAdmins(username, name, email, phoneNumber, userAccountIds, organisationIds, pageable)
+        List<Long> queryParam = organisationIds.isEmpty() ? null : organisationIds;
+        Page<UserContract> userContracts = userRepository.findAccountAndOrgAdmins(username, name, email, phoneNumber, userAccountIds, queryParam, pageable)
                 .map(UserContract::fromEntity);
         userContracts.forEach(this::setAccountIds);
         return userContracts;
@@ -277,7 +278,8 @@ public class UserController {
         User user = UserContextHolder.getUserContext().getUser();
         List<Long> userAccountIds = getOwnedAccountIds(user);
         List<Long> organisationIds = getOwnedOrganisationIds(user);
-        UserContract userContract = UserContract.fromEntity(userRepository.getOne(id, userAccountIds, organisationIds));
+        List<Long> queryParam = organisationIds.isEmpty() ? null : organisationIds;
+        UserContract userContract = UserContract.fromEntity(userRepository.getOne(id, userAccountIds, queryParam));
         setAccountIds(userContract);
         return userContract;
     }

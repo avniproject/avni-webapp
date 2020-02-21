@@ -50,7 +50,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
 
     @Query(value = "SELECT u FROM User u left join u.accountAdmin as aa " +
             "where u.isVoided = false and " +
-            "((u.isOrgAdmin = true and u.organisationId in (:organisationIds)) or aa.account.id in (:accountIds)) " +
+            "(((:organisationIds) is not null and u.organisationId in (:organisationIds) and u.isOrgAdmin = true) or aa.account.id in (:accountIds)) " +
             "and (:username is null or u.username like %:username%) " +
             "and (:name is null or u.name like %:name%) " +
             "and (:email is null or u.email like %:email%) " +
@@ -59,6 +59,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
 
     @Query(value = "SELECT u FROM User u left join u.accountAdmin as aa " +
             "where u.id=:id and u.isVoided = false and " +
-            "((u.isOrgAdmin = true and u.organisationId in (:organisationIds)) or aa.account.id in (:accountIds))")
+            "(((:organisationIds) is not null and u.organisationId in (:organisationIds) and u.isOrgAdmin = true) or aa.account.id in (:accountIds))")
     User getOne(Long id, List<Long> accountIds, List<Long> organisationIds);
 }
