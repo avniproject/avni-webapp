@@ -17,8 +17,16 @@ const useStyles = makeStyles(theme => ({
     textAlign: "left",
     boxShadow: "none",
     borderRadius: "0px",
-    borderRight: "1px solid #dcdcdc",
+   // borderRight: "1px solid #dcdcdc",
     padding: "0px"
+  },
+
+  rightBorder: {
+    borderRight: "1px solid rgba(0,0,0,0.12)",
+    "&:nth-child(4n),&:last-child": {
+      borderRight: "0px solid rgba(0,0,0,0.12)"
+    },
+    marginTop: "15px"
   },
   programStatusStyle: {
     color: "red",
@@ -58,7 +66,7 @@ const truncate = input => {
 const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
   const classes = useStyles();
   return (
-    <Grid key={index} item xs={6} sm={3}>
+    <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
       <Paper className={classes.paper}>
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>

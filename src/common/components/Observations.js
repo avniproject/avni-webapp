@@ -1,12 +1,11 @@
 import React, { Fragment } from "react";
-import moment from "moment/moment";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
-import ErrorIcon from "@material-ui/icons/Error";
-
+import { Observation } from "avni-models";
+import { ConceptService, i18n } from "../../dataEntryApp/services/ConceptService";
 const useStyles = makeStyles(theme => ({
   listItem: {
     paddingBottom: "0px",
@@ -21,6 +20,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Observations = ({ observations }) => {
+  const conceptService = new ConceptService();
+  const i = new i18n();
   const classes = useStyles();
   return (
     <div>
@@ -40,28 +41,7 @@ const Observations = ({ observations }) => {
                         {element.concept["name"]}
                       </TableCell>
                       <TableCell align="left" width="50%">
-                        {"Coded" === element.concept.dataType ? (
-                          <div>
-                            {element.value
-                              .map(it =>
-                                it.abnormal ? (
-                                  <span className={classes.abnormalColor}>
-                                    <ErrorIcon fontSize="small" />
-                                    {it.name}
-                                  </span>
-                                ) : (
-                                  <span>{it.name}</span>
-                                )
-                              )
-                              .reduce((prev, curr) => [prev, ", ", curr])}
-                          </div>
-                        ) : ["Date", "DateTime", "Time", "Duration"].includes(
-                            element.concept.dataType
-                          ) ? (
-                          <div>{moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}</div>
-                        ) : (
-                          <div>{element.value}</div>
-                        )}
+                        <div>{Observation.valueAsString(element, conceptService, i)} </div>
                       </TableCell>
                     </TableRow>
                   </TableBody>

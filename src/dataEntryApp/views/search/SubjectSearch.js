@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Table from "@material-ui/core/Table";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link} from "react-router-dom";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
@@ -49,7 +49,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const SubjectsTable = ({ type, subjects }) => {
-  const classes = useStyle();
+  const classes = useStyle();  
 
   return (
     <Table className={classes.table}>
@@ -65,8 +65,8 @@ const SubjectsTable = ({ type, subjects }) => {
       <TableBody>
         {subjects.map((row, id) => (
           <TableRow key={id}>
-            <TableCell component="th" scope="row">
-              {row.fullName}
+            <TableCell component="th" scope="row">            
+              <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
             </TableCell>
             {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}
             {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
@@ -154,3 +154,4 @@ export default withRouter(
     mapDispatchToProps
   )(SubjectSearch)
 );
+

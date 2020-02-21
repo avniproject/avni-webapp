@@ -15,10 +15,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-let flagActive = false;
-let flagExited = false;
+
 
 const SubjectDashboardProgramTab = ({ program }) => {
+  let flagActive = false;
+  let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [selectedTabExited, setSelectedTabExited] = React.useState(false);
 
@@ -34,9 +35,9 @@ const SubjectDashboardProgramTab = ({ program }) => {
 
   if (program && program.enrolments) {
     program.enrolments.sort(function(left, right) {
-      return left.hasOwnProperty("programExitDateTime")
+      return left.programExitDateTime
         ? 1
-        : right.hasOwnProperty("programExitDateTime")
+        : right.programExitDateTime
         ? -1
         : 0;
     });
