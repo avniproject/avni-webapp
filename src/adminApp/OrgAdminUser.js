@@ -176,8 +176,13 @@ const UserForm = ({ edit, user, ...props }) => {
         </Fragment>
       )}
       {!edit && <PasswordTextField />}
-      <TextInput source="name" label="Name of the Person" validate={isRequired} />
-      <TextInput source="email" label="Email Address" validate={validateEmail} />
+      <TextInput
+        source="name"
+        label="Name of the Person"
+        validate={isRequired}
+        autoComplete="off"
+      />
+      <TextInput source="email" label="Email Address" validate={validateEmail} autoComplete="off" />
       <TextInput
         source="phoneNumber"
         label="10 digit mobile number"

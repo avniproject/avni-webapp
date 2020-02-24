@@ -302,6 +302,7 @@ class NewFormModal extends Component {
               name="name"
               value={this.state.name}
               onChange={this.onChangeField.bind(this)}
+              autoComplete="off"
               fullWidth
             />
             {this.state.errors.name && (

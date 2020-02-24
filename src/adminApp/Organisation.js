@@ -19,7 +19,7 @@ import {
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
-    <TextInput label="Organisation Name" source="name" resettable alwaysOn />
+    <TextInput label="Organisation Name" source="name" autoComplete="off" resettable alwaysOn />
     <TextInput label="Db User" source="dbUser" resettable alwaysOn />
   </Filter>
 );
@@ -80,7 +80,7 @@ export const OrganisationEdit = props => {
         {props && props.id === "1" ? (
           <DisabledInput source="name" validate={isRequired} />
         ) : (
-          <TextInput source="name" validate={isRequired} />
+          <TextInput source="name" validate={isRequired} autoComplete="off" />
         )}
         <DisabledInput source="dbUser" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
@@ -101,7 +101,7 @@ export const OrganisationCreate = props => {
   return (
     <Create title="Create New Organisation" {...props}>
       <SimpleForm redirect="show">
-        <TextInput source="name" validate={isRequired} />
+        <TextInput source="name" validate={isRequired} autoComplete="off" />
         <TextInput source="dbUser" validate={isRequired} />
         <TextInput source="mediaDirectory" />
         <TextInput source="usernameSuffix" validate={isRequired} />

@@ -497,6 +497,7 @@ class CreateEditConcept extends Component {
               onChange={this.handleChange("name")}
               style={classes.textField}
               margin="normal"
+              autoComplete="off"
             />
             {this.state.error.nameError && (
               <FormHelperText error>Same name concept already exist.</FormHelperText>
