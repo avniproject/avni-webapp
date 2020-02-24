@@ -16,7 +16,9 @@ import { LineBreak, RelativeLink, withParams } from "../../../common/components/
 import Form from "../../components/Form";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
-import PrimaryButton from "../../components/PrimaryButton";
+//import PrimaryButton from "../../components/PrimaryButton";
+//Add new file 
+import PrimaryButton from "../../components/NextButton";
 import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -31,11 +33,21 @@ const useStyles = makeStyles(theme => ({
   },
   form: {
     padding: theme.spacing(3, 3)
+  },
+  villagelable:{color: "rgba(0, 0, 0, 0.54)",
+    padding: 0,
+    'font-size': "1rem",
+   'font-family': "Roboto, Helvetica, Arial, sans-serif",
+    'font-weight': 400,
+    'line-height': 1,
+    'letter-spacing': "0.00938em",
+    marginBottom:20
   }
 }));
 
 const DefaultPage = props => {
   const classes = useStyles();
+  console.log(props)
 
   React.useEffect(() => {
     props.onLoad(props.match.queryParams.type);
@@ -43,11 +55,13 @@ const DefaultPage = props => {
 
   return (
     <div>
-      <h6>1. Basic Details</h6>
-      <Paper className={classes.form}>
-        {props.subject && (
+      
+      <div >
+        {props.subject && (          
           <div>
-            <Box display="flex" flexDirection="column">
+            <h6>1. Basic Details</h6>
+            <Paper>
+            <Box className={classes.form} display="flex" flexDirection="column">
               <TextField
                 style={{ width: "30%" }}
                 label="Date of Registration"
@@ -99,6 +113,7 @@ const DefaultPage = props => {
                     isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                     onChange={selected => props.updateSubject("gender", selected)}
                   />
+                  <label className={classes.villagelable}>Village</label>
                   <LocationAutosuggest
                     onSelect={location => props.updateSubject("lowestAddressLevel", location)}
                   />
@@ -130,14 +145,15 @@ const DefaultPage = props => {
                     }}
                     noUnderline
                   >
-                    <PrimaryButton>Next</PrimaryButton>
+                    <PrimaryButton>Previous</PrimaryButton><PrimaryButton>Next</PrimaryButton>
                   </RelativeLink>
                 </Box>
               </Box>
             </Box>
+            </Paper>
           </div>
         )}
-      </Paper>
+      </div>
     </div>
   );
 };
