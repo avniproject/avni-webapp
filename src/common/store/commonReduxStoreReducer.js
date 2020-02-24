@@ -4,6 +4,7 @@ export const types = {
 };
 
 let concepts = [];
+let translations =[];
 export function setDataReduxSate(state = {}, action) {
   console.log(action);
   if (typeof state === "undefined") {
@@ -17,10 +18,10 @@ export function setDataReduxSate(state = {}, action) {
         concept: concepts
       };
       case types.TRANSLATION_DATA:
-        concepts.push(action.value);
+        translations.push(action.value)
         return {
           ...state,
-          concept: concepts
+          translations: translations
         };
     default:
       return state;

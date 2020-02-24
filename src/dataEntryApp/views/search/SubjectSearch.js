@@ -16,6 +16,7 @@ import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchRed
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import Paper from "@material-ui/core/Paper";
+import { useTranslation, translate, Trans  } from 'react-i18next';
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -48,12 +49,20 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({ type, subjects }) => {
-  const classes = useStyle();  
+const SubjectsTable = ({ type, subjects}) => {
+  const classes = useStyle();
+  const { t, i18n } = useTranslation();
+  //const { t, i18n } = this.props;
 
+  const changeLanguage = lng => {
+    i18n.changeLanguage(lng);
+  };
   return (
     <Table className={classes.table}>
       <TableHead>
+      <button onClick={() => changeLanguage("de")}>de</button>
+      <button onClick={() => changeLanguage("en")}>en</button>
+      <h1>{t('welcome')}</h1>
         <TableRow>
           <TableCell>Name</TableCell>
           {type.name === "Individual" && <TableCell align="center">Gender</TableCell>}
@@ -154,4 +163,3 @@ export default withRouter(
     mapDispatchToProps
   )(SubjectSearch)
 );
-

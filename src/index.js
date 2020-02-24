@@ -1,4 +1,5 @@
-import React from "react";
+// import React from "react";
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { HashRouter } from "react-router-dom";
@@ -18,6 +19,10 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import * as Colors from "@material-ui/core/colors";
 import { httpClient } from "common/utils/httpClient";
 
+import i18n from './i18n';
+
+import { I18nextProvider } from "react-i18next";
+
 const theme = createMuiTheme({
   palette: {
     primary: Colors.blue,
@@ -35,7 +40,9 @@ ReactDOM.render(
   <StylesProvider generateClassName={generateClassName}>
     <ThemeProvider theme={theme}>
       <Provider store={store}>
-        <HashRouter>{isProdEnv || cognitoInDev ? <SecureApp /> : <App />}</HashRouter>
+        <HashRouter>{isProdEnv || cognitoInDev ? <SecureApp /> : <I18nextProvider i18n={i18n}>
+<App />
+</I18nextProvider>}</HashRouter>
       </Provider>
     </ThemeProvider>
   </StylesProvider>,

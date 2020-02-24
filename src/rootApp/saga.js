@@ -1,4 +1,4 @@
-import { call, put, take, takeLatest } from "redux-saga/effects";
+import { call, put, take,fork,takeLatest,all,takeEvery } from "redux-saga/effects";
 import { getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, getTranslation, setTranslation, types } from "./ducks";
 import {
   cognitoConfig as cognitoConfigFromEnv,
@@ -14,7 +14,7 @@ import storeTypes ,{setDataReduxSate} from "../common/store/commonReduxStoreRedu
 
 let tranlationApi;
 function defaultLanguage(userDetails){
-  tranlationApi = { fetchTranslationDetails: () => http.fetchJson(`/web/translations?locale=${userDetails}`).then(response => response.json)}
+  tranlationApi = { fetchTranslationDetails: () => http.fetchJson(`/web/translations`).then(response => response.json)}
 }
 
 const api = {
@@ -51,13 +51,16 @@ export function* onSetCognitoUser() {
 
 
 }
+// export default function*() {
+//   yield all([translationWatcher].map(fork));
+// }
 
 export function* userInfoWatcher() {
   yield takeLatest(types.GET_USER_INFO, setUserDetails);
 
 }
 export function* translationWatcher() {
-  yield takeLatest(types.GET_TRANSLATION, setTranslationDetails);
+  yield takeEvery(types.GET_TRANSLATION, setTranslationDetails);
   
 }
 
@@ -72,14 +75,14 @@ function* setUserDetails() {
   }
   yield put(sendInitComplete());
   yield put(getTranslation());
+
 }
 
 
 
 function* setTranslationDetails(){
+  debugger;
   const translationsData = yield call(tranlationApi.fetchTranslationDetails);
   storeDispachObservations(types.TRANSLATION_DATA,translationsData);
   yield put(setTranslation(translationsData));
-  yield put(sendInitComplete());
-
 }

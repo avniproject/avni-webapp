@@ -2,10 +2,15 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Routes from "./Routes";
-import { getUserInfo } from "./ducks";
+import { getUserInfo, getTranslation } from "./ducks";
 import { cognitoInDev, isDevEnv } from "../common/constants";
-
+// import {getTranslation} from "./ducks"
 class App extends Component {
+  
+  // componentWillMount(){
+  //   this.props.getTranslation();
+  // }
+  
   componentDidMount() {
     if (isDevEnv && !cognitoInDev) {
       this.props.getUserInfo();
@@ -31,7 +36,12 @@ const mapStateToProps = state => ({
   appInitialised: state.app.appInitialised
 });
 
+
+// const mapDispatchToProps = {
+//   getTranslation
+// };
+
 export default connect(
   mapStateToProps,
-  { getUserInfo }
+  { getUserInfo}
 )(App);
