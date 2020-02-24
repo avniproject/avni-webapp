@@ -1,5 +1,5 @@
 import { call, put, take,fork,takeLatest,all,takeEvery } from "redux-saga/effects";
-import { getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, getTranslation, setTranslation, types } from "./ducks";
+import { getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, types } from "./ducks";
 import {
   cognitoConfig as cognitoConfigFromEnv,
   cognitoInDev,
@@ -8,14 +8,15 @@ import {
 } from "../common/constants";
 import http from "common/utils/httpClient";
 import { configureAuth } from "./utils";
-import  {storeDispachObservations}  from "../../src/common/utils/reduxStoreUtilty";
+import {getTranslation} from "../dataEntryApp/reducers/TranslationReducers"
+// import  {storeDispachObservations}  from "../../src/common/utils/reduxStoreUtilty";
+// import {defaultLanguage} from "../dataEntryApp/sagas/TranslationSaga"
 
-import storeTypes ,{setDataReduxSate} from "../common/store/commonReduxStoreReducer";
 
-let tranlationApi;
-function defaultLanguage(userDetails){
-  tranlationApi = { fetchTranslationDetails: () => http.fetchJson(`/web/translations`).then(response => response.json)}
-}
+// let tranlationApi;
+// function defaultLanguage(userDetails){
+//   tranlationApi = { fetchTranslationDetails: () => http.fetchJson(`/web/translations`).then(response => response.json)}
+// }
 
 const api = {
   fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
@@ -48,8 +49,6 @@ export function* onSetCognitoUser() {
   });
   yield put(getUserInfo());
 
-
-
 }
 // export default function*() {
 //   yield all([translationWatcher].map(fork));
@@ -59,15 +58,15 @@ export function* userInfoWatcher() {
   yield takeLatest(types.GET_USER_INFO, setUserDetails);
 
 }
-export function* translationWatcher() {
-  yield takeEvery(types.GET_TRANSLATION, setTranslationDetails);
+// export function* translationWatcher() {
+//   yield takeEvery(types.GET_TRANSLATION, setTranslationDetails);
   
-}
+// }
 
 
 function* setUserDetails() {
   const userDetails = yield call(api.fetchUserInfo);
-  defaultLanguage(userDetails.settings.locale);
+//  defaultLanguage(userDetails.settings.locale);
   yield put(setUserInfo(userDetails));
   
   if (isDevEnv && !cognitoInDev) {
@@ -78,11 +77,9 @@ function* setUserDetails() {
 
 }
 
-
-
-function* setTranslationDetails(){
-  debugger;
-  const translationsData = yield call(tranlationApi.fetchTranslationDetails);
-  storeDispachObservations(types.TRANSLATION_DATA,translationsData);
-  yield put(setTranslation(translationsData));
-}
+// function* setTranslationDetails(){
+//   debugger;
+//   const translationsData = yield call(tranlationApi.fetchTranslationDetails);
+//   storeDispachObservations(types.TRANSLATION_DATA,translationsData);
+//   yield put(setTranslation(translationsData));
+// }

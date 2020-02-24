@@ -17,6 +17,8 @@ import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import Paper from "@material-ui/core/Paper";
 import { useTranslation, translate, Trans  } from 'react-i18next';
+import {getTranslation} from "../../reducers/TranslationReducers"
+
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -57,6 +59,8 @@ const SubjectsTable = ({ type, subjects}) => {
   const changeLanguage = lng => {
     i18n.changeLanguage(lng);
   };
+
+
   return (
     <Table className={classes.table}>
       <TableHead>

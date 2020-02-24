@@ -8,6 +8,7 @@ import translations from "../translations/reducers";
 import reports from "../reports/reducers";
 
 import app from "./ducks";
+import translationsReducer from "../dataEntryApp/reducers/TranslationReducers"
 
 // const LOCALE = "en";
 
@@ -19,5 +20,6 @@ export default combineReducers({
   dataEntry,
   bulkUpload,
   translations,
-  reports
+  reports,
+  translationsReducer
 });

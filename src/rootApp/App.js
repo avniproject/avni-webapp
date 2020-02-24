@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Routes from "./Routes";
-import { getUserInfo, getTranslation } from "./ducks";
+import { getUserInfo } from "./ducks";
 import { cognitoInDev, isDevEnv } from "../common/constants";
 // import {getTranslation} from "./ducks"
 class App extends Component {

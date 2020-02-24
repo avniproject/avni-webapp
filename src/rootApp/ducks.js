@@ -7,8 +7,8 @@ export const types = {
   FETCH_ALL_LOCATIONS: "app/FETCH_ALL_LOCATIONS",
   FETCH_ALL_LOCATIONS_SUCCESS: "app/FETCH_ALL_LOCATIONS_SUCCESS",
   AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
-  GET_TRANSLATION: "GET_TRANSLATION___",
-  SET_TRANSLATION: "SET_TRANSLATION___",
+  // GET_TRANSLATION: "GET_TRANSLATION___",
+  // SET_TRANSLATION: "SET_TRANSLATION___",
   TRANSLATION_DATA: "TRANSLATION_DATA"
 };
 
@@ -34,14 +34,14 @@ export const setUserInfo = userInfo => ({
 });
 
 
-export const getTranslation = ()=> {
-  return { type: types.GET_TRANSLATION }
-};
+// export const getTranslation = ()=> {
+//   return { type: types.GET_TRANSLATION }
+// };
 
-export const setTranslation = translationData => ({
-  type: types.SET_TRANSLATION,
-  payload: translationData
-});
+// export const setTranslation = translationData => ({
+//   type: types.SET_TRANSLATION,
+//   payload: translationData
+// });
 
 export const sendInitComplete = () => ({
   type: types.INIT_COMPLETE
@@ -106,12 +106,12 @@ export default function(state = initialState, action) {
         authConfigured: true
       };
     }
-    case types.SET_TRANSLATION: {
-      return {
-        ...state,
-        authConfigured: true
-      };
-    }
+    // case types.SET_TRANSLATION: {
+    //   return {
+    //     ...state,
+    //     authConfigured: true
+    //   };
+    // }
     default:
       return state;
   }
