@@ -3,6 +3,12 @@ import { Box } from "@material-ui/core";
 import { InternalLink, RelativeLink } from "../../common/components/utils";
 import PrimaryButton from "./PrimaryButton";
 
+const styles = {
+  marginRight20: {
+    marginRight: 20
+  }
+};
+
 const PaginationButton = ({ page, title }) =>
   page && (
     <RelativeLink params={{ page }} noUnderline>
@@ -10,10 +16,10 @@ const PaginationButton = ({ page, title }) =>
     </RelativeLink>
   );
 
-const Paginator = props => {
+const Paginator = props => {  
   return (
-    <Box justifyContent={"space-between"} flexDirection={"row"} display={"flex"}>
-      <Box component={"span"}>
+    <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
+      <Box component={"span"} style={styles.marginRight20}>
         <PaginationButton page={props.pageDetails.previousPageNumber} title={"Previous"} />
         {!props.pageDetails.previousPageNumber && (
           <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
