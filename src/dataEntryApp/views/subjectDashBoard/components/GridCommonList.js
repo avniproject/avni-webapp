@@ -7,6 +7,7 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
+import { Link, withRouter} from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -44,7 +45,7 @@ const GridCommonList = ({ gridListDetails }) => {
                   <Card className={classes.card}>
                     <CardContent>
                       <Typography component={"div"} color="primary">
-                        {relative.firstName + " " + relative.lastName}
+                      <Link to={`?uuid=${relative.individualB.uuid}`} replace > {relative.individualB.firstName + " " + relative.individualB.lastName} </Link> 
                       </Typography>
                       <Typography
                         component={"div"}
@@ -52,7 +53,7 @@ const GridCommonList = ({ gridListDetails }) => {
                         color="textSecondary"
                         gutterBottom
                       >
-                        {relative.individualBIsToARelation}
+                        {relative.relationship.individualBIsToARelation.name}
                       </Typography>
                       <Typography
                         component={"div"}
@@ -61,7 +62,7 @@ const GridCommonList = ({ gridListDetails }) => {
                         gutterBottom
                       >
                         {new Date().getFullYear() -
-                          new Date(relative.dateOfBirth).getFullYear() +
+                          new Date(relative.individualB.dateOfBirth).getFullYear() +
                           " Year"}
                       </Typography>
                     </CardContent>
@@ -81,4 +82,4 @@ const GridCommonList = ({ gridListDetails }) => {
   );
 };
 
-export default GridCommonList;
+export default withRouter(GridCommonList);

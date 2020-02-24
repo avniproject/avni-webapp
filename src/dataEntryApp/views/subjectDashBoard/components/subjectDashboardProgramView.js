@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2),
     marginRight: "10px",
     height: "28px",
-    marginLeft: "37px"
+   // marginLeft: "37px"
   },
   root: {
     flexGrow: 1,
@@ -94,7 +94,7 @@ const ProgramView = ({ programData }) => {
       <Grid container spacing={3}>
         <Grid item xs={6}>
           <label className={classes.programLabel}>
-            {programData.operationalProgramName} program details
+            {programData.program.operationalProgramName} program details
           </label>
         </Grid>
         <Grid item xs={6}>
@@ -144,8 +144,8 @@ const ProgramView = ({ programData }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid container spacing={2}>
-              {programData && programData.programEncounters
-                ? programData.programEncounters.map((row, index) =>
+              {programData && programData.encounters
+                ? programData.encounters.map((row, index) =>
                     !row.encounterDateTime ? (
                       <Visit
                         name={row.name}
@@ -178,11 +178,11 @@ const ProgramView = ({ programData }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid container spacing={2}>
-              {programData && programData.programEncounters
-                ? programData.programEncounters.map((row, index) =>
-                    row.encounterDateTime && row.name ? (
+              {programData && programData.encounters
+                ? programData.encounters.map((row, index) =>
+                    row.encounterDateTime && row.encounterType ? (
                       <Visit
-                        name={row.name}
+                        name={row.encounterType.name}
                         key={index}
                         index={index}
                         visitDate={row.encounterDateTime}

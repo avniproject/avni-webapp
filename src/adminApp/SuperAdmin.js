@@ -19,6 +19,7 @@ import {
   OrganisationEdit,
   OrganisationList
 } from "./Organisation";
+import AdminLayout from "../common/components/AdminLayout";
 
 class SuperAdmin extends Component {
   static childContextTypes = {
@@ -37,6 +38,7 @@ class SuperAdmin extends Component {
         authProvider={authProvider}
         history={adminHistory}
         logoutButton={WithProps({ user }, LogoutButton)}
+        appLayout={AdminLayout}
       >
         <Resource
           name="organisation"

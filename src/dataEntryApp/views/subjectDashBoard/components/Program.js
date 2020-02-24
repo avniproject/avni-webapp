@@ -86,7 +86,7 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
             ? program.enrolments.map((element, index) =>
                 (element.programExitDateTime == null && type === "active") ||
                 (element.programExitDateTime != null && type === "exited") ? (
-                  <AntTab key={index} value={index} label={element.operationalProgramName} />
+                  <AntTab key={index} value={index} label={element.program.operationalProgramName} />
                 ) : (
                   ""
                 )

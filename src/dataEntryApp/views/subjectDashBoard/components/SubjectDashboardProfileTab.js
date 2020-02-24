@@ -12,17 +12,21 @@ import { bold } from "ansi-colors";
 import moment from "moment/moment";
 import Observations from "../../../../common/components/Observations";
 import GridCommonList from "../components/GridCommonList";
+import { Paper } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
-    fontSize: theme.typography.pxToRem(15),
+    fontSize: theme.typography.pxToRem(16),
     flexBasis: "33.33%",
-    flexShrink: 0,
-    fontWeight: bold
+    flexShrink: 0
   },
   expansionSecondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary
+  },
+  root: {
+    flexGrow: 1,
+    padding: theme.spacing(2)
   },
   listItemView: {
     border: "1px solid lightGrey"
@@ -62,6 +66,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
 
   return (
     <Fragment>
+      <Paper  className={classes.root}>
       <ExpansionPanel
         className={classes.expansionPanel}
         expanded={expanded === "registrationPanel"}
@@ -99,15 +104,16 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
           aria-controls="relativesPanelbh-content"
           id="relativesPanelbh-header"
         >
-          <Typography component={"span"} className={classes.expansionHeading}>
-            Relatives
-          </Typography>
+        <Typography component={"span"} className={classes.expansionHeading}>
+          Relatives
+        </Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
           <GridCommonList gridListDetails={profile.relationships} path={path} />
         </ExpansionPanelDetails>
         <Button color="primary">ADD RELATIVE</Button>
       </ExpansionPanel>
+      </Paper>
     </Fragment>
   );
 };
