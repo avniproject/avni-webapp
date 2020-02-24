@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class CatchmentController implements RestControllerResourceProcessor<CatchmentContract> {
@@ -61,6 +64,13 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
         Catchment catchment = catchmentRepository.findOne(id);
         CatchmentContract catchmentContract = CatchmentContract.fromEntity(catchment);
         return new Resource<>(catchmentContract);
+    }
+
+    @GetMapping(value = "catchment/search/findAllById")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    public List<CatchmentContract> getById(@Param("ids") Long[] ids) {
+        List<Catchment> catchments = catchmentRepository.findByIdIn(ids);
+        return catchments.stream().map(catchment -> CatchmentContract.fromEntity(catchment)).collect(Collectors.toList());
     }
 
     @PostMapping(value = "/catchment")

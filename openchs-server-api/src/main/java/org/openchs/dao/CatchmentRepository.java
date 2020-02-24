@@ -14,7 +14,6 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "catchment", path = "catchment")
 public interface CatchmentRepository extends ReferenceDataRepository<Catchment>, FindByLastModifiedDateTime<Catchment> {
-    @RestResource(path = "findAllById", rel = "findAllById")
     List<Catchment> findByIdIn(@Param("ids") Long[] ids);
 
     @Query("select c.name from Catchment c where c.isVoided = false")
