@@ -8,7 +8,9 @@ import {
   Create,
   Edit,
   SimpleForm,
-  TextInput
+  TextInput,
+  ReferenceField,
+  SelectInput
 } from "react-admin";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
@@ -26,57 +28,52 @@ const Title = ({ record }) => {
 export const IdentifierUserAssignmentList = props => (
   <List {...props} bulkActions={false}>
     <Datagrid rowClick="show">
-      <TextField source="name" />
+      <TextField source="identifierSource.name" name="Source name" />
+      <TextField source="identifierStart" />
+      <TextField source="identifierEnd" />
     </Datagrid>
   </List>
 );
 
-//export const IdentifierSourceDetail = props => {
-//  return (
-//    <Show title={<Title />} {...props}>
-//      <SimpleShowLayout>
-//        <TextField source="name" />
-//        <TextField source="type" />
-//        <TextField source="batchGenerationSize" />
-//        <TextField source="minLength" />
-//        <TextField source="maxLength" />
-//      </SimpleShowLayout>
-//    </Show>
-//  );
-//};
-//
-//export const IdentifierSourceEdit = props => {
-//  return (
-//    <Edit undoable={false} title="Edit identifier source" {...props}>
-//      <SimpleForm redirect="show">
-//        <TextInput source="name" />
-//        <TextInput source="type" />
-//        <TextInput source="catchment" />
-//        <TextInput source="facility" />
-//        <TextInput source="batchGenerationSize" />
-//        <TextInput source="minimumBalance" />
-//        <TextInput source="options" />
-//        <TextInput source="minLength" />
-//        <TextInput source="maxLength" />
-//      </SimpleForm>
-//    </Edit>
-//  );
-//};
-//
-//export const IdentifierSourceCreate = props => {
-//  return (
-//    <Create title="Add a new Identifier Source" {...props}>
-//      <SimpleForm redirect="show">
-//        <TextInput source="name" />
-//        <TextInput source="type" />
-//        <TextInput source="catchment" />
-//        <TextInput source="facility" />
-//        <TextInput source="batchGenerationSize" />
-//        <TextInput source="minimumBalance" />
-//        <TextInput source="options" />
-//        <TextInput source="minLength" />
-//        <TextInput source="maxLength" />
-//      </SimpleForm>
-//    </Create>
-//  );
-//};
+export const IdentifierUserAssignmentDetail = props => {
+  return (
+    <Show title={<Title />} {...props}>
+      <SimpleShowLayout>
+        <TextField source="identifierSource.name" name="Source name" />
+        <TextField source="identifierStart" />
+        <TextField source="identifierEnd" />
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+
+export const IdentifierUserAssignmentEdit = props => {
+  return (
+    <Edit undoable={false} title="Edit identifier user assignment" {...props}>
+      <SimpleForm redirect="show">
+        <ReferenceField
+          label="Identifier Source"
+          reference="identifierSource"
+          source="identifierSource.id"
+          allowEmpty={true}
+        >
+          <SelectInput source="name" />
+        </ReferenceField>
+        <TextInput source="identifierStart" />
+        <TextInput source="identifierEnd" />
+      </SimpleForm>
+    </Edit>
+  );
+};
+
+export const IdentifierUserAssignmentCreate = props => {
+  return (
+    <Create title="Add a new identifier user assignment" {...props}>
+      <SimpleForm redirect="show">
+        <TextInput source="identifierSource.name" name="Source name" />
+        <TextInput source="identifierStart" />
+        <TextInput source="identifierEnd" />
+      </SimpleForm>
+    </Create>
+  );
+};

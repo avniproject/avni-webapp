@@ -38,7 +38,7 @@ const urlMapping = {
   encounterType: "web/encounterType",
   organisationConfig: "organisationConfig",
   identifierSource: "web/identifierSource",
-  identifierUserAssignment: "web/identifierUserAssignments",
+  identifierUserAssignment: "web/identifierUserAssignment",
   organisation: "organisation"
 };
 export default apiUrl => {

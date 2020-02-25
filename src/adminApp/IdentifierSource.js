@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Datagrid,
   List,
@@ -8,11 +7,33 @@ import {
   Create,
   Edit,
   SimpleForm,
-  TextInput
+  TextInput,
+  ReferenceField,
+  SelectField,
+  SelectInput,
+  ChipField,
+  FormDataConsumer,
+  ReferenceInput,
+  required,
+  REDUX_FORM_NAME
 } from "react-admin";
+import React, { Fragment, useEffect, useState } from "react";
+import { change } from "redux-form";
+import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
+import { LineBreak } from "../common/components/utils";
+import Typography from "@material-ui/core/Typography";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 
+const sourceType = [
+  { id: "userBasedIdentifierGenerator", name: "userBasedIdentifierGenerator" },
+  { id: "userPoolBasedIdentifierGenerator", name: "userPoolBasedIdentifierGenerator" }
+];
+const operatingScopes = Object.freeze({
+  NONE: "None",
+  FACILITY: "ByFacility",
+  CATCHMENT: "ByCatchment"
+});
 const Title = ({ record }) => {
   return (
     record && (
@@ -27,7 +48,7 @@ export const IdentifierSourceList = props => (
   <List {...props} bulkActions={false}>
     <Datagrid rowClick="show">
       <TextField source="name" />
-      <TextField source="type" />
+      <ChipField source="type" />
       <TextField source="batchGenerationSize" />
       <TextField source="minLength" />
       <TextField source="maxLength" />
@@ -40,7 +61,7 @@ export const IdentifierSourceDetail = props => {
     <Show title={<Title />} {...props}>
       <SimpleShowLayout>
         <TextField source="name" />
-        <TextField source="type" />
+        <ChipField source="type" />
         <TextField source="batchGenerationSize" />
         <TextField source="minLength" />
         <TextField source="maxLength" />
@@ -54,8 +75,33 @@ export const IdentifierSourceEdit = props => {
     <Edit undoable={false} title="Edit identifier source" {...props}>
       <SimpleForm redirect="show">
         <TextInput source="name" />
-        <TextInput source="type" />
-        <TextInput source="catchment" />
+        <SelectInput source="type" choices={sourceType} />
+        <FormDataConsumer>
+          {({ formData, dispatch, ...rest }) =>
+            !formData.orgAdmin && (
+              <Fragment>
+                <ReferenceInput
+                  source="catchmentId"
+                  reference="catchment"
+                  label="Which catchment?"
+                  validate={required("Please select a catchment")}
+                  onChange={(e, newVal) => {
+                    dispatch(
+                      change(
+                        REDUX_FORM_NAME,
+                        "operatingIndividualScope",
+                        isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
+                      )
+                    );
+                  }}
+                  {...rest}
+                >
+                  <CatchmentSelectInput source="name" resettable />
+                </ReferenceInput>
+              </Fragment>
+            )
+          }
+        </FormDataConsumer>
         <TextInput source="facility" />
         <TextInput source="batchGenerationSize" />
         <TextInput source="minimumBalance" />
@@ -72,8 +118,33 @@ export const IdentifierSourceCreate = props => {
     <Create title="Add a new Identifier Source" {...props}>
       <SimpleForm redirect="show">
         <TextInput source="name" />
-        <TextInput source="type" />
-        <TextInput source="catchment" />
+        <SelectInput source="type" choices={sourceType} />
+        <FormDataConsumer>
+          {({ formData, dispatch, ...rest }) =>
+            !formData.orgAdmin && (
+              <Fragment>
+                <ReferenceInput
+                  source="catchmentId"
+                  reference="catchment"
+                  label="Which catchment?"
+                  validate={required("Please select a catchment")}
+                  onChange={(e, newVal) => {
+                    dispatch(
+                      change(
+                        REDUX_FORM_NAME,
+                        "operatingIndividualScope",
+                        isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
+                      )
+                    );
+                  }}
+                  {...rest}
+                >
+                  <CatchmentSelectInput source="name" resettable />
+                </ReferenceInput>
+              </Fragment>
+            )
+          }
+        </FormDataConsumer>
         <TextInput source="facility" />
         <TextInput source="batchGenerationSize" />
         <TextInput source="minimumBalance" />
