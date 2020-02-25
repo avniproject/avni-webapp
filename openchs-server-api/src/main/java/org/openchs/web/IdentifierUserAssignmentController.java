@@ -4,6 +4,8 @@ import org.openchs.dao.IdentifierSourceRepository;
 import org.openchs.dao.IdentifierUserAssignmentRepository;
 import org.openchs.dao.UserRepository;
 import org.openchs.domain.IdentifierUserAssignment;
+import org.openchs.domain.JsonObject;
+import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.IdentifierUserAssignmentContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,14 +54,14 @@ public class IdentifierUserAssignmentController extends AbstractController<Ident
         identifierUserAssignmentRepository.save(identifierUserAssignment);
     }
 
-    @GetMapping(value = "/web/identifierUserAssignments")
+    @GetMapping(value = "/web/identifierUserAssignment")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public PagedResources<Resource<IdentifierUserAssignment>> getAll(Pageable pageable) {
         return wrap(identifierUserAssignmentRepository.findPageByIsVoidedFalse(pageable));
     }
 
-    @GetMapping(value = "/web/identifierUserAssignments/{id}")
+    @GetMapping(value = "/web/identifierUserAssignment/{id}")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
     public ResponseEntity getOne(@PathVariable("id") Long id) {
@@ -68,5 +70,53 @@ public class IdentifierUserAssignmentController extends AbstractController<Ident
             return ResponseEntity.notFound().build();
         return new ResponseEntity<>(identifierUserAssignment, HttpStatus.OK);
     }
+
+    @PostMapping(value = "/web/identifierUserAssignment")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @Transactional
+    ResponseEntity saveProgramForWeb(@RequestBody IdentifierUserAssignmentContract request) {
+        IdentifierUserAssignment identifierUserAssignment = new IdentifierUserAssignment();
+        identifierUserAssignment.assignUUID();
+        identifierUserAssignment.setAssignedTo(userRepository.findByUuid(request.getUserUUID()));
+        identifierUserAssignment.setIdentifierSource(identifierSourceRepository.findByUuid(request.getIdentifierSourceUUID()));
+        identifierUserAssignment.setIdentifierStart(request.getIdentifierStart());
+        identifierUserAssignment.setIdentifierEnd(request.getIdentifierEnd());
+        identifierUserAssignment.setVoided(false);
+        identifierUserAssignmentRepository.save(identifierUserAssignment);
+        return ResponseEntity.ok(null);
+    }
+
+    @PutMapping(value = "/web/identifierUserAssignment/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @Transactional
+    public ResponseEntity updateProgramForWeb(@RequestBody IdentifierUserAssignmentContract request,
+                                              @PathVariable("id") Long id) {
+        IdentifierUserAssignment identifierUserAssignment = identifierUserAssignmentRepository.findOne(id);
+        if (identifierUserAssignment == null)
+            return ResponseEntity.badRequest()
+                    .body(ReactAdminUtil.generateJsonError(String.format("Identifier source with id '%d' not found", id)));
+
+        identifierUserAssignment.setAssignedTo(userRepository.findByUuid(request.getUserUUID()));
+        identifierUserAssignment.setIdentifierSource(identifierSourceRepository.findByUuid(request.getIdentifierSourceUUID()));
+        identifierUserAssignment.setIdentifierStart(request.getIdentifierStart());
+        identifierUserAssignment.setIdentifierEnd(request.getIdentifierEnd());
+        identifierUserAssignment.setVoided(request.isVoided());
+        identifierUserAssignmentRepository.save(identifierUserAssignment);
+        return ResponseEntity.ok(null);
+    }
+
+    @DeleteMapping(value = "/web/identifierUserAssignment/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @Transactional
+    public ResponseEntity voidProgram(@PathVariable("id") Long id) {
+        IdentifierUserAssignment identifierSource = identifierUserAssignmentRepository.findOne(id);
+        if (identifierSource == null)
+            return ResponseEntity.notFound().build();
+
+        identifierSource.setVoided(true);
+        identifierUserAssignmentRepository.save(identifierSource);
+        return ResponseEntity.ok(null);
+    }
+
 
 }
