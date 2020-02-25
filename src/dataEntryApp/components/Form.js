@@ -6,6 +6,9 @@ import Paginator from "./Paginator";
 import { withRouter, Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import Paper from "@material-ui/core/Paper";
+import Typography from '@material-ui/core/Typography';
+import { LineBreak } from "../../common/components/utils";
+import moment from "moment/moment";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -13,7 +16,23 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Form = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave }) => {
+
+const Header = ({ subject }) => {
+  const fullName = subject.firstName + " " + subject.lastName || "-";
+  const gender = subject.gender.name || "-";
+  const lowestAddressLevel = subject.lowestAddressLevel.title || "-";
+  const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
+  return ( 
+    <Fragment>
+      <Typography>
+        Name: {fullName} | Age: {dateOfBirth} | Gender: {gender} | Village: {lowestAddressLevel}
+      </Typography>
+      <LineBreak num={1} />
+    </Fragment>
+  )
+};
+
+const Form = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave, subject }) => {    
   const classes = useStyle();
 
   const page = +match.queryParams.page;
@@ -39,6 +58,7 @@ const Form = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto,
   const current = form.formElementGroupAt(currentPageNumber);
   return (
     <Fragment>
+      <Header subject={subject}></Header>
       <h6>
         {currentPageNumber + 1}. {current.name}
       </h6>

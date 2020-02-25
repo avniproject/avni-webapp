@@ -188,6 +188,7 @@ const mapFormStateToProps = state => ({
   obs: new ObservationsHolder(state.dataEntry.registration.subject.observations),
   title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
+  subject: state.dataEntry.registration.subject,
   onSaveGoto: "/app/search"
 });
 
@@ -210,7 +211,7 @@ const SubjectRegister = ({ match: { path } }) => {
     <Fragment>
       <Breadcrumbs path={path} />
       <Paper className={classes.root}>
-        <Stepper />
+        {/* <Stepper/> */}
         <Route exact path={`${path}`} component={ConnectedDefaultPage} />
         <Route path={`${path}/form`} component={RegistrationForm} />
       </Paper>
