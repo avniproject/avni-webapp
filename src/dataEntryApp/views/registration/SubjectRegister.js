@@ -24,6 +24,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
+import SubjectRegistrationForm from "./SubjectRegistrationForm";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -201,7 +202,7 @@ const RegistrationForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
-  )(Form)
+  )(SubjectRegistrationForm)
 );
 
 const SubjectRegister = ({ match: { path } }) => {
