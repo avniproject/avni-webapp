@@ -17,7 +17,6 @@ import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import Paper from "@material-ui/core/Paper";
 import { useTranslation, translate, Trans  } from 'react-i18next';
-import {getTranslation} from "../../reducers/TranslationReducers"
 
 
 const useStyle = makeStyles(theme => ({
@@ -64,14 +63,14 @@ const SubjectsTable = ({ type, subjects}) => {
   return (
     <Table className={classes.table}>
       <TableHead>
-      <button onClick={() => changeLanguage("de")}>de</button>
-      <button onClick={() => changeLanguage("en")}>en</button>
-      <h1>{t('welcome')}</h1>
+      <button onClick={() => changeLanguage("en")}>English</button>
+      <button onClick={() => changeLanguage("mr_IN")}>Marathi</button>
+      <h1>{t('numberBelowLowAbsolute')}</h1>
         <TableRow>
-          <TableCell>Name</TableCell>
-          {type.name === "Individual" && <TableCell align="center">Gender</TableCell>}
-          {type.name === "Individual" && <TableCell align="center">Date of birth(Age)</TableCell>}
-          <TableCell align="center">Location</TableCell>
+          <TableCell>{t('name')}</TableCell>
+          {type.name === "Individual" && <TableCell align="center">{t('gender')}</TableCell>}
+          {type.name === "Individual" && <TableCell align="center">{t('dateOfBirth')}</TableCell>}
+          <TableCell align="center">{t('location')}</TableCell>
           <TableCell align="center">Active programs</TableCell>
         </TableRow>
       </TableHead>

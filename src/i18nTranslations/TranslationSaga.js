@@ -1,8 +1,7 @@
 import { all, call, fork, put, takeEvery, takeLatest} from "redux-saga/effects";
-import {types,getTranslation, setTranslation} from "../reducers/TranslationReducers"
-import httpClient from "common/utils/httpClient";
-import  {storeDispachObservations}  from "../../common/utils/reduxStoreUtilty";
-import api from "../api";
+import {types,getTranslation, setTranslation} from "./TranslationReducers"
+import  {storeDispachObservations}  from "../common/utils/reduxStoreUtilty";
+import api from "./api";
 
 
 
@@ -23,7 +22,6 @@ export function* translationWatcher() {
   }
 
 export function* setTranslationDetails(){
-  alert("set Details")
     const translationsData = yield call(api.fetchTranslationDetails);
     storeDispachObservations(types.TRANSLATION_DATA,translationsData);
     yield put(setTranslation(translationsData));

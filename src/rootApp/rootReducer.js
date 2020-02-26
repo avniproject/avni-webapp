@@ -8,7 +8,7 @@ import translations from "../translations/reducers";
 import reports from "../reports/reducers";
 
 import app from "./ducks";
-import translationsReducer from "../dataEntryApp/reducers/TranslationReducers"
+import translationsReducer from "../i18nTranslations/TranslationReducers"
 
 // const LOCALE = "en";
 

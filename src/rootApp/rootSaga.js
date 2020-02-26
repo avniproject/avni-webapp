@@ -4,7 +4,7 @@ import dataEntrySaga from "../dataEntryApp/sagas";
 import translationsSaga from "../translations/sagas";
 import uploadSagas from "../upload/sagas";
 import reportSagas from "../reports/sagas";
-import translationApiSaga from "../dataEntryApp/sagas/TranslationSaga"
+import translationApiSaga from "../i18nTranslations/TranslationSaga"
 
 import {
   authProvider,

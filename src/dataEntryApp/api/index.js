@@ -20,8 +20,6 @@ export default {
   },
   fetchSubjectGeneral: uuid => {
     return httpClient.fetchJson(`/web/subject/${uuid}/encounters/`).then(response => response.json);
-  },
-  fetchTranslationDetails: () => httpClient.fetchJson(`/web/translations`).then(response => {
-    return response.json;
-  })
+  }
+ 
 };

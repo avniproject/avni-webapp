@@ -8,7 +8,6 @@ import {
 } from "../common/constants";
 import http from "common/utils/httpClient";
 import { configureAuth } from "./utils";
-import {getTranslation} from "../dataEntryApp/reducers/TranslationReducers"
 // import  {storeDispachObservations}  from "../../src/common/utils/reduxStoreUtilty";
 // import {defaultLanguage} from "../dataEntryApp/sagas/TranslationSaga"
 
@@ -73,7 +72,7 @@ function* setUserDetails() {
     yield call(http.initAuthContext, { username: userDetails.username });
   }
   yield put(sendInitComplete());
-  yield put(getTranslation());
+  // yield put(getTranslation());
 
 }
 

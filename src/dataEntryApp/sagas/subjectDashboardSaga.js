@@ -8,7 +8,6 @@ export default function*() {
 }
 
 export function* subjectProfileFetchWatcher() {
-  alert("inside watcher");
   yield takeLatest(types.GET_SUBJECT_PROFILE, subjectProfileFetchWorker);
 }
 

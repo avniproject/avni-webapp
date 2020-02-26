@@ -19,7 +19,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import * as Colors from "@material-ui/core/colors";
 import { httpClient } from "common/utils/httpClient";
 
-import i18n from './i18n';
+import i18n from './i18nTranslations/i18n';
 
 import { I18nextProvider } from "react-i18next";
 
@@ -40,9 +40,10 @@ ReactDOM.render(
   <StylesProvider generateClassName={generateClassName}>
     <ThemeProvider theme={theme}>
       <Provider store={store}>
-        <HashRouter>{isProdEnv || cognitoInDev ? <SecureApp /> : <I18nextProvider i18n={i18n}>
-<App />
-</I18nextProvider>}</HashRouter>
+        <HashRouter>{isProdEnv || cognitoInDev ? <SecureApp /> : 
+        <I18nextProvider i18n={i18n}>
+          <App />
+        </I18nextProvider>}</HashRouter>
       </Provider>
     </ThemeProvider>
   </StylesProvider>,
