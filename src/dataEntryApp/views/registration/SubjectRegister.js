@@ -10,6 +10,7 @@ import {
   updateObs,
   updateSubject
 } from "../../reducers/registrationReducer";
+import Typography from '@material-ui/core/Typography';
 import { getGenders } from "../../reducers/metadataReducer";
 import { get, sortBy } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
@@ -18,7 +19,7 @@ import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
 //import PrimaryButton from "../../components/PrimaryButton";
 //Add new file 
-import PrimaryButton from "../../components/NextButton";
+import PrimaryButton from "../../components/PagenatorButton";
 import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -61,6 +62,8 @@ const DefaultPage = props => {
         {props.subject && (          
           <div>
             <h6>1. Basic Details</h6>
+            <Typography variant="caption" gutterBottom> No Details  </Typography>
+ 
             <Paper>
             <Box className={classes.form} display="flex" flexDirection="column">
               <TextField
@@ -146,7 +149,8 @@ const DefaultPage = props => {
                     }}
                     noUnderline
                   >
-                    <PrimaryButton>Previous</PrimaryButton><PrimaryButton>Next</PrimaryButton>
+                    <div> <PrimaryButton>Previous</PrimaryButton><PrimaryButton>Next</PrimaryButton></div>
+                   
                   </RelativeLink>
                 </Box>
               </Box>

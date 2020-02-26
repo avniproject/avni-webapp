@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@material-ui/core";
 import { InternalLink, RelativeLink } from "../../common/components/utils";
 //import PrimaryButton from "./PrimaryButton";
-import PrimaryButton from "./NextButton";
+import PrimaryButton from "./PagenatorButton";
 
 const styles = {
   marginRight20: {

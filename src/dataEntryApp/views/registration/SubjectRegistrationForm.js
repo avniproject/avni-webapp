@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { LineBreak } from "../../../common/components/utils";
 import moment from "moment/moment";
 import Form from "../../components/Form";
+import Summary from'./Summary';
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -56,20 +57,22 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
   };
 
   const current = form.formElementGroupAt(currentPageNumber);
-  return (
-    <Fragment>
-      <Header subject={subject}></Header>
-      <h6>
-        {currentPageNumber + 1}. {current.name}
-      </h6>   
-      <Paper className={classes.form}>
-      <Form current={current} obs={obs} updateObs={updateObs}>
-      </Form>
-      {saved && <Redirect to={onSaveGoto} />}
-        <Paginator pageDetails={pageDetails} onSave={onSave} />
-    </Paper>
-    </Fragment>
-  );
-};
+  
+    return (
+      <Fragment>
+        <Header subject={subject}></Header>
+        <h6>
+          {currentPageNumber + 1}. {current.name}
+        </h6>   
+        <Paper className={classes.form}>
+        {(currentPageNumber === lastPageNumber) ? <Summary subject={subject}/> :  
+        <Form current={current} obs={obs} updateObs={updateObs}></Form> }     
+       
+        {saved && <Redirect to={onSaveGoto} />}
+          <Paginator pageDetails={pageDetails} onSave={onSave} />
+      </Paper>
+      </Fragment>
+    ); 
+}
 
 export default withRouter(withParams(SubjectRegistrationForm));
