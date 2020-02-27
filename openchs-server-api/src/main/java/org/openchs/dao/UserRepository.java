@@ -1,5 +1,6 @@
 package org.openchs.dao;
 
+import org.openchs.domain.Catchment;
 import org.openchs.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 @Repository
@@ -45,4 +48,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     Page<User> findByOrganisationIdAndIsVoidedFalseAndPhoneNumberContaining(Long organisationId,
                                                                             String phoneNumber,
                                                                             Pageable pageable);
+    Page<User> findPageByIsVoidedFalse(Pageable pageable);
+
+    @RestResource(path = "findAllById", rel = "findAllById")
+    List<User> findByIdIn(@Param("ids") Long[] ids);
 }

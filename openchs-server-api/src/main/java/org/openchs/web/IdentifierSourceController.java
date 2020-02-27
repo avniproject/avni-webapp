@@ -6,6 +6,7 @@ import org.openchs.domain.*;
 import org.openchs.service.UserService;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.IdentifierSourceContract;
+import org.openchs.web.request.webapp.IdentifierSourceContractWeb;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -52,81 +53,6 @@ public class IdentifierSourceController extends AbstractController<IdentifierSou
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     void save(@RequestBody List<IdentifierSourceContract> identifierSourceRequests) {
         identifierSourceRequests.forEach(this::save);
-    }
-
-    @GetMapping(value = "/web/identifierSource")
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    @ResponseBody
-    public PagedResources<Resource<IdentifierSource>> getAll(Pageable pageable) {
-        return wrap(identifierSourceRepository.findPageByIsVoidedFalse(pageable));
-    }
-
-    @GetMapping(value = "/web/identifierSource/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    @ResponseBody
-    public ResponseEntity getOne(@PathVariable("id") Long id) {
-        IdentifierSource identifierSource = identifierSourceRepository.findOne(id);
-        if (identifierSource.isVoided())
-            return ResponseEntity.notFound().build();
-        return new ResponseEntity<>(identifierSource, HttpStatus.OK);
-    }
-
-
-    @PostMapping(value = "/web/identifierSource")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    @Transactional
-    ResponseEntity saveProgramForWeb(@RequestBody IdentifierSourceContract request) {
-        IdentifierSource identifierSource = new IdentifierSource();
-        identifierSource.assignUUID();
-        identifierSource.setBatchGenerationSize(request.getBatchGenerationSize());
-        identifierSource.setCatchment(catchmentRepository.findByUuid(request.getCatchmentUUID()));
-        identifierSource.setFacility(facilityRepository.findByUuid(request.getFacilityUUID()));
-        identifierSource.setMinimumBalance(request.getMinimumBalance());
-        identifierSource.setName(request.getName());
-        identifierSource.setOptions(new JsonObject());//request.getOptions());
-        identifierSource.setType(request.getType());
-        identifierSource.setVoided(request.isVoided());
-        identifierSource.setMinLength(request.getMinLength());
-        identifierSource.setMaxLength(request.getMaxLength());
-        identifierSourceRepository.save(identifierSource);
-        return ResponseEntity.ok(null);
-    }
-
-    @PutMapping(value = "/web/identifierSource/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    @Transactional
-    public ResponseEntity updateProgramForWeb(@RequestBody IdentifierSourceContract request,
-                                              @PathVariable("id") Long id) {
-        IdentifierSource identifierSource = identifierSourceRepository.findOne(id);
-        if (identifierSource == null)
-            return ResponseEntity.badRequest()
-                    .body(ReactAdminUtil.generateJsonError(String.format("Identifier source with id '%d' not found", id)));
-
-        identifierSource.setBatchGenerationSize(request.getBatchGenerationSize());
-        identifierSource.setCatchment(catchmentRepository.findByUuid(request.getCatchmentUUID()));
-        identifierSource.setFacility(facilityRepository.findByUuid(request.getFacilityUUID()));
-        identifierSource.setMinimumBalance(request.getMinimumBalance());
-        identifierSource.setName(request.getName());
-        identifierSource.setOptions(new JsonObject());//request.getOptions());
-        identifierSource.setType(request.getType());
-        identifierSource.setVoided(request.isVoided());
-        identifierSource.setMinLength(request.getMinLength());
-        identifierSource.setMaxLength(request.getMaxLength());
-        identifierSourceRepository.save(identifierSource);
-        return ResponseEntity.ok(null);
-    }
-
-    @DeleteMapping(value = "/web/identifierSource/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
-    @Transactional
-    public ResponseEntity voidProgram(@PathVariable("id") Long id) {
-        IdentifierSource identifierSource = identifierSourceRepository.findOne(id);
-        if (identifierSource == null)
-            return ResponseEntity.notFound().build();
-
-        identifierSource.setVoided(true);
-        identifierSourceRepository.save(identifierSource);
-        return ResponseEntity.ok(null);
     }
 
     void save(IdentifierSourceContract identifierSourceContract) {
