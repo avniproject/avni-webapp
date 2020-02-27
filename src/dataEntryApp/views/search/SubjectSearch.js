@@ -69,7 +69,7 @@ const SubjectsTable = ({ type, subjects }) => {
           {type.name === "Individual" && <TableCell align="center">{t("gender")}</TableCell>}
           {type.name === "Individual" && <TableCell align="center">{t("dateOfBirth")}</TableCell>}
           <TableCell align="center">{t("location")}</TableCell>
-          <TableCell align="center">Active programs</TableCell>
+          <TableCell align="center">{t("activeprograms")}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -78,7 +78,9 @@ const SubjectsTable = ({ type, subjects }) => {
             <TableCell component="th" scope="row">
               <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
             </TableCell>
-            {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}
+            {type.name === "Individual" && (
+              <TableCell align="center">{t(row.gender.name)}</TableCell>
+            )}
             {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
             <TableCell align="center">{row.addressLevel.titleLineage}</TableCell>
             <TableCell align="center">
@@ -94,7 +96,7 @@ const SubjectsTable = ({ type, subjects }) => {
                   }}
                   disabled
                 >
-                  {p.operationalProgramName}
+                  {t(p.operationalProgramName)}
                 </Button>
               ))}
             </TableCell>
@@ -107,6 +109,7 @@ const SubjectsTable = ({ type, subjects }) => {
 
 const SubjectSearch = props => {
   const classes = useStyle();
+  const { t, i18n } = useTranslation();
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -133,7 +136,7 @@ const SubjectSearch = props => {
           </FormControl>
           <FormControl className={classes.searchFormItem}>
             <PrimaryButton type={"submit"} onClick={handleSubmit}>
-              Search
+              {t("search")}
             </PrimaryButton>
           </FormControl>
         </form>

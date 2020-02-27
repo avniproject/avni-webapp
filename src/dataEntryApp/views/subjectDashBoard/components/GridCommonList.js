@@ -7,7 +7,8 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
-import { Link, withRouter} from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -35,6 +36,8 @@ const useStyles = makeStyles(theme => ({
 
 const GridCommonList = ({ gridListDetails }) => {
   const classes = useStyles();
+  const { t, i18n } = useTranslation();
+
   return (
     <Grid item xs={12} container className={classes.gridBottomBorder}>
       {gridListDetails
@@ -45,7 +48,12 @@ const GridCommonList = ({ gridListDetails }) => {
                   <Card className={classes.card}>
                     <CardContent>
                       <Typography component={"div"} color="primary">
-                      <Link to={`?uuid=${relative.individualB.uuid}`} replace > {relative.individualB.firstName + " " + relative.individualB.lastName} </Link> 
+                        <Link to={`?uuid=${relative.individualB.uuid}`} replace>
+                          {" "}
+                          {relative.individualB.firstName +
+                            " " +
+                            relative.individualB.lastName}{" "}
+                        </Link>
                       </Typography>
                       <Typography
                         component={"div"}
@@ -53,7 +61,7 @@ const GridCommonList = ({ gridListDetails }) => {
                         color="textSecondary"
                         gutterBottom
                       >
-                        {relative.relationship.individualBIsToARelation.name}
+                        {t(relative.relationship.individualBIsToARelation.name)}
                       </Typography>
                       <Typography
                         component={"div"}
@@ -63,12 +71,12 @@ const GridCommonList = ({ gridListDetails }) => {
                       >
                         {new Date().getFullYear() -
                           new Date(relative.individualB.dateOfBirth).getFullYear() +
-                          " Year"}
+                          `${t("year")}`}
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <Button color="primary">REMOVE</Button>
-                      <Button color="primary">EDIT</Button>
+                      <Button color="primary">{t("remove")}</Button>
+                      <Button color="primary">{t("edit")}</Button>
                     </CardActions>
                   </Card>
                 </Grid>

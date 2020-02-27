@@ -13,6 +13,7 @@ import Box from "@material-ui/core/Box";
 import PersonIcon from "@material-ui/icons/Person";
 import ListIcon from "@material-ui/icons/List";
 import AssessmentIcon from "@material-ui/icons/Assessment";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   tabsDisplay: {
@@ -67,6 +68,7 @@ TabContent.propTypes = {
 
 export default ({ profile, general, program }) => {
   const classes = useStyles();
+  const { t, i18n } = useTranslation();
 
   const [value, setValue] = React.useState(0);
 
@@ -94,9 +96,9 @@ export default ({ profile, general, program }) => {
           aria-label="scrollable auto tabs example"
           className={classes.wrapper}
         >
-          <Tab label="PROGRAMS" icon={<AssessmentIcon />} {...a11yProps(0)} />
-          <Tab label="PROFILE" icon={<PersonIcon />} {...a11yProps(1)} />
-          <Tab label="GENERAL" icon={<ListIcon />} {...a11yProps(2)} />
+          <Tab label={t("Program")} icon={<AssessmentIcon />} {...a11yProps(0)} />
+          <Tab label={t("Profile")} icon={<PersonIcon />} {...a11yProps(1)} />
+          <Tab label={t("General")} icon={<ListIcon />} {...a11yProps(2)} />
         </Tabs>
       </MUAppBar>
       <TabContent value={value} index={0}>

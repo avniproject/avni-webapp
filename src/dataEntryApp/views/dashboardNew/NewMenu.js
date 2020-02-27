@@ -14,6 +14,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import { InternalLink } from "../../../common/components/utils";
+import { useTranslation } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
   container: {
@@ -42,6 +43,8 @@ const useStyle = makeStyles(theme => ({
 
 function NewMenu({ operationalModules }) {
   const classes = useStyle();
+  const { t, i18n } = useTranslation();
+
   const [value, setValue] = React.useState("female");
 
   const handleChange = event => {
@@ -59,7 +62,7 @@ function NewMenu({ operationalModules }) {
   return (
     <div className={classes.container}>
       <List component="nav" aria-labelledby="nested-list-subheader" className={classes.root}>
-        <label className={classes.FormLabel}>Register</label>
+        <label className={classes.FormLabel}>{t("register")}</label>
         {operationalModules.subjectTypes.map((element, key) => {
           return (
             <React.Fragment>
@@ -73,7 +76,7 @@ function NewMenu({ operationalModules }) {
                   <ListItemIcon>
                     <PersonAddIcon style={{ color: "blue" }} />
                   </ListItemIcon>
-                  <ListItemText primary={element.name} />
+                  <ListItemText primary={t(element.name)} />
                   <ChevronRightIcon />
                 </ListItem>
               </InternalLink>
@@ -98,7 +101,7 @@ function NewMenu({ operationalModules }) {
                 <FormControlLabel
                   value="end"
                   control={<Radio color="primary" />}
-                  label={element.operationalProgramName}
+                  label={t(element.operationalProgramName)}
                   labelPlacement="end"
                 />
               </RadioGroup>

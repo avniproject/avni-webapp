@@ -17,6 +17,7 @@ import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Chip from "@material-ui/core/Chip";
+import { useTranslation } from "react-i18next";
 
 const FormControl = withStyles({
   root: {
@@ -61,6 +62,8 @@ const showDatePicker = (cssClasses, props) => {
 
 function FormElementDetails(props) {
   const classes = useStyles();
+  const { t, i18n } = useTranslation();
+
   const cssClasses = {
     label: {
       marginTop: 13,
@@ -107,7 +110,7 @@ function FormElementDetails(props) {
           <div style={{ color: "red" }}>Please enter name</div>
         )}
         <FormControl fullWidth>
-          <InputLabel htmlFor="elementNameDetails">Name</InputLabel>
+          <InputLabel htmlFor="elementNameDetails">{t("name")}</InputLabel>
           <Input
             id="elementNameDetails"
             value={props.formElementData.name}

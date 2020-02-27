@@ -24,6 +24,7 @@ import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { getOrgConfigInfo, getUserInfo } from "../../rootApp/ducks";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -94,6 +95,7 @@ const PrimarySearchAppBar = ({
   userInfo
 }) => {
   const classes = useStyles();
+  const { t, i18n } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -208,7 +210,7 @@ const PrimarySearchAppBar = ({
           <form noValidate autoComplete="off">
             <Input
               className={classes.inputSearch}
-              placeholder="Search"
+              placeholder={t("search")}
               id="standard-adornment-search"
               endAdornment={
                 <InputAdornment position="end">
@@ -230,7 +232,7 @@ const PrimarySearchAppBar = ({
               onClick={handleToggle}
               style={{ color: "#0e6eff" }}
             >
-              New
+              {t("new")}
               <ExpandMoreIcon />
             </Button>
             <Popper

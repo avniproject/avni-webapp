@@ -190,7 +190,7 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
           <ListItemIcon>
             <SettingsIcon style={{ color: "blue" }} />
           </ListItemIcon>
-          <ListItemText primary="Settings" style={{ color: "blue" }} onClick={getLanguages} />
+          <ListItemText primary={t("settings")} style={{ color: "blue" }} onClick={getLanguages} />
           {open ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
@@ -199,7 +199,7 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
             className={classes.formControl}
             style={{ fontSize: "12px", marginTop: "20px", marginLeft: "85px" }}
           >
-            <FormLabel component="legend">Language</FormLabel>
+            <FormLabel component="legend">{t("language")}</FormLabel>
             <RadioGroup aria-label="language" name="language" value={value} onChange={handleChange}>
               {orgConfig
                 ? orgConfig.map((element, index) => (
@@ -216,7 +216,7 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
                   ))
                 : ""}
             </RadioGroup>
-            <FormLabel component="legend">Track location</FormLabel>
+            <FormLabel component="legend">{t("trackLocation")}</FormLabel>
             <FormControlLabel control={<Switch checked={true} value="checkedA" />} label="On" />
           </FormControl>
         </Collapse>
@@ -225,27 +225,27 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
           <ListItemIcon>
             <VideoIcon style={{ color: "blue" }} />
           </ListItemIcon>
-          <ListItemText primary="Video List" />
+          <ListItemText primary={t("VideoList")} />
         </ListItem>
 
         <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <SyncIcon style={{ color: "blue" }} />
           </ListItemIcon>
-          <ListItemText primary="Entity Sync Status" />
+          <ListItemText primary={t("entitySyncStatus")} />
         </ListItem>
 
         <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <LockIcon style={{ color: "blue" }} />
           </ListItemIcon>
-          <ListItemText primary="Change Password" />
+          <ListItemText primary={t("changePassword")} />
         </ListItem>
         <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <LogoutIcon style={{ color: "blue" }} />
           </ListItemIcon>
-          <ListItemText primary="Logout" />
+          <ListItemText primary={t("logout")} />
         </ListItem>
       </List>
     </div>

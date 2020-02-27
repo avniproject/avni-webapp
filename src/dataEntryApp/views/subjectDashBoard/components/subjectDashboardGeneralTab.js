@@ -9,6 +9,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
 import Visit from "./Visit";
 import SubjectButton from "./Button";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -48,7 +49,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-
+  const { t, i18n } = useTranslation();
   const classes = useStyles();
 
   return (
@@ -68,7 +69,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
             id="plannedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
-              Planned visits
+              {t("plannedVisits")}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -102,7 +103,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
             id="completedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
-              Completed visits
+              {t("completedVisits")}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -112,7 +113,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                     row.encounterDateTime ? (
                       <Visit
                         key={index}
-                        name={row.encounterType.name}
+                        name={t(row.encounterType.name)}
                         index={index}
                         visitDate={row.encounterDateTime}
                         earliestVisitDate={row.earliestVisitDateTime}
