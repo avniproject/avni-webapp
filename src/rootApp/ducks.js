@@ -3,19 +3,17 @@ export const types = {
   SET_COGNITO_USER: "app/SET_COGNITO_USER",
   GET_USER_INFO: "app/GET_USER_INFO",
   SET_USER_INFO: "app/SET_USER_INFO",
+  GET_ORG_CONFIG: "app/GET_ORG_CONFIG",
+  SET_ORG_CONFIG: "app/SET_ORG_CONFIG",
   INIT_COMPLETE: "app/INIT_COMPLETE",
   FETCH_ALL_LOCATIONS: "app/FETCH_ALL_LOCATIONS",
   FETCH_ALL_LOCATIONS_SUCCESS: "app/FETCH_ALL_LOCATIONS_SUCCESS",
-  AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
-  // GET_TRANSLATION: "GET_TRANSLATION___",
-  // SET_TRANSLATION: "SET_TRANSLATION___",
-  TRANSLATION_DATA: "TRANSLATION_DATA"
+  AUTH_CONFIGURED: "app/AUTH_CONFIGURED"
 };
 
 export const initCognito = () => ({
   type: types.INIT_COGNITO
 });
-
 export const setCognitoUser = (authState, authData) => ({
   type: types.SET_COGNITO_USER,
   payload: {
@@ -33,15 +31,14 @@ export const setUserInfo = userInfo => ({
   payload: userInfo
 });
 
+export const getOrgConfigInfo = () => ({
+  type: types.GET_ORG_CONFIG
+});
 
-// export const getTranslation = ()=> {
-//   return { type: types.GET_TRANSLATION }
-// };
-
-// export const setTranslation = translationData => ({
-//   type: types.SET_TRANSLATION,
-//   payload: translationData
-// });
+export const setOrgConfigInfo = orgConfig => ({
+  type: types.SET_ORG_CONFIG,
+  payload: orgConfig
+});
 
 export const sendInitComplete = () => ({
   type: types.INIT_COMPLETE
@@ -79,6 +76,13 @@ export default function(state = initialState, action) {
         }
       };
     }
+    case types.SET_ORG_CONFIG: {
+      return {
+        ...state,
+        // orgConfig: action.payload._embedded.organisationConfig[0].settings.languages
+        orgConfig: action.payload
+      };
+    }
     case types.SET_USER_INFO: {
       return {
         ...state,
@@ -106,12 +110,7 @@ export default function(state = initialState, action) {
         authConfigured: true
       };
     }
-    // case types.SET_TRANSLATION: {
-    //   return {
-    //     ...state,
-    //     authConfigured: true
-    //   };
-    // }
+
     default:
       return state;
   }
