@@ -133,6 +133,7 @@ const PrimarySearchAppBar = ({
 
   const handleProfileMenuOpen = event => {
     userOption ? setUserOption(false) : setUserOption(true);
+    getLanguages();
     setAnchorEl(event.currentTarget);
   };
 
@@ -188,18 +189,6 @@ const PrimarySearchAppBar = ({
     </Menu>
   );
 
-  //useEffect(() => {
-  //getOrgConfigInfo();
-  //}, []);
-
-  console.log("get org config info");
-  //console.log(getOrgConfigInfo());
-  console.log(orgConfig);
-  //console.log(state);
-  console.log("====");
-  console.log(defaultLanguage);
-  console.log("*****");
-  console.log(userInfo);
   return (
     <div className={classes.grow}>
       <AppBar position="static" style={{ background: "white" }}>

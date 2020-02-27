@@ -142,15 +142,12 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
   const { t, i18n } = useTranslation();
 
   const changeLanguage = lng => {
-    console.log("changing laguage to " + lng);
     i18n.changeLanguage(lng);
   };
 
   const handleChange = event => {
+    // event.stopPropagation();
     setValue(event.target.value);
-    console.log("Radio button changed.." + event.target.value);
-
-    console.log(userInfo);
 
     const userInfoJson = {
       username: userInfo.username,
@@ -165,12 +162,8 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
       roles: userInfo.roles
     };
 
-    console.log("After...");
-    console.log(userInfoJson);
-
     http.post("/me", userInfoJson).then(response => {
       if (response.status === 200) {
-        // console.log("success");
         changeLanguage(userInfoJson.settings.locale);
       }
     });
