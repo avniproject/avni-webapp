@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Table from "@material-ui/core/Table";
-import { withRouter, Link} from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
@@ -16,8 +16,7 @@ import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchRed
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import Paper from "@material-ui/core/Paper";
-import { useTranslation, translate, Trans  } from 'react-i18next';
-
+import { useTranslation, translate, Trans } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -50,34 +49,33 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({ type, subjects}) => {
+const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
   const { t, i18n } = useTranslation();
   //const { t, i18n } = this.props;
 
-  const changeLanguage = lng => {
-    i18n.changeLanguage(lng);
-  };
-
+  // const changeLanguage = lng => {
+  //   i18n.changeLanguage(lng);
+  // };
 
   return (
     <Table className={classes.table}>
       <TableHead>
-      <button onClick={() => changeLanguage("en")}>English</button>
-      <button onClick={() => changeLanguage("mr_IN")}>Marathi</button>
-      <h1>{t('numberBelowLowAbsolute')}</h1>
+        {/* <button onClick={() => changeLanguage("en")}>English</button>
+      <button onClick={() => changeLanguage("mr_IN")}>Marathi</button> */}
+        <h1>{t("numberBelowLowAbsolute")}</h1>
         <TableRow>
-          <TableCell>{t('name')}</TableCell>
-          {type.name === "Individual" && <TableCell align="center">{t('gender')}</TableCell>}
-          {type.name === "Individual" && <TableCell align="center">{t('dateOfBirth')}</TableCell>}
-          <TableCell align="center">{t('location')}</TableCell>
+          <TableCell>{t("name")}</TableCell>
+          {type.name === "Individual" && <TableCell align="center">{t("gender")}</TableCell>}
+          {type.name === "Individual" && <TableCell align="center">{t("dateOfBirth")}</TableCell>}
+          <TableCell align="center">{t("location")}</TableCell>
           <TableCell align="center">Active programs</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {subjects.map((row, id) => (
           <TableRow key={id}>
-            <TableCell component="th" scope="row">            
+            <TableCell component="th" scope="row">
               <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
             </TableCell>
             {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}

@@ -19,6 +19,8 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import Switch from "@material-ui/core/Switch";
 import { LOCALES } from "../../common/constants";
+import http from "common/utils/httpClient";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -137,11 +139,41 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = lng => {
+    console.log("changing laguage to " + lng);
+    i18n.changeLanguage(lng);
+  };
+
   const handleChange = event => {
     setValue(event.target.value);
     console.log("Radio button changed.." + event.target.value);
 
     console.log(userInfo);
+
+    const userInfoJson = {
+      username: userInfo.username,
+      organisationName: userInfo.organisationName,
+      organisationId: userInfo.organisationId,
+      usernameSuffix: userInfo.usernameSuffix,
+      settings: {
+        ...userInfo.settings,
+        locale: event.target.value
+      },
+      lastModifiedDateTime: userInfo.lastModifiedDateTime,
+      roles: userInfo.roles
+    };
+
+    console.log("After...");
+    console.log(userInfoJson);
+
+    http.post("/me", userInfoJson).then(response => {
+      if (response.status === 200) {
+        // console.log("success");
+        changeLanguage(userInfoJson.settings.locale);
+      }
+    });
   };
 
   const menuId = "primary-search-account-menu";
