@@ -16,7 +16,7 @@ import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchRed
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import Paper from "@material-ui/core/Paper";
-import { useTranslation, translate, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -61,9 +61,6 @@ const SubjectsTable = ({ type, subjects }) => {
   return (
     <Table className={classes.table}>
       <TableHead>
-        {/* <button onClick={() => changeLanguage("en")}>English</button>
-      <button onClick={() => changeLanguage("mr_IN")}>Marathi</button> */}
-        <h1>{t("numberBelowLowAbsolute")}</h1>
         <TableRow>
           <TableCell>{t("name")}</TableCell>
           {type.name === "Individual" && <TableCell align="center">{t("gender")}</TableCell>}

@@ -11,9 +11,9 @@ httpClient.fetchJson(`/web/translations`).then(response => {
     debug: true,
     ns: ["translations"],
     defaultNS: "translations",
-    keySeparator: false, // we use content as keys
+    keySeparator: false, 
     interpolation: {
-      escapeValue: false, // not needed for react!!
+      escapeValue: false, 
       formatSeparator: ","
     },
     react: {

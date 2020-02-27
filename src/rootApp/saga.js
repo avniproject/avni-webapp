@@ -15,13 +15,11 @@ import {
 } from "../common/constants";
 import http from "common/utils/httpClient";
 import { configureAuth } from "./utils";
-// import  {storeDispachObservations}  from "../../src/common/utils/reduxStoreUtilty";
-// import {defaultLanguage} from "../dataEntryApp/sagas/TranslationSaga"
+import { useTranslation } from "react-i18next";
 
-// let tranlationApi;
-// function defaultLanguage(userDetails){
-//   tranlationApi = { fetchTranslationDetails: () => http.fetchJson(`/web/translations`).then(response => response.json)}
-// }
+
+// const { t, i18n } = useTranslation();
+
 
 const api = {
   fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
@@ -29,6 +27,7 @@ const api = {
   fetchOrganisationConfig: () =>
     http.fetchJson("/web/organizations").then(response => response.json)
 };
+
 
 export function* initialiseCognito() {
   if (isProdEnv || cognitoInDev) {
@@ -55,17 +54,12 @@ export function* onSetCognitoUser() {
   });
   yield put(getUserInfo());
 }
-// export default function*() {
-//   yield all([translationWatcher].map(fork));
-// }
+
 
 export function* userInfoWatcher() {
   yield takeLatest(types.GET_USER_INFO, setUserDetails);
 }
-// export function* translationWatcher() {
-//   yield takeEvery(types.GET_TRANSLATION, setTranslationDetails);
 
-// }
 
 export function* organisationConfigWatcher() {
   yield takeLatest(types.GET_ORG_CONFIG, setOrganisationConfig);
@@ -73,14 +67,18 @@ export function* organisationConfigWatcher() {
 
 function* setUserDetails() {
   const userDetails = yield call(api.fetchUserInfo);
-  //  defaultLanguage(userDetails.settings.locale);
   yield put(setUserInfo(userDetails));
   if (isDevEnv && !cognitoInDev) {
     yield call(http.initAuthContext, { username: userDetails.username });
   }
   yield put(sendInitComplete());
-  //yield put(getOrgConfigInfo());
+  // yield call(changeLanguage(userDetails.settings.locale));
 }
+
+
+// function* changeLanguage(lng) { 
+//   i18n.changeLanguage(lng);
+// }
 
 function* setOrganisationConfig() {
   const orgConfig = yield call(api.fetchOrganisationConfig);

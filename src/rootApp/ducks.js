@@ -79,7 +79,6 @@ export default function(state = initialState, action) {
     case types.SET_ORG_CONFIG: {
       return {
         ...state,
-        // orgConfig: action.payload._embedded.organisationConfig[0].settings.languages
         orgConfig: action.payload
       };
     }
