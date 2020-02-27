@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 import { InternalLink, RelativeLink } from "../../common/components/utils";
 //import PrimaryButton from "./PrimaryButton";
 import PrimaryButton from "./PagenatorButton";
@@ -10,28 +10,36 @@ const styles = {
   }
 };
 
-const PaginationButton = ({ page, title }) =>
+const PaginationButton = ({ page, title, type }) =>
   page && (
     <RelativeLink params={{ page }} noUnderline>
-      <PrimaryButton>{title}</PrimaryButton>
+      <PrimaryButton type={type}>{title}</PrimaryButton>
     </RelativeLink>
   );
 
-const Paginator = props => {  
+const Paginator = props => {    
   return (
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
-        <PaginationButton page={props.pageDetails.previousPageNumber} title={"Previous"} />
+        <PaginationButton page={props.pageDetails.previousPageNumber}
+         type={props.label.type}
+         title={props.label.Previous} />
+
         {!props.pageDetails.previousPageNumber && (
           <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
-            <PrimaryButton>Previous</PrimaryButton>
+            <PrimaryButton type={props.label.type}>{props.label.Previous}</PrimaryButton>
           </InternalLink>
         )}
+
       </Box>
+      {props.showCount && <Typography variant="subtitle1" gutterBottom>  {props.count} </Typography>}
       <Box component={"span"}>
-        <PaginationButton page={props.pageDetails.nextPageNumber} title={"Next"} />
+        <PaginationButton page={props.pageDetails.nextPageNumber} 
+        type={props.label.type}
+        title={props.label.Next} />
+        
         {!props.pageDetails.nextPageNumber && props.onSave && (
-          <PrimaryButton onClick={props.onSave}>Save</PrimaryButton>
+          <PrimaryButton type={props.label.type} onClick={props.onSave}>{props.label.Save}</PrimaryButton>
         )}
       </Box>
     </Box>

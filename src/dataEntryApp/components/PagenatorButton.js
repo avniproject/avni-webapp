@@ -1,8 +1,6 @@
 import React from "react";
-import { Button } from "@material-ui/core";
-import Chip from '@material-ui/core/Chip';
+import {Chip, Typography} from '@material-ui/core';
 import { makeStyles } from "@material-ui/core/styles";
-import { withTheme } from "@material-ui/styles";
 const useStyles = makeStyles(theme => ({  
   privbuttonStyle:{  
   //  backgroundColor:"orange",
@@ -17,10 +15,18 @@ const useStyles = makeStyles(theme => ({
    }
 }));
 
+// const Chip1 = ()=>{
+//   return  <Chip className={classes.privbuttonStyle} type='button' variant="outlined" {...props} label={children}/> 
+// }
+const Text = ({label})=>{
+return  <Typography variant="subtitle1" gutterBottom>  {label} </Typography>       
+}
+
 export default ({ children, ...props }) => {
   const classes = useStyles();
- // console.log(children,'-------',props);
-  if(children == "Previous"){
+if(props.type=== "text"){
+  return <Text label={children} />
+}else if(children == "Previous"){
     return(
       <Chip className={classes.privbuttonStyle} type='button' variant="outlined" {...props} label={children}/> 
     );
