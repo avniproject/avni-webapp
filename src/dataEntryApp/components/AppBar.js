@@ -289,7 +289,7 @@ const PrimarySearchAppBar = ({
 const mapStateToProps = state => ({
   orgConfig: state.app.orgConfig ? state.app.orgConfig.settings.languages : "",
   userInfo: state.app.userInfo,
-  defaultLanguage: state.i18n ? state.i18n.locale : ""
+  defaultLanguage: state.app.userInfo ? state.app.userInfo.settings.locale : ""
 });
 
 const mapDispatchToProps = {
