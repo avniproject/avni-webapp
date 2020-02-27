@@ -31,9 +31,9 @@ const Stepper = () => {
         Register and enroll - Mother Program
       </Typography>
 
-      <Typography className={classes.detailslable} variant="caption" gutterBottom>
+      {/* <Typography className={classes.detailslable} variant="caption" gutterBottom>
         No Details
-      </Typography>
+      </Typography> */}
 
 
       {/* <h3>Register and enroll - Mother Program</h3>

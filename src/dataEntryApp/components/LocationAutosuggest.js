@@ -37,7 +37,7 @@ const LocationAutosuggest = ({ onSelect }) => {
   };
 
   const inputProps = {
-    placeholder: "Type a programming language",
+    placeholder: "Village Name",
     value,
     onChange
   };

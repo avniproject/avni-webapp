@@ -2,6 +2,11 @@ import React, { Fragment } from "react";
 import { Box, TextField } from "@material-ui/core";
 import moment from "moment/moment";
 import { LineBreak } from "../../../src/common/components/utils";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 export const DateOfBirth = ({ dateOfBirth, onChange }) => {
   const dob = dateOfBirth && dateOfBirth.toISOString().substr(0, 10);
@@ -36,18 +41,26 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
   return (
     <Fragment>
       <Box display="flex" flexDirection="column">
-        <TextField
-          label="Date of Birth"
-          type="date"
-          required
-          style={{ width: "30%" }}
-          name="dateOfBirth"
-          value={dob}
-          onChange={e => _onChange(e.target.value)}
-          InputLabelProps={{
-            shrink: true
-          }}
-        />
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDatePicker
+            disableToolbar
+            variant="inline"
+            format="MM/dd/yyyy"
+            margin="normal"
+            required
+            id="date-picker-inline"
+            style={{ width: "30%" }}
+            name="dateOfBirth"
+            value={dob}
+            onChange={e => _onChange(e.target.value)}
+            InputLabelProps={{
+              shrink: true
+            }}
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+          />
+        </MuiPickersUtilsProvider>
         <LineBreak num={1} />
         <TextField
           label={"Age"}

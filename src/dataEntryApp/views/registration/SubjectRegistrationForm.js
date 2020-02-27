@@ -9,31 +9,38 @@ import Typography from '@material-ui/core/Typography';
 import { LineBreak } from "../../../common/components/utils";
 import moment from "moment/moment";
 import Form from "../../components/Form";
-import Summary from'./Summary';
+import Summary from './Summary';
 
 const useStyle = makeStyles(theme => ({
   form: {
     padding: theme.spacing(3, 3)
+  },
+  details: {
+    marginBottom: 10,
+    color: "rgba(0, 0, 0, 0.54)"
   }
 }));
 
 
 const Header = ({ subject }) => {
+  const classes = useStyle();
   const fullName = subject.firstName + " " + subject.lastName || "-";
   const gender = subject.gender.name || "-";
   const lowestAddressLevel = subject.lowestAddressLevel.title || "-";
   const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
-  return ( 
+  return (
     <Fragment>
-      <Typography>
-        Name: {fullName} | Age: {dateOfBirth} | Gender: {gender} | Village: {lowestAddressLevel}
-      </Typography>
-      <LineBreak num={1} />
+      <div className={classes.details}>
+        <Typography variant="caption" gutterBottom>
+          Name: {fullName} | Age: {dateOfBirth} | Gender: {gender} | Village: {lowestAddressLevel}
+        </Typography>
+      </div>
+
     </Fragment>
   )
 };
 
-const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave, subject }) => {    
+const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave, subject }) => {
   const classes = useStyle();
 
   const page = +match.queryParams.page;
@@ -57,22 +64,22 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
   };
 
   const current = form.formElementGroupAt(currentPageNumber);
-  
-    return (
-      <Fragment>
-        <Header subject={subject}></Header>
-        <h6>
-          {currentPageNumber + 1}. {current.name}
-        </h6>   
-        <Paper className={classes.form}>
-        {(currentPageNumber === lastPageNumber) ? <Summary subject={subject}/> :  
-        <Form current={current} obs={obs} updateObs={updateObs}></Form> }     
-       
+
+  return (
+    <Fragment>
+      <Header subject={subject}></Header>
+      <h6>
+        {currentPageNumber + 1}. {current.name}
+      </h6>
+      <Paper className={classes.form}>
+        {(currentPageNumber === lastPageNumber) ? <Summary subject={subject} /> :
+          <Form current={current} obs={obs} updateObs={updateObs}></Form>}
+
         {saved && <Redirect to={onSaveGoto} />}
-          <Paginator pageDetails={pageDetails} onSave={onSave} />
+        <Paginator pageDetails={pageDetails} onSave={onSave} />
       </Paper>
-      </Fragment>
-    ); 
+    </Fragment>
+  );
 }
 
 export default withRouter(withParams(SubjectRegistrationForm));

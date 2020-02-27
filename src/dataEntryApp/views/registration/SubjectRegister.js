@@ -10,16 +10,32 @@ import {
   updateObs,
   updateSubject
 } from "../../reducers/registrationReducer";
+import {
+  CustomToolbar,
+  formatRoles,
+  isRequired,
+  mobileNumberFormatter,
+  mobileNumberParser,
+  PasswordTextField,
+  UserFilter,
+  UserTitle,
+  validateEmail,
+  validatePhone
+} from "../../../adminApp/UserHelper";
 import Typography from '@material-ui/core/Typography';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import { getGenders } from "../../reducers/metadataReducer";
 import { get, sortBy } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import Form from "../../components/Form";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
-//import PrimaryButton from "../../components/PrimaryButton";
-//Add new file 
-import PrimaryButton from "../../components/PagenatorButton";
+import PagenatorButton from "../../components/PagenatorButton";
 import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -36,14 +52,21 @@ const useStyles = makeStyles(theme => ({
   form: {
     padding: theme.spacing(3, 3)
   },
-  villagelable:{color: "rgba(0, 0, 0, 0.54)",
+  villagelable: {
+    color: "rgba(0, 0, 0, 0.54)",
     padding: 0,
     'font-size': "1rem",
-   'font-family': "Roboto, Helvetica, Arial, sans-serif",
+    'font-family': "Roboto, Helvetica, Arial, sans-serif",
     'font-weight': 400,
     'line-height': 1,
     'letter-spacing': "0.00938em",
-    marginBottom:20
+    marginBottom: 20
+  },
+  caption: {
+    color: "rgba(0, 0, 0, 0.54)"
+  },
+  topnav: {
+    float: "right"
   }
 }));
 
@@ -57,89 +80,13 @@ const DefaultPage = props => {
 
   return (
     <div>
-      
+      <Typography className={classes.caption} variant="caption" gutterBottom> No Details  </Typography>
+      <LineBreak num={2} />
       <div >
-        {props.subject && (          
-          <div>
-            <h6>1. Basic Details</h6>
-            <Typography variant="caption" gutterBottom> No Details  </Typography>
- 
-            <Paper>
-            <Box className={classes.form} display="flex" flexDirection="column">
-              <TextField
-                style={{ width: "30%" }}
-                label="Date of Registration"
-                type="date"
-                required
-                name="registrationDate"
-                value={props.subject.registrationDate.toISOString().substr(0, 10)}
-                onChange={e => {
-                  props.updateSubject("registrationDate", new Date(e.target.value));
-                }}
-              />
-              <LineBreak num={1} />
-              {get(props, "subject.subjectType.name") === "Individual" && (
-                <React.Fragment>
-                  <TextField
-                    style={{ width: "30%" }}
-                    label="First Name"
-                    type="text"
-                    required
-                    name="firstName"
-                    value={props.subject.firstName}
-                    onChange={e => {
-                      props.updateSubject("firstName", e.target.value);
-                    }}
-                  />
-                  <LineBreak num={1} />
-                  <TextField
-                    style={{ width: "30%" }}
-                    label="Last Name"
-                    type="text"
-                    required
-                    name="lastName"
-                    value={props.subject.lastName}
-                    onChange={e => {
-                      props.updateSubject("lastName", e.target.value);
-                    }}
-                  />
-                  <LineBreak num={1} />
-                  <DateOfBirth
-                    dateOfBirth={props.subject.dateOfBirth}
-                    dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                    onChange={date => props.updateSubject("dateOfBirth", date)}
-                    markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
-                  />
-                  <LineBreak num={1} />
-                  <CodedFormElement
-                    groupName="Gender"
-                    items={sortBy(props.genders, "name")}
-                    isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
-                    onChange={selected => props.updateSubject("gender", selected)}
-                  />
-                  <label className={classes.villagelable}>Village</label>
-                  <LocationAutosuggest
-                    onSelect={location => props.updateSubject("lowestAddressLevel", location)}
-                  />
-                </React.Fragment>
-              )}
-
-              {get(props, "subject.subjectType.name") !== "Individual" && (
-                <React.Fragment>
-                  <TextField
-                    label="Name"
-                    type="text"
-                    required
-                    name="firstName"
-                    value={props.subject.firstName}
-                    onChange={e => {
-                      props.updateSubject("firstName", e.target.value);
-                    }}
-                  />
-                </React.Fragment>
-              )}
-              <LineBreak num={4} />
-              <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-end">
+        {props.subject && (         
+            <div>            
+              <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
+                <Typography variant="subtitle1" gutterBottom> 1. Basic Details</Typography>
                 <Box>
                   <RelativeLink
                     to="form"
@@ -149,12 +96,110 @@ const DefaultPage = props => {
                     }}
                     noUnderline
                   >
-                    <div> <PrimaryButton>Previous</PrimaryButton><PrimaryButton>Next</PrimaryButton></div>
-                   
+                    <div> <PagenatorButton>Previous</PagenatorButton>1/7<PagenatorButton>Next</PagenatorButton></div>
                   </RelativeLink>
                 </Box>
               </Box>
-            </Box>
+           
+            <Paper>
+              <Box className={classes.form} display="flex" flexDirection="column">
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    disableToolbar
+                    style={{ width: "30%" }}
+                    variant="inline"
+                    format="MM/dd/yyyy"
+                    margin="normal"
+                    id="date-picker-inline"
+                    name="registrationDate"
+                    value={props.subject.registrationDate.toISOString().substr(0, 10)}
+                    onChange={e => {
+                      props.updateSubject("registrationDate", new Date(e.target.value));
+                    }}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change date',
+                    }}
+                  />
+                </MuiPickersUtilsProvider>
+                <LineBreak num={1} />
+                {get(props, "subject.subjectType.name") === "Individual" && (
+                  <React.Fragment>
+                    <TextField
+                      style={{ width: "30%" }}
+                      label="First Name"
+                      type="text"
+                      // required
+                      validate={isRequired}
+                      name="firstName"
+                      value={props.subject.firstName}
+                      onChange={e => {
+                        props.updateSubject("firstName", e.target.value);
+                      }}
+                    />
+                    <LineBreak num={1} />
+                    <TextField
+                      style={{ width: "30%" }}
+                      label="Last Name"
+                      type="text"
+                      required
+                      name="lastName"
+                      value={props.subject.lastName}
+                      onChange={e => {
+                        props.updateSubject("lastName", e.target.value);
+                      }}
+                    />
+                    <LineBreak num={1} />
+                    <DateOfBirth
+                      dateOfBirth={props.subject.dateOfBirth}
+                      dateOfBirthVerified={props.subject.dateOfBirthVerified}
+                      onChange={date => props.updateSubject("dateOfBirth", date)}
+                      markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
+                    />
+                    <LineBreak num={1} />
+                    <CodedFormElement
+                      groupName="Gender"
+                      items={sortBy(props.genders, "name")}
+                      isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
+                      onChange={selected => props.updateSubject("gender", selected)}
+                    />
+                    <label className={classes.villagelable}>Village</label>
+                    <LocationAutosuggest
+                      onSelect={location => props.updateSubject("lowestAddressLevel", location)}
+                    />
+                  </React.Fragment>
+                )}
+
+                {get(props, "subject.subjectType.name") !== "Individual" && (
+                  <React.Fragment>
+                    <TextField
+                      label="Name"
+                      type="text"
+                      required
+                      name="firstName"
+                      value={props.subject.firstName}
+                      onChange={e => {
+                        props.updateSubject("firstName", e.target.value);
+                      }}
+                    />
+                  </React.Fragment>
+                )}
+                <LineBreak num={4} />
+                <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
+                  <Box>
+                    <RelativeLink
+                      to="form"
+                      params={{
+                        type: props.subject.subjectType.name,
+                        from: props.location.pathname + props.location.search
+                      }}
+                      noUnderline
+                    >
+                      <div> <PagenatorButton>Previous</PagenatorButton><PagenatorButton>Next</PagenatorButton></div>
+
+                    </RelativeLink>
+                  </Box>
+                </Box>
+              </Box>
             </Paper>
           </div>
         )}
@@ -216,7 +261,7 @@ const SubjectRegister = ({ match: { path } }) => {
     <Fragment>
       <Breadcrumbs path={path} />
       <Paper className={classes.root}>
-        {/* <Stepper/> */}
+        <Stepper />
         <Route exact path={`${path}`} component={ConnectedDefaultPage} />
         <Route path={`${path}/form`} component={RegistrationForm} />
       </Paper>
