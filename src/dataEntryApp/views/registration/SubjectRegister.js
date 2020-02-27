@@ -10,18 +10,6 @@ import {
   updateObs,
   updateSubject
 } from "../../reducers/registrationReducer";
-import {
-  CustomToolbar,
-  formatRoles,
-  isRequired,
-  mobileNumberFormatter,
-  mobileNumberParser,
-  PasswordTextField,
-  UserFilter,
-  UserTitle,
-  validateEmail,
-  validatePhone
-} from "../../../adminApp/UserHelper";
 import Typography from '@material-ui/core/Typography';
 import {
   MuiPickersUtilsProvider,
@@ -131,8 +119,7 @@ const DefaultPage = props => {
                       style={{ width: "30%" }}
                       label="First Name"
                       type="text"
-                      // required
-                      validate={isRequired}
+                      required                     
                       name="firstName"
                       value={props.subject.firstName}
                       onChange={e => {
@@ -166,7 +153,7 @@ const DefaultPage = props => {
                       onChange={selected => props.updateSubject("gender", selected)}
                     />
                     <label className={classes.villagelable}>Village</label>
-                    <LocationAutosuggest
+                    <LocationAutosuggest selectedVillage = {props.subject.lowestAddressLevel.title}
                       onSelect={location => props.updateSubject("lowestAddressLevel", location)}
                     />
                   </React.Fragment>

@@ -3,8 +3,6 @@ import Autosuggest from "react-autosuggest";
 import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
 
-
-
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {
     width: "30%",
@@ -14,15 +12,13 @@ const useStyles = makeStyles(theme => ({
     "font-weight": 300,
     "font-size": 16,
     border: "1px solid #aaa",
-    "border-radius": "4px"
-  
-    
+    "border-radius": "4px"    
   }
 }));
 
-const LocationAutosuggest = ({ onSelect }) => {
+const LocationAutosuggest = ({ onSelect, selectedVillage }) => {
   const classes = useStyles();
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(selectedVillage || "");
   const [suggestions, setSuggestions] = React.useState([]);
 
   const getSuggestionValue = suggestion => suggestion.title;
