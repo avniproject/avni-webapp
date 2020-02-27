@@ -24,6 +24,7 @@ import { LineBreak } from "../common/components/utils";
 import Typography from "@material-ui/core/Typography";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
+import { datePickerModes } from "common/constants";
 
 const sourceType = [
   { id: "userBasedIdentifierGenerator", name: "userBasedIdentifierGenerator" },
@@ -52,6 +53,9 @@ export const IdentifierSourceList = props => (
       <TextField source="batchGenerationSize" />
       <TextField source="minLength" />
       <TextField source="maxLength" />
+      <ReferenceField source="catchmentId" reference="catchment">
+        <TextField source="name" />
+      </ReferenceField>
     </Datagrid>
   </List>
 );
@@ -65,6 +69,9 @@ export const IdentifierSourceDetail = props => {
         <TextField source="batchGenerationSize" />
         <TextField source="minLength" />
         <TextField source="maxLength" />
+        <ReferenceField source="catchmentId" reference="catchment">
+          <TextField source="name" />
+        </ReferenceField>
       </SimpleShowLayout>
     </Show>
   );
@@ -74,8 +81,8 @@ export const IdentifierSourceEdit = props => {
   return (
     <Edit undoable={false} title="Edit identifier source" {...props}>
       <SimpleForm redirect="show">
-        <TextInput source="name" />
-        <SelectInput source="type" choices={sourceType} />
+        <TextInput source="name" required />
+        <SelectInput source="type" choices={sourceType} required />
         <FormDataConsumer>
           {({ formData, dispatch, ...rest }) =>
             !formData.orgAdmin && (
@@ -84,7 +91,6 @@ export const IdentifierSourceEdit = props => {
                   source="catchmentId"
                   reference="catchment"
                   label="Which catchment?"
-                  validate={required("Please select a catchment")}
                   onChange={(e, newVal) => {
                     dispatch(
                       change(
@@ -102,12 +108,16 @@ export const IdentifierSourceEdit = props => {
             )
           }
         </FormDataConsumer>
-        <TextInput source="facility" />
-        <TextInput source="batchGenerationSize" />
-        <TextInput source="minimumBalance" />
-        <TextInput source="options" />
-        <TextInput source="minLength" />
-        <TextInput source="maxLength" />
+        <TextInput source="batchGenerationSize" required />
+        <TextInput source="minimumBalance" required />
+        <TextInput source="minLength" required />
+        <TextInput source="maxLength" required />
+        <Fragment>
+          <Typography variant="title" component="h3">
+            Options
+          </Typography>
+          <TextInput source="options.prefix" label="Prefix" />
+        </Fragment>
       </SimpleForm>
     </Edit>
   );
@@ -117,8 +127,8 @@ export const IdentifierSourceCreate = props => {
   return (
     <Create title="Add a new Identifier Source" {...props}>
       <SimpleForm redirect="show">
-        <TextInput source="name" />
-        <SelectInput source="type" choices={sourceType} />
+        <TextInput source="name" required />
+        <SelectInput source="type" choices={sourceType} required />
         <FormDataConsumer>
           {({ formData, dispatch, ...rest }) =>
             !formData.orgAdmin && (
@@ -127,7 +137,6 @@ export const IdentifierSourceCreate = props => {
                   source="catchmentId"
                   reference="catchment"
                   label="Which catchment?"
-                  validate={required("Please select a catchment")}
                   onChange={(e, newVal) => {
                     dispatch(
                       change(
@@ -145,12 +154,16 @@ export const IdentifierSourceCreate = props => {
             )
           }
         </FormDataConsumer>
-        <TextInput source="facility" />
-        <TextInput source="batchGenerationSize" />
-        <TextInput source="minimumBalance" />
-        <TextInput source="options" />
-        <TextInput source="minLength" />
-        <TextInput source="maxLength" />
+        <TextInput source="batchGenerationSize" required />
+        <TextInput source="minimumBalance" required />
+        <TextInput source="minLength" required />
+        <TextInput source="maxLength" required />
+        <Fragment>
+          <Typography variant="title" component="h3">
+            Options
+          </Typography>
+          <TextInput source="options.prefix" label="Prefix" />
+        </Fragment>
       </SimpleForm>
     </Create>
   );
