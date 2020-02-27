@@ -1,8 +1,27 @@
 import React from "react";
 import Autosuggest from "react-autosuggest";
 import http from "common/utils/httpClient";
+import { makeStyles } from "@material-ui/core/styles";
+
+
+
+const useStyles = makeStyles(theme => ({
+  rautosuggestinput: {
+    width: "30%",
+    height: "30px",
+    padding: "20px 20px",
+    "font-family":" Helvetica, sans-serif",
+    "font-weight": 300,
+    "font-size": 16,
+    border: "1px solid #aaa",
+    "border-radius": "4px"
+  
+    
+  }
+}));
 
 const LocationAutosuggest = ({ onSelect }) => {
+  const classes = useStyles();
   const [value, setValue] = React.useState("");
   const [suggestions, setSuggestions] = React.useState([]);
 
@@ -37,13 +56,14 @@ const LocationAutosuggest = ({ onSelect }) => {
   };
 
   const inputProps = {
+    className:classes.rautosuggestinput,
     placeholder: "Village Name",
     value,
     onChange
   };
 
   return (
-    <Autosuggest
+    <Autosuggest     
       suggestions={suggestions}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}

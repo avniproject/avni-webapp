@@ -12,11 +12,16 @@ import { Box, Typography, Paper } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => ({
   form: {
-    padding: theme.spacing(3, 3)
+    padding: theme.spacing(0, 3, 4, 3)
   },
   details: {   
     color: "rgba(0, 0, 0, 0.54)"
-  }
+  },
+  prinav: {
+    color: "rgba(0, 0, 0, 0.54)",
+    marginRight:10,
+  'font-size': "12px"
+  },
 }));
 
 

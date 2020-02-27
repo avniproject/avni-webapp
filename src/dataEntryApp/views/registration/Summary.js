@@ -9,53 +9,50 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 400,
+
+const useStyle = makeStyles(theme => ({
+  form: {
+    padding: theme.spacing(4, 3)
   },
-});
+  table: {
+    width: 400,
+  }
+}));
 
-// function createData(name, calories, fat, carbs, protein) {
-//   return { name, calories, fat, carbs, protein };
-// }
+const Summary = ({ subject }) => {
+  const observations = subject.observations;
+  const classes = useStyle();
 
-// const rows = [
-//   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-//   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-//   createData('Eclair', 262, 16.0, 24, 6.0),
-//   createData('Cupcake', 305, 3.7, 67, 4.3),
-//   createData('Gingerbread', 356, 16.0, 49, 3.9),
-// ];
-
-const Summary=({subject})=> {
-
-    const observations = subject.observations;
-  const classes = useStyles();
- 
 
   return (
-      <div>
-          {/* <Typography variant="button" display="block" gutterBottom>
+    <div className={classes.form} >
+      <Typography variant="button" display="block" gutterBottom>
         Visits being recommendations
       </Typography>
-          <Table className={classes.table} aria-label="simple table">
+      <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Visit Name</TableCell>
             <TableCell align="right">Scedulling for</TableCell>
             <TableCell align="right">Overdue after</TableCell>
-            
+
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <TableRow key={row.name}>             
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-             
-            </TableRow>
-          ))}
+
+          <TableRow >
+            <TableCell align="right">ANC ASHA</TableCell>
+            <TableCell align="right">23-12-2019</TableCell>
+            <TableCell align="right">24-12-2019</TableCell>
+
+          </TableRow>
+          <TableRow >
+            <TableCell align="right">ANC VHND</TableCell>
+            <TableCell align="right">24-12-2019</TableCell>
+            <TableCell align="right">25-12-2019</TableCell>
+
+          </TableRow>
+
         </TableBody>
       </Table>
 
@@ -68,22 +65,26 @@ const Summary=({subject})=> {
           <TableRow>
             <TableCell>visit cancel reson</TableCell>
             <TableCell align="right">Away from village</TableCell>
-            
+
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <TableRow key={row.name}>             
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>            
-            </TableRow>
-          ))}
+
+          <TableRow>
+            <TableCell align="right">Next VHND date</TableCell>
+            <TableCell align="right">24-12-2019</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell align="right">Next ANC ASHA date</TableCell>
+            <TableCell align="right">23-12-2019</TableCell>
+          </TableRow>
+
         </TableBody>
-      </Table> */}
+      </Table>
 
 
 
-
+      {/* 
       <Typography variant="button" display="block" gutterBottom>
         Observations
       </Typography>
@@ -99,13 +100,13 @@ const Summary=({subject})=> {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table> */}
 
-     
-      </div>
-    
-      
-    
+
+    </div>
+
+
+
   );
 }
 export default Summary;
