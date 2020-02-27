@@ -75,7 +75,8 @@ const DefaultPage = props => {
   console.log(props)
 
   React.useEffect(() => {
-    props.onLoad(props.match.queryParams.type);
+    if(!props.subject)
+      props.onLoad(props.match.queryParams.type);
   }, []);
 
   return (
@@ -96,7 +97,9 @@ const DefaultPage = props => {
                     }}
                     noUnderline
                   >
-                    <div> <PagenatorButton>Previous</PagenatorButton>1/7<PagenatorButton>Next</PagenatorButton></div>
+                    <div> <PagenatorButton>Previous</PagenatorButton>
+                    {props.form && <span> 1/{props.form.getLastFormElementElementGroup().displayOrder +1}</span>}                  
+                    <PagenatorButton>Next</PagenatorButton></div>
                   </RelativeLink>
                 </Box>
               </Box>
