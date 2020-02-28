@@ -7,6 +7,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { LineBreak } from "../../../common/components/utils";
+
 import Paper from '@material-ui/core/Paper';
 
 
@@ -16,6 +18,8 @@ const useStyle = makeStyles(theme => ({
   },
   table: {
     width: 400,
+    //borderColor:"gray",
+    border:"1px solid lightgray"
   }
 }));
 
@@ -32,30 +36,30 @@ const Summary = ({ subject }) => {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Visit Name</TableCell>
-            <TableCell align="right">Scedulling for</TableCell>
-            <TableCell align="right">Overdue after</TableCell>
+            <TableCell align="justify">Visit Name</TableCell>
+            <TableCell align="justify">Scedulling for</TableCell>
+            <TableCell align="justify">Overdue after</TableCell>
 
           </TableRow>
         </TableHead>
         <TableBody>
 
           <TableRow >
-            <TableCell align="right">ANC ASHA</TableCell>
-            <TableCell align="right">23-12-2019</TableCell>
-            <TableCell align="right">24-12-2019</TableCell>
+            <TableCell align="justify">ANC ASHA</TableCell>
+            <TableCell align="justify">23-12-2019</TableCell>
+            <TableCell align="justify">24-12-2019</TableCell>
 
           </TableRow>
           <TableRow >
-            <TableCell align="right">ANC VHND</TableCell>
-            <TableCell align="right">24-12-2019</TableCell>
-            <TableCell align="right">25-12-2019</TableCell>
+            <TableCell align="justify">ANC VHND</TableCell>
+            <TableCell align="justify">24-12-2019</TableCell>
+            <TableCell align="justify">25-12-2019</TableCell>
 
           </TableRow>
 
         </TableBody>
       </Table>
-
+      <LineBreak num={3} />
       <Typography variant="button" display="block" gutterBottom>
         Observations
       </Typography>
@@ -63,20 +67,20 @@ const Summary = ({ subject }) => {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>visit cancel reson</TableCell>
-            <TableCell align="right">Away from village</TableCell>
+            <TableCell align="justify">visit cancel reson</TableCell>
+            <TableCell align="justify">Away from village</TableCell>
 
           </TableRow>
         </TableHead>
         <TableBody>
 
           <TableRow>
-            <TableCell align="right">Next VHND date</TableCell>
-            <TableCell align="right">24-12-2019</TableCell>
+            <TableCell align="justify">Next VHND date</TableCell>
+            <TableCell align="justify">24-12-2019</TableCell>
           </TableRow>
           <TableRow>
-            <TableCell align="right">Next ANC ASHA date</TableCell>
-            <TableCell align="right">23-12-2019</TableCell>
+            <TableCell align="justify">Next ANC ASHA date</TableCell>
+            <TableCell align="justify">23-12-2019</TableCell>
           </TableRow>
 
         </TableBody>

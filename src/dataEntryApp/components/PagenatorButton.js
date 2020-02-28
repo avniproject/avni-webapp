@@ -12,6 +12,11 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "orange",
     color: 'white',
     width: 100
+  },  
+  topnav: {
+    color: "orange",
+    'font-size': "12px",
+    cursor:"pointer"
   }
 }));
 
@@ -19,7 +24,8 @@ const useStyles = makeStyles(theme => ({
 //   return  <Chip className={classes.privbuttonStyle} type='button' variant="outlined" {...props} label={children}/> 
 // }
 const Text = ({ label }) => {
-  return <Typography variant="subtitle1" gutterBottom>  {label} </Typography>
+  const classes = useStyles();
+  return <Typography className={classes.topnav} variant="subtitle1" gutterBottom>  {label} </Typography>
 }
 
 export default ({ children, ...props }) => {

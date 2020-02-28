@@ -55,6 +55,27 @@ const useStyles = makeStyles(theme => ({
   },
   topnav: {
     float: "right"
+  },
+  topprevnav: {
+    color: "rgba(0, 0, 0, 0.54)",
+    marginRight: 10,
+    'font-size': "12px"
+  },
+  toppagenum: {
+    color: "rgba(0, 0, 0, 0.54)",
+    marginRight: 10,
+    'font-size': "12px"
+  },
+  topnextnav: {
+    color: "orange",
+    marginLeft: 10,
+    marginRight: 10,
+    'font-size': "12px",
+    cursor: "pointer"
+  },
+  prevbuttonspace: {
+    marginRight: 20,
+    width: 100
   }
 }));
 
@@ -63,37 +84,40 @@ const DefaultPage = props => {
   console.log(props)
 
   React.useEffect(() => {
-    if(!props.subject)
+    if (!props.subject)
       props.onLoad(props.match.queryParams.type);
   }, []);
+
+
 
   return (
     <div>
       <Typography className={classes.caption} variant="caption" gutterBottom> No Details  </Typography>
       <LineBreak num={2} />
       <div >
-        {props.subject && (         
-            <div>            
-              <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
-                <Typography variant="subtitle1" gutterBottom> 1. Basic Details</Typography>
-                <Box>
-                  <RelativeLink
-                    to="form"
-                    params={{
-                      type: props.subject.subjectType.name,
-                      from: props.location.pathname + props.location.search
-                    }}
-                    noUnderline
-                  >
-                    <div> <PagenatorButton>Previous</PagenatorButton>
-                    {props.form && <span> 1/{props.form.getLastFormElementElementGroup().displayOrder +1}</span>}                  
-                    <PagenatorButton>Next</PagenatorButton></div>
-                  </RelativeLink>
-                </Box>
+        {props.subject && (
+          <div>
+            <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
+              <Typography variant="subtitle1" gutterBottom> 1. Basic Details</Typography>
+              <Box>
+                <RelativeLink
+                  to="form"
+                  params={{
+                    type: props.subject.subjectType.name,
+                    from: props.location.pathname + props.location.search
+                  }}
+                  noUnderline
+                >
+                  <div> <label className={classes.topprevnav} disabled={true}>PREV</label>
+                    {props.form && <label className={classes.toppagenum}> 1/{props.form.getLastFormElementElementGroup().displayOrder + 1}</label>}
+                    <label className={classes.topnextnav}>NEXT</label></div>
+                </RelativeLink>
               </Box>
-           
+            </Box>
+
             <Paper>
               <Box className={classes.form} display="flex" flexDirection="column">
+                <Typography className={classes.caption} variant="caption" display="block" gutterBottom> Registration Date </Typography>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     disableToolbar
@@ -119,7 +143,7 @@ const DefaultPage = props => {
                       style={{ width: "30%" }}
                       label="First Name"
                       type="text"
-                      required                     
+                      required
                       name="firstName"
                       value={props.subject.firstName}
                       onChange={e => {
@@ -153,7 +177,7 @@ const DefaultPage = props => {
                       onChange={selected => props.updateSubject("gender", selected)}
                     />
                     <label className={classes.villagelable}>Village</label>
-                    <LocationAutosuggest selectedVillage = {props.subject.lowestAddressLevel.title}
+                    <LocationAutosuggest selectedVillage={props.subject.lowestAddressLevel.title}
                       onSelect={location => props.updateSubject("lowestAddressLevel", location)}
                     />
                   </React.Fragment>
@@ -184,7 +208,7 @@ const DefaultPage = props => {
                       }}
                       noUnderline
                     >
-                      <div> <PagenatorButton>Previous</PagenatorButton><PagenatorButton>Next</PagenatorButton></div>
+                      <div> <PagenatorButton className={classes.prevbuttonspace}>Previous</PagenatorButton><PagenatorButton>Next</PagenatorButton></div>
 
                     </RelativeLink>
                   </Box>

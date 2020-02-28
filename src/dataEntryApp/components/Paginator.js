@@ -7,7 +7,12 @@ import PrimaryButton from "./PagenatorButton";
 const styles = {
   marginRight20: {
     marginRight: 20
-  }
+  },
+  toppagenum: {
+    color: "rgba(0, 0, 0, 0.54)",
+    marginRight:10,
+    fontSize: "12px"
+  },
 };
 
 const PaginationButton = ({ page, title, type }) =>
@@ -32,7 +37,7 @@ const Paginator = props => {
         )}
 
       </Box>
-      {props.showCount && <Typography variant="subtitle1" gutterBottom>  {props.count} </Typography>}
+      {props.showCount && <Typography style={styles.toppagenum} variant="subtitle1" gutterBottom>  {props.count} </Typography>}
       <Box component={"span"}>
         <PaginationButton page={props.pageDetails.nextPageNumber} 
         type={props.label.type}
