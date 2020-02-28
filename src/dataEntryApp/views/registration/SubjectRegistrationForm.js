@@ -9,6 +9,7 @@ import moment from "moment/moment";
 import Form from "../../components/Form";
 import Summary from './Summary';
 import { Box, Typography, Paper } from "@material-ui/core";
+import CustomizedDialog from "../../components/Dialog";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -43,6 +44,7 @@ const Header = ({ subject }) => {
 
 const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave, subject }) => {
   const classes = useStyle();
+  const [redirect, setRedirect] = React.useState(false);
 
   const page = +match.queryParams.page;
   const from = match.queryParams.from;
@@ -67,6 +69,8 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
   const current = form.formElementGroupAt(currentPageNumber);
   const pageCount = (currentPageNumber+1) + " / " + (lastPageNumber+1);
 
+  const onOkHandler = (data) =>{setRedirect(data)}
+
   return (
     <Fragment>
       <Header subject={subject}></Header>
@@ -82,7 +86,14 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
         {(currentPageNumber === lastPageNumber) ? <Summary subject={subject} /> :
           <Form current={current} obs={obs} updateObs={updateObs}></Form>}
 
-        {saved && <Redirect to={onSaveGoto} />}
+        {saved && <CustomizedDialog 
+        showSuccessIcon="true"
+        message="Your details have been successfully registered"
+        showOkbtn="true"
+        openDialogContainer="true"
+        onOk = {onOkHandler}
+        />}
+        {saved && redirect && <Redirect to={onSaveGoto} />}
         <Paginator pageDetails={pageDetails}
          onSave={onSave}
          label={{Previous:"Previous",Next:"Next",Save:"Save",type:"button"}}
