@@ -182,13 +182,19 @@ const UserForm = ({ edit, user, ...props }) => {
         validate={isRequired}
         autoComplete="off"
       />
-      <TextInput source="email" label="Email Address" validate={validateEmail} autoComplete="off" />
+      <TextInput
+        source="email"
+        label="Email Address"
+        validate={validateEmail}
+        autoComplete="none"
+      />
       <TextInput
         source="phoneNumber"
         label="10 digit mobile number"
         validate={validatePhone}
         format={mobileNumberFormatter}
         parse={mobileNumberParser}
+        autoComplete="off"
       />
       <DisabledInput source="orgAdmin" defaultValue={true} hidden={true} />
     </SimpleForm>
