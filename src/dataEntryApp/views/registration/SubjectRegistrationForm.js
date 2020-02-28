@@ -88,7 +88,7 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
 
         {saved && <CustomizedDialog 
         showSuccessIcon="true"
-        message="Your details have been successfully registered"
+        message="Your details have been successfully registered."
         showOkbtn="true"
         openDialogContainer="true"
         onOk = {onOkHandler}

@@ -28,7 +28,7 @@ const Stepper = () => {
   return (
     <Fragment>
       <Typography variant="h6" gutterBottom>
-        Register and enroll - Mother Program
+        Register Individual
       </Typography>
 
       {/* <Typography className={classes.detailslable} variant="caption" gutterBottom>

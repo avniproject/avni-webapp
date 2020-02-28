@@ -11,7 +11,8 @@ const useStyles = makeStyles(theme => ({
     "font-family":" Helvetica, sans-serif",
     "font-weight": 300,
     "font-size": 16,
-    border: "1px solid #aaa",
+   border: "0px solid #aaa",
+   borderBottom:"1px solid lightgray",
     "border-radius": "4px"    
   }
 }));

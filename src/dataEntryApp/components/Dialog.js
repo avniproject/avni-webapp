@@ -10,14 +10,15 @@ import CloseIcon from '@material-ui/icons/Close';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import { Box, Typography} from "@material-ui/core";
 import { LineBreak } from "../../common/components/utils";
+import { makeStyles } from "@material-ui/core/styles";
 import Chip from "../components/PagenatorButton";
 
 
 
-const styles = theme => ({
-  root: {
-    margin: 0,
+const useStyles = makeStyles(theme => ({  
+  root: {   
     padding: theme.spacing(2),
+    margin: "0 50"
   },
   closeButton: {
     position: 'absolute',
@@ -25,9 +26,21 @@ const styles = theme => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
-});
+  okbuttonStyle: {  
+    backgroundColor:"orange",
+    width: 80,
+    color:"white"  
+  },
+  iconstyle:{
+    'font-size': "4rem",
+    'font-family': "Roboto, Helvetica, Arial, sans-serif",
+    'font-weight': 400,
+    color:"gray"
+  }
+}));
 
-const DialogTitle = withStyles(styles)(props => {
+const DialogTitle = withStyles(useStyles)(props => {
+
   const { children, classes, onClose, ...other } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
@@ -57,6 +70,8 @@ const DialogActions = withStyles(theme => ({
 
 const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn,openDialogContainer,onOk }) => {  
   const [open, setOpen] = React.useState(openDialogContainer || false);  
+  const classes = useStyles();
+
 
   const handleClickOpen = () => {           
     setOpen(true);
@@ -82,7 +97,7 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn,openDialo
         </DialogTitle>}
         <DialogContent>                   
         <Box display="flex" flexDirection={"column"} flexWrap="wrap" justifyContent="space-between" alignItems="center">         
-            {showSuccessIcon &&  <CheckCircleOutlineRoundedIcon/>}
+            {showSuccessIcon &&  <CheckCircleOutlineRoundedIcon className={classes.iconstyle}/>}
             <LineBreak num={2}/>
             {message && <Typography gutterBottom>{message}</Typography>}
       </Box>                      
@@ -90,10 +105,10 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn,openDialo
         <DialogActions>
           {showOkbtn && 
           <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-start" alignItems="center">         
-          <Button autoFocus onClick={handleOk} color="primary">
+          {/* <Button autoFocus onClick={handleOk} color="primary">
             Ok
-          </Button>
-          {/* <Chip>Ok</Chip> */}
+          </Button> */}
+          <Chip className={classes.okbuttonStyle} onClick={handleOk}>OK</Chip>
           </Box>}
         </DialogActions>
       </Dialog>
