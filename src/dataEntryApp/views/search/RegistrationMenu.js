@@ -31,7 +31,7 @@ const RegistrationMenu = ({ types }) => {
         color={"primary"}
         onClick={handleClick()}
       >
-        <AddIcon /> Create
+        <AddIcon /> {t('create')}
       </Button>
       <Menu
         id="create-menu"

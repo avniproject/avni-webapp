@@ -65,7 +65,7 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
       <label
         className={type === "active" ? classes.activeProgramLabel : classes.exitedProgramLabel}
       >
-        {type === "active" ? "Active Programs" : "Exited Programs"}
+        {t(type === "active" ? "activeprograms" : "exitedProgram")}
       </label>
 
       <AppBar

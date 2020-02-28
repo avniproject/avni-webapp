@@ -97,7 +97,7 @@ export default ({ profile, general, program }) => {
           className={classes.wrapper}
         >
           <Tab label={t("Program")} icon={<AssessmentIcon />} {...a11yProps(0)} />
-          <Tab label={t("Profile")} icon={<PersonIcon />} {...a11yProps(1)} />
+          <Tab label={t("profile")} icon={<PersonIcon />} {...a11yProps(1)} />
           <Tab label={t("General")} icon={<ListIcon />} {...a11yProps(2)} />
         </Tabs>
       </MUAppBar>

@@ -115,7 +115,7 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
   React.useEffect(() => {
-    if (anchorRef.current && prevOpen.current === true && open === false) {
+    if (prevOpen.current && prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
 
@@ -146,27 +146,22 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
   };
 
   const handleChange = event => {
-    // event.stopPropagation();
-    setValue(event.target.value);
+    if(event.target.value) {
+      setValue(event.target.value);
 
-    const userInfoJson = {
-      username: userInfo.username,
-      organisationName: userInfo.organisationName,
-      organisationId: userInfo.organisationId,
-      usernameSuffix: userInfo.usernameSuffix,
-      settings: {
-        ...userInfo.settings,
-        locale: event.target.value
-      },
-      lastModifiedDateTime: userInfo.lastModifiedDateTime,
-      roles: userInfo.roles
-    };
-
-    http.post("/me", userInfoJson).then(response => {
-      if (response.status === 200) {
-        changeLanguage(userInfoJson.settings.locale);
-      }
-    });
+      const userInfoJson = {
+        settings: {
+          ...userInfo.settings,
+          locale: event.target.value
+        }
+      };
+  
+      http.post("/me", userInfoJson).then(response => {
+        if (response.status === 200) {
+          changeLanguage(userInfoJson.settings.locale);
+        }
+      });
+    }
   };
 
   const menuId = "primary-search-account-menu";
@@ -199,11 +194,11 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
                     <FormControlLabel
                       value={element}
                       control={<Radio />}
-                      label={
+                      label={t(
                         getKeyByValue(LOCALES, element).charAt(0) +
                         getKeyByValue(LOCALES, element)
                           .slice(1)
-                          .toLowerCase()
+                          .toLowerCase())
                       }
                     />
                   ))

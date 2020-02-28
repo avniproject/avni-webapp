@@ -80,7 +80,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             id="registrationPanelbh-header"
           >
             <div>
-              <h5>Registration Details</h5>
+              <h5>{t("registration")} {t("details")}</h5>
               <p>
                 {t("registrationDate")}:{" "}
                 {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
@@ -92,7 +92,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
               <List>
                 <Observations observations={profile ? profile.observations : ""} />
               </List>
-              <Button color="primary">VOID</Button>
+              <Button color="primary">{t("void")}</Button>
               <Button color="primary">{t("edit")}</Button>
             </Grid>
           </ExpansionPanelDetails>
