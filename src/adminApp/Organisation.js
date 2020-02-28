@@ -84,7 +84,7 @@ export const OrganisationEdit = props => {
         )}
         <DisabledInput source="dbUser" validate={isRequired} />
         <DisabledInput source="mediaDirectory" />
-        <TextInput source="usernameSuffix" validate={isRequired} />
+        <TextInput source="usernameSuffix" validate={isRequired} autoComplete="off" />
       </SimpleForm>
     </Edit>
   );
@@ -102,9 +102,9 @@ export const OrganisationCreate = props => {
     <Create title="Create New Organisation" {...props}>
       <SimpleForm redirect="show">
         <TextInput source="name" validate={isRequired} autoComplete="off" />
-        <TextInput source="dbUser" validate={isRequired} />
-        <TextInput source="mediaDirectory" />
-        <TextInput source="usernameSuffix" validate={isRequired} />
+        <TextInput source="dbUser" validate={isRequired} autoComplete="off" />
+        <TextInput source="mediaDirectory" autoComplete="off" />
+        <TextInput source="usernameSuffix" validate={isRequired} autoComplete="off" />
       </SimpleForm>
     </Create>
   );
