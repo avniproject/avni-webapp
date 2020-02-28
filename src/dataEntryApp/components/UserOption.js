@@ -115,7 +115,7 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
   React.useEffect(() => {
-    if (prevOpen.current === true && open === false) {
+    if (anchorRef.current && prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
 
