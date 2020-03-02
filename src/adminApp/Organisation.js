@@ -23,7 +23,6 @@ import { Title } from "./components/Title";
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
     <TextInput label="Organisation Name" source="name" resettable alwaysOn />
-    <TextInput label="Db User" source="dbUser" resettable alwaysOn />
   </Filter>
 );
 

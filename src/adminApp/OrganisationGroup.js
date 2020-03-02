@@ -36,6 +36,11 @@ export const OrganisationGroupList = props => (
       >
         <TextField source="name" />
       </ReferenceField>
+      <ReferenceArrayField label="Organisations" reference="organisation" source="organisationIds">
+        <SingleFieldList>
+          <TitleChip source="name" />
+        </SingleFieldList>
+      </ReferenceArrayField>
     </Datagrid>
   </List>
 );

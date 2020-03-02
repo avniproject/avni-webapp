@@ -41,7 +41,6 @@ import {
   validatePhone
 } from "./UserHelper";
 import http from "common/utils/httpClient";
-import { LineBreak } from "../common/components/utils";
 import { TitleChip } from "./components/TitleChip";
 
 export const AccountOrgAdminUserCreate = ({ user, ...props }) => (
@@ -156,7 +155,8 @@ const UserForm = ({ edit, user, ...props }) => {
         {({ formData, dispatch, ...rest }) => {
           return (
             <Fragment>
-              {isEmpty(formData.accountIds) ? (
+              <BooleanInput source="orgAdmin" label="Organisation Admin" />
+              {formData.orgAdmin && (
                 <ReferenceInput
                   resource="organisation"
                   source="organisationId"
@@ -166,9 +166,8 @@ const UserForm = ({ edit, user, ...props }) => {
                 >
                   <CustomSelectInput source="name" resettable />
                 </ReferenceInput>
-              ) : null}
-              {isNil(formData.organisationId) ||
-              (edit && isEmpty(formData.organisationId.toString())) ? (
+              )}
+              {!formData.orgAdmin && (
                 <ReferenceArrayInput
                   reference="account"
                   source="accountIds"
@@ -179,7 +178,7 @@ const UserForm = ({ edit, user, ...props }) => {
                 >
                   <AutocompleteArrayInput {...props} />
                 </ReferenceArrayInput>
-              ) : null}
+              )}
             </Fragment>
           );
         }}
@@ -222,8 +221,6 @@ const UserForm = ({ edit, user, ...props }) => {
         format={mobileNumberFormatter}
         parse={mobileNumberParser}
       />
-      <LineBreak num={1} />
-      <BooleanInput source="orgAdmin" label="Organisation Admin" />
     </SimpleForm>
   );
 };
