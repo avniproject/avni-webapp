@@ -11,6 +11,7 @@ import org.openchs.service.UserService;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.IdentifierSourceContract;
 import org.openchs.web.request.webapp.IdentifierSourceContractWeb;
+import org.openchs.web.request.webapp.IdentifierUserAssignmentContractWeb;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,14 @@ public class IdentifierSourceWebController extends AbstractController<Identifier
         this.catchmentRepository = catchmentRepository;
         this.facilityRepository = facilityRepository;
     }
+
+    @GetMapping(value = "/web/identifierSource/search/findAllById")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    public PagedResources<Resource<IdentifierSourceContractWeb>> findAllById(Long ids,Pageable pageable) {
+        Long[] id = {ids};
+        return wrap(identifierSourceRepository.findByIdIn(id, pageable).map(IdentifierSourceContractWeb::fromIdentifierSource));
+    }
+
 
     @GetMapping(value = "/web/identifierSource")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
