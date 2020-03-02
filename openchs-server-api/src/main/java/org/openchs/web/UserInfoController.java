@@ -62,7 +62,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
             logger.info(String.format("Organisation not found for user ID: %s", user.getId()));
             return new ResponseEntity<>(new UserInfo(), HttpStatus.NOT_FOUND);
         }
-        if (user.isAdmin()) {
+        if (user.isAdmin() && organisation == null) {
             organisation = new Organisation();
         }
 

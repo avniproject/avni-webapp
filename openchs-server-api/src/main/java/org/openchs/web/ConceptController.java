@@ -55,14 +55,14 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     }
 
     @GetMapping(value = "/web/concept/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
     @ResponseBody
     public ConceptProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
     }
 
     @GetMapping(value = "/web/concept")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
     @ResponseBody
     public ResponseEntity<ConceptProjection> getOneForWebByName(@RequestParam String name) {
         Concept concept = conceptRepository.findByNameIgnoreCase(name);
@@ -72,7 +72,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     }
 
     @GetMapping(value = "/web/concepts")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @ResponseBody
     public PagedResources<Resource<Concept>> getAll(@RequestParam(value = "name", required = false) String name, Pageable pageable) {
         Sort sortWithId = pageable.getSort().and(new Sort("id"));
@@ -85,7 +85,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     }
 
     @GetMapping(value = "/codedConcepts")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @ResponseBody
     public List<CodedConceptProjection> getAllCodedConcepts() {
         return conceptRepository.findAllByDataType("Coded")
@@ -95,7 +95,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     }
 
     @GetMapping(value = "/concept/dataTypes")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @ResponseBody
     public List<String> getDataTypes() {
         return Stream.of(ConceptDataType.values())

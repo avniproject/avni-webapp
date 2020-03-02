@@ -63,7 +63,7 @@ public class ImportController {
     }
 
     @PostMapping("/import/new")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public ResponseEntity<?> doit(@RequestParam MultipartFile file,
                                   @RequestParam String type) {
         String uuid = UUID.randomUUID().toString();
@@ -84,7 +84,7 @@ public class ImportController {
     }
 
     @GetMapping("/import/status")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public PagedResources<?> getUploadStats(Pageable pageable) {
         List<JobStatus> jobStatuses = jobService.getAll();
         PageMetadata pageMetadata = new PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), jobStatuses.size());

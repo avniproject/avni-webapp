@@ -119,7 +119,7 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
 
     private List<TranslationContract> generateTranslations(OrganisationConfig organisationConfig, List<Translation> translations, Platform platform, String valueForEmptyKey, Organisation organisation) {
         List<TranslationContract> translationList = new ArrayList<>();
-        Map<Locale, JsonObject> translationMap = translations.stream().collect(Collectors.toMap(Translation::getLanguage, Translation::getTranslationJson));
+        Map<Locale, JsonObject> translationMap = translations.stream().collect(Collectors.toMap(Translation::getLanguage, Translation::getTranslationJson, (a, b) -> b));
         ((List<String>) organisationConfig.getSettings().get("languages"))
                 .forEach(language -> {
                     JsonObject existingTranslations = translationMap.get(Locale.valueOf(language));
@@ -154,7 +154,11 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
                 formRepository.getAllNames(),
                 addressLevelTypeRepository.getAllNames(),
                 operationalSubjectTypeRepository.getAllNames()
-        ).forEach(list -> list.forEach(e -> result.put(e, valueForEmptyKey)));
+        ).forEach(list -> list.forEach(e -> {
+            if (e != null) {
+                result.put(e, valueForEmptyKey);
+            }
+        }));
         return result;
     }
 
@@ -179,7 +183,10 @@ public class TranslationController implements RestControllerResourceProcessor<Tr
     private Map<String, String> addRegistrationAndEnrolmentStrings() {
         Map<String, String> translations = new HashMap<>();
         operationalSubjectTypeRepository.getAllNames().forEach(subject -> translations.put(REGISTRATION_PREFIX.concat(subject), ""));
-        operationalProgramRepository.getAllNames().forEach(program -> translations.put(ENROLMENT_PREFIX.concat(program), ""));
+        operationalProgramRepository.getAllNames().forEach(program -> {
+            if (program != null)
+                translations.put(ENROLMENT_PREFIX.concat(program), "");
+        });
         return translations;
     }
 }

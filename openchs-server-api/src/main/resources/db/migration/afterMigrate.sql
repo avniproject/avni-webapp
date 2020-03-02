@@ -47,7 +47,6 @@ CREATE OR REPLACE FUNCTION revoke_permissions_on_account(rolename text)
 $body$
 BEGIN
     EXECUTE 'REVOKE ALL ON TABLE account FROM ' || quote_ident(rolename) || '';
-    EXECUTE 'REVOKE ALL ON TABLE account_admin FROM  ' || quote_ident(rolename) || '';
     RETURN 'ALL ACCOUNT PERMISSIONS REVOKED FROM ' || quote_ident(rolename);
 END;
 $body$ LANGUAGE plpgsql;

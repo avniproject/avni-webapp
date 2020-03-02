@@ -45,7 +45,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     }
 
     @GetMapping(value = "catchment")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public PagedResources<Resource<CatchmentContract>> get(Pageable pageable) {
         Page<Catchment> all = catchmentRepository.findPageByIsVoidedFalse(pageable);
         Page<CatchmentContract> catchmentContracts = all.map(catchment -> {
@@ -56,7 +56,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     }
 
     @GetMapping(value = "catchment/{id}")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public Resource<CatchmentContract> getById(@PathVariable Long id) {
         Catchment catchment = catchmentRepository.findOne(id);
         CatchmentContract catchmentContract = CatchmentContract.fromEntity(catchment);
@@ -64,7 +64,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     }
 
     @PostMapping(value = "/catchment")
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @Transactional
     ResponseEntity<?> createSingleCatchment(@RequestBody @Valid CatchmentContract catchmentContract) throws Exception {
         if(catchmentRepository.findByName(catchmentContract.getName()) != null)
@@ -115,7 +115,7 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     }
 
     @RequestMapping(value = "/catchments", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @Transactional
     ResponseEntity<?> save(@RequestBody CatchmentsContract catchmentsContract) {
         try {

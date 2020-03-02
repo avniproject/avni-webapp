@@ -74,6 +74,10 @@ public class UserContext {
         return nullSafeGetOrganisation().getName();
     }
 
+    public Long getOrganisationId() {
+        return nullSafeGetOrganisation().getId();
+    }
+
     public String getMediaDirectory() {
         return nullSafeGetOrganisation().getMediaDirectory();
     }

@@ -68,13 +68,14 @@ public class AuthService {
         }
         List<AccountAdmin> accountAdmins = accountAdminRepository.findByUser_Id(user.getId());
         user.setAdmin(accountAdmins.size() > 0);
-        userContext.setUser(user);
         Organisation organisation = null;
         if (user.isAdmin() && organisationUUID != null) {
+            user.setOrgAdmin(true);
             organisation = organisationRepository.findByUuid(organisationUUID);
         } else if (user.getOrganisationId() != null) {
             organisation = organisationRepository.findOne(user.getOrganisationId());
         }
+        userContext.setUser(user);
         userContext.setOrganisation(organisation);
         userContext.setOrganisationUUID(organisationUUID);
 
