@@ -9,22 +9,18 @@ import {
   SimpleForm,
   TextInput,
   ReferenceField,
-  SelectField,
   SelectInput,
   ChipField,
   FormDataConsumer,
   ReferenceInput,
-  required,
   REDUX_FORM_NAME
 } from "react-admin";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
-import { LineBreak } from "../common/components/utils";
 import Typography from "@material-ui/core/Typography";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
-import { datePickerModes } from "common/constants";
 
 const sourceType = [
   { id: "userBasedIdentifierGenerator", name: "userBasedIdentifierGenerator" },
