@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { InternalLink, RelativeLink } from "../../common/components/utils";
-//import PrimaryButton from "./PrimaryButton";
 import PrimaryButton from "./PagenatorButton";
 
 const styles = {
@@ -35,9 +34,10 @@ const Paginator = props => {
             <PrimaryButton type={props.label.type}>{props.label.Previous}</PrimaryButton>
           </InternalLink>
         )}
-
       </Box>
+
       {props.showCount && <Typography style={styles.toppagenum} variant="subtitle1" gutterBottom>  {props.count} </Typography>}
+      
       <Box component={"span"}>
         <PaginationButton page={props.pageDetails.nextPageNumber} 
         type={props.label.type}
