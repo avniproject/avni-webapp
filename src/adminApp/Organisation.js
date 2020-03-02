@@ -2,23 +2,25 @@ import React from "react";
 import {
   Create,
   Datagrid,
+  DisabledInput,
   Edit,
+  Filter,
   List,
   ReferenceField,
+  ReferenceInput,
+  required,
+  SaveButton,
   Show,
+  ShowButton,
   SimpleForm,
   SimpleShowLayout,
   TextField,
   TextInput,
-  required,
-  Toolbar,
-  SaveButton,
-  DisabledInput,
-  Filter,
-  ReferenceInput
+  Toolbar
 } from "react-admin";
 import { CustomSelectInput } from "./components/CustomSelectInput";
 import { Title } from "./components/Title";
+import OpenOrganisation from "./components/OpenOrganisation";
 
 export const OrganisationFilter = props => (
   <Filter {...props} style={{ marginBottom: "2em" }}>
@@ -26,30 +28,34 @@ export const OrganisationFilter = props => (
   </Filter>
 );
 
-export const OrganisationList = props => (
-  <List
-    {...props}
-    bulkActions={false}
-    filter={{ searchURI: "find" }}
-    filters={<OrganisationFilter />}
-  >
-    <Datagrid rowClick="show">
-      <TextField source="name" label="Name" />
-      <ReferenceField
-        label="Parent organisation"
-        source="parentOrganisationId"
-        reference="organisation"
-        linkType="show"
-        allowEmpty
-      >
-        <TextField source="name" />
-      </ReferenceField>
-      <TextField source="dbUser" label="DB User" />
-      <TextField source="mediaDirectory" label="Media Directory" />
-      <TextField source="usernameSuffix" label="Username Suffix" />
-    </Datagrid>
-  </List>
-);
+export const OrganisationList = ({ history, ...props }) => {
+  return (
+    <List
+      {...props}
+      bulkActions={false}
+      filter={{ searchURI: "find" }}
+      filters={<OrganisationFilter />}
+    >
+      <Datagrid>
+        <TextField source="name" label="Name" />
+        <ReferenceField
+          label="Parent organisation"
+          source="parentOrganisationId"
+          reference="organisation"
+          linkType="show"
+          allowEmpty
+        >
+          <TextField source="name" />
+        </ReferenceField>
+        <TextField source="dbUser" label="DB User" />
+        <TextField source="mediaDirectory" label="Media Directory" />
+        <TextField source="usernameSuffix" label="Username Suffix" />
+        <ShowButton />
+        <OpenOrganisation porps={props} />
+      </Datagrid>
+    </List>
+  );
+};
 
 export const OrganisationDetails = props => {
   return (

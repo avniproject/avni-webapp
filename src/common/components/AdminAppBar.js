@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
   const styles = useStyles();
-  const { organisation, user, history, staticContext, dispatch, ...rest } = props;
+  const { organisation, user, history, staticContext, dispatch, organisations, ...rest } = props;
 
   return (
     <AppBar {...rest}>
@@ -46,6 +46,7 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
         organisation={organisation}
         styles={styles}
         history={history}
+        organisations={organisations}
       />
       <div>
         <b>{organisation.name} </b> ({user.username})
@@ -59,7 +60,8 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.user
+  user: state.app.user,
+  organisations: state.app.organisations
 });
 
 export default withRouter(

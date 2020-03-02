@@ -14,17 +14,17 @@ export const OrganisationOptions = ({
   organisation,
   styles,
   history,
+  organisations,
   ...props
 }) => {
-  const [options, setOptions] = React.useState([{}]);
-  React.useEffect(() => {
-    if (isEmpty(http.getOrgId()) && !isEmpty(intersection(user.roles, [ROLES.ADMIN]))) {
-      http.get("/organisation").then(res => {
-        const options = res && map(res.data, org => ({ name: org.name, value: org.uuid }));
-        setOptions([{ name: "", value: "" }, ...options]);
-      });
-    }
-  }, []);
+  const options = [
+    { name: "", value: "" },
+    ...map(organisations, ({ name, uuid }) => ({
+      name: name,
+      value: uuid
+    }))
+  ];
+
   const handleChange = event => {
     if (event.target.value !== "") {
       http.setOrganisationUUID(event.target.value);
@@ -42,33 +42,35 @@ export const OrganisationOptions = ({
   };
 
   return (
-    <div>
-      {isEmpty(http.getOrgId()) && !isEmpty(intersection(user.roles, [ROLES.ADMIN])) && (
-        <FormControl className={styles.formControl}>
-          <InputLabel id="organisation-select-label" className={styles.whiteColor}>
-            Select Organisation
-          </InputLabel>
-          <Select
-            labelid="organisation-select"
-            id="organisation-select"
-            value={organisation}
-            onChange={handleChange}
-            classes={{
-              root: styles.whiteColor,
-              icon: styles.whiteColor
-            }}
-          >
-            {options.map((option, index) => (
-              <MenuItem key={index} value={option.value}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )}
-      {!isEmpty(intersection(user.roles, [ROLES.ADMIN])) && !isEmpty(http.getOrgId()) && (
-        <Button onClick={() => resetOrgUUID()}>Back To Admin</Button>
-      )}
-    </div>
+    !isEmpty(organisations) && (
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        {!isEmpty(intersection(user.roles, [ROLES.ADMIN])) && (
+          <FormControl className={styles.formControl}>
+            <InputLabel id="organisation-select-label" className={styles.whiteColor}>
+              Select Organisation
+            </InputLabel>
+            <Select
+              labelid="organisation-select"
+              id="organisation-select"
+              value={organisation}
+              onChange={handleChange}
+              classes={{
+                root: styles.whiteColor,
+                icon: styles.whiteColor
+              }}
+            >
+              {options.map((option, index) => (
+                <MenuItem key={index} value={option.value}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+        {!isEmpty(intersection(user.roles, [ROLES.ADMIN])) && !isEmpty(http.getOrgId()) && (
+          <Button onClick={() => resetOrgUUID()}>Back To Admin</Button>
+        )}
+      </div>
+    )
   );
 };
