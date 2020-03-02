@@ -7054,10 +7054,10 @@ open@^6.3.0:
   dependencies:
     is-wsl "^1.1.0"
 
-openchs-models@0.2.9:
-  version "0.2.9"
-  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.9.tgz#15d9a5c12a669d975143452264003e9e22821fba"
-  integrity sha512-o3s8YAVmiLrUACbmnmQfKMrPlm75+JPJz34bhj15au5fzu0zWdjl1dImi3s2u7RYKL9SQwBo5BRdp5VQyMSu4Q==
+openchs-models@0.2.10:
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/openchs-models/-/openchs-models-0.2.10.tgz#569e95573adc260104adbce583dfd439eff68d0a"
+  integrity sha512-dbtMEj/efIxCHDmxWE9gL8uam1dPN6piuvSnpqN3Ina/WRb66kwbkkfvVgtBWK7DfF2VvsH5a/V+jP3MMWMoTA==
   dependencies:
     lodash "^4.17.11"
     moment "^2.22.2"
