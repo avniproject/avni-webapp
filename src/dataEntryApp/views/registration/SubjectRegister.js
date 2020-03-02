@@ -53,9 +53,6 @@ const useStyles = makeStyles(theme => ({
   caption: {
     color: "rgba(0, 0, 0, 0.54)"
   },
-  topnav: {
-    float: "right"
-  },
   topprevnav: {
     color: "rgba(0, 0, 0, 0.54)",
     marginRight: 10,

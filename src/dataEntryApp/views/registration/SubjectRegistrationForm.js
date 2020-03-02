@@ -96,7 +96,7 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
         {saved && redirect && <Redirect to={onSaveGoto} />}
         <Paginator pageDetails={pageDetails}
          onSave={onSave}
-         label={{Previous:"Previous",Next:"Next",Save:"Save",type:"button"}}
+         label={{Previous:"Previous",Next:"Next",Save:"Save"}}
          showCount="false"/>
       </Paper>
     </Fragment>

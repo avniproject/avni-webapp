@@ -20,26 +20,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// const Chip1 = ()=>{
-//   return  <Chip className={classes.privbuttonStyle} type='button' variant="outlined" {...props} label={children}/> 
-// }
-const Text = ({ label }) => {
-  const classes = useStyles();
-  return <Typography className={classes.topnav} variant="subtitle1" gutterBottom>  {label} </Typography>
-}
-
 export default ({ children, ...props }) => {
   const classes = useStyles();
   if (props.type === "text") {
-    return <Text label={children} />
+    return <Typography className={classes.topnav} variant="subtitle1" gutterBottom {...props}> {children} </Typography>
   } else if (children == "Previous") {
-    return (
-      <Chip className={classes.privbuttonStyle} type='button' variant="outlined" {...props} label={children} />
-    );
+    return <Chip className={classes.privbuttonStyle} type='button' variant="outlined" {...props} label={children} />    
   } else {
-    return (
-      <Chip className={classes.nextbuttonStyle} type='button' variant="contained" {...props} label={children} />
-    );
+    return <Chip className={classes.nextbuttonStyle} type='button' variant="contained" {...props} label={children} />  
   }
-
 }
