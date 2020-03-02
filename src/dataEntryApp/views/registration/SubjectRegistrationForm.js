@@ -90,7 +90,7 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
         showSuccessIcon="true"
         message="Your details have been successfully registered."
         showOkbtn="true"
-        openDialogContainer="true"
+        openDialogContainer={true}
         onOk = {onOkHandler}
         />}
         {saved && redirect && <Redirect to={onSaveGoto} />}

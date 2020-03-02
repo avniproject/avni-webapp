@@ -9,9 +9,6 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { LineBreak } from "../../../common/components/utils";
 
-import Paper from '@material-ui/core/Paper';
-
-
 const useStyle = makeStyles(theme => ({
   form: {
     padding: theme.spacing(4, 3)
@@ -19,14 +16,13 @@ const useStyle = makeStyles(theme => ({
   table: {
     width: 400,
     //borderColor:"gray",
-    border:"1px solid lightgray"
+    border: "1px solid lightgray"
   }
 }));
 
 const Summary = ({ subject }) => {
-  const observations = subject.observations;
+  //const observations = subject.observations;
   const classes = useStyle();
-
 
   return (
     <div className={classes.form} >
@@ -86,8 +82,6 @@ const Summary = ({ subject }) => {
         </TableBody>
       </Table>
 
-
-
       {/* 
       <Typography variant="button" display="block" gutterBottom>
         Observations
@@ -105,12 +99,7 @@ const Summary = ({ subject }) => {
           ))}
         </TableBody>
       </Table> */}
-
-
     </div>
-
-
-
   );
 }
 export default Summary;

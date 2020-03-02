@@ -1,30 +1,30 @@
 import React, { Fragment } from "react";
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from "@material-ui/core/styles";
+//import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    padding: theme.spacing(3, 2),
-    margin: theme.spacing(4),
-    flexGrow: 1
-  },
-  form: {
-    padding: theme.spacing(3, 3)
-  },
-  detailslable: {
-    color: "rgba(0, 0, 0, 0.54)",
-    padding: 0,
-    'font-size': "12px",
-    'font-family': "Roboto, Helvetica, Arial, sans-serif",
-    'font-weight': 400,
-    'line-height': 1,
-    'letter-spacing': "0.00938em",
-    marginBottom: 20
-  }
-}));
+// const useStyles = makeStyles(theme => ({
+//   root: {
+//     padding: theme.spacing(3, 2),
+//     margin: theme.spacing(4),
+//     flexGrow: 1
+//   },
+//   form: {
+//     padding: theme.spacing(3, 3)
+//   },
+//   detailslable: {
+//     color: "rgba(0, 0, 0, 0.54)",
+//     padding: 0,
+//     'font-size': "12px",
+//     'font-family': "Roboto, Helvetica, Arial, sans-serif",
+//     'font-weight': 400,
+//     'line-height': 1,
+//     'letter-spacing': "0.00938em",
+//     marginBottom: 20
+//   }
+// }));
 
 const Stepper = () => {
-  const classes = useStyles();
+  // const classes = useStyles();
   return (
     <Fragment>
       <Typography variant="h6" gutterBottom>

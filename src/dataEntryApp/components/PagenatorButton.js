@@ -22,11 +22,11 @@ const useStyles = makeStyles(theme => ({
 
 export default ({ children, ...props }) => {
   const classes = useStyles();
-  if (props.type === "text") {
+  if(props.type === "text") {
     return <Typography className={classes.topnav} variant="subtitle1" gutterBottom {...props}> {children} </Typography>
-  } else if (children == "Previous") {
-    return <Chip className={classes.privbuttonStyle} type='button' variant="outlined" {...props} label={children} />    
-  } else {
-    return <Chip className={classes.nextbuttonStyle} type='button' variant="contained" {...props} label={children} />  
+  }else if(children === "Previous") {
+    return <Chip className={classes.privbuttonStyle} type="button" variant="outlined" {...props} label={children} />    
+  }else {
+    return <Chip className={classes.nextbuttonStyle} type="button" variant="outlined" {...props} label={children} />  
   }
 }

@@ -8,8 +8,6 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import Grid from '@material-ui/core/Grid';
-
 
 export const DateOfBirth = ({ dateOfBirth, onChange }) => {
   const dob = dateOfBirth && dateOfBirth.toISOString().substr(0, 10);

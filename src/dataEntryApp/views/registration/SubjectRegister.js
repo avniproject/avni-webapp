@@ -11,16 +11,11 @@ import {
   updateSubject
 } from "../../reducers/registrationReducer";
 import Typography from '@material-ui/core/Typography';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { getGenders } from "../../reducers/metadataReducer";
 import { get, sortBy } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
-import Form from "../../components/Form";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
 import PagenatorButton from "../../components/PagenatorButton";
@@ -205,8 +200,7 @@ const DefaultPage = props => {
                       }}
                       noUnderline
                     >
-                      <div> <PagenatorButton className={classes.prevbuttonspace}>Previous</PagenatorButton><PagenatorButton>Next</PagenatorButton></div>
-
+                    <PagenatorButton className={classes.prevbuttonspace}>Previous</PagenatorButton><PagenatorButton>Next</PagenatorButton>
                     </RelativeLink>
                   </Box>
                 </Box>
