@@ -81,6 +81,12 @@ const useStyles = makeStyles(theme => ({
   },
   ListItemText: {
     color: "blue"
+  },
+  horizontalLine: {
+    padding: "0px",
+    marginTop: "0px",
+    marginBottom: "0px",
+    width: "90%"
   }
 }));
 
@@ -146,7 +152,7 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
   };
 
   const handleChange = event => {
-    if(event.target.value) {
+    if (event.target.value) {
       setValue(event.target.value);
 
       const userInfoJson = {
@@ -155,7 +161,7 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
           locale: event.target.value
         }
       };
-  
+
       http.post("/me", userInfoJson).then(response => {
         if (response.status === 200) {
           changeLanguage(userInfoJson.settings.locale);
@@ -196,10 +202,10 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
                       control={<Radio />}
                       label={t(
                         getKeyByValue(LOCALES, element).charAt(0) +
-                        getKeyByValue(LOCALES, element)
-                          .slice(1)
-                          .toLowerCase())
-                      }
+                          getKeyByValue(LOCALES, element)
+                            .slice(1)
+                            .toLowerCase()
+                      )}
                     />
                   ))
                 : ""}
@@ -208,27 +214,28 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
             <FormControlLabel control={<Switch checked={true} value="checkedA" />} label="On" />
           </FormControl>
         </Collapse>
-
+        <hr className={classes.horizontalLine} />
         <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <VideoIcon style={{ color: "blue" }} />
           </ListItemIcon>
           <ListItemText primary={t("VideoList")} />
         </ListItem>
-
+        <hr className={classes.horizontalLine} />
         <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <SyncIcon style={{ color: "blue" }} />
           </ListItemIcon>
           <ListItemText primary={t("entitySyncStatus")} />
         </ListItem>
-
+        <hr className={classes.horizontalLine} />
         <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <LockIcon style={{ color: "blue" }} />
           </ListItemIcon>
           <ListItemText primary={t("changePassword")} />
         </ListItem>
+        <hr className={classes.horizontalLine} />
         <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <LogoutIcon style={{ color: "blue" }} />
