@@ -9,6 +9,7 @@ import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.openchs.importer.batch.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +31,7 @@ public class OpenCHS {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(OpenCHS.class);
-        app.setWebEnvironment(true);
+        app.setWebApplicationType(WebApplicationType.SERVLET);
         app.run(args);
     }
 
