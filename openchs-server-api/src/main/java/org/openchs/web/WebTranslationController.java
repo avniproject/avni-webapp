@@ -37,7 +37,7 @@ public class WebTranslationController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<?> getOrganisationConfig() throws IOException {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        OrganisationConfig organisationConfig = translationService.getOrganiastionConfigById(organisation);;
+        OrganisationConfig organisationConfig = translationService.getOrganisationConfigById(organisation);
 
         if (organisationConfig == null) {
             return ResponseEntity.notFound().build();
@@ -49,7 +49,7 @@ public class WebTranslationController {
     @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<?> translationInfo(@RequestParam(value = "locale",required = false) String locale) throws IOException {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        OrganisationConfig organisationConfig = translationService.getOrganiastionConfigById(organisation);
+        OrganisationConfig organisationConfig = translationService.getOrganisationConfigById(organisation);
 
         Object translationLanguage = translationService.createTransactionAndPlatformTransaction(organisationConfig,locale);
         if (translationLanguage == null) {
