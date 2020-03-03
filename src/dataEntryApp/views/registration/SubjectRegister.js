@@ -2,13 +2,15 @@ import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField } from "@material-ui/core";
-import { ObservationsHolder } from "avni-models";
+import { ObservationsHolder,Individual } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
   saveSubject,
   updateObs,
-  updateSubject
+  updateSubject,
+  setSubject,
+  saveCompleteFalse
 } from "../../reducers/registrationReducer";
 import Typography from '@material-ui/core/Typography';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -75,9 +77,17 @@ const DefaultPage = props => {
   const classes = useStyles();
   console.log(props)
 
-  React.useEffect(() => {
-    if (!props.subject)
-      props.onLoad(props.match.queryParams.type);
+  React.useEffect(() => { 
+    if(props.saved === false) {
+      if (!props.subject){
+        props.onLoad(props.match.queryParams.type);            
+      }
+    }else{      
+      let subject = Individual.createEmptyInstance();
+      subject.subjectType = props.subject.subjectType;      
+      props.setSubject(subject);
+      props.saveCompleteFalse();      
+    }
   }, []);
 
 
@@ -137,7 +147,7 @@ const DefaultPage = props => {
                       type="text"
                       required
                       name="firstName"
-                      value={props.subject.firstName}
+                      value={props.subject.firstName || ""}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
                       }}
@@ -149,14 +159,14 @@ const DefaultPage = props => {
                       type="text"
                       required
                       name="lastName"
-                      value={props.subject.lastName}
+                      value={props.subject.lastName || ""}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
                       }}
                     />
                     <LineBreak num={1} />
                     <DateOfBirth
-                      dateOfBirth={props.subject.dateOfBirth}
+                      dateOfBirth={props.subject.dateOfBirth || ""}
                       dateOfBirthVerified={props.subject.dateOfBirthVerified}
                       onChange={date => props.updateSubject("dateOfBirth", date)}
                       markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
@@ -218,7 +228,8 @@ const mapStateToProps = state => ({
   genders: state.dataEntry.metadata.genders,
   form: state.dataEntry.registration.registrationForm,
   subject: state.dataEntry.registration.subject,
-  loaded: state.dataEntry.registration.loaded
+  loaded: state.dataEntry.registration.loaded,
+  saved: state.dataEntry.registration.saved
 });
 
 const mapDispatchToProps = {
@@ -226,7 +237,9 @@ const mapDispatchToProps = {
   updateSubject,
   getGenders,
   saveSubject,
-  onLoad
+  onLoad,  
+  setSubject,
+  saveCompleteFalse
 };
 
 const ConnectedDefaultPage = withRouter(
