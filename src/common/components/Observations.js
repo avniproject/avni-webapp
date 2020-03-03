@@ -5,7 +5,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
 import { Observation } from "avni-models";
-import _ from "lodash";
 import { ConceptService, i18n } from "../../dataEntryApp/services/ConceptService";
 import { useTranslation } from "react-i18next";
 
@@ -25,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 const Observations = ({ observations }) => {
   const conceptService = new ConceptService();
   const i = new i18n();
-  const { t, i18nn } = useTranslation();
+  const { t } = useTranslation();
   const classes = useStyles();
   // debugger
   return (

@@ -22,7 +22,6 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2),
     marginRight: "10px",
     height: "28px"
-    // marginLeft: "37px"
   },
   root: {
     flexGrow: 1,
@@ -84,7 +83,7 @@ const useStyles = makeStyles(theme => ({
 
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [expandedPanel, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {

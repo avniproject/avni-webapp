@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
 
 const Program = ({ type, program, selectedTab, handleTabChange }) => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Grid item className={type === "active" ? classes.activeProgramBar : classes.exitedProgramBar}>

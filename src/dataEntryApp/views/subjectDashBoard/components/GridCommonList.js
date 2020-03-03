@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 const GridCommonList = ({ gridListDetails }) => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Grid item xs={12} container className={classes.gridBottomBorder}>

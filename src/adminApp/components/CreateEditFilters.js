@@ -14,7 +14,7 @@ import { CustomFilter, Concept } from "avni-models";
 import { useTranslation } from "react-i18next";
 
 export const CreateEditFilters = props => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   if (_.isNil(props.history.location.state)) {
     return <div />;

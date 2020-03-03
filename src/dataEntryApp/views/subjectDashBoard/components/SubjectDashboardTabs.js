@@ -68,7 +68,7 @@ TabContent.propTypes = {
 
 export default ({ profile, general, program }) => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const [value, setValue] = React.useState(0);
 

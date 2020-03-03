@@ -59,7 +59,7 @@ const useStyles = makeStyles(theme => ({
 
 const SubjectDashboardProfileTab = ({ profile, path }) => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [expanded, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
@@ -80,7 +80,9 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             id="registrationPanelbh-header"
           >
             <div>
-              <h5>{t("registration")} {t("details")}</h5>
+              <h5>
+                {t("registration")} {t("details")}
+              </h5>
               <p>
                 {t("registrationDate")}:{" "}
                 {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}

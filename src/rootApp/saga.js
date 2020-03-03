@@ -1,12 +1,5 @@
-import { call, put, take, fork, takeLatest, all, takeEvery } from "redux-saga/effects";
-import {
-  getUserInfo,
-  sendAuthConfigured,
-  sendInitComplete,
-  setUserInfo,
-  types,
-  setOrgConfigInfo
-} from "./ducks";
+import { call, put, take, takeLatest } from "redux-saga/effects";
+import { getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, types } from "./ducks";
 import {
   cognitoConfig as cognitoConfigFromEnv,
   cognitoInDev,
@@ -15,9 +8,6 @@ import {
 } from "../common/constants";
 import http from "common/utils/httpClient";
 import { configureAuth } from "./utils";
-import { useTranslation } from "react-i18next";
-
-// const { t, i18n } = useTranslation();
 
 const api = {
   fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
@@ -61,9 +51,4 @@ function* setUserDetails() {
     yield call(http.initAuthContext, { username: userDetails.username });
   }
   yield put(sendInitComplete());
-  // yield call(changeLanguage(userDetails.settings.locale));
 }
-
-// function* changeLanguage(lng) {
-//   i18n.changeLanguage(lng);
-// }

@@ -49,14 +49,14 @@ const SubjectDashboardGeneralTab = ({ general }) => {
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const classes = useStyles();
 
   return (
     <Fragment>
       <Paper className={classes.root}>
         <Grid container justify="flex-end">
-          <SubjectButton btnLabel={t('newForm')} />
+          <SubjectButton btnLabel={t("newForm")} />
         </Grid>
         <ExpansionPanel
           className={classes.expansionPanel}

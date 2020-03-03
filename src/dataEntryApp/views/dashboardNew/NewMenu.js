@@ -43,13 +43,12 @@ const useStyle = makeStyles(theme => ({
 
 function NewMenu({ operationalModules }) {
   const classes = useStyle();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const [value, setValue] = React.useState("female");
 
   const handleChange = event => {
     setValue(event.target.value);
-    console.log(operationalModules);
   };
 
   const [setAnchorEl] = React.useState(null);

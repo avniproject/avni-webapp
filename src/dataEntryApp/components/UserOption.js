@@ -92,8 +92,6 @@ const useStyles = makeStyles(theme => ({
 
 const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [value, setValue] = React.useState(defaultLanguage);
@@ -106,18 +104,6 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
     return Object.keys(object).find(key => object[key] === value);
   };
 
-  const handleToggle = () => {
-    setOpen(prevOpen => !prevOpen);
-  };
-
-  const handleClose = event => {
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-
-    setOpen(false);
-  };
-
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
   React.useEffect(() => {
@@ -127,23 +113,6 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
 
     prevOpen.current = open;
   }, [open]);
-
-  const handleProfileMenuOpen = event => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
-  const handleMobileMenuOpen = event => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
 
   const { t, i18n } = useTranslation();
 
@@ -169,8 +138,6 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
       });
     }
   };
-
-  const menuId = "primary-search-account-menu";
 
   return (
     <div style={{ float: "right", boxShadow: "3px 3px 5px #aaaaaa", marginRight: "300px" }}>

@@ -33,39 +33,37 @@ export const mapObservation = objservationList => {
 };
 // included redux store functionality
 export const mapConcept = observationJson => {
-  if(observationJson){
-  const observation = new Observation();
-  const concept = General.assignFields(observationJson.concept, new Concept(), ["uuid", "name"]);
-  concept.datatype = observationJson.concept["dataType"];
-  let valueuuid;
-  if (Array.isArray(observationJson.value) && concept.datatype === "Coded") {
-    valueuuid = [];
-    observationJson.value.map(observation => {
-      valueuuid.push(observation.uuid);
-      storeDispachObservations(types.OBSERVATIONS_VALUE, observation);
-    });
-  } else if (concept.datatype === "Coded") {
-    valueuuid = observationJson.value.uuid;
-    storeDispachObservations(types.OBSERVATIONS_VALUE, observationJson.value);
-  } else {
-    valueuuid = observationJson.value;
+  if (observationJson) {
+    const observation = new Observation();
+    const concept = General.assignFields(observationJson.concept, new Concept(), ["uuid", "name"]);
+    concept.datatype = observationJson.concept["dataType"];
+    let valueuuid;
+    if (Array.isArray(observationJson.value) && concept.datatype === "Coded") {
+      valueuuid = [];
+      observationJson.value.forEach(observation => {
+        valueuuid.push(observation.uuid);
+        storeDispachObservations(types.OBSERVATIONS_VALUE, observation);
+      });
+    } else if (concept.datatype === "Coded") {
+      valueuuid = observationJson.value.uuid;
+      storeDispachObservations(types.OBSERVATIONS_VALUE, observationJson.value);
+    } else {
+      valueuuid = observationJson.value;
+    }
+    const value = JSON.stringify(concept.getValueWrapperFor(valueuuid));
+    observation.concept = concept;
+    observation.valueJSON = value;
+    return observation;
   }
-  const value = JSON.stringify(concept.getValueWrapperFor(valueuuid));
-  observation.concept = concept;
-  observation.valueJSON = value;
-  return observation;
-}
 };
-
-
 
 //subject Dashboard profile Tab
 export const mapProfile = subjectProfile => {
-  if(subjectProfile){
-  let individual = mapIndividual(subjectProfile);
-  individual.observations = mapObservation(subjectProfile["observations"]);
-  individual.relationships = mapRelationships(subjectProfile["relationships"]);
-  return individual;
+  if (subjectProfile) {
+    let individual = mapIndividual(subjectProfile);
+    individual.observations = mapObservation(subjectProfile["observations"]);
+    individual.relationships = mapRelationships(subjectProfile["relationships"]);
+    return individual;
   }
 };
 
@@ -115,11 +113,10 @@ export const mapIndividualRelation = individualRelation => {
 
 // program Tab subject Dashboard
 export const mapProgram = subjectProgram => {
-  if(subjectProgram){
-  let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);
-  programIndividual.enrolments = mapEnrolment(subjectProgram.enrolments);
-  console.log(programIndividual);
-  return programIndividual;
+  if (subjectProgram) {
+    let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);
+    programIndividual.enrolments = mapEnrolment(subjectProgram.enrolments);
+    return programIndividual;
   }
 };
 export const mapEnrolment = enrolmentList => {
@@ -129,7 +126,7 @@ export const mapEnrolment = enrolmentList => {
         enrolments,
         new ProgramEnrolment(),
         [],
-        [ "programExitDateTime","enrolmentDateTime",]
+        ["programExitDateTime", "enrolmentDateTime"]
       );
       programEnrolment.observations = mapObservation(enrolments["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolments["programEncounters"]);
@@ -148,7 +145,7 @@ export const mapProgramEncounters = programEncountersList => {
         ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime"]
       );
       programEnconter.encounterType = mapEncounterType(programEncounters["encounterType"]);
-return programEnconter;
+      return programEnconter;
     });
 };
 
@@ -157,18 +154,21 @@ export const mapOperationalProgramName = operationalProgramName => {
 };
 
 export const mapEncounterType = encounterType => {
-  return General.assignFields(encounterType, new EncounterType(),["name"]);
-}
+  return General.assignFields(encounterType, new EncounterType(), ["name"]);
+};
 
-// general tab subject Dashbord 
+// general tab subject Dashbord
 export const mapGeneral = subjectGeneral => {
-  if(subjectGeneral && subjectGeneral.encounters){
-   return subjectGeneral.encounters.map((encounters)=>{
-    let generalEncounter =  General.assignFields(encounters, new Encounter(),["uuid"],["encounterDateTime","earliestVisitDateTime","maxVisitDateTime"]);
-    generalEncounter.encounterType = mapEncounterType(encounters.encounterType);
-    return generalEncounter;
-  }) 
+  if (subjectGeneral && subjectGeneral.encounters) {
+    return subjectGeneral.encounters.map(encounters => {
+      let generalEncounter = General.assignFields(
+        encounters,
+        new Encounter(),
+        ["uuid"],
+        ["encounterDateTime", "earliestVisitDateTime", "maxVisitDateTime"]
+      );
+      generalEncounter.encounterType = mapEncounterType(encounters.encounterType);
+      return generalEncounter;
+    });
   }
-}
-
-
+};

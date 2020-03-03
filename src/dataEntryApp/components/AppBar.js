@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -96,19 +95,13 @@ const PrimarySearchAppBar = ({
   userInfo
 }) => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
-  const [value, setValue] = React.useState("english");
   const [userOption, setUserOption] = React.useState(false);
-  const handleClick = () => {
-    setOpen(!open);
-  };
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen);
@@ -124,7 +117,7 @@ const PrimarySearchAppBar = ({
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
-  React.useEffect(() => {
+  useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
@@ -135,16 +128,10 @@ const PrimarySearchAppBar = ({
   const handleProfileMenuOpen = event => {
     userOption ? setUserOption(false) : setUserOption(true);
     getLanguages();
-    setAnchorEl(event.currentTarget);
   };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
   };
 
   const handleMobileMenuOpen = event => {
@@ -158,6 +145,7 @@ const PrimarySearchAppBar = ({
 
   const handleClickAway = () => {
     setUserOption(false);
+    getLanguages();
   };
 
   const menuId = "primary-search-account-menu";

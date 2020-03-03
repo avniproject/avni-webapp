@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
 
 const ProfileDetails = ({ profileDetails }) => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className={classes.tableView}>
       <Typography component={"span"} className={classes.mainHeading}>

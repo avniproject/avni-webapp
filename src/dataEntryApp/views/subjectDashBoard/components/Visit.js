@@ -66,7 +66,7 @@ const truncate = input => {
 
 const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
       <Paper className={classes.paper}>

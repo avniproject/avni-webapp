@@ -51,12 +51,7 @@ const useStyle = makeStyles(theme => ({
 
 const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
-  const { t, i18n } = useTranslation();
-  //const { t, i18n } = this.props;
-
-  // const changeLanguage = lng => {
-  //   i18n.changeLanguage(lng);
-  // };
+  const { t } = useTranslation();
 
   return (
     <Table className={classes.table}>
@@ -106,7 +101,7 @@ const SubjectsTable = ({ type, subjects }) => {
 
 const SubjectSearch = props => {
   const classes = useStyle();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const handleSubmit = event => {
     event.preventDefault();

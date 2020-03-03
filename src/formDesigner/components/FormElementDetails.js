@@ -62,7 +62,7 @@ const showDatePicker = (cssClasses, props) => {
 
 function FormElementDetails(props) {
   const classes = useStyles();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const cssClasses = {
     label: {
