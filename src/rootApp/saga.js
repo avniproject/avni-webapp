@@ -17,17 +17,12 @@ import http from "common/utils/httpClient";
 import { configureAuth } from "./utils";
 import { useTranslation } from "react-i18next";
 
-
 // const { t, i18n } = useTranslation();
-
 
 const api = {
   fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
-  fetchUserInfo: () => http.fetchJson("/me").then(response => response.json),
-  fetchOrganisationConfig: () =>
-    http.fetchJson("/web/organizations").then(response => response.json)
+  fetchUserInfo: () => http.fetchJson("/me").then(response => response.json)
 };
-
 
 export function* initialiseCognito() {
   if (isProdEnv || cognitoInDev) {
@@ -55,14 +50,8 @@ export function* onSetCognitoUser() {
   yield put(getUserInfo());
 }
 
-
 export function* userInfoWatcher() {
   yield takeLatest(types.GET_USER_INFO, setUserDetails);
-}
-
-
-export function* organisationConfigWatcher() {
-  yield takeLatest(types.GET_ORG_CONFIG, setOrganisationConfig);
 }
 
 function* setUserDetails() {
@@ -75,12 +64,6 @@ function* setUserDetails() {
   // yield call(changeLanguage(userDetails.settings.locale));
 }
 
-
-// function* changeLanguage(lng) { 
+// function* changeLanguage(lng) {
 //   i18n.changeLanguage(lng);
 // }
-
-function* setOrganisationConfig() {
-  const orgConfig = yield call(api.fetchOrganisationConfig);
-  yield put(setOrgConfigInfo(orgConfig));
-}

@@ -1,18 +1,28 @@
 export const types = {
-    GET_TRANSLATION: "GET_TRANSLATION",
-    SET_TRANSLATION: "SET_TRANSLATION",
-    TRANSLATION_DATA: "TRANSLATION_DATA"
+  GET_TRANSLATION: "GET_TRANSLATION",
+  SET_TRANSLATION: "SET_TRANSLATION",
+  TRANSLATION_DATA: "TRANSLATION_DATA",
+  GET_ORG_CONFIG: "app/GET_ORG_CONFIG",
+  SET_ORG_CONFIG: "app/SET_ORG_CONFIG"
 };
 
+export const getOrgConfigInfo = () => ({
+  type: types.GET_ORG_CONFIG
+});
 
-export const getTranslation = ()=> {
-    return { type: types.GET_TRANSLATION }
-  };
-  
-  export const setTranslation = translationData => ({
-    type: types.SET_TRANSLATION,
-    payload: translationData
-  });
+export const setOrgConfigInfo = orgConfig => ({
+  type: types.SET_ORG_CONFIG,
+  payload: orgConfig
+});
+
+export const getTranslation = () => {
+  return { type: types.GET_TRANSLATION };
+};
+
+export const setTranslation = translationData => ({
+  type: types.SET_TRANSLATION,
+  payload: translationData
+});
 
 export default function(state = {}, action) {
   switch (action.type) {
@@ -20,6 +30,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         translationData: action.translationData
+      };
+    }
+    case types.SET_ORG_CONFIG: {
+      return {
+        ...state,
+        orgConfig: action.payload
       };
     }
     default:

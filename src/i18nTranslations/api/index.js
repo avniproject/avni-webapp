@@ -6,9 +6,10 @@
 
 import { httpClient } from "common/utils/httpClient";
 export default {
-    fetchTranslationDetails: () => httpClient.fetchJson(`/web/translations`).then(response => {
-        return response.json;
-      })
+  fetchTranslationDetails: () =>
+    httpClient.fetchJson(`/web/translations`).then(response => {
+      return response.json;
+    }),
+  fetchOrganisationConfig: () =>
+    httpClient.fetchJson("/web/organizations").then(response => response.json)
 };
-
-

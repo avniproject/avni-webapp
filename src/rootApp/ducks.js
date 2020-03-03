@@ -3,8 +3,6 @@ export const types = {
   SET_COGNITO_USER: "app/SET_COGNITO_USER",
   GET_USER_INFO: "app/GET_USER_INFO",
   SET_USER_INFO: "app/SET_USER_INFO",
-  GET_ORG_CONFIG: "app/GET_ORG_CONFIG",
-  SET_ORG_CONFIG: "app/SET_ORG_CONFIG",
   INIT_COMPLETE: "app/INIT_COMPLETE",
   FETCH_ALL_LOCATIONS: "app/FETCH_ALL_LOCATIONS",
   FETCH_ALL_LOCATIONS_SUCCESS: "app/FETCH_ALL_LOCATIONS_SUCCESS",
@@ -29,15 +27,6 @@ export const getUserInfo = () => ({
 export const setUserInfo = userInfo => ({
   type: types.SET_USER_INFO,
   payload: userInfo
-});
-
-export const getOrgConfigInfo = () => ({
-  type: types.GET_ORG_CONFIG
-});
-
-export const setOrgConfigInfo = orgConfig => ({
-  type: types.SET_ORG_CONFIG,
-  payload: orgConfig
 });
 
 export const sendInitComplete = () => ({
@@ -76,12 +65,7 @@ export default function(state = initialState, action) {
         }
       };
     }
-    case types.SET_ORG_CONFIG: {
-      return {
-        ...state,
-        orgConfig: action.payload
-      };
-    }
+
     case types.SET_USER_INFO: {
       return {
         ...state,

@@ -23,7 +23,8 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
-import { getOrgConfigInfo, getUserInfo } from "../../rootApp/ducks";
+import { getUserInfo } from "../../rootApp/ducks";
+import { getOrgConfigInfo } from "../../i18nTranslations/TranslationReducers";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -155,14 +156,22 @@ const PrimarySearchAppBar = ({
     getUserInfo();
   };
 
+  const handleClickAway = () => {
+    setUserOption(false);
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
-    <UserOption
-      orgConfig={orgConfig}
-      getLanguages={getLanguages}
-      userInfo={userInfo}
-      defaultLanguage={defaultLanguage}
-    />
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <div>
+        <UserOption
+          orgConfig={orgConfig}
+          getLanguages={getLanguages}
+          userInfo={userInfo}
+          defaultLanguage={defaultLanguage}
+        />
+      </div>
+    </ClickAwayListener>
   );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
@@ -278,7 +287,9 @@ const PrimarySearchAppBar = ({
 };
 
 const mapStateToProps = state => ({
-  orgConfig: state.app.orgConfig ? state.app.orgConfig.settings.languages : "",
+  orgConfig: state.translationsReducer.orgConfig
+    ? state.translationsReducer.orgConfig.settings.languages
+    : "",
   userInfo: state.app.userInfo,
   defaultLanguage: state.app.userInfo ? state.app.userInfo.settings.locale : ""
 });
