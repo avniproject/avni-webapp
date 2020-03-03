@@ -61,11 +61,22 @@ import {
   OrganisationGroupShow
 } from "./OrganisationGroup";
 import { ROLES } from "../common/constants";
+import { getAdminOrgs } from "../rootApp/ducks";
 
 class OrgManager extends Component {
   static childContextTypes = {
     store: PropTypes.object
   };
+
+  constructor(props) {
+    super(props);
+    if (
+      !isEmpty(intersection(this.props.user.roles, [ROLES.ADMIN])) &&
+      isEmpty(httpClient.getOrgId())
+    ) {
+      this.props.getAdminOrgs();
+    }
+  }
 
   getChildContext() {
     return { store };
@@ -259,12 +270,13 @@ class OrgManager extends Component {
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.user
+  user: state.app.user,
+  organisations: state.app.organisations
 });
 
 export default withRouter(
   connect(
     mapStateToProps,
-    null
+    { getAdminOrgs }
   )(OrgManager)
 );

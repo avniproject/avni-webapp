@@ -9,6 +9,9 @@ import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { getUserInfo } from "../../rootApp/ducks";
 import { OrganisationOptions } from "./OrganisationOptions";
+import { intersection, isEmpty } from "lodash";
+import http from "common/utils/httpClient";
+import { ROLES } from "../constants";
 
 const styles = {
   title: {
@@ -51,9 +54,11 @@ const AdminAppBar = withStyles(styles)(({ classes, getUserInfo, ...props }) => {
       <div>
         <b>{organisation.name} </b> ({user.username})
       </div>
-      <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
-        <HomeIcon />
-      </IconButton>
+      {(isEmpty(intersection(user.roles, [ROLES.ADMIN])) || !isEmpty(http.getOrgId())) && (
+        <IconButton onClick={() => history.push("/home")} aria-label="Home" color="inherit">
+          <HomeIcon />
+        </IconButton>
+      )}
     </AppBar>
   );
 });
