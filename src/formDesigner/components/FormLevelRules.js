@@ -9,6 +9,8 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import PropTypes from "prop-types";
+import CustomizedHelperText from "./CustomizedHelperText";
+import Tooltip from "@material-ui/core/Tooltip";
 
 function FormLevelRules(props) {
   return (
@@ -20,11 +22,16 @@ function FormLevelRules(props) {
           style={{ marginTop: "3%" }}
         >
           <Grid container item sm={12}>
-            <span onClick={event => props.onToggleExpandPanel("decisionExpand")}>
-              {props.form.decisionExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </span>
+            <Grid item sm={11}>
+              <span onClick={event => props.onToggleExpandPanel("decisionExpand")}>
+                {props.form.decisionExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </span>
 
-            <Typography>Decision Rule</Typography>
+              <span>Decision Rule</span>
+            </Grid>
+            <Grid item sm={1}>
+              <CustomizedHelperText name="decisionRule" />
+            </Grid>
           </Grid>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
@@ -52,11 +59,16 @@ function FormLevelRules(props) {
           style={{ marginTop: "3%" }}
         >
           <Grid container item sm={12}>
-            <span onClick={event => props.onToggleExpandPanel("visitScheduleExpand")}>
-              {props.form.visitScheduleExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </span>
+            <Grid item sm={11}>
+              <span onClick={event => props.onToggleExpandPanel("visitScheduleExpand")}>
+                {props.form.visitScheduleExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </span>
 
-            <Typography>Visit Schedule Rule</Typography>
+              <span>Visit Schedule Rule</span>
+            </Grid>
+            <Grid item sm={1}>
+              <CustomizedHelperText name="visitScheduleRule" />
+            </Grid>
           </Grid>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
@@ -83,11 +95,16 @@ function FormLevelRules(props) {
           style={{ marginTop: "3%" }}
         >
           <Grid container item sm={12}>
-            <span onClick={event => props.onToggleExpandPanel("validationExpand")}>
-              {props.form.validationExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </span>
+            <Grid item sm={11}>
+              <span onClick={event => props.onToggleExpandPanel("validationExpand")}>
+                {props.form.validationExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </span>
 
-            <Typography>Validation Rule</Typography>
+              <span>Validation Rule</span>
+            </Grid>
+            <Grid item sm={1}>
+              <CustomizedHelperText name="validationRule" />
+            </Grid>
           </Grid>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
@@ -116,11 +133,16 @@ function FormLevelRules(props) {
             style={{ marginTop: "3%" }}
           >
             <Grid container item sm={12}>
-              <span onClick={event => props.onToggleExpandPanel("checklistExpand")}>
-                {props.form.checklistExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </span>
+              <Grid item sm={11}>
+                <span onClick={event => props.onToggleExpandPanel("checklistExpand")}>
+                  {props.form.checklistExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </span>
 
-              <Typography>Checklist Rule</Typography>
+                <span>Checklist Rule</span>
+              </Grid>
+              <Grid item sm={1}>
+                <CustomizedHelperText name="checklistRule" />
+              </Grid>
             </Grid>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
