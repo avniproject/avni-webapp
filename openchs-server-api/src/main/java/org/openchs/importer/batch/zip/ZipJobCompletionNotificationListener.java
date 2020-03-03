@@ -5,7 +5,6 @@ import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.S3Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 
 import static java.lang.String.format;
@@ -36,7 +36,8 @@ public class ZipJobCompletionNotificationListener extends JobExecutionListenerSu
     @Override
     public void afterJob(JobExecution jobExecution) {
         logger.info("BulkUpload with uuid {} {}", jobExecution.getJobParameters().getString("uuid"), jobExecution.getStatus());
-        if (jobExecution.getStatus() == BatchStatus.FAILED) {
+        File errorFile = bulkUploadS3Service.getLocalErrorFile(uuid);
+        if (errorFile.exists() && errorFile.length() != 0) {
             try {
                 S3Service.ObjectInfo metadata = bulkUploadS3Service.uploadErrorFile(bulkUploadS3Service.getLocalErrorFile(uuid), uuid);
                 logger.info(format("BulkUpload '%s'! Check for errors at '%s'", jobExecution.getStatus(), metadata.getKey()));
