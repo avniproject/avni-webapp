@@ -67,7 +67,8 @@ const customConfig = ({ operationalModules, getOperationalModules, history, orga
       );
       const orgSettings = isEmpty(settings) ? emptyOrgSettings : createOrgSettings(settings[0]);
       setSettings(orgSettings);
-      setWorklistUpdationRule(res.data._embedded.organisationConfig[0].worklistUpdationRule);
+      !_.isEmpty(res.data._embedded.organisationConfig) &&
+        setWorklistUpdationRule(res.data._embedded.organisationConfig[0].worklistUpdationRule);
     });
   }, []);
 
@@ -309,4 +310,9 @@ const mapStateToProps = state => ({
   operationalModules: state.reports.operationalModules
 });
 
-export default withRouter(connect(mapStateToProps, { getOperationalModules })(customConfig));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { getOperationalModules }
+  )(customConfig)
+);

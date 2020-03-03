@@ -28,6 +28,7 @@ import { change } from "redux-form";
 import { None } from "../common/components/utils";
 import { LocationSaveButton } from "./components/LocationSaveButton";
 import { store } from "../common/store";
+import { Title } from "./components/Title";
 
 const LocationFilter = props => (
   <Filter {...props}>
@@ -81,19 +82,9 @@ ParentLocationReferenceField.defaultProps = {
   addLabel: true
 };
 
-const Title = ({ record }) => {
-  return (
-    record && (
-      <span>
-        Location: <b>{record.title}</b>
-      </span>
-    )
-  );
-};
-
 export const LocationDetail = props => {
   return (
-    <Show title={<Title />} {...props}>
+    <Show title={<Title title={"Location"} />} {...props}>
       <SimpleShowLayout>
         <TextField source="title" label="Name" />
         <TextField source="typeString" label="Type" />

@@ -3,7 +3,7 @@ import { includes, intersection, isEmpty } from "lodash";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
-import { OrgManager, SuperAdmin } from "../adminApp";
+import { OrgManager } from "../adminApp";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
@@ -29,9 +29,9 @@ const Routes = ({ user, organisation }) => (
     <Route path="/admin">
       <RestrictedRoute
         path="/"
-        allowedRoles={includes(user.roles, ROLES.ADMIN) ? [ROLES.ADMIN] : [ROLES.ORG_ADMIN]}
+        allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
         currentUserRoles={user.roles}
-        component={includes(user.roles, ROLES.ADMIN) ? SuperAdmin : OrgManager}
+        component={OrgManager}
       />
     </Route>
     <RestrictedRoute
@@ -54,21 +54,21 @@ const Routes = ({ user, organisation }) => (
     <RestrictedRoute
       exact
       path="/home"
-      allowedRoles={[ROLES.ORG_ADMIN]}
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={Homepage}
     />
     <RestrictedRoute
       exact
       path="/translations"
-      allowedRoles={[ROLES.ORG_ADMIN]}
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Translations)}
     />
     <RestrictedRoute
       exact
       path="/export"
-      allowedRoles={[ROLES.ORG_ADMIN]}
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Export)}
     />
@@ -87,9 +87,9 @@ const RoutesWithoutDataEntry = ({ user }) => (
     <Route path="/admin">
       <RestrictedRoute
         path="/"
-        allowedRoles={includes(user.roles, ROLES.ADMIN) ? [ROLES.ADMIN] : [ROLES.ORG_ADMIN]}
+        allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
         currentUserRoles={user.roles}
-        component={includes(user.roles, ROLES.ADMIN) ? SuperAdmin : OrgManager}
+        component={OrgManager}
       />
     </Route>
     <Route exact path="/">
@@ -103,4 +103,7 @@ const mapStateToProps = state => ({
   user: state.app.user
 });
 
-export default connect(mapStateToProps, null)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);
+export default connect(
+  mapStateToProps,
+  null
+)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);

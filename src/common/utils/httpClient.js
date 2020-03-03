@@ -28,12 +28,22 @@ class HttpClient {
     this.authContext.init(userInfo);
     const authParams = this.authContext.get();
     if (authParams.token) axios.defaults.headers.common["AUTH-TOKEN"] = authParams.token;
+    axios.defaults.headers.common["ORGANISATION-UUID"] = this.organisationUUID;
   }
 
   initHeadersForDevEnv() {
     if (devEnvUserName) {
       axios.defaults.headers.common["user-name"] = devEnvUserName;
     }
+    axios.defaults.headers.common["ORGANISATION-UUID"] = this.organisationUUID;
+  }
+
+  setOrganisationUUID(orgUUID) {
+    this.organisationUUID = orgUUID;
+  }
+
+  getOrgId() {
+    return this.organisationUUID;
   }
 
   setHeaders(options) {
@@ -53,6 +63,8 @@ class HttpClient {
     if (devEnvUserName) {
       options.headers.set("user-name", devEnvUserName);
     }
+    options.headers.set("ORGANISATION-UUID", this.organisationUUID);
+    axios.defaults.headers.common["ORGANISATION-UUID"] = this.organisationUUID;
   }
 
   fetchJson(url, options = {}) {
@@ -83,6 +95,7 @@ class HttpClient {
       if (!isDevEnv) {
         const currentSession = await Auth.currentSession();
         axios.defaults.headers.common["AUTH-TOKEN"] = currentSession.idToken.jwtToken;
+        axios.defaults.headers.common["ORGANISATION-UUID"] = this.organisationUUID;
       }
       return axios[methodname](...args);
     };

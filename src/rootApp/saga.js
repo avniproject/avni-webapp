@@ -1,5 +1,12 @@
 import { call, put, take, takeLatest } from "redux-saga/effects";
-import { getUserInfo, sendAuthConfigured, sendInitComplete, setUserInfo, types } from "./ducks";
+import {
+  getUserInfo,
+  sendAuthConfigured,
+  sendInitComplete,
+  setAdminOrgs,
+  setUserInfo,
+  types
+} from "./ducks";
 import {
   cognitoConfig as cognitoConfigFromEnv,
   cognitoInDev,
@@ -11,7 +18,8 @@ import { configureAuth } from "./utils";
 
 const api = {
   fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
-  fetchUserInfo: () => http.fetchJson("/me").then(response => response.json)
+  fetchUserInfo: () => http.fetchJson("/me").then(response => response.json),
+  fetchAdminOrgs: () => http.get("/organisation").then(response => response && response.data)
 };
 
 export function* initialiseCognito() {
@@ -27,7 +35,6 @@ export function* initialiseCognito() {
       yield call(alert, e);
     }
   } else {
-    return;
   }
 }
 
@@ -51,4 +58,13 @@ function* setUserDetails() {
     yield call(http.initAuthContext, { username: userDetails.username });
   }
   yield put(sendInitComplete());
+}
+
+export function* getAdminOrgsWatcher() {
+  yield takeLatest(types.GET_ADMIN_ORGANISATIONS, setAdminOrgsWorker);
+}
+
+function* setAdminOrgsWorker() {
+  const organisations = yield call(api.fetchAdminOrgs);
+  yield put(setAdminOrgs(organisations));
 }
