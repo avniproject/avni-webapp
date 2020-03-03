@@ -183,6 +183,7 @@ export const UserDetail = ({ user, ...props }) => (
           !isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : ""
         }
       />
+      <TextField label="Identifier prefix" source="settings.idPrefix" />
       <TextField label="Created by" source="createdBy" />
       <TextField label="Last modified by" source="lastModifiedBy" />
       <TextField label="Created On(datetime)" source="createdDateTime" />
@@ -318,6 +319,8 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         <BooleanInput source="settings.hideRegister" label="Hide register" />
         <BooleanInput source="settings.hideUnplanned" label="Hide unplanned" />
         <BooleanInput source="settings.showBeneficiaryMode" label="Beneficiary mode" />
+        <TextInput source="settings.idPrefix" label="Identifier prefix" />
+        <br />
         <RadioButtonGroupInput
           source="settings.datePickerMode"
           label="Date picker mode"
