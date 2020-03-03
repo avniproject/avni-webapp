@@ -34,7 +34,6 @@ public class WebTranslationController {
     }
 
     @RequestMapping(value = "/web/organizations", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<?> getOrganisationConfig() throws IOException {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         OrganisationConfig organisationConfig = translationService.getOrganisationConfigById(organisation);
@@ -46,7 +45,6 @@ public class WebTranslationController {
     }
 
     @RequestMapping(value = "/web/translations", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
     public ResponseEntity<?> translationInfo(@RequestParam(value = "locale",required = false) String locale) throws IOException {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         OrganisationConfig organisationConfig = translationService.getOrganisationConfigById(organisation);
