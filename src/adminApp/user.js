@@ -316,6 +316,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         <BooleanInput source="settings.hideRegister" label="Hide register" />
         <BooleanInput source="settings.hideUnplanned" label="Hide unplanned" />
         <BooleanInput source="settings.showBeneficiaryMode" label="Beneficiary mode" />
+        <BooleanInput source="settings.disableAutoRefresh" label="Disable dashboard auto refresh" />
         <RadioButtonGroupInput
           source="settings.datePickerMode"
           label="Date picker mode"
