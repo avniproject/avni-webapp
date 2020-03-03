@@ -1,7 +1,6 @@
 package org.openchs.dao;
 
 import org.openchs.domain.User;
-import org.openchs.projection.OrgAdminUserProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -13,6 +12,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "user", path = "user")
@@ -48,17 +48,17 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
                                                                             String phoneNumber,
                                                                             Pageable pageable);
 
-    @Query(value = "SELECT u.id as id, u.name as name, u.username as username, u.email as email, " +
-            "u.phoneNumber as phoneNumber, u.organisationId as organisationId, u.disabledInCognito as disabledInCognito " +
-            "FROM User u where u.isVoided = false and u.isOrgAdmin = true " +
+    @Query(value = "SELECT u FROM User u left join u.accountAdmin as aa " +
+            "where u.isVoided = false and " +
+            "(((:organisationIds) is not null and u.organisationId in (:organisationIds) and u.isOrgAdmin = true) or aa.account.id in (:accountIds)) " +
             "and (:username is null or u.username like %:username%) " +
             "and (:name is null or u.name like %:name%) " +
             "and (:email is null or u.email like %:email%) " +
             "and (:phoneNumber is null or u.phoneNumber like %:phoneNumber%)")
-    Page<OrgAdminUserProjection> findOrgAdmins(String username, String name, String email, String phoneNumber, Pageable pageable);
+    Page<User> findAccountAndOrgAdmins(String username, String name, String email, String phoneNumber, List<Long> accountIds, List<Long> organisationIds, Pageable pageable);
 
-    @Query(value = "SELECT u.id as id, u.name as name, u.username as username, u.email as email, " +
-            "u.phoneNumber as phoneNumber, u.organisationId as organisationId, u.disabledInCognito as disabledInCognito " +
-            "FROM User u where u.id=:id")
-    OrgAdminUserProjection getOne(Long id);
+    @Query(value = "SELECT u FROM User u left join u.accountAdmin as aa " +
+            "where u.id=:id and u.isVoided = false and " +
+            "(((:organisationIds) is not null and u.organisationId in (:organisationIds) and u.isOrgAdmin = true) or aa.account.id in (:accountIds))")
+    User getOne(Long id, List<Long> accountIds, List<Long> organisationIds);
 }

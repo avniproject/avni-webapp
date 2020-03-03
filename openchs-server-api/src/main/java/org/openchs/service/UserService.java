@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    private UserRepository userRepository;
     private static Logger logger = LoggerFactory.getLogger(UserService.class);
+    private UserRepository userRepository;
     private OrganisationRepository organisationRepository;
 
     @Autowired
@@ -35,11 +35,13 @@ public class UserService {
     }
 
     public User save(User user) {
-        Organisation organisation = organisationRepository.findOne(user.getOrganisationId());
-        user = userRepository.save(user);
-        if(organisation.getParentOrganisationId() == null && user.isOrgAdmin()) {
-            user.setCreatedBy(user);
-            user.setLastModifiedBy(user);
+        if (user.getOrganisationId() != null) {
+            Organisation organisation = organisationRepository.findOne(user.getOrganisationId());
+            user = userRepository.save(user);
+            if (organisation.getParentOrganisationId() == null && user.isOrgAdmin()) {
+                user.setCreatedBy(user);
+                user.setLastModifiedBy(user);
+            }
         }
         return userRepository.save(user);
     }

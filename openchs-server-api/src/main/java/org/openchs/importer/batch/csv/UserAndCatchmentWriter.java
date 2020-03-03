@@ -3,6 +3,7 @@ package org.openchs.importer.batch.csv;
 import org.openchs.dao.LocationRepository;
 import org.openchs.dao.UserRepository;
 import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.batch.model.Row;
 import org.openchs.service.CatchmentService;
 import org.openchs.service.CognitoIdpService;
@@ -92,7 +93,8 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
                 .with("idPrefix", idPrefix));
 
         User currentUser = userService.getCurrentUser();
-        user.setOrganisationId(currentUser.getOrganisationId());
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        user.setOrganisationId(organisation.getId());
         user.setAuditInfo(currentUser);
 
         cognitoService.createUser(user);

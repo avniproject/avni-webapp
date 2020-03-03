@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -37,7 +38,23 @@ public class Organisation {
     @Column
     private boolean isVoided;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
     public Organisation() {
+    }
+
+    public Organisation(String name) {
+        this.name = name;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public Long getId() {
@@ -46,10 +63,6 @@ public class Organisation {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Organisation(String name) {
-        this.name = name;
     }
 
     public String getName() {
