@@ -10,7 +10,6 @@ class App extends Component {
     if (isDevEnv && !cognitoInDev) {
       this.props.getUserInfo();
     }
-    this.props.getAdminOrgs();
   }
 
   render() {
