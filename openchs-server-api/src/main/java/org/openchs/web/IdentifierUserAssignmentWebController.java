@@ -27,6 +27,13 @@ public class IdentifierUserAssignmentWebController extends AbstractController<Id
     private UserRepository userRepository;
     private IdentifierSourceRepository identifierSourceRepository;
 
+    @Autowired
+    public IdentifierUserAssignmentWebController(IdentifierUserAssignmentRepository identifierUserAssignmentRepository, UserRepository userRepository, IdentifierSourceRepository identifierSourceRepository) {
+        this.identifierUserAssignmentRepository = identifierUserAssignmentRepository;
+        this.userRepository = userRepository;
+        this.identifierSourceRepository = identifierSourceRepository;
+    }
+
     @GetMapping(value = "/web/identifierUserAssignment")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
