@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField } from "@material-ui/core";
-import { ObservationsHolder,Individual } from "avni-models";
+import { ObservationsHolder, Individual } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
@@ -178,7 +178,7 @@ const DefaultPage = props => {
                     />
                     <label className={classes.villagelabel}>Village</label>
                     <LocationAutosuggest selectedVillage={props.subject.lowestAddressLevel.title}
-                      onSelect={location => props.updateSubject("lowestAddressLevel", location)}
+                      onSelect={location => props.updateSubject("lowestAddressLevel", location) } data={props}
                     />
                   </React.Fragment>
                 )}
@@ -208,7 +208,7 @@ const DefaultPage = props => {
                       }}
                       noUnderline
                     >
-                    <PagenatorButton className={classes.prevbuttonspace}>Previous</PagenatorButton><PagenatorButton>Next</PagenatorButton>
+                      <PagenatorButton className={classes.prevbuttonspace}>Previous</PagenatorButton><PagenatorButton>Next</PagenatorButton>
                     </RelativeLink>
                   </Box>
                 </Box>
@@ -235,7 +235,7 @@ const mapDispatchToProps = {
   updateSubject,
   getGenders,
   saveSubject,
-  onLoad,  
+  onLoad,
   setSubject,
   saveCompleteFalse
 };
