@@ -13,15 +13,16 @@ import Typography from "@material-ui/core/Typography";
 const useStyles = makeStyles(theme => ({
   tableCell: {
     borderBottom: "none",
-    padding: "4px 40px 8px 16px"
+    padding: "0px 0px 0px 16px"
   },
   enrollButtonStyle: {
-    backgroundColor: "#fc9153"
+    backgroundColor: "#fc9153",
+    height: "38px",
+    zIndex: 1
   },
   bigAvatar: {
-    width: 60,
-    height: 60,
-    marginLeft: theme.spacing(1)
+    width: 42,
+    height: 42
   },
   tableView: {
     flexGrow: 1,
@@ -30,6 +31,11 @@ const useStyles = makeStyles(theme => ({
   },
   mainHeading: {
     fontSize: "20px"
+  },
+  tableHeader: {
+    color: "#555555",
+    fontSize: "12px",
+    fontFamily: "Roboto Reg"
   }
 }));
 
@@ -41,7 +47,7 @@ const ProfileDetails = ({ profileDetails }) => {
         {`${profileDetails.firstName} ${profileDetails.lastName}`} Dashboard
       </Typography>
       <Grid justify="center" alignItems="center" container spacing={2}>
-        <Grid item xs={1}>
+        <Grid item>
           <Avatar
             src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
             className={classes.bigAvatar}
@@ -50,7 +56,7 @@ const ProfileDetails = ({ profileDetails }) => {
         <Grid item xs={5}>
           <Table aria-label="caption table">
             <TableHead>
-              <TableRow>
+              <TableRow className={classes.tableHeader}>
                 <TableCell className={classes.tableCell}>Name</TableCell>
                 <TableCell className={classes.tableCell}>Gender</TableCell>
                 <TableCell className={classes.tableCell}>Age</TableCell>
@@ -68,7 +74,9 @@ const ProfileDetails = ({ profileDetails }) => {
                     new Date(profileDetails.dateOfBirth).getFullYear() +
                     " Year"}
                 </TableCell>
-                <TableCell className={classes.tableCell}>{profileDetails.addressLevel}</TableCell>
+                <TableCell className={classes.tableCell}>
+                  {profileDetails.lowestAddressLevel}
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>

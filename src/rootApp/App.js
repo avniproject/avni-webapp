@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import Routes from "./Routes";
-import { getUserInfo } from "./ducks";
+import { getAdminOrgs, getUserInfo } from "./ducks";
 import { cognitoInDev, isDevEnv } from "../common/constants";
 
 class App extends Component {
@@ -33,5 +33,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getUserInfo }
+  { getUserInfo, getAdminOrgs }
 )(App);

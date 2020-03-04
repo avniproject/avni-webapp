@@ -6,8 +6,21 @@ export const types = {
   INIT_COMPLETE: "app/INIT_COMPLETE",
   FETCH_ALL_LOCATIONS: "app/FETCH_ALL_LOCATIONS",
   FETCH_ALL_LOCATIONS_SUCCESS: "app/FETCH_ALL_LOCATIONS_SUCCESS",
-  AUTH_CONFIGURED: "app/AUTH_CONFIGURED"
+  AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
+  GET_ADMIN_ORGANISATIONS: "app/GET_ADMIN_ORGANISATIONS",
+  SET_ADMIN_ORGANISATIONS: "app/SET_ADMIN_ORGANISATIONS"
 };
+
+export const getAdminOrgs = () => ({
+  type: types.GET_ADMIN_ORGANISATIONS
+});
+
+export const setAdminOrgs = organisations => ({
+  type: types.SET_ADMIN_ORGANISATIONS,
+  payload: {
+    organisations
+  }
+});
 
 export const initCognito = () => ({
   type: types.INIT_COGNITO
@@ -91,6 +104,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         authConfigured: true
+      };
+    }
+    case types.SET_ADMIN_ORGANISATIONS: {
+      return {
+        ...state,
+        organisations: action.payload.organisations
       };
     }
     default:

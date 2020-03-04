@@ -2,7 +2,8 @@ import { map, findKey } from "lodash";
 
 const types = Object.freeze({
   locations: "Locations",
-  usersAndCatchments: "Users & Catchments"
+  usersAndCatchments: "Users & Catchments",
+  metadataZip: "Metadata Zip"
 });
 
 export default class {

@@ -10,16 +10,7 @@ import {
   SimpleForm,
   TextInput
 } from "react-admin";
-
-const Title = ({ record }) => {
-  return (
-    record && (
-      <span>
-        Program: <b>{record.name}</b>
-      </span>
-    )
-  );
-};
+import { Title } from "./components/Title";
 
 export const SubjectTypeList = props => (
   <List {...props} bulkActions={false}>
@@ -32,7 +23,7 @@ export const SubjectTypeList = props => (
 
 export const SubjectTypeDetail = props => {
   return (
-    <Show title={<Title />} {...props}>
+    <Show title={<Title title={"Subject Type"} />} {...props}>
       <SimpleShowLayout>
         <TextField source="name" label="Name" />
         <TextField label="Organisation Id" source="subjectTypeOrganisationId" />

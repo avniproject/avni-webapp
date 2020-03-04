@@ -185,7 +185,11 @@ function FormElementDetails(props) {
               <InputLabel>Low Absolute</InputLabel>
               <Input
                 disableUnderline={true}
-                value={props.formElementData.concept.lowAbsolute}
+                value={
+                  props.formElementData.concept.lowAbsolute
+                    ? props.formElementData.concept.lowAbsolute
+                    : "N.A"
+                }
                 disabled
               />
             </FormControl>
@@ -195,7 +199,11 @@ function FormElementDetails(props) {
               <InputLabel>High Absolute</InputLabel>
               <Input
                 disableUnderline={true}
-                value={props.formElementData.concept.highAbsolute}
+                value={
+                  props.formElementData.concept.highAbsolute
+                    ? props.formElementData.concept.highAbsolute
+                    : "N.A"
+                }
                 disabled
               />
             </FormControl>
@@ -205,7 +213,11 @@ function FormElementDetails(props) {
               <InputLabel>Low normal</InputLabel>
               <Input
                 disableUnderline={true}
-                value={props.formElementData.concept.lowNormal}
+                value={
+                  props.formElementData.concept.lowNormal
+                    ? props.formElementData.concept.lowNormal
+                    : "N.A"
+                }
                 disabled
               />
             </FormControl>
@@ -215,7 +227,11 @@ function FormElementDetails(props) {
               <InputLabel>High normal</InputLabel>
               <Input
                 disableUnderline={true}
-                value={props.formElementData.concept.highNormal}
+                value={
+                  props.formElementData.concept.highNormal
+                    ? props.formElementData.concept.highNormal
+                    : "N.A"
+                }
                 disabled
               />
             </FormControl>
@@ -223,7 +239,13 @@ function FormElementDetails(props) {
           <Grid item sm={2}>
             <FormControl>
               <InputLabel>Unit</InputLabel>
-              <Input disableUnderline={true} value={props.formElementData.concept.unit} disabled />
+              <Input
+                disableUnderline={true}
+                value={
+                  props.formElementData.concept.unit ? props.formElementData.concept.unit : "N.A"
+                }
+                disabled
+              />
             </FormControl>
           </Grid>
         </Grid>

@@ -39,7 +39,10 @@ const urlMapping = {
   organisationConfig: "organisationConfig",
   identifierSource: "web/identifierSource",
   identifierUserAssignment: "web/identifierUserAssignment",
-  organisation: "organisation"
+  organisation: "organisation",
+  accountOrgAdmin: "user/accountOrgAdmin",
+  account: "account",
+  organisationGroup: "organisationGroup"
 };
 export default apiUrl => {
   /**

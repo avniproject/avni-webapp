@@ -21,6 +21,7 @@ import {
 } from "react-admin";
 import { None } from "../common/components/utils";
 import { isNil } from "lodash";
+import { Title } from "./components/Title";
 
 export const LocationTypeList = props => (
   <List
@@ -65,18 +66,8 @@ ParentReferenceField.defaultProps = {
   addLabel: true
 };
 
-const Title = ({ record }) => {
-  return (
-    record && (
-      <span>
-        Location Type: <b>{record.name}</b>
-      </span>
-    )
-  );
-};
-
 export const LocationTypeDetail = props => (
-  <Show {...props} title={<Title />}>
+  <Show {...props} title={<Title title={"Location Type"} />}>
     <SimpleShowLayout>
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />

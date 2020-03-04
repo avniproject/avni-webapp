@@ -2,25 +2,21 @@ import React, { Fragment } from "react";
 import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Button from "@material-ui/core/Button";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import Fab from "@material-ui/core/Fab";
-import moment from "moment/moment";
+import Visit from "./Visit";
+import SubjectButton from "./Button";
 
 const useStyles = makeStyles(theme => ({
   label: {
     marginLeft: theme.spacing(2),
     marginBottom: theme.spacing(2)
   },
-  enrollButtonStyle: {
-    marginBottom: theme.spacing(2)
+  expansionPanel: {
+    marginBottom: "11px"
   },
   root: {
     flexGrow: 1,
@@ -59,20 +55,17 @@ const SubjectDashboardGeneralTab = ({ general }) => {
     <Fragment>
       <Paper className={classes.root}>
         <Grid container justify="flex-end">
-          <Fab
-            className={classes.enrollButtonStyle}
-            variant="extended"
-            color="primary"
-            aria-label="add"
-          >
-            New Form
-          </Fab>
+          <SubjectButton btnLabel="New Form" />
         </Grid>
-        <ExpansionPanel expanded={expanded === "panel1"} onChange={handleChange("panel1")}>
+        <ExpansionPanel
+          className={classes.expansionPanel}
+          expanded={expanded === "plannedVisitPanel"}
+          onChange={handleChange("plannedVisitPanel")}
+        >
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
+            aria-controls="plannedVisitPanelbh-content"
+            id="plannedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Planned visits
@@ -80,40 +73,16 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general.encounters
-                ? general.encounters.map(row =>
+              {general
+                ? general.map((row, index) =>
                     !row.encounterDateTime ? (
-                      <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
-                        <Paper
-                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                          className={classes.paper}
-                        >
-                          <List>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.operationalEncounterTypeName} />
-                            </ListItem>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText
-                                primary={moment(new Date(row.maxVisitDateTime)).format(
-                                  "DD-MM-YYYY"
-                                )}
-                              />
-                            </ListItem>
-
-                            {new Date() > new Date(row.maxVisitDateTime) ? (
-                              <ListItem className={classes.listItem}>
-                                <ListItemText>
-                                  <label className={classes.programStatusStyle}>Overdue</label>
-                                </ListItemText>
-                              </ListItem>
-                            ) : (
-                              ""
-                            )}
-                          </List>
-                          <Button color="primary">DO VISIT</Button>
-                          <Button color="primary">CANCEL VISIT</Button>
-                        </Paper>
-                      </Grid>
+                      <Visit
+                        key={index}
+                        name={row.encounterType.name}
+                        index={index}
+                        visitDate={row.earliestVisitDateTime}
+                        overdueDate={row.maxVisitDateTime}
+                      />
                     ) : (
                       ""
                     )
@@ -122,11 +91,15 @@ const SubjectDashboardGeneralTab = ({ general }) => {
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel expanded={expanded === "panel2"} onChange={handleChange("panel2")}>
+        <ExpansionPanel
+          className={classes.expansionPanel}
+          expanded={expanded === "completedVisitPanel"}
+          onChange={handleChange("completedVisitPanel")}
+        >
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
+            aria-controls="completedVisitPanelbh-content"
+            id="completedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Completed visits
@@ -134,36 +107,16 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general.encounters
-                ? general.encounters.map(row =>
+              {general
+                ? general.map((row, index) =>
                     row.encounterDateTime ? (
-                      <Grid key={row.operationalEncounterTypeName} item xs={6} sm={3}>
-                        <Paper
-                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                          className={classes.paper}
-                        >
-                          <List>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.operationalEncounterTypeName} />
-                            </ListItem>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText
-                                primary={moment(new Date(row.encounterDateTime)).format(
-                                  "DD-MM-YYYY"
-                                )}
-                              />
-                            </ListItem>
-                            <ListItem className={classes.listItem}>
-                              <label style={{ fontSize: "14px" }}>
-                                {`Scheduled on :${moment(
-                                  new Date(row.earliestVisitDateTime)
-                                ).format("DD-MM-YYYY")}`}{" "}
-                              </label>
-                            </ListItem>
-                          </List>
-                          <Button color="primary">EDIT VISIT</Button>
-                        </Paper>
-                      </Grid>
+                      <Visit
+                        key={index}
+                        name={row.encounterType.name}
+                        index={index}
+                        visitDate={row.encounterDateTime}
+                        earliestVisitDate={row.earliestVisitDateTime}
+                      />
                     ) : (
                       ""
                     )

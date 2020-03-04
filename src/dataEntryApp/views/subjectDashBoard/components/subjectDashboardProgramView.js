@@ -1,6 +1,5 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-import Fab from "@material-ui/core/Fab";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
@@ -9,33 +8,43 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import moment from "moment/moment";
 import Observations from "../../../../common/components/Observations";
-
+import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
+import SubjectButton from "./Button";
 
 const useStyles = makeStyles(theme => ({
-  enrollButtonStyle: {
+  programLabel: {
+    fontSize: "18px"
+  },
+  growthButtonStyle: {
     marginBottom: theme.spacing(2),
-    marginRight: theme.spacing(2)
+    marginRight: "10px",
+    height: "28px"
+    // marginLeft: "37px"
   },
   root: {
     flexGrow: 1,
     padding: theme.spacing(2)
   },
+  expansionPanel: {
+    marginBottom: "11px"
+  },
   paper: {
-    padding: theme.spacing(2),
-    textAlign: "left"
+    textAlign: "left",
+    boxShadow: "none",
+    borderRadius: "0px",
+    borderRight: "1px solid #dcdcdc",
+    padding: "0px"
   },
   programStatusStyle: {
     color: "red",
-    backgroundColor: "#FFB6C1",
-    borderRadius: "5px"
+    backgroundColor: "#ffeaea",
+    fontSize: "12px",
+    padding: "2px 5px"
   },
   expansionHeading: {
-    fontSize: theme.typography.pxToRem(15),
+    fontSize: theme.typography.pxToRem(16),
     flexBasis: "33.33%",
     flexShrink: 0
   },
@@ -43,11 +52,32 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: "0px",
     paddingTop: "0px"
   },
+  ListItemText: {
+    "& span": {
+      fontSize: "14px"
+    },
+    color: "#2196f3",
+    fontSize: "14px",
+    textTransform: "uppercase"
+  },
+  listItemTextDate: {
+    "& span": {
+      fontSize: "15px",
+      color: "#555555"
+    }
+  },
   table: {
     border: "1px solid rgba(224, 224, 224, 1)"
   },
   abnormalColor: {
     color: "#ff4f33"
+  },
+  expandMoreIcon: {
+    color: "#0e6eff"
+  },
+  visitButton: {
+    marginLeft: "8px",
+    fontSize: "14px"
   }
 }));
 
@@ -63,47 +93,32 @@ const ProgramView = ({ programData }) => {
     <div>
       <Grid container spacing={3}>
         <Grid item xs={6}>
-          <label>{programData.operationalProgramName} program details</label>
+          <label className={classes.programLabel}>
+            {programData.program.operationalProgramName} program details
+          </label>
         </Grid>
         <Grid item xs={6}>
-          <Fab
-            className={classes.enrollButtonStyle}
-            variant="extended"
-            color="primary"
-            aria-label="add"
-          >
-            Growth Chart
-          </Fab>
-          <Fab
-            className={classes.enrollButtonStyle}
-            variant="extended"
-            color="primary"
-            aria-label="add"
-          >
-            Vaccinations
-          </Fab>
-          <Fab
-            className={classes.enrollButtonStyle}
-            variant="extended"
-            color="primary"
-            aria-label="add"
-          >
-            New Program Visit
-          </Fab>
+          <SubjectButton btnLabel="Growth Chart" btnClass={classes.growthButtonStyle} />
+          <SubjectButton btnLabel="Vaccinations" />
+          <SubjectButton btnLabel="New Program Visit" />
         </Grid>
       </Grid>
       <Paper className={classes.root}>
-        <ExpansionPanel expanded={expandedPanel === "panel1"} onChange={handleChange("panel1")}>
+        <ExpansionPanel
+          className={classes.expansionPanel}
+          expanded={expandedPanel === "enrollmentPanel"}
+          onChange={handleChange("enrollmentPanel")}
+        >
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+            aria-controls="enrollmentPanelbh-content"
             id="panel1bh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Enrollment details
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid item xs={12}>
               <List>
                 <Observations observations={programData ? programData.observations : ""} />
@@ -113,51 +128,32 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel expanded={expandedPanel === "panel2"} onChange={handleChange("panel2")}>
+        <ExpansionPanel
+          className={classes.expansionPanel}
+          expanded={expandedPanel === "plannedVisitPanel"}
+          onChange={handleChange("plannedVisitPanel")}
+        >
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+            aria-controls="plannedVisitPanelbh-content"
+            id="plannedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Planned visits
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid container spacing={2}>
-              {programData && programData.programEncounters
-                ? programData.programEncounters.map(row =>
+              {programData && programData.encounters
+                ? programData.encounters.map((row, index) =>
                     !row.encounterDateTime ? (
-                      <Grid key={row.name} item xs={6} sm={3}>
-                        <Paper
-                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                          className={classes.paper}
-                        >
-                          <List>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.name} />
-                            </ListItem>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText
-                                primary={moment(new Date(row.earliestVisitDateTime)).format(
-                                  "DD-MM-YYYY"
-                                )}
-                              />
-                            </ListItem>
-                            {new Date() > new Date(row.maxVisitDateTime) ? (
-                              <ListItem className={classes.listItem}>
-                                <ListItemText>
-                                  <label className={classes.programStatusStyle}>Overdue</label>
-                                </ListItemText>
-                              </ListItem>
-                            ) : (
-                              ""
-                            )}
-                          </List>
-                          <Button color="primary">DO VISIT</Button>
-                          <Button color="primary">CANCEL VISIT</Button>
-                        </Paper>
-                      </Grid>
+                      <Visit
+                        name={row.name}
+                        key={index}
+                        index={index}
+                        visitDate={row.earliestVisitDateTime}
+                        overdueDate={row.maxVisitDateTime}
+                      />
                     ) : (
                       ""
                     )
@@ -166,49 +162,32 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel expanded={expandedPanel === "panel3"} onChange={handleChange("panel3")}>
+        <ExpansionPanel
+          className={classes.expansionPanel}
+          expanded={expandedPanel === "completedVisitPanel"}
+          onChange={handleChange("completedVisitPanel")}
+        >
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+            aria-controls="completedVisitPanelbh-content"
+            id="completedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
               Completed visit
             </Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
+          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid container spacing={2}>
-              {programData && programData.programEncounters
-                ? programData.programEncounters.map(row =>
-                    row.encounterDateTime ? (
-                      <Grid key={row.name} item xs={6} sm={3}>
-                        <Paper
-                          style={{ boxShadow: "none", borderRight: "1px solid lightGrey" }}
-                          className={classes.paper}
-                        >
-                          <List>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText primary={row.name} />
-                            </ListItem>
-                            <ListItem className={classes.listItem}>
-                              <ListItemText
-                                primary={moment(new Date(row.encounterDateTime)).format(
-                                  "DD-MM-YYYY"
-                                )}
-                              />
-                            </ListItem>
-                            <ListItem className={classes.listItem}>
-                              <label style={{ fontSize: "14px" }}>
-                                {`Scheduled on :${moment(
-                                  new Date(row.earliestVisitDateTime)
-                                ).format("DD-MM-YYYY")}`}{" "}
-                              </label>
-                            </ListItem>
-                          </List>
-                          <Button color="primary">DO VISIT</Button>
-                          <Button color="primary">CANCEL VISIT</Button>
-                        </Paper>
-                      </Grid>
+              {programData && programData.encounters
+                ? programData.encounters.map((row, index) =>
+                    row.encounterDateTime && row.encounterType ? (
+                      <Visit
+                        name={row.encounterType.name}
+                        key={index}
+                        index={index}
+                        visitDate={row.encounterDateTime}
+                        earliestVisitDate={row.earliestVisitDateTime}
+                      />
                     ) : (
                       ""
                     )

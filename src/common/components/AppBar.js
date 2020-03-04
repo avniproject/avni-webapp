@@ -11,6 +11,8 @@ import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import { OrganisationOptions } from "./OrganisationOptions";
+import { getUserInfo } from "../../rootApp/ducks";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -35,10 +37,16 @@ const useStyle = makeStyles(theme => ({
   },
   profileButton: {
     color: "white"
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    color: "white"
   }
 }));
 
-const AppBar = props => {
+const AppBar = ({ getUserInfo, ...props }) => {
+  const { organisation, user, history, staticContext, dispatch, organisations, ...rest } = props;
   const classes = useStyle();
   const [anchorEl, setAnchorEl] = React.useState(null);
   function handleClick(event) {
@@ -69,8 +77,15 @@ const AppBar = props => {
               {props.title}
             </Typography>
           </div>
-
           <div className={classes.profile}>
+            <OrganisationOptions
+              getUserInfo={getUserInfo}
+              user={user}
+              organisation={organisation}
+              styles={classes}
+              history={history}
+              organisations={organisations}
+            />
             <div style={{ marginTop: "2%" }}>
               <b>{props.organisation.name} </b> ({props.user.username})
             </div>
@@ -107,12 +122,13 @@ const AppBar = props => {
 
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
-  user: state.app.user
+  user: state.app.user,
+  organisations: state.app.organisations
 });
 
 export default withRouter(
   connect(
     mapStateToProps,
-    null
+    { getUserInfo }
   )(AppBar)
 );
