@@ -7,6 +7,7 @@ public class OrganisationConfigRequest {
 
     private String uuid;
     private JsonObject settings;
+    private String worklistUpdationRule;
 
     public String getUuid() {
         return uuid;
@@ -24,10 +25,18 @@ public class OrganisationConfigRequest {
         this.settings = settings;
     }
 
+    public String getWorklistUpdationRule(){
+        return worklistUpdationRule;
+    }
+
+    public void setWorklistUpdationRule(String worklistUpdationRule){
+        this.worklistUpdationRule = worklistUpdationRule;
+    }
     public static OrganisationConfigRequest fromOrganisationConfig(OrganisationConfig organisationConfig) {
         OrganisationConfigRequest configRequest = new OrganisationConfigRequest();
         configRequest.setUuid(organisationConfig.getUuid());
         configRequest.setSettings(organisationConfig.getSettings());
+        configRequest.setWorklistUpdationRule(organisationConfig.getWorklistUpdationRule());
         return configRequest;
     }
 }

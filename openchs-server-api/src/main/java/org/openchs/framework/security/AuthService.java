@@ -1,7 +1,10 @@
 package org.openchs.framework.security;
 
+import org.openchs.dao.AccountAdminRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.UserRepository;
+import org.openchs.domain.AccountAdmin;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
 import org.openchs.service.CognitoAuthService;
@@ -11,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,12 +30,15 @@ public class AuthService {
     private CognitoAuthService cognitoAuthService;
     private UserRepository userRepository;
     private OrganisationRepository organisationRepository;
+    private AccountAdminRepository accountAdminRepository;
+    private String organisationUUID;
 
     @Autowired
-    public AuthService(CognitoAuthService cognitoAuthService, UserRepository userRepository, OrganisationRepository organisationRepository) {
+    public AuthService(CognitoAuthService cognitoAuthService, UserRepository userRepository, OrganisationRepository organisationRepository, AccountAdminRepository accountAdminRepository) {
         this.cognitoAuthService = cognitoAuthService;
         this.userRepository = userRepository;
         this.organisationRepository = organisationRepository;
+        this.accountAdminRepository = accountAdminRepository;
     }
 
     public UserContext authenticateByUserName(String username) {
@@ -61,8 +66,18 @@ public class AuthService {
         if (user == null) {
             return null;
         }
+        List<AccountAdmin> accountAdmins = accountAdminRepository.findByUser_Id(user.getId());
+        user.setAdmin(accountAdmins.size() > 0);
+        Organisation organisation = null;
+        if (user.isAdmin() && organisationUUID != null) {
+            user.setOrgAdmin(true);
+            organisation = organisationRepository.findByUuid(organisationUUID);
+        } else if (user.getOrganisationId() != null) {
+            organisation = organisationRepository.findOne(user.getOrganisationId());
+        }
         userContext.setUser(user);
-        userContext.setOrganisation(organisationRepository.findOne(user.getOrganisationId()));
+        userContext.setOrganisation(organisation);
+        userContext.setOrganisationUUID(organisationUUID);
 
         List<SimpleGrantedAuthority> authorities = ALL_AUTHORITIES.stream()
                 .filter(authority -> userContext.getRoles().contains(authority.getAuthority()))
@@ -85,6 +100,14 @@ public class AuthService {
     private Authentication createTempAuth(List<SimpleGrantedAuthority> authorities) {
         String token = UUID.randomUUID().toString();
         return new AnonymousAuthenticationToken(token, token, authorities);
+    }
+
+    public String getOrganisationUUID() {
+        return organisationUUID;
+    }
+
+    public void setOrganisationUUID(String organisationUUID) {
+        this.organisationUUID = organisationUUID;
     }
 
 }

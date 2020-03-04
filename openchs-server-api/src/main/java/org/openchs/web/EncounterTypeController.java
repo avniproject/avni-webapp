@@ -4,6 +4,7 @@ import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.OperationalEncounterTypeRepository;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.OperationalEncounterType;
+import org.openchs.service.EncounterTypeService;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.webapp.EncounterTypeContractWeb;
@@ -24,13 +25,15 @@ import java.util.List;
 @RestController
 public class EncounterTypeController extends AbstractController<EncounterType> implements RestControllerResourceProcessor<EncounterTypeContractWeb> {
     private final Logger logger;
-    private EncounterTypeRepository encounterTypeRepository;
     private final OperationalEncounterTypeRepository operationalEncounterTypeRepository;
+    private final EncounterTypeService encounterTypeService;
+    private EncounterTypeRepository encounterTypeRepository;
 
     @Autowired
-    public EncounterTypeController(EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository) {
+    public EncounterTypeController(EncounterTypeRepository encounterTypeRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, EncounterTypeService encounterTypeService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
+        this.encounterTypeService = encounterTypeService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -39,11 +42,7 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     void save(@RequestBody List<EncounterTypeContract> encounterTypeRequests) {
         for (EncounterTypeContract encounterTypeRequest : encounterTypeRequests) {
-            EncounterType encounterType = newOrExistingEntity(encounterTypeRepository, encounterTypeRequest, new EncounterType());
-            encounterType.setName(encounterTypeRequest.getName());
-            encounterType.setEncounterEligibilityCheckRule(encounterTypeRequest.getEncounterEligibilityCheckRule());
-            encounterType.setVoided(encounterTypeRequest.isVoided());
-            encounterTypeRepository.save(encounterType);
+            encounterTypeService.createEncounterType(encounterTypeRequest);
         }
     }
 

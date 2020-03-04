@@ -67,7 +67,4 @@ public class OperationalProgram extends OrganisationAwareEntity {
         return getProgram().getEnrolmentEligibilityCheckRule();
     }
 
-    public String getChecklistsRule() {
-        return getProgram().getChecklistsRule();
-    }
 }

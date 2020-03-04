@@ -8,28 +8,35 @@ import org.openchs.domain.Individual;
 import org.openchs.domain.SubjectType;
 import org.openchs.geo.Point;
 import org.openchs.projection.IndividualWebProjection;
+import org.openchs.service.ConceptService;
 import org.openchs.service.IndividualService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
+import org.openchs.util.S;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.IndividualContract;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.PointRequest;
+import org.openchs.web.response.ResponsePage;
+import org.openchs.web.response.SubjectResponse;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,9 +53,11 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final SubjectTypeRepository subjectTypeRepository;
     private final ProjectionFactory projectionFactory;
     private final IndividualService individualService;
+    private ConceptRepository conceptRepository;
+    private ConceptService conceptService;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService, ConceptRepository conceptRepository, ConceptService conceptService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -57,6 +66,37 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.subjectTypeRepository = subjectTypeRepository;
         this.projectionFactory = projectionFactory;
         this.individualService = individualService;
+        this.conceptRepository = conceptRepository;
+        this.conceptService = conceptService;
+    }
+
+    @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    public ResponsePage getSubjects(@RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+                                    @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+                                    @RequestParam(value = "subjectType", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String subjectType,
+                                    Pageable pageable) {
+        Page<Individual> subjects;
+        boolean subjectTypeRequested = S.isEmpty(subjectType);
+        if (subjectTypeRequested) {
+            subjects = individualRepository.findByAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, pageable);
+        } else
+            subjects = individualRepository.findByAuditLastModifiedDateTimeIsBetweenAndSubjectTypeNameOrderByAuditLastModifiedDateTimeAscIdAsc(lastModifiedDateTime, now, subjectType, pageable);
+        ArrayList<SubjectResponse> subjectResponses = new ArrayList<>();
+        subjects.forEach(subject -> {
+            subjectResponses.add(SubjectResponse.fromSubject(subject, subjectTypeRequested, conceptRepository, conceptService));
+        });
+        return new ResponsePage(subjectResponses, subjects.getNumberOfElements(), subjects.getTotalPages(), subjects.getSize());
+    }
+
+    @GetMapping(value = "/api/subject/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<SubjectResponse> get(@PathVariable("id") String uuid) {
+        Individual subject = individualRepository.findByUuid(uuid);
+        if (subject == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(SubjectResponse.fromSubject(subject, true, conceptRepository, conceptService), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/individuals", method = RequestMethod.POST)
@@ -121,7 +161,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectProfile(@RequestParam("uuid") String uuid) {
-        IndividualContract individualContract =  individualService.getSubjectInfo(uuid);
+        IndividualContract individualContract = individualService.getSubjectInfo(uuid);
         return ResponseEntity.ok(individualContract);
     }
 
@@ -129,8 +169,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectProgramEnrollment(@PathVariable("subjectUuid") String uuid) {
-        IndividualContract individualEnrolmentContract =  individualService.getSubjectProgramEnrollment(uuid);
-        if(individualEnrolmentContract == null){
+        IndividualContract individualEnrolmentContract = individualService.getSubjectProgramEnrollment(uuid);
+        if (individualEnrolmentContract == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(individualEnrolmentContract);
@@ -140,8 +180,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectEncounters(@PathVariable("uuid") String uuid) {
-        IndividualContract individualEncounterContract =  individualService.getSubjectEncounters(uuid);
-        if(individualEncounterContract == null){
+        IndividualContract individualEncounterContract = individualService.getSubjectEncounters(uuid);
+        if (individualEncounterContract == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(individualEncounterContract);

@@ -3,7 +3,7 @@ package org.openchs.dao;
 import org.openchs.domain.Organisation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "organisation", path = "organisation")
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface OrganisationRepository extends CrudRepository<Organisation, Long> {
+public interface OrganisationRepository extends CrudRepository<Organisation, Long>, JpaSpecificationExecutor<Organisation> {
     Organisation findByName(String name);
 
     Organisation findByUuid(String organisationUuid);
@@ -32,12 +32,11 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Lon
         return findById(organisationId).orElse(null);
     }
 
-    @Query("SELECT o from Organisation o where o.isVoided = false ")
-    @PreAuthorize("hasAnyAuthority('admin')")
-    @RestResource(path = "findAll", rel = "findAll")
-    Page<Organisation> getAllPageable(Pageable pageable);
-
     List<Organisation> findAllByIsVoidedFalse();
+
+    List<Organisation> findByAccount_AccountAdmin_User_Id(Long userId);
+
+    Organisation findByIdAndAccount_AccountAdmin_User_Id(Long id, Long userId);
 
     @PreAuthorize("hasAnyAuthority('admin')")
     @RestResource(path = "findAllById", rel = "findAllById")

@@ -1,13 +1,12 @@
 package org.openchs.web.request;
 
-import org.openchs.domain.Encounter;
 import org.openchs.web.request.common.CommonIndividualRequest;
 
 import java.util.*;
 
 public class IndividualContract extends CommonIndividualRequest {
 
-    private String fullAddress;
+    private String lowestAddressLevel;
 
     private List<RelationshipContract> relationships = new ArrayList<>();
 
@@ -17,12 +16,12 @@ public class IndividualContract extends CommonIndividualRequest {
 
     private Set<EncounterContract> encounters = new HashSet<>();
 
-    public String getFullAddress() {
-        return fullAddress;
+    public String getLowestAddressLevel() {
+        return lowestAddressLevel;
     }
 
-    public void setFullAddress(String fullAddress) {
-        this.fullAddress = fullAddress;
+    public void setLowestAddressLevel(String lowestAddressLevel) {
+        this.lowestAddressLevel = lowestAddressLevel;
     }
 
     public List<RelationshipContract> getRelationships() {

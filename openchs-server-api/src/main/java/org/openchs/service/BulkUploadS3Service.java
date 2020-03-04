@@ -26,6 +26,11 @@ public class BulkUploadS3Service {
         return s3Service.uploadFile(source, targetFileName, "bulkuploads/input");
     }
 
+    public ObjectInfo uploadZip(MultipartFile source, String uuid) throws IOException {
+        String targetFileName = format("%s-%s", uuid, source.getOriginalFilename());
+        return s3Service.uploadZipFile(source, targetFileName, "bulkuploads/input");
+    }
+
     public ObjectInfo uploadErrorFile(File tempSourceFile, String uuid) throws IOException {
         return s3Service.uploadFile(tempSourceFile, format("%s.csv", uuid), "bulkuploads/error");
     }

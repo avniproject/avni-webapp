@@ -5,6 +5,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.validation.ValidationException;
 
 import javax.persistence.*;
@@ -70,7 +71,12 @@ public class User {
 
     @Column
     private boolean isOrgAdmin;
-    @Column
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<AccountAdmin> accountAdmin = new HashSet<>();
+
+    @Transient
     private boolean isAdmin;
 
     @JsonIgnore
@@ -245,8 +251,8 @@ public class User {
 
     public String[] getRoles() {
         ArrayList<String> roles = new ArrayList<>();
-        if (!(isOrgAdmin || isAdmin)) roles.add(USER);
-        if (isAdmin) roles.add(ADMIN);
+        if (!(isOrgAdmin || isAdmin())) roles.add(USER);
+        if (isAdmin()) roles.add(ADMIN);
         if (isOrgAdmin) roles.add(ORGANISATION_ADMIN);
         return roles.toArray(new String[0]);
     }
@@ -255,12 +261,23 @@ public class User {
         isOrgAdmin = orgAdmin;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public Set<AccountAdmin> getAccountAdmin() {
+        return accountAdmin;
+    }
+
+    public void setAccountAdmin(AccountAdmin accountAdmin) {
+        this.accountAdmin.clear();
+        if (accountAdmin != null) {
+            this.accountAdmin.add(accountAdmin);
+        }
     }
 
     public boolean isAdmin() {
         return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.isAdmin = admin;
     }
 
     public boolean isOrgAdmin() {

@@ -1,16 +1,14 @@
-package org.openchs.importer.batch;
+package org.openchs.importer.batch.zip;
 
-import org.openchs.importer.batch.model.Row;
+import org.openchs.importer.batch.model.JsonFile;
 import org.openchs.service.BulkUploadS3Service;
 import org.springframework.batch.core.annotation.OnSkipInWrite;
-import org.springframework.batch.core.annotation.OnWriteError;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,37 +16,32 @@ import static java.lang.String.format;
 
 @Component
 @StepScope
-public class ErrorFileWriterListener {
+public class ZipErrorFileWriterListener {
 
     private final BulkUploadS3Service bulkUploadS3Service;
     @Value("#{jobParameters['uuid']}")
     private String uuid;
 
-    public ErrorFileWriterListener(BulkUploadS3Service bulkUploadS3Service) {
+    public ZipErrorFileWriterListener(BulkUploadS3Service bulkUploadS3Service) {
         this.bulkUploadS3Service = bulkUploadS3Service;
     }
 
-    @OnWriteError
-    public void onWriteError(Exception exception, List<? extends Row> items) {
-        items.forEach(item -> appendToErrorFile(item, exception));
-    }
-
     @OnSkipInWrite
-    public void onSkipInWrite(Row item, Throwable t) {
-        appendToErrorFile(item, t);
+    public void onSkipInWrite(JsonFile jsonFile, Throwable throwable) {
+        writeError(jsonFile, throwable);
     }
 
-    public void appendToErrorFile(Row item, Throwable t) {
+    public void writeError(JsonFile jsonFile, Throwable t) {
         try {
             String stackTrace = Stream.of(t.getStackTrace())
                     .map(StackTraceElement::toString)
                     .collect(Collectors.joining("\n"));
             FileWriter fileWriter = new FileWriter(bulkUploadS3Service.getLocalErrorFile(uuid), true);
-            fileWriter.append(item.toString());
+            fileWriter.append(jsonFile.getName());
             fileWriter.append(",\"");
-            fileWriter.append(t.getMessage());
+            fileWriter.append(t.getMessage().replaceAll("\"", "\"\""));
             fileWriter.append("\n");
-            fileWriter.append(t.getMessage() == null ? stackTrace : "");
+            fileWriter.append(stackTrace);
             fileWriter.append("\"\n");
             fileWriter.close();
         } catch (IOException e) {

@@ -8,6 +8,9 @@ import org.openchs.domain.Catchment;
 import org.openchs.domain.OperatingIndividualScope;
 import org.openchs.domain.User;
 import org.openchs.domain.UserFacilityMapping;
+import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.AccountAdminService;
 import org.openchs.service.CognitoIdpService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.CatchmentContract;
@@ -31,10 +34,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RepositoryRestController
@@ -48,6 +48,9 @@ public class UserController {
     private UserService userService;
     private CognitoIdpService cognitoService;
     private FacilityRepository facilityRepository;
+    private AccountAdminService accountAdminService;
+    private AccountRepository accountRepository;
+    private AccountAdminRepository accountAdminRepository;
 
     @Value("${openchs.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -59,7 +62,8 @@ public class UserController {
                           OrganisationRepository organisationRepository,
                           UserService userService,
                           CognitoIdpService cognitoService,
-                          FacilityRepository facilityRepository) {
+                          FacilityRepository facilityRepository,
+                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.userFacilityMappingRepository = userFacilityMappingRepository;
@@ -67,6 +71,9 @@ public class UserController {
         this.userService = userService;
         this.cognitoService = cognitoService;
         this.facilityRepository = facilityRepository;
+        this.accountAdminService = accountAdminService;
+        this.accountRepository = accountRepository;
+        this.accountAdminRepository = accountAdminRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -80,7 +87,7 @@ public class UserController {
         return errorMap;
     }
 
-    @RequestMapping(value = "/user", method = RequestMethod.POST)
+    @RequestMapping(value = {"/user", "/user/accountOrgAdmin"}, method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity createUser(@RequestBody UserContract userContract) {
@@ -97,7 +104,7 @@ public class UserController {
 
             cognitoService.createUser(user);
             userService.save(user);
-
+            accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException | UsernameExistsException ex) {
@@ -109,7 +116,7 @@ public class UserController {
         }
     }
 
-    @PutMapping(value = "/user/{id}")
+    @PutMapping(value = {"/user/{id}", "/user/accountOrgAdmin/{id}"})
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity updateUser(@RequestBody UserContract userContract, @PathVariable("id") Long id) {
@@ -123,7 +130,7 @@ public class UserController {
 
             cognitoService.updateUser(user);
             userService.save(user);
-
+            accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             logger.info(String.format("Saved user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException ex) {
@@ -168,12 +175,12 @@ public class UserController {
         user.addUserFacilityMappings(userFacilityMappings);
 
         user.setOrgAdmin(userContract.isOrgAdmin());
-        user.setAdmin(userContract.isAdmin());
         user.setOperatingIndividualScope(OperatingIndividualScope.valueOf(userContract.getOperatingIndividualScope()));
         user.setSettings(userContract.getSettings());
 
         User currentUser = userService.getCurrentUser();
-        user.setOrganisationId(userContract.getOrganisationId() == null ? currentUser.getOrganisationId() : userContract.getOrganisationId());
+        Long organisationId = UserContextHolder.getUserContext().getOrganisationId();
+        user.setOrganisationId(userContract.getOrganisationId() == null ? organisationId : userContract.getOrganisationId());
         user.setAuditInfo(currentUser);
         return user;
     }
@@ -196,7 +203,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/user/{id}/disable", method = RequestMethod.PUT)
+    @RequestMapping(value = {"/user/{id}/disable", "/user/accountOrgAdmin/{id}/disable"}, method = RequestMethod.PUT)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity disableUser(@PathVariable("id") Long id,
@@ -233,7 +240,7 @@ public class UserController {
                            @RequestParam(value = "email", required = false) String email,
                            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
                            Pageable pageable) {
-        Long organisationId = userService.getCurrentUser().getOrganisationId();
+        Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
         return userRepository.findAll((root, query, builder) -> {
             Predicate predicate = builder.equal(root.get("organisationId"), organisationId);
             return applyUserPredicates(username, name, email, phoneNumber, root, builder, predicate);
@@ -256,19 +263,58 @@ public class UserController {
         return predicate;
     }
 
-    @GetMapping(value = "/user/search/findOrgAdmins")
-    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @GetMapping(value = "/user/accountOrgAdmin/search/find")
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
     @ResponseBody
-    public Page<User> findOrgAdmin(@RequestParam(value = "username", required = false) String username,
-                           @RequestParam(value = "name", required = false) String name,
-                           @RequestParam(value = "email", required = false) String email,
-                           @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
-                           Pageable pageable) {
-        return userRepository.findAll((root, query, builder) -> {
-            Predicate nonVoided = builder.equal(root.get("isVoided"), false);
-            Predicate isOrgAdmin = builder.equal(root.get("isOrgAdmin"), true);
-            Predicate predicate = builder.and(isOrgAdmin, nonVoided);
-            return applyUserPredicates(username, name, email, phoneNumber, root, builder, predicate);
-        }, pageable);
+    public Page<UserContract> findOrgAdmin(@RequestParam(value = "username", required = false) String username,
+                                           @RequestParam(value = "name", required = false) String name,
+                                           @RequestParam(value = "email", required = false) String email,
+                                           @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+                                           Pageable pageable) {
+        User user = UserContextHolder.getUserContext().getUser();
+        List<Long> userAccountIds = getOwnedAccountIds(user);
+        List<Long> organisationIds = getOwnedOrganisationIds(user);
+        List<Long> queryParam = organisationIds.isEmpty() ? null : organisationIds;
+        Page<UserContract> userContracts = userRepository.findAccountAndOrgAdmins(username, name, email, phoneNumber, userAccountIds, queryParam, pageable)
+                .map(UserContract::fromEntity);
+        userContracts.forEach(this::setAccountIds);
+        return userContracts;
+    }
+
+    @GetMapping(value = "/user/accountOrgAdmin/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('admin')")
+    @ResponseBody
+    public UserContract getOne(@PathVariable("id") Long id) {
+        User user = UserContextHolder.getUserContext().getUser();
+        List<Long> userAccountIds = getOwnedAccountIds(user);
+        List<Long> organisationIds = getOwnedOrganisationIds(user);
+        List<Long> queryParam = organisationIds.isEmpty() ? null : organisationIds;
+        UserContract userContract = UserContract.fromEntity(userRepository.getOne(id, userAccountIds, queryParam));
+        setAccountIds(userContract);
+        return userContract;
+    }
+
+    private List<Long> getOwnedAccountIds(User user) {
+        return accountRepository.findAllByAccountAdmin_User_Id(user.getId()).stream().map(Account::getId).collect(Collectors.toList());
+    }
+
+    private void setAccountIds(UserContract uc) {
+        List<Long> accountIds = accountRepository.findAllByAccountAdmin_User_Id(uc.getId()).stream().map(Account::getId).collect(Collectors.toList());
+        boolean isAdmin = accountAdminRepository.findByUser_Id(uc.getId()).size() > 0;
+        List<String> roles = new ArrayList<>();
+        if (isAdmin) {
+            roles.add(User.ADMIN);
+            if (uc.isOrgAdmin()) roles.add(User.ORGANISATION_ADMIN);
+        } else {
+            roles.addAll(Arrays.asList(uc.getRoles()));
+        }
+        uc.setAccountIds(accountIds);
+        uc.setAdmin(isAdmin);
+        uc.setRoles(roles.toArray(new String[0]));
+    }
+
+    private List<Long> getOwnedOrganisationIds(User user) {
+        return organisationRepository.findByAccount_AccountAdmin_User_Id(user.getId()).stream()
+                .map(Organisation::getId).collect(Collectors.toList());
     }
 }

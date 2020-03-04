@@ -12,6 +12,8 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RepositoryRestResource(collectionResourceRel = "operationalSubjectType", path = "operationalSubjectType")
 public interface OperationalSubjectTypeRepository extends ImplReferenceDataRepository<OperationalSubjectType> {
@@ -25,4 +27,7 @@ public interface OperationalSubjectTypeRepository extends ImplReferenceDataRepos
     OperationalSubjectType findBySubjectTypeAndOrganisationId(SubjectType subjectType, long organisationId);
 
     OperationalSubjectType findBySubjectTypeIdAndOrganisationId(long subjectTypeId, long organisationId);
+
+    @Query("select s.name from OperationalSubjectType s where s.isVoided = false")
+    List<String> getAllNames();
 }

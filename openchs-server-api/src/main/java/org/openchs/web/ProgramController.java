@@ -4,6 +4,7 @@ import org.openchs.dao.OperationalProgramRepository;
 import org.openchs.dao.ProgramRepository;
 import org.openchs.domain.OperationalProgram;
 import org.openchs.domain.Program;
+import org.openchs.service.ProgramService;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ProgramRequest;
 import org.openchs.web.request.webapp.ProgramContractWeb;
@@ -26,11 +27,13 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     private final Logger logger;
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
+    private ProgramService programService;
 
     @Autowired
-    public ProgramController(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository) {
+    public ProgramController(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, ProgramService programService) {
         this.programRepository = programRepository;
         this.operationalProgramRepository = operationalProgramRepository;
+        this.programService = programService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -39,19 +42,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     public void save(@RequestBody List<ProgramRequest> programRequests) {
         programRequests.forEach(programRequest -> {
-            logger.info(String.format("Creating program: %s", programRequest.toString()));
-            Program program = programRepository.findByUuid(programRequest.getUuid());
-            if (program == null) {
-                program = createProgram(programRequest);
-            }
-
-            program.setName(programRequest.getName());
-            program.setColour(programRequest.getColour());
-            program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
-            program.setChecklistsRule(program.getChecklistsRule());
-            program.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
-
-            programRepository.save(program);
+            programService.saveProgram(programRequest);
         });
     }
 
@@ -71,7 +62,6 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         program.setColour(request.getColour());
         program.setEnrolmentSummaryRule(request.getEnrolmentSummaryRule());
         program.setEnrolmentEligibilityCheckRule(request.getEnrolmentEligibilityCheckRule());
-        program.setChecklistsRule(request.getChecklistsRule());
         programRepository.save(program);
         OperationalProgram operationalProgram = new OperationalProgram();
         operationalProgram.assignUUIDIfRequired();
@@ -103,7 +93,6 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         program.setColour(programContractWeb.getColour());
         program.setEnrolmentSummaryRule(programContractWeb.getEnrolmentSummaryRule());
         program.setEnrolmentEligibilityCheckRule(programContractWeb.getEnrolmentEligibilityCheckRule());
-        program.setChecklistsRule(programContractWeb.getChecklistsRule());
 
         programRepository.save(program);
 
@@ -162,9 +151,4 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         return new ResponseEntity<>(programContractWeb, HttpStatus.OK);
     }
 
-    private Program createProgram(ProgramRequest programRequest) {
-        Program program = new Program();
-        program.setUuid(programRequest.getUuid());
-        return program;
-    }
 }

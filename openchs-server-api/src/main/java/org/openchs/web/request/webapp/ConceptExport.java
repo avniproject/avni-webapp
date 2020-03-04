@@ -1,6 +1,7 @@
 package org.openchs.web.request.webapp;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.openchs.application.KeyValues;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptAnswer;
 
@@ -22,6 +23,16 @@ public class ConceptExport {
     private String unit;
     private boolean voided;
     private List<AnswerExport> answers;
+
+    public KeyValues getKeyValues() {
+        return keyValues;
+    }
+
+    public void setKeyValues(KeyValues keyValues) {
+        this.keyValues = keyValues;
+    }
+
+    private KeyValues keyValues;
 
     public ConceptExport() {
         answers = new ArrayList<>();
@@ -114,6 +125,7 @@ public class ConceptExport {
         export.setHighNormal(concept.getHighNormal());
         export.setUnit(concept.getUnit());
         export.setVoided(concept.isVoided());
+        export.setKeyValues(concept.getKeyValues());
         List<ConceptAnswer> conceptAnswersSortedByOrder = concept.getConceptAnswers()
                 .stream()
                 .sorted(Comparator.comparing(ConceptAnswer::getOrder))

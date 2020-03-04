@@ -16,6 +16,7 @@ import java.io.IOException;
 public class AuthenticationFilter extends BasicAuthenticationFilter {
     public static final String USER_NAME_HEADER = "USER-NAME";
     public static final String AUTH_TOKEN_HEADER = "AUTH-TOKEN";
+    public static final String ORGANISATION_UUID = "ORGANISATION-UUID";
     private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     private AuthService authService;
@@ -34,9 +35,11 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
         try {
             String username = request.getHeader(USER_NAME_HEADER);
             String authToken = request.getHeader(AUTH_TOKEN_HEADER);
+            String organisationUUID = request.getHeader(ORGANISATION_UUID);
             String method = request.getMethod();
             String requestURI = request.getRequestURI();
             String queryString = request.getQueryString();
+            authService.setOrganisationUUID(organisationUUID);
 
             logger.info(String.format("Processing %s %s?%s Header: %s", method, requestURI, queryString, username));
             UserContext userContext = isDev

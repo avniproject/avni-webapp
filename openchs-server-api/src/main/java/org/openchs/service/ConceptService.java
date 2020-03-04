@@ -4,6 +4,7 @@ import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.*;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.O;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.validation.ValidationException;
@@ -15,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -61,6 +63,7 @@ public class ConceptService {
             throw new ValidationException("UUID missing for answer");
         }
         ConceptAnswer conceptAnswer = concept.findConceptAnswerByConceptUUID(answerConceptRequest.getUuid());
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         if (conceptAnswer == null) {
             conceptAnswer = new ConceptAnswer();
             conceptAnswer.assignUUID();
@@ -72,7 +75,7 @@ public class ConceptService {
             throw new AnswerConceptNotFoundException(message);
         }
         updateOrganisationIfNeeded(conceptAnswer, answerConceptRequest);
-        if (!conceptAnswer.editableBy(userService.getCurrentUser().getOrganisationId())) {
+        if (!conceptAnswer.editableBy(organisation.getId())) {
             return conceptAnswer;
         }
         conceptAnswer.setAnswerConcept(answerConcept);
@@ -194,5 +197,22 @@ public class ConceptService {
         Concept concept = this.get(conceptUUID);
         Concept answerConcept = this.get(conceptAnswerUUID);
         return conceptAnswerRepository.findByConceptAndAnswerConcept(concept, answerConcept);
+    }
+
+    public Object getObservationValue(Concept concept, Object value) {
+        if (ConceptDataType.isPrimitiveType(concept.getDataType()) || ConceptDataType.matches(concept.getDataType(), ConceptDataType.Id, ConceptDataType.Video, ConceptDataType.Image)) {
+            return value;
+        } else if (ConceptDataType.matches(ConceptDataType.Coded, concept.getDataType())) {
+            if (value instanceof String) {
+                return conceptRepository.findByUuid((String) value).getName();
+            } else {
+                List<String> answerUUIDs = (List<String>) value;
+                return answerUUIDs.stream().map(answerUUID -> conceptRepository.findByUuid(answerUUID).getName()).toArray();
+            }
+        } else if (ConceptDataType.matches(ConceptDataType.Coded, concept.getDataType())) {
+            return value;
+        } else {
+            return value;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package org.openchs.importer.batch;
+package org.openchs.importer.batch.csv;
 
 import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.S3Service;
