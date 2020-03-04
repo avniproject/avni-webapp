@@ -8,18 +8,27 @@ const useStyles = makeStyles(theme => ({
     width: "30%",
     height: "30px",
     padding: "20px 20px",
-    "font-family":" Helvetica, sans-serif",
+    "font-family": " Helvetica, sans-serif",
     "font-weight": 300,
     "font-size": 16,
-   border: "0px solid #aaa",
-   borderBottom:"1px solid lightgray",
-    "border-radius": "4px"    
+    border: "0px solid #aaa",
+    borderBottom: "1px solid lightgray",
+    "border-radius": "4px"
   }
 }));
 
-const LocationAutosuggest = ({ onSelect, selectedVillage }) => {
-  const classes = useStyles();
-  const [value, setValue] = React.useState(selectedVillage || "");
+const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
+  const classes = useStyles();  
+
+  if (data.saved === true) {
+    selectedVillage = ""
+  } else if (data.saved === false && selectedVillage === undefined) {
+    selectedVillage = ""
+  } else {
+    selectedVillage = selectedVillage
+  }
+
+  const [value, setValue] = React.useState(selectedVillage);
   const [suggestions, setSuggestions] = React.useState([]);
 
   const getSuggestionValue = suggestion => suggestion.title;
@@ -48,19 +57,19 @@ const LocationAutosuggest = ({ onSelect, selectedVillage }) => {
     return inputLength === 0
       ? []
       : await http
-          .get(`locations/search/find?title=${inputValue}`)
-          .then(res => res.data._embedded.locations);
+        .get(`locations/search/find?title=${inputValue}`)
+        .then(res => res.data._embedded.locations);
   };
 
   const inputProps = {
-    className:classes.rautosuggestinput,
+    className: classes.rautosuggestinput,
     placeholder: "Village Name",
     value,
     onChange
   };
 
   return (
-    <Autosuggest     
+    <Autosuggest
       suggestions={suggestions}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
