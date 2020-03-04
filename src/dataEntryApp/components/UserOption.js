@@ -166,6 +166,7 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
                 ? orgConfig.map((element, index) => (
                     <FormControlLabel
                       value={element}
+                      key={index}
                       control={<Radio />}
                       label={t(
                         getKeyByValue(LOCALES, element).charAt(0) +

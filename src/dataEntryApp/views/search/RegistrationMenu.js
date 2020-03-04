@@ -15,7 +15,7 @@ const useStyle = makeStyles(theme => ({
 
 const RegistrationMenu = ({ types }) => {
   const classes = useStyle();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = () => event => {
     setAnchorEl(event.currentTarget);
