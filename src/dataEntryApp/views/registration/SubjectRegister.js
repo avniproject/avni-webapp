@@ -37,14 +37,14 @@ const useStyles = makeStyles(theme => ({
   form: {
     padding: theme.spacing(3, 3)
   },
-  villagelable: {
+  villagelabel: {
     color: "rgba(0, 0, 0, 0.54)",
     padding: 0,
-    'font-size': "1rem",
-    'font-family': "Roboto, Helvetica, Arial, sans-serif",
-    'font-weight': 400,
-    'line-height': 1,
-    'letter-spacing': "0.00938em",
+    fontSize: "1rem",
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+    fontWeight: 400,
+    lineHeight: 1,
+    letterSpacing: "0.00938em",
     marginBottom: 20
   },
   caption: {
@@ -53,18 +53,18 @@ const useStyles = makeStyles(theme => ({
   topprevnav: {
     color: "rgba(0, 0, 0, 0.54)",
     marginRight: 10,
-    'font-size': "12px"
+    fontSize: "12px"
   },
   toppagenum: {
     color: "rgba(0, 0, 0, 0.54)",
     marginRight: 10,
-    'font-size': "12px"
+    fontSize: "12px"
   },
   topnextnav: {
     color: "orange",
     marginLeft: 10,
     marginRight: 10,
-    'font-size': "12px",
+    fontSize: "12px",
     cursor: "pointer"
   },
   prevbuttonspace: {
@@ -78,19 +78,17 @@ const DefaultPage = props => {
   console.log(props)
 
   React.useEffect(() => { 
-    if(props.saved === false) {
-      if (!props.subject){
+    if(!props.saved) {
+      if(!props.subject) {
         props.onLoad(props.match.queryParams.type);            
       }
-    }else{      
+    }else {
       let subject = Individual.createEmptyInstance();
-      subject.subjectType = props.subject.subjectType;      
+      subject.subjectType = props.subject.subjectType;            
       props.setSubject(subject);
-      props.saveCompleteFalse();      
+      props.saveCompleteFalse();
     }
   }, []);
-
-
 
   return (
     <div>
@@ -178,7 +176,7 @@ const DefaultPage = props => {
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                       onChange={selected => props.updateSubject("gender", selected)}
                     />
-                    <label className={classes.villagelable}>Village</label>
+                    <label className={classes.villagelabel}>Village</label>
                     <LocationAutosuggest selectedVillage={props.subject.lowestAddressLevel.title}
                       onSelect={location => props.updateSubject("lowestAddressLevel", location)}
                     />

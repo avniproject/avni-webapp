@@ -17,12 +17,7 @@ const useStyle = makeStyles(theme => ({
   },
   details: {   
     color: "rgba(0, 0, 0, 0.54)"
-  },
-  prinav: {
-    color: "rgba(0, 0, 0, 0.54)",
-    marginRight:10,
-  'font-size': "12px"
-  },
+  } 
 }));
 
 

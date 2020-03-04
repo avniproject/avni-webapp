@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   },  
   topnav: {
     color: "orange",
-    'font-size': "12px",
+    fontSize: "12px",
     cursor:"pointer"
   }
 }));
