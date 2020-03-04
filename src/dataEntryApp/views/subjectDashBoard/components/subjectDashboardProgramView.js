@@ -12,6 +12,7 @@ import Observations from "../../../../common/components/Observations";
 import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -20,8 +21,7 @@ const useStyles = makeStyles(theme => ({
   growthButtonStyle: {
     marginBottom: theme.spacing(2),
     marginRight: "10px",
-    height: "28px",
-   // marginLeft: "37px"
+    height: "28px"
   },
   root: {
     flexGrow: 1,
@@ -83,6 +83,7 @@ const useStyles = makeStyles(theme => ({
 
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const [expandedPanel, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
@@ -94,13 +95,13 @@ const ProgramView = ({ programData }) => {
       <Grid container spacing={3}>
         <Grid item xs={6}>
           <label className={classes.programLabel}>
-            {programData.program.operationalProgramName} program details
+            {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
         </Grid>
         <Grid item xs={6}>
-          <SubjectButton btnLabel="Growth Chart" btnClass={classes.growthButtonStyle} />
-          <SubjectButton btnLabel="Vaccinations" />
-          <SubjectButton btnLabel="New Program Visit" />
+          <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
+          <SubjectButton btnLabel={t("vaccinations")} />
+          <SubjectButton btnLabel={t("newProgramVisit")} />
         </Grid>
       </Grid>
       <Paper className={classes.root}>
@@ -115,7 +116,7 @@ const ProgramView = ({ programData }) => {
             id="panel1bh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
-              Enrollment details
+              {t("enrolmentDetails")}{" "}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
@@ -123,8 +124,8 @@ const ProgramView = ({ programData }) => {
               <List>
                 <Observations observations={programData ? programData.observations : ""} />
               </List>
-              <Button color="primary">VOID</Button>
-              <Button color="primary">EDIT</Button>
+              <Button color="primary">{t("void")}</Button>
+              <Button color="primary">{t("edit")}</Button>
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -139,7 +140,7 @@ const ProgramView = ({ programData }) => {
             id="plannedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
-              Planned visits
+              {t("plannedVisits")}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
@@ -173,7 +174,7 @@ const ProgramView = ({ programData }) => {
             id="completedVisitPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
-              Completed visit
+              {t("completedVisits")}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>

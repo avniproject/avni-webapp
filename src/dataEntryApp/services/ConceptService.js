@@ -1,6 +1,7 @@
 import { store } from "../../common/store/createStore";
 
 export class ConceptService {
+  
   getConceptByUUID(conceptUuid) {
     if (conceptUuid !== null || conceptUuid !== undefined) {
       let conceptList = store.getState().dataEntry.conceptReducer.concepts;

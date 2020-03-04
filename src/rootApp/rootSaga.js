@@ -4,6 +4,7 @@ import dataEntrySaga from "../dataEntryApp/sagas";
 import translationsSaga from "../translations/sagas";
 import uploadSagas from "../upload/sagas";
 import reportSagas from "../reports/sagas";
+import { organisationConfigWatcher } from "../i18nTranslations/TranslationSaga";
 
 import {
   authProvider,
@@ -23,6 +24,7 @@ export default function* rootSaga() {
       onSetCognitoUser,
       userInfoWatcher,
       getAdminOrgsWatcher,
+      organisationConfigWatcher,
       dataEntrySaga,
       translationsSaga,
       uploadSagas,

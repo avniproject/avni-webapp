@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -17,9 +17,14 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewMenu from "../views/dashboardNew/NewMenu";
 import Input from "@material-ui/core/Input";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { Auth } from "aws-amplify";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
+import UserOption from "./UserOption";
+import { getUserInfo } from "../../rootApp/ducks";
+import { getOrgConfigInfo } from "../../i18nTranslations/TranslationReducers";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -41,6 +46,22 @@ const useStyles = makeStyles(theme => ({
       display: "flex"
     }
   },
+  root: {
+    width: "100%",
+    color: "blue",
+    maxWidth: 360,
+    position: "absolute",
+    zIndex: "2",
+    backgroundColor: theme.palette.background.paper
+  },
+  MuiSvgIcon: {
+    root: {
+      color: "blue"
+    }
+  },
+  nested: {
+    paddingLeft: theme.spacing(4)
+  },
   sectionMobile: {
     display: "flex",
     [theme.breakpoints.up("md")]: {
@@ -60,18 +81,27 @@ const useStyles = makeStyles(theme => ({
   },
   headerMenu: {
     marginLeft: theme.spacing(3)
+  },
+  ListItemText: {
+    color: "blue"
   }
 }));
 
-const PrimarySearchAppBar = ({ logout }) => {
+const PrimarySearchAppBar = ({
+  getOrgConfigInfo,
+  getUserInfo,
+  orgConfig,
+  defaultLanguage,
+  userInfo
+}) => {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
+  const [userOption, setUserOption] = React.useState(false);
 
   const handleToggle = () => {
     setOpen(prevOpen => !prevOpen);
@@ -87,7 +117,7 @@ const PrimarySearchAppBar = ({ logout }) => {
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
-  React.useEffect(() => {
+  useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current.focus();
     }
@@ -96,37 +126,40 @@ const PrimarySearchAppBar = ({ logout }) => {
   }, [open]);
 
   const handleProfileMenuOpen = event => {
-    setAnchorEl(event.currentTarget);
+    userOption ? setUserOption(false) : setUserOption(true);
+    getLanguages();
   };
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
   const handleMobileMenuOpen = event => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const getLanguages = () => {
+    getOrgConfigInfo();
+    getUserInfo();
+  };
+
+  const handleClickAway = () => {
+    setUserOption(false);
+    getLanguages();
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={logout}>Logout</MenuItem>
-    </Menu>
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <div>
+        <UserOption
+          orgConfig={orgConfig}
+          getLanguages={getLanguages}
+          userInfo={userInfo}
+          defaultLanguage={defaultLanguage}
+        />
+      </div>
+    </ClickAwayListener>
   );
 
   const mobileMenuId = "primary-search-account-menu-mobile";
@@ -163,7 +196,7 @@ const PrimarySearchAppBar = ({ logout }) => {
           <form noValidate autoComplete="off">
             <Input
               className={classes.inputSearch}
-              placeholder="Search"
+              placeholder={t("search")}
               id="standard-adornment-search"
               endAdornment={
                 <InputAdornment position="end">
@@ -185,7 +218,7 @@ const PrimarySearchAppBar = ({ logout }) => {
               onClick={handleToggle}
               style={{ color: "#0e6eff" }}
             >
-              New
+              {t("new")}
               <ExpandMoreIcon />
             </Button>
             <Popper
@@ -236,16 +269,29 @@ const PrimarySearchAppBar = ({ logout }) => {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
+      {userOption ? renderMenu : ""}
     </div>
   );
 };
 
-const mapDispatchToProps = dispatch => ({
-  logout: () => Auth.signOut().then(() => (document.location.href = "/"))
+const mapStateToProps = state => ({
+  orgConfig: state.translationsReducer.orgConfig
+    ? state.translationsReducer.orgConfig.settings.languages
+    : "",
+  userInfo: state.app.userInfo,
+  defaultLanguage: state.app.userInfo ? state.app.userInfo.settings.locale : ""
 });
 
-export default connect(
-  null,
-  mapDispatchToProps
-)(PrimarySearchAppBar);
+const mapDispatchToProps = {
+  getOrgConfigInfo,
+  getUserInfo
+};
+
+export default withRouter(
+  withParams(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(PrimarySearchAppBar)
+  )
+);
