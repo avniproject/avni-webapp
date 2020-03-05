@@ -729,6 +729,7 @@ class FormDetails extends Component {
               onChange={event => this.onUpdateFormName(event.target.value)}
               value={this.state.name}
               style={{ width: "50%" }}
+              autoComplete="off"
             />
           </Grid>
           {this.state.createFlag && (
