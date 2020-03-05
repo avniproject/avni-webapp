@@ -18,6 +18,11 @@ public class IdentifierSourceContractWeb {
     private boolean voided;
     private Long organisationId;
     private Long id;
+    private String UUID;
+
+    public String getUUID() { return this.UUID; }
+
+    public void setUUID(String uuid) { this.UUID = uuid; }
 
     public Long getBatchGenerationSize() {
         return batchGenerationSize;
@@ -107,6 +112,7 @@ public class IdentifierSourceContractWeb {
         contract.setId(identifierSource.getId());
         contract.setVoided(identifierSource.isVoided());
         contract.setOrganisationId(identifierSource.getOrganisationId());
+        contract.setUUID(identifierSource.getUuid());
         return contract;
     }
 
