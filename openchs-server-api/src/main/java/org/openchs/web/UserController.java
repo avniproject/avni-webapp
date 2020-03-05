@@ -172,8 +172,11 @@ public class UserController {
         user.setSettings(userContract.getSettings());
 
         User currentUser = userService.getCurrentUser();
-        Long organisationId = UserContextHolder.getUserContext().getOrganisationId();
-        user.setOrganisationId(userContract.getOrganisationId() == null ? organisationId : userContract.getOrganisationId());
+        Long organisationId = null;
+        if (!userContract.isAdmin()) {
+            organisationId = userContract.getOrganisationId() == null ? UserContextHolder.getUserContext().getOrganisationId() : userContract.getOrganisationId();
+        }
+        user.setOrganisationId(organisationId);
         user.setAuditInfo(currentUser);
         return user;
     }
