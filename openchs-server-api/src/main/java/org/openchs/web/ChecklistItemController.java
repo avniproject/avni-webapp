@@ -1,16 +1,14 @@
 package org.openchs.web;
 
 import org.joda.time.DateTime;
-import org.openchs.dao.ChecklistItemDetailRepository;
-import org.openchs.dao.ChecklistItemRepository;
-import org.openchs.dao.ChecklistRepository;
-import org.openchs.dao.OperatingIndividualScopeAwareRepository;
+import org.openchs.dao.*;
 import org.openchs.domain.Checklist;
 import org.openchs.domain.ChecklistItem;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.web.request.application.ChecklistItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -20,9 +18,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Collections;
+import java.util.List;
 
 @RestController
-public class ChecklistItemController extends AbstractController<ChecklistItem> implements RestControllerResourceProcessor<ChecklistItem>, OperatingIndividualScopeAwareController<ChecklistItem> {
+public class ChecklistItemController extends AbstractController<ChecklistItem> implements RestControllerResourceProcessor<ChecklistItem>, OperatingIndividualScopeAwareController<ChecklistItem>, OperatingIndividualScopeAwareFilterController<ChecklistItem> {
     private final ObservationService observationService;
     private final ChecklistItemDetailRepository checklistItemDetailRepository;
     private final ChecklistRepository checklistRepository;
@@ -68,7 +68,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(checklistItemRepository.findByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId,lastModifiedDateTime,now,pageable));
+        return wrap(checklistItemRepository.findByChecklistProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable));
     }
 
 
@@ -77,8 +77,14 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
     public PagedResources<Resource<ChecklistItem>> getChecklistItemsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @RequestParam(value = "checklistDetailUuid", required = false) List<String> checklistDetailUuid,
             Pageable pageable) {
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(),lastModifiedDateTime,now,pageable));
+        if (checklistDetailUuid == null) {
+            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+        } else {
+            return checklistDetailUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
+                    wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, checklistDetailUuid, pageable));
+        }
     }
 
     @Override
@@ -94,6 +100,11 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
 
     @Override
     public OperatingIndividualScopeAwareRepository<ChecklistItem> resourceRepository() {
+        return checklistItemRepository;
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<ChecklistItem> repository() {
         return checklistItemRepository;
     }
 }

@@ -17,6 +17,7 @@ import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -30,9 +31,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @RestController
-public class ProgramEncounterController extends AbstractController<ProgramEncounter> implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter> {
+public class ProgramEncounterController extends AbstractController<ProgramEncounter> implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter>, OperatingIndividualScopeAwareFilterController<ProgramEncounter> {
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
+    @Autowired
+    Bugsnag bugsnag;
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private ProgramEnrolmentRepository programEnrolmentRepository;
@@ -40,11 +46,6 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     private UserService userService;
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
-
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
-
-    @Autowired
-    Bugsnag bugsnag;
 
     @Autowired
     public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ConceptRepository conceptRepository, ConceptService conceptService) {
@@ -106,7 +107,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         EncounterType encounterType = encounterTypeRepository.findByUuidOrName(request.getEncounterType(), request.getEncounterTypeUUID());
         ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());
         //Planned visit can not overwrite completed encounter
-        if(encounter.isCompleted() && request.isPlanned())
+        if (encounter.isCompleted() && request.isPlanned())
             return;
 
         encounter.setEncounterDateTime(request.getEncounterDateTime());
@@ -119,10 +120,10 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         encounter.setCancelDateTime(request.getCancelDateTime());
         encounter.setCancelObservations(observationService.createObservations(request.getCancelObservations()));
         PointRequest encounterLocation = request.getEncounterLocation();
-        if(encounterLocation != null)
+        if (encounterLocation != null)
             encounter.setEncounterLocation(new Point(encounterLocation.getX(), encounterLocation.getY()));
         PointRequest cancelLocation = request.getCancelLocation();
-        if(cancelLocation != null)
+        if (cancelLocation != null)
             encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
 
         programEncounterRepository.save(encounter);
@@ -154,8 +155,14 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     public PagedResources<Resource<ProgramEncounter>> getProgramEncountersByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @RequestParam(value = "programEncounterTypeUuid", required = false) List<String> encounterTypeUuid,
             Pageable pageable) {
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(),lastModifiedDateTime, now, pageable));
+        if (encounterTypeUuid == null) {
+            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+        } else {
+            return encounterTypeUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
+                    wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, encounterTypeUuid, pageable));
+        }
     }
 
     @Override
@@ -169,6 +176,11 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
 
     @Override
     public OperatingIndividualScopeAwareRepository<ProgramEncounter> resourceRepository() {
+        return programEncounterRepository;
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<ProgramEncounter> repository() {
         return programEncounterRepository;
     }
 }
