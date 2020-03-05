@@ -15,19 +15,7 @@ import {
   LocationTypeList
 } from "./addressLevelType";
 import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
-import { ProgramCreate, ProgramDetail, ProgramEdit, ProgramList } from "./programs";
-import {
-  SubjectTypeCreate,
-  SubjectTypeDetail,
-  SubjectTypeEdit,
-  SubjectTypeList
-} from "./SubjectTypes";
-import {
-  EncounterTypeCreate,
-  EncounterTypeDetail,
-  EncounterTypeEdit,
-  EncounterTypeList
-} from "./EncounterTypes";
+
 import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 import Link from "@material-ui/core/Link";
@@ -61,6 +49,10 @@ import {
   OrganisationGroupShow
 } from "./OrganisationGroup";
 import { ROLES } from "../common/constants";
+
+import SubjectTypesList from "./SubjectType/SubjectTypesList";
+import ProgramList from "./Program/ProgramList";
+import EncounterTypeList from "./EncounterType/EncounterTypeList";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -215,26 +207,17 @@ class OrgManager extends Component {
         <Resource
           name="subjectType"
           options={{ label: "Subject Types" }}
-          list={uiDesignerToggle && SubjectTypeList}
-          show={SubjectTypeDetail}
-          create={SubjectTypeCreate}
-          edit={SubjectTypeEdit}
+          list={uiDesignerToggle && SubjectTypesList}
         />
         <Resource
           name="program"
           options={{ label: "Programs" }}
           list={uiDesignerToggle && ProgramList}
-          show={ProgramDetail}
-          create={ProgramCreate}
-          edit={ProgramEdit}
         />
         <Resource
           name="encounterType"
           options={{ label: "Encounter Types" }}
           list={uiDesignerToggle && EncounterTypeList}
-          show={EncounterTypeDetail}
-          create={EncounterTypeCreate}
-          edit={EncounterTypeEdit}
         />
         <Resource
           name="forms"
