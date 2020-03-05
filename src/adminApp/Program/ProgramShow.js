@@ -123,7 +123,7 @@ const ProgramShow = props => {
           </div>
         </div>
 
-        {editAlert && <Redirect to={"/admin/program/" + props.match.params.id} />}
+        {editAlert && <Redirect to={"/appDesigner/program/" + props.match.params.id} />}
       </Box>
     </>
   );

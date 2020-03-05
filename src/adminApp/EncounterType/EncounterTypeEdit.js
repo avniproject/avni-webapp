@@ -135,8 +135,8 @@ const EncounterTypeEdit = props => {
           </Grid>
         </Grid>
       </Box>
-      {redirectShow && <Redirect to={`/admin/encounterType/${props.match.params.id}/show`} />}
-      {deleteAlert && <Redirect to="/admin/encounterType" />}
+      {redirectShow && <Redirect to={`/appDesigner/encounterType/${props.match.params.id}/show`} />}
+      {deleteAlert && <Redirect to="/appDesigner/encounterType" />}
     </>
   );
 };

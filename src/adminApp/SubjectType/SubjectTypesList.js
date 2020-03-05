@@ -73,7 +73,7 @@ const SubjectTypesList = ({ history }) => {
               }}
               onRowClick={(event, rowData) =>
                 history.push({
-                  pathname: `/admin/subjectType/${rowData.id}/show`,
+                  pathname: `/appDesigner/subjectType/${rowData.id}/show`,
                   state: {}
                 })
               }
@@ -81,7 +81,7 @@ const SubjectTypesList = ({ history }) => {
           </div>
         </div>
       </Box>
-      {redirect && <Redirect to={"/admin/subjectType/create"} />}
+      {redirect && <Redirect to={"/appDesigner/subjectType/create"} />}
     </>
   );
 };

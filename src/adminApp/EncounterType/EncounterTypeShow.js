@@ -97,7 +97,7 @@ const EncounterTypeShow = props => {
           </div>
         </div>
 
-        {editAlert && <Redirect to={"/admin/encounterType/" + props.match.params.id} />}
+        {editAlert && <Redirect to={"/appDesigner/encounterType/" + props.match.params.id} />}
       </Box>
     </>
   );

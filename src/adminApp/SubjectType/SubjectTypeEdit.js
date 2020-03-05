@@ -114,8 +114,8 @@ const SubjectTypeEdit = props => {
           </Grid>
         </Grid>
       </Box>
-      {redirectShow && <Redirect to={`/admin/subjectType/${props.match.params.id}/show`} />}
-      {deleteAlert && <Redirect to="/admin/subjectType" />}
+      {redirectShow && <Redirect to={`/appDesigner/subjectType/${props.match.params.id}/show`} />}
+      {deleteAlert && <Redirect to="/appDesigner/subjectType" />}
     </>
   );
 };

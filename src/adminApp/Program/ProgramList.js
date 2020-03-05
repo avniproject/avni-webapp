@@ -75,7 +75,7 @@ const ProgramList = ({ history }) => {
               }}
               onRowClick={(event, rowData) =>
                 history.push({
-                  pathname: `/admin/program/${rowData.id}/show`,
+                  pathname: `/appDesigner/program/${rowData.id}/show`,
                   state: {}
                 })
               }
@@ -83,7 +83,7 @@ const ProgramList = ({ history }) => {
           </div>
         </div>
       </Box>
-      {redirect && <Redirect to={"/admin/program/create"} />}
+      {redirect && <Redirect to={"/appDesigner/program/create"} />}
     </>
   );
 };

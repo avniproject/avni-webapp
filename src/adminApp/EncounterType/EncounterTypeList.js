@@ -73,7 +73,7 @@ const EncounterTypeList = ({ history }) => {
               }}
               onRowClick={(event, rowData) =>
                 history.push({
-                  pathname: `/admin/encounterType/${rowData.id}/show`,
+                  pathname: `/appDesigner/encounterType/${rowData.id}/show`,
                   state: {}
                 })
               }
@@ -81,7 +81,7 @@ const EncounterTypeList = ({ history }) => {
           </div>
         </div>
       </Box>
-      {redirect && <Redirect to={"/admin/encounterType/create"} />}
+      {redirect && <Redirect to={"/appDesigner/encounterType/create"} />}
     </>
   );
 };

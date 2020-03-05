@@ -50,6 +50,7 @@ const Homepage = () => {
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justify="center">
         {renderCard("/#/admin/user", "Admin")}
+        {renderCard("/#/appdesigner", "App Designer")}
         {renderCard("/#/translations", "Translations")}
         {renderCard("/#/export", "Reports")}
       </Grid>

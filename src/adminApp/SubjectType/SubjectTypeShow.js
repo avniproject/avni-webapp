@@ -72,7 +72,7 @@ const SubjectTypeShow = props => {
             </span>
           </div>
         </div>
-        {editAlert && <Redirect to={"/admin/subjectType/" + props.match.params.id} />}
+        {editAlert && <Redirect to={"/appDesigner/subjectType/" + props.match.params.id} />}
       </Box>
     </>
   );

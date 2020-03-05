@@ -129,7 +129,7 @@ const ProgramCreate = props => {
           </form>
         </div>
       </Box>
-      {alert && <Redirect to={"/admin/program/" + id + "/show"} />}
+      {alert && <Redirect to={"/appDesigner/program/" + id + "/show"} />}
     </>
   );
 };

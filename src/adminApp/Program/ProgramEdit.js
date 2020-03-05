@@ -174,8 +174,8 @@ const ProgramEdit = props => {
           </Grid>
         </Grid>
       </Box>
-      {redirectShow && <Redirect to={`/admin/program/${props.match.params.id}/show`} />}
-      {deleteAlert && <Redirect to="/admin/program" />}
+      {redirectShow && <Redirect to={`/appDesigner/program/${props.match.params.id}/show`} />}
+      {deleteAlert && <Redirect to="/appDesigner/program" />}
     </>
   );
 };

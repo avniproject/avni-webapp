@@ -69,7 +69,7 @@ const SubjectTypeCreate = props => {
           </form>
         </div>
       </Box>
-      {alert && <Redirect to={"/admin/subjectType/" + id + "/show"} />}
+      {alert && <Redirect to={"/appDesigner/subjectType/" + id + "/show"} />}
     </>
   );
 };

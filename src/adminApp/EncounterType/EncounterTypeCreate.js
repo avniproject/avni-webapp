@@ -91,7 +91,7 @@ const EncounterTypeCreate = props => {
           </form>
         </div>
       </Box>
-      {alert && <Redirect to={"/admin/encounterType/" + id + "/show"} />}
+      {alert && <Redirect to={"/appDesigner/encounterType/" + id + "/show"} />}
     </>
   );
 };
