@@ -17,6 +17,8 @@ import Forms from "../formDesigner/views/Forms";
 import Concepts from "../formDesigner/views/Concepts";
 import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import FormSettings from "../formDesigner/components/FormSettings";
+import customFilters from "./CustomFilters";
+import { WorklistUpdationRule } from "./WorklistUpdationRule";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -28,7 +30,7 @@ class OrgManagerAppDesigner extends Component {
   }
 
   render() {
-    const { user } = this.props;
+    const { organisation, user } = this.props;
     const uiDesignerToggle =
       window.location.href.includes("localhost") ||
       window.location.href.includes("staging") ||
@@ -48,6 +50,16 @@ class OrgManagerAppDesigner extends Component {
             name="subjectType"
             options={{ label: "Subject Types" }}
             list={uiDesignerToggle && SubjectTypesList}
+          />
+          <Resource
+            name="myDashboardFilters"
+            options={{ label: "My Dashboard Filters" }}
+            list={WithProps({ organisation }, customFilters)}
+          />
+          <Resource
+            name="searchFilters"
+            options={{ label: "Search Filters" }}
+            list={WithProps({ organisation }, customFilters)}
           />
           <Resource
             name="program"
@@ -70,10 +82,16 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Concepts" }}
             list={uiDesignerToggle && Concepts}
           />
+
           <Resource
             name="bundle"
             options={{ label: "Bundle" }}
             list={uiDesignerToggle && ImplementationBundle}
+          />
+          <Resource
+            name="worklistUpdationRule"
+            options={{ label: "Worklist Updation Rule" }}
+            list={uiDesignerToggle && WorklistUpdationRule}
           />
         </Admin>
         <div
