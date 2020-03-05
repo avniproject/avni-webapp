@@ -31,8 +31,6 @@ import NonMandatory from "@material-ui/icons/HighlightOff";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
 
-import CustomizedHelperText from "./CustomizedHelperText";
-
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
@@ -160,6 +158,14 @@ function FormElement(props) {
       TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
       expanded={props.formElementData.expanded}
       className={props.formElementData.error ? classes.rootError : classes.root}
+      onChange={event =>
+        props.handleGroupElementChange(
+          props.groupIndex,
+          "expanded",
+          !props.formElementData.expanded,
+          props.index
+        )
+      }
     >
       <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
         <div className={classes.iconlay}>
@@ -196,19 +202,7 @@ function FormElement(props) {
           </Typography>
         </div>
         <Grid container item sm={12}>
-          <Grid
-            item
-            sm={9}
-            style={{ paddingTop: "10px" }}
-            onClick={event =>
-              props.handleGroupElementChange(
-                props.groupIndex,
-                "expanded",
-                !props.formElementData.expanded,
-                props.index
-              )
-            }
-          >
+          <Grid item sm={10} style={{ paddingTop: "10px" }}>
             <Typography component={"span"} className={classes.heading}>
               <span className={classes.expandIcon}>
                 {props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -219,7 +213,8 @@ function FormElement(props) {
             </Typography>
           </Grid>
 
-          <Grid item sm={3} className={classes.requiredIcon}>
+          <Grid item sm={2} className={classes.requiredIcon}>
+            {/* <div className={classes.requiredIcon}> */}
             {props.formElementData.mandatory ? (
               <Tooltip title="Required">
                 <Mandatory className={classes.iconMandatory} />
@@ -229,12 +224,12 @@ function FormElement(props) {
                 <NonMandatory className={classes.iconNonMandatory} />
               </Tooltip>
             )}
+            {/* </span>
+              <span className={classes.deleteicon}> */}
             <IconButton aria-label="delete" onClick={handleDelete}>
               <DeleteIcon />
             </IconButton>
-            {props.formElementData.concept.dataType && (
-              <CustomizedHelperText name={props.formElementData.concept.dataType + "Element"} />
-            )}
+            {/* </div> */}
           </Grid>
         </Grid>
       </ExpansionPanelSummary>

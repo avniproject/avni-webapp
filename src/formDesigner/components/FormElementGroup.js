@@ -18,7 +18,6 @@ import AddIcon from "@material-ui/icons/Add";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 
 import FormElementWithAddButton from "./FormElementWithAddButton";
-import CustomizedHelperText from "./CustomizedHelperText";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -197,14 +196,12 @@ function FormElementGroup(props) {
             TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
             expanded={props.groupData.expanded}
             className={props.groupData.error ? classes.rootError : classes.root}
+            onChange={event =>
+              props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
+            }
           >
             <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
-              <div
-                className={classes.iconlay}
-                onClick={event =>
-                  props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
-                }
-              >
+              <div className={classes.iconlay}>
                 {props.groupData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </div>
 
@@ -217,7 +214,7 @@ function FormElementGroup(props) {
                     <FormControl fullWidth>
                       <Input
                         type="text"
-                        placeholder="Question group name"
+                        placeholder="Name"
                         disableUnderline={true}
                         onClick={stopPropagation}
                         name={"name" + panel}
@@ -237,7 +234,6 @@ function FormElementGroup(props) {
               <IconButton className={classes.deleteicon} aria-label="delete" onClick={handleDelete}>
                 <DeleteIcon />
               </IconButton>
-              <CustomizedHelperText name="formGroup" />
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Typography component={"span"} className={classes.root}>
