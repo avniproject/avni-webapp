@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField } from "@material-ui/core";
+import { Box, TextField, Chip} from "@material-ui/core";
 import { ObservationsHolder, Individual } from "avni-models";
 import {
   getRegistrationForm,
@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
     color: "rgba(0, 0, 0, 0.54)"
   },
   topprevnav: {
-    color: "rgba(0, 0, 0, 0.54)",
+    color: "#cecdcd",
     marginRight: 10,
     fontSize: "12px"
   },
@@ -68,6 +68,7 @@ const useStyles = makeStyles(theme => ({
     cursor: "pointer"
   },
   prevbuttonspace: {
+    color:"#cecdcd",
     marginRight: 20,
     width: 100
   }
@@ -100,6 +101,7 @@ const DefaultPage = props => {
             <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
               <Typography variant="subtitle1" gutterBottom> 1. Basic Details</Typography>
               <Box>
+              <label className={classes.topprevnav} disabled={true}>PREV</label>
                 <RelativeLink
                   to="form"
                   params={{
@@ -108,9 +110,9 @@ const DefaultPage = props => {
                   }}
                   noUnderline
                 >
-                  <div> <label className={classes.topprevnav} disabled={true}>PREV</label>
+               
                     {props.form && <label className={classes.toppagenum}> 1/{props.form.getLastFormElementElementGroup().displayOrder + 1}</label>}
-                    <label className={classes.topnextnav}>NEXT</label></div>
+                    <label className={classes.topnextnav}>NEXT</label>
                 </RelativeLink>
               </Box>
             </Box>
@@ -200,7 +202,8 @@ const DefaultPage = props => {
                 )}
                 <LineBreak num={4} />
                 <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
-                  <Box>
+                  <Box>                 
+                  <Chip className={classes.prevbuttonspace} label="Previous" disabled variant="outlined" />
                     <RelativeLink
                       to="form"
                       params={{
@@ -209,7 +212,7 @@ const DefaultPage = props => {
                       }}
                       noUnderline
                     >
-                      <PagenatorButton className={classes.prevbuttonspace}>Previous</PagenatorButton><PagenatorButton>Next</PagenatorButton>
+                       <PagenatorButton>Next</PagenatorButton>
                     </RelativeLink>
                   </Box>
                 </Box>
