@@ -17,7 +17,6 @@ import { DragDropContext } from "react-beautiful-dnd";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
-import CustomizedHelperText from "../components/CustomizedHelperText";
 import { filter, trim } from "lodash";
 
 class CreateEditConcept extends Component {
@@ -556,11 +555,6 @@ class CreateEditConcept extends Component {
                 disabled={true}
               />
             )}
-          </Grid>
-          <Grid item sm={1}>
-            <div style={{ marginTop: "35px" }}>
-              <CustomizedHelperText name={this.state.dataType + "Concept"} />
-            </div>
           </Grid>
           <Grid item sm={8} />
           {dataType}
