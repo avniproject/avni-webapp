@@ -505,8 +505,8 @@ class CreateEditConcept extends Component {
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={appBarTitle} />
-        <Grid container justify="flex-start">
-          <Grid item sm={12}>
+        <Grid direction="column" container justify="flex-start">
+          <Grid item>
             <TextField
               id="name"
               label="Concept name"
@@ -523,44 +523,46 @@ class CreateEditConcept extends Component {
               ))}
           </Grid>
 
-          <Grid item sm={3}>
-            {this.props.isCreatePage && (
-              <FormControl>
-                <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
-                <Select
+          <Grid container>
+            <Grid item>
+              {this.props.isCreatePage && (
+                <FormControl>
+                  <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
+                  <Select
+                    id="dataType"
+                    label="DataType"
+                    value={this.state.dataType}
+                    onChange={this.handleChange("dataType")}
+                    style={classes.select}
+                  >
+                    {this.state.dataTypes.map(datatype => {
+                      return (
+                        <MenuItem value={datatype} key={datatype}>
+                          {datatype}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                  {this.state.error.dataTypeSelectionAlert && (
+                    <FormHelperText error>*Required</FormHelperText>
+                  )}
+                </FormControl>
+              )}
+              {!this.props.isCreatePage && (
+                <TextField
                   id="dataType"
                   label="DataType"
                   value={this.state.dataType}
-                  onChange={this.handleChange("dataType")}
                   style={classes.select}
-                >
-                  {this.state.dataTypes.map(datatype => {
-                    return (
-                      <MenuItem value={datatype} key={datatype}>
-                        {datatype}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-                {this.state.error.dataTypeSelectionAlert && (
-                  <FormHelperText error>*Required</FormHelperText>
-                )}
-              </FormControl>
-            )}
-            {!this.props.isCreatePage && (
-              <TextField
-                id="dataType"
-                label="DataType"
-                value={this.state.dataType}
-                style={classes.select}
-                disabled={true}
-              />
-            )}
-          </Grid>
-          <Grid item sm={1}>
-            <div style={{ marginTop: "35px" }}>
-              <CustomizedHelperText name={this.state.dataType + "Concept"} />
-            </div>
+                  disabled={true}
+                />
+              )}
+            </Grid>
+            <Grid item>
+              <Box ml={3} mt={4}>
+                <CustomizedHelperText name={this.state.dataType + "Concept"} />
+              </Box>
+            </Grid>
           </Grid>
           <Grid item sm={8} />
           {dataType}
