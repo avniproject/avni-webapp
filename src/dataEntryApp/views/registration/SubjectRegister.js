@@ -77,14 +77,14 @@ const DefaultPage = props => {
   const classes = useStyles();
   console.log(props)
 
-  React.useEffect(() => { 
-    if(!props.saved) {
-      if(!props.subject) {
-        props.onLoad(props.match.queryParams.type);            
+  React.useEffect(() => {
+    if (!props.saved) {
+      if (!props.subject) {
+        props.onLoad(props.match.queryParams.type);
       }
-    }else {
+    } else {
       let subject = Individual.createEmptyInstance();
-      subject.subjectType = props.subject.subjectType;            
+      subject.subjectType = props.subject.subjectType;
       props.setSubject(subject);
       props.saveCompleteFalse();
     }
@@ -176,9 +176,10 @@ const DefaultPage = props => {
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                       onChange={selected => props.updateSubject("gender", selected)}
                     />
+                    <LineBreak num={1} />
                     <label className={classes.villagelabel}>Village</label>
                     <LocationAutosuggest selectedVillage={props.subject.lowestAddressLevel.title}
-                      onSelect={location => props.updateSubject("lowestAddressLevel", location) } data={props}
+                      onSelect={location => props.updateSubject("lowestAddressLevel", location)} data={props}
                     />
                   </React.Fragment>
                 )}
