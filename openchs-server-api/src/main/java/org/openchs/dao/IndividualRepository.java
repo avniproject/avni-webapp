@@ -22,7 +22,7 @@ import static org.openchs.domain.OperatingIndividualScope.ByFacility;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individual", path = "individual", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
-public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual> {
+public interface IndividualRepository extends TransactionalDataRepository<Individual>, OperatingIndividualScopeAwareRepository<Individual>, OperatingIndividualScopeAwareRepositoryWithTypeFilter<Individual> {
     Page<Individual> findByAuditLastModifiedDateTimeIsBetweenAndIsVoidedFalseOrderByAuditLastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime,
             DateTime now,
@@ -49,6 +49,20 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             DateTime now,
             Pageable pageable);
 
+    Page<Individual> findByAddressLevelVirtualCatchmentsIdAndSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long catchmentId,
+            String subjectTypeUuid,
+            DateTime lastModifiedDateTime,
+            DateTime now,
+            Pageable pageable);
+
+    Page<Individual> findByFacilityIdAndSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long facilityId,
+            String subjectTypeUuid,
+            DateTime lastModifiedDateTime,
+            DateTime now,
+            Pageable pageable);
+
     @Override
     default Page<Individual> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
         return findByAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, lastModifiedDateTime, now, pageable);
@@ -57,6 +71,16 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     @Override
     default Page<Individual> findByFacilityIndividualOperatingScope(long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
         return findByFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default Page<Individual> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, String filters, Pageable pageable) {
+        return findByAddressLevelVirtualCatchmentsIdAndSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filters, lastModifiedDateTime, now, pageable);
+    }
+
+    @Override
+    default Page<Individual> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filters, Pageable pageable) {
+        return findByFacilityIdAndSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filters, lastModifiedDateTime, now, pageable);
     }
 
     default Specification<Individual> getFilterSpecForVoid(Boolean includeVoided) {

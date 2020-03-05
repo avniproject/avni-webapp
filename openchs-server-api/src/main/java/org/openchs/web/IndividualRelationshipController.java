@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.joda.time.DateTime;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.OperatingIndividualScopeAwareRepository;
+import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
 import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.domain.Individual;
@@ -11,6 +12,7 @@ import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.openchs.service.UserService;
 import org.openchs.web.request.IndividualRelationshipRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
@@ -20,9 +22,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Collections;
+import java.util.List;
 
 @RestController
-public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship>, OperatingIndividualScopeAwareController<IndividualRelationship> {
+public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship>, OperatingIndividualScopeAwareController<IndividualRelationship>, OperatingIndividualScopeAwareFilterController<IndividualRelationship> {
     private final IndividualRepository individualRepository;
     private final IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
     private final IndividualRelationshipRepository individualRelationshipRepository;
@@ -80,8 +84,14 @@ public class IndividualRelationshipController extends AbstractController<Individ
     public PagedResources<Resource<IndividualRelationship>> getIndividualRelationshipsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            @RequestParam(value = "subjectTypeUuid", required = false) String subjectTypeUuid,
             Pageable pageable) {
-        return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(),lastModifiedDateTime, now, pageable));
+        if (subjectTypeUuid == null) {
+            return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));
+        } else {
+            return subjectTypeUuid.isEmpty() ? wrap(new PageImpl<>(Collections.emptyList())) :
+                    wrap(getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(userService.getCurrentUser(), lastModifiedDateTime, now, subjectTypeUuid, pageable));
+        }
     }
 
     @Override
@@ -96,6 +106,11 @@ public class IndividualRelationshipController extends AbstractController<Individ
 
     @Override
     public OperatingIndividualScopeAwareRepository<IndividualRelationship> resourceRepository() {
+        return individualRelationshipRepository;
+    }
+
+    @Override
+    public OperatingIndividualScopeAwareRepositoryWithTypeFilter<IndividualRelationship> repository() {
         return individualRelationshipRepository;
     }
 }

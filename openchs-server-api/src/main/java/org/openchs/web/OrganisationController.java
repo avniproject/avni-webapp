@@ -1,17 +1,16 @@
 package org.openchs.web;
 
 import org.openchs.dao.AccountRepository;
-import org.openchs.dao.JobStatus;
+import org.openchs.dao.GroupRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.domain.Account;
+import org.openchs.domain.Group;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.OrganisationContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,11 +28,13 @@ public class OrganisationController implements RestControllerResourceProcessor<O
 
     private OrganisationRepository organisationRepository;
     private AccountRepository accountRepository;
+    private GroupRepository groupRepository;
 
     @Autowired
-    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository) {
+    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GroupRepository groupRepository) {
         this.organisationRepository = organisationRepository;
         this.accountRepository = accountRepository;
+        this.groupRepository = groupRepository;
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.POST)
@@ -51,7 +52,17 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         createOrganisation(request, org);
         setOrgAccountByIdOrDefault(org, request.getAccountId());
         organisationRepository.save(org);
+        addDefaultGroup(org.getId());
         return new ResponseEntity<>(org, HttpStatus.CREATED);
+    }
+
+    private void addDefaultGroup(Long organisationId){
+        Group group = new Group();
+        group.setName("Everyone");
+        group.setOrganisationId(organisationId);
+        group.setUuid(UUID.randomUUID().toString());
+        group.setVersion(0);
+        groupRepository.save(group);
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.GET)
