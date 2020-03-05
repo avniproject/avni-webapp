@@ -127,8 +127,10 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
       const userInfoJson = {
         settings: {
           ...userInfo.settings,
-          locale: event.target.value
-        }
+          locale: event.target.value,
+          trackLocation: false
+        },
+        
       };
 
       http.post("/me", userInfoJson).then(response => {

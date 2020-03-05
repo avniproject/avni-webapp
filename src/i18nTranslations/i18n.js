@@ -10,7 +10,7 @@ httpClient.fetchJson(`/web/translations`).then(response => {
   i18n.use(LanguageDetector).init({
     resources: translationData,
     fallbackLng: "en",
-    lng:defaultLanguage.settings.locale,
+    lng:defaultLanguage.settings ? defaultLanguage.settings.locale : "en",
     debug: true,
     ns: ["translations"],
     defaultNS: "translations",
