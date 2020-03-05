@@ -13,7 +13,7 @@ export const CodedFormElement = ({
   ...props
 }) => {
   return (
-    <FormControl component="fieldset" {...props} style={{ width: "80%" }}>
+    <FormControl component="fieldset" {...props} style={{ width: "100%" }}>
       <FormLabel component="legend">{groupName}</FormLabel>
       <FormGroup>
         <Box display="flex" flexWrap="wrap" alignContent="flex-start">

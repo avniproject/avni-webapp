@@ -13,11 +13,26 @@ import CustomizedDialog from "../../components/Dialog";
 
 const useStyle = makeStyles(theme => ({
   form: {
-    padding: theme.spacing(0, 3, 4, 3)
+    padding: theme.spacing(0, 3, 4, 3),
+    height:600,
+    border: "1px solid #f1ebeb",
+    position:"relative"
+  },
+  detailsstyle: {
+    color:"#000",
+    fontSize:"bold"
   },
   details: {   
     color: "rgba(0, 0, 0, 0.54)"
-  } 
+  },
+  foo : {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    marginBottom:25,
+    marginRight:15,
+    marginLeft:20
+  }
 }));
 
 
@@ -30,7 +45,7 @@ const Header = ({ subject }) => {
   return (   
       <div className={classes.details}>
         <Typography variant="caption" gutterBottom>
-          Name: {fullName} | Age: {dateOfBirth} | Gender: {gender} | Village: {lowestAddressLevel}
+          Name:  <Typography className={classes.detailsstyle} variant="caption" gutterBottom>{fullName}</Typography> | Age: <Typography className={classes.detailsstyle} variant="caption" gutterBottom>{dateOfBirth}</Typography> | Gender: <Typography className={classes.detailsstyle} variant="caption" gutterBottom>{gender}</Typography> | Village: <Typography className={classes.detailsstyle} variant="caption" gutterBottom>{lowestAddressLevel}</Typography>
         </Typography>
         <LineBreak num={2}></LineBreak> 
       </div>    
@@ -89,10 +104,13 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
         onOk = {onOkHandler}
         />}
         {saved && redirect && <Redirect to={onSaveGoto} />}
+        <div className={classes.foo}>
         <Paginator pageDetails={pageDetails}
          onSave={onSave}
-         label={{Previous:"Previous",Next:"Next",Save:"Save"}}
+         label={{Previous:"PREVIOUS",Next:"NEXT",Save:"SAVE"}}
          showCount="false"/>
+        </div>
+        
       </Paper>
     </Fragment>
   );

@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip} from "@material-ui/core";
+import { Box, TextField, Chip } from "@material-ui/core";
 import { ObservationsHolder, Individual } from "avni-models";
 import {
   getRegistrationForm,
@@ -35,7 +35,8 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   form: {
-    padding: theme.spacing(3, 3)
+    padding: theme.spacing(3, 3),
+    border: "1px solid #f1ebeb"
   },
   villagelabel: {
     color: "rgba(0, 0, 0, 0.54)",
@@ -68,9 +69,12 @@ const useStyles = makeStyles(theme => ({
     cursor: "pointer"
   },
   prevbuttonspace: {
-    color:"#cecdcd",
+    color: "#cecdcd",
     marginRight: 20,
     width: 100
+  },
+  iconcolor:{
+    color:"blue"
   }
 }));
 
@@ -101,7 +105,7 @@ const DefaultPage = props => {
             <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
               <Typography variant="subtitle1" gutterBottom> 1. Basic Details</Typography>
               <Box>
-              <label className={classes.topprevnav} disabled={true}>PREV</label>
+                <label className={classes.topprevnav} disabled={true}>PREV</label>
                 <RelativeLink
                   to="form"
                   params={{
@@ -110,9 +114,9 @@ const DefaultPage = props => {
                   }}
                   noUnderline
                 >
-               
-                    {props.form && <label className={classes.toppagenum}> 1/{props.form.getLastFormElementElementGroup().displayOrder + 1}</label>}
-                    <label className={classes.topnextnav}>NEXT</label>
+
+                  {props.form && <label className={classes.toppagenum}> 1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}</label>}
+                  <label className={classes.topnextnav}>NEXT</label>
                 </RelativeLink>
               </Box>
             </Box>
@@ -121,9 +125,9 @@ const DefaultPage = props => {
               <Box className={classes.form} display="flex" flexDirection="column">
                 <Typography className={classes.caption} variant="caption" display="block" gutterBottom> Registration Date </Typography>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
+                  <KeyboardDatePicker                  
                     disableToolbar
-                    style={{ width: "30%" }}
+                    style={{ width: "30%"}}                   
                     variant="inline"
                     format="MM/dd/yyyy"
                     margin="normal"
@@ -135,6 +139,7 @@ const DefaultPage = props => {
                     }}
                     KeyboardButtonProps={{
                       'aria-label': 'change date',
+                      color:"primary"
                     }}
                   />
                 </MuiPickersUtilsProvider>
@@ -202,8 +207,8 @@ const DefaultPage = props => {
                 )}
                 <LineBreak num={4} />
                 <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
-                  <Box>                 
-                  <Chip className={classes.prevbuttonspace} label="Previous" disabled variant="outlined" />
+                  <Box>
+                    <Chip className={classes.prevbuttonspace} label="PREVIOUS" disabled variant="outlined" />
                     <RelativeLink
                       to="form"
                       params={{
@@ -212,7 +217,7 @@ const DefaultPage = props => {
                       }}
                       noUnderline
                     >
-                       <PagenatorButton>Next</PagenatorButton>
+                      <PagenatorButton>NEXT</PagenatorButton>
                     </RelativeLink>
                   </Box>
                 </Box>
