@@ -23,15 +23,24 @@ const useStyle = makeStyles(theme => ({
     fontSize:"bold"
   },
   details: {   
-    color: "rgba(0, 0, 0, 0.54)"
+    color: "rgba(0, 0, 0, 0.54)",
+    backgroundColor:"#f8f4f4",
+    height:40,
+    width:"90%",  
+    padding: 8,
+    marginBottom: 10
   },
   foo : {
     position: "absolute",
     bottom: 0,
     left: 0,
-    marginBottom:25,
-    marginRight:15,
-    marginLeft:20
+    // marginBottom:25,
+    // marginRight:15,
+    // marginLeft:25,
+    backgroundColor: "#f8f4f4",
+    height: 80,
+    width: '100%',
+    padding: 25
   }
 }));
 

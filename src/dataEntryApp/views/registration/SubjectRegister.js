@@ -34,8 +34,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(4),
     flexGrow: 1
   },
-  form: {
-    padding: theme.spacing(3, 3),
+  form: {   
     border: "1px solid #f1ebeb"
   },
   villagelabel: {
@@ -48,8 +47,15 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: "0.00938em",
     marginBottom: 20
   },
+  topcaption: {
+    color: "rgba(0, 0, 0, 0.54)",
+    backgroundColor: "#f8f4f4",
+    height: 40,
+    width: "100%",
+    padding: 8
+  },
   caption: {
-    color: "rgba(0, 0, 0, 0.54)"
+    color: "rgba(0, 0, 0, 0.54)"   
   },
   topprevnav: {
     color: "#cecdcd",
@@ -70,11 +76,20 @@ const useStyles = makeStyles(theme => ({
   },
   prevbuttonspace: {
     color: "#cecdcd",
-    marginRight: 20,
+    marginRight: 27,
     width: 100
   },
-  iconcolor:{
-    color:"blue"
+  iconcolor: {
+    color: "blue"
+  },
+  topboxstyle:{
+    padding: theme.spacing(3, 3),
+  },
+  buttomboxstyle:{
+    backgroundColor: "#f8f4f4",
+    height: 80,
+    width: '100%',
+    padding: 25
   }
 }));
 
@@ -97,8 +112,11 @@ const DefaultPage = props => {
 
   return (
     <div>
-      <Typography className={classes.caption} variant="caption" gutterBottom> No Details  </Typography>
-      <LineBreak num={2} />
+      <div className={classes.topcaption}>
+      <Typography  variant="caption" gutterBottom> No Details  </Typography>
+      </div>
+      
+      <LineBreak num={1} />
       <div >
         {props.subject && (
           <div>
@@ -121,13 +139,13 @@ const DefaultPage = props => {
               </Box>
             </Box>
 
-            <Paper>
-              <Box className={classes.form} display="flex" flexDirection="column">
+            <Paper className={classes.form}>
+              <Box className={classes.topboxstyle} display="flex" flexDirection="column">
                 <Typography className={classes.caption} variant="caption" display="block" gutterBottom> Registration Date </Typography>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker                  
+                  <KeyboardDatePicker
                     disableToolbar
-                    style={{ width: "30%"}}                   
+                    style={{ width: "30%" }}
                     variant="inline"
                     format="MM/dd/yyyy"
                     margin="normal"
@@ -139,7 +157,7 @@ const DefaultPage = props => {
                     }}
                     KeyboardButtonProps={{
                       'aria-label': 'change date',
-                      color:"primary"
+                      color: "primary"
                     }}
                   />
                 </MuiPickersUtilsProvider>
@@ -205,8 +223,9 @@ const DefaultPage = props => {
                     />
                   </React.Fragment>
                 )}
-                <LineBreak num={4} />
-                <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
+                <LineBreak num={1} />                
+              </Box>
+              <Box className={classes.buttomboxstyle} display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
                   <Box>
                     <Chip className={classes.prevbuttonspace} label="PREVIOUS" disabled variant="outlined" />
                     <RelativeLink
@@ -221,7 +240,6 @@ const DefaultPage = props => {
                     </RelativeLink>
                   </Box>
                 </Box>
-              </Box>
             </Paper>
           </div>
         )}
