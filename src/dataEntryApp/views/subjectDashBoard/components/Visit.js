@@ -7,6 +7,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: "left",
     boxShadow: "none",
     borderRadius: "0px",
-   // borderRight: "1px solid #dcdcdc",
+    // borderRight: "1px solid #dcdcdc",
     padding: "0px"
   },
 
@@ -65,12 +66,17 @@ const truncate = input => {
 
 const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
       <Paper className={classes.paper}>
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>
-            <ListItemText className={classes.ListItemText} title={name} primary={truncate(name)} />
+            <ListItemText
+              className={classes.ListItemText}
+              title={t(name)}
+              primary={truncate(t(name))}
+            />
           </ListItem>
           <ListItem className={classes.listItem}>
             <ListItemText
@@ -81,7 +87,7 @@ const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
           {overdueDate && new Date() > new Date(overdueDate) ? (
             <ListItem className={classes.listItem}>
               <ListItemText>
-                <label className={classes.programStatusStyle}>Overdue</label>
+                <label className={classes.programStatusStyle}>{t("Overdue")}</label>
               </ListItemText>
             </ListItem>
           ) : (
@@ -99,8 +105,8 @@ const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
           )}
         </List>
         <div className={classes.visitButton}>
-          <Button color="primary">DO VISIT</Button>
-          <Button color="primary">CANCEL VISIT</Button>
+          <Button color="primary">{t("dovisit")}</Button>
+          <Button color="primary">{t("cancelVisit")}</Button>
         </div>
       </Paper>
     </Grid>
