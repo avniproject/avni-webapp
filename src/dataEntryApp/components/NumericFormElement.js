@@ -8,6 +8,7 @@ export default ({ formElement: fe, value, update }) => {
       <TextField
         label={fe.display || fe.name}
         type={"numeric"}
+        autoComplete="off"
         required={fe.mandatory}
         name={fe.name}
         value={value}

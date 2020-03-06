@@ -45,6 +45,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
         <TextField
           label="Date of Birth"
           type="date"
+          autoComplete="off"
           required
           style={{ width: "30%" }}
           name="dateOfBirth"
@@ -79,6 +80,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
         <TextField
           label={"Age"}
           type={"numeric"}
+          autoComplete="off"
           name={"ageYearsPart"}
           value={years}
           style={{ width: "30%" }}

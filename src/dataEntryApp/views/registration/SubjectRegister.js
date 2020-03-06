@@ -141,7 +141,7 @@ const DefaultPage = props => {
 
             <Paper className={classes.form}>
               <Box className={classes.topboxstyle} display="flex" flexDirection="column">
-                <Typography className={classes.caption} variant="caption" display="block" gutterBottom> Registration Date </Typography>
+                <Typography className={classes.caption} variant="caption" display="block" gutterBottom> Date of registration </Typography>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     disableToolbar
@@ -168,6 +168,7 @@ const DefaultPage = props => {
                       style={{ width: "30%" }}
                       label="First Name"
                       type="text"
+                      autoComplete="off"
                       required
                       name="firstName"
                       value={props.subject.firstName || ""}
@@ -180,6 +181,7 @@ const DefaultPage = props => {
                       style={{ width: "30%" }}
                       label="Last Name"
                       type="text"
+                      autoComplete="off"
                       required
                       name="lastName"
                       value={props.subject.lastName || ""}
@@ -214,6 +216,7 @@ const DefaultPage = props => {
                     <TextField
                       label="Name"
                       type="text"
+                      autoComplete="off"
                       required
                       name="firstName"
                       value={props.subject.firstName}
