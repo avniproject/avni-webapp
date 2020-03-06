@@ -1,14 +1,16 @@
 import TextField from "@material-ui/core/TextField";
 import { Redirect } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
+import { subjectTypeInitialState } from "../Constant";
+import { subjectTypeReducer } from "../Reducers";
 
 const SubjectTypeCreate = props => {
-  const [subjectTypeName, setSubjectTypeName] = useState("");
+  const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
@@ -17,13 +19,13 @@ const SubjectTypeCreate = props => {
   const onSubmit = event => {
     event.preventDefault();
 
-    if (subjectTypeName === "") {
+    if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
     } else {
       setNameValidation(false);
       http
-        .post("/web/subjectType", { name: subjectTypeName })
+        .post("/web/subjectType", { name: subjectType.name })
         .then(response => {
           if (response.status === 200) {
             setError("");
@@ -48,8 +50,8 @@ const SubjectTypeCreate = props => {
               id="name"
               label="Name"
               autoComplete="off"
-              value={subjectTypeName}
-              onChange={event => setSubjectTypeName(event.target.value)}
+              value={subjectType.name}
+              onChange={event => dispatch({ type: "name", payload: event.target.value })}
             />
             <div />
             {nameValidation && (

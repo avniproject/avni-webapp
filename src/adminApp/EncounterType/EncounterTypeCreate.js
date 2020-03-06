@@ -1,6 +1,6 @@
 import TextField from "@material-ui/core/TextField";
 import { Redirect } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -8,10 +8,11 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { encounterTypeInitialState } from "../Constant";
+import { encounterTypeReducer } from "../Reducers";
 
 const EncounterTypeCreate = props => {
-  const [encounterTypeName, setEncounterTypeName] = useState("");
-  const [encounterEligibilityCheckRule, setEncounterEligibilityCheckRule] = useState("");
+  const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
@@ -20,15 +21,15 @@ const EncounterTypeCreate = props => {
   const onSubmit = event => {
     event.preventDefault();
 
-    if (encounterTypeName === "") {
+    if (encounterType.name.trim() === "") {
       setError("");
       setNameValidation(true);
     } else {
       setNameValidation(false);
       http
         .post("/web/encounterType", {
-          name: encounterTypeName,
-          encounterEligibilityCheckRule: encounterEligibilityCheckRule
+          name: encounterType.name,
+          encounterEligibilityCheckRule: encounterType.encounterEligibilityCheckRule
         })
         .then(response => {
           if (response.status === 200) {
@@ -54,8 +55,8 @@ const EncounterTypeCreate = props => {
               id="name"
               label="Name"
               autoComplete="off"
-              value={encounterTypeName}
-              onChange={event => setEncounterTypeName(event.target.value)}
+              value={encounterType.name}
+              onChange={event => dispatch({ type: "name", payload: event.target.value })}
             />
             <div />
             {nameValidation && (
@@ -71,8 +72,14 @@ const EncounterTypeCreate = props => {
             <p />
             <FormLabel>Encounter Eligibility Check Rule</FormLabel>
             <Editor
-              value={encounterEligibilityCheckRule ? encounterEligibilityCheckRule : ""}
-              onValueChange={event => setEncounterEligibilityCheckRule(event)}
+              value={
+                encounterType.encounterEligibilityCheckRule
+                  ? encounterType.encounterEligibilityCheckRule
+                  : ""
+              }
+              onValueChange={event =>
+                dispatch({ type: "encounterEligibilityCheckRule", payload: event })
+              }
               highlight={code => highlight(code, languages.js)}
               padding={10}
               style={{

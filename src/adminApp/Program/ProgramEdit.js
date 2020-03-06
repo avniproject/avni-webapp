@@ -1,6 +1,6 @@
 import TextField from "@material-ui/core/TextField";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
@@ -12,17 +12,15 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { programInitialState } from "../Constant";
+import { programReducer } from "../Reducers";
 
 const ProgramEdit = props => {
-  const [programName, setProgramName] = useState("");
-  const [programColour, setProgramColour] = useState("");
-  const [programSubjectLabel, setProgramSubjectLabel] = useState("");
-  const [enrolmentSummaryRule, setEnrolmentSummaryRule] = useState("");
-  const [enrolmentEligibilityCheckRule, setEnrolmentEligibilityCheckRule] = useState("");
+  const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
-  const [program, setProgram] = useState({});
+  const [programData, setProgramData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
 
   useEffect(() => {
@@ -30,32 +28,28 @@ const ProgramEdit = props => {
       .get("/web/program/" + props.match.params.id)
       .then(response => response.data)
       .then(result => {
-        setProgram(result);
-        setProgramName(result.name);
-        setProgramColour(result.colour);
-        setProgramSubjectLabel(result.programSubjectLabel);
-        setEnrolmentSummaryRule(result.enrolmentSummaryRule);
-        setEnrolmentEligibilityCheckRule(result.enrolmentEligibilityCheckRule);
+        setProgramData(result);
+        dispatch({ type: "setData", payload: result });
       });
   }, []);
 
   const onSubmit = () => {
-    if (programName === "") {
+    if (program.name.trim() === "") {
       setError("");
       setNameValidation(true);
     } else {
       setNameValidation(false);
       http
         .put("/web/program/" + props.match.params.id, {
-          name: programName,
-          colour: programColour,
-          programSubjectLabel: programSubjectLabel,
-          enrolmentSummaryRule: enrolmentSummaryRule,
-          enrolmentEligibilityCheckRule: enrolmentEligibilityCheckRule,
+          name: program.name,
+          colour: program.colour,
+          programSubjectLabel: program.programSubjectLabel,
+          enrolmentSummaryRule: program.enrolmentSummaryRule,
+          enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
           id: props.match.params.id,
-          organisationId: program.organisationId,
-          programOrganisationId: program.programOrganisationId,
-          voided: program.voided
+          organisationId: programData.organisationId,
+          programOrganisationId: programData.programOrganisationId,
+          voided: programData.voided
         })
         .then(response => {
           if (response.status === 200) {
@@ -84,7 +78,7 @@ const ProgramEdit = props => {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={"Edit program "} />
-        <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+        <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
           <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
             <VisibilityIcon /> Show
           </Button>
@@ -94,8 +88,8 @@ const ProgramEdit = props => {
             id="name"
             label="Name"
             autoComplete="off"
-            value={programName}
-            onChange={event => setProgramName(event.target.value)}
+            value={program.name}
+            onChange={event => dispatch({ type: "name", payload: event.target.value })}
           />
           <div />
           {nameValidation && (
@@ -113,22 +107,24 @@ const ProgramEdit = props => {
             id="colour"
             label="Colour"
             autoComplete="off"
-            value={programColour}
-            onChange={event => setProgramColour(event.target.value)}
+            value={program.colour}
+            onChange={event => dispatch({ type: "colour", payload: event.target.value })}
           />
           <p />
           <TextField
             id="programsubjectlabel"
             label="Program subject label"
             autoComplete="off"
-            value={programSubjectLabel}
-            onChange={event => setProgramSubjectLabel(event.target.value)}
+            value={program.programSubjectLabel}
+            onChange={event =>
+              dispatch({ type: "programSubjectLabel", payload: event.target.value })
+            }
           />
           <p />
           <FormLabel>Enrolment summary rule</FormLabel>
           <Editor
-            value={enrolmentSummaryRule ? enrolmentSummaryRule : ""}
-            onValueChange={event => setEnrolmentSummaryRule(event)}
+            value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
+            onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
             highlight={code => highlight(code, languages.js)}
             padding={10}
             style={{
@@ -142,8 +138,12 @@ const ProgramEdit = props => {
           <p />
           <FormLabel>Enrolment eligibility check rule</FormLabel>
           <Editor
-            value={enrolmentEligibilityCheckRule ? enrolmentEligibilityCheckRule : ""}
-            onValueChange={event => setEnrolmentEligibilityCheckRule(event)}
+            value={
+              program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""
+            }
+            onValueChange={event =>
+              dispatch({ type: "enrolmentEligibilityCheckRule", payload: event })
+            }
             highlight={code => highlight(code, languages.js)}
             padding={10}
             style={{

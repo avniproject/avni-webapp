@@ -1,6 +1,5 @@
 import TextField from "@material-ui/core/TextField";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
@@ -12,14 +11,15 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { encounterTypeInitialState } from "../Constant";
+import { encounterTypeReducer } from "../Reducers";
 
 const EncounterTypeEdit = props => {
-  const [encounterTypeName, setEncounterTypeName] = useState("");
-  const [encounterEligibilityCheckRule, setEncounterEligibilityCheckRule] = useState("");
+  const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
-  const [encounterType, setEncounterType] = useState({});
+  const [encounterTypeData, setEncounterTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
 
   useEffect(() => {
@@ -27,26 +27,25 @@ const EncounterTypeEdit = props => {
       .get("/web/encounterType/" + props.match.params.id)
       .then(response => response.data)
       .then(result => {
-        setEncounterType(result);
-        setEncounterTypeName(result.name);
-        setEncounterEligibilityCheckRule(result.encounterEligibilityCheckRule);
+        setEncounterTypeData(result);
+        dispatch({ type: "setData", payload: result });
       });
   }, []);
 
   const onSubmit = () => {
-    if (encounterTypeName === "") {
+    if (encounterType.name.trim() === "") {
       setError("");
       setNameValidation(true);
     } else {
       setNameValidation(false);
       http
         .put("/web/encounterType/" + props.match.params.id, {
-          name: encounterTypeName,
-          encounterEligibilityCheckRule: encounterEligibilityCheckRule,
+          name: encounterType.name,
+          encounterEligibilityCheckRule: encounterType.encounterEligibilityCheckRule,
           id: props.match.params.id,
-          organisationId: encounterType.organisationId,
-          encounterTypeOrganisationId: encounterType.encounterTypeOrganisationId,
-          voided: encounterType.voided
+          organisationId: encounterTypeData.organisationId,
+          encounterTypeOrganisationId: encounterTypeData.encounterTypeOrganisationId,
+          voided: encounterTypeData.voided
         })
         .then(response => {
           if (response.status === 200) {
@@ -85,8 +84,8 @@ const EncounterTypeEdit = props => {
             id="name"
             label="Name"
             autoComplete="off"
-            value={encounterTypeName}
-            onChange={event => setEncounterTypeName(event.target.value)}
+            value={encounterType.name}
+            onChange={event => dispatch({ type: "name", payload: event.target.value })}
           />
           <div />
           {nameValidation && (
@@ -103,8 +102,14 @@ const EncounterTypeEdit = props => {
           <p />
           <FormLabel>Enrolment eligibility check rule</FormLabel>
           <Editor
-            value={encounterEligibilityCheckRule ? encounterEligibilityCheckRule : ""}
-            onValueChange={event => setEncounterEligibilityCheckRule(event)}
+            value={
+              encounterType.encounterEligibilityCheckRule
+                ? encounterType.encounterEligibilityCheckRule
+                : ""
+            }
+            onValueChange={event =>
+              dispatch({ type: "encounterEligibilityCheckRule", payload: event })
+            }
             highlight={code => highlight(code, languages.js)}
             padding={10}
             style={{

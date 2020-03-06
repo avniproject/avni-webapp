@@ -1,6 +1,6 @@
 import TextField from "@material-ui/core/TextField";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
@@ -10,13 +10,15 @@ import FormLabel from "@material-ui/core/FormLabel";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { subjectTypeInitialState } from "../Constant";
+import { subjectTypeReducer } from "../Reducers";
 
 const SubjectTypeEdit = props => {
-  const [subjectTypeName, setSubjectTypeName] = useState("");
+  const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
-  const [subjectType, setSubjectType] = useState({});
+  const [subjectTypeData, setSubjectTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
 
   useEffect(() => {
@@ -24,24 +26,24 @@ const SubjectTypeEdit = props => {
       .get("/web/subjectType/" + props.match.params.id)
       .then(response => response.data)
       .then(result => {
-        setSubjectType(result);
-        setSubjectTypeName(result.name);
+        setSubjectTypeData(result);
+        dispatch({ type: "setData", payload: result });
       });
   }, []);
 
   const onSubmit = () => {
-    if (subjectTypeName === "") {
+    if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
     } else {
       setNameValidation(false);
       http
         .put("/web/subjectType/" + props.match.params.id, {
-          name: subjectTypeName,
+          name: subjectType.name,
           id: props.match.params.id,
-          organisationId: subjectType.organisationId,
-          subjectTypeOrganisationId: subjectType.subjectTypeOrganisationId,
-          voided: subjectType.voided
+          organisationId: subjectTypeData.organisationId,
+          subjectTypeOrganisationId: subjectTypeData.subjectTypeOrganisationId,
+          voided: subjectTypeData.voided
         })
         .then(response => {
           if (response.status === 200) {
@@ -80,8 +82,8 @@ const SubjectTypeEdit = props => {
             id="name"
             label="Name"
             autoComplete="off"
-            value={subjectTypeName}
-            onChange={event => setSubjectTypeName(event.target.value)}
+            value={subjectType.name}
+            onChange={event => dispatch({ type: "name", payload: event.target.value })}
           />
           <div />
           {nameValidation && (

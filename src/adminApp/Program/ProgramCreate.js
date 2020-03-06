@@ -1,6 +1,6 @@
 import TextField from "@material-ui/core/TextField";
 import { Redirect } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -8,13 +8,11 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { programInitialState } from "../Constant";
+import { programReducer } from "../Reducers";
 
 const ProgramCreate = props => {
-  const [programName, setProgramName] = useState("");
-  const [programColour, setProgramColour] = useState("");
-  const [programSubjectLabel, setProgramSubjectLabel] = useState("");
-  const [enrolmentSummaryRule, setEnrolmentSummaryRule] = useState("");
-  const [enrolmentEligibilityCheckRule, setEnrolmentEligibilityCheckRule] = useState("");
+  const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
@@ -23,19 +21,18 @@ const ProgramCreate = props => {
   const onSubmit = event => {
     event.preventDefault();
 
-    if (programName === "") {
+    if (program.name.trim() === "") {
       setError("");
       setNameValidation(true);
     } else {
       setNameValidation(false);
       http
         .post("/web/program", {
-          name: programName,
-          colour: programColour,
-          programSubjectLabel: programSubjectLabel,
-          enrolmentSummaryRule: enrolmentSummaryRule,
-          enrolmentEligibilityCheckRule: enrolmentEligibilityCheckRule,
-          voided: false
+          name: program.name,
+          colour: program.colour,
+          programSubjectLabel: program.programSubjectLabel,
+          enrolmentSummaryRule: program.enrolmentSummaryRule,
+          enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule
         })
         .then(response => {
           if (response.status === 200) {
@@ -61,8 +58,8 @@ const ProgramCreate = props => {
               id="name"
               label="Name"
               autoComplete="off"
-              value={programName}
-              onChange={event => setProgramName(event.target.value)}
+              value={program.name}
+              onChange={event => dispatch({ type: "name", payload: event.target.value })}
             />
             <div />
             {nameValidation && (
@@ -80,22 +77,24 @@ const ProgramCreate = props => {
               id="colour"
               label="Colour"
               autoComplete="off"
-              value={programColour}
-              onChange={event => setProgramColour(event.target.value)}
+              value={program.colour}
+              onChange={event => dispatch({ type: "colour", payload: event.target.value })}
             />
             <p />
             <TextField
               id="programsubjectlabel"
               label="Program subject label"
               autoComplete="off"
-              value={programSubjectLabel}
-              onChange={event => setProgramSubjectLabel(event.target.value)}
+              value={program.programSubjectLabel}
+              onChange={event =>
+                dispatch({ type: "programSubjectLabel", payload: event.target.value })
+              }
             />
             <p />
             <FormLabel>Enrolment summary rule</FormLabel>
             <Editor
-              value={enrolmentSummaryRule ? enrolmentSummaryRule : ""}
-              onValueChange={event => setEnrolmentSummaryRule(event)}
+              value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
+              onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
               highlight={code => highlight(code, languages.js)}
               padding={10}
               style={{
@@ -109,8 +108,12 @@ const ProgramCreate = props => {
             <p />
             <FormLabel>Enrolment eligibility check rule</FormLabel>
             <Editor
-              value={enrolmentEligibilityCheckRule ? enrolmentEligibilityCheckRule : ""}
-              onValueChange={event => setEnrolmentEligibilityCheckRule(event)}
+              value={
+                program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""
+              }
+              onValueChange={event =>
+                dispatch({ type: "enrolmentEligibilityCheckRule", payload: event })
+              }
               highlight={code => highlight(code, languages.js)}
               padding={10}
               style={{
