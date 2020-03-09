@@ -260,7 +260,7 @@ class CreateEditConcept extends Component {
         if (this.state.dataType === "") {
           error["dataTypeSelectionAlert"] = true;
         }
-        if (this.state.name === "") {
+        if (this.state.name.trim() === "") {
           error["isEmptyName"] = true;
         }
         if (parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute)) {
@@ -279,7 +279,7 @@ class CreateEditConcept extends Component {
 
         this.state.dataType === "Coded" &&
           answers.forEach(answer => {
-            if (answer.name === "") {
+            if (answer.name.trim() === "") {
               answer["isEmptyAnswer"] = true;
               error["isEmptyAnswer"] = true;
             } else {

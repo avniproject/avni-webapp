@@ -79,6 +79,7 @@ export default function(state = initialState, action) {
         }
       };
     }
+
     case types.SET_USER_INFO: {
       return {
         ...state,
@@ -91,7 +92,8 @@ export default function(state = initialState, action) {
           id: action.payload.organisationId,
           name: action.payload.organisationName,
           usernameSuffix: action.payload.usernameSuffix
-        }
+        },
+        userInfo: action.payload
       };
     }
     case types.INIT_COMPLETE: {
