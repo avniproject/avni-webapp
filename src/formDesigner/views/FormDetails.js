@@ -122,7 +122,6 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
-            fe.showDateOrDuration = "durationOptions";
             //             if (fe["rule"]) {
             //               let ruleExtraction = fe["rule"];
             //               ruleExtraction = ruleExtraction.replace(
@@ -142,7 +141,6 @@ class FormDetails extends Component {
             let keyValueObject = {};
 
             fe.keyValues.map(keyValue => {
-              if (keyValue.key === "datePickerMode") fe.showDateOrDuration = "datePickerMode";
               return (keyValueObject[keyValue.key] = keyValue.value);
             });
 
@@ -469,7 +467,6 @@ class FormDetails extends Component {
           name: "",
           type: "",
           keyValues: {},
-          showDateOrDuration: "durationOptions",
           mandatory: false,
           voided: false,
           expanded: true,
