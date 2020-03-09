@@ -1,5 +1,5 @@
 import { httpClient } from "common/utils/httpClient";
 export default {
   fetchOrganisationConfig: () =>
-    httpClient.fetchJson("/web/organizations").then(response => response.json)
+    httpClient.fetchJson("/organisationConfig").then(response => response.json)
 };
