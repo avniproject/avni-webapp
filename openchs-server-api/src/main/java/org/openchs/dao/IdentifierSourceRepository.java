@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,6 +18,9 @@ import java.util.List;
 @Repository
 @RepositoryRestResource(collectionResourceRel = "identifierSource", path = "identifierSource", exported = false)
 public interface IdentifierSourceRepository extends ReferenceDataRepository<IdentifierSource> {
+
+    @RestResource(path = "findAllById", rel = "findAllById")
+    Page<IdentifierSource> findByIdIn(@Param("ids") Long[] ids, Pageable pageable);
 
     @Query("select isource from IdentifierSource isource " +
             "where (catchment is null or (:catchment is not null and catchment = :catchment)) and " +

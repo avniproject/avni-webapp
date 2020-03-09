@@ -4,6 +4,9 @@ import com.amazonaws.services.cognitoidp.model.AWSCognitoIdentityProviderExcepti
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.openchs.dao.*;
+import org.openchs.domain.OperatingIndividualScope;
+import org.openchs.domain.User;
+import org.openchs.domain.UserFacilityMapping;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.AccountAdminService;
