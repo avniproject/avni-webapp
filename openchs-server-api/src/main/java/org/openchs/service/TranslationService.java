@@ -28,7 +28,7 @@ public class TranslationService {
         return organisationConfigRepository.findByOrganisationId(organisation.getId());
     }
 
-    public Map<String,Object> createTransactionAndPlatformTransaction(OrganisationConfig organisationConfig, String locale) throws IOException {
+    public Map<String,Map<String, JsonObject>> createTransactionAndPlatformTransaction(OrganisationConfig organisationConfig, String locale) throws IOException {
         List<String> languages = (ArrayList<String>) organisationConfig.getSettings().get("languages");
         List<String> localeLanguages = new ArrayList<>();
         localeLanguages.addAll(languages);
@@ -41,10 +41,10 @@ public class TranslationService {
             localeLanguages.clear();
             localeLanguages.add(locale);
         }
-        Map<String,Object> responseObject = new HashMap<>();
+        Map<String,Map<String, JsonObject>> responseObject = new HashMap<>();
         for(String language : localeLanguages){
             if(!responseObject.containsKey(language)){
-                Map<String,Object> translationMap = new HashMap<>();
+                Map<String,JsonObject> translationMap = new HashMap<>();
                 Translation translation = translationRepository.findByOrganisationIdAndLanguage(organisationConfig.getOrganisationId(), Locale.valueOf(language));
                 PlatformTranslation platformTranslation = platformTranslationRepository.findByLanguage(Locale.valueOf(language));
                 if(Objects.nonNull(translation) && Objects.nonNull(platformTranslation)) {
