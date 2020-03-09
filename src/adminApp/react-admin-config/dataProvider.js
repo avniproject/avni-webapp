@@ -37,6 +37,8 @@ const urlMapping = {
   subjectType: "web/subjectType",
   encounterType: "web/encounterType",
   organisationConfig: "organisationConfig",
+  identifierSource: "web/identifierSource",
+  identifierUserAssignment: "web/identifierUserAssignment",
   organisation: "organisation",
   accountOrgAdmin: "user/accountOrgAdmin",
   account: "account",
