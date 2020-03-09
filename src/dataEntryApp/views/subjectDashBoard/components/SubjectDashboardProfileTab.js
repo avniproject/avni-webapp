@@ -13,6 +13,7 @@ import moment from "moment/moment";
 import Observations from "../../../../common/components/Observations";
 import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -58,6 +59,7 @@ const useStyles = makeStyles(theme => ({
 
 const SubjectDashboardProfileTab = ({ profile, path }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const [expanded, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
@@ -78,9 +80,12 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             id="registrationPanelbh-header"
           >
             <div>
-              <h5>Registration Details</h5>
+              <h5>
+                {t("registration")} {t("details")}
+              </h5>
               <p>
-                Registration Date: {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
+                {t("registrationDate")}:{" "}
+                {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
               </p>
             </div>
           </ExpansionPanelSummary>
@@ -89,8 +94,8 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
               <List>
                 <Observations observations={profile ? profile.observations : ""} />
               </List>
-              <Button color="primary">VOID</Button>
-              <Button color="primary">EDIT</Button>
+              <Button color="primary">{t("void")}</Button>
+              <Button color="primary">{t("edit")}</Button>
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -105,13 +110,13 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             id="relativesPanelbh-header"
           >
             <Typography component={"span"} className={classes.expansionHeading}>
-              Relatives
+              {t("Relatives")}
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <GridCommonList gridListDetails={profile.relationships} path={path} />
           </ExpansionPanelDetails>
-          <Button color="primary">ADD RELATIVE</Button>
+          <Button color="primary"> {t("addARelative")}</Button>
         </ExpansionPanel>
       </Paper>
     </Fragment>

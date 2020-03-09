@@ -4,7 +4,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Grid from "@material-ui/core/Grid";
-
+import { useTranslation } from "react-i18next";
 const AntTabs = withStyles({
   indicator: {
     display: "none"
@@ -30,7 +30,6 @@ const AntTab = withStyles(theme => ({
   },
   selected: {}
 }))(props => <Tab disableRipple {...props} />);
-
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
@@ -59,13 +58,14 @@ const useStyles = makeStyles(theme => ({
 
 const Program = ({ type, program, selectedTab, handleTabChange }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
     <Grid item className={type === "active" ? classes.activeProgramBar : classes.exitedProgramBar}>
       <label
         className={type === "active" ? classes.activeProgramLabel : classes.exitedProgramLabel}
       >
-        {type === "active" ? "Active Programs" : "Exited Programs"}
+        {t(type === "active" ? "activeprograms" : "exitedProgram")}
       </label>
 
       <AppBar
@@ -89,7 +89,7 @@ const Program = ({ type, program, selectedTab, handleTabChange }) => {
                   <AntTab
                     key={index}
                     value={index}
-                    label={element.program.operationalProgramName}
+                    label={t(element.program.operationalProgramName)}
                   />
                 ) : (
                   ""

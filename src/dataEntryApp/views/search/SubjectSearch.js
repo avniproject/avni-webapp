@@ -16,6 +16,7 @@ import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchRed
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import Paper from "@material-ui/core/Paper";
+import { useTranslation } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -50,16 +51,17 @@ const useStyle = makeStyles(theme => ({
 
 const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
+  const { t } = useTranslation();
 
   return (
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
-          {type.name === "Individual" && <TableCell align="center">Gender</TableCell>}
-          {type.name === "Individual" && <TableCell align="center">Date of birth(Age)</TableCell>}
-          <TableCell align="center">Location</TableCell>
-          <TableCell align="center">Active programs</TableCell>
+          <TableCell>{t("name")}</TableCell>
+          {type.name === "Individual" && <TableCell align="center">{t("gender")}</TableCell>}
+          {type.name === "Individual" && <TableCell align="center">{t("dateOfBirth")}</TableCell>}
+          <TableCell align="center">{t("location")}</TableCell>
+          <TableCell align="center">{t("activeprograms")}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -68,7 +70,9 @@ const SubjectsTable = ({ type, subjects }) => {
             <TableCell component="th" scope="row">
               <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
             </TableCell>
-            {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}
+            {type.name === "Individual" && (
+              <TableCell align="center">{t(row.gender.name)}</TableCell>
+            )}
             {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
             <TableCell align="center">{row.addressLevel.titleLineage}</TableCell>
             <TableCell align="center">
@@ -84,7 +88,7 @@ const SubjectsTable = ({ type, subjects }) => {
                   }}
                   disabled
                 >
-                  {p.operationalProgramName}
+                  {t(p.operationalProgramName)}
                 </Button>
               ))}
             </TableCell>
@@ -97,6 +101,7 @@ const SubjectsTable = ({ type, subjects }) => {
 
 const SubjectSearch = props => {
   const classes = useStyle();
+  const { t } = useTranslation();
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -123,7 +128,7 @@ const SubjectSearch = props => {
           </FormControl>
           <FormControl className={classes.searchFormItem}>
             <PrimaryButton type={"submit"} onClick={handleSubmit}>
-              Search
+              {t("search")}
             </PrimaryButton>
           </FormControl>
         </form>

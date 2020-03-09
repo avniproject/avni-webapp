@@ -9,6 +9,7 @@ import Fab from "@material-ui/core/Fab";
 import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -41,10 +42,11 @@ const useStyles = makeStyles(theme => ({
 
 const ProfileDetails = ({ profileDetails }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   return (
     <div className={classes.tableView}>
       <Typography component={"span"} className={classes.mainHeading}>
-        {`${profileDetails.firstName} ${profileDetails.lastName}`} Dashboard
+        {`${profileDetails.firstName} ${profileDetails.lastName}`} {t("Dashboard")}
       </Typography>
       <Grid justify="center" alignItems="center" container spacing={2}>
         <Grid item>
@@ -57,10 +59,10 @@ const ProfileDetails = ({ profileDetails }) => {
           <Table aria-label="caption table">
             <TableHead>
               <TableRow className={classes.tableHeader}>
-                <TableCell className={classes.tableCell}>Name</TableCell>
-                <TableCell className={classes.tableCell}>Gender</TableCell>
-                <TableCell className={classes.tableCell}>Age</TableCell>
-                <TableCell className={classes.tableCell}>Village</TableCell>
+                <TableCell className={classes.tableCell}>{t("name")}</TableCell>
+                <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
+                <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
+                <TableCell className={classes.tableCell}>{t("Village")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -68,11 +70,11 @@ const ProfileDetails = ({ profileDetails }) => {
                 <TableCell className={classes.tableCell}>{`${profileDetails.firstName} ${
                   profileDetails.lastName
                 }`}</TableCell>
-                <TableCell className={classes.tableCell}>{profileDetails.gender}</TableCell>
+                <TableCell className={classes.tableCell}>{t(profileDetails.gender)}</TableCell>
                 <TableCell className={classes.tableCell}>
                   {new Date().getFullYear() -
                     new Date(profileDetails.dateOfBirth).getFullYear() +
-                    " Year"}
+                    `${t("year")}`}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
                   {profileDetails.lowestAddressLevel}
@@ -88,7 +90,7 @@ const ProfileDetails = ({ profileDetails }) => {
             color="primary"
             aria-label="add"
           >
-            Enroll In Program
+            {t("enrolInProgram")}
           </Fab>
         </Grid>
       </Grid>
