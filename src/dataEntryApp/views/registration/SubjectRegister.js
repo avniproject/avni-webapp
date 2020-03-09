@@ -281,8 +281,8 @@ const ConnectedDefaultPage = withRouter(
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.registration.registrationForm,
-  obs: new ObservationsHolder(state.dataEntry.registration.subject.observations),
-  title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
+  obs: state.dataEntry.registration.subject && new ObservationsHolder(state.dataEntry.registration.subject.observations),
+  //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
   onSaveGoto: "/app/search"
@@ -290,6 +290,7 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs,
+  onLoad,
   onSave: saveSubject
 };
 

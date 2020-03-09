@@ -61,38 +61,44 @@ const Header = ({ subject }) => {
   )
 };
 
-const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave, subject }) => {
+const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave, subject, onLoad }) => {
+  React.useEffect(()=>{
+    if(!subject){
+      onLoad(match.queryParams.type);
+    }
+  })
   const classes = useStyle();
   const [redirect, setRedirect] = React.useState(false);
 
   const page = +match.queryParams.page;
   const from = match.queryParams.from;
 
-  const firstPageNumber = form.firstFormElementGroup.displayOrder;
+  const firstPageNumber = form && form.firstFormElementGroup.displayOrder;
   const currentPageNumber = isNaN(page) ? firstPageNumber : page;
-  const lastPageNumber = form.getLastFormElementElementGroup().displayOrder;
+  const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
 
   const pageDetails = {
     nextPageNumber:
       currentPageNumber === lastPageNumber
         ? null
-        : form.getNextFormElement(currentPageNumber).displayOrder,
+        : form && form.getNextFormElement(currentPageNumber).displayOrder,
     previousPageNumber:
       currentPageNumber === firstPageNumber
         ? null
-        : form.getPrevFormElement(currentPageNumber).displayOrder,
+        : form && form.getPrevFormElement(currentPageNumber).displayOrder,
     location,
     from
   };
 
-  const current = form.formElementGroupAt(currentPageNumber);
+  const current = form && form.formElementGroupAt(currentPageNumber);
   const pageCount = (currentPageNumber+1) + " / " + (lastPageNumber+1);
 
   const onOkHandler = (data) =>{setRedirect(data)}
 
   return (
-    <Fragment>
-      <Header subject={subject}></Header>
+    <Fragment>    
+      {form && <div>
+        <Header subject={subject}></Header>
       <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
         <Typography variant="subtitle1" gutterBottom>  {currentPageNumber + 1}. {current.name} </Typography>       
           <Paginator pageDetails={pageDetails} 
@@ -120,8 +126,8 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
          showCount="false"/>
         </div>
         
-      </Paper>
-    </Fragment>
+      </Paper></div>}
+   </Fragment>
   );
 }
 
