@@ -183,6 +183,12 @@ export const UserDetail = ({ user, ...props }) => (
           !isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : ""
         }
       />
+      <FunctionField
+        label="Disable dashboard auto refresh"
+        render={user =>
+          !isNil(user.settings) ? (user.settings.disableAutoRefresh ? "True" : "False") : ""
+        }
+      />
       <TextField label="Identifier prefix" source="settings.idPrefix" />
       <TextField label="Created by" source="createdBy" />
       <TextField label="Last modified by" source="lastModifiedBy" />
