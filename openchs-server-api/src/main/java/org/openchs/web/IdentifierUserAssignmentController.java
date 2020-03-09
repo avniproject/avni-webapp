@@ -4,7 +4,6 @@ import org.openchs.dao.IdentifierSourceRepository;
 import org.openchs.dao.IdentifierUserAssignmentRepository;
 import org.openchs.dao.UserRepository;
 import org.openchs.domain.IdentifierUserAssignment;
-import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.IdentifierUserAssignmentContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,18 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
-public class IdentifierUserAssignmentController extends AbstractController<IdentifierUserAssignment> implements RestControllerResourceProcessor<IdentifierUserAssignment> {
+public class IdentifierUserAssignmentController extends AbstractController<IdentifierUserAssignment> {
     private IdentifierUserAssignmentRepository identifierUserAssignmentRepository;
     private UserRepository userRepository;
     private IdentifierSourceRepository identifierSourceRepository;
