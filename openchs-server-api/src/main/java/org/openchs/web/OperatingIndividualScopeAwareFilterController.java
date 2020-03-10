@@ -15,15 +15,15 @@ import static org.openchs.domain.OperatingIndividualScope.ByFacility;
 
 public interface OperatingIndividualScopeAwareFilterController<T extends CHSEntity> {
 
-    default Page<T> getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(User user, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
+    default Page<T> getCHSEntitiesForUserByLastModifiedDateTimeAndFilterByType(User user, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
         OperatingIndividualScope scope = user.getOperatingIndividualScope();
         Facility userFacility = user.getFacility();
         Catchment catchment = user.getCatchment();
         if (ByCatchment.equals(scope)) {
-            return repository().findByCatchmentIndividualOperatingScopeAndFilterByType(catchment.getId(), lastModifiedDateTime, now, filters, pageable);
+            return repository().findByCatchmentIndividualOperatingScopeAndFilterByType(catchment.getId(), lastModifiedDateTime, now, filter, pageable);
         }
         if (ByFacility.equals(scope)) {
-            return repository().findByFacilityIndividualOperatingScopeAndFilterByType(userFacility.getId(), lastModifiedDateTime, now, filters, pageable);
+            return repository().findByFacilityIndividualOperatingScopeAndFilterByType(userFacility.getId(), lastModifiedDateTime, now, filter, pageable);
         }
         return new PageImpl<>(Collections.emptyList());
     }

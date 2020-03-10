@@ -49,16 +49,16 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             DateTime now,
             Pageable pageable);
 
-    Page<Individual> findByAddressLevelVirtualCatchmentsIdAndSubjectTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Individual> findByAddressLevelVirtualCatchmentsIdAndSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,
-            List<String> subjectTypeUuid,
+            String subjectTypeUuid,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    Page<Individual> findByFacilityIdAndSubjectTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<Individual> findByFacilityIdAndSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId,
-            List<String> subjectTypeUuid,
+            String subjectTypeUuid,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
@@ -74,13 +74,13 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     @Override
-    default Page<Individual> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByAddressLevelVirtualCatchmentsIdAndSubjectTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filters, lastModifiedDateTime, now, pageable);
+    default Page<Individual> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, String filters, Pageable pageable) {
+        return findByAddressLevelVirtualCatchmentsIdAndSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filters, lastModifiedDateTime, now, pageable);
     }
 
     @Override
-    default Page<Individual> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByFacilityIdAndSubjectTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filters, lastModifiedDateTime, now, pageable);
+    default Page<Individual> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filters, Pageable pageable) {
+        return findByFacilityIdAndSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filters, lastModifiedDateTime, now, pageable);
     }
 
     default Specification<Individual> getFilterSpecForVoid(Boolean includeVoided) {

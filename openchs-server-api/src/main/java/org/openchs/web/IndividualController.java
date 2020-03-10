@@ -117,7 +117,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     public PagedResources<Resource<Individual>> getIndividualsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            @RequestParam(value = "subjectTypeUuid", required = false) List<String> subjectTypeUuid,
+            @RequestParam(value = "subjectTypeUuid", required = false) String subjectTypeUuid,
             Pageable pageable) {
         if (subjectTypeUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));

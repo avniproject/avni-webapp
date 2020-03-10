@@ -19,11 +19,11 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<Checklist> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistDetailUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId, List<String> checklistDetailUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<Checklist> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistDetailUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long catchmentId, String checklistDetailUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long facilityId, List<String> checklistDetailUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<Checklist> findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long facilityId, String checklistDetailUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
     Checklist findByProgramEnrolmentId(long programEnrolmentId);
 
@@ -40,12 +40,12 @@ public interface ChecklistRepository extends TransactionalDataRepository<Checkli
     }
 
     @Override
-    default Page<Checklist> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistDetailUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filters, lastModifiedDateTime, now, pageable);
+    default Page<Checklist> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
+        return findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndChecklistDetailUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
     }
 
     @Override
-    default Page<Checklist> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filters, lastModifiedDateTime, now, pageable);
+    default Page<Checklist> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
+        return findByProgramEnrolmentIndividualFacilityIdAndChecklistDetailUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
     }
 }

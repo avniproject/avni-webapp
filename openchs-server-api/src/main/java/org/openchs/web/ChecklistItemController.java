@@ -77,7 +77,7 @@ public class ChecklistItemController extends AbstractController<ChecklistItem> i
     public PagedResources<Resource<ChecklistItem>> getChecklistItemsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            @RequestParam(value = "checklistDetailUuid", required = false) List<String> checklistDetailUuid,
+            @RequestParam(value = "checklistDetailUuid", required = false) String checklistDetailUuid,
             Pageable pageable) {
         if (checklistDetailUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));

@@ -164,7 +164,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     public PagedResources<Resource<Encounter>> getEncountersByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            @RequestParam(value = "encounterTypeUuid", required = false) List<String> encounterTypeUuid,
+            @RequestParam(value = "encounterTypeUuid", required = false) String encounterTypeUuid,
             Pageable pageable) {
         if (encounterTypeUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));

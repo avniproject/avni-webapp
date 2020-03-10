@@ -134,7 +134,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     public PagedResources<Resource<ProgramEnrolment>> getProgramEnrolmentsByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            @RequestParam(value = "programUuid", required = false) List<String> programUuid,
+            @RequestParam(value = "programUuid", required = false) String programUuid,
             Pageable pageable) {
         if (programUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));

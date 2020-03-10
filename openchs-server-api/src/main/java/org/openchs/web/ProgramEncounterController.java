@@ -155,7 +155,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     public PagedResources<Resource<ProgramEncounter>> getProgramEncountersByOperatingIndividualScope(
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
-            @RequestParam(value = "programEncounterTypeUuid", required = false) List<String> encounterTypeUuid,
+            @RequestParam(value = "programEncounterTypeUuid", required = false) String encounterTypeUuid,
             Pageable pageable) {
         if (encounterTypeUuid == null) {
             return wrap(getCHSEntitiesForUserByLastModifiedDateTime(userService.getCurrentUser(), lastModifiedDateTime, now, pageable));

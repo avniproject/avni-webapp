@@ -189,11 +189,12 @@ select uuid_generate_v4(),
            else null end,
        null,
        0,
-       fm.organisation_id,
+       oet.organisation_id,
        create_audit(),
        true
-from form_mapping fm
-         left join groups g on g.organisation_id = fm.organisation_id
+from operational_encounter_type oet
+         left join form_mapping fm on fm.observations_type_entity_id = oet.encounter_type_id
+         left join groups g on g.organisation_id = oet.organisation_id
          join privilege p on true
 where p.name in ('View visit', 'Schedule visit', 'Perform visit', 'Edit visit', 'Cancel visit')
   and fm.observations_type_entity_id notnull;

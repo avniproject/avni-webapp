@@ -28,16 +28,16 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             DateTime now,
             Pageable pageable);
 
-    Page<ProgramEnrolment> findByIndividualAddressLevelVirtualCatchmentsIdAndProgramUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByIndividualAddressLevelVirtualCatchmentsIdAndProgramUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,
-            List<String> programUuid,
+            String programUuid,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
 
-    Page<ProgramEnrolment> findByIndividualFacilityIdAndProgramUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<ProgramEnrolment> findByIndividualFacilityIdAndProgramUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId,
-            List<String> programUuid,
+            String programUuid,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable);
@@ -55,13 +55,13 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     }
 
     @Override
-    default Page<ProgramEnrolment> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByIndividualAddressLevelVirtualCatchmentsIdAndProgramUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filters, lastModifiedDateTime, now, pageable);
+    default Page<ProgramEnrolment> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
+        return findByIndividualAddressLevelVirtualCatchmentsIdAndProgramUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
     }
 
     @Override
-    default Page<ProgramEnrolment> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByIndividualFacilityIdAndProgramUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filters, lastModifiedDateTime, now, pageable);
+    default Page<ProgramEnrolment> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
+        return findByIndividualFacilityIdAndProgramUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
     }
 
     @Query("select enl from ProgramEnrolment enl " +

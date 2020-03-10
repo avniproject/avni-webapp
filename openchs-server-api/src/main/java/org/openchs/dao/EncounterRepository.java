@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import java.util.Calendar;
-import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "encounter", path = "encounter", exported = false)
@@ -27,11 +26,11 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     Page<Encounter> findByIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<Encounter> findByIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId, List<String> encounterTypeUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<Encounter> findByIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long catchmentId, String encounterTypeUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<Encounter> findByIndividualFacilityIdAndEncounterTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long facilityId, List<String> encounterTypeUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<Encounter> findByIndividualFacilityIdAndEncounterTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long facilityId, String encounterTypeUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
     @Override
     default Page<Encounter> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
@@ -44,13 +43,13 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
     }
 
     @Override
-    default Page<Encounter> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filters, lastModifiedDateTime, now, pageable);
+    default Page<Encounter> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
+        return findByIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
     }
 
     @Override
-    default Page<Encounter> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByIndividualFacilityIdAndEncounterTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filters, lastModifiedDateTime, now, pageable);
+    default Page<Encounter> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
+        return findByIndividualFacilityIdAndEncounterTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
     }
 
     @Query(value = "select count(enc.id) as count " +

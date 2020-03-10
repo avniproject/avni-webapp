@@ -5,14 +5,11 @@ import org.openchs.domain.ProgramEncounter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import java.util.Calendar;
-import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter", exported = false)
@@ -25,11 +22,11 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     Page<ProgramEncounter> findByProgramEnrolmentIndividualFacilityIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId, List<String> encounterTypeUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<ProgramEncounter> findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long catchmentId, String encounterTypeUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
-    Page<ProgramEncounter> findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
-            long catchmentId, List<String> encounterTypeUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
+    Page<ProgramEncounter> findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+            long catchmentId, String encounterTypeUuid, DateTime lastModifiedDateTime, DateTime now, Pageable pageable);
 
     @Override
     default Page<ProgramEncounter> findByCatchmentIndividualOperatingScope(long catchmentId, DateTime lastModifiedDateTime, DateTime now, Pageable pageable) {
@@ -42,13 +39,13 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
     }
 
     @Override
-    default Page<ProgramEncounter> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filters, lastModifiedDateTime, now, pageable);
+    default Page<ProgramEncounter> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
+        return findByProgramEnrolmentIndividualAddressLevelVirtualCatchmentsIdAndEncounterTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
     }
 
     @Override
-    default Page<ProgramEncounter> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, List<String> filters, Pageable pageable) {
-        return findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeUuidInAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filters, lastModifiedDateTime, now, pageable);
+    default Page<ProgramEncounter> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
+        return findByProgramEnrolmentIndividualFacilityIdAndEncounterTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
     }
 
     @Query(value = "select count(enc.id) as count " +
