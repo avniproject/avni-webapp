@@ -6,7 +6,7 @@ import Menu from "@material-ui/core/Menu";
 import { withRouter } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
-
+import { useTranslation } from "react-i18next";
 const useStyle = makeStyles(theme => ({
   createButton: {
     margin: theme.spacing(1)
@@ -15,7 +15,7 @@ const useStyle = makeStyles(theme => ({
 
 const RegistrationMenu = ({ types }) => {
   const classes = useStyle();
-
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = () => event => {
     setAnchorEl(event.currentTarget);
@@ -31,7 +31,7 @@ const RegistrationMenu = ({ types }) => {
         color={"primary"}
         onClick={handleClick()}
       >
-        <AddIcon /> Create
+        <AddIcon /> {t("create")}
       </Button>
       <Menu
         id="create-menu"
@@ -48,7 +48,7 @@ const RegistrationMenu = ({ types }) => {
           >
             <MenuItem>
               {" "}
-              <AddIcon /> {type.name}{" "}
+              <AddIcon /> {t(type.name)}{" "}
             </MenuItem>
           </InternalLink>
         ))}

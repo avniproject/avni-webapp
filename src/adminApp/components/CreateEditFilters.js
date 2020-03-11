@@ -11,8 +11,11 @@ import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
 import { CustomFilter, Concept } from "avni-models";
+import { useTranslation } from "react-i18next";
 
 export const CreateEditFilters = props => {
+  const { t } = useTranslation();
+
   if (_.isNil(props.history.location.state)) {
     return <div />;
   }
@@ -380,7 +383,7 @@ export const CreateEditFilters = props => {
                   aria-haspopup="false"
                   disabled={saveDisabled()}
                 >
-                  Save
+                  {t("save")}
                 </Button>
               </Box>
               <p />
