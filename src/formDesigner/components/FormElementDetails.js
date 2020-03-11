@@ -12,11 +12,12 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import MenuItem from "@material-ui/core/MenuItem";
-import { isEqual, get } from "lodash";
+import _, { isEqual, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Chip from "@material-ui/core/Chip";
+import { useTranslation } from "react-i18next";
 
 const FormControl = withStyles({
   root: {
@@ -61,6 +62,8 @@ const showDatePicker = (cssClasses, props) => {
 
 function FormElementDetails(props) {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   const cssClasses = {
     label: {
       marginTop: 13,
@@ -99,6 +102,13 @@ function FormElementDetails(props) {
   //     </Dialog>
   //   );
   // };
+  function identifierSourceList() {
+    var identifierSourceArr = [];
+    _.forEach(props.identifierSource, (idSource, i) => {
+      identifierSourceArr.push(<MenuItem value={idSource.value}>{idSource.label}</MenuItem>);
+    });
+    return identifierSourceArr;
+  }
 
   return (
     <Grid container item sm={12}>
@@ -107,7 +117,7 @@ function FormElementDetails(props) {
           <div style={{ color: "red" }}>Please enter name</div>
         )}
         <FormControl fullWidth>
-          <InputLabel htmlFor="elementNameDetails">Name</InputLabel>
+          <InputLabel htmlFor="elementNameDetails">{t("name")}</InputLabel>
           <Input
             id="elementNameDetails"
             value={props.formElementData.name}
@@ -185,7 +195,11 @@ function FormElementDetails(props) {
               <InputLabel>Low Absolute</InputLabel>
               <Input
                 disableUnderline={true}
-                value={props.formElementData.concept.lowAbsolute}
+                value={
+                  props.formElementData.concept.lowAbsolute
+                    ? props.formElementData.concept.lowAbsolute
+                    : "N.A"
+                }
                 disabled
               />
             </FormControl>
@@ -195,7 +209,11 @@ function FormElementDetails(props) {
               <InputLabel>High Absolute</InputLabel>
               <Input
                 disableUnderline={true}
-                value={props.formElementData.concept.highAbsolute}
+                value={
+                  props.formElementData.concept.highAbsolute
+                    ? props.formElementData.concept.highAbsolute
+                    : "N.A"
+                }
                 disabled
               />
             </FormControl>
@@ -205,7 +223,11 @@ function FormElementDetails(props) {
               <InputLabel>Low normal</InputLabel>
               <Input
                 disableUnderline={true}
-                value={props.formElementData.concept.lowNormal}
+                value={
+                  props.formElementData.concept.lowNormal
+                    ? props.formElementData.concept.lowNormal
+                    : "N.A"
+                }
                 disabled
               />
             </FormControl>
@@ -215,7 +237,11 @@ function FormElementDetails(props) {
               <InputLabel>High normal</InputLabel>
               <Input
                 disableUnderline={true}
-                value={props.formElementData.concept.highNormal}
+                value={
+                  props.formElementData.concept.highNormal
+                    ? props.formElementData.concept.highNormal
+                    : "N.A"
+                }
                 disabled
               />
             </FormControl>
@@ -223,7 +249,13 @@ function FormElementDetails(props) {
           <Grid item sm={2}>
             <FormControl>
               <InputLabel>Unit</InputLabel>
-              <Input disableUnderline={true} value={props.formElementData.concept.unit} disabled />
+              <Input
+                disableUnderline={true}
+                value={
+                  props.formElementData.concept.unit ? props.formElementData.concept.unit : "N.A"
+                }
+                disabled
+              />
             </FormControl>
           </Grid>
         </Grid>
@@ -629,6 +661,28 @@ function FormElementDetails(props) {
           </Grid>
         )}
       </Grid>
+      {props.identifierSource.length > 0 && (
+        <Grid item sm={6}>
+          <FormControl fullWidth>
+            <InputLabel>Identifier Source</InputLabel>
+            <Select
+              name="identifierSource"
+              value={props.formElementData.keyValues.identifierSource}
+              onChange={event =>
+                props.handleGroupElementKeyValueChange(
+                  props.groupIndex,
+                  "identifierSource",
+                  event.target.value,
+                  props.index
+                )
+              }
+              required
+            >
+              {identifierSourceList()}
+            </Select>
+          </FormControl>
+        </Grid>
+      )}
     </Grid>
   );
 }

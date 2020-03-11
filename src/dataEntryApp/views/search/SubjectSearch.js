@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Table from "@material-ui/core/Table";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
@@ -14,8 +14,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
-import ScreenWithAppBar from "../../../common/components/ScreenWithAppBar";
 import PrimaryButton from "../../components/PrimaryButton";
+import Paper from "@material-ui/core/Paper";
+import { useTranslation } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -41,30 +42,37 @@ const useStyle = makeStyles(theme => ({
   },
   createButtonHolder: {
     flex: 1
+  },
+  searchBox: {
+    padding: "1.5rem",
+    margin: "2rem 1rem"
   }
 }));
 
 const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
+  const { t } = useTranslation();
 
   return (
     <Table className={classes.table}>
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
-          {type.name === "Individual" && <TableCell align="center">Gender</TableCell>}
-          {type.name === "Individual" && <TableCell align="center">Date of birth(Age)</TableCell>}
-          <TableCell align="center">Location</TableCell>
-          <TableCell align="center">Active programs</TableCell>
+          <TableCell>{t("name")}</TableCell>
+          {type.name === "Individual" && <TableCell align="center">{t("gender")}</TableCell>}
+          {type.name === "Individual" && <TableCell align="center">{t("dateOfBirth")}</TableCell>}
+          <TableCell align="center">{t("location")}</TableCell>
+          <TableCell align="center">{t("activeprograms")}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {subjects.map((row, id) => (
           <TableRow key={id}>
             <TableCell component="th" scope="row">
-              {row.fullName}
+              <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
             </TableCell>
-            {type.name === "Individual" && <TableCell align="center">{row.gender.name}</TableCell>}
+            {type.name === "Individual" && (
+              <TableCell align="center">{t(row.gender.name)}</TableCell>
+            )}
             {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
             <TableCell align="center">{row.addressLevel.titleLineage}</TableCell>
             <TableCell align="center">
@@ -80,7 +88,7 @@ const SubjectsTable = ({ type, subjects }) => {
                   }}
                   disabled
                 >
-                  {p.operationalProgramName}
+                  {t(p.operationalProgramName)}
                 </Button>
               ))}
             </TableCell>
@@ -93,6 +101,7 @@ const SubjectsTable = ({ type, subjects }) => {
 
 const SubjectSearch = props => {
   const classes = useStyle();
+  const { t } = useTranslation();
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -104,7 +113,7 @@ const SubjectSearch = props => {
   }, []);
 
   return (
-    <ScreenWithAppBar appbarTitle={`Search ${props.subjectType.name}`}>
+    <Paper className={classes.searchBox}>
       <div className={classes.searchCreateToolbar}>
         <form onSubmit={handleSubmit} className={classes.searchForm}>
           <FormControl className={classes.searchFormItem}>
@@ -119,14 +128,14 @@ const SubjectSearch = props => {
           </FormControl>
           <FormControl className={classes.searchFormItem}>
             <PrimaryButton type={"submit"} onClick={handleSubmit}>
-              Search
+              {t("search")}
             </PrimaryButton>
           </FormControl>
         </form>
         <RegistrationMenu className={classes.createButtonHolder} />
       </div>
       <SubjectsTable subjects={props.subjects} type={props.subjectType} />
-    </ScreenWithAppBar>
+    </Paper>
   );
 };
 

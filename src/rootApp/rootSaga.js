@@ -4,13 +4,14 @@ import dataEntrySaga from "../dataEntryApp/sagas";
 import translationsSaga from "../translations/sagas";
 import uploadSagas from "../upload/sagas";
 import reportSagas from "../reports/sagas";
+import { organisationConfigWatcher } from "../i18nTranslations/TranslationSaga";
 
 import {
   authProvider,
   dataProvider as springDataProvider
 } from "../adminApp/react-admin-config/index";
 
-import { initialiseCognito, onSetCognitoUser, userInfoWatcher } from "./saga";
+import { getAdminOrgsWatcher, initialiseCognito, onSetCognitoUser, userInfoWatcher } from "./saga";
 
 const dataProvider = springDataProvider("");
 const i18nProvider = defaultI18nProvider;
@@ -22,6 +23,8 @@ export default function* rootSaga() {
       adminSaga(dataProvider, authProvider, i18nProvider),
       onSetCognitoUser,
       userInfoWatcher,
+      getAdminOrgsWatcher,
+      organisationConfigWatcher,
       dataEntrySaga,
       translationsSaga,
       uploadSagas,

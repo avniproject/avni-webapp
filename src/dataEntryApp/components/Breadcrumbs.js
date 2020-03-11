@@ -7,11 +7,15 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3, 2),
-    margin: theme.spacing(4),
+    margin: theme.spacing(1, 3),
     flexGrow: 1
   },
   Breadcrumbs: {
-    margin: theme.spacing(4)
+    margin: "12px 24px",
+    fontSize: "12px"
+  },
+  Typography: {
+    fontSize: "12px"
   }
 }));
 
@@ -28,7 +32,7 @@ export default ({ path }) => {
           {part}
         </Link>
       ))}
-      <Typography component={"span"} color="textPrimary">
+      <Typography className={classes.Typography} component={"span"} color="textPrimary">
         {currentpage}
       </Typography>
     </Breadcrumbs>

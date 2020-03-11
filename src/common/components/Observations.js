@@ -1,11 +1,13 @@
 import React, { Fragment } from "react";
-import moment from "moment/moment";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import { makeStyles } from "@material-ui/core/styles";
-import ErrorIcon from "@material-ui/icons/Error";
+import { Observation } from "avni-models";
+import _ from "lodash";
+import { ConceptService, i18n } from "../../dataEntryApp/services/ConceptService";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -21,7 +23,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Observations = ({ observations }) => {
+  const conceptService = new ConceptService();
+  const i = new i18n();
+  const { t } = useTranslation();
   const classes = useStyles();
+ // debugger
   return (
     <div>
       {observations
@@ -31,32 +37,16 @@ const Observations = ({ observations }) => {
                 <Table className={classes.table} size="small" aria-label="a dense table">
                   <TableBody>
                     <TableRow>
-                      <TableCell component="th" scope="row" width="50%">
-                        {element.concept["name"]}
+                      <TableCell
+                        style={{ color: "#555555" }}
+                        component="th"
+                        scope="row"
+                        width="50%"
+                      >
+                        {t(element.concept["name"])}
                       </TableCell>
                       <TableCell align="left" width="50%">
-                        {"Coded" === element.concept.dataType ? (
-                          <div>
-                            {element.value
-                              .map(it =>
-                                it.abnormal ? (
-                                  <span className={classes.abnormalColor}>
-                                    <ErrorIcon fontSize="small" />
-                                    {it.name}
-                                  </span>
-                                ) : (
-                                  <span>{it.name}</span>
-                                )
-                              )
-                              .reduce((prev, curr) => [prev, ", ", curr])}
-                          </div>
-                        ) : ["Date", "DateTime", "Time", "Duration"].includes(
-                            element.concept.dataType
-                          ) ? (
-                          <div>{moment(new Date(element.value)).format("DD-MM-YYYY HH:MM A")}</div>
-                        ) : (
-                          <div>{element.value}</div>
-                        )}
+                        <div>{t(Observation.valueAsString(element, conceptService, i))} </div>
                       </TableCell>
                     </TableRow>
                   </TableBody>

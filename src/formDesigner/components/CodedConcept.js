@@ -10,6 +10,7 @@ import FormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import PropTypes from "prop-types";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -49,6 +50,9 @@ export default function CodedConcept(props) {
                               placeholder="Enter answer"
                               label="Answer"
                             />
+                            {answer.isEmptyAnswer && (
+                              <FormHelperText error>Answer is required.</FormHelperText>
+                            )}
                           </FormControl>
                           <FormControl>
                             <FormControlLabel

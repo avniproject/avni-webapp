@@ -7,6 +7,8 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
+import { Link, withRouter } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -34,40 +36,47 @@ const useStyles = makeStyles(theme => ({
 
 const GridCommonList = ({ gridListDetails }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   return (
     <Grid item xs={12} container className={classes.gridBottomBorder}>
       {gridListDetails
-        ? gridListDetails.map(relative => {
+        ? gridListDetails.map((relative, index) => {
             if (relative !== undefined) {
               return (
-                <Grid item xs={3} className={classes.rightBorder}>
+                <Grid key={index} item xs={3} className={classes.rightBorder}>
                   <Card className={classes.card}>
                     <CardContent>
-                      <Typography component={"span"} color="primary">
-                        {relative.firstName + " " + relative.lastName}
+                      <Typography component={"div"} color="primary">
+                        <Link to={`?uuid=${relative.individualB.uuid}`} replace>
+                          {" "}
+                          {relative.individualB.firstName +
+                            " " +
+                            relative.individualB.lastName}{" "}
+                        </Link>
                       </Typography>
                       <Typography
-                        component={"span"}
+                        component={"div"}
                         className={classes.title}
                         color="textSecondary"
                         gutterBottom
                       >
-                        {relative.individualBIsToARelation}
+                        {t(relative.relationship.individualBIsToARelation.name)}
                       </Typography>
                       <Typography
-                        component={"span"}
+                        component={"div"}
                         className={classes.title}
                         color="textSecondary"
                         gutterBottom
                       >
                         {new Date().getFullYear() -
-                          new Date(relative.dateOfBirth).getFullYear() +
-                          " Year"}
+                          new Date(relative.individualB.dateOfBirth).getFullYear() +
+                          `${t("year")}`}
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <Button color="primary">REMOVE</Button>
-                      <Button color="primary">EDIT</Button>
+                      <Button color="primary">{t("remove")}</Button>
+                      <Button color="primary">{t("edit")}</Button>
                     </CardActions>
                   </Card>
                 </Grid>
@@ -81,4 +90,4 @@ const GridCommonList = ({ gridListDetails }) => {
   );
 };
 
-export default GridCommonList;
+export default withRouter(GridCommonList);

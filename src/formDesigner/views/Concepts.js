@@ -24,7 +24,7 @@ const Concepts = ({ history }) => {
       let apiUrl = "/web/concepts?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
+      if (!_.isEmpty(query.search)) apiUrl += "&name=" + encodeURIComponent(query.search);
       if (!_.isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
@@ -73,7 +73,7 @@ const Concepts = ({ history }) => {
   const editConcept = rowData => ({
     icon: "edit",
     tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
-    onClick: (event, concept) => history.push(`/admin/concept/${concept.uuid}/edit`),
+    onClick: (event, concept) => history.push(`/appdesigner/concept/${concept.uuid}/edit`),
     disabled: rowData.organisationId === 1 || rowData.voided
   });
 
@@ -120,7 +120,7 @@ const Concepts = ({ history }) => {
           </div>
         </div>
       </Box>
-      {redirect && <Redirect to={"/admin/concept/create"} />}
+      {redirect && <Redirect to={"/appdesigner/concept/create"} />}
     </>
   );
 };

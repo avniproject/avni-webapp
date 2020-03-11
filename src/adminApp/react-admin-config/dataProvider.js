@@ -36,9 +36,16 @@ const urlMapping = {
   program: "web/program",
   subjectType: "web/subjectType",
   encounterType: "web/encounterType",
+  language: "organisationConfig",
+  myDashboardFilters: "organisationConfig",
+  searchFilters: "organisationConfig",
   organisationConfig: "organisationConfig",
+  identifierSource: "web/identifierSource",
+  identifierUserAssignment: "web/identifierUserAssignment",
   organisation: "organisation",
-  orgAdmin: "user/orgAdmin"
+  accountOrgAdmin: "user/accountOrgAdmin",
+  account: "account",
+  organisationGroup: "organisationGroup"
 };
 export default apiUrl => {
   /**

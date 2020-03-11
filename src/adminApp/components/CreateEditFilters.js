@@ -11,13 +11,22 @@ import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar
 import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
 import { CustomFilter, Concept } from "avni-models";
+import { useTranslation } from "react-i18next";
 
 export const CreateEditFilters = props => {
+  const { t } = useTranslation();
+
   if (_.isNil(props.history.location.state)) {
     return <div />;
   }
 
-  const { omitTableData, selectedFilter, title, filterType } = props.history.location.state;
+  const {
+    omitTableData,
+    selectedFilter,
+    title,
+    filterType,
+    worklistUpdationRule
+  } = props.history.location.state;
   const allTypes = _.values(CustomFilter.type);
   const getFilterTypes =
     filterType === "myDashboardFilters"
@@ -166,6 +175,7 @@ export const CreateEditFilters = props => {
       : [...oldFilters.filter(f => f.titleKey !== titleKey), newFilter];
     return {
       uuid: setting.uuid,
+      worklistUpdationRule: worklistUpdationRule,
       settings: {
         languages: setting.settings.languages,
         myDashboardFilters:
@@ -215,7 +225,7 @@ export const CreateEditFilters = props => {
     }
     const inputValue = deburr(value.trim()).toLowerCase();
     http
-      .get(`/search/concept?name=${inputValue}`)
+      .get("/search/concept?name=" + encodeURIComponent(inputValue))
       .then(response => {
         const concepts = response.data;
         const filteredConcepts = concepts.filter(
@@ -373,7 +383,7 @@ export const CreateEditFilters = props => {
                   aria-haspopup="false"
                   disabled={saveDisabled()}
                 >
-                  Save
+                  {t("save")}
                 </Button>
               </Box>
               <p />

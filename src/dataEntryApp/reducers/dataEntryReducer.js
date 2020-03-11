@@ -5,6 +5,9 @@ import metadata from "./metadataReducer";
 import subjectProfile from "./subjectDashboardReducer";
 import subjectGenerel from "./generalSubjectDashboardReducer";
 import subjectProgram from "./programSubjectDashboardReducer";
+import { conceptReducer } from "../../common/store/conceptReducer";
+import orgConfig from "../../rootApp/ducks";
+import userInfo from "../../rootApp/ducks";
 
 export default combineReducers({
   search,
@@ -12,5 +15,8 @@ export default combineReducers({
   metadata,
   subjectProfile,
   subjectGenerel,
-  subjectProgram
+  subjectProgram,
+  conceptReducer,
+  orgConfig,
+  userInfo
 });

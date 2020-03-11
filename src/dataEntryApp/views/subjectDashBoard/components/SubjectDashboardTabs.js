@@ -10,14 +10,36 @@ import SubjectDashboardProfileTab from "./SubjectDashboardProfileTab";
 import SubjectDashboardGeneralTab from "./subjectDashboardGeneralTab";
 import SubjectDashboardProgramTab from "./subjectDashboardProgramTab";
 import Box from "@material-ui/core/Box";
+import PersonIcon from "@material-ui/icons/Person";
+import ListIcon from "@material-ui/icons/List";
+import AssessmentIcon from "@material-ui/icons/Assessment";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   tabsDisplay: {
-    margin: theme.spacing(1)
+    margin: "-23px"
   },
   tabView: {
     backgroundColor: "white",
     boxShadow: "none"
+  },
+  MuiTab: {
+    wrapper: {
+      flexDirection: "row"
+    }
+  },
+  wrapper: {
+    "& span": {
+      flexDirection: "row",
+      "& svg": {
+        marginRight: "6px",
+        marginTop: "3px"
+      }
+    },
+    "& button": {
+      marginTop: "20px",
+      minHeight: "0px"
+    }
   }
 }));
 
@@ -46,6 +68,7 @@ TabContent.propTypes = {
 
 export default ({ profile, general, program }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const [value, setValue] = React.useState(0);
 
@@ -71,10 +94,11 @@ export default ({ profile, general, program }) => {
           variant="scrollable"
           scrollButtons="auto"
           aria-label="scrollable auto tabs example"
+          className={classes.wrapper}
         >
-          <Tab label="PROGRAMS" {...a11yProps(0)} />
-          <Tab label="PROFILE" {...a11yProps(1)} />
-          <Tab label="GENERAL" {...a11yProps(2)} />
+          <Tab label={t("Program")} icon={<AssessmentIcon />} {...a11yProps(0)} />
+          <Tab label={t("profile")} icon={<PersonIcon />} {...a11yProps(1)} />
+          <Tab label={t("General")} icon={<ListIcon />} {...a11yProps(2)} />
         </Tabs>
       </MUAppBar>
       <TabContent value={value} index={0}>

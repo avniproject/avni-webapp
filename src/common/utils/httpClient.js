@@ -28,12 +28,30 @@ class HttpClient {
     this.authContext.init(userInfo);
     const authParams = this.authContext.get();
     if (authParams.token) axios.defaults.headers.common["AUTH-TOKEN"] = authParams.token;
+    this.setOrgUuidHeader();
+  }
+
+  setOrgUuidHeader() {
+    if (!isEmpty(this.organisationUUID)) {
+      axios.defaults.headers.common["ORGANISATION-UUID"] = this.organisationUUID;
+    } else {
+      delete axios.defaults.headers.common["ORGANISATION-UUID"];
+    }
   }
 
   initHeadersForDevEnv() {
     if (devEnvUserName) {
       axios.defaults.headers.common["user-name"] = devEnvUserName;
     }
+    this.setOrgUuidHeader();
+  }
+
+  setOrganisationUUID(orgUUID) {
+    this.organisationUUID = orgUUID;
+  }
+
+  getOrgId() {
+    return this.organisationUUID;
   }
 
   setHeaders(options) {
@@ -53,6 +71,12 @@ class HttpClient {
     if (devEnvUserName) {
       options.headers.set("user-name", devEnvUserName);
     }
+    if (!isEmpty(this.organisationUUID)) {
+      options.headers.set("ORGANISATION-UUID", this.organisationUUID);
+    } else {
+      options.headers.delete("ORGANISATION-UUID");
+    }
+    this.setOrgUuidHeader();
   }
 
   fetchJson(url, options = {}) {
@@ -83,6 +107,7 @@ class HttpClient {
       if (!isDevEnv) {
         const currentSession = await Auth.currentSession();
         axios.defaults.headers.common["AUTH-TOKEN"] = currentSession.idToken.jwtToken;
+        this.setOrgUuidHeader();
       }
       return axios[methodname](...args);
     };

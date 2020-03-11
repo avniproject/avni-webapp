@@ -8,7 +8,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
 import { getStatuses } from "./reducers";
-import { get, isNil, map, capitalize } from "lodash";
+import { capitalize, get, isNil, map } from "lodash";
 import Types from "./Types";
 import moment from "moment";
 import FileDownloadButton from "../common/components/FileDownloadButton";
@@ -46,9 +46,9 @@ const Status = ({ viewVersion, statuses, getStatuses }) => {
             Ended at
           </TableCell>
           <TableCell align="right">Status</TableCell>
-          <TableCell align="right">{"Rows read"}</TableCell>
-          <TableCell align="right">{"Rows completed"}</TableCell>
-          <TableCell align="right">{"Rows skipped"}</TableCell>
+          <TableCell align="right">{"Rows/File read"}</TableCell>
+          <TableCell align="right">{"Rows/File completed"}</TableCell>
+          <TableCell align="right">{"Rows/File skipped"}</TableCell>
           <TableCell align="right">Failure</TableCell>
         </TableRow>
       </TableHead>
@@ -79,7 +79,7 @@ const Status = ({ viewVersion, statuses, getStatuses }) => {
               {jobStatus.status === "FAILED" || 0 < jobStatus.skipped ? (
                 <FileDownloadButton
                   url={`/import/errorfile/?jobUuid=${jobStatus.uuid}`}
-                  filename={`errors-${jobStatus.fileName}`}
+                  filename={`errors-${jobStatus.fileName.replace(".zip", ".csv")}`}
                   iconProps={{ color: "error" }}
                 />
               ) : (

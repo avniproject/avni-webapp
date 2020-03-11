@@ -44,7 +44,8 @@ class CreateEditConcept extends Component {
           abnormal: false,
           editable: true,
           voided: false,
-          order: 0
+          order: 0,
+          isEmptyAnswer: false
         }
       ],
       conceptCreationAlert: false,
@@ -150,7 +151,8 @@ class CreateEditConcept extends Component {
           abnormal: false,
           editable: true,
           voided: false,
-          order: 0
+          order: 0,
+          isEmptyAnswer: false
         }
       ]
     });
@@ -226,6 +228,7 @@ class CreateEditConcept extends Component {
   formValidation = () => {
     const conceptName = this.state.name;
     let error = {};
+    const answers = this.state.answers;
     var promise = new Promise((resolve, reject) => {
       http
         .get(`/web/concept?name=${encodeURIComponent(conceptName)}`)
@@ -257,6 +260,9 @@ class CreateEditConcept extends Component {
         if (this.state.dataType === "") {
           error["dataTypeSelectionAlert"] = true;
         }
+        if (this.state.name.trim() === "") {
+          error["isEmptyName"] = true;
+        }
         if (parseInt(this.state.lowAbsolute) > parseInt(this.state.highAbsolute)) {
           error["absoluteValidation"] = true;
         }
@@ -271,8 +277,19 @@ class CreateEditConcept extends Component {
           error["keyValueError"] = true;
         }
 
+        this.state.dataType === "Coded" &&
+          answers.forEach(answer => {
+            if (answer.name.trim() === "") {
+              answer["isEmptyAnswer"] = true;
+              error["isEmptyAnswer"] = true;
+            } else {
+              answer["isEmptyAnswer"] = false;
+            }
+          });
+
         this.setState({
-          error
+          error: error,
+          answers: answers
         });
 
         Object.keys(error).length === 0 && this.afterSuccessfullValidation();
@@ -452,7 +469,7 @@ class CreateEditConcept extends Component {
       },
       inputLabel: {
         marginTop: 15,
-        fontSize: 12
+        fontSize: 16
       }
     };
 
@@ -490,20 +507,22 @@ class CreateEditConcept extends Component {
         <Grid container justify="flex-start">
           <Grid item sm={12}>
             <TextField
-              required
               id="name"
-              label="Name"
+              label="Concept name"
               value={this.state.name}
               onChange={this.handleChange("name")}
               style={classes.textField}
               margin="normal"
+              autoComplete="off"
             />
-            {this.state.error.nameError && (
-              <FormHelperText error>Same name concept already exist.</FormHelperText>
-            )}
+            {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
+            {!this.state.error.isEmptyName &&
+              (this.state.error.nameError && (
+                <FormHelperText error>Same name concept already exist.</FormHelperText>
+              ))}
           </Grid>
 
-          <Grid>
+          <Grid item sm={3}>
             {this.props.isCreatePage && (
               <FormControl>
                 <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
@@ -537,6 +556,7 @@ class CreateEditConcept extends Component {
               />
             )}
           </Grid>
+          <Grid item sm={8} />
           {dataType}
         </Grid>
         <KeyValues

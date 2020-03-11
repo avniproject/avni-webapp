@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import React, { Fragment, useState } from "react";
 import {
   Create,
@@ -17,12 +17,17 @@ import {
   SimpleForm,
   SimpleShowLayout,
   TextField,
-  TextInput
+  TextInput,
+  ReferenceArrayInput,
+  AutocompleteArrayInput,
+  BooleanInput,
+  ReferenceArrayField,
+  SingleFieldList
 } from "react-admin";
 import CardActions from "@material-ui/core/CardActions";
 import { change } from "redux-form";
 import EnableDisableButton from "./components/EnableDisableButton";
-import { OrganisationSelectInput } from "./components/OrganisationSelectInput";
+import { CustomSelectInput } from "./components/CustomSelectInput";
 import {
   CustomToolbar,
   formatRoles,
@@ -36,14 +41,15 @@ import {
   validatePhone
 } from "./UserHelper";
 import http from "common/utils/httpClient";
+import { TitleChip } from "./components/TitleChip";
 
-export const OrgAdminUserCreate = ({ user, ...props }) => (
+export const AccountOrgAdminUserCreate = ({ user, ...props }) => (
   <Create {...props}>
     <UserForm user={user} />
   </Create>
 );
 
-export const OrgAdminUserEdit = ({ user, ...props }) => (
+export const AccountOrgAdminUserEdit = ({ user, ...props }) => (
   <Edit
     {...props}
     title={<UserTitle titlePrefix="Edit" />}
@@ -54,13 +60,13 @@ export const OrgAdminUserEdit = ({ user, ...props }) => (
   </Edit>
 );
 
-export const OrgAdminUserList = ({ ...props }) => (
+export const AccountOrgAdminUserList = ({ ...props }) => (
   <List
     {...props}
     bulkActions={false}
     filter={{ searchURI: "find" }}
     filters={<UserFilter />}
-    title={`Organisation Admin Users`}
+    title={`Admin Users`}
   >
     <Datagrid rowClick="show">
       <TextField label="Login ID" source="username" />
@@ -104,13 +110,14 @@ const CustomShowActions = ({ basePath, data, resource }) => {
   );
 };
 
-export const OrgAdminUserDetail = ({ user, ...props }) => (
+export const AccountOrgAdminUserDetail = ({ user, ...props }) => (
   <Show title={<UserTitle />} actions={<CustomShowActions user={user} />} {...props}>
     <SimpleShowLayout>
       <TextField source="username" label="Login ID (username)" />
       <TextField source="name" label="Name of the Person" />
       <TextField source="email" label="Email Address" />
       <TextField source="phoneNumber" label="Phone Number" />
+      <FunctionField label="Role" render={user => formatRoles(user.roles)} />
       <ReferenceField
         label="Organisation"
         source="organisationId"
@@ -120,7 +127,11 @@ export const OrgAdminUserDetail = ({ user, ...props }) => (
       >
         <TextField source="name" />
       </ReferenceField>
-      <FunctionField label="Role" render={user => formatRoles(user.roles)} />
+      <ReferenceArrayField label="Accounts" reference="account" source="accountIds">
+        <SingleFieldList>
+          <TitleChip source="name" />
+        </SingleFieldList>
+      </ReferenceArrayField>
     </SimpleShowLayout>
   </Show>
 );
@@ -139,16 +150,39 @@ const UserForm = ({ edit, user, ...props }) => {
     save
   });
   return (
-    <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="show">
-      <ReferenceInput
-        resource="organisation"
-        source="organisationId"
-        reference="organisation"
-        label="Organisation Name"
-        validate={required("Please select a organisation")}
-      >
-        <OrganisationSelectInput source="name" resettable disabled={edit} />
-      </ReferenceInput>
+    <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="list">
+      <FormDataConsumer>
+        {({ formData, dispatch, ...rest }) => {
+          return (
+            <Fragment>
+              <BooleanInput source="orgAdmin" label="Organisation Admin" />
+              {formData.orgAdmin && (
+                <ReferenceInput
+                  resource="organisation"
+                  source="organisationId"
+                  reference="organisation"
+                  label="Organisation Name"
+                  validate={required("Please select an organisation")}
+                >
+                  <CustomSelectInput source="name" resettable />
+                </ReferenceInput>
+              )}
+              {!formData.orgAdmin && (
+                <ReferenceArrayInput
+                  reference="account"
+                  source="accountIds"
+                  perPage={1000}
+                  label="Accounts"
+                  validate={required("Please select one or more accounts")}
+                  filterToQuery={searchText => ({ name: searchText })}
+                >
+                  <AutocompleteArrayInput {...props} />
+                </ReferenceArrayInput>
+              )}
+            </Fragment>
+          );
+        }}
+      </FormDataConsumer>
       {edit ? (
         <DisabledInput source="username" label="Login ID (admin username)" />
       ) : (
@@ -156,6 +190,8 @@ const UserForm = ({ edit, user, ...props }) => {
           <FormDataConsumer>
             {({ formData, dispatch, ...rest }) => {
               formData && getOrgData(formData.organisationId);
+              const getSuffixIfApplicable =
+                formData && formData.organisationId ? `@${nameSuffix}` : "";
               return (
                 <Fragment>
                   <TextInput
@@ -164,11 +200,11 @@ const UserForm = ({ edit, user, ...props }) => {
                     label={"Login ID (username)"}
                     onChange={(e, newVal) =>
                       !isEmpty(newVal) &&
-                      dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))
+                      dispatch(change(REDUX_FORM_NAME, "username", newVal + getSuffixIfApplicable))
                     }
                     {...rest}
                   />
-                  <span>@{nameSuffix}</span>
+                  <span>{getSuffixIfApplicable}</span>
                 </Fragment>
               );
             }}
@@ -176,16 +212,21 @@ const UserForm = ({ edit, user, ...props }) => {
         </Fragment>
       )}
       {!edit && <PasswordTextField />}
-      <TextInput source="name" label="Name of the Person" validate={isRequired} />
-      <TextInput source="email" label="Email Address" validate={validateEmail} />
+      <TextInput
+        source="name"
+        label="Name of the Person"
+        validate={isRequired}
+        autoComplete="off"
+      />
+      <TextInput source="email" label="Email Address" validate={validateEmail} autoComplete="off" />
       <TextInput
         source="phoneNumber"
         label="10 digit mobile number"
         validate={validatePhone}
         format={mobileNumberFormatter}
         parse={mobileNumberParser}
+        autoComplete="off"
       />
-      <DisabledInput source="orgAdmin" defaultValue={true} hidden={true} />
     </SimpleForm>
   );
 };

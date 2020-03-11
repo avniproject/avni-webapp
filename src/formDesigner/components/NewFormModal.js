@@ -257,7 +257,7 @@ class NewFormModal extends Component {
 
   render() {
     if (this.state.toFormDetails !== "") {
-      return <Redirect to={"/admin/forms/" + this.state.toFormDetails} />;
+      return <Redirect to={"/appdesigner/forms/" + this.state.toFormDetails} />;
     }
     const encounterTypes =
       this.state.formType === "Encounter" ||
@@ -302,6 +302,7 @@ class NewFormModal extends Component {
               name="name"
               value={this.state.name}
               onChange={this.onChangeField.bind(this)}
+              autoComplete="off"
               fullWidth
             />
             {this.state.errors.name && (

@@ -52,6 +52,7 @@ class FormDetails extends Component {
     super(props);
     this.state = {
       form: [],
+      identifierSource: [],
       name: "",
       errorMsg: "",
       saveCall: false,
@@ -96,6 +97,14 @@ class FormDetails extends Component {
 
   componentDidMount() {
     this.setupBeforeUnloadListener();
+    http.get(`/web/identifierSource`).then(response => {
+      var identifierSources = [];
+      _.forEach(response.data["_embedded"]["identifierSource"], (source, index) => {
+        identifierSources.push({ value: source.uuid, label: source.name });
+      });
+      this.setState({ identifierSource: identifierSources });
+    });
+
     return http
       .get(`/forms/export?formUUID=${this.props.match.params.formUUID}`)
       .then(response => response.data)
@@ -109,9 +118,11 @@ class FormDetails extends Component {
         form["visitScheduleRule"] = form.visitScheduleRule ? form.visitScheduleRule : "";
         form["decisionRule"] = form.decisionRule ? form.decisionRule : "";
         form["validationRule"] = form.validationRule ? form.validationRule : "";
+        form["checklistsRule"] = form.checklistsRule ? form.checklistsRule : "";
         form["decisionExpand"] = false;
         form["visitScheduleExpand"] = false;
         form["validationExpand"] = false;
+        form["checklistExpand"] = false;
 
         _.forEach(form.formElementGroups, group => {
           group.groupId = (group.groupId || group.name).replace(/[^a-zA-Z0-9]/g, "_");
@@ -362,6 +373,7 @@ class FormDetails extends Component {
           index: index,
           deleteGroup: this.deleteGroup,
           btnGroupAdd: this.btnGroupAdd,
+          identifierSource: this.state.identifierSource,
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
@@ -398,7 +410,9 @@ class FormDetails extends Component {
     this.setState(
       produce(draft => {
         const formElement = draft.form.formElementGroups[index].formElements[elementIndex];
-        if (propertyName === "editable") {
+        if (propertyName === "identifierSource") {
+          formElement.keyValues[propertyName] = value;
+        } else if (propertyName === "editable") {
           value === "undefined"
             ? (formElement.keyValues[propertyName] = false)
             : delete formElement.keyValues[propertyName];
@@ -727,6 +741,7 @@ class FormDetails extends Component {
               onChange={event => this.onUpdateFormName(event.target.value)}
               value={this.state.name}
               style={{ width: "50%" }}
+              autoComplete="off"
             />
           </Grid>
           {this.state.createFlag && (
