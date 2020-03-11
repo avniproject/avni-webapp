@@ -16,8 +16,6 @@ import {
   required
 } from "react-admin";
 import { change } from "redux-form";
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-javascript";
 
 const Title = ({ record }) => {
   return (

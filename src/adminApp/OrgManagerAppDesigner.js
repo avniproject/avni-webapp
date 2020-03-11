@@ -52,16 +52,6 @@ class OrgManagerAppDesigner extends Component {
             list={uiDesignerToggle && SubjectTypesList}
           />
           <Resource
-            name="myDashboardFilters"
-            options={{ label: "My Dashboard Filters" }}
-            list={WithProps({ organisation }, customFilters)}
-          />
-          <Resource
-            name="searchFilters"
-            options={{ label: "Search Filters" }}
-            list={WithProps({ organisation }, customFilters)}
-          />
-          <Resource
             name="program"
             options={{ label: "Programs" }}
             list={uiDesignerToggle && ProgramList}
@@ -82,7 +72,16 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Concepts" }}
             list={uiDesignerToggle && Concepts}
           />
-
+          <Resource
+            name="myDashboardFilters"
+            options={{ label: "My Dashboard Filters" }}
+            list={WithProps({ organisation }, customFilters)}
+          />
+          <Resource
+            name="searchFilters"
+            options={{ label: "Search Filters" }}
+            list={WithProps({ organisation }, customFilters)}
+          />
           <Resource
             name="bundle"
             options={{ label: "Bundle" }}
