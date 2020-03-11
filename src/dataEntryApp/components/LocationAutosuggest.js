@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {
-    width: "30%",
+    width: "23%",
     height: "30px",
     padding: "20px 20px",
     "font-family": " Helvetica, sans-serif",

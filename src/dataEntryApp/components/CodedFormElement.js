@@ -11,14 +11,20 @@ export const CodedFormElement = ({
   onChange,
   multiSelect,
   ...props
-}) => {
+}) => {  
+  let genwidth = ''
+  if(groupName === "Gender"){
+    genwidth= "10%"
+  }else{
+    genwidth= "20%"
+  }
   return (
-    <FormControl component="fieldset" {...props} style={{ width: "100%" }}>
-      <FormLabel component="legend">{groupName}</FormLabel>
+    <FormControl component="fieldset" {...props} style={{ width: "80%" }}>
+      <FormLabel component="legend">{groupName}</FormLabel>     
       <FormGroup>
         <Box display="flex" flexWrap="wrap" alignContent="flex-start">
           {items.map(item => (
-            <Box width="20%">
+            <Box width={genwidth}>
               <FormControlLabel
                 key={item.uuid}
                 control={

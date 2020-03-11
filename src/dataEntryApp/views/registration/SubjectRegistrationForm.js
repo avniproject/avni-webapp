@@ -26,17 +26,14 @@ const useStyle = makeStyles(theme => ({
     color: "rgba(0, 0, 0, 0.54)",
     backgroundColor:"#f8f4f4",
     height:40,
-    width:"90%",  
+    width:"100%",  
     padding: 8,
     marginBottom: 10
   },
-  foo : {
+  buttomstyle : {
     position: "absolute",
     bottom: 0,
-    left: 0,
-    // marginBottom:25,
-    // marginRight:15,
-    // marginLeft:25,
+    left: 0,    
     backgroundColor: "#f8f4f4",
     height: 80,
     width: '100%',
@@ -66,7 +63,7 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
     if(!subject){
       onLoad(match.queryParams.type);
     }
-  })
+  })  
   const classes = useStyle();
   const [redirect, setRedirect] = React.useState(false);
 
@@ -119,7 +116,7 @@ const SubjectRegistrationForm = ({ form, obs, updateObs, location, title, match,
         onOk = {onOkHandler}
         />}
         {saved && redirect && <Redirect to={onSaveGoto} />}
-        <div className={classes.foo}>
+        <div className={classes.buttomstyle}>
         <Paginator pageDetails={pageDetails}
          onSave={onSave}
          label={{Previous:"PREVIOUS",Next:"NEXT",Save:"SAVE"}}

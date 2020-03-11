@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { InternalLink, RelativeLink } from "../../common/components/utils";
-import PrimaryButton from "./PagenatorButton";
+import PagenatorButton from "./PagenatorButton";
 
 const styles = {
   marginRight20: {
@@ -17,11 +17,12 @@ const styles = {
 const PaginationButton = ({ page, title, type }) =>
   page && (
     <RelativeLink params={{ page }} noUnderline>
-      <PrimaryButton type={type}>{title}</PrimaryButton>
+      <PagenatorButton type={type}>{title}</PagenatorButton>
     </RelativeLink>
   );
 
-const Paginator = props => {    
+const Paginator = props => {     
+  console.log("props*************8",props); 
   return (
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
@@ -31,7 +32,7 @@ const Paginator = props => {
 
         {!props.pageDetails.previousPageNumber && (
           <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
-            <PrimaryButton type={props.label.type}>{props.label.Previous}</PrimaryButton>
+            <PagenatorButton type={props.label.type}>{props.label.Previous}</PagenatorButton>
           </InternalLink>
         )}
       </Box>
@@ -44,7 +45,7 @@ const Paginator = props => {
         title={props.label.Next} />
         
         {!props.pageDetails.nextPageNumber && props.onSave && (
-          <PrimaryButton type={props.label.type} onClick={props.onSave}>{props.label.Save}</PrimaryButton>
+          <PagenatorButton type={props.label.type} onClick={props.onSave}>{props.label.Save}</PagenatorButton>
         )}
       </Box>
     </Box>
