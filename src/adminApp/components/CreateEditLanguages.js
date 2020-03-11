@@ -49,7 +49,7 @@ export const CreateEditLanguages = props => {
 
   return (
     <div>
-      <Title title="Language Config" />
+      <Title title="Edit language" />
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Box m={2}>
           <Select isMulti value={lang} options={options} onChange={name => setLang(name)} />

@@ -19,8 +19,6 @@ import React, { Fragment } from "react";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import Typography from "@material-ui/core/Typography";
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-javascript";
 
 const sourceType = [
   { id: "userBasedIdentifierGenerator", name: "userBasedIdentifierGenerator" },

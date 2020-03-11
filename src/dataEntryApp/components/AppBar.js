@@ -279,7 +279,10 @@ const mapStateToProps = state => ({
     ? state.translationsReducer.orgConfig._embedded.organisationConfig[0].settings.languages
     : "",
   userInfo: state.app.userInfo,
-  defaultLanguage: state.app.userInfo.settings && state.app.userInfo.settings.locale ? state.app.userInfo.settings.locale : "en"
+  defaultLanguage:
+    state.app.userInfo.settings && state.app.userInfo.settings.locale
+      ? state.app.userInfo.settings.locale
+      : "en"
 });
 
 const mapDispatchToProps = {

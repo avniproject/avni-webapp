@@ -15,7 +15,6 @@ import {
   LocationTypeList
 } from "./addressLevelType";
 import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
-import { ProgramCreate, ProgramDetail, ProgramEdit, ProgramList } from "./programs";
 import {
   IdentifierSourceCreate,
   IdentifierSourceList,
@@ -28,18 +27,6 @@ import {
   IdentifierUserAssignmentEdit,
   IdentifierUserAssignmentCreate
 } from "./IdentifierUserAssignment";
-import {
-  SubjectTypeCreate,
-  SubjectTypeDetail,
-  SubjectTypeEdit,
-  SubjectTypeList
-} from "./SubjectTypes";
-import {
-  EncounterTypeCreate,
-  EncounterTypeDetail,
-  EncounterTypeEdit,
-  EncounterTypeList
-} from "./EncounterTypes";
 import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 import Link from "@material-ui/core/Link";
@@ -47,10 +34,6 @@ import Link from "@material-ui/core/Link";
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
-import Forms from "../formDesigner/views/Forms";
-import Concepts from "../formDesigner/views/Concepts";
-import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
-import FormSettings from "../formDesigner/components/FormSettings";
 import { intersection, isEmpty } from "lodash";
 import httpClient from "../common/utils/httpClient";
 import { AccountCreate, AccountDetails, AccountEdit, AccountList } from "./Account";
@@ -196,8 +179,8 @@ class OrgManager extends Component {
         appLayout={AdminLayout}
       >
         <Resource
-          name="organisationConfig"
-          options={{ label: "Organisation Config" }}
+          name="language"
+          options={{ label: "Languages" }}
           list={WithProps({ organisation }, customConfig)}
         />
         <Resource
@@ -236,30 +219,6 @@ class OrgManager extends Component {
           list={csvUploadToggle && UploadDashboard}
         />
         <Resource
-          name="subjectType"
-          options={{ label: "Subject Types" }}
-          list={uiDesignerToggle && SubjectTypeList}
-          show={SubjectTypeDetail}
-          create={SubjectTypeCreate}
-          edit={SubjectTypeEdit}
-        />
-        <Resource
-          name="program"
-          options={{ label: "Programs" }}
-          list={uiDesignerToggle && ProgramList}
-          show={ProgramDetail}
-          create={ProgramCreate}
-          edit={ProgramEdit}
-        />
-        <Resource
-          name="encounterType"
-          options={{ label: "Encounter Types" }}
-          list={uiDesignerToggle && EncounterTypeList}
-          show={EncounterTypeDetail}
-          create={EncounterTypeCreate}
-          edit={EncounterTypeEdit}
-        />
-        <Resource
           name="identifierSource"
           options={{ label: "Identifier source" }}
           list={IdentifierSourceList}
@@ -274,22 +233,6 @@ class OrgManager extends Component {
           show={IdentifierUserAssignmentDetail}
           create={IdentifierUserAssignmentCreate}
           edit={IdentifierUserAssignmentEdit}
-        />
-        <Resource
-          name="forms"
-          options={{ label: "Forms" }}
-          list={uiDesignerToggle && Forms}
-          edit={FormSettings}
-        />
-        <Resource
-          name="concepts"
-          options={{ label: "Concepts" }}
-          list={uiDesignerToggle && Concepts}
-        />
-        <Resource
-          name="bundle"
-          options={{ label: "Bundle" }}
-          list={uiDesignerToggle && ImplementationBundle}
         />
       </Admin>
     );
