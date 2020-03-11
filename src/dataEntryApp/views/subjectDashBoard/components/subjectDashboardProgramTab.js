@@ -15,8 +15,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
-
 const SubjectDashboardProgramTab = ({ program }) => {
   let flagActive = false;
   let flagExited = false;
@@ -35,11 +33,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
 
   if (program && program.enrolments) {
     program.enrolments.sort(function(left, right) {
-      return left.programExitDateTime
-        ? 1
-        : right.programExitDateTime
-        ? -1
-        : 0;
+      return left.programExitDateTime ? 1 : right.programExitDateTime ? -1 : 0;
     });
   }
 

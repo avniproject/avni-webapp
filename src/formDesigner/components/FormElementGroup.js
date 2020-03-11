@@ -146,6 +146,7 @@ function FormElementGroup(props) {
           groupIndex: props.index,
           index: index,
           btnGroupAdd: props.btnGroupAdd,
+          identifierSource: props.identifierSource,
           handleGroupElementChange: props.handleGroupElementChange,
           deleteGroup: props.deleteGroup,
           updateConceptElementData: props.updateConceptElementData,
