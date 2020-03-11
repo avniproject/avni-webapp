@@ -50,6 +50,7 @@ const EncounterTypeShow = props => {
             <FormLabel style={{ fontSize: "13px" }}>Encounter Eligibility Check Rule</FormLabel>
             <br />
             <Editor
+              readOnly
               value={
                 encounterType.encounterEligibilityCheckRule
                   ? encounterType.encounterEligibilityCheckRule

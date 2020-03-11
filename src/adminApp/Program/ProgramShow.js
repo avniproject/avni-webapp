@@ -62,6 +62,7 @@ const ProgramShow = props => {
             <FormLabel style={{ fontSize: "13px" }}>Enrolment Summary Rule</FormLabel>
             <br />
             <Editor
+              readOnly
               value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
               highlight={code => highlight(code, languages.js)}
               padding={10}
@@ -79,6 +80,7 @@ const ProgramShow = props => {
             <FormLabel style={{ fontSize: "13px" }}>Enrolment Eligibility Check Rule</FormLabel>
             <br />
             <Editor
+              readOnly
               value={
                 program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""
               }
