@@ -108,6 +108,38 @@ public class FormMappingService {
         formMappingRepository.save(formMapping);
     }
 
+    public void createOrUpdateEmptyFormMapping(FormMappingContract formMappingRequest) {
+        FormMapping formMapping = new FormMapping();
+        formMapping.setUuid(formMappingRequest.getUuid());
+
+        formMapping.setForm(null);
+
+        if (formMappingRequest.getProgramUUID() != null) {
+            formMapping.setProgram(programRepository.findByUuid(formMappingRequest.getProgramUUID()));
+        }
+        else{
+            formMapping.setProgram(null);
+        }
+
+        if (formMappingRequest.getEncounterTypeUUID() != null) {
+            formMapping.setEncounterType(encounterTypeRepository.findByUuid(formMappingRequest.getEncounterTypeUUID()));
+        }
+        else{
+            formMapping.setEncounterType(null);
+        }
+
+        if (formMappingRequest.getSubjectTypeUUID() != null) {
+            formMapping.setSubjectType(
+                    subjectTypeRepository.findByUuid(
+                            formMappingRequest.getSubjectTypeUUID()));
+        } else {
+            formMapping.setSubjectType(null);
+        }
+
+        formMapping.setVoided(formMappingRequest.isVoided());
+        formMappingRepository.save(formMapping);
+    }
+
     private void validateRequest(CreateUpdateFormRequest createUpdateFormRequest, FormType formType) {
         for (FormMappingRequest formMappingRequest : createUpdateFormRequest.getFormMappings()) {
             if (!formMappingRequest.getVoided()) {
