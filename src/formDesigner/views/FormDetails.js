@@ -98,10 +98,12 @@ class FormDetails extends Component {
   componentDidMount() {
     this.setupBeforeUnloadListener();
     http.get(`/web/identifierSource`).then(response => {
-      var identifierSources = [];
-      _.forEach(response.data["_embedded"]["identifierSource"], (source, index) => {
-        identifierSources.push({ value: source.uuid, label: source.name });
-      });
+      const identifierSources = [];
+      if (response.data["_embedded"]) {
+        _.forEach(response.data["_embedded"]["identifierSource"], (source, index) => {
+          identifierSources.push({ value: source.uuid, label: source.name });
+        });
+      }
       this.setState({ identifierSource: identifierSources });
     });
 
