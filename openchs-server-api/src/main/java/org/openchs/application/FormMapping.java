@@ -17,7 +17,6 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties({"form", "program", "encounterType", "subjectType"})
 public class FormMapping extends OrganisationAwareEntity {
     @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
     @JoinColumn(name = "form_id")
     private Form form;
 
@@ -81,16 +80,4 @@ public class FormMapping extends OrganisationAwareEntity {
         this.subjectType = subjectType;
     }
 
-    @Projection(name = "FormMappingProjection", types = {FormMapping.class})
-    public interface FormMappingProjection extends BaseProjection {
-        @Value("#{target.subjectType.uuid}")
-        String getSubjectTypeUuid();
-
-        @Value("#{target.form.uuid}")
-        String getFormUuid();
-
-        String getEncounterTypeUuid();
-
-        String getProgramUuid();
-    }
 }

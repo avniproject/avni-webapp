@@ -48,6 +48,7 @@ public class FormMappingContract extends ReferenceDataContract {
     public static FormMappingContract fromFormMapping(FormMapping formMapping) {
         FormMappingContract contract = new FormMappingContract();
         contract.setUuid(formMapping.getUuid());
+        contract.setId(formMapping.getId());
         contract.setSubjectTypeUUID(formMapping.getSubjectTypeUuid());
         contract.setProgramUUID(formMapping.getProgramUuid());
         contract.setFormUUID(formMapping.getFormUuid());
