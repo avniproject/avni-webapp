@@ -5,26 +5,24 @@ let defaultLanguage;
 let translationData;
 httpClient.fetchJson(`/me`).then(response => {
   defaultLanguage = response.json;
-httpClient.fetchJson(`/web/translations`).then(response => {
-  translationData = response.json;
-  i18n.use(LanguageDetector).init({
-    resources: translationData,
-    fallbackLng: "en",
-    lng:defaultLanguage.settings ? defaultLanguage.settings.locale : "en",
-    debug: true,
-    ns: ["translations"],
-    defaultNS: "translations",
-    keySeparator: false, 
-    interpolation: {
-      escapeValue: false, 
-      formatSeparator: ","
-    },
-    react: {
-      wait: true
-    }
+  httpClient.fetchJson(`/web/translations`).then(response => {
+    translationData = response.json;
+    i18n.use(LanguageDetector).init({
+      resources: translationData,
+      fallbackLng: "en",
+      lng: defaultLanguage.settings ? defaultLanguage.settings.locale : "en",
+      debug: true,
+      ns: ["translations"],
+      defaultNS: "translations",
+      keySeparator: false,
+      interpolation: {
+        escapeValue: false,
+        formatSeparator: ","
+      },
+      react: {
+        wait: true
+      }
+    });
   });
-})
- })
- export default(i18n);
-
-
+});
+export default i18n;

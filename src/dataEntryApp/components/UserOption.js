@@ -19,8 +19,10 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import Switch from "@material-ui/core/Switch";
 import { LOCALES } from "../../common/constants";
-import http from "common/utils/httpClient";
 import { useTranslation } from "react-i18next";
+import { saveUserInfo } from "rootApp/ducks";
+import { connect } from "react-redux";
+import { get } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -90,13 +92,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
+const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
-  const [value, setValue] = React.useState(defaultLanguage);
-
-  const handleClick = () => {
+  const toggleSettingsMenu = () => {
     setOpen(!open);
   };
 
@@ -116,28 +116,11 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
 
   const { t, i18n } = useTranslation();
 
-  const changeLanguage = lng => {
-    i18n.changeLanguage(lng);
-  };
-
   const handleChange = event => {
     if (event.target.value) {
-      setValue(event.target.value);
-
-      const userInfoJson = {
-        settings: {
-          ...userInfo.settings,
-          locale: event.target.value,
-          trackLocation: false
-        },
-        
-      };
-
-      http.post("/me", userInfoJson).then(response => {
-        if (response.status === 200) {
-          changeLanguage(userInfoJson.settings.locale);
-        }
-      });
+      userInfo.settings.locale = event.target.value;
+      saveUserInfo(userInfo);
+      i18n.changeLanguage(userInfo.settings.locale);
     }
   };
 
@@ -149,11 +132,15 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
         className={classes.root}
         style={{ boxShadow: "3px 3px 5px #aaaaaa" }}
       >
-        <ListItem button onClick={handleClick} style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+        <ListItem
+          button
+          onClick={toggleSettingsMenu}
+          style={{ paddingTop: "5px", paddingBottom: "5px" }}
+        >
           <ListItemIcon>
             <SettingsIcon style={{ color: "blue" }} />
           </ListItemIcon>
-          <ListItemText primary={t("settings")} style={{ color: "blue" }} onClick={getLanguages} />
+          <ListItemText primary={t("settings")} style={{ color: "blue" }} />
           {open ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
         <Collapse in={open} timeout="auto" unmountOnExit>
@@ -163,7 +150,12 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
             style={{ fontSize: "12px", marginTop: "20px", marginLeft: "85px" }}
           >
             <FormLabel component="legend">{t("language")}</FormLabel>
-            <RadioGroup aria-label="language" name="language" value={value} onChange={handleChange}>
+            <RadioGroup
+              aria-label="language"
+              name="language"
+              value={get(userInfo, "settings.locale", "en")}
+              onChange={handleChange}
+            >
               {orgConfig
                 ? orgConfig.map((element, index) => (
                     <FormControlLabel
@@ -217,4 +209,22 @@ const UserOption = ({ orgConfig, defaultLanguage, getLanguages, userInfo }) => {
   );
 };
 
-export default UserOption;
+const mapStateToProps = state => ({
+  orgConfig: state.translationsReducer.orgConfig
+    ? state.translationsReducer.orgConfig._embedded.organisationConfig[0].settings.languages
+    : "",
+  userInfo: state.app.userInfo,
+  defaultLanguage:
+    state.app.userInfo.settings && state.app.userInfo.settings.locale
+      ? state.app.userInfo.settings.locale
+      : "en"
+});
+
+const mapDispatchToProps = {
+  saveUserInfo: saveUserInfo
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserOption);
