@@ -2,6 +2,7 @@ import React from "react";
 import Autosuggest from "react-autosuggest";
 import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {
@@ -18,14 +19,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
-  const classes = useStyles();  
+  const classes = useStyles();
+  const { t } = useTranslation();
 
   if (data.saved === true) {
-    selectedVillage = ""
+    selectedVillage = "";
   } else if (data.saved === false && selectedVillage === undefined) {
-    selectedVillage = ""
+    selectedVillage = "";
   } else {
-    selectedVillage = selectedVillage
+    selectedVillage = selectedVillage;
   }
 
   const [value, setValue] = React.useState(selectedVillage);
@@ -57,13 +59,13 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
     return inputLength === 0
       ? []
       : await http
-        .get(`locations/search/find?title=${inputValue}`)
-        .then(res => res.data._embedded.locations);
+          .get(`locations/search/find?title=${inputValue}`)
+          .then(res => res.data._embedded.locations);
   };
 
   const inputProps = {
     className: classes.rautosuggestinput,
-    placeholder: "Village Name",
+    placeholder: `${t("Village")}` + " " + `${t("name")}`,
     value,
     onChange
   };

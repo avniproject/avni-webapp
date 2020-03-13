@@ -4,6 +4,8 @@ import { xor, first, filter } from "lodash";
 import Checkbox from "./Checkbox";
 import Radio from "./Radio";
 import Box from "@material-ui/core/Box";
+import { useTranslation } from "react-i18next";
+
 export const CodedFormElement = ({
   groupName,
   items,
@@ -11,16 +13,18 @@ export const CodedFormElement = ({
   onChange,
   multiSelect,
   ...props
-}) => {  
-  let genwidth = ''
-  if(groupName === "Gender"){
-    genwidth= "10%"
-  }else{
-    genwidth= "20%"
+}) => {
+  let genwidth = "";
+  if (groupName === "Gender") {
+    genwidth = "10%";
+  } else {
+    genwidth = "20%";
   }
+  const { t } = useTranslation();
+
   return (
     <FormControl component="fieldset" {...props} style={{ width: "80%" }}>
-      <FormLabel component="legend">{groupName}</FormLabel>     
+      <FormLabel component="legend">{t(groupName)}</FormLabel>
       <FormGroup>
         <Box display="flex" flexWrap="wrap" alignContent="flex-start">
           {items.map(item => (
@@ -42,7 +46,7 @@ export const CodedFormElement = ({
                     />
                   )
                 }
-                label={item.name}
+                label={t(item.name)}
               />{" "}
             </Box>
           ))}
