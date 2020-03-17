@@ -15,7 +15,18 @@ import {
   LocationTypeList
 } from "./addressLevelType";
 import { LocationCreate, LocationDetail, LocationEdit, LocationList } from "./locations";
-
+import {
+  IdentifierSourceCreate,
+  IdentifierSourceList,
+  IdentifierSourceDetail,
+  IdentifierSourceEdit
+} from "./IdentifierSource";
+import {
+  IdentifierUserAssignmentList,
+  IdentifierUserAssignmentDetail,
+  IdentifierUserAssignmentEdit,
+  IdentifierUserAssignmentCreate
+} from "./IdentifierUserAssignment";
 import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
 import Link from "@material-ui/core/Link";
@@ -206,6 +217,22 @@ class OrgManager extends Component {
           name="upload"
           options={{ label: "Upload" }}
           list={csvUploadToggle && UploadDashboard}
+        />
+        <Resource
+          name="identifierSource"
+          options={{ label: "Identifier source" }}
+          list={IdentifierSourceList}
+          show={IdentifierSourceDetail}
+          create={IdentifierSourceCreate}
+          edit={IdentifierSourceEdit}
+        />
+        <Resource
+          name="identifierUserAssignment"
+          options={{ label: "Identifier user assignment" }}
+          list={IdentifierUserAssignmentList}
+          show={IdentifierUserAssignmentDetail}
+          create={IdentifierUserAssignmentCreate}
+          edit={IdentifierUserAssignmentEdit}
         />
       </Admin>
     );

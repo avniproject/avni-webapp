@@ -12,7 +12,7 @@ import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
 import MenuItem from "@material-ui/core/MenuItem";
-import { isEqual, get } from "lodash";
+import _, { isEqual, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -100,6 +100,13 @@ function FormElementDetails(props) {
   //     </Dialog>
   //   );
   // };
+  function identifierSourceList() {
+    var identifierSourceArr = [];
+    _.forEach(props.identifierSource, (idSource, i) => {
+      identifierSourceArr.push(<MenuItem value={idSource.value}>{idSource.label}</MenuItem>);
+    });
+    return identifierSourceArr;
+  }
 
   return (
     <Grid container item sm={12}>
@@ -625,6 +632,28 @@ function FormElementDetails(props) {
           </Grid>
         )}
       </Grid>
+      {props.identifierSource.length > 0 && (
+        <Grid item sm={6}>
+          <FormControl fullWidth>
+            <InputLabel>Identifier Source</InputLabel>
+            <Select
+              name="identifierSource"
+              value={props.formElementData.keyValues.identifierSource}
+              onChange={event =>
+                props.handleGroupElementKeyValueChange(
+                  props.groupIndex,
+                  "identifierSource",
+                  event.target.value,
+                  props.index
+                )
+              }
+              required
+            >
+              {identifierSourceList()}
+            </Select>
+          </FormControl>
+        </Grid>
+      )}
     </Grid>
   );
 }

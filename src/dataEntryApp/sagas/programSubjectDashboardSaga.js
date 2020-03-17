@@ -3,8 +3,6 @@ import { types, setSubjectProgram } from "../reducers/programSubjectDashboardRed
 import api from "../api";
 import { mapProgram } from "../../common/subjectModelMapper";
 
-
-
 export default function*() {
   yield all([subjectProgramFetchWatcher].map(fork));
 }
