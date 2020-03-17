@@ -29,6 +29,7 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import SubjectRegistrationForm from "./SubjectRegistrationForm";
 import { useTranslation } from "react-i18next";
 import BrowserStore from '../../api/browserStore';
+import SubjectValidation from "./SubjectValidation";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -92,12 +93,17 @@ const useStyles = makeStyles(theme => ({
     height: 80,
     width: "100%",
     padding: 25
+  },
+  errmsg: {
+    color: "red"
   }
 }));
 
 const DefaultPage = props => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
+  const [lastnameerrormsg, setLastnamemsg] = React.useState("");
   console.log(props);
 
   React.useEffect(() => {
@@ -216,8 +222,14 @@ const DefaultPage = props => {
                       value={props.subject.firstName || ""}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
+                        const validationMsg = SubjectValidation.stringvalidation("firstName", e.target.value);
+                        // console.log("messageKey---->", validationMsg.messageKey);
+                        let firstnameerrormsg = validationMsg.messageKey
+                        console.log("messageKey---->", firstnameerrormsg);
+                        setFirstnamemsg(firstnameerrormsg);
                       }}
                     />
+                    {firstnameerrormsg && <Typography className={classes.errmsg} variant="caption" display="block" gutterBottom> {firstnameerrormsg} </Typography>}
                     <LineBreak num={1} />
                     <TextField
                       style={{ width: "30%" }}
@@ -229,8 +241,14 @@ const DefaultPage = props => {
                       value={props.subject.lastName || ""}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
+                        const validationMsg = SubjectValidation.stringvalidation("lastName", e.target.value);
+                        //console.log("messageKey---->", validationMsg.messageKey);
+                        let lastnameerrormsg = validationMsg.messageKey
+                        console.log("messageKey---->", lastnameerrormsg);
+                        setLastnamemsg(lastnameerrormsg);
                       }}
                     />
+                    {lastnameerrormsg && <Typography className={classes.errmsg} variant="caption" display="block" gutterBottom> {lastnameerrormsg} </Typography>}
                     <LineBreak num={1} />
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || ""}
