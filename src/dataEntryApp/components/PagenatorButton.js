@@ -30,14 +30,50 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default ({ children, ...props }) => {
+export default ({ children, ...props}) => {
   let subject = props.formdata;
+  // console.log("-----props-----",props.subject )
+
+  const onTestClick=(e)=> {
+    console.log("Propssss-----",props)
+    if(subject === undefined){
+      return true;
+    }else{
+    if(subject.firstName === undefined){
+      alert("Please enter First Name")
+      e.preventDefault();   
+      return false;
+    }else if(subject.lastName === undefined){
+      alert("Please enter Last Name")
+      e.preventDefault();   
+      return false;      
+    }else if(subject.dateOfBirth === undefined){
+      alert("Please enter date Of Birth")
+      e.preventDefault();   
+    return false;      
+    }else if(subject.gender.name === ""){
+      alert("Please select gender")
+      e.preventDefault();    
+    return false;      
+    }else if(subject.lowestAddressLevel.title === undefined){
+      alert("Please enter village name")
+      e.preventDefault();   
+    return false;
+    }else{
+      return true;
+    }
+  }
+    
+}
+
   const classes = useStyles();
   if(props.type === "text") {
-    return <Typography className={classes.topnav} variant="subtitle1" gutterBottom {...props}> {children} </Typography>
+    return <Typography className={classes.topnav} variant="subtitle1" gutterBottom {...props} onClick={onTestClick}> {children} </Typography>
   }else if(children === "PREVIOUS") {
     return <Button className={classes.privbuttonStyle} type="button" variant="outlined" {...props} >{children} </Button>   
+  }else if(children === "SAVE") {
+    return<Button className={classes.nextbuttonStyle} type="button" {...props}>{children}</Button>   
   }else {     
-    return <Button className={classes.nextbuttonStyle} type="button" {...props}>{children}</Button>
+    return <Button className={classes.nextbuttonStyle} type="button" {...props} onClick={onTestClick}>{children}</Button>
   }
 }

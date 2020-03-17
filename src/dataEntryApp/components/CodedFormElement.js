@@ -10,6 +10,7 @@ export const CodedFormElement = ({
   isChecked,
   onChange,
   multiSelect,
+  mandatory,
   ...props
 }) => {  
   let genwidth = ''
@@ -18,6 +19,8 @@ export const CodedFormElement = ({
   }else{
     genwidth= "20%"
   }
+  console.log("mandatory",mandatory);
+  
   return (
     <FormControl component="fieldset" {...props} style={{ width: "80%" }}>
       <FormLabel component="legend">{groupName}</FormLabel>     
@@ -33,7 +36,7 @@ export const CodedFormElement = ({
                       checked={isChecked(item)}
                       onChange={() => onChange(xor([item], filter(items, isChecked)))}
                       value={item.uuid}
-                    />
+                    />                   
                   ) : (
                     <Radio
                       checked={isChecked(item)}
