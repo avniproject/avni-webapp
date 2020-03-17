@@ -7,7 +7,7 @@ import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
-import { Box, Typography} from "@material-ui/core";
+import { Box, Typography, Button} from "@material-ui/core";
 import { LineBreak } from "../../common/components/utils";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "../components/PagenatorButton";
@@ -24,9 +24,14 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[500],
   },
   okbuttonStyle: {  
-    backgroundColor:"orange",
-    width: 80,
-    color:"white"  
+    backgroundColor: "orange",
+    color: 'white',
+    height: 30,
+    fontSize: 12,
+    width: 100,
+    cursor:"pointer",
+    'border-radius': 50,
+    padding:"4px 25px"  
   },
   iconstyle:{
     'font-size': "4rem",
@@ -99,10 +104,10 @@ const CustomizedDialog = ({ title, showSuccessIcon, message, showOkbtn,openDialo
         <DialogActions>
           {showOkbtn && 
           <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-start" alignItems="center">         
-          {/* <Button autoFocus onClick={handleOk} color="primary">
+          <Button className={classes.okbuttonStyle} onClick={handleOk} color="primary">
             Ok
-          </Button> */}
-          <Chip className={classes.okbuttonStyle} onClick={handleOk}>OK</Chip>
+          </Button>
+          {/* <Chip className={classes.okbuttonStyle} onClick={handleOk}>OK</Chip> */}
           </Box>}
         </DialogActions>
       </Dialog>

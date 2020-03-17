@@ -2,7 +2,9 @@ import React from "react";
 import Autosuggest from "react-autosuggest";
 import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
+import SubjectValidation from "../views/registration/SubjectValidation";
 
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {
@@ -15,6 +17,9 @@ const useStyles = makeStyles(theme => ({
     border: "0px solid #aaa",
     borderBottom: "1px solid lightgray",
     "border-radius": "4px"
+  },
+  errmsg: {
+    color: "red"
   }
 }));
 
@@ -32,6 +37,7 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
 
   const [value, setValue] = React.useState(selectedVillage);
   const [suggestions, setSuggestions] = React.useState([]);
+  const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
 
   const getSuggestionValue = suggestion => suggestion.title;
 
@@ -48,6 +54,12 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
 
   const onChange = (event, { newValue }) => {
     setValue(newValue);
+    const validationMsg = SubjectValidation.stringvalidation("firstName", newValue);
+    // console.log("messageKey---->", validationMsg.messageKey);
+    let firstnameerrormsg = validationMsg.messageKey
+    console.log("messageKey---->", firstnameerrormsg);
+    setFirstnamemsg(firstnameerrormsg);
+   
   };
 
   const onSuggestionSelected = (event, { suggestion }) => onSelect(suggestion);
@@ -71,7 +83,8 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
   };
 
   return (
-    <Autosuggest
+    <div>
+       <Autosuggest
       suggestions={suggestions}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
@@ -80,6 +93,10 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
       inputProps={inputProps}
       onSuggestionSelected={onSuggestionSelected}
     />
+    {firstnameerrormsg && <Typography className={classes.errmsg} variant="caption" display="block" gutterBottom> {firstnameerrormsg} </Typography>}
+
+    </div>
+   
   );
 };
 

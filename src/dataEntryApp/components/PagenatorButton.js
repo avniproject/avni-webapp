@@ -71,7 +71,7 @@ export default ({ children, ...props}) => {
     return <Typography className={classes.topnav} variant="subtitle1" gutterBottom {...props} onClick={onTestClick}> {children} </Typography>
   }else if(children === "PREVIOUS") {
     return <Button className={classes.privbuttonStyle} type="button" variant="outlined" {...props} >{children} </Button>   
-  }else if(children === "SAVE") {
+  }else if(children === "Save") {
     return<Button className={classes.nextbuttonStyle} type="button" {...props}>{children}</Button>   
   }else {     
     return <Button className={classes.nextbuttonStyle} type="button" {...props} onClick={onTestClick}>{children}</Button>
