@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography } from "@material-ui/core";
 import { InternalLink, RelativeLink } from "../../common/components/utils";
 import PagenatorButton from "./PagenatorButton";
+import { useTranslation } from "react-i18next";
 
 const styles = {
   marginRight20: {
@@ -9,9 +10,9 @@ const styles = {
   },
   toppagenum: {
     color: "rgba(0, 0, 0, 0.54)",
-    marginRight:10,
+    marginRight: 10,
     fontSize: "12px"
-  },
+  }
 };
 
 const PaginationButton = ({ page, title, type }) =>
@@ -21,31 +22,44 @@ const PaginationButton = ({ page, title, type }) =>
     </RelativeLink>
   );
 
-const Paginator = props => {     
-  console.log("props*************8",props); 
+const Paginator = props => {
+  console.log("props*************8", props);
+  const { t } = useTranslation();
+
   return (
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
-        <PaginationButton page={props.pageDetails.previousPageNumber}
-         type={props.label.type}
-         title={props.label.Previous} />
+        <PaginationButton
+          page={props.pageDetails.previousPageNumber}
+          type={props.label.type}
+          title={t(props.label.Previous)}
+        />
 
         {!props.pageDetails.previousPageNumber && (
           <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
-            <PagenatorButton type={props.label.type}>{props.label.Previous}</PagenatorButton>
+            <PagenatorButton type={props.label.type}>{t(props.label.Previous)}</PagenatorButton>
           </InternalLink>
         )}
       </Box>
 
-      {props.showCount && <Typography style={styles.toppagenum} variant="subtitle1" gutterBottom>  {props.count} </Typography>}
-      
+      {props.showCount && (
+        <Typography style={styles.toppagenum} variant="subtitle1" gutterBottom>
+          {" "}
+          {props.count}{" "}
+        </Typography>
+      )}
+
       <Box component={"span"}>
-        <PaginationButton page={props.pageDetails.nextPageNumber} 
-        type={props.label.type}
-        title={props.label.Next} />
-        
+        <PaginationButton
+          page={props.pageDetails.nextPageNumber}
+          type={props.label.type}
+          title={t(props.label.Next)}
+        />
+
         {!props.pageDetails.nextPageNumber && props.onSave && (
-          <PagenatorButton type={props.label.type} onClick={props.onSave}>{props.label.Save}</PagenatorButton>
+          <PagenatorButton type={props.label.type} onClick={props.onSave}>
+            {t(props.label.Save)}
+          </PagenatorButton>
         )}
       </Box>
     </Box>

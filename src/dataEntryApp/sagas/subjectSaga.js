@@ -77,6 +77,7 @@ export function* updateObsWorker({ formElement, value }) {
   observationHolder.updateObs(formElement, value);
   subject.observations = observationHolder.observations;
   yield put(setSubject(subject));
+  sessionStorage.setItem('subject',JSON.stringify(subject))
 }
 
 export default function* subjectSaga() {

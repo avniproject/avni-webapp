@@ -4,6 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import { isEmpty } from "lodash";
 import SubjectValidation from '../views/registration/SubjectValidation';
 import { makeStyles } from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
 const useStyles = makeStyles(theme => ({
   errmsg: {
     color: "red"
@@ -12,6 +13,7 @@ const useStyles = makeStyles(theme => ({
 
 
 export default ({ formElement: fe, value, update }) => {
+  const { t } = useTranslation();
   const classes = useStyles();
   console.log("------------fe.name", fe.concept.datatype);
   console.log("------------fe.name", fe.mandatory);
@@ -23,7 +25,7 @@ export default ({ formElement: fe, value, update }) => {
     return (
       <div>
         <TextField
-          label={fe.display || fe.name}
+           label={t(fe.display || fe.name)}
           type={"text"}
           autoComplete="off"
           required={fe.mandatory}
@@ -48,7 +50,7 @@ export default ({ formElement: fe, value, update }) => {
     return (
       <div>
         <TextField
-          label={fe.display || fe.name}
+           label={t(fe.display || fe.name)}
           type={"text"}
           autoComplete="off"
           required={fe.mandatory}
@@ -73,7 +75,7 @@ export default ({ formElement: fe, value, update }) => {
     return (
       <div>
         <TextField
-          label={fe.display || fe.name}
+           label={t(fe.display || fe.name)}
           type={"text"}
           autoComplete="off"
           required={fe.mandatory}
@@ -98,7 +100,7 @@ export default ({ formElement: fe, value, update }) => {
     return (
       <div>
         <TextField
-          label={fe.display || fe.name}
+           label={t(fe.display || fe.name)}
           type={"text"}
           autoComplete="off"
           required={fe.mandatory}
@@ -113,5 +115,4 @@ export default ({ formElement: fe, value, update }) => {
       </div>
     );
   }
-
-};
+}

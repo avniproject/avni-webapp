@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField, Chip } from "@material-ui/core";
-import { ObservationsHolder, Individual } from "avni-models";
+import { ObservationsHolder } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
@@ -12,9 +12,9 @@ import {
   setSubject,
   saveCompleteFalse
 } from "../../reducers/registrationReducer";
-import Typography from '@material-ui/core/Typography';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import Typography from "@material-ui/core/Typography";
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
 import { getGenders } from "../../reducers/metadataReducer";
 import { get, sortBy } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
@@ -27,6 +27,8 @@ import Paper from "@material-ui/core/Paper";
 import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import SubjectRegistrationForm from "./SubjectRegistrationForm";
+import { useTranslation } from "react-i18next";
+import BrowserStore from '../../api/browserStore';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(4),
     flexGrow: 1
   },
-  form: {   
+  form: {
     border: "1px solid #f1ebeb"
   },
   villagelabel: {
@@ -55,7 +57,7 @@ const useStyles = makeStyles(theme => ({
     padding: 8
   },
   caption: {
-    color: "rgba(0, 0, 0, 0.54)"   
+    color: "rgba(0, 0, 0, 0.54)"
   },
   topprevnav: {
     color: "#cecdcd",
@@ -82,48 +84,76 @@ const useStyles = makeStyles(theme => ({
   iconcolor: {
     color: "blue"
   },
-  topboxstyle:{
-    padding: theme.spacing(3, 3),
+  topboxstyle: {
+    padding: theme.spacing(3, 3)
   },
-  buttomboxstyle:{
+  buttomboxstyle: {
     backgroundColor: "#f8f4f4",
     height: 80,
-    width: '100%',
+    width: "100%",
     padding: 25
   }
 }));
 
 const DefaultPage = props => {
   const classes = useStyles();
-  console.log(props)
+  const { t } = useTranslation();
+  console.log(props);
 
   React.useEffect(() => {
-    if (!props.saved) {
-      if (!props.subject) {
-        props.onLoad(props.match.queryParams.type);
-      }
-    } else {
-      let subject = Individual.createEmptyInstance();
-      subject.subjectType = props.subject.subjectType;
-      props.setSubject(subject);
-      props.saveCompleteFalse();
-    }
+    (async function fetchData() {
+      await props.onLoad(props.match.queryParams.type); 
+      let subject = BrowserStore.fetchSubject();
+      // props.updateSubject("firstName",subject.firstName);
+      if(subject){
+
+      
+        props.setSubject(subject);              
+      } 
+      console.log("props",props.subject);
+    })();
+
+
+
+    // if (!props.saved) {
+    //   if (!props.subject) {
+    //     props.onLoad(props.match.queryParams.type);
+    //   }
+    // } else {
+    //   let subject = Individual.createEmptyInstance();
+    //   subject.subjectType = props.subject.subjectType;
+    //   props.setSubject(subject);
+    //   props.saveCompleteFalse();
+    // }
   }, []);
 
   return (
     <div>
       <div className={classes.topcaption}>
-      <Typography  variant="caption" gutterBottom> No Details  </Typography>
+        <Typography variant="caption" gutterBottom>
+          {" "}
+          {t("no")} {t("details")}{" "}
+        </Typography>
       </div>
-      
+
       <LineBreak num={1} />
-      <div >
+      <div>
         {props.subject && (
           <div>
-            <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
-              <Typography variant="subtitle1" gutterBottom> 1. Basic Details</Typography>
+            <Box
+              display="flex"
+              flexDirection={"row"}
+              flexWrap="wrap"
+              justifyContent="space-between"
+            >
+              <Typography variant="subtitle1" gutterBottom>
+                {" "}
+                1. {t("Basic")} {t("details")}
+              </Typography>
               <Box>
-                <label className={classes.topprevnav} disabled={true}>PREV</label>
+                <label className={classes.topprevnav} disabled={true}>
+                  {t("previous")}
+                </label>
                 <RelativeLink
                   to="form"
                   params={{
@@ -132,16 +162,28 @@ const DefaultPage = props => {
                   }}
                   noUnderline
                 >
-
-                  {props.form && <label className={classes.toppagenum}> 1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}</label>}
-                  <label className={classes.topnextnav}>NEXT</label>
+                  {props.form && (
+                    <label className={classes.toppagenum}>
+                      {" "}
+                      1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}
+                    </label>
+                  )}
+                  <label className={classes.topnextnav}>{t("next")}</label>
                 </RelativeLink>
               </Box>
             </Box>
 
             <Paper className={classes.form}>
               <Box className={classes.topboxstyle} display="flex" flexDirection="column">
-                <Typography className={classes.caption} variant="caption" display="block" gutterBottom> Date of registration </Typography>
+                <Typography
+                  className={classes.caption}
+                  variant="caption"
+                  display="block"
+                  gutterBottom
+                >
+                  {" "}
+                  {t("date")} of {t("registration")}{" "}
+                </Typography>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     disableToolbar
@@ -151,12 +193,12 @@ const DefaultPage = props => {
                     margin="normal"
                     id="date-picker-inline"
                     name="registrationDate"
-                    value={props.subject.registrationDate.toISOString().substr(0, 10)}
+                    value={new Date(props.subject.registrationDate).toISOString().substr(0, 10)}
                     onChange={e => {
                       props.updateSubject("registrationDate", new Date(e.target.value));
                     }}
                     KeyboardButtonProps={{
-                      'aria-label': 'change date',
+                      "aria-label": "change date",
                       color: "primary"
                     }}
                   />
@@ -166,7 +208,7 @@ const DefaultPage = props => {
                   <React.Fragment>
                     <TextField
                       style={{ width: "30%" }}
-                      label="First Name"
+                      label={t("firstName")}
                       type="text"
                       autoComplete="off"
                       required
@@ -179,7 +221,7 @@ const DefaultPage = props => {
                     <LineBreak num={1} />
                     <TextField
                       style={{ width: "30%" }}
-                      label="Last Name"
+                      label={t("lastName")}
                       type="text"
                       autoComplete="off"
                       required
@@ -194,19 +236,23 @@ const DefaultPage = props => {
                       dateOfBirth={props.subject.dateOfBirth || ""}
                       dateOfBirthVerified={props.subject.dateOfBirthVerified}
                       onChange={date => props.updateSubject("dateOfBirth", date)}
-                      markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
+                      markVerified={verified =>
+                        props.updateSubject("dateOfBirthVerified", verified)
+                      }
                     />
                     <LineBreak num={1} />
                     <CodedFormElement
-                      groupName="Gender"
+                      groupName={t("gender")}
                       items={sortBy(props.genders, "name")}
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                       onChange={selected => props.updateSubject("gender", selected)}
                     />
                     <LineBreak num={1} />
-                    <label className={classes.villagelabel}>Village</label>
-                    <LocationAutosuggest selectedVillage={props.subject.lowestAddressLevel.title}
-                      onSelect={location => props.updateSubject("lowestAddressLevel", location)} data={props}
+                    <label className={classes.villagelabel}>{t("Village")}</label>
+                    <LocationAutosuggest
+                      selectedVillage={props.subject.lowestAddressLevel.title}
+                      onSelect={location => props.updateSubject("lowestAddressLevel", location)}
+                      data={props}
                     />
                   </React.Fragment>
                 )}
@@ -226,23 +272,34 @@ const DefaultPage = props => {
                     />
                   </React.Fragment>
                 )}
-                <LineBreak num={1} />                
+                <LineBreak num={1} />
               </Box>
-              <Box className={classes.buttomboxstyle} display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="flex-start">
-                  <Box>
-                    <Chip className={classes.prevbuttonspace} label="PREVIOUS" disabled variant="outlined" />
-                    <RelativeLink
-                      to="form"
-                      params={{
-                        type: props.subject.subjectType.name,
-                        from: props.location.pathname + props.location.search
-                      }}
-                      noUnderline
-                    >
-                      <PagenatorButton>NEXT</PagenatorButton>
-                    </RelativeLink>
-                  </Box>
+              <Box
+                className={classes.buttomboxstyle}
+                display="flex"
+                flexDirection={"row"}
+                flexWrap="wrap"
+                justifyContent="flex-start"
+              >
+                <Box>
+                  <Chip
+                    className={classes.prevbuttonspace}
+                    label={t("previous")}
+                    disabled
+                    variant="outlined"
+                  />
+                  <RelativeLink
+                    to="form"
+                    params={{
+                      type: props.subject.subjectType.name,
+                      from: props.location.pathname + props.location.search
+                    }}
+                    noUnderline
+                  >
+                    <PagenatorButton>{t("next")}</PagenatorButton>
+                  </RelativeLink>
                 </Box>
+              </Box>
             </Paper>
           </div>
         )}
@@ -281,7 +338,9 @@ const ConnectedDefaultPage = withRouter(
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.registration.registrationForm,
-  obs: state.dataEntry.registration.subject && new ObservationsHolder(state.dataEntry.registration.subject.observations),
+  obs:
+    state.dataEntry.registration.subject &&
+    new ObservationsHolder(state.dataEntry.registration.subject.observations),
   //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
@@ -291,6 +350,7 @@ const mapFormStateToProps = state => ({
 const mapFormDispatchToProps = {
   updateObs,
   onLoad,
+  setSubject,
   onSave: saveSubject
 };
 
