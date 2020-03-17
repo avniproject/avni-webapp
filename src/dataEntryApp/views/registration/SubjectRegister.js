@@ -187,16 +187,16 @@ const DefaultPage = props => {
                 </Typography>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
-                    disableToolbar
+                    //disableToolbar
                     style={{ width: "30%" }}
-                    variant="inline"
-                    format="MM/dd/yyyy"
                     margin="normal"
-                    id="date-picker-inline"
+                    id="date-picker-dialog"
+                    label="Date picker dialog"
+                    format="MM/dd/yyyy"
                     name="registrationDate"
                     value={new Date(props.subject.registrationDate).toISOString().substr(0, 10)}
-                    onChange={e => {
-                      props.updateSubject("registrationDate", new Date(e.target.value));
+                    onChange={date => {
+                      props.updateSubject("registrationDate", new Date(date));
                     }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",

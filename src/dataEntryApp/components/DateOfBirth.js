@@ -12,8 +12,12 @@ import { useTranslation } from "react-i18next";
 
 export const DateOfBirth = ({ dateOfBirth, onChange }) => {
   const { t } = useTranslation();
-  //const dob = dateOfBirth && dateOfBirth.toISOString().substr(0, 10);
-  const dob = dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10);
+  let dob = dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10);
+  if (dob === "") {
+    dob = new Date().toISOString().substr(0, 10);
+  } else {
+    dob = dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10);
+  }
   const [years, setYears] = React.useState("");
   const [months, setMonths] = React.useState("");
 
@@ -27,9 +31,9 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
     }
   }, [dateOfBirth]);
 
-  const _onChange = value => {
-    const date = new Date(value);
-    onChange(moment(date).isValid() ? date : undefined);
+  const _onChange = date => {
+    const date1 = new Date(date).toISOString().substr(0, 10);
+    onChange(moment(date1).isValid() ? date1 : undefined);
   };
 
   const _onYearsChange = value => {
@@ -45,40 +49,26 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
   return (
     <Fragment>
       <Box display="flex" flexDirection="column">
-        <TextField
-          label={t("dateOfBirth")}
-          type="date"
-          autoComplete="off"
-          required
-          style={{ width: "30%" }}
-          name="dateOfBirth"
-          value={dob}
-          onChange={e => _onChange(e.target.value)}
-          InputLabelProps={{
-            shrink: true
-          }}
-        />
-        {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
-            disableToolbar
-            variant="inline"
-            format="MM/dd/yyyy"
             margin="normal"
-            required
-            id="date-picker-inline"
+            id="date-picker-dialog"
+            label="Date picker dialog"
+            format="MM/dd/yyyy"
             style={{ width: "30%" }}
             name="dateOfBirth"
             value={dob}
-            onChange={e => _onChange(e.target.value)}
+            onChange={date => _onChange(date)}
             InputLabelProps={{
               shrink: true
             }}
             KeyboardButtonProps={{
               'aria-label': 'change date',
+              color: "primary"
             }}
           />
 
-        </MuiPickersUtilsProvider> */}
+        </MuiPickersUtilsProvider>
         <LineBreak num={1} />
         <TextField
           label={t("age")}
