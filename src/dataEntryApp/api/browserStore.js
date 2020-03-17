@@ -35,4 +35,10 @@ export default class {
       return subject;  
     }else return;
   }
+
+  static clear(key) {
+    if(sessionStorage.getItem(key)) {
+      sessionStorage.clear(key);
+    }
+  }
 }

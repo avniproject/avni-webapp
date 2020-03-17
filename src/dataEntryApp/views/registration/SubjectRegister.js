@@ -109,15 +109,10 @@ const DefaultPage = props => {
   React.useEffect(() => {
     (async function fetchData() {
       await props.onLoad(props.match.queryParams.type); 
+      props.saveCompleteFalse();
       let subject = BrowserStore.fetchSubject();
-      // props.updateSubject("firstName",subject.firstName);
-      if(subject){
-
-      
-        props.setSubject(subject);              
-      } 
-      console.log("props",props.subject);
-    })();
+      if(subject)  props.setSubject(subject);
+   })();
 
 
 

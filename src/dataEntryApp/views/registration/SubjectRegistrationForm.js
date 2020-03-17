@@ -128,6 +128,7 @@ const SubjectRegistrationForm = ({
   const pageCount = currentPageNumber + 1 + " / " + (lastPageNumber + 1);
   const { t } = useTranslation();
   const onOkHandler = data => {
+    BrowserStore.clear('subject');
     setRedirect(data);
   };
 
