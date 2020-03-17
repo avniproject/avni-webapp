@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField, Chip } from "@material-ui/core";
-import { ObservationsHolder, Individual } from "avni-models";
+import { ObservationsHolder } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
@@ -28,6 +28,7 @@ import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import SubjectRegistrationForm from "./SubjectRegistrationForm";
 import { useTranslation } from "react-i18next";
+import BrowserStore from '../../api/browserStore';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -100,16 +101,30 @@ const DefaultPage = props => {
   console.log(props);
 
   React.useEffect(() => {
-    if (!props.saved) {
-      if (!props.subject) {
-        props.onLoad(props.match.queryParams.type);
-      }
-    } else {
-      let subject = Individual.createEmptyInstance();
-      subject.subjectType = props.subject.subjectType;
-      props.setSubject(subject);
-      props.saveCompleteFalse();
-    }
+    (async function fetchData() {
+      await props.onLoad(props.match.queryParams.type); 
+      let subject = BrowserStore.fetchSubject();
+      // props.updateSubject("firstName",subject.firstName);
+      if(subject){
+
+      
+        props.setSubject(subject);              
+      } 
+      console.log("props",props.subject);
+    })();
+
+
+
+    // if (!props.saved) {
+    //   if (!props.subject) {
+    //     props.onLoad(props.match.queryParams.type);
+    //   }
+    // } else {
+    //   let subject = Individual.createEmptyInstance();
+    //   subject.subjectType = props.subject.subjectType;
+    //   props.setSubject(subject);
+    //   props.saveCompleteFalse();
+    // }
   }, []);
 
   return (
@@ -178,7 +193,7 @@ const DefaultPage = props => {
                     margin="normal"
                     id="date-picker-inline"
                     name="registrationDate"
-                    value={props.subject.registrationDate.toISOString().substr(0, 10)}
+                    value={new Date(props.subject.registrationDate).toISOString().substr(0, 10)}
                     onChange={e => {
                       props.updateSubject("registrationDate", new Date(e.target.value));
                     }}
@@ -335,6 +350,7 @@ const mapFormStateToProps = state => ({
 const mapFormDispatchToProps = {
   updateObs,
   onLoad,
+  setSubject,
   onSave: saveSubject
 };
 

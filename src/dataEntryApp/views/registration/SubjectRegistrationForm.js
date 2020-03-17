@@ -11,6 +11,7 @@ import Summary from "./Summary";
 import { Box, Typography, Paper } from "@material-ui/core";
 import CustomizedDialog from "../../components/Dialog";
 import { useTranslation } from "react-i18next";
+import BrowserStore from '../../api/browserStore';
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -85,13 +86,21 @@ const SubjectRegistrationForm = ({
   onSaveGoto,
   onSave,
   subject,
-  onLoad
+  onLoad,
+  setSubject
 }) => {
-  React.useEffect(() => {
-    if (!subject) {
-      onLoad(match.queryParams.type);
-    }
-  });
+  React.useEffect(()=>{
+    if(!subject){      
+      (async function fetchData() {
+        await onLoad(match.queryParams.type);               
+        let subject = BrowserStore.fetchSubject();
+        if(subject){          
+          setSubject(subject);  
+                  } 
+
+      })();  
+    }    
+  })
   const classes = useStyle();
   const [redirect, setRedirect] = React.useState(false);
 
