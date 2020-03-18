@@ -47,10 +47,11 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
             margin="normal"
-            id="date-picker-dialog"            
+            id="date-picker-dialog"     
+            autoComplete="off"       
             placeholder = "Date of birth"
             format="MM/dd/yyyy"
-            style={{ width: "30%" }}
+            style={{ width: "30%" }}            
             name="dateOfBirth"
             value={dob}
             onChange={date => _onChange(date)}

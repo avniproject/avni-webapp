@@ -15,7 +15,7 @@ export default ({ formElement: fe, value, update }) => {
         required={fe.mandatory}
         name={fe.name}
         value={value}
-        fullWidth
+        style={{ width: "30%" }}
         onChange={e => {
           const v = e.target.value;
           isEmpty(v) || isNaN(+v) ? update() : update(+v);
