@@ -1,7 +1,6 @@
 package org.openchs.dao.application;
 
 import org.openchs.application.FormMapping;
-import org.openchs.application.FormMapping.FormMappingProjection;
 import org.openchs.application.FormType;
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ReferenceDataRepository;
@@ -32,7 +31,7 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     FormMapping findByProgramIdAndEncounterTypeIdAndFormFormTypeAndIsVoidedFalse(Long programId, Long encounterTypeId, FormType formType);
 
     @Query("select m from FormMapping m where m.isVoided = false")
-    List<FormMappingProjection> findAllOperational();
+    List<FormMapping> findAllOperational();
 
     default FormMapping findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in FormMapping");

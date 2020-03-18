@@ -23,6 +23,7 @@ public class ProgramContractWeb {
     private String lastModifiedBy;
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
+    private String uuid;
 
     public String getName() {
         return name;
@@ -64,11 +65,20 @@ public class ProgramContractWeb {
         this.colour = colour;
     }
 
+    public void setUUID(String uuid){
+        this.uuid = uuid;
+    }
+
+    public String getUUID(){
+        return uuid;
+    }
+
     public static ProgramContractWeb fromOperationalProgram(OperationalProgram operationalProgram) {
         ProgramContractWeb contract = new ProgramContractWeb();
 
         contract.setId(operationalProgram.getId());
         contract.setName(operationalProgram.getName());
+        contract.setUUID(operationalProgram.getProgram().getUuid());
         contract.setColour(operationalProgram.getProgram().getColour());
         contract.setProgramSubjectLabel(operationalProgram.getProgramSubjectLabel());
         contract.setOrganisationId(operationalProgram.getOrganisationId());

@@ -3,6 +3,7 @@ package org.openchs.web.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.FormMapping;
+import org.openchs.application.FormType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"name", "uuid", "dataType", "answers", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit", "unique"})
@@ -12,6 +13,7 @@ public class FormMappingContract extends ReferenceDataContract {
     private String programUUID;
     private String encounterTypeUUID;
     private String subjectTypeUUID;
+    private FormType formType;
 
     public String getFormUUID() {
         return formUUID;
@@ -45,9 +47,19 @@ public class FormMappingContract extends ReferenceDataContract {
         this.subjectTypeUUID = subjectTypeUUID;
     }
 
+    public void setFormType(FormType formType){
+        this.formType=formType;
+    }
+
+    public FormType getFormType() {
+        return formType;
+    }
+
     public static FormMappingContract fromFormMapping(FormMapping formMapping) {
         FormMappingContract contract = new FormMappingContract();
         contract.setUuid(formMapping.getUuid());
+        contract.setId(formMapping.getId());
+        contract.setFormType(formMapping.getType());
         contract.setSubjectTypeUUID(formMapping.getSubjectTypeUuid());
         contract.setProgramUUID(formMapping.getProgramUuid());
         contract.setFormUUID(formMapping.getFormUuid());

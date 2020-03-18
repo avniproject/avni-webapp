@@ -18,7 +18,7 @@ public class Form extends OrganisationAwareEntity {
     @Enumerated(EnumType.STRING)
     private FormType formType;
 
-    @NotNull
+    // @NotNull
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "form")
