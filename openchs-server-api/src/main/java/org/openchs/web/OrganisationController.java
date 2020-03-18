@@ -1,17 +1,11 @@
 package org.openchs.web;
 
-import org.openchs.dao.AccountRepository;
-import org.openchs.dao.JobStatus;
-import org.openchs.dao.OrganisationRepository;
-import org.openchs.domain.Account;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.User;
+import org.openchs.dao.*;
+import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.OrganisationContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,9 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,11 +21,15 @@ public class OrganisationController implements RestControllerResourceProcessor<O
 
     private OrganisationRepository organisationRepository;
     private AccountRepository accountRepository;
+    private final GenderRepository genderRepository;
+    private final OrganisationConfigRepository organisationConfigRepository;
 
     @Autowired
-    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository) {
+    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository) {
         this.organisationRepository = organisationRepository;
         this.accountRepository = accountRepository;
+        this.genderRepository = genderRepository;
+        this.organisationConfigRepository = organisationConfigRepository;
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.POST)
@@ -48,10 +44,39 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         }
         org.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
         org.setDbUser(request.getDbUser());
-        createOrganisation(request, org);
+        setAttributesOnOrganisation(request, org);
         setOrgAccountByIdOrDefault(org, request.getAccountId());
+
         organisationRepository.save(org);
+        createDefaultGenders(org);
+        createDefaultOrgConfig(org);
+
         return new ResponseEntity<>(org, HttpStatus.CREATED);
+    }
+
+    private void createDefaultOrgConfig(Organisation org) {
+        OrganisationConfig organisationConfig = new OrganisationConfig();
+        organisationConfig.assignUUID();
+        Map<String, Object> settings = new HashMap<>();
+        settings.put("languages", new String[]{"en"});
+        JsonObject jsonObject = new JsonObject(settings);
+        organisationConfig.setSettings(jsonObject);
+        organisationConfig.setOrganisationId(org.getId());
+        organisationConfigRepository.save(organisationConfig);
+    }
+
+    private void createDefaultGenders(Organisation org) {
+        createGender("Male", org);
+        createGender("Female", org);
+        createGender("Other", org);
+    }
+
+    private void createGender(String genderName, Organisation org) {
+        Gender gender = new Gender();
+        gender.setName(genderName);
+        gender.assignUUID();
+        gender.setOrganisationId(org.getId());
+        genderRepository.save(gender);
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.GET)
@@ -79,7 +104,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         if (organisation == null) {
             throw new Exception(String.format("Organisation %s not found", request.getName()));
         }
-        createOrganisation(request, organisation);
+        setAttributesOnOrganisation(request, organisation);
         setOrgAccountByIdOrDefault(organisation, request.getAccountId());
         return organisationRepository.save(organisation);
     }
@@ -109,7 +134,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         return organisations.map(OrganisationContract::fromEntity);
     }
 
-    private void createOrganisation(@RequestBody OrganisationContract request, Organisation organisation) {
+    private void setAttributesOnOrganisation(@RequestBody OrganisationContract request, Organisation organisation) {
         organisation.setName(request.getName());
         organisation.setUsernameSuffix(request.getUsernameSuffix());
         if (request.getParentOrganisationId() != null) {

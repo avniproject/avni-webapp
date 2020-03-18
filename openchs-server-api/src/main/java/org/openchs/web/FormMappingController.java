@@ -31,6 +31,15 @@ public class FormMappingController extends AbstractController<FormMapping> {
         for (FormMappingContract formMappingRequest : formMappingRequests) {
             formMappingService.createOrUpdateFormMapping(formMappingRequest);
         }
-
     }
+
+    @RequestMapping(value = "/emptyFormMapping", method = RequestMethod.POST)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    void save_empty(@RequestBody FormMappingContract formMappingRequest) {
+        if (formMappingRequest != null) {
+            formMappingService.createOrUpdateEmptyFormMapping(formMappingRequest);
+        }
+    }
+
 }
