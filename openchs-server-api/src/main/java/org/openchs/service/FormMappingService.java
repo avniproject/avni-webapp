@@ -112,8 +112,12 @@ public class FormMappingService {
         FormMapping formMapping = new FormMapping();
         formMapping.setUuid(formMappingRequest.getUuid());
 
-        formMapping.setForm(null);
-
+        Form form =  null;
+        if (formMappingRequest.getFormUUID() != null) {
+            form =  formRepository.findByUuid(formMappingRequest.getFormUUID());
+        }
+        formMapping.setForm(form);
+        
         if (formMappingRequest.getProgramUUID() != null) {
             formMapping.setProgram(programRepository.findByUuid(formMappingRequest.getProgramUUID()));
         }
