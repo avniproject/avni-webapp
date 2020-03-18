@@ -68,7 +68,7 @@ export default ({ children, ...props}) => {
 
   const classes = useStyles();
   if(props.type === "text") {
-    return <Typography className={classes.topnav} variant="subtitle1" gutterBottom {...props} onClick={onTestClick}> {children} </Typography>
+    return <Typography className={classes.topnav} variant="overline" {...props} onClick={onTestClick}> {children} </Typography>
   }else if(children === "PREVIOUS") {
     return <Button className={classes.privbuttonStyle} type="button" variant="outlined" {...props} >{children} </Button>   
   }else if(children === "Save") {

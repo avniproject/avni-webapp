@@ -9,10 +9,13 @@ const styles = {
     marginRight: 20
   },
   toppagenum: {
-    color: "rgba(0, 0, 0, 0.54)",
     marginRight: 10,
-    fontSize: "12px"
-  }
+    marginTop: 5,    
+    backgroundColor: "silver",
+    color: "black",    
+    fontSize: 12,
+    padding: 3
+  }  
 };
 
 const PaginationButton = ({ page, title, type }) =>
@@ -23,7 +26,6 @@ const PaginationButton = ({ page, title, type }) =>
   );
 
 const Paginator = props => {
-  console.log("props*************8", props);
   const { t } = useTranslation();
 
   return (
@@ -43,10 +45,10 @@ const Paginator = props => {
       </Box>
 
       {props.showCount && (
-        <Typography style={styles.toppagenum} variant="subtitle1" gutterBottom>
-          {" "}
-          {props.count}{" "}
-        </Typography>
+         <label style={styles.toppagenum}>
+         {" "}
+         {props.count}{" "}
+       </label>      
       )}
 
       <Box component={"span"}>

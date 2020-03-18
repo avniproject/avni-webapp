@@ -146,7 +146,7 @@ const SubjectRegistrationForm = ({
               pageDetails={pageDetails}
               onSave={onSave}
               label={{ Previous: "previous", Next: "next", Save: "save", type: "text" }}
-              showCount="true"
+              showCount={true}
               count={pageCount}
             />
           </Box>
@@ -172,7 +172,7 @@ const SubjectRegistrationForm = ({
                 pageDetails={pageDetails}
                 onSave={onSave}
                 label={{ Previous: "previous", Next: "next", Save: "save" }}
-                showCount="false"
+                showCount={false}
               />
             </div>
           </Paper>

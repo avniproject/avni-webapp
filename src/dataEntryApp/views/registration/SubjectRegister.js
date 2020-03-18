@@ -62,13 +62,14 @@ const useStyles = makeStyles(theme => ({
   },
   topprevnav: {
     color: "#cecdcd",
-    marginRight: 10,
+    marginRight: 20,
     fontSize: "12px"
   },
   toppagenum: {
-    color: "rgba(0, 0, 0, 0.54)",
-    marginRight: 10,
-    fontSize: "12px"
+    backgroundColor: "silver",
+    color: "black",
+    fontSize: 12,
+    padding: 3
   },
   topnextnav: {
     color: "orange",
@@ -186,12 +187,10 @@ const DefaultPage = props => {
                   {t("date")} of {t("registration")}{" "}
                 </Typography>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    //disableToolbar
+                  <KeyboardDatePicker                    
                     style={{ width: "30%" }}
                     margin="normal"
-                    id="date-picker-dialog"
-                    label="Date picker dialog"
+                    id="date-picker-dialog"                    
                     format="MM/dd/yyyy"
                     name="registrationDate"
                     value={new Date(props.subject.registrationDate).toISOString().substr(0, 10)}
