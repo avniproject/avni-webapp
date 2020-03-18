@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.openchs.domain.Audit;
 import org.openchs.domain.OrganisationAwareEntity;
 import org.openchs.domain.User;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 
@@ -37,7 +38,7 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
     }
 
     private int getIndexOf(String[] propertyNames, String propertyName) {
-        for (int i = 0; i < propertyNames.length; i++ ) {
+        for (int i = 0; i < propertyNames.length; i++) {
             if (propertyNames[i].equals(propertyName)) return i;
         }
         return -1;
@@ -46,9 +47,12 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
     private boolean updateOrganisationId(Object entity, Object[] currentState, String[] propertyNames) {
         if (entity instanceof OrganisationAwareEntity) {
             int organisationIdIndex = getIndexOf(propertyNames, "organisationId");
-            Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
+            Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+            if (organisation == null) {
+                return false;
+            }
             if (currentState[organisationIdIndex] == null) {
-                currentState[organisationIdIndex] = organisationId;
+                currentState[organisationIdIndex] = organisation.getId();
                 return true;
             }
         }
