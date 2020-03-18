@@ -10,7 +10,7 @@ import Button from "@material-ui/core/Button";
 const ProgramList = ({ history }) => {
   const columns = [
     { title: "Name", field: "name", defaultSort: "asc" },
-    { title: "Colour", field: "colour", type: "string" },
+    { title: "Colour", field: "colour", type: "string", sorting: false },
     { title: "Program subject label", field: "programSubjectLabel", type: "string" },
     { title: "Organisation Id", field: "organisationId", type: "numeric" }
   ];

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
@@ -6,11 +6,60 @@ import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
+import ProgramChips from "../WorkFlow/ProgramChip";
+import EncounterTypeChips from "../WorkFlow/EncounterTypeChip";
+import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 
 const SubjectTypesList = ({ history }) => {
+  const [formMapping, setMapping] = useState([]);
+  const [program, setProgram] = useState([]);
+  const [encounterType, setEncounterType] = useState([]);
+
+  useEffect(() => {
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        setMapping(response.data.formMappings);
+        setProgram(response.data.programs);
+        setEncounterType(response.data.encounterTypes);
+      })
+      .catch(error => {});
+  }, []);
+
   const columns = [
     { title: "Name", field: "name", defaultSort: "asc" },
-    { title: "Organisation Id", field: "organisationId", type: "numeric" }
+    {
+      title: "Registration form name",
+      field: "formName",
+      sorting: false,
+      render: rowData => <WorkFlowFormCreation rowDetails={rowData} formMapping={formMapping} />
+    },
+    {
+      title: "Programs",
+      sorting: false,
+      render: rowData => (
+        <ProgramChips
+          formMapping={formMapping}
+          rowDetails={rowData}
+          setMapping={setMapping}
+          program={program}
+          setProgram={setProgram}
+        />
+      )
+    },
+    {
+      title: "Encounter types",
+      sorting: false,
+      render: rowData => (
+        <EncounterTypeChips
+          formMapping={formMapping}
+          rowDetails={rowData}
+          setMapping={setMapping}
+          encounterType={encounterType}
+          setEncounterType={setEncounterType}
+        />
+      )
+    }
   ];
 
   const [redirect, setRedirect] = useState(false);
@@ -35,6 +84,13 @@ const SubjectTypesList = ({ history }) => {
           });
         });
     });
+
+  const editSubjectType = rowData => ({
+    icon: "edit",
+    tooltip: "Edit subject type",
+    onClick: (event, form) => history.push(`/appDesigner/subjectType/${rowData.id}`),
+    disabled: rowData.voided
+  });
 
   const addNewConcept = () => {
     setRedirect(true);
@@ -71,12 +127,7 @@ const SubjectTypesList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
-              onRowClick={(event, rowData) =>
-                history.push({
-                  pathname: `/appDesigner/subjectType/${rowData.id}/show`,
-                  state: {}
-                })
-              }
+              actions={[editSubjectType]}
             />
           </div>
         </div>
