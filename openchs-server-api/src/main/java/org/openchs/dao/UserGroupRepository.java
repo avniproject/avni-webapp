@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
+import java.util.List;
+
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "myGroups", path = "myGroups")
@@ -26,4 +28,6 @@ public interface UserGroupRepository extends ReferenceDataRepository<UserGroup> 
     default UserGroup findByNameIgnoreCase(String name) {
         throw new UnsupportedOperationException("No field 'name' in UserGroup.");
     }
+
+    List<UserGroup> findByGroup_Id(Long groupId);
 }
