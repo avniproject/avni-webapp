@@ -15,6 +15,7 @@ import org.openchs.service.FormMappingService;
 import org.openchs.service.FormService;
 import org.openchs.util.ApiException;
 import org.openchs.web.request.ConceptContract;
+import org.openchs.web.request.FormMappingContract;
 import org.openchs.web.request.FormatContract;
 import org.openchs.web.request.application.BasicFormDetails;
 import org.openchs.web.request.application.FormContract;
@@ -148,6 +149,12 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     public ResponseEntity deleteWeb(@PathVariable String formUUID) {
         try {
             Form existingForm = formRepository.findByUuid(formUUID);
+            List<FormMapping> formMappings = formMappingRepository.findByFormId(existingForm.getId());
+            for (FormMapping formMapping : formMappings) {
+                FormMappingContract formMappingContract = FormMappingContract.fromFormMapping(formMapping);
+                formMappingContract.setVoided(true);
+                formMappingService.createOrUpdateFormMapping(formMappingContract);
+            }
             existingForm.setVoided(!existingForm.isVoided());
             formRepository.save(existingForm);
         } catch (Exception e) {
