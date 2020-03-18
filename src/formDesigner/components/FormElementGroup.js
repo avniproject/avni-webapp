@@ -215,7 +215,7 @@ function FormElementGroup(props) {
                     <FormControl fullWidth>
                       <Input
                         type="text"
-                        placeholder="Name"
+                        placeholder="Group name"
                         disableUnderline={true}
                         onClick={stopPropagation}
                         name={"name" + panel}
