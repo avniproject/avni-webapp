@@ -221,6 +221,7 @@ function FormElementGroup(props) {
                         name={"name" + panel}
                         value={props.groupData.name}
                         onChange={event => eventCall(props.index, "name", event.target.value)}
+                        autoComplete="off"
                       />
                     </FormControl>
                   </Typography>
