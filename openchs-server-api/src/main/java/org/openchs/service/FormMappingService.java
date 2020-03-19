@@ -117,7 +117,7 @@ public class FormMappingService {
             form =  formRepository.findByUuid(formMappingRequest.getFormUUID());
         }
         formMapping.setForm(form);
-        
+
         if (formMappingRequest.getProgramUUID() != null) {
             formMapping.setProgram(programRepository.findByUuid(formMappingRequest.getProgramUUID()));
         }
@@ -140,7 +140,7 @@ public class FormMappingService {
             formMapping.setSubjectType(null);
         }
 
-        formMapping.setVoided(false);
+        formMapping.setVoided(formMappingRequest.isVoided());
         formMappingRepository.save(formMapping);
     }
 
