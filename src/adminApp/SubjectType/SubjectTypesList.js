@@ -19,7 +19,9 @@ const SubjectTypesList = ({ history }) => {
     http
       .get("/web/operationalModules")
       .then(response => {
-        setMapping(response.data.formMappings);
+        const formMap = response.data.formMappings;
+        formMap.map(l => (l["isVoided"] = false));
+        setMapping(formMap);
         setProgram(response.data.programs);
         setEncounterType(response.data.encounterTypes);
       })

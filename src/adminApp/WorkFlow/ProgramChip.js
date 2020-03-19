@@ -4,6 +4,7 @@ import Chip from "@material-ui/core/Chip";
 import FormLabel from "@material-ui/core/FormLabel";
 import { default as UUID } from "uuid";
 import AutoSuggestForEntity from "./AutoSuggestForEntity";
+import { cloneDeep } from "lodash";
 
 function ProgramChips(props) {
   const programObject = {};
@@ -13,17 +14,37 @@ function ProgramChips(props) {
   props.program.map(l => (programObject[l.uuid] = l));
 
   const temp = props.formMapping.filter(
-    l => l.subjectTypeUUID === props.rowDetails.uuid && l.programUUID !== null
+    l =>
+      l.subjectTypeUUID === props.rowDetails.uuid && l.programUUID !== null && l.isVoided === false
   );
 
   const removeDuplicate = [...new Set(temp.map(t => t.programUUID))];
 
-  const onAddProgram = (flag, t) => {
+  const onRemoveProgram = (progUUID, subUUID) => {
+    const formMappingCopy = cloneDeep(props.formMapping);
+    const voidMapping = formMappingCopy.filter(
+      l => l.subjectTypeUUID === subUUID && l.programUUID === progUUID
+    );
+    voidMapping.map(l => (l.isVoided = true));
+    http
+      .post("/emptyFormMapping", voidMapping)
+      .then(response => {
+        if (response.status === 200) {
+          props.setMapping(formMappingCopy);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const onAddProgram = (flag, programName) => {
     if (name.trim() !== "") {
       const data = {
         uuid: UUID.v4(),
         subjectTypeUUID: props.rowDetails.uuid,
-        programUUID: ""
+        programUUID: "",
+        isVoided: false
       };
       if (flag) {
         http
@@ -36,7 +57,7 @@ function ProgramChips(props) {
               props.setProgram([...props.program, response.data]);
               data.programUUID = response.data.uuid;
               http
-                .post("/emptyFormMapping", data)
+                .post("/emptyFormMapping", [data])
                 .then(response => {
                   props.setMapping([...props.formMapping, data]);
                 })
@@ -50,10 +71,10 @@ function ProgramChips(props) {
           });
       }
       if (!flag) {
-        const progUUID = props.program.filter(l => l.name === t);
+        const progUUID = props.program.filter(l => l.name === programName);
         data.programUUID = progUUID[0].uuid;
         http
-          .post("/emptyFormMapping", data)
+          .post("/emptyFormMapping", [data])
           .then(response => {
             props.setMapping([...props.formMapping, data]);
           })
@@ -79,7 +100,7 @@ function ProgramChips(props) {
               label={programObject[prog].name}
               color="primary"
               key={index}
-              // onDelete={()=> onRemoveProgram(index)}
+              onDelete={() => onRemoveProgram(programObject[prog].uuid, props.rowDetails.uuid)}
             />
           )
         );
