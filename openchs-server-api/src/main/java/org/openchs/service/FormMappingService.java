@@ -109,8 +109,11 @@ public class FormMappingService {
     }
 
     public void createOrUpdateEmptyFormMapping(FormMappingContract formMappingRequest) {
-        FormMapping formMapping = new FormMapping();
-        formMapping.setUuid(formMappingRequest.getUuid());
+        FormMapping formMapping = formMappingRepository.findByUuid(formMappingRequest.getUuid());
+        if (formMapping == null) {
+            formMapping = new FormMapping();
+            formMapping.setUuid(formMappingRequest.getUuid());
+        }
 
         Form form =  null;
         if (formMappingRequest.getFormUUID() != null) {
