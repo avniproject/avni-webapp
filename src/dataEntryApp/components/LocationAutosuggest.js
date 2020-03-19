@@ -53,13 +53,7 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
   };
 
   const onChange = (event, { newValue }) => {
-    setValue(newValue);
-    const validationMsg = SubjectValidation.stringvalidation("firstName", newValue);
-    // console.log("messageKey---->", validationMsg.messageKey);
-    let firstnameerrormsg = validationMsg.messageKey
-    console.log("messageKey---->", firstnameerrormsg);
-    setFirstnamemsg(firstnameerrormsg);
-   
+    setValue(newValue);  
   };
 
   const onSuggestionSelected = (event, { suggestion }) => onSelect(suggestion);
@@ -93,8 +87,6 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
       inputProps={inputProps}
       onSuggestionSelected={onSuggestionSelected}
     />
-    {firstnameerrormsg && <Typography className={classes.errmsg} variant="caption" display="block" gutterBottom> {firstnameerrormsg} </Typography>}
-
     </div>
    
   );

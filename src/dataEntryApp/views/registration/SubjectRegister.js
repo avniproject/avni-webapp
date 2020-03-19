@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip } from "@material-ui/core";
+import { Box, TextField, Chip, Typography, Paper} from "@material-ui/core";
 import { ObservationsHolder } from "avni-models";
 import {
   getRegistrationForm,
@@ -12,7 +12,6 @@ import {
   setSubject,
   saveCompleteFalse
 } from "../../reducers/registrationReducer";
-import Typography from "@material-ui/core/Typography";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { getGenders } from "../../reducers/metadataReducer";
@@ -23,13 +22,11 @@ import { CodedFormElement } from "../../components/CodedFormElement";
 import PagenatorButton from "../../components/PagenatorButton";
 import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import SubjectRegistrationForm from "./SubjectRegistrationForm";
 import { useTranslation } from "react-i18next";
 import BrowserStore from '../../api/browserStore';
-import SubjectValidation from "./SubjectValidation";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,7 +59,7 @@ const useStyles = makeStyles(theme => ({
   },
   topprevnav: {
     color: "#cecdcd",
-    marginRight: 20,
+    marginRight: 8,
     fontSize: "12px"
   },
   toppagenum: {
@@ -177,7 +174,7 @@ const DefaultPage = props => {
 
             <Paper className={classes.form}>
               <Box className={classes.topboxstyle} display="flex" flexDirection="column">
-                <Typography
+                {/* <Typography
                   className={classes.caption}
                   variant="caption"
                   display="block"
@@ -185,7 +182,7 @@ const DefaultPage = props => {
                 >
                   {" "}
                   {t("date")} of {t("registration")}{" "}
-                </Typography>
+                </Typography> */}
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker                    
                     style={{ width: "30%" }}
@@ -193,7 +190,8 @@ const DefaultPage = props => {
                     id="date-picker-dialog"                    
                     format="MM/dd/yyyy"
                     name="registrationDate"
-                    value={new Date(props.subject.registrationDate).toISOString().substr(0, 10)}
+                    label= "Date of registration"
+                    value={new Date(props.subject.registrationDate)}
                     onChange={date => {
                       props.updateSubject("registrationDate", new Date(date));
                     }}
@@ -215,15 +213,9 @@ const DefaultPage = props => {
                       name="firstName"
                       value={props.subject.firstName || ""}
                       onChange={e => {
-                        props.updateSubject("firstName", e.target.value);
-                        const validationMsg = SubjectValidation.stringvalidation("firstName", e.target.value);
-                        // console.log("messageKey---->", validationMsg.messageKey);
-                        let firstnameerrormsg = validationMsg.messageKey
-                        console.log("messageKey---->", firstnameerrormsg);
-                        setFirstnamemsg(firstnameerrormsg);
+                        props.updateSubject("firstName", e.target.value);                       
                       }}
-                    />
-                    {firstnameerrormsg && <Typography className={classes.errmsg} variant="caption" display="block" gutterBottom> {firstnameerrormsg} </Typography>}
+                    />                   
                     <LineBreak num={1} />
                     <TextField
                       style={{ width: "30%" }}
@@ -234,15 +226,9 @@ const DefaultPage = props => {
                       name="lastName"
                       value={props.subject.lastName || ""}
                       onChange={e => {
-                        props.updateSubject("lastName", e.target.value);
-                        const validationMsg = SubjectValidation.stringvalidation("lastName", e.target.value);
-                        //console.log("messageKey---->", validationMsg.messageKey);
-                        let lastnameerrormsg = validationMsg.messageKey
-                        console.log("messageKey---->", lastnameerrormsg);
-                        setLastnamemsg(lastnameerrormsg);
+                        props.updateSubject("lastName", e.target.value);                       
                       }}
-                    />
-                    {lastnameerrormsg && <Typography className={classes.errmsg} variant="caption" display="block" gutterBottom> {lastnameerrormsg} </Typography>}
+                    />                   
                     <LineBreak num={1} />
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || ""}

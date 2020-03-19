@@ -27,7 +27,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
   }, [dateOfBirth]);
 
   const _onChange = date => {
-    const date1 = new Date(date).toISOString().substr(0, 10);
+    const date1 = new Date(date);
     onChange(moment(date1).isValid() ? date1 : undefined);
   };
 
@@ -48,11 +48,12 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
           <KeyboardDatePicker
             margin="normal"
             id="date-picker-dialog"     
-            autoComplete="off"       
-            placeholder = "Date of birth"
+            autoComplete="off"  
+            placeholder = "mm/dd/yyyy"
             format="MM/dd/yyyy"
             style={{ width: "30%" }}            
             name="dateOfBirth"
+            label="Date Of birth"
             value={dob}
             onChange={date => _onChange(date)}
             InputLabelProps={{

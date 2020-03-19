@@ -32,9 +32,6 @@ class SubjectValidation {
         if (result === true) {
             errormsg = ''
             return new SubjectValidation(true, formIdentifier, errormsg);
-        } else if (formIdentifier.trim() == "") {
-            errormsg = 'Please enter valid text';
-            return new SubjectValidation(false, formIdentifier, errormsg);
         } else {
             errormsg = 'Please enter valid text';
             return new SubjectValidation(false, formIdentifier, errormsg);
@@ -50,10 +47,7 @@ class SubjectValidation {
         if (result === true) {
             errormsg = ''
             return new SubjectValidation(true, formIdentifier, errormsg);
-        } else if (formIdentifier.trim() == "") {
-            errormsg = 'Please enter numaric values';
-            return new SubjectValidation(false, formIdentifier, errormsg);
-        } else {
+        }else {
             errormsg = 'Please enter numaric values';
             return new SubjectValidation(false, formIdentifier, errormsg);
         }
@@ -68,10 +62,7 @@ class SubjectValidation {
         if (result === true) {
             errormsg = ''
             return new SubjectValidation(true, formIdentifier, errormsg);
-        } else if (formIdentifier.trim() == "") {
-            errormsg = 'Please enter valid contact number';
-            return new SubjectValidation(false, formIdentifier, errormsg);
-        } else {
+        }else {
             errormsg = 'Please enter valid contact number';
             return new SubjectValidation(false, formIdentifier, errormsg);
         }
