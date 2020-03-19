@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
 import org.openchs.service.FormMappingService;
 import org.openchs.web.request.FormMappingContract;
@@ -36,10 +37,12 @@ public class FormMappingController extends AbstractController<FormMapping> {
     @RequestMapping(value = "/emptyFormMapping", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    void save_empty(@RequestBody FormMappingContract formMappingRequest) {
-        if (formMappingRequest != null) {
+    void save_empty(@RequestBody List<FormMappingContract> formMappingRequests) {
+
+        for (FormMappingContract formMappingRequest : formMappingRequests) {
             formMappingService.createOrUpdateEmptyFormMapping(formMappingRequest);
         }
     }
+
 
 }
