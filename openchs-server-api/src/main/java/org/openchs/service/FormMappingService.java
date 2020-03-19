@@ -143,7 +143,7 @@ public class FormMappingService {
             formMapping.setSubjectType(null);
         }
 
-        formMapping.setVoided(formMappingRequest.isVoided());
+        formMapping.setVoided(formMappingRequest.getIsVoided());
         formMappingRepository.save(formMapping);
     }
 
