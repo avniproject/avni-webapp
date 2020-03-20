@@ -45,6 +45,7 @@ function ProgramChips(props) {
         subjectTypeUUID: props.rowDetails.uuid,
         programUUID: "",
         isVoided: false
+        // formType:""
       };
       if (flag) {
         http
@@ -96,7 +97,8 @@ function ProgramChips(props) {
         return (
           programObject[prog] && (
             <Chip
-              size="small"
+              size="medium"
+              style={{ marginRight: "3px", marginTop: "2px" }}
               label={programObject[prog].name}
               color="primary"
               key={index}

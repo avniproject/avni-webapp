@@ -53,7 +53,7 @@ function WorkFlowFormCreation(props) {
       {" "}
       {clicked && (
         <Link href={"http://localhost:6010/#/appdesigner/forms/" + formData.uuid}>
-          {formData.name}
+          {formData.name === undefined || formData.name === null ? "Fill the form" : formData.name}
         </Link>
       )}
       {!clicked && (

@@ -16,6 +16,7 @@ function EncounterTypeChips(props) {
   const temp = props.formMapping.filter(
     l =>
       l.subjectTypeUUID === props.rowDetails.uuid &&
+      (l.programUUID === undefined || l.programUUID === null) &&
       l.encounterTypeUUID !== null &&
       l.isVoided !== true
   );
@@ -47,6 +48,7 @@ function EncounterTypeChips(props) {
         subjectTypeUUID: props.rowDetails.uuid,
         encounterTypeUUID: "",
         isVoided: false
+        // formType: "Encounter"
       };
       if (flag) {
         http
@@ -98,7 +100,8 @@ function EncounterTypeChips(props) {
         return (
           encounterTypeObject[encounter] && (
             <Chip
-              size="small"
+              size="medium"
+              style={{ marginRight: "3px", marginTop: "2px" }}
               label={encounterTypeObject[encounter].name}
               color="primary"
               key={index}
