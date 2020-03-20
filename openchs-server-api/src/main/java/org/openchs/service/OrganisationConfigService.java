@@ -7,6 +7,7 @@ import org.openchs.web.request.OrganisationConfigRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.UUID;
 
 @Service
@@ -20,6 +21,7 @@ public class OrganisationConfigService {
         this.organisationConfigRepository = organisationConfigRepository;
     }
 
+    @Transactional
     public OrganisationConfig saveOrganisationConfig(OrganisationConfigRequest request, Organisation organisation) {
         OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisation.getId());
         if (organisationConfig == null) {
@@ -29,6 +31,7 @@ public class OrganisationConfigService {
         organisationConfig.setUuid(request.getUuid() == null ? UUID.randomUUID().toString() : request.getUuid());
         organisationConfig.setSettings(request.getSettings());
         organisationConfig.setWorklistUpdationRule(request.getWorklistUpdationRule());
+        organisationConfig.updateLastModifiedDateTime();
         organisationConfigRepository.save(organisationConfig);
         return organisationConfig;
     }
