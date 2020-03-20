@@ -185,12 +185,12 @@ class FormSettings extends Component {
         let data = Object.assign({}, response.data);
         let formMappings = [];
         _.forEach(data.formMappings, formMapping => {
-          if (formMapping.formUuid === this.props.match.params.id) {
+          if (formMapping.formUUID === this.props.match.params.id) {
             formMappings.push({
               uuid: formMapping.uuid,
-              programUuid: formMapping.programUuid,
-              subjectTypeUuid: formMapping.subjectTypeUuid,
-              encounterTypeUuid: formMapping.encounterTypeUuid,
+              programUuid: formMapping.programUUID,
+              subjectTypeUuid: formMapping.subjectTypeUUID,
+              encounterTypeUuid: formMapping.encounterTypeUUID,
               voided: false,
               newFlag: false,
               updatedFlag: false
