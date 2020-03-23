@@ -2,7 +2,7 @@ package org.openchs.importer.batch.csv;
 
 import org.openchs.framework.security.AuthService;
 import org.openchs.importer.batch.model.Row;
-import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,7 @@ import java.util.Map;
 import static java.lang.String.format;
 
 @Component
-@StepScope
+@JobScope
 public class CsvFileItemWriter implements ItemWriter<Row> {
 
     private final AuthService authService;
@@ -27,20 +27,28 @@ public class CsvFileItemWriter implements ItemWriter<Row> {
     private String type;
 
     @Autowired
-    public CsvFileItemWriter(AuthService authService, LocationWriter locationWriter, UserAndCatchmentWriter userAndCatchmentWriter) {
+    public CsvFileItemWriter(AuthService authService,
+                             LocationWriter locationWriter,
+                             UserAndCatchmentWriter userAndCatchmentWriter,
+                             SubjectWriter subjectWriter) {
         this.authService = authService;
         writers.put("locations", locationWriter);
         writers.put("usersAndCatchments", userAndCatchmentWriter);
+        writers.put("subjects", subjectWriter);
+    }
+
+    private ItemWriter<Row> getWriter() {
+        if (writers.containsKey(type)) {
+            return writers.get(type);
+        } else {
+            throw new RuntimeException(format("Unknown bulkupload type: '%s'", type));
+        }
     }
 
     @Override
     public void write(List<? extends Row> rows) throws Exception {
         authService.authenticateByUserId(userId);
-        if (writers.containsKey(type)) {
-            writers.get(type).write(rows);
-        } else {
-            throw new RuntimeException(format("Unknown bulkupload type: '%s'", type));
-        }
+        getWriter().write(rows);
     }
 
     public Long getUserId() {

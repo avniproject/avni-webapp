@@ -1,6 +1,7 @@
 package org.openchs.dao.application;
 
 import org.openchs.application.Form;
+import org.openchs.application.FormType;
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ReferenceDataRepository;
 import org.openchs.domain.User;
@@ -23,4 +24,6 @@ public interface FormRepository extends ReferenceDataRepository<Form>, FindByLas
 
     @Query("select f.name from Form f where f.isVoided = false")
     List<String> getAllNames();
+
+    List<Form> findAllByFormType(FormType formType);
 }
