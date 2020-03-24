@@ -66,7 +66,9 @@ public class SyncConfiguration extends WebMvcConfigurerAdapter {
             "groups",
             "myGroups",
             "groupPrivilege",
-            "privilege"
+            "privilege",
+            "groupRole",
+            "groupSubject"
     ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     @Autowired

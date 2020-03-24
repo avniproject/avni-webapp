@@ -22,6 +22,17 @@ public class SubjectType extends OrganisationAwareEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "subjectType")
     private Set<OperationalSubjectType> operationalSubjectTypes = new HashSet<>();
 
+    @Column
+    private boolean isGroup;
+
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(boolean group) {
+        isGroup = group;
+    }
+
     public String getName() {
         return name;
     }
