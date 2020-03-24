@@ -11,5 +11,5 @@ export default {
       return response.json;
     }),
   fetchOrganisationConfig: () =>
-    httpClient.fetchJson("/web/organizations").then(response => response.json)
+    httpClient.fetchJson("/organisationConfig").then(response => response.json)
 };

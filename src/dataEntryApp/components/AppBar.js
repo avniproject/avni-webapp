@@ -275,8 +275,12 @@ const PrimarySearchAppBar = ({
 };
 
 const mapStateToProps = state => ({
+  //orgConfig: state.translationsReducer.orgConfig
+  //? state.translationsReducer.orgConfig.settings.languages
+  //: "",
+
   orgConfig: state.translationsReducer.orgConfig
-    ? state.translationsReducer.orgConfig.settings.languages
+    ? state.translationsReducer.orgConfig._embedded.organisationConfig[0].settings.languages
     : "",
   userInfo: state.app.userInfo,
   defaultLanguage: state.app.userInfo ? state.app.userInfo.settings.locale : ""

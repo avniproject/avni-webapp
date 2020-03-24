@@ -36,7 +36,10 @@ const Form = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto,
     from
   };
 
-  const current = form.formElementGroupAt(currentPageNumber);
+  const current = currentPageNumber
+    ? form.formElementGroupAt(currentPageNumber)
+    : form.formElementGroupAt(0);
+  //console.log(current);
   return (
     <Fragment>
       <h6>

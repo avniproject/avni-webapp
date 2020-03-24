@@ -8,6 +8,8 @@ import translations from "../translations/reducers";
 import reports from "../reports/reducers";
 import app from "./ducks";
 import translationsReducer from "../i18nTranslations/TranslationReducers";
+import enrolForm from "../dataEntryApp/reducers/programEnrolReducer";
+import programs from "../dataEntryApp/reducers/programReducer";
 
 export default combineReducers({
   admin: adminReducer,
@@ -18,5 +20,7 @@ export default combineReducers({
   bulkUpload,
   translations,
   reports,
-  translationsReducer
+  translationsReducer,
+  enrolForm,
+  programs
 });

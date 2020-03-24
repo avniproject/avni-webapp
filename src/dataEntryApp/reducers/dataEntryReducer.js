@@ -3,6 +3,7 @@ import search from "./searchReducer";
 import registration from "./registrationReducer";
 import metadata from "./metadataReducer";
 import subjectProfile from "./subjectDashboardReducer";
+import programs from "./programReducer";
 import subjectGenerel from "./generalSubjectDashboardReducer";
 import subjectProgram from "./programSubjectDashboardReducer";
 //import { conceptReducer } from "../../common/store/conceptReducer";
@@ -18,5 +19,6 @@ export default combineReducers({
   subjectProgram,
   // conceptReducer,
   orgConfig,
-  userInfo
+  userInfo,
+  programs
 });
