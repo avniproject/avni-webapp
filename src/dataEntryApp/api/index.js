@@ -20,8 +20,8 @@ export default {
       return response.json;
     }),
 
-  fetchPrograms: () =>
-    httpClient.fetchJson(`/web/programs`).then(response => {
+  fetchPrograms: subjectUuid =>
+    httpClient.fetchJson(`/web/eligiblePrograms?subjectUuid=${subjectUuid}`).then(response => {
       return response.json;
     }),
 

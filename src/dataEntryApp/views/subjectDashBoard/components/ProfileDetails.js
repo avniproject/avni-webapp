@@ -104,7 +104,7 @@ const styles = theme => ({
   }
 });
 
-const ProfileDetails = ({ profileDetails, getPrograms, programs, match }) => {
+const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid }) => {
   const classes = useStyles();
   const [age, setAge] = React.useState("");
 
@@ -113,12 +113,12 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, match }) => {
   };
 
   const { t } = useTranslation();
-  console.log(programs);
+  console.log("programs coming from api", programs);
 
   useEffect(() => {
     debugger;
     console.log("use effect...");
-    getPrograms();
+    getPrograms(subjectUuid);
   }, []);
 
   const content = (

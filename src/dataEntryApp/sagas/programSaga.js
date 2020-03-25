@@ -11,7 +11,7 @@ export function* programFetchWatcher() {
   yield takeLatest(types.GET_PROGRAMS, programFetchWorker);
 }
 
-export function* programFetchWorker() {
-  const program = yield call(api.fetchPrograms);
-  yield put(setPrograms(mapProgram(program)));
+export function* programFetchWorker({ subjectUUID }) {
+  const programs = yield call(api.fetchPrograms, subjectUUID);
+  yield put(setPrograms(programs));
 }
