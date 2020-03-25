@@ -6,7 +6,7 @@ export default {
   fetchForm: uuid => httpClient.fetchJson(`/web/form/${uuid}`).then(response => response.json),
   fetchEnrolForm: uuid =>
     httpClient
-      .fetchJson(`/web/form/36ba19a3-c289-44b7-bf56-eed36e9d7519`)
+      .fetchJson(`web/form/23d8763d-4759-4c7d-bb46-d57a1ee58673`)
       .then(response => response.json),
   fetchGenders: () => httpClient.fetchJson("/web/gender/").then(response => response.json),
   saveSubject: subject =>
