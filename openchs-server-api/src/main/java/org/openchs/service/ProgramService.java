@@ -1,7 +1,12 @@
 package org.openchs.service;
 
+import org.openchs.application.FormMapping;
+import org.openchs.application.FormType;
+import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.OperationalProgramRepository;
 import org.openchs.dao.ProgramRepository;
+import org.openchs.dao.application.FormMappingRepository;
+import org.openchs.domain.Individual;
 import org.openchs.domain.OperationalProgram;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.Program;
@@ -12,16 +17,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 @Service
 public class ProgramService {
     private final Logger logger;
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
+    private final FormMappingRepository formMappingRepository;
+    private final IndividualRepository individualRepository;
 
     @Autowired
-    public ProgramService(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository) {
+    public ProgramService(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, FormMappingRepository formMappingRepository, IndividualRepository individualRepository) {
         this.programRepository = programRepository;
         this.operationalProgramRepository = operationalProgramRepository;
+        this.formMappingRepository = formMappingRepository;
+        this.individualRepository = individualRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -36,6 +51,27 @@ public class ProgramService {
         program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
         program.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
         programRepository.save(program);
+    }
+
+
+    public List<Program> getEligiblePrograms(Individual individual) {
+        //get all program uuids using form mappings and form type
+        List<FormMapping> formMappings = formMappingRepository
+                .findBySubjectTypeAndFormFormTypeAndIsVoidedFalse(individual.getSubjectType(), FormType.ProgramEnrolment);
+        List<Program> availablePrograms = formMappings.stream()
+                .map(formMapping -> formMapping.getProgram())
+                .collect(Collectors.toList());
+        List<Program> activePrograms = individual.getActivePrograms();
+
+        //If the subject is not enrolled in any program then return all available programs
+        if (activePrograms.isEmpty()) return availablePrograms;
+
+        //Remove programs that the subject is already enrolled in.
+        List<Program> eligiblePrograms = formMappings.stream()
+                .filter(formMapping -> !activePrograms.stream().anyMatch(program -> Objects.equals(formMapping.getProgramUuid(), program.getUuid())))
+                .map(formMapping -> formMapping.getProgram())
+                .collect(Collectors.toList());
+        return eligiblePrograms;
     }
 
     public void createOperationalProgram(OperationalProgramContract operationalProgramContract, Organisation organisation) {

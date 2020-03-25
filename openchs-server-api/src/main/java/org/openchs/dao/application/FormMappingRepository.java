@@ -4,6 +4,7 @@ import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ReferenceDataRepository;
+import org.openchs.domain.SubjectType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -29,6 +30,8 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     List<FormMapping> findAllByProgramIdIsNullAndEncounterTypeIdIsNull();
 
     FormMapping findByProgramIdAndEncounterTypeIdAndFormFormTypeAndIsVoidedFalse(Long programId, Long encounterTypeId, FormType formType);
+
+    List<FormMapping> findBySubjectTypeAndFormFormTypeAndIsVoidedFalse(SubjectType subjectType, FormType formType);
 
     @Query("select m from FormMapping m where m.isVoided = false")
     List<FormMapping> findAllOperational();
