@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
@@ -6,13 +6,65 @@ import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
+import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
+import ShowSubjectType from "../WorkFlow/ShowSubjectType";
 
 const ProgramList = ({ history }) => {
+  const [formMapping, setMapping] = useState([]);
+  const [subjectType, setSubjectType] = useState([]);
+
+  useEffect(() => {
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        const formMap = response.data.formMappings;
+        formMap.map(l => (l["isVoided"] = false));
+        setMapping(formMap);
+        setSubjectType(response.data.subjectTypes);
+      })
+      .catch(error => {});
+  }, []);
+
   const columns = [
     { title: "Name", field: "name", defaultSort: "asc" },
-    { title: "Colour", field: "colour", type: "string", sorting: false },
-    { title: "Program subject label", field: "programSubjectLabel", type: "string" },
-    { title: "Organisation Id", field: "organisationId", type: "numeric" }
+    {
+      title: "Subject type",
+      sorting: false,
+      render: rowData => (
+        <ShowSubjectType
+          rowDetails={rowData}
+          subjectType={subjectType}
+          formMapping={formMapping}
+          setMapping={setMapping}
+        />
+      )
+    },
+    {
+      title: "Enrolment form name",
+      sorting: false,
+      render: rowData => (
+        <WorkFlowFormCreation
+          rowDetails={rowData}
+          formMapping={formMapping}
+          setMapping={setMapping}
+          formType="ProgramEnrolment"
+          placeholder="Select enrolment form"
+        />
+      )
+    },
+    {
+      title: "Exit form name",
+      sorting: false,
+      render: rowData => (
+        <WorkFlowFormCreation
+          rowDetails={rowData}
+          formMapping={formMapping}
+          setMapping={setMapping}
+          formType="ProgramExit"
+          placeholder="Select exit form"
+        />
+      )
+    }
   ];
 
   const [redirect, setRedirect] = useState(false);
@@ -73,12 +125,6 @@ const ProgramList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
-              onRowClick={(event, rowData) =>
-                history.push({
-                  pathname: `/appDesigner/program/${rowData.id}/show`,
-                  state: {}
-                })
-              }
             />
           </div>
         </div>
