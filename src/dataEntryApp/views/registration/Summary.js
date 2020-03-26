@@ -1,6 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {Table, TableBody, TableCell, TableRow, Typography, List, Grid} from "@material-ui/core";
+import { Table, TableBody, TableCell, TableRow, Typography, List, Grid } from "@material-ui/core";
 import Observations from "../../../common/components/Observations";
 import { LineBreak } from "../../../common/components/utils";
 import { useTranslation } from "react-i18next";
@@ -20,17 +20,19 @@ const Summary = ({ subject }) => {
   const { t } = useTranslation();
 
   return (
-    <div className={classes.form}>     
+    <div className={classes.form}>
       <Typography variant="button" display="block" gutterBottom>
         System Recommendations
       </Typography>
-      <Table className={classes.table} aria-label="simple table">      
+      <Table className={classes.table} aria-label="simple table">
         <TableBody>
           <TableRow>
-            <TableCell align="justify">{t("Refer to the hospital immeditely for Baby  has got diarrohea")}</TableCell>           
-          </TableRow>         
+            <TableCell align="justify">
+              {t("Refer to the hospital immeditely for Baby  has got diarrohea")}
+            </TableCell>
+          </TableRow>
         </TableBody>
-      </Table> 
+      </Table>
 
       <LineBreak num={2} />
       <Typography variant="button" display="block" gutterBottom>
