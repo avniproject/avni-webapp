@@ -6,14 +6,10 @@ import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
-import ProgramChips from "../WorkFlow/ProgramChip";
-import EncounterTypeChips from "../WorkFlow/EncounterTypeChip";
 import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 
 const SubjectTypesList = ({ history }) => {
   const [formMapping, setMapping] = useState([]);
-  const [program, setProgram] = useState([]);
-  const [encounterType, setEncounterType] = useState([]);
 
   useEffect(() => {
     http
@@ -22,43 +18,23 @@ const SubjectTypesList = ({ history }) => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
         setMapping(formMap);
-        setProgram(response.data.programs);
-        setEncounterType(response.data.encounterTypes);
       })
       .catch(error => {});
   }, []);
 
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc" },
+    { title: "Name", field: "name", defaultSort: "asc", sorting: false },
     {
       title: "Registration form name",
       field: "formName",
       sorting: false,
-      render: rowData => <WorkFlowFormCreation rowDetails={rowData} formMapping={formMapping} />
-    },
-    {
-      title: "Programs",
-      sorting: false,
       render: rowData => (
-        <ProgramChips
-          formMapping={formMapping}
+        <WorkFlowFormCreation
           rowDetails={rowData}
-          setMapping={setMapping}
-          program={program}
-          setProgram={setProgram}
-        />
-      )
-    },
-    {
-      title: "Encounter types",
-      sorting: false,
-      render: rowData => (
-        <EncounterTypeChips
           formMapping={formMapping}
-          rowDetails={rowData}
           setMapping={setMapping}
-          encounterType={encounterType}
-          setEncounterType={setEncounterType}
+          formType="IndividualProfile"
+          placeholder="Select registration form"
         />
       )
     }
