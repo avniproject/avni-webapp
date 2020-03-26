@@ -10,9 +10,9 @@ export const selectRegistrationFormMapping = subjectType => state =>
   find(
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     fm =>
-      isNil(fm.programUuid) &&
-      isNil(fm.encounterTypeUuid) &&
-      fm.subjectTypeUuid === subjectType.uuid
+      isNil(fm.programUUID) &&
+      isNil(fm.encounterTypeUUID) &&
+      fm.subjectTypeUUID === subjectType.uuid
   );
 
 export const selectRegistrationFormMappingForSubjectType = subjectTypeName => state =>
