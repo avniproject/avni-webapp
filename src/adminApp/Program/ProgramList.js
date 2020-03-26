@@ -64,6 +64,18 @@ const ProgramList = ({ history }) => {
           placeholder="Select exit form"
         />
       )
+    },
+    {
+      title: "Colour",
+      field: "colour",
+      type: "string",
+      render: rowData => (
+        <div
+          style={{ width: "20px", height: "20px", border: "1px solid", background: rowData.colour }}
+        >
+          &nbsp;
+        </div>
+      )
     }
   ];
 
@@ -89,6 +101,13 @@ const ProgramList = ({ history }) => {
           });
         });
     });
+
+  const editProgram = rowData => ({
+    icon: "edit",
+    tooltip: "Edit program",
+    onClick: (event, form) => history.push(`/appDesigner/program/${rowData.id}`),
+    disabled: rowData.voided
+  });
 
   const addNewConcept = () => {
     setRedirect(true);
@@ -125,6 +144,7 @@ const ProgramList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
+              actions={[editProgram]}
             />
           </div>
         </div>

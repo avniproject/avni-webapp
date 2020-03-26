@@ -24,6 +24,7 @@
     "jszip": "^3.2.2",
     "lodash": "^4.17.11",
     "material-table": "^1.40.1",
+    "material-ui-rc-color-picker": "^1.0.4",
     "moment": "^2.22.2",
     "popper.js": "^1.14.3",
     "prismjs": "^1.17.1",
