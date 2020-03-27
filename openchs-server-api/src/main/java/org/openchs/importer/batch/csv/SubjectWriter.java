@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -106,7 +104,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        Individual individual = new Individual();
+        Individual individual = getOrCreateIndividual(row);
         List<String> allErrorMsgs = new ArrayList<>();
 
         setSubjectType(individual, row, allErrorMsgs);
@@ -124,9 +122,24 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         }
 
         individual.setVoided(false);
-        individual.setUuid(UUID.randomUUID().toString());
+        individual.assignUUIDIfRequired();
 
         individualRepository.save(individual);
+    }
+
+    private Individual getOrCreateIndividual(Row row) {
+        String externalId = row.get(FixedHeaders.id.getHeader());
+        Individual existingIndividual = null;
+        if (!(externalId == null && externalId.isEmpty())) {
+            existingIndividual = individualRepository.findByExternalId(externalId);
+        }
+        return existingIndividual == null ? createNewIndividual(externalId) : existingIndividual;
+    }
+
+    private Individual createNewIndividual(String externalId) {
+        Individual individual = new Individual();
+        individual.setExternalId(externalId);
+        return individual;
     }
 
     private Set<String> getConceptHeaders(String[] allHeaders, Set<String> nonConceptHeaders) {

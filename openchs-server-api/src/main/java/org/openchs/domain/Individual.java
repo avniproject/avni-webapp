@@ -24,6 +24,8 @@ public class Individual extends OrganisationAwareEntity {
     @JoinColumn(name = "subject_type_id")
     private SubjectType subjectType;
 
+    private String externalId;
+
     @NotNull
     private String firstName;
 
@@ -189,6 +191,14 @@ public class Individual extends OrganisationAwareEntity {
         this.subjectType = subjectType;
     }
 
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
     public Set<IndividualRelationship> getRelationshipsFromSelfToOthers() {
         return relationshipsFromSelfToOthers;
     }
@@ -210,5 +220,4 @@ public class Individual extends OrganisationAwareEntity {
         return programEnrolments.stream().filter(x -> !x.isVoided()).filter(x -> x.getProgramExitDateTime() == null)
                 .map(x -> x.getProgram()).collect(Collectors.toList());
     }
-
 }
