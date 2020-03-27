@@ -153,11 +153,11 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                                 Row row,
                                 List<String> errorMsgs) {
         String subjectTypeValue = row.get(FixedHeaders.subjectType.getHeader());
-        SubjectType subjectType = operationalSubjectTypeRepository.findByNameIgnoreCase(subjectTypeValue).getSubjectType();
-        if (subjectType == null)
+        OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findByNameIgnoreCase(subjectTypeValue);
+        if (operationalSubjectType == null)
             errorMsgs.add(String.format("'%s' not found", FixedHeaders.subjectType.getHeader()));
         else
-            individual.setSubjectType(subjectType);
+            individual.setSubjectType(operationalSubjectType.getSubjectType());
     }
 
     private void setDateOfBirth(Individual individual, Row row, List<String> errorMsgs) {

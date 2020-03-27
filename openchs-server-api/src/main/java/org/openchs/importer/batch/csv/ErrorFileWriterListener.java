@@ -28,11 +28,6 @@ public class ErrorFileWriterListener {
         this.bulkUploadS3Service = bulkUploadS3Service;
     }
 
-    @OnWriteError
-    public void onWriteError(Exception exception, List<? extends Row> items) {
-        items.forEach(item -> appendToErrorFile(item, exception));
-    }
-
     @OnSkipInWrite
     public void onSkipInWrite(Row item, Throwable t) {
         appendToErrorFile(item, t);
