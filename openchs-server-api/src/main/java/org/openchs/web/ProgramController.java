@@ -1,10 +1,13 @@
 package org.openchs.web;
 
+import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.OperationalProgramRepository;
 import org.openchs.dao.ProgramRepository;
+import org.openchs.domain.Individual;
 import org.openchs.domain.OperationalProgram;
 import org.openchs.domain.Program;
 import org.openchs.service.ProgramService;
+import org.openchs.util.ApiException;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ProgramRequest;
 import org.openchs.web.request.webapp.ProgramContractWeb;
@@ -20,7 +23,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ProgramController implements RestControllerResourceProcessor<ProgramContractWeb> {
@@ -28,12 +33,14 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     private ProgramRepository programRepository;
     private OperationalProgramRepository operationalProgramRepository;
     private ProgramService programService;
+    private final IndividualRepository individualRepository;
 
     @Autowired
-    public ProgramController(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, ProgramService programService) {
+    public ProgramController(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, ProgramService programService, IndividualRepository individualRepository) {
         this.programRepository = programRepository;
         this.operationalProgramRepository = operationalProgramRepository;
         this.programService = programService;
+        this.individualRepository = individualRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -131,6 +138,22 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         return wrap(operationalProgramRepository
                 .findPageByIsVoidedFalse(pageable)
                 .map(ProgramContractWeb::fromOperationalProgram));
+    }
+
+    @GetMapping(value = "web/eligiblePrograms")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public List<ProgramContractWeb> getEligiblePrograms(@RequestParam String subjectUuid) {
+        Individual individual = individualRepository.findByUuid(subjectUuid);
+        if (individual == null) throw new ApiException("Subject %s not found", subjectUuid);
+        List<Program> eligiblePrograms = programService.getEligiblePrograms(individual);
+        List<OperationalProgram> operationalPrograms = new ArrayList<>();
+        for (Program p: eligiblePrograms) {
+            operationalPrograms.addAll(p.getOperationalPrograms());
+        }
+        return operationalPrograms.stream()
+                .map(operationalProgram -> ProgramContractWeb.fromOperationalProgram(operationalProgram))
+                .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/web/programs")
