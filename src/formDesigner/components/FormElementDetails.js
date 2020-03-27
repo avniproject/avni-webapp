@@ -115,7 +115,7 @@ function FormElementDetails(props) {
           <div style={{ color: "red" }}>Please enter name</div>
         )}
         <FormControl fullWidth>
-          <InputLabel htmlFor="elementNameDetails">{t("name")}</InputLabel>
+          <InputLabel htmlFor="elementNameDetails">{t("Question")}</InputLabel>
           <Input
             id="elementNameDetails"
             value={props.formElementData.name}

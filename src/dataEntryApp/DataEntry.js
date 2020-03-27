@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
 import { getOperationalModules } from "./reducers/metadataReducer";
+import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
 import Loading from "./components/Loading";
 import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
 import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
@@ -11,7 +12,7 @@ import AppBar from "dataEntryApp/components/AppBar";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "query-string";
-import i18n from "../i18nTranslations/i18n";
+import i18n from "i18next";
 
 import { I18nextProvider } from "react-i18next";
 
@@ -21,15 +22,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DataEntry = ({ match: { path }, getOperationalModules, operationalModules }) => {
+const DataEntry = ({
+  match: { path },
+  getOperationalModules,
+  operationalModules,
+  getOrgConfigInfo,
+  orgConfig
+}) => {
   const classes = useStyles();
   let location = useLocation();
 
   useEffect(() => {
     getOperationalModules();
+    getOrgConfigInfo();
   }, []);
 
-  return operationalModules ? (
+  return operationalModules && orgConfig ? (
     <I18nextProvider i18n={i18n}>
       <div className={classes.root}>
         <Grid container spacing={2} justify="center">
@@ -56,12 +64,13 @@ const DataEntry = ({ match: { path }, getOperationalModules, operationalModules 
 };
 
 const mapStateToProps = state => ({
-  operationalModules: state.dataEntry.metadata.operationalModules
+  operationalModules: state.dataEntry.metadata.operationalModules,
+  orgConfig: state.translationsReducer.orgConfig
 });
 
 export default withRouter(
   connect(
     mapStateToProps,
-    { getOperationalModules }
+    { getOperationalModules, getOrgConfigInfo }
   )(DataEntry)
 );

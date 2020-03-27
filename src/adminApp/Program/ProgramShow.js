@@ -43,7 +43,16 @@ const ProgramShow = props => {
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Colour</FormLabel>
             <br />
-            <span style={{ fontSize: "15px" }}>{program.colour}</span>
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                border: "1px solid",
+                background: program.colour
+              }}
+            >
+              &nbsp;
+            </div>
           </div>
           <p />
           <div>
