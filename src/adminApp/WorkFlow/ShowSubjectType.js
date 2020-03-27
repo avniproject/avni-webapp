@@ -53,7 +53,6 @@ function ShowSubjectType(props) {
 
       {existMapping.length !== 0 && subjectType.length !== 0 && (
         <span>
-          OUT
           {props.subjectType.filter(l => l.uuid === existMapping[0].subjectTypeUUID)[0].name}
         </span>
       )}
