@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip, Typography, Paper} from "@material-ui/core";
+import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
 import { ObservationsHolder } from "avni-models";
 import {
   getRegistrationForm,
@@ -26,7 +26,7 @@ import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import SubjectRegistrationForm from "./SubjectRegistrationForm";
 import { useTranslation } from "react-i18next";
-import BrowserStore from '../../api/browserStore';
+import BrowserStore from "../../api/browserStore";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -106,13 +106,11 @@ const DefaultPage = props => {
 
   React.useEffect(() => {
     (async function fetchData() {
-      await props.onLoad(props.match.queryParams.type); 
+      await props.onLoad(props.match.queryParams.type);
       props.saveCompleteFalse();
       let subject = BrowserStore.fetchSubject();
-      if(subject)  props.setSubject(subject);
-   })();
-
-
+      if (subject) props.setSubject(subject);
+    })();
 
     // if (!props.saved) {
     //   if (!props.subject) {
@@ -184,13 +182,13 @@ const DefaultPage = props => {
                   {t("date")} of {t("registration")}{" "}
                 </Typography> */}
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker                    
+                  <KeyboardDatePicker
                     style={{ width: "30%" }}
                     margin="normal"
-                    id="date-picker-dialog"                    
+                    id="date-picker-dialog"
                     format="MM/dd/yyyy"
                     name="registrationDate"
-                    label= "Date of registration"
+                    label={t("Date of registration")}
                     value={new Date(props.subject.registrationDate)}
                     onChange={date => {
                       props.updateSubject("registrationDate", new Date(date));
@@ -213,9 +211,9 @@ const DefaultPage = props => {
                       name="firstName"
                       value={props.subject.firstName || ""}
                       onChange={e => {
-                        props.updateSubject("firstName", e.target.value);                       
+                        props.updateSubject("firstName", e.target.value);
                       }}
-                    />                   
+                    />
                     <LineBreak num={1} />
                     <TextField
                       style={{ width: "30%" }}
@@ -226,9 +224,9 @@ const DefaultPage = props => {
                       name="lastName"
                       value={props.subject.lastName || ""}
                       onChange={e => {
-                        props.updateSubject("lastName", e.target.value);                       
+                        props.updateSubject("lastName", e.target.value);
                       }}
-                    />                   
+                    />
                     <LineBreak num={1} />
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || ""}
