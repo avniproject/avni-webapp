@@ -19,7 +19,7 @@ import programs from "./programsJson";
 import { getPrograms } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
+import { withParams, InternalLink } from "common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -104,7 +104,7 @@ const styles = theme => ({
   }
 });
 
-const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid }) => {
+const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match }) => {
   const classes = useStyles();
   const [age, setAge] = React.useState("");
 
@@ -116,8 +116,6 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid }) 
   console.log("programs coming from api", programs);
 
   useEffect(() => {
-    debugger;
-    console.log("use effect...");
     getPrograms(subjectUuid);
   }, []);
 
@@ -136,10 +134,11 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid }) 
             displayEmpty
             className={classes.selectEmpty}
           >
-            <MenuItem value={10}>Child</MenuItem>
-            <MenuItem value={20}>Pregnancy</MenuItem>
-            <MenuItem value={30}>Abortion</MenuItem>
-            <MenuItem value={30}>Diabetis</MenuItem>
+            {programs
+              ? programs.map((element, index) => (
+                  <MenuItem value={element.uuid}>{element.name}</MenuItem>
+                ))
+              : ""}
           </Select>
         </FormControl>
       </form>
@@ -209,7 +208,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid }) 
 };
 
 const mapStateToProps = state => ({
-  programs: state.dataEntry.programs
+  programs: state.dataEntry.programs ? state.dataEntry.programs.programs : ""
 });
 
 const mapDispatchToProps = {

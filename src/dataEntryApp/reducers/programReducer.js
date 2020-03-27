@@ -5,8 +5,9 @@ export const types = {
   SET_PROGRAMS: `${prefix}SET_PROGRAMS`
 };
 
-export const getPrograms = () => ({
-  type: types.GET_PROGRAMS
+export const getPrograms = subjectUuid => ({
+  type: types.GET_PROGRAMS,
+  subjectUuid
 });
 
 export const setPrograms = programs => ({

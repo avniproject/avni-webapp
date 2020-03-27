@@ -10,6 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import SubjectButton from "./Button";
 import Fab from "@material-ui/core/Fab";
+import { InternalLink } from "common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -161,7 +162,13 @@ const CommonModal = ({ content, buttonsSet, title }) => {
         {content}
         <DialogActions className={classes.borderBottom}>
           {saveButton ? (
-            <SubjectButton btnLabel={saveButton.label} btnClass={saveButton.classes} />
+            <InternalLink key="1" to={`/app/register?type=Individual`}>
+              <SubjectButton
+                btnLabel={saveButton.label}
+                btnClass={saveButton.classes}
+                btnClick={handleClose}
+              />
+            </InternalLink>
           ) : (
             ""
           )}
