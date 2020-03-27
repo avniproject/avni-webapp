@@ -15,6 +15,7 @@ public class FormMappingContract extends ReferenceDataContract {
     private String subjectTypeUUID;
     private FormType formType;
     private Boolean isVoided;
+    private String formName;
 
     public String getFormUUID() {
         return formUUID;
@@ -56,6 +57,14 @@ public class FormMappingContract extends ReferenceDataContract {
         return formType;
     }
 
+    public void setFormName(String formName){
+        this.formName=formName;
+    }
+
+    public String getFormName() {
+        return formName;
+    }
+
     public Boolean getIsVoided() { return isVoided; }
 
     public static FormMappingContract fromFormMapping(FormMapping formMapping) {
@@ -63,6 +72,7 @@ public class FormMappingContract extends ReferenceDataContract {
         contract.setUuid(formMapping.getUuid());
         contract.setId(formMapping.getId());
         contract.setFormType(formMapping.getType());
+        contract.setFormName(formMapping.getFormName());
         contract.setSubjectTypeUUID(formMapping.getSubjectTypeUuid());
         contract.setProgramUUID(formMapping.getProgramUuid());
         contract.setFormUUID(formMapping.getFormUuid());
