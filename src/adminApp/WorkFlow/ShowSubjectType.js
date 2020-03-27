@@ -8,6 +8,10 @@ import FormControl from "@material-ui/core/FormControl";
 
 function ShowSubjectType(props) {
   const existMapping = props.formMapping.filter(l => l.programUUID === props.rowDetails.uuid);
+  const subjectType =
+    existMapping.length !== 0
+      ? props.subjectType.filter(l => l.uuid === existMapping[0].subjectTypeUUID)
+      : [];
 
   const onAddSubjectMappingtoProgram = event => {
     const data = {
@@ -28,7 +32,7 @@ function ShowSubjectType(props) {
   };
   return (
     <>
-      {existMapping.length === 0 && (
+      {(existMapping.length === 0 || subjectType.length === 0) && (
         <FormControl>
           <InputLabel id="demo-simple-select-label">Select subject type</InputLabel>
           <Select
@@ -47,8 +51,9 @@ function ShowSubjectType(props) {
         </FormControl>
       )}
 
-      {existMapping.length !== 0 && (
+      {existMapping.length !== 0 && subjectType.length !== 0 && (
         <span>
+          OUT
           {props.subjectType.filter(l => l.uuid === existMapping[0].subjectTypeUUID)[0].name}
         </span>
       )}

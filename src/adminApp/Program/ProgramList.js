@@ -69,6 +69,7 @@ const ProgramList = ({ history }) => {
       title: "Colour",
       field: "colour",
       type: "string",
+      sorting: false,
       render: rowData => (
         <div
           style={{ width: "20px", height: "20px", border: "1px solid", background: rowData.colour }}

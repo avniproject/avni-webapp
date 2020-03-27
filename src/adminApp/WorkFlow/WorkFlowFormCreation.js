@@ -192,7 +192,7 @@ function WorkFlowFormCreation(props) {
       )}
       {!clicked && (
         <>
-          <FormControl className={classes.formControl}>
+          <FormControl>
             <InputLabel id="demo-simple-select-label">{props.placeholder}</InputLabel>
             <Select
               label="SelectForm"
