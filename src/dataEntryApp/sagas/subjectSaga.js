@@ -18,6 +18,11 @@ import {
   selectRegistrationSubject
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
+import {
+  getEnrolForm,
+  setEnrolForm,
+  types as enrolSubjectTypes
+} from "../reducers/programEnrolReducer";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -29,6 +34,11 @@ function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   yield put(setRegistrationForm(mapForm(registrationForm)));
 }
 
+function* dataEntryLoadEnrolFormWorker({ subjectTypeName }) {
+  const enrolForm = yield call(api.fetchEnrolForm, "fdf5c253-c49f-43e1-9591-4556a3ea36d4");
+  yield put(setEnrolForm(mapForm(enrolForm)));
+}
+
 function* dataEntrySearchWorker() {
   const params = yield select(state => state.dataEntry.search.subjectSearchParams);
   const subjects = yield call(SubjectService.search, params);
@@ -37,6 +47,10 @@ function* dataEntrySearchWorker() {
 
 export function* dataEntryLoadRegistrationFormWatcher() {
   yield takeLatest(subjectTypes.GET_REGISTRATION_FORM, dataEntryLoadRegistrationFormWorker);
+}
+
+export function* dataEntryLoadEnrolFormWatcher() {
+  yield takeLatest(enrolSubjectTypes.GET_ENROL_FORM, dataEntryLoadEnrolFormWorker);
 }
 
 export function* saveSubjectWorker() {
@@ -84,6 +98,7 @@ export default function* subjectSaga() {
     [
       dataEntrySearchWatcher,
       dataEntryLoadRegistrationFormWatcher,
+      dataEntryLoadEnrolFormWatcher,
       saveSubjectWatcher,
       loadRegistrationPageWatcher,
       updateObsWatcher
