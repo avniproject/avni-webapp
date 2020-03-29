@@ -10,6 +10,8 @@ import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 
 const SubjectTypesList = ({ history }) => {
   const [formMapping, setMapping] = useState([]);
+  const [notificationAlert, setNotificationAlert] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     http
@@ -23,7 +25,12 @@ const SubjectTypesList = ({ history }) => {
   }, []);
 
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc", sorting: false },
+    {
+      title: "Name",
+      defaultSort: "asc",
+      sorting: false,
+      render: rowData => <a href={`#/appDesigner/subjectType/${rowData.id}/show`}>{rowData.name}</a>
+    },
     {
       title: "Registration form name",
       field: "formName",
@@ -35,6 +42,12 @@ const SubjectTypesList = ({ history }) => {
           setMapping={setMapping}
           formType="IndividualProfile"
           placeholder="Select registration form"
+          customUUID="subjectTypeUUID"
+          fillFormName="Registration form"
+          notificationAlert={notificationAlert}
+          setNotificationAlert={setNotificationAlert}
+          message={message}
+          setMessage={setMessage}
         />
       )
     }
@@ -62,13 +75,6 @@ const SubjectTypesList = ({ history }) => {
           });
         });
     });
-
-  const editSubjectType = rowData => ({
-    icon: "edit",
-    tooltip: "Edit subject type",
-    onClick: (event, form) => history.push(`/appDesigner/subjectType/${rowData.id}`),
-    disabled: rowData.voided
-  });
 
   const addNewConcept = () => {
     setRedirect(true);
@@ -105,7 +111,6 @@ const SubjectTypesList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
-              actions={[editSubjectType]}
             />
           </div>
         </div>

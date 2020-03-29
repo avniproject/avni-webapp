@@ -12,6 +12,8 @@ import ShowSubjectType from "../WorkFlow/ShowSubjectType";
 const ProgramList = ({ history }) => {
   const [formMapping, setMapping] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
+  const [notificationAlert, setNotificationAlert] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     http
@@ -26,7 +28,12 @@ const ProgramList = ({ history }) => {
   }, []);
 
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc" },
+    {
+      title: "Name",
+      defaultSort: "asc",
+      sorting: false,
+      render: rowData => <a href={`#/appDesigner/program/${rowData.id}/show`}>{rowData.name}</a>
+    },
     {
       title: "Subject type",
       sorting: false,
@@ -49,6 +56,12 @@ const ProgramList = ({ history }) => {
           setMapping={setMapping}
           formType="ProgramEnrolment"
           placeholder="Select enrolment form"
+          customUUID="programUUID"
+          fillFormName="Enrolment form"
+          notificationAlert={notificationAlert}
+          setNotificationAlert={setNotificationAlert}
+          message={message}
+          setMessage={setMessage}
         />
       )
     },
@@ -62,6 +75,12 @@ const ProgramList = ({ history }) => {
           setMapping={setMapping}
           formType="ProgramExit"
           placeholder="Select exit form"
+          customUUID="programUUID"
+          fillFormName="Exit form"
+          notificationAlert={notificationAlert}
+          setNotificationAlert={setNotificationAlert}
+          message={message}
+          setMessage={setMessage}
         />
       )
     },
@@ -103,13 +122,6 @@ const ProgramList = ({ history }) => {
         });
     });
 
-  const editProgram = rowData => ({
-    icon: "edit",
-    tooltip: "Edit program",
-    onClick: (event, form) => history.push(`/appDesigner/program/${rowData.id}`),
-    disabled: rowData.voided
-  });
-
   const addNewConcept = () => {
     setRedirect(true);
   };
@@ -145,7 +157,6 @@ const ProgramList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
-              actions={[editProgram]}
             />
           </div>
         </div>
