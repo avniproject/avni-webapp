@@ -3,8 +3,12 @@ const prefix = "app/userGroup/reducer/metadata/";
 export const types = {
   SET_GROUPS: `${prefix}SET_GROUPS`,
   GET_GROUPS: `${prefix}GET_GROUPS`,
-  SET_GROUP_DETAILS: `${prefix}SET_GROUP_DETAILS`,
-  GET_GROUP_DETAILS: `${prefix}GET_GROUP_DETAILS`
+  SET_ALL_USERS: `${prefix}SET_ALL_USERS`,
+  GET_ALL_USERS: `${prefix}GET_ALL_USERS`,
+  SET_GROUP_USERS: `${prefix}SET_GROUP_USERS`,
+  GET_GROUP_USERS: `${prefix}GET_GROUP_USERS`,
+  SET_GROUP_PRIVILEGE_LIST: `${prefix}SET_GROUP_PRIVILEGE_LIST`,
+  GET_GROUP_PRIVILEGE_LIST: `${prefix}GET_GROUP_PRIVILEGE_LIST`
 };
 
 export const setGroups = groups => ({
@@ -16,13 +20,32 @@ export const getGroups = () => ({
   type: types.GET_GROUPS
 });
 
-export const setGroupDetails = groupDetails => ({
-  type: types.SET_GROUP_DETAILS,
-  groupDetails
+export const setAllUsers = allUsers => ({
+  type: types.SET_ALL_USERS,
+  allUsers
 });
 
-export const getGroupDetails = param => ({
-  type: types.GET_GROUP_DETAILS,
+export const getAllUsers = () => ({
+  type: types.GET_ALL_USERS
+});
+
+export const setGroupPrivilegeList = groupPrivilegeList => ({
+  type: types.SET_GROUP_PRIVILEGE_LIST,
+  groupPrivilegeList
+});
+
+export const getGroupPrivilegeList = param => ({
+  type: types.GET_GROUP_PRIVILEGE_LIST,
+  param: param
+});
+
+export const setGroupUsers = groupUsers => ({
+  type: types.SET_GROUP_USERS,
+  groupUsers
+});
+
+export const getGroupUsers = param => ({
+  type: types.GET_GROUP_USERS,
   param: param
 });
 
@@ -37,10 +60,22 @@ export default function(state = initialState, action) {
         groups: action.groups
       };
     }
-    case types.SET_GROUP_DETAILS: {
+    case types.SET_ALL_USERS: {
       return {
         ...state,
-        groupDetails: action.groupDetails
+        allUsers: action.allUsers
+      };
+    }
+    case types.SET_GROUP_PRIVILEGE_LIST: {
+      return {
+        ...state,
+        groupPrivilegeList: action.groupPrivilegeList
+      };
+    }
+    case types.SET_GROUP_USERS: {
+      return {
+        ...state,
+        groupUsers: action.groupUsers
       };
     }
     default:

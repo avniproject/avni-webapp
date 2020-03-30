@@ -1,23 +1,69 @@
 import React from "react";
-import Tabs from "@material-ui/core/Tab";
+import PropTypes from "prop-types";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+import GroupUsers from "./GroupUsers";
+import GroupPrivileges from "./GroupPrivileges";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 
-export const TabbedView = ({ name, value }) => {
-  const handleChange = () => {};
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
   return (
-    <Paper square>
-      <Tabs
-        value={value}
-        indicatorColor="primary"
-        textColor="primary"
-        onChange={handleChange}
-        aria-label="disabled tabs example"
-      >
-        <Tab label="Active" />
-        <Tab label="Disabled" disabled />
-        <Tab label="Active" />
-      </Tabs>
-    </Paper>
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
+    </Typography>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired
+};
+
+export const TabView = ({ groupId, userList, privilegeList, ...props }) => {
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  return (
+    <div>
+      <AppBar position="static">
+        <Tabs value={value} onChange={handleChange}>
+          <Tab label="Users" />
+          <Tab label="Permissions" />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={value} index={0}>
+        <GroupUsers groupId={groupId} {...props} />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <GroupPrivileges groupId={groupId} privilegeList={privilegeList} {...props} />
+      </TabPanel>
+    </div>
   );
 };
+
+const mapStateToProps = state => ({
+  privilegeList: state.userGroups.privilegeList
+});
+
+export default withRouter(
+  connect(
+    mapStateToProps
+    //    mapDispatchToProps,
+  )(TabView)
+);
