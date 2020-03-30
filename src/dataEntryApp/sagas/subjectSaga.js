@@ -1,4 +1,4 @@
-import { Individual, ObservationsHolder } from "avni-models";
+import { Individual, ObservationsHolder, Concept } from "avni-models";
 import {
   setSubject,
   getRegistrationForm,
@@ -73,11 +73,27 @@ function* updateObsWatcher() {
 
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
+  console.log(subject.observations);
   const observationHolder = new ObservationsHolder(subject.observations);
-  observationHolder.updateObs(formElement, value);
+  // observationHolder.updateObs(formElement, value);
+  // observationHolder.observations.map((concept)=>{
+  //   console.log(concept);
+
+  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
+    observationHolder.toggleMultiSelectAnswer(formElement.concept, value[0]);
+  } else if (
+    formElement.concept.datatype === Concept.dataType.Coded &&
+    formElement.isSingleSelect()
+  ) {
+    observationHolder.toggleSingleSelectAnswer(formElement.concept, value);
+  } else {
+    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
+  }
+  // })
+
   subject.observations = observationHolder.observations;
   yield put(setSubject(subject));
-  sessionStorage.setItem('subject',JSON.stringify(subject))
+  sessionStorage.setItem("subject", JSON.stringify(subject));
 }
 
 export default function* subjectSaga() {
