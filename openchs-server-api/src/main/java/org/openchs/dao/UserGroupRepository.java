@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 
@@ -30,4 +31,6 @@ public interface UserGroupRepository extends ReferenceDataRepository<UserGroup> 
     }
 
     List<UserGroup> findByGroup_Id(Long groupId);
+
+    List<UserGroup> findByOrganisationId(Long organisationId);
 }

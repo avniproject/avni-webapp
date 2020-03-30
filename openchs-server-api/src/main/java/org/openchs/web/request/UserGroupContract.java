@@ -4,16 +4,20 @@ import org.openchs.domain.UserGroup;
 
 public class UserGroupContract {
 
+    private long id;
     private String userName;
     private String name;
     private String groupName;
     private String email;
     private Long userId;
+    private Long groupId;
     private String phoneNumber;
 
     public static UserGroupContract fromEntity(UserGroup userGroup) {
         UserGroupContract userGroupContract = new UserGroupContract();
+        userGroupContract.setId(userGroup.getId());
         userGroupContract.setGroupName(userGroup.getGroupName());
+        userGroupContract.setGroupId(userGroup.getGroupId());
         userGroupContract.setUserName(userGroup.getUser().getUsername());
         userGroupContract.setEmail(userGroup.getUser().getEmail());
         userGroupContract.setUserId(userGroup.getUser().getId());
@@ -22,12 +26,28 @@ public class UserGroupContract {
         return userGroupContract;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public Long getUserId() {
         return userId;
     }
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
     public String getPhoneNumber() {

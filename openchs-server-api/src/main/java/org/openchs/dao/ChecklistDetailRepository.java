@@ -1,10 +1,9 @@
 package org.openchs.dao;
 
 import org.openchs.domain.ChecklistDetail;
+import org.openchs.domain.ChecklistDetail.ChecklistDetailProjection;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,4 +14,7 @@ public interface ChecklistDetailRepository extends ImplReferenceDataRepository<C
 
     @Query("select c.name from ChecklistDetail c where c.isVoided = false")
     List<String> getAllNames();
+
+    @Query("select c from ChecklistDetail c where c.isVoided = false")
+    List<ChecklistDetailProjection> getAllIdsAndNames();
 }
