@@ -25,7 +25,7 @@ export function* dataEntrySearchWatcher() {
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
-  const registrationForm = yield call(api.fetchForm, formMapping.formUuid);
+  const registrationForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setRegistrationForm(mapForm(registrationForm)));
 }
 
