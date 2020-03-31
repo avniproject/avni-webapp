@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { saveUserInfo } from "rootApp/ducks";
 import { connect } from "react-redux";
 import { get } from "lodash";
+import { Auth } from "aws-amplify";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -92,7 +93,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo }) => {
+const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -198,7 +199,7 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo }) => {
           <ListItemText primary={t("changePassword")} />
         </ListItem>
         <hr className={classes.horizontalLine} />
-        <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+        <ListItem onClick={logout} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
             <LogoutIcon style={{ color: "blue" }} />
           </ListItemIcon>
@@ -221,7 +222,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  saveUserInfo: saveUserInfo
+  saveUserInfo: saveUserInfo,
+  logout: () => Auth.signOut().then(() => (document.location.href = "/"))
 };
 
 export default connect(
