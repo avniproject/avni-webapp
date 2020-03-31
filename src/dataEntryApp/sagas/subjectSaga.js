@@ -17,6 +17,12 @@ import {
   selectSubjectTypeFromName,
   selectRegistrationSubject
 } from "./selectors";
+import {
+  selectEnrolmentFormMappingForSubjectType,
+  selectEnrolSubjectTypeFromName,
+  selectEnrolmentSubject,
+  selectProgramUUID
+} from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
 import {
   getEnrolForm,
@@ -33,6 +39,14 @@ function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const registrationForm = yield call(api.fetchForm, formMapping.formUuid);
   yield put(setRegistrationForm(mapForm(registrationForm)));
 }
+
+// function* dataEntryLoadEnrolFormWorker({ subjectTypeName, programName }) {
+//   //const enrolForm = yield call(api.fetchEnrolForm, "fdf5c253-c49f-43e1-9591-4556a3ea36d4");
+//   //yield put(setEnrolForm(mapForm(enrolForm)));
+//   const formMapping = yield select(selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName));
+//   const enrolForm = yield call(api.fetchForm, formMapping.formUuid);
+//   yield put(setEnrolForm(mapForm(enrolForm)));
+// }
 
 function* dataEntryLoadEnrolFormWorker({ subjectTypeName }) {
   const enrolForm = yield call(api.fetchEnrolForm, "fdf5c253-c49f-43e1-9591-4556a3ea36d4");

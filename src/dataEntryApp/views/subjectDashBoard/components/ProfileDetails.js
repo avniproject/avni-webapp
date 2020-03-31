@@ -22,6 +22,8 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams, InternalLink } from "common/components/utils";
 
+import NativeSelect from "@material-ui/core/NativeSelect";
+
 const useStyles = makeStyles(theme => ({
   tableCell: {
     borderBottom: "none",
@@ -107,10 +109,10 @@ const styles = theme => ({
 
 const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match }) => {
   const classes = useStyles();
-  const [age, setAge] = React.useState("");
+  const [selectedProgram, setSelectedProgram] = React.useState("");
 
   const handleChange = event => {
-    setAge(event.target.value);
+    setSelectedProgram(event.target.value);
   };
 
   const { t } = useTranslation();
@@ -127,7 +129,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           <InputLabel shrink id="demo-simple-select-placeholder-label-label">
             Program
           </InputLabel>
-          <Select
+          {/* <Select
             labelId="demo-simple-select-placeholder-label-label"
             id="demo-simple-select-placeholder-label"
             value={age}
@@ -140,7 +142,24 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                   <MenuItem value={element.uuid}>{element.name}</MenuItem>
                 ))
               : ""}
-          </Select>
+          </Select> */}
+
+          <NativeSelect
+            value={selectedProgram}
+            onChange={handleChange}
+            inputProps={{
+              name: "selected_program",
+              id: "selected_program-native-helper"
+            }}
+          >
+            <option value="" />
+
+            {programs
+              ? programs.map((element, index) => (
+                  <option value={element.name}>{element.name}</option>
+                ))
+              : ""}
+          </NativeSelect>
         </FormControl>
       </form>
     </DialogContent>
@@ -187,7 +206,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           </Table>
         </Grid>
         <Grid item xs={6} align="right">
-          <div onClick={getPrograms}>
+          <div>
             <Modal
               content={content}
               buttonsSet={[
@@ -196,7 +215,12 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                   label: t("enrolInProgram"),
                   classes: classes.enrollButtonStyle
                 },
-                { buttonType: "saveButton", label: t("Enrol"), classes: classes.btnCustom },
+                {
+                  buttonType: "saveButton",
+                  label: t("Enrol"),
+                  classes: classes.btnCustom,
+                  redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`
+                },
                 { buttonType: "cancelButton", label: t("Cancel"), classes: classes.cancelBtnCustom }
               ]}
               title={t("Enrol in program")}

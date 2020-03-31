@@ -15,6 +15,7 @@ import Form from "../../../components/Form";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
+import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramEnrol = ({ match, getEnrolForm }) => {
+const ProgramEnrol = ({ match, getEnrolForm, getSubjectProfile, subjectProfile }) => {
   const [value, setValue] = React.useState("Yes");
 
   const handleChange = event => {
@@ -41,10 +42,11 @@ const ProgramEnrol = ({ match, getEnrolForm }) => {
   };
   const classes = useStyles();
 
-  console.log(getEnrolForm);
+  console.log(subjectProfile);
 
   useEffect(() => {
     getEnrolForm();
+    getSubjectProfile(match.queryParams.uuid);
   }, []);
 
   return (
@@ -53,7 +55,7 @@ const ProgramEnrol = ({ match, getEnrolForm }) => {
       <Paper className={classes.root}>
         <div className={classes.tableView}>
           <Typography component={"span"} className={classes.mainHeading}>
-            Enrol Child Program
+            {match.queryParams.programName}
           </Typography>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
@@ -66,17 +68,29 @@ const ProgramEnrol = ({ match, getEnrolForm }) => {
                   fontSize: "12px"
                 }}
               >
-                <span>
-                  Name: <span style={{ color: "black" }}>Shilpa Ingale</span>{" "}
-                  &nbsp;&nbsp;|&nbsp;&nbsp; Age: <span style={{ color: "black" }}>20yrs</span>{" "}
-                  &nbsp;&nbsp;|&nbsp;&nbsp; Gender: <span style={{ color: "black" }}>Female</span>{" "}
-                  &nbsp;&nbsp;|&nbsp;&nbsp; Village:{" "}
-                  <span style={{ color: "black" }}>Bokkapuram</span>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GPS Coordinates:{" "}
-                  <span style={{ color: "black" }}>15.3657699, 73.9327478</span>
-                  &nbsp;&nbsp;|&nbsp;&nbsp; Enrolment details:{" "}
-                  <span style={{ color: "black" }}>29-01-2020</span>
-                </span>
+                {subjectProfile ? (
+                  <span>
+                    Name:{" "}
+                    <span style={{ color: "black" }}>
+                      {subjectProfile.firstName} {subjectProfile.lastName}
+                    </span>{" "}
+                    &nbsp;&nbsp;|&nbsp;&nbsp; Age:{" "}
+                    <span style={{ color: "black" }}>
+                      {subjectProfile.getAge()._durationValue}{" "}
+                      {subjectProfile.getAge().durationUnit}
+                    </span>{" "}
+                    &nbsp;&nbsp;|&nbsp;&nbsp; Gender:{" "}
+                    <span style={{ color: "black" }}>{subjectProfile.gender}</span>{" "}
+                    &nbsp;&nbsp;|&nbsp;&nbsp; Village:{" "}
+                    <span style={{ color: "black" }}>{subjectProfile.lowestAddressLevel}</span>
+                    {/* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GPS Coordinates:{" "}
+                        <span style={{ color: "black" }}>15.3657699, 73.9327478</span> */}
+                    &nbsp;&nbsp;|&nbsp;&nbsp; Enrolment details:{" "}
+                    <span style={{ color: "black" }}>29-01-2020</span>
+                  </span>
+                ) : (
+                  ""
+                )}
               </p>
               <p style={{ padding: "9px", marginTop: "20px" }}>
                 <span style={{ float: "left" }}>1. Basic details</span>
@@ -135,11 +149,13 @@ const ProgramEnrol = ({ match, getEnrolForm }) => {
 const mapStateToProps = state => ({
   form: state.enrolForm.enrolForm,
   saved: state.enrolForm.saved,
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   onSaveGoto: "/app/search"
 });
 
 const mapDispatchToProps = {
-  getEnrolForm
+  getEnrolForm,
+  getSubjectProfile
 };
 
 export default withRouter(

@@ -11,6 +11,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import SubjectButton from "./Button";
 import Fab from "@material-ui/core/Fab";
 import { InternalLink } from "common/components/utils";
+//import Link from "@material-ui/core/Link";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -130,6 +132,7 @@ const CommonModal = ({ content, buttonsSet, title }) => {
   const handleClose = () => {
     setOpen(false);
   };
+  const preventDefault = event => event.preventDefault();
 
   const mainButton = buttonsSet.filter(element => element.buttonType == "openButton").shift();
   const saveButton = buttonsSet.filter(element => element.buttonType == "saveButton").shift();
@@ -162,18 +165,23 @@ const CommonModal = ({ content, buttonsSet, title }) => {
         {content}
         <DialogActions className={classes.borderBottom}>
           {saveButton ? (
-            <InternalLink key="1" to={`/app/register?type=Individual`}>
+            <Link to={saveButton.redirectTo}>
               <SubjectButton
                 btnLabel={saveButton.label}
                 btnClass={saveButton.classes}
                 btnClick={handleClose}
               />
-            </InternalLink>
+              {/* TEst */}
+            </Link>
           ) : (
             ""
           )}
           {cancelButton ? (
-            <SubjectButton btnLabel={cancelButton.label} btnClass={cancelButton.classes} />
+            <SubjectButton
+              btnLabel={cancelButton.label}
+              btnClass={cancelButton.classes}
+              btnClick={handleClose}
+            />
           ) : (
             ""
           )}
