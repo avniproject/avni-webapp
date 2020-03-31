@@ -15,10 +15,11 @@ import BrowserStore from "../../api/browserStore";
 
 const useStyle = makeStyles(theme => ({
   form: {
-    padding: theme.spacing(0, 3, 4, 3),
-    height: 600,
+    padding: theme.spacing(0, 3, 10, 3),
+    height: "Auto",
     border: "1px solid #f1ebeb",
-    position: "relative"
+    position: "relative",
+    minHeight: "600px"
   },
   detailsstyle: {
     color: "#000",
