@@ -54,7 +54,7 @@ const ProgramCreate = props => {
         http
           .post("/web/program", {
             name: program.name,
-            colour: program.colour,
+            colour: program.colour === "" ? "#ff0000" : program.colour,
             programSubjectLabel: program.programSubjectLabel,
             enrolmentSummaryRule: program.enrolmentSummaryRule,
             enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule

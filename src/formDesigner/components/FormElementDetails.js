@@ -50,8 +50,6 @@ const showDatePicker = (cssClasses, props) => {
         }
         row
       >
-        <FormControlLabel value="Default" control={<Radio />} label="Default" />
-
         <FormControlLabel value="Calendar" control={<Radio />} label="Calendar" />
 
         <FormControlLabel value="Spinner" control={<Radio />} label="Spinner" />
@@ -387,152 +385,125 @@ function FormElementDetails(props) {
           </Grid>
         </Grid>
       )}
-      {props.formElementData.concept.dataType === "Date" && (
-        <Grid container item sm={12}>
-          <InputLabel style={cssClasses.label}>Do you want Date Picker Mode? </InputLabel>
 
-          <RadioGroup
-            aria-label="Select Mode"
-            name="showDateOrDuration"
-            value={props.formElementData.showDateOrDuration}
-            onChange={event =>
-              props.handleModeForDate(
-                props.groupIndex,
-                "showDateOrDuration",
-                event.target.value,
-                props.index
-              )
-            }
-            row
-          >
-            <FormControlLabel value="datePickerMode" control={<Radio />} label="Yes" />
-            <FormControlLabel value="durationOptions" control={<Radio />} label="No" />
-          </RadioGroup>
+      {props.formElementData.concept.dataType === "Date" && showDatePicker(cssClasses, props)}
+
+      {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
+        <Grid container item sm={12}>
+          <InputLabel style={cssClasses.label}>Duration Options</InputLabel>
+
+          <FormControl component="fieldset">
+            <FormGroup row>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={
+                      props.formElementData.keyValues.durationOptions
+                        ? props.formElementData.keyValues.durationOptions.includes("years")
+                        : false
+                    }
+                    value="years"
+                    onChange={event =>
+                      props.handleGroupElementKeyValueChange(
+                        props.groupIndex,
+                        "years",
+                        event.target.value,
+                        props.index
+                      )
+                    }
+                  />
+                }
+                label="Years"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={
+                      props.formElementData.keyValues.durationOptions
+                        ? props.formElementData.keyValues.durationOptions.includes("months")
+                        : false
+                    }
+                    value="months"
+                    onChange={event =>
+                      props.handleGroupElementKeyValueChange(
+                        props.groupIndex,
+                        "months",
+                        event.target.value,
+                        props.index
+                      )
+                    }
+                  />
+                }
+                label="Months"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={
+                      props.formElementData.keyValues.durationOptions
+                        ? props.formElementData.keyValues.durationOptions.includes("weeks")
+                        : false
+                    }
+                    value="weeks"
+                    onChange={event =>
+                      props.handleGroupElementKeyValueChange(
+                        props.groupIndex,
+                        "weeks",
+                        event.target.value,
+                        props.index
+                      )
+                    }
+                  />
+                }
+                label="Weeks"
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={
+                      props.formElementData.keyValues.durationOptions
+                        ? props.formElementData.keyValues.durationOptions.includes("days")
+                        : false
+                    }
+                    value="days"
+                    onChange={event =>
+                      props.handleGroupElementKeyValueChange(
+                        props.groupIndex,
+                        "days",
+                        event.target.value,
+                        props.index
+                      )
+                    }
+                  />
+                }
+                label="Days"
+              />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={
+                      props.formElementData.keyValues.durationOptions
+                        ? props.formElementData.keyValues.durationOptions.includes("hours")
+                        : false
+                    }
+                    value="hours"
+                    onChange={event =>
+                      props.handleGroupElementKeyValueChange(
+                        props.groupIndex,
+                        "hours",
+                        event.target.value,
+                        props.index
+                      )
+                    }
+                  />
+                }
+                label="Hours"
+              />
+            </FormGroup>
+          </FormControl>
         </Grid>
       )}
-
-      {["Date", "Duration"].includes(props.formElementData.concept.dataType) &&
-        (props.formElementData.concept.dataType === "Duration" ||
-          props.formElementData.showDateOrDuration === "durationOptions") && (
-          <Grid container item sm={12}>
-            <InputLabel style={cssClasses.label}>Duration Options</InputLabel>
-
-            <FormControl component="fieldset">
-              <FormGroup row>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={
-                        props.formElementData.keyValues.durationOptions
-                          ? props.formElementData.keyValues.durationOptions.includes("years")
-                          : false
-                      }
-                      value="years"
-                      onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "years",
-                          event.target.value,
-                          props.index
-                        )
-                      }
-                    />
-                  }
-                  label="Years"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={
-                        props.formElementData.keyValues.durationOptions
-                          ? props.formElementData.keyValues.durationOptions.includes("months")
-                          : false
-                      }
-                      value="months"
-                      onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "months",
-                          event.target.value,
-                          props.index
-                        )
-                      }
-                    />
-                  }
-                  label="Months"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={
-                        props.formElementData.keyValues.durationOptions
-                          ? props.formElementData.keyValues.durationOptions.includes("weeks")
-                          : false
-                      }
-                      value="weeks"
-                      onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "weeks",
-                          event.target.value,
-                          props.index
-                        )
-                      }
-                    />
-                  }
-                  label="Weeks"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={
-                        props.formElementData.keyValues.durationOptions
-                          ? props.formElementData.keyValues.durationOptions.includes("days")
-                          : false
-                      }
-                      value="days"
-                      onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "days",
-                          event.target.value,
-                          props.index
-                        )
-                      }
-                    />
-                  }
-                  label="Days"
-                />
-
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={
-                        props.formElementData.keyValues.durationOptions
-                          ? props.formElementData.keyValues.durationOptions.includes("hours")
-                          : false
-                      }
-                      value="hours"
-                      onChange={event =>
-                        props.handleGroupElementKeyValueChange(
-                          props.groupIndex,
-                          "hours",
-                          event.target.value,
-                          props.index
-                        )
-                      }
-                    />
-                  }
-                  label="Hours"
-                />
-              </FormGroup>
-            </FormControl>
-          </Grid>
-        )}
-
-      {props.formElementData.concept.dataType === "Date" &&
-        props.formElementData.showDateOrDuration === "datePickerMode" &&
-        showDatePicker(cssClasses, props)}
 
       {props.formElementData.concept.dataType === "DateTime" && showDatePicker(cssClasses, props)}
 

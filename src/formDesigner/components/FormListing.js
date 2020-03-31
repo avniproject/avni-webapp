@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
@@ -10,11 +10,14 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import NewFormModal from "../components/NewFormModal";
 
 const FormListing = ({ history }) => {
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
   const [uuid, setUUID] = useState(0);
+  const [voided, setVoided] = useState(false);
 
   const onCloseEvent = () => {
     setCloneFormIndicator(false);
@@ -57,7 +60,9 @@ const FormListing = ({ history }) => {
         .then(response => response.data)
         .then(result => {
           resolve({
-            data: result._embedded ? result._embedded.basicFormDetailses : [],
+            data: result._embedded
+              ? result._embedded.basicFormDetailses.filter(l => voided || voided === l.voided)
+              : [],
             page: result.page.number,
             totalCount: result.page.totalElements
           });
@@ -125,12 +130,34 @@ const FormListing = ({ history }) => {
     disabled: rowData.organisationId === 1
   });
 
+  const handleChangeFitlerVoided = name => event => {
+    setVoided(event.target.checked);
+    tableRef.current.onQueryChange();
+  };
+
   return (
     <>
       <MaterialTable
         title=""
         components={{
-          Container: props => <Fragment>{props.children}</Fragment>
+          Container: props => <Fragment>{props.children}</Fragment>,
+          Toolbar: props => (
+            <>
+              <MTableToolbar {...props} />
+              <div style={{ marginLeft: "15px" }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={voided}
+                      onChange={handleChangeFitlerVoided("voided")}
+                      value="voided"
+                    />
+                  }
+                  label="Show voided forms"
+                />
+              </div>
+            </>
+          )
         }}
         tableRef={tableRef}
         columns={columns}

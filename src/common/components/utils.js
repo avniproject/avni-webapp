@@ -7,6 +7,7 @@ import qs from "query-string";
 import { join } from "path";
 
 import { makeStyles } from "@material-ui/core/styles";
+import ScreenWithAppBar from "common/components/ScreenWithAppBar";
 
 const createStyles = makeStyles(theme => ({
   noUnderline: {
@@ -65,9 +66,11 @@ export const Home = () => (
 );
 
 export const AccessDenied = () => (
-  <div className="centerContainer">
-    <h2>Access denied</h2>
-  </div>
+  <ScreenWithAppBar appbarTitle="Access Denied">
+    <div className="centerContainer">
+      <h2>Access denied</h2>
+    </div>
+  </ScreenWithAppBar>
 );
 
 export const LineBreak = ({ num = 1 }) => _(num).times(idx => <br key={idx} />);
