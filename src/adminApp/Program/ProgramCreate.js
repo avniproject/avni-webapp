@@ -1,6 +1,6 @@
 import TextField from "@material-ui/core/TextField";
 import { Redirect } from "react-router-dom";
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -12,40 +12,88 @@ import { programInitialState, colorPickerCSS } from "../Constant";
 import { programReducer } from "../Reducers";
 import ColorPicker from "material-ui-rc-color-picker";
 import "material-ui-rc-color-picker/assets/index.css";
+import { default as UUID } from "uuid";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import _ from "lodash";
 
 const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
+  const [subjectValidation, setSubjectValidation] = useState(false);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
+  const [subjectT, setSubjectT] = useState({});
+  const [subjectType, setSubjectType] = useState([]);
+
+  useEffect(() => {
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        const formMap = response.data.formMappings;
+        formMap.map(l => (l["isVoided"] = false));
+        setSubjectType(response.data.subjectTypes);
+      })
+      .catch(error => {});
+  }, []);
 
   const onSubmit = event => {
     event.preventDefault();
+    let programUUID = "";
 
-    if (program.name.trim() === "") {
+    if (program.name.trim() === "" || _.isEmpty(subjectT)) {
       setError("");
-      setNameValidation(true);
+      program.name.trim() === "" ? setNameValidation(true) : setNameValidation(false);
+      _.isEmpty(subjectT) ? setSubjectValidation(true) : setSubjectValidation(false);
     } else {
       setNameValidation(false);
-      http
-        .post("/web/program", {
-          name: program.name,
-          colour: program.colour,
-          programSubjectLabel: program.programSubjectLabel,
-          enrolmentSummaryRule: program.enrolmentSummaryRule,
-          enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule
-        })
-        .then(response => {
-          if (response.status === 200) {
-            setError("");
-            setAlert(true);
-            setId(response.data.id);
-          }
-        })
-        .catch(error => {
-          setError(error.response.data.message);
-        });
+      var promise = new Promise((resolve, reject) => {
+        http
+          .post("/web/program", {
+            name: program.name,
+            colour: program.colour,
+            programSubjectLabel: program.programSubjectLabel,
+            enrolmentSummaryRule: program.enrolmentSummaryRule,
+            enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule
+          })
+          .then(response => {
+            if (response.status === 200) {
+              setError("");
+              setAlert(true);
+              setId(response.data.id);
+              programUUID = response.data.uuid;
+
+              resolve("Promise resolved ");
+            }
+          })
+          .catch(error => {
+            setError(error.response.data.message);
+            reject(Error("Promise rejected"));
+          });
+      });
+      promise.then(
+        result => {
+          http
+            .post("/emptyFormMapping", [
+              {
+                uuid: UUID.v4(),
+                subjectTypeUUID: subjectT.uuid,
+                programUUID: programUUID,
+                isVoided: false
+              }
+            ])
+            .then(response => {})
+            .catch(error => {
+              console.log(error.response.data.message);
+            });
+        },
+        function(error) {
+          console.log(error);
+        }
+      );
     }
   };
 
@@ -75,8 +123,34 @@ const ProgramCreate = props => {
               </FormLabel>
             )}
             <p />
+            <FormControl>
+              <InputLabel id="subjectType">Select subject type</InputLabel>
+              <Select
+                label="Select subject type"
+                value={_.isEmpty(subjectT) ? "" : subjectT}
+                onChange={event => setSubjectT(event.target.value)}
+                style={{ width: "200px" }}
+                required
+              >
+                {subjectType.map(subject => {
+                  return (
+                    <MenuItem value={subject} key={subject.uuid}>
+                      {subject.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+            <div />
+            {subjectValidation && (
+              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                Empty subject type is not allowed.
+              </FormLabel>
+            )}
+            <p />
             <FormLabel>Colour picker</FormLabel>
             <br />
+
             <ColorPicker
               id="colour"
               label="Colour"

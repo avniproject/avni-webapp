@@ -8,6 +8,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
+import _, { isEqual, get } from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 function WorkFlowFormCreation(props) {
@@ -18,6 +19,7 @@ function WorkFlowFormCreation(props) {
     form = props.formMapping.filter(
       l => l.formType === props.formType && l[props.customUUID] === props.rowDetails.uuid
     );
+
   const [formData, setFormData] = useState({});
   const [error, setError] = useState("");
   const [redirect, setRedirect] = useState(false);
@@ -203,5 +205,7 @@ function WorkFlowFormCreation(props) {
     </>
   );
 }
-
-export default React.memo(WorkFlowFormCreation);
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
+export default React.memo(WorkFlowFormCreation, areEqual);

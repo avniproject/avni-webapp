@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _ from "lodash";
+import _, { isEqual } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -37,6 +37,7 @@ const SubjectTypesList = ({ history }) => {
       sorting: false,
       render: rowData => (
         <WorkFlowFormCreation
+          key={rowData.uuid}
           rowDetails={rowData}
           formMapping={formMapping}
           setMapping={setMapping}
@@ -119,5 +120,8 @@ const SubjectTypesList = ({ history }) => {
     </>
   );
 };
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
 
-export default withRouter(SubjectTypesList);
+export default withRouter(React.memo(SubjectTypesList, areEqual));
