@@ -102,14 +102,14 @@ const DefaultPage = props => {
   const { t } = useTranslation();
   const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
   const [lastnameerrormsg, setLastnamemsg] = React.useState("");
-  console.log(props);
+  // console.log(props);
 
   React.useEffect(() => {
     (async function fetchData() {
       await props.onLoad(props.match.queryParams.type);
       props.saveCompleteFalse();
-      let subject = BrowserStore.fetchSubject();
-      if (subject) props.setSubject(subject);
+      //let subject = BrowserStore.fetchSubject();
+      //if (subject) props.setSubject(subject);
     })();
 
     // if (!props.saved) {

@@ -11,7 +11,7 @@ import Summary from "./Summary";
 import { Box, Typography, Paper } from "@material-ui/core";
 import CustomizedDialog from "../../components/Dialog";
 import { useTranslation } from "react-i18next";
-import BrowserStore from '../../api/browserStore';
+import BrowserStore from "../../api/browserStore";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -89,18 +89,17 @@ const SubjectRegistrationForm = ({
   onLoad,
   setSubject
 }) => {
-  React.useEffect(()=>{
-    if(!subject){      
+  React.useEffect(() => {
+    if (!subject) {
       (async function fetchData() {
-        await onLoad(match.queryParams.type);               
-        let subject = BrowserStore.fetchSubject();
-        if(subject){          
-          setSubject(subject);  
-                  } 
-
-      })();  
-    }    
-  })
+        await onLoad(match.queryParams.type);
+        // let subject = BrowserStore.fetchSubject();
+        // if (subject) {
+        //   setSubject(subject);
+        // }
+      })();
+    }
+  });
   const classes = useStyle();
   const [redirect, setRedirect] = React.useState(false);
 
@@ -128,7 +127,7 @@ const SubjectRegistrationForm = ({
   const pageCount = currentPageNumber + 1 + " / " + (lastPageNumber + 1);
   const { t } = useTranslation();
   const onOkHandler = data => {
-    BrowserStore.clear('subject');
+    BrowserStore.clear("subject");
     setRedirect(data);
   };
 
