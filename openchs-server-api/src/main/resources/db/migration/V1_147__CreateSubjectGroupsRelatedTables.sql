@@ -48,3 +48,11 @@ ALTER TABLE ONLY group_subject
 
 SELECT enable_rls_on_ref_table('group_role');
 SELECT enable_rls_on_tx_table('group_subject');
+
+insert into privilege(uuid, name, description, entity_type, created_date_time, last_modified_date_time)
+values ('0843ee63-721c-49c5-8374-818b512caf82', 'Add member', 'Add member', 'Subject', current_timestamp,
+        current_timestamp),
+       ('d9d7ae77-a67e-4644-8976-5b3551106a53', 'Edit member', 'Edit member', 'Subject', current_timestamp,
+        current_timestamp),
+       ('f2915fc4-d2cb-492a-b9bc-88a7bae11b75', 'Remove member', 'Remove member', 'Subject', current_timestamp,
+        current_timestamp);
