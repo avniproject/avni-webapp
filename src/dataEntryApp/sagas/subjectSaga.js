@@ -18,6 +18,7 @@ import {
   selectRegistrationSubject
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
+import { isEmpty } from "lodash";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -80,7 +81,7 @@ export function* updateObsWorker({ formElement, value }) {
   //   console.log(concept);
 
   if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-    observationHolder.toggleMultiSelectAnswer(formElement.concept, value[0]);
+    observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
   } else if (
     formElement.concept.datatype === Concept.dataType.Coded &&
     formElement.isSingleSelect()

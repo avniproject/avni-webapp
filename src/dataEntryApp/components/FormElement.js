@@ -28,9 +28,9 @@ const elements = {
   Id: div
 };
 
-export const FormElement = ({ children: formElement, value, update }) => {
+export const FormElement = ({ children: formElement, value, update, obsHolder }) => {
   const type = formElement.getType();
-  const props = { formElement, value, update };
+  const props = { formElement, value, update, obsHolder };
   const Element = elements[type];
   return (
     <div>

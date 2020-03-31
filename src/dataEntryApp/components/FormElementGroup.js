@@ -11,7 +11,8 @@ export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
         <FormElement
           key={fe.uuid}
           concept={fe.concept}
-          value={get(obs.findObservation(fe.concept), "valueJSON.answer")}         
+          obsHolder={obs}
+          value={get(obs.findObservation(fe.concept), "valueJSON.answer")}
           update={value => {
             updateObs(fe, value);
           }}

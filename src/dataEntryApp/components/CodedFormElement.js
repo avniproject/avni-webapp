@@ -35,9 +35,9 @@ export const CodedFormElement = ({
                   multiSelect ? (
                     <Checkbox
                       checked={isChecked(item)}
-                      onChange={() => onChange(xor([item], filter(items, isChecked)))}
+                      onChange={() => onChange(item)}
                       value={item.uuid}
-                    />                   
+                    />
                   ) : (
                     <Radio
                       checked={isChecked(item)}
