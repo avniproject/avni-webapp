@@ -1,12 +1,11 @@
 package org.openchs.web;
 
+import org.openchs.dao.OrganisationConfigRepository;
 import org.openchs.domain.JsonObject;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.OrganisationConfig;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.TranslationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,19 +19,19 @@ import java.util.Map;
 @RestController
 public class WebTranslationController {
 
-    private final Logger logger;
     private final TranslationService translationService;
+    private final OrganisationConfigRepository organisationConfigRepository;
 
     @Autowired
-    WebTranslationController(TranslationService translationService) {
+    WebTranslationController(TranslationService translationService, OrganisationConfigRepository organisationConfigRepository) {
         this.translationService = translationService;
-        logger = LoggerFactory.getLogger(this.getClass());
+        this.organisationConfigRepository = organisationConfigRepository;
     }
 
     @RequestMapping(value = "/web/translations", method = RequestMethod.GET)
     public ResponseEntity<?> translationInfo(@RequestParam(value = "locale",required = false) String locale) throws IOException {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        OrganisationConfig organisationConfig = translationService.getOrganisationConfigById(organisation);
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisation.getId());
 
         Map<String, Map<String, JsonObject>> translationLanguage = translationService.createTransactionAndPlatformTransaction(organisationConfig, locale);
         if (translationLanguage == null) {
