@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Button from "@material-ui/core/Button";
@@ -8,7 +8,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import _, { isEqual, get } from "lodash";
+import _, { isEqual } from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 
 function WorkFlowFormCreation(props) {
@@ -20,10 +20,10 @@ function WorkFlowFormCreation(props) {
       l => l.formType === props.formType && l[props.customUUID] === props.rowDetails.uuid
     );
 
-  const [formData, setFormData] = useState({});
   const [error, setError] = useState("");
   const [redirect, setRedirect] = useState(false);
   const [clicked, setClicked] = useState(form.length === 0 ? false : true);
+  const [uuid, setUUID] = useState("");
 
   existMapping = props.formMapping.filter(l => l[props.customUUID] === props.rowDetails.uuid);
 
@@ -42,23 +42,11 @@ function WorkFlowFormCreation(props) {
 
   showAvailableForms.unshift({ formName: "createform", formUUID: "11111" });
 
-  useEffect(() => {
-    form.length !== 0 &&
-      http
-        .get("/forms/export?formUUID=" + form[0].formUUID)
-        .then(response => {
-          setFormData(response.data);
-          setClicked(true);
-        })
-        .catch(error => {});
-  }, []);
-
-  const formCreation = formData => {
+  const formCreation = data => {
     http
-      .post("/web/forms", formData)
+      .post("/web/forms", data)
       .then(response => {
-        setFormData(response.data);
-        setClicked(true);
+        setUUID(response.data.uuid);
         setRedirect(true);
         setError("");
       })
@@ -163,10 +151,10 @@ function WorkFlowFormCreation(props) {
         </span>
       )}
       {clicked && (
-        <Link href={"http://localhost:6010/#/appdesigner/forms/" + formData.uuid}>
-          {formData.name === undefined || formData.name === null
+        <Link href={"http://localhost:6010/#/appdesigner/forms/" + form[0].formUUID}>
+          {form[0].formName === undefined || form[0].formName === null
             ? props.fillFormName
-            : formData.name}
+            : form[0].formName}
         </Link>
       )}
       {!clicked && (
@@ -192,7 +180,7 @@ function WorkFlowFormCreation(props) {
           </FormControl>
         </>
       )}
-      {redirect && <Redirect to={"/appdesigner/forms/" + formData.uuid} />}
+      {redirect && <Redirect to={"/appdesigner/forms/" + uuid} />}
       {props.notificationAlert && (
         <CustomizedSnackbar
           message={props.message}

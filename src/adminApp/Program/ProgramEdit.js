@@ -37,7 +37,6 @@ const ProgramEdit = props => {
   const [existMapping, setExistMapping] = useState([]);
 
   useEffect(() => {
-    let data = {};
     http
       .get("/web/program/" + props.match.params.id)
       .then(response => response.data)
