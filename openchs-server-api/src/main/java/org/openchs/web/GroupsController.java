@@ -9,6 +9,7 @@ import org.openchs.web.request.webapp.ProgramContractWeb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,9 @@ public class GroupsController implements RestControllerResourceProcessor<Program
     @Transactional
     public ResponseEntity saveProgramForWeb(@RequestBody Group group) {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        if (groupRepository.findByNameAndOrganisationId(group.getName(), organisation.getId()) != null) {
+            return ResponseEntity.badRequest().body(String.format("Group with name %s already exists.", group.getName()));
+        }
         group.setOrganisationId(organisation.getId());
         group.setUuid(UUID.randomUUID().toString());
         return ResponseEntity.ok(groupRepository.save(group));
