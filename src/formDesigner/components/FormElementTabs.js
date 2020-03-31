@@ -71,7 +71,7 @@ function FormElementTabs(props) {
         className={classes.tabs}
       >
         <Tab label="Details" {...a11yProps(props.indexTab, 0)} />
-        <Tab label="Rules" {...a11yProps(props.indexTab, 1)} />
+        <Tab label="Rule" {...a11yProps(props.indexTab, 1)} />
       </Tabs>
       <TabPanel className={classes.tabsPanel} value={value} index={0} propsIndex={props.indexTab}>
         <FormElementDetails {...props} />

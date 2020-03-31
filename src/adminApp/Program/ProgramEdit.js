@@ -12,8 +12,10 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
-import { programInitialState } from "../Constant";
+import { programInitialState, colorPickerCSS } from "../Constant";
 import { programReducer } from "../Reducers";
+import ColorPicker from "material-ui-rc-color-picker";
+import "material-ui-rc-color-picker/assets/index.css";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -42,7 +44,7 @@ const ProgramEdit = props => {
       http
         .put("/web/program/" + props.match.params.id, {
           name: program.name,
-          colour: program.colour,
+          colour: program.colour === "" ? "#ff0000" : program.colour,
           programSubjectLabel: program.programSubjectLabel,
           enrolmentSummaryRule: program.enrolmentSummaryRule,
           enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
@@ -103,14 +105,16 @@ const ProgramEdit = props => {
             </FormLabel>
           )}
           <p />
-          <TextField
+          <FormLabel>Colour picker</FormLabel>
+          <br />
+          <ColorPicker
             id="colour"
             label="Colour"
-            autoComplete="off"
-            value={program.colour}
-            onChange={event => dispatch({ type: "colour", payload: event.target.value })}
+            style={colorPickerCSS}
+            color={program.colour}
+            onChange={color => dispatch({ type: "colour", payload: color.color })}
           />
-          <p />
+          <br />
           <TextField
             id="programsubjectlabel"
             label="Program subject label"

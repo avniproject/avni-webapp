@@ -71,8 +71,8 @@ export const OrganisationGroupShow = props => (
 export const organisationGroupCreate = props => (
   <Create title="Add a new Account" {...props}>
     <SimpleForm redirect="list">
-      <TextInput source="name" />
-      <TextInput source="dbUser" />
+      <TextInput source="name" validate={required("Name cannot be empty")} />
+      <TextInput source="dbUser" validate={required("db user cannot be empty")} />
       <ReferenceInput
         resource="account"
         source="accountId"
@@ -88,6 +88,7 @@ export const organisationGroupCreate = props => (
         perPage={1000}
         label="Organisations"
         filterToQuery={searchText => ({ name: searchText })}
+        validate={required("Please choose organisations")}
       >
         <AutocompleteArrayInput {...props} />
       </ReferenceArrayInput>
@@ -98,7 +99,7 @@ export const organisationGroupCreate = props => (
 export const organisationGroupEdit = props => (
   <Edit undoable={false} title={<Title title={"Edit account"} />} {...props}>
     <SimpleForm redirect="list">
-      <TextInput source="name" />
+      <TextInput source="name" validate={required("Name cannot be empty")} />
       <DisabledInput source="dbUser" />
       <ReferenceInput
         resource="account"
@@ -115,6 +116,7 @@ export const organisationGroupEdit = props => (
         perPage={1000}
         label="Organisations"
         filterToQuery={searchText => ({ name: searchText })}
+        validate={required("Please choose organisations")}
       >
         <AutocompleteArrayInput {...props} />
       </ReferenceArrayInput>

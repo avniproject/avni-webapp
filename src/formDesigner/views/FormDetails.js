@@ -98,10 +98,12 @@ class FormDetails extends Component {
   componentDidMount() {
     this.setupBeforeUnloadListener();
     http.get(`/web/identifierSource`).then(response => {
-      var identifierSources = [];
-      _.forEach(response.data["_embedded"]["identifierSource"], (source, index) => {
-        identifierSources.push({ value: source.uuid, label: source.name });
-      });
+      const identifierSources = [];
+      if (response.data["_embedded"]) {
+        _.forEach(response.data["_embedded"]["identifierSource"], (source, index) => {
+          identifierSources.push({ value: source.uuid, label: source.name });
+        });
+      }
       this.setState({ identifierSource: identifierSources });
     });
 
@@ -131,7 +133,6 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
-            fe.showDateOrDuration = "durationOptions";
             //             if (fe["rule"]) {
             //               let ruleExtraction = fe["rule"];
             //               ruleExtraction = ruleExtraction.replace(
@@ -151,7 +152,6 @@ class FormDetails extends Component {
             let keyValueObject = {};
 
             fe.keyValues.map(keyValue => {
-              if (keyValue.key === "datePickerMode") fe.showDateOrDuration = "datePickerMode";
               return (keyValueObject[keyValue.key] = keyValue.value);
             });
 
@@ -481,7 +481,6 @@ class FormDetails extends Component {
           name: "",
           type: "",
           keyValues: {},
-          showDateOrDuration: "durationOptions",
           mandatory: false,
           voided: false,
           expanded: true,

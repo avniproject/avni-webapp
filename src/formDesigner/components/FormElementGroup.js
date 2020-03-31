@@ -215,12 +215,13 @@ function FormElementGroup(props) {
                     <FormControl fullWidth>
                       <Input
                         type="text"
-                        placeholder="Name"
+                        placeholder="Group name"
                         disableUnderline={true}
                         onClick={stopPropagation}
                         name={"name" + panel}
                         value={props.groupData.name}
                         onChange={event => eventCall(props.index, "name", event.target.value)}
+                        autoComplete="off"
                       />
                     </FormControl>
                   </Typography>
