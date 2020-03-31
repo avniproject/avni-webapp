@@ -40,16 +40,11 @@ function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   yield put(setRegistrationForm(mapForm(registrationForm)));
 }
 
-// function* dataEntryLoadEnrolFormWorker({ subjectTypeName, programName }) {
-//   //const enrolForm = yield call(api.fetchEnrolForm, "fdf5c253-c49f-43e1-9591-4556a3ea36d4");
-//   //yield put(setEnrolForm(mapForm(enrolForm)));
-//   const formMapping = yield select(selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName));
-//   const enrolForm = yield call(api.fetchForm, formMapping.formUuid);
-//   yield put(setEnrolForm(mapForm(enrolForm)));
-// }
-
-function* dataEntryLoadEnrolFormWorker({ subjectTypeName }) {
-  const enrolForm = yield call(api.fetchEnrolForm, "fdf5c253-c49f-43e1-9591-4556a3ea36d4");
+function* dataEntryLoadEnrolFormWorker({ subjectTypeName, programName }) {
+  const formMapping = yield select(
+    selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName)
+  );
+  const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));
 }
 

@@ -42,10 +42,8 @@ const ProgramEnrol = ({ match, getEnrolForm, getSubjectProfile, subjectProfile }
   };
   const classes = useStyles();
 
-  console.log(subjectProfile);
-
   useEffect(() => {
-    getEnrolForm();
+    getEnrolForm("Individual", match.queryParams.programName);
     getSubjectProfile(match.queryParams.uuid);
   }, []);
 
@@ -134,17 +132,6 @@ const ProgramEnrol = ({ match, getEnrolForm, getSubjectProfile, subjectProfile }
     </Fragment>
   );
 };
-
-// const mapFormStateToProps = state => ({
-//   form: state.dataEntry.registration.enrolForm
-// });
-
-// const EnrolForm = withRouter(
-//   connect(
-//     mapFormStateToProps,
-//     mapFormDispatchToProps
-//   )(Form)
-// );
 
 const mapStateToProps = state => ({
   form: state.enrolForm.enrolForm,
