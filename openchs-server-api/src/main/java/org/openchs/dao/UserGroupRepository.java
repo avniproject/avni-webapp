@@ -32,5 +32,7 @@ public interface UserGroupRepository extends ReferenceDataRepository<UserGroup> 
 
     List<UserGroup> findByGroup_Id(Long groupId);
 
+    List<UserGroup> findByGroup_IdAndIsVoidedFalse(Long groupId);
+
     List<UserGroup> findByOrganisationId(Long organisationId);
 }

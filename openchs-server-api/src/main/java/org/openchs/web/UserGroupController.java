@@ -52,7 +52,7 @@ public class UserGroupController extends AbstractController<UserGroup> implement
     @RequestMapping(value = "/groups/{id}/users", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public List<UserGroupContract> getById(@PathVariable("id") Long id) {
-        return userGroupRepository.findByGroup_Id(id).stream()
+        return userGroupRepository.findByGroup_IdAndIsVoidedFalse(id).stream()
                 .map(UserGroupContract::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -89,7 +89,7 @@ public class UserGroupController extends AbstractController<UserGroup> implement
         return ResponseEntity.ok(userGroupRepository.saveAll(usersToBeAdded));
     }
 
-    @RequestMapping(value = "/userGroup/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/userGroup/{id}", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public ResponseEntity removeUserFromGroup(@PathVariable("id") Long id) {
@@ -97,7 +97,8 @@ public class UserGroupController extends AbstractController<UserGroup> implement
         if (userGroup == null)
             return ResponseEntity.badRequest().body(String.format("UserGroup with id '%d' not found", id));
 
-        userGroupRepository.delete(userGroup);
+        userGroup.setVoided(true);
+        userGroupRepository.save(userGroup);
         return new ResponseEntity<>(UserGroupContract.fromEntity(userGroup), HttpStatus.OK);
     }
 }
