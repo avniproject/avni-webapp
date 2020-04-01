@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -96,14 +97,24 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
 
     private List<GroupPrivilege> getAllGroupPrivileges(Long groupId) {
 
-        List<FormMapping.FormMappingProjection> formMappings = formMappingRepository.findAllOperationalProjections();
+        List<FormMapping> formMappings = formMappingRepository.findAllOperational();
         List<SubjectType.SubjectTypeProjection> subjectTypes = subjectTypeRepository.findAllOperational();
+        List<Program.ProgramProjection> operationalPrograms = programRepository.findAllOperational();
+        Set<Long> operationalProgramIds = operationalPrograms.stream().map(Program.ProgramProjection::getId).collect(Collectors.toSet());
+        List<EncounterType.EncounterTypeProjection> encounterTypes = encounterTypeRepository.findAllOperational();
+        Set<Long> operationalEncounterTypeIds = encounterTypes.stream().map(EncounterType.EncounterTypeProjection::getId).collect(Collectors.toSet());
         List<ChecklistDetail.ChecklistDetailProjection> checklistDetails = checklistDetailRepository.getAllIdsAndNames();
         Group currentGroup = groupRepository.findOne(groupId);
         Iterable<Privilege> privileges = privilegeRepository.findAll();
         List<Privilege> privilegeList = IterableUtils.toList(privileges);
         List<GroupPrivilege> allPrivileges = new ArrayList<>();
-        formMappings.forEach(formMapping -> {
+
+        List<FormMapping> operationalFormMappings = formMappings.stream()
+                .filter(formMapping -> formMapping.getProgram() != null && operationalProgramIds.contains(formMapping.getProgram().getId()))
+                .filter(formMapping -> formMapping.getEncounterType() != null && operationalEncounterTypeIds.contains(formMapping.getEncounterType().getId()))
+                .collect(Collectors.toList());
+
+        operationalFormMappings.forEach(formMapping -> {
             if (formMapping.getSubjectTypeUuid() != null && formMapping.getEncounterTypeUuid() != null) {
                 privilegeList.stream()
                         .filter(privilege -> privilege.getEntityType() == EntityType.Encounter)
@@ -143,20 +154,20 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
                         });
             }
         });
-        subjectTypes.forEach(subjectType -> {
-            checklistDetails.forEach(checklistDetail -> {
-                privilegeList.stream()
-                        .filter(privilege -> privilege.getEntityType() == EntityType.Checklist)
-                        .forEach(privilege -> {
-                            GroupPrivilege groupPrivilege = new GroupPrivilege();
-                            groupPrivilege.setGroup(currentGroup);
-                            groupPrivilege.setPrivilege(privilege);
-                            groupPrivilege.setSubjectType(subjectTypeRepository.findByUuid(subjectType.getUuid()));
-                            groupPrivilege.setChecklistDetail(checklistDetailRepository.findByUuid(checklistDetail.getUuid()));
-                            allPrivileges.add(groupPrivilege);
-                        });
-            });
-        });
+        subjectTypes.forEach(subjectType ->
+                checklistDetails.forEach(checklistDetail ->
+                        privilegeList.stream()
+                                .filter(privilege -> privilege.getEntityType() == EntityType.Checklist)
+                                .forEach(privilege -> {
+                                    GroupPrivilege groupPrivilege = new GroupPrivilege();
+                                    groupPrivilege.setGroup(currentGroup);
+                                    groupPrivilege.setPrivilege(privilege);
+                                    groupPrivilege.setSubjectType(subjectTypeRepository.findByUuid(subjectType.getUuid()));
+                                    groupPrivilege.setChecklistDetail(checklistDetailRepository.findByUuid(checklistDetail.getUuid()));
+                                    allPrivileges.add(groupPrivilege);
+                                })
+                )
+        );
         return allPrivileges;
     }
 }
