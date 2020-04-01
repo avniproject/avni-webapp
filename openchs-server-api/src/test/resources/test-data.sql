@@ -21,8 +21,11 @@ DELETE FROM catchment_address_mapping;
 DELETE FROM address_level;
 DELETE FROM catchment;
 DELETE FROM account_admin;
+DELETE FROM user_group;
 DELETE FROM users;
 DELETE FROM subject_type;
+DELETE FROM groups;
+DELETE FROM group_privilege;
 DELETE FROM organisation;
 DELETE FROM audit;
 

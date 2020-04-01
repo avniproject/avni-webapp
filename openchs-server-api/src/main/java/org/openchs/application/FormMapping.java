@@ -80,4 +80,16 @@ public class FormMapping extends OrganisationAwareEntity {
         this.subjectType = subjectType;
     }
 
+    @Projection(name = "FormMappingProjection", types = {FormMapping.class})
+    public interface FormMappingProjection extends BaseProjection {
+        @Value("#{target.subjectType.uuid}")
+        String getSubjectTypeUuid();
+
+        @Value("#{target.form.uuid}")
+        String getFormUuid();
+
+        String getEncounterTypeUuid();
+
+        String getProgramUuid();
+    }
 }

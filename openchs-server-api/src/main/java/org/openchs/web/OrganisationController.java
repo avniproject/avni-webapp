@@ -2,6 +2,13 @@ package org.openchs.web;
 
 import org.openchs.dao.*;
 import org.openchs.domain.*;
+import org.openchs.dao.AccountRepository;
+import org.openchs.dao.GroupRepository;
+import org.openchs.dao.OrganisationRepository;
+import org.openchs.domain.Account;
+import org.openchs.domain.Group;
+import org.openchs.domain.Organisation;
+import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.OrganisationContract;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +30,15 @@ public class OrganisationController implements RestControllerResourceProcessor<O
     private AccountRepository accountRepository;
     private final GenderRepository genderRepository;
     private final OrganisationConfigRepository organisationConfigRepository;
+    private GroupRepository groupRepository;
 
     @Autowired
-    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository) {
+    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository, GroupRepository groupRepository) {
         this.organisationRepository = organisationRepository;
         this.accountRepository = accountRepository;
         this.genderRepository = genderRepository;
         this.organisationConfigRepository = organisationConfigRepository;
+        this.groupRepository = groupRepository;
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.POST)
@@ -49,6 +58,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
 
         organisationRepository.save(org);
         createDefaultGenders(org);
+        addDefaultGroup(org.getId());
         createDefaultOrgConfig(org);
 
         return new ResponseEntity<>(org, HttpStatus.CREATED);
@@ -77,6 +87,15 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         gender.assignUUID();
         gender.setOrganisationId(org.getId());
         genderRepository.save(gender);
+    }
+
+    private void addDefaultGroup(Long organisationId){
+        Group group = new Group();
+        group.setName("Everyone");
+        group.setOrganisationId(organisationId);
+        group.setUuid(UUID.randomUUID().toString());
+        group.setVersion(0);
+        groupRepository.save(group);
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.GET)
