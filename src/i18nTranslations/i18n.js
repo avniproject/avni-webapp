@@ -11,7 +11,7 @@ httpClient.fetchJson(`/me`).then(response => {
       resources: translationData,
       fallbackLng: "en",
       lng: defaultLanguage.settings ? defaultLanguage.settings.locale : "en",
-      debug: true,
+      debug: false,
       ns: ["translations"],
       defaultNS: "translations",
       keySeparator: false,

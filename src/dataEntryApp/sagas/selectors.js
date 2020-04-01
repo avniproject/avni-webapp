@@ -10,12 +10,10 @@ export const selectRegistrationFormMapping = subjectType => state =>
   find(
     //get takes state from store you can print this
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
-    (
-      fm //this is function fm is parameter it is just like map form uuid from saga
-    ) =>
-      isNil(fm.programUuid) &&
-      isNil(fm.encounterTypeUuid) &&
-      fm.subjectTypeUuid === subjectType.uuid
+    fm =>
+      isNil(fm.programUUID) &&
+      isNil(fm.encounterTypeUUID) &&
+      fm.subjectTypeUUID === subjectType.uuid
   );
 
 export const selectRegistrationFormMappingForSubjectType = subjectTypeName => state =>

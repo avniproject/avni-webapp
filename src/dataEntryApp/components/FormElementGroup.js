@@ -1,4 +1,4 @@
-import { invoke } from "lodash";
+import { invoke, get } from "lodash";
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
@@ -11,7 +11,8 @@ export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
         <FormElement
           key={fe.uuid}
           concept={fe.concept}
-          value={invoke(obs.findObservation(fe.concept), "getValue")}
+          obsHolder={obs}
+          value={get(obs.findObservation(fe.concept), "valueJSON.answer")}
           update={value => {
             updateObs(fe, value);
           }}

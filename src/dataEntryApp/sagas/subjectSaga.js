@@ -1,4 +1,4 @@
-import { Individual, ObservationsHolder } from "avni-models";
+import { Individual, ObservationsHolder, Concept } from "avni-models";
 import {
   setSubject,
   getRegistrationForm,
@@ -29,6 +29,7 @@ import {
   setEnrolForm,
   types as enrolSubjectTypes
 } from "../reducers/programEnrolReducer";
+import { isEmpty } from "lodash";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -36,7 +37,7 @@ export function* dataEntrySearchWatcher() {
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
-  const registrationForm = yield call(api.fetchForm, formMapping.formUuid);
+  const registrationForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setRegistrationForm(mapForm(registrationForm)));
 }
 
@@ -96,10 +97,27 @@ function* updateObsWatcher() {
 
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
+  console.log(subject.observations);
   const observationHolder = new ObservationsHolder(subject.observations);
-  observationHolder.updateObs(formElement, value);
+  // observationHolder.updateObs(formElement, value);
+  // observationHolder.observations.map((concept)=>{
+  //   console.log(concept);
+
+  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
+    observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
+  } else if (
+    formElement.concept.datatype === Concept.dataType.Coded &&
+    formElement.isSingleSelect()
+  ) {
+    observationHolder.toggleSingleSelectAnswer(formElement.concept, value);
+  } else {
+    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
+  }
+  // })
+
   subject.observations = observationHolder.observations;
   yield put(setSubject(subject));
+  sessionStorage.setItem("subject", JSON.stringify(subject));
 }
 
 export default function* subjectSaga() {

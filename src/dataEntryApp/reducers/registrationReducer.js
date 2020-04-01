@@ -10,7 +10,8 @@ export const types = {
   ON_LOAD: `${prefix}ON_LOAD`,
   SET_LOADED: `${prefix}SET_LOADED`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
-  SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`
+  SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
+  SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`
 };
 
 export const saveSubject = () => ({
@@ -61,6 +62,10 @@ export const saveComplete = () => ({
   type: types.SAVE_COMPLETE
 });
 
+export const saveCompleteFalse = () => ({
+  type: types.SAVE_COMPLETE_FALSE
+});
+
 const initialState = {
   saved: false
 };
@@ -89,6 +94,7 @@ export default function(state = initialState, action) {
     case types.UPDATE_SUBJECT: {
       const subject = state.subject.cloneForEdit();
       subject[action.field] = action.value;
+      sessionStorage.setItem("subject", JSON.stringify(subject));
       return {
         ...state,
         subject
@@ -98,6 +104,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         saved: true
+      };
+    }
+    case types.SAVE_COMPLETE_FALSE: {
+      return {
+        ...state,
+        saved: false
       };
     }
     default:
