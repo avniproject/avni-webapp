@@ -16,7 +16,9 @@ export const selectEnrolmentFormMapping = (subjectType, programUuid) => state =>
       fm //this is function fm is parameter it is just like map form uuid from saga
     ) =>
       !isNil(fm.programUUID) &&
-      (fm.subjectTypeUUID === subjectType.uuid && fm.programUUID === programUuid)
+      (fm.subjectTypeUUID === subjectType.uuid &&
+        fm.programUUID === programUuid &&
+        fm.formUUID === "23d8763d-4759-4c7d-bb46-d57a1ee58673")
   );
 
 //For retriving the program uuid from program name
@@ -26,13 +28,13 @@ export const selectProgramUUID = programName => state =>
     get(state, "dataEntry.metadata.operationalModules.programs"),
     (
       fm //this is function fm is parameter it is just like map form uuid from saga
-    ) => fm.operationalProgramName === programName
+    ) => fm.displayName === programName
   );
 
 export const selectEnrolmentFormMappingForSubjectType = (subjectTypeName, programName) => state => {
-  //debugger;
+  debugger;
   const program = selectProgramUUID(programName)(state);
-  //debugger;
+  debugger;
   return selectEnrolmentFormMapping(
     selectEnrolSubjectTypeFromName(subjectTypeName)(state),
     program.uuid

@@ -14,6 +14,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const Form = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto, onSave }) => {
+  debugger;
   const classes = useStyle();
 
   const page = +match.queryParams.page;
@@ -37,18 +38,25 @@ const Form = ({ form, obs, updateObs, location, title, match, saved, onSaveGoto,
   };
 
   const current = form.formElementGroupAt(currentPageNumber);
+
   return (
     <Fragment>
-      <h6>
-        {currentPageNumber + 1}. {current.name}
-      </h6>
-      <Paper className={classes.form}>
-        <FormElementGroup key={current.uuid} obs={obs} updateObs={updateObs}>
-          {current}
-        </FormElementGroup>
-        {saved && <Redirect to={onSaveGoto} />}
-        <Paginator pageDetails={pageDetails} onSave={onSave} />
-      </Paper>
+      {form ? (
+        <div>
+          <h6>
+            {currentPageNumber + 1}. {current.name}
+          </h6>
+          <Paper className={classes.form}>
+            <FormElementGroup key={current.uuid} obs={obs} updateObs={updateObs}>
+              {current}
+            </FormElementGroup>
+            {saved && <Redirect to={onSaveGoto} />}
+            <Paginator pageDetails={pageDetails} onSave={onSave} />
+          </Paper>
+        </div>
+      ) : (
+        "  "
+      )}
     </Fragment>
   );
 };
