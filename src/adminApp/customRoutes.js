@@ -32,5 +32,5 @@ export default [
   <Route exact path="/encounterType/:id/show" component={EncounterTypeShow} />,
   <Route exact path="/encounterType/create" component={EncounterTypeCreate} />,
   <Route exact path="/encounterType/:id" component={EncounterTypeEdit} />,
-  <Route exact path="/userGroupDetails/:id" component={UserGroupDetails} />
+  <Route exact path="/userGroupDetails/:id/:groupName/show" component={UserGroupDetails} />
 ];

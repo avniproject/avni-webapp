@@ -33,7 +33,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export const TabView = ({ groupId, userList, privilegeList, ...props }) => {
+export const TabView = ({ groupId, groupName, userList, ...props }) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -41,6 +41,7 @@ export const TabView = ({ groupId, userList, privilegeList, ...props }) => {
   };
   return (
     <div>
+      <h5>{groupName}</h5>
       <AppBar position="static">
         <Tabs value={value} onChange={handleChange}>
           <Tab label="Users" />
@@ -51,15 +52,13 @@ export const TabView = ({ groupId, userList, privilegeList, ...props }) => {
         <GroupUsers groupId={groupId} {...props} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <GroupPrivileges groupId={groupId} privilegeList={privilegeList} {...props} />
+        <GroupPrivileges groupId={groupId} {...props} />
       </TabPanel>
     </div>
   );
 };
 
-const mapStateToProps = state => ({
-  privilegeList: state.userGroups.privilegeList
-});
+const mapStateToProps = state => ({});
 
 export default withRouter(
   connect(

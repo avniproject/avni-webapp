@@ -32,6 +32,9 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
         case 6: // View enrolment details
         case 9: // View visit
         case 14: // View checklist
+        case 16: // Add member
+        case 17: // Edit member
+        case 18: // Remove member
           metadata.set(privilegeListItem.tableData.id, {
             checkedState: privilegeListItem.allow,
             dependencies: groupPrivilegeList
@@ -182,11 +185,11 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
       )
     },
     { title: "Subject Type", field: "subjectTypeName", defaultGroupOrder: 0 },
-    { title: "Entity Type", field: "privilegeEntityType", defaultGroupOrder: 0 },
+    { title: "Entity Type", field: "privilegeEntityType", defaultGroupOrder: 1 },
     { title: "Privilege", field: "privilegeName" },
     { title: "Program", field: "programName" },
-    { title: "Program Encounter Type", field: "programEncounterTypeName" },
-    { title: "General Encounter Type", field: "encounterTypeName" },
+    { title: "Program Encounter Type", field: "programEncounterTypeName", defaultSort: "asc" },
+    { title: "General Encounter Type", field: "encounterTypeName", defaultSort: "asc" },
     { title: "Checklist Detail", field: "checklistDetailName" }
   ];
   return (

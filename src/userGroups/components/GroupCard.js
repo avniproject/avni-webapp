@@ -21,14 +21,14 @@ export const GroupCard = ({ name, href }) => {
     }
   };
 
-  let newTo = {
-    pathname: href,
-    state: name
-  };
+  // let newTo = {
+  //   pathname: href,
+  //   state: name
+  // };
 
   return (
     <CardActionArea style={classes.cardArea}>
-      <Link to={newTo}>
+      <Link to={href}>
         <Card style={classes.card} raised={true}>
           <CardContent>
             <Typography align="center" color="primary" />

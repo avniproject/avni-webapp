@@ -68,7 +68,11 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
     });
   };
 
-  const columns = [{ title: "Login ID", field: "userName" }, { title: "Name", field: "name" }];
+  const columns = [
+    { title: "Name", field: "name" },
+    { title: "Login ID", field: "userName" },
+    { title: "Email", field: "email" }
+  ];
   return (
     <div>
       <MaterialTable
@@ -83,10 +87,16 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
             onClick: (event, rowData) => removeUserFromGroupHandler(event, rowData)
           }
         ]}
+        options={{
+          actionsColumnIndex: 3
+        }}
+        localization={{
+          header: { actions: "Remove" }
+        }}
       />
       <br />
       <hr />
-      Add users to group:
+      Select users to add to this group:
       <br />
       <Select
         name="addUserList"

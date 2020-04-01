@@ -5,9 +5,14 @@ import { withRouter } from "react-router-dom";
 import { TabView } from "./components/TabbedView";
 
 const UserGroupDetails = ({ ...props }) => {
+  console.log(props);
   return (
     <Grid container>
-      <TabView groupId={props.match.params.id} {...props} />
+      <TabView
+        groupId={props.match.params.id}
+        groupName={props.match.params.groupName}
+        {...props}
+      />
     </Grid>
   );
 };

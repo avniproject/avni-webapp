@@ -79,7 +79,11 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
 
       <Grid container>
         {map(groups, (group, index) => (
-          <GroupCard key={index} name={group.name} href={`userGroupDetails/${group.id}`} />
+          <GroupCard
+            key={index}
+            name={group.name}
+            href={`userGroupDetails/${group.id}/${group.name}/show`}
+          />
         ))}
       </Grid>
     </Box>
