@@ -25,7 +25,7 @@ export default {
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   removeUserFromGroup: id =>
     http
-      .deleteEntity("/userGroup/" + id)
+      .postJson("/userGroup/" + id)
       .then(r => [r.data, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   //  fetchAllPrivileges: () => http.fetchJson("/web/groupPrivileges").then(response => response.json),
