@@ -57,6 +57,7 @@ import {
 } from "./OrganisationGroup";
 import { ROLES } from "../common/constants";
 import { getAdminOrgs } from "../rootApp/ducks";
+import UserGroups from "../userGroups/UserGroups";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -212,6 +213,11 @@ class OrgManager extends Component {
           create={WithProps({ organisation }, UserCreate)}
           show={WithProps({ user }, UserDetail)}
           edit={WithProps({ user }, UserEdit)}
+        />
+        <Resource
+          name="userGroups"
+          options={{ label: "User Groups" }}
+          list={csvUploadToggle && UserGroups}
         />
         <Resource
           name="upload"

@@ -116,6 +116,10 @@ class HttpClient {
   async postJson(url, body) {
     return await this.post(url, body);
   }
+
+  async deleteEntity(url) {
+    return await this.delete(url);
+  }
 }
 
 export const httpClient = new HttpClient();
