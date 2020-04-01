@@ -90,6 +90,8 @@ const SubjectRegistrationForm = ({
   onLoad,
   setSubject
 }) => {
+  if (!form) return <div>Loading</div>;
+
   React.useEffect(() => {
     if (!subject) {
       (async function fetchData() {
@@ -104,28 +106,33 @@ const SubjectRegistrationForm = ({
   const classes = useStyle();
   const [redirect, setRedirect] = React.useState(false);
 
-  const page = +match.queryParams.page;
+  const page = new Number(match.queryParams.page);
   const from = match.queryParams.from;
 
-  const firstPageNumber = form && form.firstFormElementGroup.displayOrder;
-  const currentPageNumber = isNaN(page) ? firstPageNumber : page;
-  const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
+  const firstPageNumber = form.firstFormElementGroup.displayOrder;
+  const currentPageNumber = page ? firstPageNumber : page;
+  const lastPageNumber = form.getLastFormElementElementGroup().displayOrder;
+
+  const showSummaryPage = page > lastPageNumber;
 
   const pageDetails = {
-    nextPageNumber:
-      currentPageNumber === lastPageNumber
-        ? null
-        : form && form.getNextFormElement(currentPageNumber).displayOrder,
+    nextPageNumber: showSummaryPage
+      ? null
+      : form.getNextFormElement(currentPageNumber).displayOrder,
     previousPageNumber:
       currentPageNumber === firstPageNumber
         ? null
-        : form && form.getPrevFormElement(currentPageNumber).displayOrder,
+        : showSummaryPage
+        ? form.getPrevFormElement(currentPageNumber - 1).displayOrder
+        : form.getPrevFormElement(currentPageNumber).displayOrder,
     location,
     from
   };
 
-  const current = form && form.formElementGroupAt(currentPageNumber);
-  const pageCount = currentPageNumber + 1 + " / " + (lastPageNumber + 1);
+  const current = showSummaryPage
+    ? { name: "Summary" }
+    : form.formElementGroupAt(currentPageNumber);
+  const pageCount = currentPageNumber + 1 + " / " + (lastPageNumber + 2);
   const { t } = useTranslation();
   const onOkHandler = data => {
     BrowserStore.clear("subject");
@@ -151,7 +158,7 @@ const SubjectRegistrationForm = ({
             />
           </Box>
           <Paper className={classes.form}>
-            {currentPageNumber === lastPageNumber ? (
+            {currentPageNumber > lastPageNumber ? (
               <Summary subject={subject} />
             ) : (
               <Form current={current} obs={obs} updateObs={updateObs} />
