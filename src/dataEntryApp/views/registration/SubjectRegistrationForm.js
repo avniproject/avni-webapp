@@ -151,7 +151,7 @@ const SubjectRegistrationForm = ({
             />
           </Box>
           <Paper className={classes.form}>
-            {currentPageNumber === lastPageNumber ? (
+            {currentPageNumber > lastPageNumber ? (
               <Summary subject={subject} />
             ) : (
               <Form current={current} obs={obs} updateObs={updateObs} />

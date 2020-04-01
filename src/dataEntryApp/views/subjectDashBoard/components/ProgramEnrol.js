@@ -16,6 +16,8 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
+import enrolmentReducer from "dataEntryApp/reducers/programEnrolReducer";
+import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramEnrol = ({ match, getEnrolForm, getSubjectProfile, subjectProfile }) => {
+const ProgramEnrol = ({ match, getEnrolForm, enrolForm, getSubjectProfile, subjectProfile }) => {
   const [value, setValue] = React.useState("Yes");
 
   const handleChange = event => {
@@ -90,41 +92,7 @@ const ProgramEnrol = ({ match, getEnrolForm, getSubjectProfile, subjectProfile }
                   ""
                 )}
               </p>
-              <p style={{ padding: "9px", marginTop: "20px" }}>
-                <span style={{ float: "left" }}>1. Basic details</span>
-                <span style={{ float: "right" }}>Prev 1/2 Next</span>
-              </p>
-              <Paper style={{ fontSize: "12px", color: "gray", marginTop: "27px" }}>
-                <div style={{ padding: "20px" }}>
-                  <FormControl component="fieldset">
-                    <FormLabel component="legend">Are you registering child at birth?</FormLabel>
-                    <RadioGroup
-                      aria-label="position"
-                      name="position"
-                      value={value}
-                      onChange={handleChange}
-                      row
-                    >
-                      <FormControlLabel
-                        value="No"
-                        control={<Radio color="primary" />}
-                        label="No"
-                        labelPlacement="No"
-                      />
-                      <FormControlLabel
-                        value="Yes"
-                        control={<Radio color="primary" />}
-                        label="Yes"
-                        labelPlacement="Yes"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </div>
-                <div style={{ backgroundColor: "#F8F9F9", padding: "30px" }}>
-                  <SubjectButton btnLabel="Prev" btnClass={classes.btnCustom} />
-                  <SubjectButton btnLabel="Next" btnClass={classes.btnCustom} />
-                </div>
-              </Paper>
+              {enrolForm ? <ProgramEnrolmentForm /> : <div>Loading</div>}
             </Grid>
           </Grid>
         </div>
@@ -134,10 +102,8 @@ const ProgramEnrol = ({ match, getEnrolForm, getSubjectProfile, subjectProfile }
 };
 
 const mapStateToProps = state => ({
-  form: state.enrolForm.enrolForm,
-  saved: state.enrolForm.saved,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  onSaveGoto: "/app/search"
+  enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile
 });
 
 const mapDispatchToProps = {

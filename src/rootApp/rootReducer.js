@@ -8,7 +8,6 @@ import translations from "../translations/reducers";
 import reports from "../reports/reducers";
 import app from "./ducks";
 import translationsReducer from "../i18nTranslations/TranslationReducers";
-import enrolForm from "../dataEntryApp/reducers/programEnrolReducer";
 import programs from "../dataEntryApp/reducers/programReducer";
 
 const LOCALE = "en";
@@ -23,6 +22,5 @@ export default combineReducers({
   translations,
   reports,
   translationsReducer,
-  enrolForm,
   programs
 });

@@ -7,6 +7,7 @@ import subjectGenerel from "./generalSubjectDashboardReducer";
 import subjectProgram from "./programSubjectDashboardReducer";
 import { conceptReducer } from "../../common/store/conceptReducer";
 import programs from "./programReducer";
+import enrolmentReducer from "./programEnrolReducer";
 
 export default combineReducers({
   search,
@@ -16,5 +17,6 @@ export default combineReducers({
   subjectGenerel,
   subjectProgram,
   conceptReducer,
-  programs
+  programs,
+  enrolmentReducer
 });
