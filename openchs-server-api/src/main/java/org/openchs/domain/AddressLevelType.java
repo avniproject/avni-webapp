@@ -2,6 +2,8 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
+import org.openchs.application.projections.BaseProjection;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -73,5 +75,10 @@ public class AddressLevelType extends OrganisationAwareEntity {
 
     public Boolean isVoidable() {
         return subTypes.stream().allMatch(CHSEntity::isVoided) && addressLevels.stream().allMatch(CHSEntity::isVoided);
+    }
+
+    @Projection(name = "AddressLevelTypeProjection", types = {AddressLevelType.class})
+    public interface AddressLevelTypeProjection extends BaseProjection {
+        String getName();
     }
 }
