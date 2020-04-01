@@ -127,7 +127,7 @@ select uuid_generate_v4(),
        0,
        u.organisation_id,
        create_audit()
-from users u;
+from users u where organisation_id notnull;
 
 --subject privilege
 insert into group_privilege
