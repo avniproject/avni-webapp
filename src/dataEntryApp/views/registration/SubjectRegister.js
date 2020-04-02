@@ -24,7 +24,7 @@ import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import SubjectRegistrationForm from "./SubjectRegistrationForm";
+import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 
@@ -354,19 +354,23 @@ const RegistrationForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
-  )(SubjectRegistrationForm)
+  )(FormWizard)
 );
 
-const SubjectRegister = ({ match: { path } }) => {
+const SubjectRegister = ({ match }) => {
   const classes = useStyles();
+
+  React.useEffect(() => {
+    onLoad(match.queryParams.type);
+  });
 
   return (
     <Fragment>
-      <Breadcrumbs path={path} />
+      <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <Stepper />
-        <Route exact path={`${path}`} component={ConnectedDefaultPage} />
-        <Route path={`${path}/form`} component={RegistrationForm} />
+        <Route exact path={`${match.path}`} component={ConnectedDefaultPage} />
+        <Route path={`${match.path}/form`} component={RegistrationForm} />
       </Paper>
     </Fragment>
   );

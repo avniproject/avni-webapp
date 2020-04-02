@@ -76,7 +76,7 @@ const Header = ({ subject }) => {
   );
 };
 
-const SubjectRegistrationForm = ({
+const FormWizard = ({
   form,
   obs,
   updateObs,
@@ -90,17 +90,6 @@ const SubjectRegistrationForm = ({
   onLoad,
   setSubject
 }) => {
-  React.useEffect(() => {
-    if (!subject) {
-      (async function fetchData() {
-        await onLoad(match.queryParams.type);
-        // let subject = BrowserStore.fetchSubject();
-        // if (subject) {
-        //   setSubject(subject);
-        // }
-      })();
-    }
-  });
   const classes = useStyle();
   const [redirect, setRedirect] = React.useState(false);
 
@@ -182,4 +171,4 @@ const SubjectRegistrationForm = ({
   );
 };
 
-export default withRouter(withParams(SubjectRegistrationForm));
+export default withRouter(withParams(FormWizard));

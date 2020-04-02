@@ -10,7 +10,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import SubjectButton from "./Button";
-import { getEnrolForm } from "../../../reducers/programEnrolReducer";
+import { onLoad } from "../../../reducers/programEnrolReducer";
 import Form from "../../../components/Form";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -36,7 +36,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramEnrol = ({ match, getEnrolForm, enrolForm, getSubjectProfile, subjectProfile }) => {
+const ProgramEnrol = ({
+  match,
+  onLoad,
+  enrolForm,
+  getSubjectProfile,
+  subjectProfile,
+  programEnrolment
+}) => {
   const [value, setValue] = React.useState("Yes");
 
   const handleChange = event => {
@@ -45,7 +52,7 @@ const ProgramEnrol = ({ match, getEnrolForm, enrolForm, getSubjectProfile, subje
   const classes = useStyles();
 
   useEffect(() => {
-    getEnrolForm("Individual", match.queryParams.programName);
+    onLoad("Individual", match.queryParams.programName);
     getSubjectProfile(match.queryParams.uuid);
   }, []);
 
@@ -92,7 +99,7 @@ const ProgramEnrol = ({ match, getEnrolForm, enrolForm, getSubjectProfile, subje
                   ""
                 )}
               </p>
-              {enrolForm ? <ProgramEnrolmentForm /> : <div>Loading</div>}
+              {enrolForm && programEnrolment ? <ProgramEnrolmentForm /> : <div>Loading</div>}
             </Grid>
           </Grid>
         </div>
@@ -103,11 +110,12 @@ const ProgramEnrol = ({ match, getEnrolForm, enrolForm, getSubjectProfile, subje
 
 const mapStateToProps = state => ({
   enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
+  programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment
 });
 
 const mapDispatchToProps = {
-  getEnrolForm,
+  onLoad,
   getSubjectProfile
 };
 

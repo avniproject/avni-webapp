@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import Form from "dataEntryApp/views/registration/SubjectRegistrationForm";
+import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import { ObservationsHolder, Individual, SubjectType } from "avni-models";
 import { updateObs } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
@@ -10,7 +10,7 @@ subject.subjectType = SubjectType.create("Individual");
 const mapFormStateToProps = state => ({
   form: state.dataEntry.enrolmentReducer.enrolForm,
   subject: subject,
-  obs: new ObservationsHolder(null),
+  obs: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),
   title: `New Enrolment`,
   saved: state.dataEntry.enrolmentReducer.saved,
   onSaveGoto: "/app/search"
@@ -25,7 +25,7 @@ const ProgramEnrolmentForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
-  )(Form)
+  )(FormWizard)
 );
 
 export default ProgramEnrolmentForm;

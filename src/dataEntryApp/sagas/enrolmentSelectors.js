@@ -7,6 +7,13 @@ export const selectEnrolSubjectTypeFromName = subjectTypeName => (
     get(state, "dataEntry.metadata.operationalModules.subjectTypes"),
     subjectType => subjectType.name === subjectTypeName
   );
+
+export const selectProgram = programName => state =>
+  find(
+    get(state, "dataEntry.metadata.operationalModules.programs"),
+    program => program.name === programName
+  );
+
 //it is returning another funciton
 export const selectEnrolmentFormMapping = (subjectType, programUuid) => state =>
   find(

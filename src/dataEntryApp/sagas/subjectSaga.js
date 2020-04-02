@@ -1,4 +1,10 @@
-import { Individual, ObservationsHolder, Concept } from "avni-models";
+import {
+  Individual,
+  ObservationsHolder,
+  Concept,
+  ProgramEnrolment,
+  SubjectType
+} from "avni-models";
 import {
   setSubject,
   getRegistrationForm,
@@ -17,17 +23,13 @@ import {
   selectSubjectTypeFromName,
   selectRegistrationSubject
 } from "./selectors";
-import {
-  selectEnrolmentFormMappingForSubjectType,
-  selectEnrolSubjectTypeFromName,
-  selectEnrolmentSubject,
-  selectProgramUUID
-} from "./enrolmentSelectors";
+import { selectEnrolmentFormMappingForSubjectType, selectProgram } from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
 import {
-  getEnrolForm,
+  onLoad,
   setEnrolForm,
-  types as enrolSubjectTypes
+  setProgramEnrolment,
+  types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import { isEmpty } from "lodash";
 
@@ -41,12 +43,25 @@ function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   yield put(setRegistrationForm(mapForm(registrationForm)));
 }
 
-function* dataEntryLoadEnrolFormWorker({ subjectTypeName, programName }) {
+export function* enrolmentOnLoadWatcher() {
+  yield takeLatest(enrolmentTypes.ON_LOAD, setupNewEnrolmentWorker);
+}
+
+function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
   const formMapping = yield select(
     selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName)
   );
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));
+
+  const program = yield select(selectProgram(programName));
+
+  const state = yield select();
+  const subject = state.dataEntry.subjectProfile.subjectProfile;
+  subject.subjectType = SubjectType.create("Individual");
+
+  let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
+  yield put.resolve(setProgramEnrolment(programEnrolment));
 }
 
 function* dataEntrySearchWorker() {
@@ -57,10 +72,6 @@ function* dataEntrySearchWorker() {
 
 export function* dataEntryLoadRegistrationFormWatcher() {
   yield takeLatest(subjectTypes.GET_REGISTRATION_FORM, dataEntryLoadRegistrationFormWorker);
-}
-
-export function* dataEntryLoadEnrolFormWatcher() {
-  yield takeLatest(enrolSubjectTypes.GET_ENROL_FORM, dataEntryLoadEnrolFormWorker);
 }
 
 export function* saveSubjectWorker() {
@@ -91,18 +102,11 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   yield put.resolve(setLoaded());
 }
 
-function* updateObsWatcher() {
-  yield takeEvery(subjectTypes.UPDATE_OBS, updateObsWorker);
-}
-
-export function* updateObsWorker({ formElement, value }) {
-  const subject = yield select(state => state.dataEntry.registration.subject);
-  console.log(subject.observations);
-  const observationHolder = new ObservationsHolder(subject.observations);
-  // observationHolder.updateObs(formElement, value);
-  // observationHolder.observations.map((concept)=>{
-  //   console.log(concept);
-
+/*
+Takes observations and returns updated observations. It do not modify the passed parameters.
+ */
+function updateObservations(observations, formElement, value) {
+  const observationHolder = new ObservationsHolder(observations);
   if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
     observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
   } else if (
@@ -113,11 +117,35 @@ export function* updateObsWorker({ formElement, value }) {
   } else {
     observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   }
-  // })
+  return observationHolder.observations;
+}
 
-  subject.observations = observationHolder.observations;
+function* updateObsWatcher() {
+  yield takeEvery(subjectTypes.UPDATE_OBS, updateObsWorker);
+}
+
+export function* updateObsWorker({ formElement, value }) {
+  const subject = yield select(state => state.dataEntry.registration.subject);
+  console.log(subject.observations);
+  subject.observations = updateObservations(subject.observations, formElement, value);
   yield put(setSubject(subject));
   sessionStorage.setItem("subject", JSON.stringify(subject));
+}
+
+function* updateEnrolmentObsWatcher() {
+  yield takeEvery(enrolmentTypes.UPDATE_OBS, updateEnrolmentObsWorker);
+}
+
+export function* updateEnrolmentObsWorker({ formElement, value }) {
+  const state = yield select();
+  const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
+  console.log("Program Enrolment Observations", programEnrolment.observations);
+  programEnrolment.observations = updateObservations(
+    programEnrolment.observations,
+    formElement,
+    value
+  );
+  yield put(setProgramEnrolment(programEnrolment));
 }
 
 export default function* subjectSaga() {
@@ -125,10 +153,11 @@ export default function* subjectSaga() {
     [
       dataEntrySearchWatcher,
       dataEntryLoadRegistrationFormWatcher,
-      dataEntryLoadEnrolFormWatcher,
+      enrolmentOnLoadWatcher,
       saveSubjectWatcher,
       loadRegistrationPageWatcher,
-      updateObsWatcher
+      updateObsWatcher,
+      updateEnrolmentObsWatcher
     ].map(fork)
   );
 }
