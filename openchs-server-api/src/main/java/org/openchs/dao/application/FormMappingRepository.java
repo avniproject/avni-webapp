@@ -36,9 +36,6 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
     @Query("select m from FormMapping m where m.isVoided = false")
     List<FormMapping> findAllOperational();
 
-    @Query("select m from FormMapping m where m.isVoided = false")
-    List<FormMapping.FormMappingProjection> findAllOperationalProjections();
-
     default FormMapping findByName(String name) {
         throw new UnsupportedOperationException("No field 'name' in FormMapping");
     }
