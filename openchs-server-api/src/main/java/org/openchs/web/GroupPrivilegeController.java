@@ -103,7 +103,7 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
         Set<Long> operationalProgramIds = operationalPrograms.stream().map(Program.ProgramProjection::getId).collect(Collectors.toSet());
         List<EncounterType.EncounterTypeProjection> encounterTypes = encounterTypeRepository.findAllOperational();
         Set<Long> operationalEncounterTypeIds = encounterTypes.stream().map(EncounterType.EncounterTypeProjection::getId).collect(Collectors.toSet());
-        List<ChecklistDetail.ChecklistDetailProjection> checklistDetails = checklistDetailRepository.getAllIdsAndNames();
+        List<ChecklistDetail> checklistDetails = checklistDetailRepository.findAllByOrganisationId(UserContextHolder.getUserContext().getOrganisationId());
         Group currentGroup = groupRepository.findOne(groupId);
         Iterable<Privilege> privileges = privilegeRepository.findAll();
         List<Privilege> privilegeList = IterableUtils.toList(privileges);
@@ -154,8 +154,8 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
                         });
             }
         });
-        subjectTypes.forEach(subjectType ->
-                checklistDetails.forEach(checklistDetail ->
+        checklistDetails.forEach(checklistDetail ->
+                subjectTypes.forEach(subjectType ->
                         privilegeList.stream()
                                 .filter(privilege -> privilege.getEntityType() == EntityType.Checklist)
                                 .forEach(privilege -> {
