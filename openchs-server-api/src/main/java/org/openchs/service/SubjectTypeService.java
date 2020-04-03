@@ -40,6 +40,7 @@ public class SubjectTypeService {
         SubjectType subjectType = new SubjectType();
         subjectType.setUuid(programRequest.getUuid());
         subjectType.setVoided(programRequest.isVoided());
+        subjectType.setGroup(programRequest.isGroup());
         return subjectType;
     }
 

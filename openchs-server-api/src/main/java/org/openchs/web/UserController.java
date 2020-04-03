@@ -47,6 +47,8 @@ public class UserController {
     private AccountAdminService accountAdminService;
     private AccountRepository accountRepository;
     private AccountAdminRepository accountAdminRepository;
+    private GroupRepository groupRepository;
+    private UserGroupRepository userGroupRepository;
 
     @Value("${openchs.userPhoneNumberPattern}")
     private String MOBILE_NUMBER_PATTERN;
@@ -59,7 +61,7 @@ public class UserController {
                           UserService userService,
                           CognitoIdpService cognitoService,
                           FacilityRepository facilityRepository,
-                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository) {
+                          AccountAdminService accountAdminService, AccountRepository accountRepository, AccountAdminRepository accountAdminRepository, GroupRepository groupRepository, UserGroupRepository userGroupRepository) {
         this.catchmentRepository = catchmentRepository;
         this.userRepository = userRepository;
         this.userFacilityMappingRepository = userFacilityMappingRepository;
@@ -70,6 +72,8 @@ public class UserController {
         this.accountAdminService = accountAdminService;
         this.accountRepository = accountRepository;
         this.accountAdminRepository = accountAdminRepository;
+        this.groupRepository = groupRepository;
+        this.userGroupRepository = userGroupRepository;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -101,6 +105,7 @@ public class UserController {
             cognitoService.createUser(user);
             userService.save(user);
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
+            addToDefaultUserGroup(user);
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
             return new ResponseEntity<>(user, HttpStatus.CREATED);
         } catch (ValidationException | UsernameExistsException ex) {
@@ -109,6 +114,16 @@ public class UserController {
         } catch (AWSCognitoIdentityProviderException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generateJsonError(ex.getMessage()));
+        }
+    }
+
+    private void addToDefaultUserGroup(User user) {
+        if (user.getOrganisationId() != null) {
+            UserGroup userGroup = new UserGroup();
+            userGroup.setGroup(groupRepository.findByNameAndOrganisationId("Everyone", user.getOrganisationId()));
+            userGroup.setUser(user);
+            userGroup.setUuid(UUID.randomUUID().toString());
+            userGroupRepository.save(userGroup);
         }
     }
 

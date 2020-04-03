@@ -67,7 +67,7 @@ public class LocationController implements OperatingIndividualScopeAwareControll
     }
 
     @GetMapping(value = "locations/search/find")
-    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin', 'user')")
     @ResponseBody
     public PagedResources<Resource<AddressLevel>> find(
             @RequestParam(value = "title") String title,

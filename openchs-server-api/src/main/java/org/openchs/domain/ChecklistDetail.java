@@ -1,5 +1,8 @@
 package org.openchs.domain;
 
+import org.openchs.application.projections.BaseProjection;
+import org.springframework.data.rest.core.config.Projection;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -33,5 +36,10 @@ public class ChecklistDetail extends OrganisationAwareEntity {
 
     public void addItem(ChecklistItemDetail checklistItem) {
         this.items.add(checklistItem);
+    }
+
+    @Projection(name = "ChecklistDetailProjection", types = {ChecklistDetail.class})
+    public interface ChecklistDetailProjection extends BaseProjection {
+        String getName();
     }
 }
