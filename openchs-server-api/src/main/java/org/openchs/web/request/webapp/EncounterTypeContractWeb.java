@@ -20,6 +20,7 @@ public class EncounterTypeContractWeb {
     private String lastModifiedBy;
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
+    private String uuid;
 
     public String getName() {
         return name;
@@ -45,11 +46,20 @@ public class EncounterTypeContractWeb {
         this.organisationId = organisationId;
     }
 
+    public void setUUID(String uuid){
+        this.uuid = uuid;
+    }
+
+    public String getUUID(){
+        return uuid;
+    }
+
     public static EncounterTypeContractWeb fromOperationalEncounterType(OperationalEncounterType operationalEncounterType) {
         EncounterTypeContractWeb contract = new EncounterTypeContractWeb();
         contract.setId(operationalEncounterType.getId());
         contract.setName(operationalEncounterType.getName());
         contract.setOrganisationId(operationalEncounterType.getOrganisationId());
+        contract.setUUID(operationalEncounterType.getEncounterType().getUuid());
         contract.setEncounterTypeOrganisationId(operationalEncounterType.getEncounterType().getOrganisationId());
         contract.setVoided(operationalEncounterType.isVoided());
         contract.setEncounterEligibilityCheckRule(operationalEncounterType.getEncounterEligibilityCheckRule());

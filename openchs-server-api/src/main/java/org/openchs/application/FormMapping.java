@@ -44,6 +44,14 @@ public class FormMapping extends OrganisationAwareEntity {
         return this.getForm() != null ? this.getForm().getUuid() : null;
     }
 
+    public FormType getType() {
+        return this.getForm() != null ? this.getForm().getFormType() : null;
+    }
+
+    public String getFormName() {
+        return this.getForm() != null ? this.getForm().getName() : null;
+    }
+    
     public Program getProgram() {
         return program;
     }

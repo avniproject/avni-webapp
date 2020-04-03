@@ -3,6 +3,7 @@ package org.openchs.web.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.FormMapping;
+import org.openchs.application.FormType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"name", "uuid", "dataType", "answers", "lowAbsolute", "highAbsolute", "lowNormal", "highNormal", "unit", "unique"})
@@ -12,6 +13,9 @@ public class FormMappingContract extends ReferenceDataContract {
     private String programUUID;
     private String encounterTypeUUID;
     private String subjectTypeUUID;
+    private FormType formType;
+    private Boolean isVoided;
+    private String formName;
 
     public String getFormUUID() {
         return formUUID;
@@ -45,10 +49,30 @@ public class FormMappingContract extends ReferenceDataContract {
         this.subjectTypeUUID = subjectTypeUUID;
     }
 
+    public void setFormType(FormType formType){
+        this.formType=formType;
+    }
+
+    public FormType getFormType() {
+        return formType;
+    }
+
+    public void setFormName(String formName){
+        this.formName=formName;
+    }
+
+    public String getFormName() {
+        return formName;
+    }
+
+    public Boolean getIsVoided() { return isVoided; }
+
     public static FormMappingContract fromFormMapping(FormMapping formMapping) {
         FormMappingContract contract = new FormMappingContract();
         contract.setUuid(formMapping.getUuid());
         contract.setId(formMapping.getId());
+        contract.setFormType(formMapping.getType());
+        contract.setFormName(formMapping.getFormName());
         contract.setSubjectTypeUUID(formMapping.getSubjectTypeUuid());
         contract.setProgramUUID(formMapping.getProgramUuid());
         contract.setFormUUID(formMapping.getFormUuid());

@@ -22,12 +22,14 @@ public class SubjectTypeContractWeb {
     private String lastModifiedBy;
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
+    private String uuid;
     private List<GroupRoleContract> groupRoles;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
         contract.setId(operationalSubjectType.getId());
         contract.setName(operationalSubjectType.getName());
+        contract.setUUID(operationalSubjectType.getSubjectTypeUUID());
         contract.setOrganisationId(operationalSubjectType.getOrganisationId());
         contract.setSubjectTypeOrganisationId(operationalSubjectType.getSubjectType().getOrganisationId());
         contract.setVoided(operationalSubjectType.isVoided());
@@ -87,6 +89,14 @@ public class SubjectTypeContractWeb {
 
     public void setOrganisationId(Long organisationId) {
         this.organisationId = organisationId;
+    }
+
+    public String getUUID(){
+        return uuid;
+    }
+
+    public void setUUID(String uuid){
+        this.uuid=uuid;
     }
 
     public boolean isVoided() {
