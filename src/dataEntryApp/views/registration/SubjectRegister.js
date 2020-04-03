@@ -14,8 +14,9 @@ import {
 } from "../../reducers/registrationReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import moment from "moment/moment";
 import { getGenders } from "../../reducers/metadataReducer";
-import { get, sortBy } from "lodash";
+import _, { get, sortBy } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
@@ -102,6 +103,10 @@ const DefaultPage = props => {
   const { t } = useTranslation();
   const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
   const [lastnameerrormsg, setLastnamemsg] = React.useState("");
+  const [regDateErrorMsg, setregDateErrorMsg] = React.useState("");
+  const [dobErrorMsg, setdobErrorMsg] = React.useState("");
+  const [genderErrorMsg, setgenderErrorMsg] = React.useState("");
+  const stringRegex = /^[A-Za-z]+$/;
   // console.log(props);
 
   React.useEffect(() => {
@@ -123,6 +128,49 @@ const DefaultPage = props => {
     //   props.saveCompleteFalse();
     // }
   }, []);
+
+  const validateFirstName = textValue => {
+    //return _.isNil(textValue) ? "There is no value specified" : '';
+  };
+
+  const validateRegistrationDate = (regDate, dob) => {
+    setregDateErrorMsg("");
+    if (_.isNil(regDate)) {
+      setregDateErrorMsg("There is no value specified");
+    } else if (!(_.isNil(dob) || _.isNil(regDate))) {
+      if (moment(dob).isAfter(regDate)) {
+        setregDateErrorMsg("Registration Date cannot be before date of birth");
+      }
+    } else {
+      setregDateErrorMsg("");
+      //return ValidationResult.successful(Individual.validationKeys.DOB);
+    }
+  };
+
+  const validateDateOfBirth = (date, regDate) => {
+    setdobErrorMsg("");
+    const years = moment().diff(date, "years");
+    if (_.isNil(date)) {
+      setdobErrorMsg("There is no value specified");
+    } else if (years > 120) {
+      setdobErrorMsg("Age is person is above 120 years");
+    } else if (moment(date).isAfter(new Date())) {
+      setdobErrorMsg("Birth date cannot be in future");
+    } else if (!(_.isNil(date) || _.isNil(regDate))) {
+      if (moment(date).isAfter(regDate)) {
+        setdobErrorMsg("Registration Date cannot be before date of birth");
+      }
+    } else {
+      setdobErrorMsg("");
+      //return ValidationResult.successful(Individual.validationKeys.DOB);
+    }
+  };
+
+  const validateGender = gender => {
+    if (_.isNil(gender)) {
+      setgenderErrorMsg("There is no value specified");
+    }
+  };
 
   return (
     <div>
@@ -183,15 +231,23 @@ const DefaultPage = props => {
                 </Typography> */}
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
+                    error={!_.isEmpty(regDateErrorMsg)}
+                    helperText={regDateErrorMsg}
                     style={{ width: "30%" }}
                     margin="normal"
                     id="date-picker-dialog"
                     format="MM/dd/yyyy"
+                    autoComplete="off"
+                    required
                     name="registrationDate"
                     label={t("Date of registration")}
                     value={new Date(props.subject.registrationDate)}
                     onChange={date => {
                       props.updateSubject("registrationDate", new Date(date));
+                      validateRegistrationDate(date, props.subject.dateOfBirth);
+                    }}
+                    InputLabelProps={{
+                      shrink: true
                     }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -203,6 +259,12 @@ const DefaultPage = props => {
                 {get(props, "subject.subjectType.name") === "Individual" && (
                   <React.Fragment>
                     <TextField
+                      error={_.isEqual(props.subject.firstName, "")}
+                      helperText={
+                        _.isEqual(props.subject.firstName, "")
+                          ? "There is no value specified!"
+                          : " "
+                      }
                       style={{ width: "30%" }}
                       label={t("firstName")}
                       type="text"
@@ -212,10 +274,15 @@ const DefaultPage = props => {
                       value={props.subject.firstName || ""}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
+                        //validateFirstName(e.target.value)
                       }}
                     />
                     <LineBreak num={1} />
                     <TextField
+                      error={_.isEqual(props.subject.lastName, "")}
+                      helperText={
+                        _.isEqual(props.subject.lastName, "") ? "There is no value specified!" : " "
+                      }
                       style={{ width: "30%" }}
                       label={t("lastName")}
                       type="text"
@@ -231,7 +298,11 @@ const DefaultPage = props => {
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || ""}
                       dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                      onChange={date => props.updateSubject("dateOfBirth", date)}
+                      dobErrorMsg={dobErrorMsg}
+                      onChange={date => {
+                        props.updateSubject("dateOfBirth", date);
+                        validateDateOfBirth(date, props.subject.registrationDate);
+                      }}
                       markVerified={verified =>
                         props.updateSubject("dateOfBirthVerified", verified)
                       }
@@ -241,7 +312,12 @@ const DefaultPage = props => {
                       groupName={t("gender")}
                       items={sortBy(props.genders, "name")}
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
-                      onChange={selected => props.updateSubject("gender", selected)}
+                      mandatory={true}
+                      onChange={selected => {
+                        props.updateSubject("gender", selected);
+                        validateGender(selected);
+                      }}
+                      errorMsg={genderErrorMsg}
                     />
                     <LineBreak num={1} />
                     <label className={classes.villagelabel}>{t("Village")}</label>

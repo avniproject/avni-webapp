@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { Box, TextField } from "@material-ui/core";
 import moment from "moment/moment";
+import _ from "lodash";
 import { LineBreak } from "../../../src/common/components/utils";
 import {
   MuiPickersUtilsProvider,
@@ -10,9 +11,9 @@ import {
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 
-export const DateOfBirth = ({ dateOfBirth, onChange }) => {
+export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
-  const dob = dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10) || null;  
+  const dob = (dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10)) || null;
   const [years, setYears] = React.useState("");
   const [months, setMonths] = React.useState("");
 
@@ -39,6 +40,9 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
         .subtract(months, "months")
         .toDate()
     );
+    if (value > 120) {
+      dobErrorMsg = "Age is person is above 120 years";
+    }
   };
 
   return (
@@ -46,12 +50,15 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
       <Box display="flex" flexDirection="column">
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
+            error={!_.isEmpty(dobErrorMsg)}
+            helperText={dobErrorMsg}
+            required
             margin="normal"
-            id="date-picker-dialog"     
-            autoComplete="off"  
-            placeholder = "mm/dd/yyyy"
+            id="date-picker-dialog"
+            autoComplete="off"
+            placeholder="mm/dd/yyyy"
             format="MM/dd/yyyy"
-            style={{ width: "30%" }}            
+            style={{ width: "30%" }}
             name="dateOfBirth"
             label="Date Of birth"
             value={dob}
@@ -60,17 +67,17 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
               shrink: true
             }}
             KeyboardButtonProps={{
-              'aria-label': 'change date',
+              "aria-label": "change date",
               color: "primary"
             }}
           />
-
         </MuiPickersUtilsProvider>
         <LineBreak num={1} />
         <TextField
           label={t("age")}
           type={"numeric"}
           autoComplete="off"
+          required
           name={"ageYearsPart"}
           value={years}
           style={{ width: "30%" }}
