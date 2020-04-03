@@ -48,6 +48,10 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
         return subjectType.isGroup();
     }
 
+    public boolean isHousehold() {
+        return subjectType.isHousehold();
+    }
+
     public DateTime getLastModifiedDateTime() {
         return getSubjectType().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getSubjectType().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }

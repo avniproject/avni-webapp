@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 import org.openchs.domain.OperationalSubjectType;
 import org.springframework.hateoas.core.Relation;
 
+import java.util.List;
+
 /**
  * This class represents a combined entity representing one to one mapping of SubjectType and OperationalSubjectType.
  */
@@ -15,10 +17,12 @@ public class SubjectTypeContractWeb {
     private Long subjectTypeOrganisationId;
     private boolean voided;
     private boolean group;
+    private boolean household;
     private String createdBy;
     private String lastModifiedBy;
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
+    private List<GroupRoleContract> groupRoles;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -32,7 +36,25 @@ public class SubjectTypeContractWeb {
         contract.setCreatedDateTime(operationalSubjectType.getAudit().getCreatedDateTime());
         contract.setModifiedDateTime(operationalSubjectType.getAudit().getLastModifiedDateTime());
         contract.setGroup(operationalSubjectType.isGroup());
+        contract.setHousehold(operationalSubjectType.isHousehold());
+        contract.setGroupRoles(operationalSubjectType.getSubjectType().getGroupRolesContract());
         return contract;
+    }
+
+    public List<GroupRoleContract> getGroupRoles() {
+        return groupRoles;
+    }
+
+    public void setGroupRoles(List<GroupRoleContract> groupRoles) {
+        this.groupRoles = groupRoles;
+    }
+
+    public boolean isHousehold() {
+        return household;
+    }
+
+    public void setHousehold(boolean household) {
+        this.household = household;
     }
 
     public boolean isGroup() {
