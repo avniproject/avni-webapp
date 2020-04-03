@@ -10,7 +10,7 @@ import Moment from "react-moment";
 import Grid from "@material-ui/core/Grid";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
-import ShowSubjectType from "../WorkFlow/ShowSubjectType";
+import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 
 const ProgramShow = props => {
   const [program, setProgram] = useState({});
@@ -59,6 +59,7 @@ const ProgramShow = props => {
               rowDetails={program}
               subjectType={subjectType}
               formMapping={formMapping}
+              entityUUID="encounterTypeUUID"
             />
           </div>
           <p />

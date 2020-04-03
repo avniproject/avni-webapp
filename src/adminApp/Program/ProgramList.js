@@ -7,7 +7,7 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
-import ShowSubjectType from "../WorkFlow/ShowSubjectType";
+import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 
 const ProgramList = ({ history }) => {
   const [formMapping, setMapping] = useState([]);
@@ -43,6 +43,7 @@ const ProgramList = ({ history }) => {
           subjectType={subjectType}
           formMapping={formMapping}
           setMapping={setMapping}
+          entityUUID="programUUID"
         />
       )
     },
