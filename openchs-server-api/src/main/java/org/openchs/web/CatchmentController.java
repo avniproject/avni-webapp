@@ -73,11 +73,19 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
         return catchments.stream().map(catchment -> CatchmentContract.fromEntity(catchment)).collect(Collectors.toList());
     }
 
+    @GetMapping(value = "catchment/search/find")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    public PagedResources<Resource<CatchmentContract>> find(@RequestParam(value = "name") String name, Pageable pageable) {
+        Page<Catchment> catchments = catchmentRepository.findByNameIgnoreCaseStartingWithOrderByNameAsc(name, pageable);
+        Page<CatchmentContract> catchmentContracts = catchments.map(CatchmentContract::fromEntity);
+        return wrap(catchmentContracts);
+    }
+
     @PostMapping(value = "/catchment")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @Transactional
     ResponseEntity<?> createSingleCatchment(@RequestBody @Valid CatchmentContract catchmentContract) throws Exception {
-        if(catchmentRepository.findByName(catchmentContract.getName()) != null)
+        if (catchmentRepository.findByName(catchmentContract.getName()) != null)
             return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("Catchment with name %s already exists", catchmentContract.getName())));
         Catchment catchment = new Catchment();
         catchment.assignUUID();
