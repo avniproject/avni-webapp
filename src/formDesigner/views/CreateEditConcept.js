@@ -392,7 +392,7 @@ class CreateEditConcept extends Component {
               highAbsolute: this.state.highAbsolute,
               lowNormal: this.state.lowNormal,
               highNormal: this.state.highNormal,
-              unit: this.state.unit
+              unit: this.state.unit === "" ? null : this.state.unit
             }
           ])
           .then(response => {
