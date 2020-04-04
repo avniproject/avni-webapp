@@ -101,13 +101,16 @@ const useStyles = makeStyles(theme => ({
 const DefaultPage = props => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
-  const [lastnameerrormsg, setLastnamemsg] = React.useState("");
-  const [regDateErrorMsg, setregDateErrorMsg] = React.useState("");
-  const [dobErrorMsg, setdobErrorMsg] = React.useState("");
-  const [genderErrorMsg, setgenderErrorMsg] = React.useState("");
   const [disableNext, setDisableNext] = React.useState(true);
   const stringRegex = /^[A-Za-z]+$/;
+  const [subjectRegFormErrors, setSubjectRegFormErrors] = React.useState({
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    registrationDate: "",
+    gender: ""
+  });
+
   // console.log(props);
 
   React.useEffect(() => {
@@ -130,77 +133,66 @@ const DefaultPage = props => {
     // }
   }, []);
 
-  const validateFirstName = textValue => {
-    setFirstnamemsg("");
-    if (_.isEqual(textValue, "")) {
-      setFirstnamemsg("There is no value specified!");
-    } else if (_.isNil(textValue)) {
-      setFirstnamemsg("There is no value specified!");
-    } else {
-      setFirstnamemsg("");
+  const validateRegistrationDate = (regDate, dob) => {
+    subjectRegFormErrors.registrationDate = "";
+    if (_.isNil(regDate)) {
+      subjectRegFormErrors.registrationDate = "There is no value specified!";
+    } else if (!(_.isNil(dob) || _.isNil(regDate))) {
+      if (moment(dob).isAfter(regDate)) {
+        subjectRegFormErrors.registrationDate = "Registration Date cannot be before date of birth";
+      }
+    } else if (moment(regDate).isAfter(new Date())) {
+      subjectRegFormErrors.registrationDate = "Registration date cannot be in future";
     }
+    setSubjectRegFormErrors({ ...subjectRegFormErrors });
+  };
+
+  const validateFirstName = firstName => {
+    subjectRegFormErrors.firstName = "";
+    if (_.isEqual(firstName, "")) {
+      subjectRegFormErrors.firstName = "There is no value specified!";
+    } else if (_.isNil(firstName)) {
+      subjectRegFormErrors.firstName = "There is no value specified!";
+    }
+    setSubjectRegFormErrors({ ...subjectRegFormErrors });
   };
 
   const validateLastName = lastName => {
-    setLastnamemsg("");
+    subjectRegFormErrors.lastName = "";
     if (_.isEqual(lastName, "")) {
-      setLastnamemsg("There is no value specified!");
+      subjectRegFormErrors.lastName = "There is no value specified!";
     } else if (_.isNil(lastName)) {
-      setLastnamemsg("There is no value specified!");
-    } else {
-      setLastnamemsg("");
+      subjectRegFormErrors.lastName = "There is no value specified!";
     }
-  };
-
-  const validateRegistrationDate = (regDate, dob) => {
-    console.log("in reg validation");
-    console.log(regDate);
-    console.log(dob);
-    setregDateErrorMsg("");
-    if (_.isNil(regDate)) {
-      setregDateErrorMsg("There is no value specified");
-    } else if (!(_.isNil(dob) || _.isNil(regDate))) {
-      if (moment(dob).isAfter(regDate)) {
-        setregDateErrorMsg("Registration Date cannot be before date of birth");
-      }
-    } else if (moment(regDate).isAfter(new Date())) {
-      setregDateErrorMsg("Registration date cannot be in future");
-    } else {
-      setregDateErrorMsg("");
-      //return ValidationResult.successful(Individual.validationKeys.DOB);
-    }
+    setSubjectRegFormErrors({ ...subjectRegFormErrors });
   };
 
   const validateDateOfBirth = (date, regDate) => {
-    setdobErrorMsg("");
+    subjectRegFormErrors.dateOfBirth = "";
+    setSubjectRegFormErrors({ ...subjectRegFormErrors, dateOfBirth: "" });
     const years = moment().diff(date, "years");
     if (_.isNil(date)) {
-      setdobErrorMsg("There is no value specified");
+      subjectRegFormErrors.dateOfBirth = "There is no value specified";
     } else if (years > 120) {
-      setdobErrorMsg("Age is person is above 120 years");
+      subjectRegFormErrors.dateOfBirth = "Age is person is above 120 years";
     } else if (moment(date).isAfter(new Date())) {
-      setdobErrorMsg("Birth date cannot be in future");
+      subjectRegFormErrors.dateOfBirth = "Birth date cannot be in future";
     } else if (!(_.isNil(date) || _.isNil(regDate))) {
       if (moment(date).isAfter(regDate)) {
-        setdobErrorMsg("Registration Date cannot be before date of birth");
+        subjectRegFormErrors.dateOfBirth = "Registration Date cannot be before date of birth";
       }
-    } else {
-      setdobErrorMsg("");
-      //return ValidationResult.successful(Individual.validationKeys.DOB);
     }
+    setSubjectRegFormErrors({ ...subjectRegFormErrors });
   };
 
   const validateGender = gender => {
-    console.log("inside validate gender");
-    console.log(gender);
-    setgenderErrorMsg("");
+    subjectRegFormErrors.gender = "";
     if (_.isNil(gender)) {
-      setgenderErrorMsg("There is no value specified");
+      subjectRegFormErrors.gender = "There is no value specified!";
     } else if (_.isEmpty(gender.name)) {
-      setgenderErrorMsg("There is no value specified");
-    } else {
-      setgenderErrorMsg("");
+      subjectRegFormErrors.gender = "There is no value specified!";
     }
+    setSubjectRegFormErrors({ ...subjectRegFormErrors });
   };
 
   const nextHandler = () => {
@@ -212,11 +204,11 @@ const DefaultPage = props => {
     validateGender(props.subject.gender);
     // To be moved out of nextHandler; once all error messgae are empty
     if (
-      _.isEmpty(firstnameerrormsg) &&
-      _.isEmpty(lastnameerrormsg) &&
-      _.isEmpty(regDateErrorMsg) &&
-      _.isEmpty(dobErrorMsg) &&
-      _.isEmpty(genderErrorMsg)
+      _.isEmpty(subjectRegFormErrors.firstName) &&
+      _.isEmpty(subjectRegFormErrors.lastName) &&
+      _.isEmpty(subjectRegFormErrors.dateOfBirth) &&
+      _.isEmpty(subjectRegFormErrors.registrationDate) &&
+      _.isEmpty(subjectRegFormErrors.gender)
     ) {
       console.log("setDisableNext ..false");
       setDisableNext(false);
@@ -271,28 +263,19 @@ const DefaultPage = props => {
 
             <Paper className={classes.form}>
               <Box className={classes.topboxstyle} display="flex" flexDirection="column">
-                {/* <Typography
-                  className={classes.caption}
-                  variant="caption"
-                  display="block"
-                  gutterBottom
-                >
-                  {" "}
-                  {t("date")} of {t("registration")}{" "}
-                </Typography> */}
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
-                    error={!_.isEmpty(regDateErrorMsg)}
-                    helperText={regDateErrorMsg}
-                    style={{ width: "30%" }}
-                    margin="normal"
-                    id="date-picker-dialog"
-                    format="MM/dd/yyyy"
                     autoComplete="off"
                     required
                     name="registrationDate"
                     label={t("Date of registration")}
                     value={new Date(props.subject.registrationDate)}
+                    error={!_.isEmpty(subjectRegFormErrors.registrationDate)}
+                    helperText={subjectRegFormErrors.registrationDate}
+                    style={{ width: "30%" }}
+                    margin="normal"
+                    id="date-picker-dialog"
+                    format="MM/dd/yyyy"
                     onChange={date => {
                       props.updateSubject("registrationDate", new Date(date));
                       validateRegistrationDate(date, props.subject.dateOfBirth);
@@ -310,15 +293,15 @@ const DefaultPage = props => {
                 {get(props, "subject.subjectType.name") === "Individual" && (
                   <React.Fragment>
                     <TextField
-                      error={!_.isEmpty(firstnameerrormsg)}
-                      helperText={firstnameerrormsg}
-                      style={{ width: "30%" }}
-                      label={t("firstName")}
                       type="text"
                       autoComplete="off"
                       required
                       name="firstName"
                       value={props.subject.firstName || ""}
+                      error={!_.isEmpty(subjectRegFormErrors.firstName)}
+                      helperText={subjectRegFormErrors.firstName}
+                      style={{ width: "30%" }}
+                      label={t("firstName")}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
                         validateFirstName(e.target.value);
@@ -326,15 +309,15 @@ const DefaultPage = props => {
                     />
                     <LineBreak num={1} />
                     <TextField
-                      error={!_.isEmpty(lastnameerrormsg)}
-                      helperText={lastnameerrormsg}
-                      style={{ width: "30%" }}
-                      label={t("lastName")}
                       type="text"
                       autoComplete="off"
                       required
                       name="lastName"
                       value={props.subject.lastName || ""}
+                      error={!_.isEmpty(subjectRegFormErrors.lastName)}
+                      helperText={subjectRegFormErrors.lastName}
+                      style={{ width: "30%" }}
+                      label={t("lastName")}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
                         validateLastName(e.target.value);
@@ -344,7 +327,7 @@ const DefaultPage = props => {
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || ""}
                       dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                      dobErrorMsg={dobErrorMsg}
+                      dobErrorMsg={subjectRegFormErrors.dateOfBirth}
                       onChange={date => {
                         props.updateSubject("dateOfBirth", date);
                         validateDateOfBirth(date, props.subject.registrationDate);
@@ -359,11 +342,11 @@ const DefaultPage = props => {
                       items={sortBy(props.genders, "name")}
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                       mandatory={true}
+                      errorMsg={subjectRegFormErrors.gender}
                       onChange={selected => {
                         props.updateSubject("gender", selected);
                         validateGender(selected);
                       }}
-                      errorMsg={genderErrorMsg}
                     />
                     <LineBreak num={1} />
                     <label className={classes.villagelabel}>{t("Village")}</label>
