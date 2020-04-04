@@ -20,6 +20,7 @@ export const CodedFormElement = ({
   onChange,
   multiSelect,
   mandatory,
+  errorMsg,
   ...props
 }) => {
   let genwidth = "";

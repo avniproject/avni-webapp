@@ -106,6 +106,7 @@ const DefaultPage = props => {
   const [regDateErrorMsg, setregDateErrorMsg] = React.useState("");
   const [dobErrorMsg, setdobErrorMsg] = React.useState("");
   const [genderErrorMsg, setgenderErrorMsg] = React.useState("");
+  const [disableNext, setDisableNext] = React.useState(true);
   const stringRegex = /^[A-Za-z]+$/;
   // console.log(props);
 
@@ -113,8 +114,8 @@ const DefaultPage = props => {
     (async function fetchData() {
       await props.onLoad(props.match.queryParams.type);
       props.saveCompleteFalse();
-      let subject = BrowserStore.fetchSubject();
-      if (subject) props.setSubject(subject);
+      // let subject = BrowserStore.fetchSubject();
+      // if (subject) props.setSubject(subject);
     })();
 
     // if (!props.saved) {
@@ -130,10 +131,31 @@ const DefaultPage = props => {
   }, []);
 
   const validateFirstName = textValue => {
-    //return _.isNil(textValue) ? "There is no value specified" : '';
+    setFirstnamemsg("");
+    if (_.isEqual(textValue, "")) {
+      setFirstnamemsg("There is no value specified!");
+    } else if (_.isNil(textValue)) {
+      setFirstnamemsg("There is no value specified!");
+    } else {
+      setFirstnamemsg("");
+    }
+  };
+
+  const validateLastName = lastName => {
+    setLastnamemsg("");
+    if (_.isEqual(lastName, "")) {
+      setLastnamemsg("There is no value specified!");
+    } else if (_.isNil(lastName)) {
+      setLastnamemsg("There is no value specified!");
+    } else {
+      setLastnamemsg("");
+    }
   };
 
   const validateRegistrationDate = (regDate, dob) => {
+    console.log("in reg validation");
+    console.log(regDate);
+    console.log(dob);
     setregDateErrorMsg("");
     if (_.isNil(regDate)) {
       setregDateErrorMsg("There is no value specified");
@@ -141,6 +163,8 @@ const DefaultPage = props => {
       if (moment(dob).isAfter(regDate)) {
         setregDateErrorMsg("Registration Date cannot be before date of birth");
       }
+    } else if (moment(regDate).isAfter(new Date())) {
+      setregDateErrorMsg("Registration date cannot be in future");
     } else {
       setregDateErrorMsg("");
       //return ValidationResult.successful(Individual.validationKeys.DOB);
@@ -167,8 +191,35 @@ const DefaultPage = props => {
   };
 
   const validateGender = gender => {
+    console.log("inside validate gender");
+    console.log(gender);
+    setgenderErrorMsg("");
     if (_.isNil(gender)) {
       setgenderErrorMsg("There is no value specified");
+    } else if (_.isEmpty(gender.name)) {
+      setgenderErrorMsg("There is no value specified");
+    } else {
+      setgenderErrorMsg("");
+    }
+  };
+
+  const nextHandler = () => {
+    console.log("in nextHandler ....");
+    validateFirstName(props.subject.firstName);
+    validateLastName(props.subject.lastName);
+    validateRegistrationDate(props.subject.registrationDate, props.subject.dateOfBirth);
+    validateDateOfBirth(props.subject.dateOfBirth, props.subject.registrationDate);
+    validateGender(props.subject.gender);
+    // To be moved out of nextHandler; once all error messgae are empty
+    if (
+      _.isEmpty(firstnameerrormsg) &&
+      _.isEmpty(lastnameerrormsg) &&
+      _.isEmpty(regDateErrorMsg) &&
+      _.isEmpty(dobErrorMsg) &&
+      _.isEmpty(genderErrorMsg)
+    ) {
+      console.log("setDisableNext ..false");
+      setDisableNext(false);
     }
   };
 
@@ -259,12 +310,8 @@ const DefaultPage = props => {
                 {get(props, "subject.subjectType.name") === "Individual" && (
                   <React.Fragment>
                     <TextField
-                      error={_.isEqual(props.subject.firstName, "")}
-                      helperText={
-                        _.isEqual(props.subject.firstName, "")
-                          ? "There is no value specified!"
-                          : " "
-                      }
+                      error={!_.isEmpty(firstnameerrormsg)}
+                      helperText={firstnameerrormsg}
                       style={{ width: "30%" }}
                       label={t("firstName")}
                       type="text"
@@ -274,15 +321,13 @@ const DefaultPage = props => {
                       value={props.subject.firstName || ""}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
-                        //validateFirstName(e.target.value)
+                        validateFirstName(e.target.value);
                       }}
                     />
                     <LineBreak num={1} />
                     <TextField
-                      error={_.isEqual(props.subject.lastName, "")}
-                      helperText={
-                        _.isEqual(props.subject.lastName, "") ? "There is no value specified!" : " "
-                      }
+                      error={!_.isEmpty(lastnameerrormsg)}
+                      helperText={lastnameerrormsg}
                       style={{ width: "30%" }}
                       label={t("lastName")}
                       type="text"
@@ -292,6 +337,7 @@ const DefaultPage = props => {
                       value={props.subject.lastName || ""}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
+                        validateLastName(e.target.value);
                       }}
                     />
                     <LineBreak num={1} />
@@ -360,16 +406,21 @@ const DefaultPage = props => {
                     disabled
                     variant="outlined"
                   />
-                  <RelativeLink
-                    to="form"
-                    params={{
-                      type: props.subject.subjectType.name,
-                      from: props.location.pathname + props.location.search
-                    }}
-                    noUnderline
-                  >
-                    <PagenatorButton formdata={props.subject}>{t("next")}</PagenatorButton>
-                  </RelativeLink>
+
+                  {!disableNext ? (
+                    <RelativeLink
+                      to="form"
+                      params={{
+                        type: props.subject.subjectType.name,
+                        from: props.location.pathname + props.location.search
+                      }}
+                      noUnderline
+                    >
+                      <PagenatorButton formdata={props.subject}>{t("next")}</PagenatorButton>
+                    </RelativeLink>
+                  ) : (
+                    <Chip disabled label={"next"} onClick={nextHandler} />
+                  )}
                 </Box>
               </Box>
             </Paper>
