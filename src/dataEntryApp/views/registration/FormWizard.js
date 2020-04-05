@@ -93,28 +93,40 @@ const FormWizard = ({
   const classes = useStyle();
   const [redirect, setRedirect] = React.useState(false);
 
-  const page = +match.queryParams.page;
   const from = match.queryParams.from;
+  // console.log(page);
 
   const firstPageNumber = form && form.firstFormElementGroup.displayOrder;
-  const currentPageNumber = isNaN(page) ? firstPageNumber : page;
   const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
+  const page =
+    match.queryParams.page === parseInt(lastPageNumber)
+      ? parseInt(match.queryParams.page)
+      : +match.queryParams.page;
+
+  const currentPageNumber = isNaN(page) ? firstPageNumber : page;
+
+  const showSummaryPage = page >= lastPageNumber + 1;
 
   const pageDetails = {
-    nextPageNumber:
-      currentPageNumber === lastPageNumber
-        ? null
-        : form && form.getNextFormElement(currentPageNumber).displayOrder,
+    nextPageNumber: showSummaryPage
+      ? null
+      : form && form.getNextFormElement(currentPageNumber) != undefined
+      ? form.getNextFormElement(currentPageNumber).displayOrder
+      : currentPageNumber + 1,
     previousPageNumber:
       currentPageNumber === firstPageNumber
         ? null
+        : showSummaryPage
+        ? form && form.getPrevFormElement(currentPageNumber - 1).displayOrder
         : form && form.getPrevFormElement(currentPageNumber).displayOrder,
     location,
     from
   };
 
-  const current = form && form.formElementGroupAt(currentPageNumber);
-  const pageCount = currentPageNumber + 1 + " / " + (lastPageNumber + 1);
+  const current = showSummaryPage
+    ? { name: "Summary" }
+    : form && form.formElementGroupAt(currentPageNumber);
+  const pageCount = currentPageNumber + " / " + (lastPageNumber + 1);
   const { t } = useTranslation();
   const onOkHandler = data => {
     BrowserStore.clear("subject");
@@ -129,7 +141,7 @@ const FormWizard = ({
           <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
             <Typography variant="subtitle1" gutterBottom>
               {" "}
-              {currentPageNumber + 1}. {t(current.name)}{" "}
+              {currentPageNumber}. {t(current.name)}{" "}
             </Typography>
             <Paginator
               pageDetails={pageDetails}
@@ -140,7 +152,7 @@ const FormWizard = ({
             />
           </Box>
           <Paper className={classes.form}>
-            {currentPageNumber > lastPageNumber ? (
+            {currentPageNumber >= lastPageNumber + 1 ? (
               <Summary subject={subject} />
             ) : (
               <Form current={current} obs={obs} updateObs={updateObs} />
