@@ -1,8 +1,8 @@
-import React, { Fragment } from "react";
+import React, { Fragment, createRef } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
-import { ObservationsHolder } from "avni-models";
+import { ObservationsHolder, ValidationResults } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
@@ -95,21 +95,43 @@ const useStyles = makeStyles(theme => ({
   },
   errmsg: {
     color: "red"
+  },
+  nextBtn: {
+    color: "white",
+    width: 110,
+    cursor: "pointer",
+    height: 30,
+    padding: "4px 25px",
+    fontSize: 12,
+    borderRadius: 50,
+    backgroundColor: "orange"
   }
 }));
 
 const DefaultPage = props => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [disableNext, setDisableNext] = React.useState(true);
+
+  //const [disableNext, setDisableNext] = React.useState(true);
   const stringRegex = /^[A-Za-z]+$/;
-  const [subjectRegFormErrors, setSubjectRegFormErrors] = React.useState({
-    firstName: "",
-    lastName: "",
-    dateOfBirth: "",
-    registrationDate: "",
-    gender: ""
+  // const [subjectRegFormErrors, setSubjectRegFormErrors] = React.useState({
+  //   firstName: "",
+  //   lastName: "",
+  //   dateOfBirth: "",
+  //   registrationDate: "",
+  //   gender: ""
+  // });
+
+  const [subjectRegErrors, setSubjectRegErrors] = React.useState({
+    REGISTRATION_DATE: "",
+    FIRST_NAME: "",
+    LAST_NAME: "",
+    DOB: "",
+    GENDER: "",
+    REGISTRATION_LOCATION: ""
   });
+
+  const nextBtnRef = React.useRef();
 
   // console.log(props);
 
@@ -133,85 +155,93 @@ const DefaultPage = props => {
     // }
   }, []);
 
-  const validateRegistrationDate = (regDate, dob) => {
-    subjectRegFormErrors.registrationDate = "";
-    if (_.isNil(regDate)) {
-      subjectRegFormErrors.registrationDate = "There is no value specified!";
-    } else if (!(_.isNil(dob) || _.isNil(regDate))) {
-      if (moment(dob).isAfter(regDate)) {
-        subjectRegFormErrors.registrationDate = "Registration Date cannot be before date of birth";
-      }
-    } else if (moment(regDate).isAfter(new Date())) {
-      subjectRegFormErrors.registrationDate = "Registration date cannot be in future";
-    }
-    setSubjectRegFormErrors({ ...subjectRegFormErrors });
+  const setValidationResultToError = validationResult => {
+    subjectRegErrors[validationResult.formIdentifier] = validationResult.messageKey;
+    setSubjectRegErrors({ ...subjectRegErrors });
   };
 
-  const validateFirstName = firstName => {
-    subjectRegFormErrors.firstName = "";
-    if (_.isEqual(firstName, "")) {
-      subjectRegFormErrors.firstName = "There is no value specified!";
-    } else if (_.isNil(firstName)) {
-      subjectRegFormErrors.firstName = "There is no value specified!";
-    }
-    setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  };
+  // const validateRegistrationDate = (regDate, dob) => {
+  //   subjectRegFormErrors.registrationDate = "";
+  //   if (_.isNil(regDate)) {
+  //     subjectRegFormErrors.registrationDate = "There is no value specified!";
+  //   } else if (!(_.isNil(dob) || _.isNil(regDate))) {
+  //     if (moment(dob).isAfter(regDate)) {
+  //       subjectRegFormErrors.registrationDate = "Registration Date cannot be before date of birth";
+  //     }
+  //   } else if (moment(regDate).isAfter(new Date())) {
+  //     subjectRegFormErrors.registrationDate = "Registration date cannot be in future";
+  //   }
+  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
+  // };
 
-  const validateLastName = lastName => {
-    subjectRegFormErrors.lastName = "";
-    if (_.isEqual(lastName, "")) {
-      subjectRegFormErrors.lastName = "There is no value specified!";
-    } else if (_.isNil(lastName)) {
-      subjectRegFormErrors.lastName = "There is no value specified!";
-    }
-    setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  };
+  // const validateFirstName = firstName => {
+  //   console.log("subject",props.subject);
+  //   subjectRegFormErrors.firstName = "";
+  //   if (_.isEqual(firstName, "")) {
+  //     subjectRegFormErrors.firstName = "There is no value specified!";
+  //   } else if (_.isNil(firstName)) {
+  //     subjectRegFormErrors.firstName = "There is no value specified!";
+  //   }
+  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
+  // };
 
-  const validateDateOfBirth = (date, regDate) => {
-    subjectRegFormErrors.dateOfBirth = "";
-    setSubjectRegFormErrors({ ...subjectRegFormErrors, dateOfBirth: "" });
-    const years = moment().diff(date, "years");
-    if (_.isNil(date)) {
-      subjectRegFormErrors.dateOfBirth = "There is no value specified";
-    } else if (years > 120) {
-      subjectRegFormErrors.dateOfBirth = "Age is person is above 120 years";
-    } else if (moment(date).isAfter(new Date())) {
-      subjectRegFormErrors.dateOfBirth = "Birth date cannot be in future";
-    } else if (!(_.isNil(date) || _.isNil(regDate))) {
-      if (moment(date).isAfter(regDate)) {
-        subjectRegFormErrors.dateOfBirth = "Registration Date cannot be before date of birth";
-      }
-    }
-    setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  };
+  // const validateLastName = lastName => {
+  //   subjectRegFormErrors.lastName = "";
+  //   if (_.isEqual(lastName, "")) {
+  //     subjectRegFormErrors.lastName = "There is no value specified!";
+  //   } else if (_.isNil(lastName)) {
+  //     subjectRegFormErrors.lastName = "There is no value specified!";
+  //   }
+  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
+  // };
 
-  const validateGender = gender => {
-    subjectRegFormErrors.gender = "";
-    if (_.isNil(gender)) {
-      subjectRegFormErrors.gender = "There is no value specified!";
-    } else if (_.isEmpty(gender.name)) {
-      subjectRegFormErrors.gender = "There is no value specified!";
-    }
-    setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  };
+  // const validateDateOfBirth = (date, regDate) => {
+  //   subjectRegFormErrors.dateOfBirth = "";
+  //   setSubjectRegFormErrors({ ...subjectRegFormErrors, dateOfBirth: "" });
+  //   const years = moment().diff(date, "years");
+  //   if (_.isNil(date)) {
+  //     subjectRegFormErrors.dateOfBirth = "There is no value specified";
+  //   } else if (years > 120) {
+  //     subjectRegFormErrors.dateOfBirth = "Age is person is above 120 years";
+  //   } else if (moment(date).isAfter(new Date())) {
+  //     subjectRegFormErrors.dateOfBirth = "Birth date cannot be in future";
+  //   } else if (!(_.isNil(date) || _.isNil(regDate))) {
+  //     if (moment(date).isAfter(regDate)) {
+  //       subjectRegFormErrors.dateOfBirth = "Registration Date cannot be before date of birth";
+  //     }
+  //   }
+  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
+  // };
+
+  // const validateGender = gender => {
+  //   subjectRegFormErrors.gender = "";
+  //   if (_.isNil(gender)) {
+  //     subjectRegFormErrors.gender = "There is no value specified!";
+  //   } else if (_.isEmpty(gender.name)) {
+  //     subjectRegFormErrors.gender = "There is no value specified!";
+  //   }
+  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
+  // };
 
   const nextHandler = () => {
     console.log("in nextHandler ....");
-    validateFirstName(props.subject.firstName);
-    validateLastName(props.subject.lastName);
-    validateRegistrationDate(props.subject.registrationDate, props.subject.dateOfBirth);
-    validateDateOfBirth(props.subject.dateOfBirth, props.subject.registrationDate);
-    validateGender(props.subject.gender);
-    // To be moved out of nextHandler; once all error messgae are empty
+    setValidationResultToError(props.subject.validateRegistrationDate());
+    setValidationResultToError(props.subject.validateFirstName());
+    setValidationResultToError(props.subject.validateLastName());
+    setValidationResultToError(props.subject.validateDateOfBirth());
+    setValidationResultToError(props.subject.validateGender());
+
+    //needs to used when village location is set
+    //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
+
     if (
-      _.isEmpty(subjectRegFormErrors.firstName) &&
-      _.isEmpty(subjectRegFormErrors.lastName) &&
-      _.isEmpty(subjectRegFormErrors.dateOfBirth) &&
-      _.isEmpty(subjectRegFormErrors.registrationDate) &&
-      _.isEmpty(subjectRegFormErrors.gender)
+      _.isEmpty(subjectRegErrors.FIRST_NAME) &&
+      _.isEmpty(subjectRegErrors.LAST_NAME) &&
+      _.isEmpty(subjectRegErrors.DOB) &&
+      _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
+      _.isEmpty(subjectRegErrors.GENDER)
     ) {
-      console.log("setDisableNext ..false");
-      setDisableNext(false);
+      nextBtnRef.current.click();
     }
   };
 
@@ -270,15 +300,16 @@ const DefaultPage = props => {
                     name="registrationDate"
                     label={t("Date of registration")}
                     value={new Date(props.subject.registrationDate)}
-                    error={!_.isEmpty(subjectRegFormErrors.registrationDate)}
-                    helperText={subjectRegFormErrors.registrationDate}
+                    error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
+                    helperText={subjectRegErrors.REGISTRATION_DATE}
                     style={{ width: "30%" }}
                     margin="normal"
                     id="date-picker-dialog"
                     format="MM/dd/yyyy"
                     onChange={date => {
                       props.updateSubject("registrationDate", new Date(date));
-                      validateRegistrationDate(date, props.subject.dateOfBirth);
+                      //validateRegistrationDate(date, props.subject.dateOfBirth);
+                      setValidationResultToError(props.subject.validateRegistrationDate());
                     }}
                     InputLabelProps={{
                       shrink: true
@@ -298,13 +329,16 @@ const DefaultPage = props => {
                       required
                       name="firstName"
                       value={props.subject.firstName || ""}
-                      error={!_.isEmpty(subjectRegFormErrors.firstName)}
-                      helperText={subjectRegFormErrors.firstName}
+                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
+                      helperText={subjectRegErrors.FIRST_NAME}
                       style={{ width: "30%" }}
                       label={t("firstName")}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
-                        validateFirstName(e.target.value);
+                        //validateFirstName(e.target.value);
+                        console.log("before validate");
+                        console.log("validate", props.subject.validateFirstName());
+                        setValidationResultToError(props.subject.validateFirstName());
                       }}
                     />
                     <LineBreak num={1} />
@@ -314,23 +348,25 @@ const DefaultPage = props => {
                       required
                       name="lastName"
                       value={props.subject.lastName || ""}
-                      error={!_.isEmpty(subjectRegFormErrors.lastName)}
-                      helperText={subjectRegFormErrors.lastName}
+                      error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
+                      helperText={subjectRegErrors.LAST_NAME}
                       style={{ width: "30%" }}
                       label={t("lastName")}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
-                        validateLastName(e.target.value);
+                        //validateLastName(e.target.value);
+                        setValidationResultToError(props.subject.validateLastName());
                       }}
                     />
                     <LineBreak num={1} />
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || ""}
                       dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                      dobErrorMsg={subjectRegFormErrors.dateOfBirth}
+                      dobErrorMsg={subjectRegErrors.DOB}
                       onChange={date => {
                         props.updateSubject("dateOfBirth", date);
-                        validateDateOfBirth(date, props.subject.registrationDate);
+                        //validateDateOfBirth(date, props.subject.registrationDate);
+                        setValidationResultToError(props.subject.validateDateOfBirth());
                       }}
                       markVerified={verified =>
                         props.updateSubject("dateOfBirthVerified", verified)
@@ -342,10 +378,11 @@ const DefaultPage = props => {
                       items={sortBy(props.genders, "name")}
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                       mandatory={true}
-                      errorMsg={subjectRegFormErrors.gender}
+                      errorMsg={subjectRegErrors.GENDER}
                       onChange={selected => {
                         props.updateSubject("gender", selected);
-                        validateGender(selected);
+                        //validateGender(selected);
+                        setValidationResultToError(props.subject.validateGender());
                       }}
                     />
                     <LineBreak num={1} />
@@ -390,20 +427,17 @@ const DefaultPage = props => {
                     variant="outlined"
                   />
 
-                  {!disableNext ? (
-                    <RelativeLink
-                      to="form"
-                      params={{
-                        type: props.subject.subjectType.name,
-                        from: props.location.pathname + props.location.search
-                      }}
-                      noUnderline
-                    >
-                      <PagenatorButton formdata={props.subject}>{t("next")}</PagenatorButton>
-                    </RelativeLink>
-                  ) : (
-                    <Chip disabled label={"next"} onClick={nextHandler} />
-                  )}
+                  <RelativeLink
+                    to="form"
+                    params={{
+                      type: props.subject.subjectType.name,
+                      from: props.location.pathname + props.location.search
+                    }}
+                    noUnderline
+                  >
+                    <Chip style={{ display: "none" }} ref={nextBtnRef} label={t("next")} />
+                  </RelativeLink>
+                  <Chip className={classes.nextBtn} label={t("next")} onClick={nextHandler} />
                 </Box>
               </Box>
             </Paper>
