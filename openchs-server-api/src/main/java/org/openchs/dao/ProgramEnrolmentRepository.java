@@ -75,4 +75,6 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
             DateTime now,
             String program,
             Pageable pageable);
+
+    ProgramEnrolment findByLegacyId(String legacyId);
 }

@@ -131,14 +131,14 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         String externalId = row.get(FixedHeaders.id.getHeader());
         Individual existingIndividual = null;
         if (!(externalId == null && externalId.isEmpty())) {
-            existingIndividual = individualRepository.findByExternalId(externalId);
+            existingIndividual = individualRepository.findByLegacyId(externalId);
         }
         return existingIndividual == null ? createNewIndividual(externalId) : existingIndividual;
     }
 
     private Individual createNewIndividual(String externalId) {
         Individual individual = new Individual();
-        individual.setExternalId(externalId);
+        individual.setLegacyId(externalId);
         return individual;
     }
 

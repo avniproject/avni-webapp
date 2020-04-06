@@ -134,5 +134,5 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             "and ind.subjectType.uuid = :subjectTypeUUID")
     Page<Individual> findIndividuals(String subjectTypeUUID, Pageable pageable);
 
-    Individual findByExternalId(String externalId);
+    Individual findByLegacyId(String legacyId);
 }

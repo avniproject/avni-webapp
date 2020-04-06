@@ -24,7 +24,7 @@ public class Individual extends OrganisationAwareEntity {
     @JoinColumn(name = "subject_type_id")
     private SubjectType subjectType;
 
-    private String externalId;
+    private String legacyId;
 
     @NotNull
     private String firstName;
@@ -191,12 +191,12 @@ public class Individual extends OrganisationAwareEntity {
         this.subjectType = subjectType;
     }
 
-    public String getExternalId() {
-        return externalId;
+    public String getLegacyId() {
+        return legacyId;
     }
 
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
     }
 
     public Set<IndividualRelationship> getRelationshipsFromSelfToOthers() {
