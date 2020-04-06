@@ -335,9 +335,8 @@ const DefaultPage = props => {
                       label={t("firstName")}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
+                        props.subject.setFirstName(e.target.value);
                         //validateFirstName(e.target.value);
-                        console.log("before validate");
-                        console.log("validate", props.subject.validateFirstName());
                         setValidationResultToError(props.subject.validateFirstName());
                       }}
                     />
@@ -355,6 +354,7 @@ const DefaultPage = props => {
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
                         //validateLastName(e.target.value);
+                        props.subject.setLastName(e.target.value);
                         setValidationResultToError(props.subject.validateLastName());
                       }}
                     />
@@ -366,6 +366,7 @@ const DefaultPage = props => {
                       onChange={date => {
                         props.updateSubject("dateOfBirth", date);
                         //validateDateOfBirth(date, props.subject.registrationDate);
+                        props.subject.setDateOfBirth(date);
                         setValidationResultToError(props.subject.validateDateOfBirth());
                       }}
                       markVerified={verified =>
@@ -382,6 +383,7 @@ const DefaultPage = props => {
                       onChange={selected => {
                         props.updateSubject("gender", selected);
                         //validateGender(selected);
+                        props.subject.gender = selected;
                         setValidationResultToError(props.subject.validateGender());
                       }}
                     />
