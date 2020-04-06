@@ -102,6 +102,8 @@ const SubjectRegistrationForm = ({
     }
   });
   const classes = useStyle();
+  const { t } = useTranslation();
+
   const [redirect, setRedirect] = React.useState(false);
 
   const from = match.queryParams.from;
@@ -135,10 +137,9 @@ const SubjectRegistrationForm = ({
   };
 
   const current = showSummaryPage
-    ? { name: "Summary" }
+    ? { name: `${t("Summary and Recommendations")}` }
     : form && form.formElementGroupAt(currentPageNumber);
   const pageCount = currentPageNumber + " / " + (lastPageNumber + 1);
-  const { t } = useTranslation();
   const onOkHandler = data => {
     BrowserStore.clear("subject");
     setRedirect(data);

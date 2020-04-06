@@ -47,11 +47,16 @@ function NewMenu({ operationalModules }) {
 
   const [value, setValue] = React.useState("female");
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleClose = () => setAnchorEl(null);
+
   const handleChange = event => {
     setValue(event.target.value);
+    handleClose();
   };
 
-  const [setAnchorEl] = React.useState(null);
+  // const setAnchorEl = React.useState(null);
+
   const handleClickRoute = () => event => {
     setAnchorEl(event.currentTarget);
   };
