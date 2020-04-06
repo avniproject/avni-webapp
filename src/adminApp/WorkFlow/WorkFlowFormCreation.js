@@ -27,12 +27,6 @@ function WorkFlowFormCreation(props) {
 
   existMapping = props.formMapping.filter(l => l[props.customUUID] === props.rowDetails.uuid);
 
-  const isProgramEncounter = props.isProgramEncounter
-    ? Object.keys(existMapping[0]).includes("programUUID")
-      ? false
-      : true
-    : false;
-
   form.length === 0 &&
     props.formMapping.map(l => {
       if (
@@ -156,14 +150,14 @@ function WorkFlowFormCreation(props) {
           {error} <p />
         </span>
       )}
-      {clicked && !isProgramEncounter && (
+      {clicked && (
         <Link href={"http://localhost:6010/#/appdesigner/forms/" + form[0].formUUID}>
           {form[0].formName === undefined || form[0].formName === null
             ? props.fillFormName
             : form[0].formName}
         </Link>
       )}
-      {!clicked && !isProgramEncounter && (
+      {!clicked && (
         <>
           <FormControl>
             <InputLabel id="demo-simple-select-label">{props.placeholder}</InputLabel>
@@ -186,8 +180,14 @@ function WorkFlowFormCreation(props) {
           </FormControl>
         </>
       )}
-      {isProgramEncounter && <span>N.A</span>}
-      {redirect && <Redirect to={"/appdesigner/forms/" + uuid} />}
+      {redirect && (
+        <Redirect
+          to={{
+            pathname: "/appdesigner/forms/" + uuid,
+            state: { stateName: props.redirectToWorkflow }
+          }}
+        />
+      )}
       {props.notificationAlert && (
         <CustomizedSnackbar
           message={props.message}

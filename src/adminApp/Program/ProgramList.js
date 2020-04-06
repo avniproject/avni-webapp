@@ -64,6 +64,7 @@ const ProgramList = ({ history }) => {
           setNotificationAlert={setNotificationAlert}
           message={message}
           setMessage={setMessage}
+          redirectToWorkflow="program"
         />
       )
     },
@@ -84,6 +85,7 @@ const ProgramList = ({ history }) => {
           setNotificationAlert={setNotificationAlert}
           message={message}
           setMessage={setMessage}
+          redirectToWorkflow="program"
         />
       )
     },

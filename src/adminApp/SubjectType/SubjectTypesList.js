@@ -49,6 +49,7 @@ const SubjectTypesList = ({ history }) => {
           setNotificationAlert={setNotificationAlert}
           message={message}
           setMessage={setMessage}
+          redirectToWorkflow="subjectType"
         />
       )
     },
