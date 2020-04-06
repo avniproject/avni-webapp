@@ -88,7 +88,10 @@ class FormSettings extends Component {
           }
         }
 
-        if (this.state.formType === "Encounter") {
+        if (
+          this.state.formType === "Encounter" ||
+          this.state.formType === "IndividualEncounterCancellation"
+        ) {
           uniqueString = formMap.subjectTypeUuid + formMap.encounterTypeUuid;
           if (formMap.subjectTypeUuid === "") {
             errorsList["unselectedData"]["subjectTypeUuid" + index] = "Please select subject type.";
@@ -305,7 +308,8 @@ class FormSettings extends Component {
       "ProgramEnrolment",
       "ProgramExit",
       "ProgramEncounterCancellation",
-      "ChecklistItem"
+      "ChecklistItem",
+      "IndividualEncounterCancellation"
     ];
 
     return formTypes.map(formType => {
@@ -383,7 +387,8 @@ class FormSettings extends Component {
     const encounterTypes =
       this.state.formType === "Encounter" ||
       this.state.formType === "ProgramEncounter" ||
-      this.state.formType === "ProgramEncounterCancellation";
+      this.state.formType === "ProgramEncounterCancellation" ||
+      this.state.formType === "IndividualEncounterCancellation";
     const programBased =
       this.state.formType === "ProgramEncounter" ||
       this.state.formType === "ProgramExit" ||

@@ -45,7 +45,8 @@ class NewFormModal extends Component {
     if (
       (this.state.formType === "Encounter" ||
         this.state.formType === "ProgramEncounter" ||
-        this.state.formType === "ProgramEncounterCancellation") &&
+        this.state.formType === "ProgramEncounterCancellation" ||
+        this.state.formType === "IndividualEncounterCancellation") &&
       this.state.encounterType === ""
     )
       errorsList["encounterType"] = "Please select encounter type.";
@@ -219,7 +220,8 @@ class NewFormModal extends Component {
       "ProgramEnrolment",
       "ProgramExit",
       "ProgramEncounterCancellation",
-      "ChecklistItem"
+      "ChecklistItem",
+      "IndividualEncounterCancellation"
     ];
 
     return formTypes.map(formType => {
@@ -262,7 +264,8 @@ class NewFormModal extends Component {
     const encounterTypes =
       this.state.formType === "Encounter" ||
       this.state.formType === "ProgramEncounter" ||
-      this.state.formType === "ProgramEncounterCancellation";
+      this.state.formType === "ProgramEncounterCancellation" ||
+      this.state.formType === "IndividualEncounterCancellation";
     const programBased =
       this.state.formType === "ProgramEncounter" ||
       this.state.formType === "ProgramExit" ||
