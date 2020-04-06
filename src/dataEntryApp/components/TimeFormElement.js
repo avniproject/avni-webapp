@@ -29,6 +29,7 @@ const TimeFormElement = ({ formElement: fe, value, update }) => {
         InputLabelProps={{
           shrink: true
         }}
+        style={{ width: "30%" }}
         value={time}
         onChange={e => {
           const value = e.target.value;

@@ -1,4 +1,4 @@
-import { Individual, ObservationsHolder, Concept } from "avni-models";
+import { Individual, ObservationsHolder, Concept, PrimitiveValue } from "avni-models";
 import {
   setSubject,
   getRegistrationForm,
@@ -18,7 +18,7 @@ import {
   selectRegistrationSubject
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
-import { isEmpty } from "lodash";
+import _ from "lodash";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -74,12 +74,7 @@ function* updateObsWatcher() {
 
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
-  console.log(subject.observations);
   const observationHolder = new ObservationsHolder(subject.observations);
-  // observationHolder.updateObs(formElement, value);
-  // observationHolder.observations.map((concept)=>{
-  //   console.log(concept);
-
   if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
     observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
   } else if (
@@ -87,11 +82,14 @@ export function* updateObsWorker({ formElement, value }) {
     formElement.isSingleSelect()
   ) {
     observationHolder.toggleSingleSelectAnswer(formElement.concept, value);
+  } else if (
+    formElement.concept.datatype === Concept.dataType.Duration &&
+    !_.isNil(formElement.durationOptions)
+  ) {
+    observationHolder.updateCompositeDurationValue(formElement.concept, value);
   } else {
     observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   }
-  // })
-
   subject.observations = observationHolder.observations;
   yield put(setSubject(subject));
   sessionStorage.setItem("subject", JSON.stringify(subject));

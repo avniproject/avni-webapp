@@ -10,12 +10,12 @@ const styles = {
   },
   toppagenum: {
     marginRight: 10,
-    marginTop: 5,    
+    marginTop: 5,
     backgroundColor: "silver",
-    color: "black",    
+    color: "black",
     fontSize: 12,
     padding: 3
-  }  
+  }
 };
 
 const PaginationButton = ({ page, title, type }) =>
@@ -32,7 +32,11 @@ const Paginator = props => {
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
         <PaginationButton
-          page={props.pageDetails.previousPageNumber}
+          page={
+            props.pageDetails.nextPageNumber == null
+              ? props.pageDetails.previousPageNumber + 1
+              : props.pageDetails.previousPageNumber
+          }
           type={props.label.type}
           title={t(props.label.Previous)}
         />
@@ -44,12 +48,7 @@ const Paginator = props => {
         )}
       </Box>
 
-      {props.showCount && (
-         <label style={styles.toppagenum}>
-         {" "}
-         {props.count}{" "}
-       </label>      
-      )}
+      {props.showCount && <label style={styles.toppagenum}> {props.count} </label>}
 
       <Box component={"span"}>
         <PaginationButton

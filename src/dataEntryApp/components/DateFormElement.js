@@ -24,6 +24,7 @@ const SimpleDateFormElement = ({ formElement: fe, type, value, update }) => {
         type={type}
         required={fe.mandatory}
         name={fe.name}
+        style={{ width: "30%" }}
         fullWidth
         InputLabelProps={{
           shrink: true

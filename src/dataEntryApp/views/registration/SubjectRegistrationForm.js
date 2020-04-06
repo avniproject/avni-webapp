@@ -110,9 +110,9 @@ const SubjectRegistrationForm = ({
   const firstPageNumber = form && form.firstFormElementGroup.displayOrder;
   const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
   const page =
-    match.queryParams.page === parseInt(lastPageNumber)
+    parseInt(match.queryParams.page) === parseInt(lastPageNumber)
       ? parseInt(match.queryParams.page)
-      : +match.queryParams.page;
+      : parseInt(+match.queryParams.page);
 
   const currentPageNumber = isNaN(page) ? firstPageNumber : page;
 
