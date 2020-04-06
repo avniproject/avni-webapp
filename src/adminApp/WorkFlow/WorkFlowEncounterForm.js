@@ -15,12 +15,19 @@ function WorkFlowEncounterForm(props) {
   let data,
     showAvailableForms = [],
     removeDuplicate = [],
-    existMapping = [];
+    existMapping = [],
+    formType;
 
   const encounters = props.formMapping.filter(l => l.encounterTypeUUID === props.rowDetails.uuid);
-  const formType = Object.keys(encounters[0]).includes("programUUID")
-    ? "ProgramEncounter"
-    : "Encounter";
+  if (props.whichForm === "encounter") {
+    formType = Object.keys(encounters[0]).includes("programUUID")
+      ? "ProgramEncounter"
+      : "Encounter";
+  } else if (props.whichForm === "cancellation") {
+    formType = Object.keys(encounters[0]).includes("programUUID")
+      ? "ProgramEncounterCancellation"
+      : "IndividualEncounterCancellation";
+  }
 
   let form = props.formMapping.filter(
     l => l.formType === formType && l.encounterTypeUUID === props.rowDetails.uuid
@@ -63,7 +70,7 @@ function WorkFlowEncounterForm(props) {
   };
 
   const onCreateForm = () => {
-    if (formType === "Encounter") {
+    if (formType === "Encounter" || formType === "IndividualEncounterCancellation") {
       data = {
         name: "",
         formType: formType,
@@ -77,7 +84,7 @@ function WorkFlowEncounterForm(props) {
       };
       data.formMappings[0].subjectTypeUuid = existMapping[0].subjectTypeUUID;
       formCreation(data);
-    } else if (formType === "ProgramEncounter") {
+    } else if (formType === "ProgramEncounter" || formType === "ProgramEncounterCancellation") {
       if (existMapping.length !== 0) {
         data = {
           name: "",
@@ -103,7 +110,7 @@ function WorkFlowEncounterForm(props) {
   const handleFormName = event => {
     if (event.target.value.formName === "createform") {
       onCreateForm();
-    } else if (formType === "Encounter") {
+    } else if (formType === "Encounter" || formType === "IndividualEncounterCancellation") {
       data = {
         uuid: UUID.v4(),
         encounterTypeUUID: props.rowDetails.uuid,
@@ -126,7 +133,7 @@ function WorkFlowEncounterForm(props) {
           props.setMessage("Failed in attaching form...!!!");
           console.log(error.response.data.message);
         });
-    } else if (formType === "ProgramEncounter") {
+    } else if (formType === "ProgramEncounter" || formType === "ProgramEncounterCancellation") {
       if (existMapping.length !== 0) {
         data = {
           uuid: UUID.v4(),
@@ -165,7 +172,7 @@ function WorkFlowEncounterForm(props) {
       {clicked && (
         <Link href={"http://localhost:6010/#/appdesigner/forms/" + form[0].formUUID}>
           {form[0].formName === undefined || form[0].formName === null
-            ? "Encounter form"
+            ? props.fillFormName
             : form[0].formName}
         </Link>
       )}

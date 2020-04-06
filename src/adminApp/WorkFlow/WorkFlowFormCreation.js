@@ -93,24 +93,6 @@ function WorkFlowFormCreation(props) {
       } else {
         setError("First select subject type for program");
       }
-    } else if (props.formType === "ProgramEncounterCancellation") {
-      if (existMapping.length !== 0) {
-        data = {
-          name: "",
-          formType: props.formType,
-          formMappings: [
-            {
-              uuid: UUID.v4(),
-              programUuid: "",
-              subjectTypeUuid: "",
-              encounterTypeUuid: props.rowDetails.uuid
-            }
-          ]
-        };
-        data.formMappings[0].subjectTypeUuid = existMapping[0].subjectTypeUUID;
-        data.formMappings[0].programUuid = existMapping[0].programUUID;
-        formCreation(data);
-      }
     }
   };
 
@@ -150,34 +132,6 @@ function WorkFlowFormCreation(props) {
           formType: props.formType,
           formUUID: event.target.value.formUUID
         };
-        http
-          .post("/emptyFormMapping", [data])
-          .then(response => {
-            props.setMapping([...props.formMapping, data]);
-            props.setNotificationAlert(true);
-            props.setMessage("Form attached successfully...!!!");
-          })
-          .catch(error => {
-            props.setNotificationAlert(true);
-            props.setMessage("Failed in attaching form...!!!");
-            console.log(error.response.data.message);
-          });
-      } else {
-        setError("First select subject type for the program");
-      }
-    } else if (props.formType === "ProgramEncounterCancellation") {
-      if (existMapping.length !== 0) {
-        data = {
-          uuid: UUID.v4(),
-          subjectTypeUUID: existMapping[0].subjectTypeUUID,
-          programUUID: existMapping[0].programUUID,
-          encounterTypeUUID: props.rowDetails.uuid,
-          isVoided: false,
-          formName: event.target.value.formName,
-          formType: props.formType,
-          formUUID: event.target.value.formUUID
-        };
-
         http
           .post("/emptyFormMapping", [data])
           .then(response => {

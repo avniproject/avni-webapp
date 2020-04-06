@@ -8,7 +8,6 @@ import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import { ShowSubjectType, ShowPrograms } from "../WorkFlow/ShowSubjectType";
 import WorkFlowEncounterForm from "../WorkFlow/WorkFlowEncounterForm";
-import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 
 const EncounterTypeList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
@@ -77,10 +76,12 @@ const EncounterTypeList = ({ history }) => {
           formMapping={formMapping}
           setMapping={setMapping}
           placeholder="Select encounter form"
+          fillFormName="Encounter Form"
           notificationAlert={notificationAlert}
           setNotificationAlert={setNotificationAlert}
           message={message}
           setMessage={setMessage}
+          whichForm="encounter"
         />
       )
     },
@@ -88,20 +89,19 @@ const EncounterTypeList = ({ history }) => {
       title: "Cancellation form",
       sorting: false,
       render: rowData => (
-        <WorkFlowFormCreation
+        <WorkFlowEncounterForm
           key={rowData.uuid}
           rowDetails={rowData}
           formMapping={formMapping}
           setMapping={setMapping}
-          formType="ProgramEncounterCancellation"
           placeholder="Select cancellation form"
-          customUUID="encounterTypeUUID"
           fillFormName="Cancellation form"
           notificationAlert={notificationAlert}
           setNotificationAlert={setNotificationAlert}
           message={message}
           setMessage={setMessage}
           isProgramEncounter={true}
+          whichForm="cancellation"
         />
       )
     }
