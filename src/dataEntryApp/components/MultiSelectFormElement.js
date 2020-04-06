@@ -9,6 +9,12 @@ export default ({ formElement: fe, value, update, obsHolder }) => {
     return isNil(observation) ? nullReplacement : observation.getValueWrapper();
   };
   const valueWrapper = getSelectedAnswer(fe.concept, new MultipleCodedValues());
+  const [validationErrMessage, setValidationErrMessage] = React.useState("");
+
+  const setValidationResultToError = validationResult => {
+    setValidationErrMessage(validationResult.messageKey);
+  };
+
   return (
     <CodedConceptFormElement
       isChecked={answer => {
@@ -18,7 +24,12 @@ export default ({ formElement: fe, value, update, obsHolder }) => {
         );
         return answerAlreadyPresent;
       }}
-      onChange={answer => update(answer.uuid)}
+      onChange={answer => {
+        update(answer.uuid);
+        setValidationResultToError(fe.validate(answer));
+      }}
+      errorMsg={validationErrMessage}
+      mandatory={fe.mandatory}
     >
       {fe}
     </CodedConceptFormElement>

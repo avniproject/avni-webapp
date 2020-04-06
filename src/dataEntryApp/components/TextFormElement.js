@@ -11,8 +11,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default ({ formElement: fe, value, update, validationErrMessage }) => {
+export default ({ formElement: fe, value, update }) => {
   const { t } = useTranslation();
+  const [validationErrMessage, setValidationErrMessage] = React.useState("");
+
+  const setValidationResultToError = validationResult => {
+    console.log("validationResult+++++=", validationResult);
+    setValidationErrMessage(validationResult.messageKey);
+  };
+
   return (
     <div>
       <TextField
@@ -31,6 +38,7 @@ export default ({ formElement: fe, value, update, validationErrMessage }) => {
           console.log("In ..onchange of Textfield");
           console.log(fe);
           console.log(validationErrMessage);
+          setValidationResultToError(fe.validate(v));
         }}
       />
     </div>

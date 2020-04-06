@@ -41,6 +41,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const onNextBtnClick = () => {
+  console.log("In next click method..");
+};
+
 export default ({ children, ...props }) => {
   const classes = useStyles();
   if (props.type === "text") {
@@ -67,7 +71,7 @@ export default ({ children, ...props }) => {
     );
   } else {
     return (
-      <Button className={classes.nextbuttonStyle} type="button" {...props}>
+      <Button className={classes.nextbuttonStyle} type="button" {...props} onClick={onNextBtnClick}>
         {children}
       </Button>
     );

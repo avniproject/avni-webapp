@@ -157,6 +157,9 @@ const DefaultPage = props => {
 
   const setValidationResultToError = validationResult => {
     subjectRegErrors[validationResult.formIdentifier] = validationResult.messageKey;
+    console.log("to print validationResult");
+    console.log(validationResult);
+    console.log(validationResult.messageKey);
     setSubjectRegErrors({ ...subjectRegErrors });
   };
 
@@ -306,9 +309,14 @@ const DefaultPage = props => {
                     margin="normal"
                     id="date-picker-dialog"
                     format="MM/dd/yyyy"
+                    minDate={null}
+                    maskChar=""
                     onChange={date => {
+                      console.log("Date of reg");
+                      console.log(date);
                       props.updateSubject("registrationDate", new Date(date));
                       //validateRegistrationDate(date, props.subject.dateOfBirth);
+                      props.subject.registrationDate = date;
                       setValidationResultToError(props.subject.validateRegistrationDate());
                     }}
                     InputLabelProps={{
@@ -320,6 +328,7 @@ const DefaultPage = props => {
                     }}
                   />
                 </MuiPickersUtilsProvider>
+
                 <LineBreak num={1} />
                 {get(props, "subject.subjectType.name") === "Individual" && (
                   <React.Fragment>
