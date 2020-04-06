@@ -51,7 +51,10 @@ const SubjectTypesList = ({ history }) => {
           setMessage={setMessage}
         />
       )
-    }
+    },
+    { title: "Household", field: "household", type: "boolean" },
+    { title: "Group", field: "group", type: "boolean" },
+    { title: "Organisation Id", field: "organisationId", type: "numeric" }
   ];
 
   const [redirect, setRedirect] = useState(false);
