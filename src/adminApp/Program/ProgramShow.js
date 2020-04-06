@@ -59,7 +59,7 @@ const ProgramShow = props => {
               rowDetails={program}
               subjectType={subjectType}
               formMapping={formMapping}
-              entityUUID="encounterTypeUUID"
+              entityUUID="programUUID"
             />
           </div>
           <p />

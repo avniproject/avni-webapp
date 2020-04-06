@@ -91,7 +91,8 @@ const EncounterTypeEdit = props => {
         temp.map(
           l => (
             (l.subjectTypeUUID = subjectT.uuid),
-            (l.programUUID = programT === undefined ? null : programT.uuid)((l.isVoided = false))
+            (l.programUUID = programT === undefined ? null : programT.uuid),
+            (l.isVoided = false)
           )
         );
       var promise = new Promise((resolve, reject) => {
