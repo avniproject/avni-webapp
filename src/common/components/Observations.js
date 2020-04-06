@@ -45,7 +45,7 @@ const Observations = ({ observations }) => {
                         {t(element.concept["name"])}
                       </TableCell>
                       <TableCell align="left" width="50%">
-                        <div>{t(Observation.valueAsString(element, conceptService, i))} </div>
+                        <div>{Observation.valueAsString(element, conceptService, i)} </div>
                       </TableCell>
                     </TableRow>
                   </TableBody>
