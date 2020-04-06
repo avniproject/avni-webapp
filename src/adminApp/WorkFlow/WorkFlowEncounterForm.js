@@ -20,12 +20,16 @@ function WorkFlowEncounterForm(props) {
     isProgramEncounter;
 
   const encounters = props.formMapping.filter(l => l.encounterTypeUUID === props.rowDetails.uuid);
-  if (props.whichForm === "encounter" && encounters !== undefined && encounters !== null) {
+  if (props.whichForm === "encounter" && encounters[0] !== undefined && encounters[0] !== null) {
     formType = Object.keys(encounters[0]).includes("programUUID")
       ? "ProgramEncounter"
       : "Encounter";
     isProgramEncounter = true;
-  } else if (props.whichForm === "cancellation") {
+  } else if (
+    props.whichForm === "cancellation" &&
+    encounters[0] !== undefined &&
+    encounters[0] !== null
+  ) {
     formType = Object.keys(encounters[0]).includes("programUUID")
       ? "ProgramEncounterCancellation"
       : "IndividualEncounterCancellation";
@@ -203,15 +207,14 @@ function WorkFlowEncounterForm(props) {
         </>
       )}
       {!isProgramEncounter && <span>N.A</span>}
-      {redirect && <Redirect to={"/appdesigner/forms/" + uuid} />}
-      {/* {redirect && (
+      {redirect && (
         <Redirect
           to={{
             pathname: "/appdesigner/forms/" + uuid,
             state: { stateName: "encounterType" }
           }}
-        /> */}
-      {/* )} */}
+        />
+      )}
       {props.notificationAlert && (
         <CustomizedSnackbar
           message={props.message}

@@ -82,6 +82,7 @@ const EncounterTypeList = ({ history }) => {
           message={message}
           setMessage={setMessage}
           whichForm="encounter"
+          redirectToWorkflow="encountertType"
         />
       )
     },
@@ -102,6 +103,7 @@ const EncounterTypeList = ({ history }) => {
           setMessage={setMessage}
           isProgramEncounter={true}
           whichForm="cancellation"
+          redirectToWorkflow="encountertType"
         />
       )
     }
