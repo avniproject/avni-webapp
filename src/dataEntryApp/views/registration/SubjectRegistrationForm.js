@@ -173,7 +173,7 @@ const SubjectRegistrationForm = ({
             {saved && (
               <CustomizedDialog
                 showSuccessIcon="true"
-                message="Your details have been successfully registered."
+                message={t("Your details have been successfully registered.")}
                 showOkbtn="true"
                 openDialogContainer={true}
                 onOk={onOkHandler}

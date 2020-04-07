@@ -56,7 +56,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
     <Fragment>
       <Paper className={classes.root}>
         <Grid container justify="flex-end">
-          <SubjectButton btnLabel={t("newForm")} />
+          <SubjectButton btnLabel={t("newform")} />
         </Grid>
         <ExpansionPanel
           className={classes.expansionPanel}

@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 
 export const DateOfBirth = ({ dateOfBirth, onChange }) => {
   const { t } = useTranslation();
-  const dob = dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10) || null;  
+  const dob = (dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10)) || null;
   const [years, setYears] = React.useState("");
   const [months, setMonths] = React.useState("");
 
@@ -47,24 +47,23 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
             margin="normal"
-            id="date-picker-dialog"     
-            autoComplete="off"  
-            placeholder = "mm/dd/yyyy"
+            id="date-picker-dialog"
+            autoComplete="off"
+            placeholder="mm/dd/yyyy"
             format="MM/dd/yyyy"
-            style={{ width: "30%" }}            
+            style={{ width: "30%" }}
             name="dateOfBirth"
-            label="Date Of birth"
+            label={t("date of birth")}
             value={dob}
             onChange={date => _onChange(date)}
             InputLabelProps={{
               shrink: true
             }}
             KeyboardButtonProps={{
-              'aria-label': 'change date',
+              "aria-label": "change date",
               color: "primary"
             }}
           />
-
         </MuiPickersUtilsProvider>
         <LineBreak num={1} />
         <TextField
