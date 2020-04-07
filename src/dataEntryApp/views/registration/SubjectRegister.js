@@ -111,17 +111,6 @@ const useStyles = makeStyles(theme => ({
 const DefaultPage = props => {
   const classes = useStyles();
   const { t } = useTranslation();
-
-  //const [disableNext, setDisableNext] = React.useState(true);
-  const stringRegex = /^[A-Za-z]+$/;
-  // const [subjectRegFormErrors, setSubjectRegFormErrors] = React.useState({
-  //   firstName: "",
-  //   lastName: "",
-  //   dateOfBirth: "",
-  //   registrationDate: "",
-  //   gender: ""
-  // });
-
   const [subjectRegErrors, setSubjectRegErrors] = React.useState({
     REGISTRATION_DATE: "",
     FIRST_NAME: "",
@@ -130,10 +119,43 @@ const DefaultPage = props => {
     GENDER: "",
     REGISTRATION_LOCATION: ""
   });
-
   const nextBtnRef = React.useRef();
 
-  // console.log(props);
+  const setValidationResultToError = validationResult => {
+    subjectRegErrors[validationResult.formIdentifier] = validationResult.messageKey;
+    console.log("to print validationResult");
+    console.log(validationResult);
+    console.log(validationResult.messageKey);
+    setSubjectRegErrors({ ...subjectRegErrors });
+  };
+
+  const nextHandler = () => {
+    console.log("in nextHandler ....");
+    setValidationResultToError(props.subject.validateRegistrationDate());
+    setValidationResultToError(props.subject.validateFirstName());
+    setValidationResultToError(props.subject.validateLastName());
+    setValidationResultToError(props.subject.validateDateOfBirth());
+    setValidationResultToError(props.subject.validateGender());
+
+    //needs to used when village location is set
+    //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
+
+    if (props.subject.subjectType.isIndividual()) {
+      if (
+        _.isEmpty(subjectRegErrors.FIRST_NAME) &&
+        _.isEmpty(subjectRegErrors.LAST_NAME) &&
+        _.isEmpty(subjectRegErrors.DOB) &&
+        _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
+        _.isEmpty(subjectRegErrors.GENDER)
+      ) {
+        nextBtnRef.current.click();
+      }
+    } else {
+      if (_.isEmpty(subjectRegErrors.FIRST_NAME) && _.isEmpty(subjectRegErrors.REGISTRATION_DATE)) {
+        nextBtnRef.current.click();
+      }
+    }
+  };
 
   React.useEffect(() => {
     (async function fetchData() {
@@ -154,99 +176,6 @@ const DefaultPage = props => {
     //   props.saveCompleteFalse();
     // }
   }, []);
-
-  const setValidationResultToError = validationResult => {
-    subjectRegErrors[validationResult.formIdentifier] = validationResult.messageKey;
-    console.log("to print validationResult");
-    console.log(validationResult);
-    console.log(validationResult.messageKey);
-    setSubjectRegErrors({ ...subjectRegErrors });
-  };
-
-  // const validateRegistrationDate = (regDate, dob) => {
-  //   subjectRegFormErrors.registrationDate = "";
-  //   if (_.isNil(regDate)) {
-  //     subjectRegFormErrors.registrationDate = "There is no value specified!";
-  //   } else if (!(_.isNil(dob) || _.isNil(regDate))) {
-  //     if (moment(dob).isAfter(regDate)) {
-  //       subjectRegFormErrors.registrationDate = "Registration Date cannot be before date of birth";
-  //     }
-  //   } else if (moment(regDate).isAfter(new Date())) {
-  //     subjectRegFormErrors.registrationDate = "Registration date cannot be in future";
-  //   }
-  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  // };
-
-  // const validateFirstName = firstName => {
-  //   console.log("subject",props.subject);
-  //   subjectRegFormErrors.firstName = "";
-  //   if (_.isEqual(firstName, "")) {
-  //     subjectRegFormErrors.firstName = "There is no value specified!";
-  //   } else if (_.isNil(firstName)) {
-  //     subjectRegFormErrors.firstName = "There is no value specified!";
-  //   }
-  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  // };
-
-  // const validateLastName = lastName => {
-  //   subjectRegFormErrors.lastName = "";
-  //   if (_.isEqual(lastName, "")) {
-  //     subjectRegFormErrors.lastName = "There is no value specified!";
-  //   } else if (_.isNil(lastName)) {
-  //     subjectRegFormErrors.lastName = "There is no value specified!";
-  //   }
-  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  // };
-
-  // const validateDateOfBirth = (date, regDate) => {
-  //   subjectRegFormErrors.dateOfBirth = "";
-  //   setSubjectRegFormErrors({ ...subjectRegFormErrors, dateOfBirth: "" });
-  //   const years = moment().diff(date, "years");
-  //   if (_.isNil(date)) {
-  //     subjectRegFormErrors.dateOfBirth = "There is no value specified";
-  //   } else if (years > 120) {
-  //     subjectRegFormErrors.dateOfBirth = "Age is person is above 120 years";
-  //   } else if (moment(date).isAfter(new Date())) {
-  //     subjectRegFormErrors.dateOfBirth = "Birth date cannot be in future";
-  //   } else if (!(_.isNil(date) || _.isNil(regDate))) {
-  //     if (moment(date).isAfter(regDate)) {
-  //       subjectRegFormErrors.dateOfBirth = "Registration Date cannot be before date of birth";
-  //     }
-  //   }
-  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  // };
-
-  // const validateGender = gender => {
-  //   subjectRegFormErrors.gender = "";
-  //   if (_.isNil(gender)) {
-  //     subjectRegFormErrors.gender = "There is no value specified!";
-  //   } else if (_.isEmpty(gender.name)) {
-  //     subjectRegFormErrors.gender = "There is no value specified!";
-  //   }
-  //   setSubjectRegFormErrors({ ...subjectRegFormErrors });
-  // };
-
-  const nextHandler = () => {
-    console.log("in nextHandler ....");
-    setValidationResultToError(props.subject.validateRegistrationDate());
-    setValidationResultToError(props.subject.validateFirstName());
-    setValidationResultToError(props.subject.validateLastName());
-    setValidationResultToError(props.subject.validateDateOfBirth());
-    setValidationResultToError(props.subject.validateGender());
-
-    //needs to used when village location is set
-    //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
-
-    if (
-      _.isEmpty(subjectRegErrors.FIRST_NAME) &&
-      _.isEmpty(subjectRegErrors.LAST_NAME) &&
-      _.isEmpty(subjectRegErrors.DOB) &&
-      _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
-      _.isEmpty(subjectRegErrors.GENDER)
-    ) {
-      nextBtnRef.current.click();
-    }
-  };
 
   return (
     <div>
@@ -315,7 +244,6 @@ const DefaultPage = props => {
                       console.log("Date of reg");
                       console.log(date);
                       props.updateSubject("registrationDate", new Date(date));
-                      //validateRegistrationDate(date, props.subject.dateOfBirth);
                       props.subject.registrationDate = date;
                       setValidationResultToError(props.subject.validateRegistrationDate());
                     }}
@@ -345,7 +273,6 @@ const DefaultPage = props => {
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
                         props.subject.setFirstName(e.target.value);
-                        //validateFirstName(e.target.value);
                         setValidationResultToError(props.subject.validateFirstName());
                       }}
                     />
@@ -362,7 +289,6 @@ const DefaultPage = props => {
                       label={t("lastName")}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
-                        //validateLastName(e.target.value);
                         props.subject.setLastName(e.target.value);
                         setValidationResultToError(props.subject.validateLastName());
                       }}
@@ -374,7 +300,6 @@ const DefaultPage = props => {
                       dobErrorMsg={subjectRegErrors.DOB}
                       onChange={date => {
                         props.updateSubject("dateOfBirth", date);
-                        //validateDateOfBirth(date, props.subject.registrationDate);
                         props.subject.setDateOfBirth(date);
                         setValidationResultToError(props.subject.validateDateOfBirth());
                       }}
@@ -391,7 +316,6 @@ const DefaultPage = props => {
                       errorMsg={subjectRegErrors.GENDER}
                       onChange={selected => {
                         props.updateSubject("gender", selected);
-                        //validateGender(selected);
                         props.subject.gender = selected;
                         setValidationResultToError(props.subject.validateGender());
                       }}
@@ -413,10 +337,14 @@ const DefaultPage = props => {
                       type="text"
                       autoComplete="off"
                       required
+                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
+                      helperText={subjectRegErrors.FIRST_NAME}
                       name="firstName"
                       value={props.subject.firstName}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
+                        props.subject.setFirstName(e.target.value);
+                        setValidationResultToError(props.subject.validateFirstName());
                       }}
                     />
                   </React.Fragment>
