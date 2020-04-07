@@ -17,20 +17,37 @@ import java.util.stream.Collectors;
 public class GroupPrivilegeService {
     private GroupRepository groupRepository;
     private PrivilegeRepository privilegeRepository;
+    private GroupPrivilegeRepository groupPrivilegeRepository;
     private SubjectTypeRepository subjectTypeRepository;
     private ProgramRepository programRepository;
     private EncounterTypeRepository encounterTypeRepository;
     private ChecklistDetailRepository checklistDetailRepository;
     private FormMappingRepository formMappingRepository;
 
-    public GroupPrivilegeService(GroupRepository groupRepository, PrivilegeRepository privilegeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, ChecklistDetailRepository checklistDetailRepository, FormMappingRepository formMappingRepository) {
+    public GroupPrivilegeService(GroupRepository groupRepository, PrivilegeRepository privilegeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, ChecklistDetailRepository checklistDetailRepository, FormMappingRepository formMappingRepository, GroupPrivilegeRepository groupPrivilegeRepository) {
         this.groupRepository = groupRepository;
         this.privilegeRepository = privilegeRepository;
+        this.groupPrivilegeRepository = groupPrivilegeRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.programRepository = programRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.checklistDetailRepository = checklistDetailRepository;
         this.formMappingRepository = formMappingRepository;
+    }
+
+    public GroupPrivilege assignEverythingPrivilegeToEveryoneGroup(Long orgId) {
+        Group everyoneGroup = groupRepository.findByNameAndOrganisationId("Everyone", orgId);
+        if (everyoneGroup != null) {
+            GroupPrivilege everythingPrivilege = new GroupPrivilege();
+            everythingPrivilege.setPrivilege(privilegeRepository.findByName("All Privileges"));
+            everythingPrivilege.setGroup(everyoneGroup);
+            everythingPrivilege.setOrganisationId(orgId);
+            everythingPrivilege.setAllow(true);
+            everythingPrivilege.assignUUID();
+            return groupPrivilegeRepository.save(everythingPrivilege);
+        } else {
+            return null;
+        }
     }
 
     public List<GroupPrivilege> getAllGroupPrivileges(Long groupId) {

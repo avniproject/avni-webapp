@@ -2,17 +2,12 @@ package org.openchs.web;
 
 import org.openchs.dao.*;
 import org.openchs.domain.*;
-import org.openchs.dao.AccountRepository;
-import org.openchs.dao.GroupRepository;
-import org.openchs.dao.OrganisationRepository;
-import org.openchs.domain.Account;
-import org.openchs.domain.Group;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.GroupPrivilegeService;
 import org.openchs.web.request.OrganisationContract;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,14 +26,16 @@ public class OrganisationController implements RestControllerResourceProcessor<O
     private final GenderRepository genderRepository;
     private final OrganisationConfigRepository organisationConfigRepository;
     private GroupRepository groupRepository;
+    private GroupPrivilegeService groupPrivilegeService;
 
     @Autowired
-    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository, GroupRepository groupRepository) {
+    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository, GroupRepository groupRepository, GroupPrivilegeService groupPrivilegeService) {
         this.organisationRepository = organisationRepository;
         this.accountRepository = accountRepository;
         this.genderRepository = genderRepository;
         this.organisationConfigRepository = organisationConfigRepository;
         this.groupRepository = groupRepository;
+        this.groupPrivilegeService = groupPrivilegeService;
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.POST)
@@ -59,6 +56,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         organisationRepository.save(org);
         createDefaultGenders(org);
         addDefaultGroup(org.getId());
+        groupPrivilegeService.assignEverythingPrivilegeToEveryoneGroup(org.getId());
         createDefaultOrgConfig(org);
 
         return new ResponseEntity<>(org, HttpStatus.CREATED);

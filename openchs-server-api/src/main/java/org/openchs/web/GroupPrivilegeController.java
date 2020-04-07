@@ -1,10 +1,7 @@
 package org.openchs.web;
 
 import org.openchs.dao.*;
-import org.openchs.domain.Group;
-import org.openchs.domain.GroupPrivilege;
-import org.openchs.domain.Privilege;
-import org.openchs.domain.SubjectType;
+import org.openchs.domain.*;
 import org.openchs.service.GroupPrivilegeService;
 import org.openchs.web.request.GroupPrivilegeContract;
 import org.springframework.http.ResponseEntity;
@@ -42,9 +39,17 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
     @RequestMapping(value = "/groups/{id}/privileges", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public List<GroupPrivilegeContract> getById(@PathVariable("id") Long id) {
-        List<GroupPrivilege> allPrivileges = groupPrivilegeService.getAllGroupPrivileges(id);
         List<GroupPrivilege> groupPrivileges = groupPrivilegeRepository.findByGroup_Id(id);
-        groupPrivileges.addAll(allPrivileges);
+
+        GroupPrivilege everythingAllowedPrivilege = groupPrivileges.stream()
+                .filter(groupPrivilege -> groupPrivilege.getPrivilege().getEntityType() == EntityType.Everything && groupPrivilege.isAllow())
+                .findAny().orElse(null);
+
+        if (everythingAllowedPrivilege == null) {
+            List<GroupPrivilege> allPrivileges = groupPrivilegeService.getAllGroupPrivileges(id);
+            groupPrivileges.addAll(allPrivileges);
+        }
+
         return groupPrivileges.stream()
                 .map(GroupPrivilegeContract::fromEntity)
                 .distinct()
@@ -69,10 +74,14 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
             } else {
                 Optional<Privilege> optionalPrivilege = privilegeRepository.findById(groupPrivilege.getPrivilegeId());
                 Group group = groupRepository.findOne(groupPrivilege.getGroupId());
-                SubjectType subjectType = subjectTypeRepository.findOne(groupPrivilege.getSubjectTypeId());
 
-                if (!optionalPrivilege.isPresent() || group == null || subjectType == null) {
-                    return ResponseEntity.badRequest().body(String.format("Invalid privilege id %d or group id %d or subject type %s", groupPrivilege.getPrivilegeId(), groupPrivilege.getGroupId(), groupPrivilege.getSubjectTypeName()));
+                SubjectType subjectType = null;
+                if (groupPrivilege.getSubjectTypeId().isPresent()) {
+                    subjectType = subjectTypeRepository.findOne(groupPrivilege.getSubjectTypeId().get());
+                }
+
+                if (!optionalPrivilege.isPresent() || group == null) {
+                    return ResponseEntity.badRequest().body(String.format("Invalid privilege id %d or group id %d", groupPrivilege.getPrivilegeId(), groupPrivilege.getGroupId()));
                 }
 
                 GroupPrivilege newGroupPrivilege = new GroupPrivilege();
