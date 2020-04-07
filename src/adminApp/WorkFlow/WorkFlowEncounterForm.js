@@ -206,7 +206,7 @@ function WorkFlowEncounterForm(props) {
           </FormControl>
         </>
       )}
-      {!isProgramEncounter && <span>N.A</span>}
+      {!isProgramEncounter && <span style={{ fontSize: "48px" }}>-</span>}
       {redirect && (
         <Redirect
           to={{

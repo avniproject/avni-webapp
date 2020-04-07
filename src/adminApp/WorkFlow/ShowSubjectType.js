@@ -31,7 +31,9 @@ export const ShowPrograms = props => {
       {existMapping.length !== 0 && program.length !== 0 && (
         <span>{props.program.filter(l => l.uuid === existMapping[0].programUUID)[0].name}</span>
       )}
-      {(existMapping.length === 0 || program.length === 0) && <span>N.A</span>}
+      {(existMapping.length === 0 || program.length === 0) && (
+        <span style={{ fontSize: "48px" }}>-</span>
+      )}
     </>
   );
 };
