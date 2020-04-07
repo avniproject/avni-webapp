@@ -139,6 +139,10 @@ const PrimarySearchAppBar = ({
     setUserOption(false);
   };
 
+  const newHandleclose = () => {
+    setOpen(false);
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <ClickAwayListener onClickAway={handleClickAway}>
@@ -195,41 +199,42 @@ const PrimarySearchAppBar = ({
               }}
             />
           </form>
-          <div>
-            <Button
-              className={classes.headerMenu}
-              ref={anchorRef}
-              aria-controls={open ? "menu-list-grow" : undefined}
-              aria-haspopup="true"
-              onClick={handleToggle}
-              style={{ color: "#0e6eff" }}
-            >
-              {t("new")}
-              <ExpandMoreIcon />
-            </Button>
-            <Popper
-              open={open}
-              anchorEl={anchorRef.current}
-              role={undefined}
-              transition
-              disablePortal
-            >
-              {({ TransitionProps, placement }) => (
-                <Grow
-                  {...TransitionProps}
-                  style={{
-                    transformOrigin: placement === "bottom" ? "center top" : "center bottom"
-                  }}
-                >
-                  <Paper>
-                    <ClickAwayListener onClickAway={handleClose}>
+          <ClickAwayListener onClickAway={newHandleclose}>
+            <div>
+              <Button
+                className={classes.headerMenu}
+                ref={anchorRef}
+                aria-controls={open ? "menu-list-grow" : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+                style={{ color: "#0e6eff" }}
+              >
+                {t("new")}
+                <ExpandMoreIcon />
+              </Button>
+              <Popper
+                open={open}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin: placement === "bottom" ? "center top" : "center bottom"
+                    }}
+                  >
+                    <Paper>
                       <NewMenu />
-                    </ClickAwayListener>
-                  </Paper>
-                </Grow>
-              )}
-            </Popper>
-          </div>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </div>
+          </ClickAwayListener>
+
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton

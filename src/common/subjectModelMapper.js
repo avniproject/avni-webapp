@@ -38,14 +38,18 @@ export const mapConcept = observationJson => {
     const concept = General.assignFields(observationJson.concept, new Concept(), ["uuid", "name"]);
     concept.datatype = observationJson.concept["dataType"];
     let valueuuid;
+    let isAbnormalValue;
     if (Array.isArray(observationJson.value) && concept.datatype === "Coded") {
       valueuuid = [];
+
       observationJson.value.forEach(observation => {
         valueuuid.push(observation.uuid);
+        isAbnormalValue = observation.abnormal;
         store.dispatch({ type: types.ADD_CONCEPT, value: observation });
       });
     } else if (concept.datatype === "Coded") {
       valueuuid = observationJson.value.uuid;
+      isAbnormalValue = observationJson.value.abnormal;
       store.dispatch({ type: types.ADD_CONCEPT, value: observationJson.value });
     } else {
       valueuuid = observationJson.value;
@@ -53,6 +57,7 @@ export const mapConcept = observationJson => {
     const value = JSON.stringify(concept.getValueWrapperFor(valueuuid));
     observation.concept = concept;
     observation.valueJSON = value;
+    observation.abnormal = isAbnormalValue;
     return observation;
   }
 };

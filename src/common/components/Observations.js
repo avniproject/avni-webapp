@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Observation } from "avni-models";
 import { ConceptService, i18n } from "../../dataEntryApp/services/ConceptService";
 import { useTranslation } from "react-i18next";
+import ErrorIcon from "@material-ui/icons/Error";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -23,9 +24,11 @@ const useStyles = makeStyles(theme => ({
 
 const Observations = ({ observations }) => {
   const conceptService = new ConceptService();
+  // const observation = new Observation();
   const i = new i18n();
   const { t } = useTranslation();
   const classes = useStyles();
+
   // debugger
   return (
     <div>
@@ -45,7 +48,17 @@ const Observations = ({ observations }) => {
                         {t(element.concept["name"])}
                       </TableCell>
                       <TableCell align="left" width="50%">
-                        <div>{Observation.valueAsString(element, conceptService, i)} </div>
+                        <div>
+                          {" "}
+                          {element.abnormal === true ? (
+                            <span className={classes.abnormalColor}>
+                              {" "}
+                              <ErrorIcon /> {Observation.valueAsString(element, conceptService, i)}
+                            </span>
+                          ) : (
+                            Observation.valueAsString(element, conceptService, i)
+                          )}{" "}
+                        </div>
                       </TableCell>
                     </TableRow>
                   </TableBody>

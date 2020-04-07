@@ -67,11 +67,11 @@ function NewMenu({ operationalModules }) {
     <div className={classes.container}>
       <List component="nav" aria-labelledby="nested-list-subheader" className={classes.root}>
         <label className={classes.FormLabel}>{t("register")}</label>
-        {operationalModules.subjectTypes.map((element, key) => {
+        {operationalModules.subjectTypes.map((element, index) => {
           return (
             <React.Fragment>
               <InternalLink
-                key={key}
+                key={index}
                 to={`/app/register?type=${element.name}`}
                 onClick={handleClickRoute(element)}
                 style={{ color: "blue" }}
@@ -91,11 +91,11 @@ function NewMenu({ operationalModules }) {
       </List>
       <FormControl className={classes.FormControlRadio} component="fieldset">
         <label className={classes.FormLabel}>Register and Enrollment For</label>
-        {operationalModules.programs.map((element, key) => {
+        {operationalModules.programs.map((element, index) => {
           return (
             <React.Fragment>
               <RadioGroup
-                key={key}
+                key={index}
                 aria-label="position"
                 name="position"
                 value={value}
