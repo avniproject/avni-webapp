@@ -3,7 +3,8 @@ import {
   ObservationsHolder,
   Concept,
   ProgramEnrolment,
-  SubjectType
+  SubjectType,
+  PrimitiveValue
 } from "avni-models";
 import {
   setSubject,
@@ -31,7 +32,7 @@ import {
   setProgramEnrolment,
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
-import { isEmpty } from "lodash";
+import _ from "lodash";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -114,6 +115,11 @@ function updateObservations(observations, formElement, value) {
     formElement.isSingleSelect()
   ) {
     observationHolder.toggleSingleSelectAnswer(formElement.concept, value);
+  } else if (
+    formElement.concept.datatype === Concept.dataType.Duration &&
+    !_.isNil(formElement.durationOptions)
+  ) {
+    observationHolder.updateCompositeDurationValue(formElement.concept, value);
   } else {
     observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   }

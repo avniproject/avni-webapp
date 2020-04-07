@@ -32,7 +32,11 @@ const Paginator = props => {
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
         <PaginationButton
-          page={props.pageDetails.previousPageNumber}
+          page={
+            props.pageDetails.nextPageNumber == null
+              ? props.pageDetails.previousPageNumber + 1
+              : props.pageDetails.previousPageNumber
+          }
           type={props.label.type}
           title={t(props.label.Previous)}
         />

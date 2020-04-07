@@ -91,6 +91,8 @@ const FormWizard = ({
   setSubject
 }) => {
   const classes = useStyle();
+  const { t } = useTranslation();
+
   const [redirect, setRedirect] = React.useState(false);
 
   const from = match.queryParams.from;
@@ -99,9 +101,9 @@ const FormWizard = ({
   const firstPageNumber = form && form.firstFormElementGroup.displayOrder;
   const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
   const page =
-    match.queryParams.page === parseInt(lastPageNumber)
+    parseInt(match.queryParams.page) === parseInt(lastPageNumber)
       ? parseInt(match.queryParams.page)
-      : +match.queryParams.page;
+      : parseInt(+match.queryParams.page);
 
   const currentPageNumber = isNaN(page) ? firstPageNumber : page;
 
@@ -124,10 +126,9 @@ const FormWizard = ({
   };
 
   const current = showSummaryPage
-    ? { name: "Summary" }
+    ? { name: `${t("Summary and Recommendations")}` }
     : form && form.formElementGroupAt(currentPageNumber);
   const pageCount = currentPageNumber + " / " + (lastPageNumber + 1);
-  const { t } = useTranslation();
   const onOkHandler = data => {
     BrowserStore.clear("subject");
     setRedirect(data);

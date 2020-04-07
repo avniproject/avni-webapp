@@ -1,14 +1,17 @@
 import React, { Fragment, useState } from "react";
-import { FormControlLabel, TextField } from "@material-ui/core";
+import { FormControlLabel, TextField, FormLabel, FormControl } from "@material-ui/core";
 import { isEmpty } from "lodash";
 import { CompositeDuration } from "avni-models";
+import { useTranslation } from "react-i18next";
 
 const DurationFormElement = ({ duration, mandatory, name, update }) => {
   const [localVal, setLocalVal] = useState((duration && duration.durationValue) || "");
+  const { t } = useTranslation();
 
   return (
     <Fragment>
       <TextField
+        label={t(duration.durationUnit)}
         required={mandatory}
         name={name}
         type="numeric"
@@ -22,7 +25,7 @@ const DurationFormElement = ({ duration, mandatory, name, update }) => {
           isEmpty(value) ? update() : update(value);
         }}
       />
-      <span>{duration.durationUnit}</span>
+      {/* <span>{duration.durationUnit}</span> */}
     </Fragment>
   );
 };
@@ -33,28 +36,27 @@ const CompositeDurationFormElement = ({ formElement: fe, value, update }) => {
     : CompositeDuration.fromOpts(fe.durationOptions);
 
   return (
-    <FormControlLabel
-      label={fe.display || fe.name}
-      control={
-        <Fragment>
-          {fe.durationOptions.map((durationUnit, key) => {
-            return (
-              <DurationFormElement
-                key={key}
-                mandatory={fe.mandatory}
-                name={fe.name + key}
-                duration={compositeDuration.findByUnit(durationUnit)}
-                update={val => {
-                  isEmpty(val)
-                    ? update(compositeDuration.changeValueByUnit(durationUnit, ""))
-                    : update(compositeDuration.changeValueByUnit(durationUnit, val));
-                }}
-              />
-            );
-          })}
-        </Fragment>
-      }
-    />
+    <FormControl style={{ width: "30%" }}>
+      <FormLabel>{fe.display || fe.name}</FormLabel>
+      <Fragment>
+        {fe.durationOptions.map((durationUnit, key) => {
+          return (
+            <DurationFormElement
+              key={key}
+              mandatory={fe.mandatory}
+              name={fe.name + key}
+              style={{ height: "10%" }}
+              duration={compositeDuration.findByUnit(durationUnit)}
+              update={val => {
+                isEmpty(val)
+                  ? update(compositeDuration.changeValueByUnit(durationUnit, ""))
+                  : update(compositeDuration.changeValueByUnit(durationUnit, val));
+              }}
+            />
+          );
+        })}
+      </Fragment>
+    </FormControl>
   );
 };
 
