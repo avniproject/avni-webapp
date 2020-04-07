@@ -218,8 +218,9 @@ const DefaultPage = props => {
                       1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}
                     </label>
                   )}
-                  <label className={classes.topnextnav}>{t("next")}</label>
+                  <Chip style={{ display: "none" }} ref={nextBtnRef} label={t("next")} />
                 </RelativeLink>
+                <label className={classes.topnextnav}>{t("next")}</label>
               </Box>
             </Box>
 
