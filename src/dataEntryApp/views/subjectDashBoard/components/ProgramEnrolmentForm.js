@@ -10,7 +10,8 @@ subject.subjectType = SubjectType.create("Individual");
 const mapFormStateToProps = state => ({
   form: state.dataEntry.enrolmentReducer.enrolForm,
   subject: subject,
-  obs: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),
+  observations: state.dataEntry.enrolmentReducer.programEnrolment.observations,
+  obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),
   title: `New Enrolment`,
   saved: state.dataEntry.enrolmentReducer.saved,
   onSaveGoto: "/app/search"

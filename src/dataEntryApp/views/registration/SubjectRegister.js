@@ -334,9 +334,10 @@ const ConnectedDefaultPage = withRouter(
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.registration.registrationForm,
-  obs:
+  obsHolder:
     state.dataEntry.registration.subject &&
     new ObservationsHolder(state.dataEntry.registration.subject.observations),
+  observations: state.dataEntry.registration.subject.observations,
   //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,

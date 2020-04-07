@@ -152,11 +152,13 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
               id: "selected_program-native-helper"
             }}
           >
-            <option value="" />
+            <option key={"emptyElement"} value="" />
 
             {programs
               ? programs.map((element, index) => (
-                  <option value={element.name}>{element.name}</option>
+                  <option key={index} value={element.name}>
+                    {element.name}
+                  </option>
                 ))
               : ""}
           </NativeSelect>

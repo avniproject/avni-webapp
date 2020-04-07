@@ -78,8 +78,9 @@ const Header = ({ subject }) => {
 
 const FormWizard = ({
   form,
-  obs,
+  obsHolder,
   updateObs,
+  observations,
   location,
   title,
   match,
@@ -154,9 +155,9 @@ const FormWizard = ({
           </Box>
           <Paper className={classes.form}>
             {currentPageNumber >= lastPageNumber + 1 ? (
-              <Summary subject={subject} />
+              <Summary observations={observations} />
             ) : (
-              <Form current={current} obs={obs} updateObs={updateObs} />
+              <Form current={current} obsHolder={obsHolder} updateObs={updateObs} />
             )}
 
             {saved && (

@@ -3,7 +3,7 @@ import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
 
-export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
+export const FormElementGroup = ({ children: feg, obsHolder, updateObs }) => {
   return (
     <div>
       <LineBreak num={1} />
@@ -11,8 +11,8 @@ export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
         <FormElement
           key={fe.uuid}
           concept={fe.concept}
-          obsHolder={obs}
-          value={get(obs.findObservation(fe.concept), "valueJSON.answer")}
+          obsHolder={obsHolder}
+          value={get(obsHolder.findObservation(fe.concept), "valueJSON.answer")}
           update={value => {
             updateObs(fe, value);
           }}
