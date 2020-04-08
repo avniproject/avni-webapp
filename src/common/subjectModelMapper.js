@@ -12,18 +12,21 @@ import {
   IndividualRelationshipType,
   IndividualRelation,
   Encounter,
-  EncounterType
+  EncounterType,
+  Gender
 } from "avni-models";
 import { types } from "../common/store/conceptReducer";
 
 // subject Dashboard common functionality
 export const mapIndividual = individualDetails => {
-  return General.assignFields(
+  const individual = General.assignFields(
     individualDetails,
     new Individual(),
-    ["uuid", "firstName", "lastName", "dateOfBirth", "gender", "lowestAddressLevel"],
+    ["uuid", "firstName", "lastName", "dateOfBirth"],
     ["registrationDate"]
   );
+  individual.gender = Gender.create(individualDetails.gender);
+  return individual;
 };
 export const mapObservation = objservationList => {
   if (objservationList)

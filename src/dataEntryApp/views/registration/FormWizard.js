@@ -76,10 +76,11 @@ const Header = ({ subject }) => {
   );
 };
 
-const SubjectRegistrationForm = ({
+const FormWizard = ({
   form,
-  obs,
+  obsHolder,
   updateObs,
+  observations,
   location,
   title,
   match,
@@ -90,17 +91,6 @@ const SubjectRegistrationForm = ({
   onLoad,
   setSubject
 }) => {
-  React.useEffect(() => {
-    if (!subject) {
-      (async function fetchData() {
-        await onLoad(match.queryParams.type);
-        let subject = BrowserStore.fetchSubject();
-        if (subject) {
-          setSubject(subject);
-        }
-      })();
-    }
-  });
   const classes = useStyle();
   const { t } = useTranslation();
 
@@ -165,9 +155,9 @@ const SubjectRegistrationForm = ({
           </Box>
           <Paper className={classes.form}>
             {currentPageNumber >= lastPageNumber + 1 ? (
-              <Summary subject={subject} />
+              <Summary observations={observations} />
             ) : (
-              <Form current={current} obs={obs} updateObs={updateObs} />
+              <Form current={current} obsHolder={obsHolder} updateObs={updateObs} />
             )}
 
             {saved && (
@@ -195,4 +185,4 @@ const SubjectRegistrationForm = ({
   );
 };
 
-export default withRouter(withParams(SubjectRegistrationForm));
+export default withRouter(withParams(FormWizard));

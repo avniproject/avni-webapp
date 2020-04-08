@@ -15,10 +15,19 @@ export default {
     httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
       return response.json;
     }),
+
+  fetchPrograms: subjectUuid =>
+    httpClient.fetchJson(`/web/eligiblePrograms?subjectUuid=${subjectUuid}`).then(response => {
+      return response.json;
+    }),
+
   fetchSubjectProgram: uuid => {
     return httpClient.fetchJson(`/web/subject/${uuid}/programs/`).then(response => response.json);
   },
   fetchSubjectGeneral: uuid => {
     return httpClient.fetchJson(`/web/subject/${uuid}/encounters/`).then(response => response.json);
+  },
+  fetchEnrolments: uuid => {
+    return httpClient.fetchJson(`/api/enrolments/`).then(response => response.json);
   }
 };

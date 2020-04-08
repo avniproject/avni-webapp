@@ -2,15 +2,14 @@ import React, { Fragment } from "react";
 import { withParams } from "../../common/components/utils";
 import { FormElementGroup } from "./FormElementGroup";
 
-import { withRouter} from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
-
-const Form = ({ current, obs, updateObs }) => {      
+const Form = ({ current, obsHolder, updateObs }) => {
   return (
     <Fragment>
-        <FormElementGroup key={current.uuid} obs={obs} updateObs={updateObs}>
-          {current}
-        </FormElementGroup>
+      <FormElementGroup key={current.uuid} obsHolder={obsHolder} updateObs={updateObs}>
+        {current}
+      </FormElementGroup>
     </Fragment>
   );
 };

@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Button = ({ btnLabel, btnClass }) => {
+const Button = ({ btnLabel, btnClass, btnClick }) => {
   const classes = useStyles();
   return (
     <Fab
@@ -18,6 +18,7 @@ const Button = ({ btnLabel, btnClass }) => {
       variant="extended"
       color="primary"
       aria-label="add"
+      onClick={btnClick}
     >
       {btnLabel}
     </Fab>

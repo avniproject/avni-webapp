@@ -15,7 +15,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Summary = ({ subject }) => {
+const Summary = ({ observations }) => {
   const classes = useStyle();
   const { t } = useTranslation();
 
@@ -40,7 +40,7 @@ const Summary = ({ subject }) => {
       </Typography>
       <Grid item xs={8}>
         <List>
-          <Observations observations={subject ? subject.observations : ""} />
+          <Observations observations={observations ? observations : ""} />
         </List>
         {/* <Button color="primary">{t("void")}</Button>
         <Button color="primary">{t("edit")}</Button> */}
