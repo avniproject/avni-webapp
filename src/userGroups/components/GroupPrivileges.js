@@ -7,7 +7,8 @@ import { getGroupPrivilegeList } from "../reducers";
 import api from "../api";
 
 const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList }) => {
-  const [privilegesMetadata, setPrivilegesMetadata] = React.useState(null);
+  const [privilegeDependencies, setPrivilegeDependencies] = React.useState(null);
+  const [privilegesCheckedState, setPrivilegesCheckedState] = React.useState(null);
 
   React.useEffect(() => {
     getGroupPrivilegeList(groupId);
@@ -16,13 +17,22 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
   React.useEffect(() => {
     if (!groupPrivilegeList) return;
 
-    let metadata = new Map();
+    const [checkedState, dependencies] = generatePrivilegeDependenciesAndCheckedState();
+
+    setPrivilegesCheckedState(checkedState);
+
+    setPrivilegeDependencies(dependencies);
+  }, [groupPrivilegeList]);
+
+  const generatePrivilegeDependenciesAndCheckedState = () => {
+    let dependencies = new Map();
+    let checkedState = new Map();
 
     groupPrivilegeList.forEach(privilegeListItem => {
+      checkedState.set(privilegeListItem.tableData.id, { checkedState: privilegeListItem.allow });
       switch (privilegeListItem.privilegeId) {
         case 1: // View subject
-          metadata.set(privilegeListItem.tableData.id, {
-            checkedState: privilegeListItem.allow,
+          dependencies.set(privilegeListItem.tableData.id, {
             dependencies: []
           });
           break;
@@ -35,8 +45,7 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
         case 16: // Add member
         case 17: // Edit member
         case 18: // Remove member
-          metadata.set(privilegeListItem.tableData.id, {
-            checkedState: privilegeListItem.allow,
+          dependencies.set(privilegeListItem.tableData.id, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
@@ -49,8 +58,7 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
         case 5: // Enrol subject
         case 7: // Edit enrolment details
         case 8: // Exit enrolment
-          metadata.set(privilegeListItem.tableData.id, {
-            checkedState: privilegeListItem.allow,
+          dependencies.set(privilegeListItem.tableData.id, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
@@ -67,8 +75,7 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
         case 11: // Perform visit
         case 12: // Edit visit
         case 13: // Cancel visit
-          metadata.set(privilegeListItem.tableData.id, {
-            checkedState: privilegeListItem.allow,
+          dependencies.set(privilegeListItem.tableData.id, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
@@ -84,8 +91,7 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
           });
           break;
         case 15: // Edit checklist
-          metadata.set(privilegeListItem.tableData.id, {
-            checkedState: privilegeListItem.allow,
+          dependencies.set(privilegeListItem.tableData.id, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
@@ -103,47 +109,47 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
       }
     });
 
-    for (let [key, value] of metadata) {
+    for (let [key, value] of dependencies) {
       let dependency_keys = value.dependencies;
-      let current_metadata;
+      let current_dependencies;
       if (!(dependency_keys === undefined)) {
         dependency_keys.forEach(dep_key => {
-          current_metadata = metadata.get(dep_key);
-          if (!current_metadata.dependents) {
-            current_metadata.dependents = [];
+          current_dependencies = dependencies.get(dep_key);
+          if (!current_dependencies.dependents) {
+            current_dependencies.dependents = [];
           }
-          current_metadata.dependents.push(key);
+          current_dependencies.dependents.push(key);
         });
       }
     }
-    setPrivilegesMetadata(metadata);
-  }, [groupPrivilegeList]);
-
-  React.useEffect(() => {}, [privilegesMetadata]);
+    return [checkedState, dependencies];
+  };
 
   const onTogglePermissionClick = (event, rowData) => {
     let isAllow = event.target.checked;
     let indexesToBeUpdated;
 
     if (isAllow) {
-      indexesToBeUpdated = privilegesMetadata.get(rowData.tableData.id).dependencies || [];
+      indexesToBeUpdated = privilegeDependencies.get(rowData.tableData.id).dependencies || [];
     } else {
-      indexesToBeUpdated = privilegesMetadata.get(rowData.tableData.id).dependents || [];
+      indexesToBeUpdated = privilegeDependencies.get(rowData.tableData.id).dependents || [];
     }
 
     indexesToBeUpdated.push(rowData.tableData.id);
 
-    let toggleAllowMap = new Map();
+    let toggleCheckedStateMap = new Map();
     indexesToBeUpdated.forEach(index => {
-      toggleAllowMap.set(index, {
-        checkedState: isAllow,
-        dependents: privilegesMetadata.get(index).dependents || [],
-        dependencies: privilegesMetadata.get(index).dependencies || []
+      toggleCheckedStateMap.set(index, {
+        checkedState: isAllow
       });
     });
 
-    setPrivilegesMetadata(new Map([...privilegesMetadata, ...toggleAllowMap]));
+    setPrivilegesCheckedState(new Map([...privilegesCheckedState, ...toggleCheckedStateMap]));
 
+    updatePrivilegesonServer(indexesToBeUpdated, isAllow);
+  };
+
+  const updatePrivilegesonServer = (indexesToBeUpdated, isAllow) => {
     let privilegesToBeUpdated = groupPrivilegeList.filter(
       privilege =>
         indexesToBeUpdated.includes(privilege.tableData.id) && privilege.allow !== isAllow
@@ -165,6 +171,7 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
       const [response_data, error] = response;
       if (!response_data && error) {
         alert(error);
+        getGroupPrivilegeList(groupId);
       }
     });
   };
@@ -179,7 +186,9 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
         <Switch
           onChange={event => onTogglePermissionClick(event, rowData)}
           checked={
-            privilegesMetadata ? privilegesMetadata.get(rowData.tableData.id).checkedState : false
+            privilegesCheckedState
+              ? privilegesCheckedState.get(rowData.tableData.id).checkedState
+              : false
           }
         />
       )
