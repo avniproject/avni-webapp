@@ -40,6 +40,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.io.InvalidObjectException;
 import java.util.*;
@@ -87,14 +88,22 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public PagedResources<Resource<BasicFormDetails>> getAllFormsWeb(
             @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "includeVoided", required = false) boolean includeVoided,
             Pageable pageable) {
         Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
         Sort sortWithId = pageable.getSort().and(new Sort("id"));
 
         PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sortWithId);
-        Page<Form> forms = name != null
-                ? formRepository.findByOrganisationIdAndNameIgnoreCaseContaining(organisationId, name, pageRequest)
-                : formRepository.findAllByOrganisationId(organisationId, pageRequest);
+
+        Page<Form> forms = formRepository.findAll((root, query, builder) -> {
+            Predicate predicate = builder.equal(root.get("organisationId"), organisationId);
+            if(name != null)
+                predicate = builder.and(predicate, builder.like(builder.upper(root.get("name")), "%" + name.toUpperCase() + "%"));
+            if(!includeVoided)
+                predicate = builder.and(predicate, builder.equal(root.get("isVoided"), false));
+            return predicate;
+        }, pageRequest);
+
         Page<BasicFormDetails> basicFormDetailsPage = forms.map(form -> {
             BasicFormDetails basicFormDetails = new BasicFormDetails(form, null);
             List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
