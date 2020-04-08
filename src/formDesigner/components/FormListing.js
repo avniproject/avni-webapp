@@ -17,7 +17,7 @@ import NewFormModal from "../components/NewFormModal";
 const FormListing = ({ history }) => {
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
   const [uuid, setUUID] = useState(0);
-  const [voided, setVoided] = useState(false);
+  const [includeVoided, setIncludeVoided] = useState(false);
 
   const onCloseEvent = () => {
     setCloneFormIndicator(false);
@@ -53,6 +53,7 @@ const FormListing = ({ history }) => {
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
+      apiUrl += "&includeVoided=" + includeVoided;
       if (!_.isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
@@ -60,9 +61,7 @@ const FormListing = ({ history }) => {
         .then(response => response.data)
         .then(result => {
           resolve({
-            data: result._embedded
-              ? result._embedded.basicFormDetailses.filter(l => voided || voided === l.voided)
-              : [],
+            data: result._embedded ? result._embedded.basicFormDetailses : [],
             page: result.page.number,
             totalCount: result.page.totalElements
           });
@@ -131,7 +130,7 @@ const FormListing = ({ history }) => {
   });
 
   const handleChangeFitlerVoided = name => event => {
-    setVoided(event.target.checked);
+    setIncludeVoided(event.target.checked);
     tableRef.current.onQueryChange();
   };
 
@@ -148,12 +147,12 @@ const FormListing = ({ history }) => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={voided}
+                      checked={includeVoided}
                       onChange={handleChangeFitlerVoided("voided")}
                       value="voided"
                     />
                   }
-                  label="Show voided forms"
+                  label="Include voided forms"
                 />
               </div>
             </>
