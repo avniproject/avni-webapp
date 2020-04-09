@@ -1,5 +1,7 @@
 package org.openchs.web;
 
+import org.codehaus.jettison.json.JSONException;
+import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.RuleService;
 import org.openchs.web.request.RuleDependencyRequest;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -56,5 +59,11 @@ public class RuleController {
         logger.info(String.format("Creating rules for: %s", UserContextHolder.getUserContext().getOrganisation().getName()));
         ruleService.createOrUpdate(ruleRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/web/rule", method = RequestMethod.POST)
+    ResponseEntity<?> decisionRule(@RequestBody String JsonData) throws IOException, JSONException {
+        UserContext userContext = UserContextHolder.getUserContext();
+        return ResponseEntity.ok().body(ruleService.decisionRule(JsonData,userContext));
     }
 }
