@@ -4,9 +4,7 @@ import { get } from "lodash";
 
 export default {
   fetchUploadJobStatuses: (params = {}) =>
-    http
-      .fetchJson(http.withParams("/import/status", { size: 5, page: 0, ...params }))
-      .then(r => r.json),
+    http.fetchJson(http.withParams("/import/status", { size: 5, ...params })).then(r => r.json),
   bulkUpload: (type, file) =>
     http
       .uploadFile(http.withParams("/import/new", { type }), file)

@@ -10,8 +10,9 @@ export const setStatuses = statuses => ({
   statuses
 });
 
-export const getStatuses = () => ({
-  type: types.GET_UPLOAD_JOB_STATUSES
+export const getStatuses = page => ({
+  type: types.GET_UPLOAD_JOB_STATUSES,
+  page
 });
 
 const initialState = {};

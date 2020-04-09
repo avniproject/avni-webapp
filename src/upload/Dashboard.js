@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { get, isEmpty, isNil, filter } from "lodash";
+import { filter, get, isEmpty, isNil } from "lodash";
 import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -12,7 +12,6 @@ import FileUpload from "../common/components/FileUpload";
 import Types from "./Types";
 import api from "./api";
 import DropDown from "../common/components/DropDown";
-import { getStatuses } from "./reducers";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -24,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = ({ getStatuses }) => {
+const Dashboard = () => {
   const classes = useStyles();
   const [entity, setEntity] = React.useState("");
   const [entityForDownload, setEntityForDownload] = React.useState("");
@@ -37,7 +36,6 @@ const Dashboard = ({ getStatuses }) => {
     if (!ok && error) {
       alert(error);
     }
-    setTimeout(() => getStatuses(), 1000);
     setFile();
     setEntity("");
   };
@@ -118,9 +116,4 @@ const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses
 });
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { getStatuses }
-  )(Dashboard)
-);
+export default withRouter(connect(mapStateToProps)(Dashboard));
