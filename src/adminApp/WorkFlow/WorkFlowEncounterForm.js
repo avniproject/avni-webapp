@@ -177,7 +177,7 @@ function WorkFlowEncounterForm(props) {
         </span>
       )}
       {clicked && isProgramEncounter && (
-        <Link href={"http://localhost:6010/#/appdesigner/forms/" + form[0].formUUID}>
+        <Link href={"/#/appdesigner/forms/" + form[0].formUUID}>
           {form[0].formName === undefined || form[0].formName === null
             ? props.fillFormName
             : form[0].formName}
