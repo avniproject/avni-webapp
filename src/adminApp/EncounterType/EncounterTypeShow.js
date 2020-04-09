@@ -10,10 +10,15 @@ import Moment from "react-moment";
 import Grid from "@material-ui/core/Grid";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { ShowSubjectType, ShowPrograms } from "../WorkFlow/ShowSubjectType";
 
 const EncounterTypeShow = props => {
   const [encounterType, setEncounterType] = useState({});
   const [editAlert, setEditAlert] = useState(false);
+  const [formMapping, setFormMapping] = useState([]);
+  const [subjectType, setSubjectType] = useState([]);
+  const [program, setProgram] = useState([]);
+
   useEffect(() => {
     http
       .get("/web/encounterType/" + props.match.params.id)
@@ -21,6 +26,15 @@ const EncounterTypeShow = props => {
       .then(result => {
         setEncounterType(result);
       });
+
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        setFormMapping(response.data.formMappings);
+        setSubjectType(response.data.subjectTypes);
+        setProgram(response.data.programs);
+      })
+      .catch(error => {});
   }, []);
 
   return (
@@ -38,6 +52,28 @@ const EncounterTypeShow = props => {
             <FormLabel style={{ fontSize: "13px" }}>Name</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>{encounterType.name}</span>
+          </div>
+          <p />
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Subject type</FormLabel>
+            <br />
+            <ShowSubjectType
+              rowDetails={encounterType}
+              subjectType={subjectType}
+              formMapping={formMapping}
+              entityUUID="encounterTypeUUID"
+            />
+          </div>
+          <p />
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Program</FormLabel>
+            <br />
+            <ShowPrograms
+              rowDetails={encounterType}
+              program={program}
+              formMapping={formMapping}
+              setMapping={setFormMapping}
+            />
           </div>
           <p />
           <div>

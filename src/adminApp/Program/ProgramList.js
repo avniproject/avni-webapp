@@ -1,19 +1,99 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _ from "lodash";
+import _, { isEqual } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
+import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
+import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 
 const ProgramList = ({ history }) => {
+  const [formMapping, setMapping] = useState([]);
+  const [subjectType, setSubjectType] = useState([]);
+  const [notificationAlert, setNotificationAlert] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        const formMap = response.data.formMappings;
+        formMap.map(l => (l["isVoided"] = false));
+        setMapping(formMap);
+        setSubjectType(response.data.subjectTypes);
+      })
+      .catch(error => {});
+  }, []);
+
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc" },
+    {
+      title: "Name",
+      defaultSort: "asc",
+      sorting: false,
+      render: rowData => <a href={`#/appDesigner/program/${rowData.id}/show`}>{rowData.name}</a>
+    },
+    {
+      title: "Subject type",
+      sorting: false,
+      render: rowData => (
+        <ShowSubjectType
+          rowDetails={rowData}
+          subjectType={subjectType}
+          formMapping={formMapping}
+          setMapping={setMapping}
+          entityUUID="programUUID"
+        />
+      )
+    },
+    {
+      title: "Enrolment form name",
+      sorting: false,
+      render: rowData => (
+        <WorkFlowFormCreation
+          key={rowData.uuid}
+          rowDetails={rowData}
+          formMapping={formMapping}
+          setMapping={setMapping}
+          formType="ProgramEnrolment"
+          placeholder="Select enrolment form"
+          customUUID="programUUID"
+          fillFormName="Enrolment form"
+          notificationAlert={notificationAlert}
+          setNotificationAlert={setNotificationAlert}
+          message={message}
+          setMessage={setMessage}
+          redirectToWorkflow="program"
+        />
+      )
+    },
+    {
+      title: "Exit form name",
+      sorting: false,
+      render: rowData => (
+        <WorkFlowFormCreation
+          key={rowData.uuid}
+          rowDetails={rowData}
+          formMapping={formMapping}
+          setMapping={setMapping}
+          formType="ProgramExit"
+          placeholder="Select exit form"
+          customUUID="programUUID"
+          fillFormName="Exit form"
+          notificationAlert={notificationAlert}
+          setNotificationAlert={setNotificationAlert}
+          message={message}
+          setMessage={setMessage}
+          redirectToWorkflow="program"
+        />
+      )
+    },
     {
       title: "Colour",
       field: "colour",
       type: "string",
+      sorting: false,
       render: rowData => (
         <div
           style={{ width: "20px", height: "20px", border: "1px solid", background: rowData.colour }}
@@ -21,9 +101,7 @@ const ProgramList = ({ history }) => {
           &nbsp;
         </div>
       )
-    },
-    { title: "Program subject label", field: "programSubjectLabel", type: "string" },
-    { title: "Organisation Id", field: "organisationId", type: "numeric" }
+    }
   ];
 
   const [redirect, setRedirect] = useState(false);
@@ -84,12 +162,6 @@ const ProgramList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
-              onRowClick={(event, rowData) =>
-                history.push({
-                  pathname: `/appDesigner/program/${rowData.id}/show`,
-                  state: {}
-                })
-              }
             />
           </div>
         </div>
@@ -98,5 +170,8 @@ const ProgramList = ({ history }) => {
     </>
   );
 };
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
 
-export default withRouter(ProgramList);
+export default withRouter(React.memo(ProgramList, areEqual));
