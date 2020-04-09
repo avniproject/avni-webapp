@@ -76,18 +76,7 @@ function* updateObsWatcher() {
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
-  const foundIndex = _.findIndex(validationResults, element => element.uuid === formElement.uuid);
-
-  if (validationResults[foundIndex]) {
-    validationResults[foundIndex].validationResult = formElement.validate(value);
-  } else {
-    validationResults.push({
-      uuid: formElement.uuid,
-      validationResult: formElement.validate(value)
-    });
-  }
-
-  console.log(subject.observations, validationResults);
+  const validationResult = formElement.validate(value);
   const observationHolder = new ObservationsHolder(subject.observations);
   // observationHolder.updateObs(formElement, value);
   // observationHolder.observations.map((concept)=>{
@@ -107,6 +96,14 @@ export function* updateObsWorker({ formElement, value }) {
 
   subject.observations = observationHolder.observations;
   yield put(setSubject(subject));
+
+  _.remove(
+    validationResults,
+    existingValidationResult =>
+      existingValidationResult.formIdentifier === validationResult.formIdentifier
+  );
+  validationResults.push(validationResult);
+
   yield put(setValidationResults(validationResults));
   sessionStorage.setItem("subject", JSON.stringify(subject));
 }

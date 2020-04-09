@@ -144,6 +144,13 @@ const SubjectRegistrationForm = ({
     BrowserStore.clear("subject");
     setRedirect(data);
   };
+  //   const nextHandler= ()=>{
+  //     console.log("ï ma at next button static");
+  //     console.log("cureentttt",current);
+  // console.log("validation results",validationResults);
+  // console.log("observations",obs)
+
+  //   }
 
   return (
     <Fragment>
@@ -155,6 +162,7 @@ const SubjectRegistrationForm = ({
               {" "}
               {currentPageNumber}. {t(current.name)}{" "}
             </Typography>
+            {/* <button onClick={nextHandler}>next111</button> */}
             <Paginator
               pageDetails={pageDetails}
               onSave={onSave}
