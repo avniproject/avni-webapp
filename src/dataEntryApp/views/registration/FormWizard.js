@@ -87,9 +87,7 @@ const FormWizard = ({
   saved,
   onSaveGoto,
   onSave,
-  subject,
-  onLoad,
-  setSubject
+  subject
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();

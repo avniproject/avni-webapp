@@ -346,8 +346,6 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs,
-  onLoad,
-  setSubject,
   onSave: saveSubject
 };
 
@@ -360,10 +358,6 @@ const RegistrationForm = withRouter(
 
 const SubjectRegister = ({ match }) => {
   const classes = useStyles();
-
-  React.useEffect(() => {
-    onLoad(match.queryParams.type);
-  });
 
   return (
     <Fragment>
