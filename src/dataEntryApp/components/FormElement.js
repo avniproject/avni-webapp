@@ -33,10 +33,11 @@ export const FormElement = ({
   value,
   update,
   obsHolder,
-  validationErrMessage
+  validationResults,
+  uuid
 }) => {
   const type = formElement.getType();
-  const props = { formElement, value, update, obsHolder, validationErrMessage };
+  const props = { formElement, value, update, obsHolder, validationResults, uuid };
   const Element = elements[type];
   return (
     <div>

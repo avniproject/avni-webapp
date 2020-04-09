@@ -88,7 +88,8 @@ const SubjectRegistrationForm = ({
   onSave,
   subject,
   onLoad,
-  setSubject
+  setSubject,
+  validationResults
 }) => {
   React.useEffect(() => {
     if (!subject) {
@@ -168,7 +169,12 @@ const SubjectRegistrationForm = ({
             {currentPageNumber >= lastPageNumber + 1 ? (
               <Summary subject={subject} />
             ) : (
-              <Form current={current} obs={obs} updateObs={updateObs} />
+              <Form
+                current={current}
+                obs={obs}
+                updateObs={updateObs}
+                validationResults={validationResults}
+              />
             )}
 
             {saved && (

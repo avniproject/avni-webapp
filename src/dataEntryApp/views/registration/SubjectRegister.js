@@ -424,7 +424,8 @@ const mapFormStateToProps = state => ({
   //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
-  onSaveGoto: "/app/search"
+  onSaveGoto: "/app/search",
+  validationResults: state.dataEntry.registration.validationResults
 });
 
 const mapFormDispatchToProps = {

@@ -20,7 +20,8 @@ export const CodedFormElement = ({
   onChange,
   multiSelect,
   mandatory,
-  errorMsg,
+  validationResults,
+  uuid,
   ...props
 }) => {
   let genwidth = "";
@@ -30,13 +31,19 @@ export const CodedFormElement = ({
     genwidth = "20%";
   }
   const { t } = useTranslation();
+  const foundIndex = _.findIndex(validationResults, element => element.uuid === uuid);
+  const validationResult =
+    validationResults && validationResults[foundIndex]
+      ? validationResults[foundIndex].validationResult
+      : null;
   return (
     <FormControl
       component="fieldset"
       {...props}
       style={{ width: "80%" }}
       required={mandatory}
-      error={!_.isEmpty(errorMsg)}
+      error={validationResult && !validationResult.success}
+      // error={!_.isEmpty(errorMsg)}
     >
       <FormLabel component="legend">{t(groupName)}</FormLabel>
       <FormGroup>
@@ -66,7 +73,8 @@ export const CodedFormElement = ({
           ))}
         </Box>
       </FormGroup>
-      <FormHelperText>{errorMsg}</FormHelperText>
+      {/* <FormHelperText>{errorMsg}</FormHelperText> */}
+      <FormHelperText>{validationResult && validationResult.messageKey}</FormHelperText>
     </FormControl>
   );
 };

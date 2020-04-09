@@ -2,9 +2,9 @@ import _, { invoke, get } from "lodash";
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
-import { ObservationsHolder, ValidationResults } from "avni-models";
+import { ObservationsHolder } from "avni-models";
 
-export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
+export const FormElementGroup = ({ children: feg, obs, updateObs, validationResults }) => {
   return (
     <div>
       <LineBreak num={1} />
@@ -14,12 +14,15 @@ export const FormElementGroup = ({ children: feg, obs, updateObs }) => {
           concept={fe.concept}
           obsHolder={obs}
           value={get(obs.findObservation(fe.concept), "valueJSON.answer")}
+          validationResults={validationResults}
+          uuid={fe.uuid}
           update={value => {
             updateObs(fe, value);
-            console.log("Inside FormElementGroup..");
-            console.log(value);
+            // console.log("Inside FormElementGroup..");
+            // console.log(value);
+            console.log("feg", feg);
             console.log(fe);
-            console.log(fe.validate(value));
+            // console.log(fe.validate(value));
           }}
         >
           {fe}

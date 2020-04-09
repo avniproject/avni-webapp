@@ -5,7 +5,8 @@ import {
   setLoaded,
   setRegistrationForm,
   types as subjectTypes,
-  saveComplete
+  saveComplete,
+  setValidationResults
 } from "../reducers/registrationReducer";
 import SubjectService from "../services/SubjectService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
@@ -18,7 +19,7 @@ import {
   selectRegistrationSubject
 } from "./selectors";
 import { mapForm } from "../../common/adapters";
-import { isEmpty } from "lodash";
+import _, { isEmpty } from "lodash";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -74,7 +75,19 @@ function* updateObsWatcher() {
 
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
-  console.log(subject.observations);
+  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
+  const foundIndex = _.findIndex(validationResults, element => element.uuid === formElement.uuid);
+
+  if (validationResults[foundIndex]) {
+    validationResults[foundIndex].validationResult = formElement.validate(value);
+  } else {
+    validationResults.push({
+      uuid: formElement.uuid,
+      validationResult: formElement.validate(value)
+    });
+  }
+
+  console.log(subject.observations, validationResults);
   const observationHolder = new ObservationsHolder(subject.observations);
   // observationHolder.updateObs(formElement, value);
   // observationHolder.observations.map((concept)=>{
@@ -94,6 +107,7 @@ export function* updateObsWorker({ formElement, value }) {
 
   subject.observations = observationHolder.observations;
   yield put(setSubject(subject));
+  yield put(setValidationResults(validationResults));
   sessionStorage.setItem("subject", JSON.stringify(subject));
 }
 
