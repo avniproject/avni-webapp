@@ -9,6 +9,7 @@ import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.RestClient;
 import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.EnrolmentContract;
@@ -154,7 +155,7 @@ public class RuleService {
     }
 
     public JsonNode decisionRule(String encounterData, UserContext userContext) throws JSONException, IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
         JSONObject encounterJsonObj = new JSONObject(encounterData);
         String programEnrolmentUUID = (String) encounterJsonObj.get("programEnrolmentUUID");
         String encounterUuid = (String) encounterJsonObj.get("uuid");

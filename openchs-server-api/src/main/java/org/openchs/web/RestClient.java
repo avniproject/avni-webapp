@@ -3,6 +3,7 @@ package org.openchs.web;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jettison.json.JSONObject;
+import org.openchs.util.ObjectMapperSingleton;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,6 @@ public class RestClient {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> entityCredentials = new HttpEntity<>(jsonObj.toString(), httpHeaders);
         String responseString = restTemplate.postForObject( uri, entityCredentials, String.class);
-        return new ObjectMapper().readTree(responseString);
+        return ObjectMapperSingleton.getObjectMapper().readTree(responseString);
     }
 }
