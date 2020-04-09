@@ -10,6 +10,8 @@ import Button from "@material-ui/core/Button";
 const SubjectTypesList = ({ history }) => {
   const columns = [
     { title: "Name", field: "name", defaultSort: "asc" },
+    { title: "Household", field: "household", type: "boolean" },
+    { title: "Group", field: "group", type: "boolean" },
     { title: "Organisation Id", field: "organisationId", type: "numeric" }
   ];
 
