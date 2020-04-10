@@ -68,6 +68,7 @@ public class IndividualService {
         List<ObservationContract> observationContractsList = constructObservations(individual.getObservations());
         List<RelationshipContract> relationshipContractList = constructRelationships(individual);
         List<EnrolmentContract> enrolmentContractList = constructEnrolments(individual);
+        individualContract.setSubjectType(constructSubjectType(individual.getSubjectType()));
         individualContract.setObservations(observationContractsList);
         individualContract.setRelationships(relationshipContractList);
         individualContract.setEnrolments(enrolmentContractList);
@@ -81,6 +82,14 @@ public class IndividualService {
         individualContract.setLowestAddressLevel(individual.getAddressLevel().getTitleLineage());
         individualContract.setVoided(individual.isVoided());
         return individualContract;
+    }
+
+    private SubjectTypeContract constructSubjectType(SubjectType subjectType) {
+        SubjectTypeContract subjectTypeContract = new SubjectTypeContract();
+        subjectTypeContract.setUuid(subjectType.getUuid());
+        subjectTypeContract.setName(subjectType.getName());
+        subjectTypeContract.setVoided(subjectType.isVoided());
+        return subjectTypeContract;
     }
 
     public List<EnrolmentContract> constructEnrolmentsMetadata(Individual individual) {
