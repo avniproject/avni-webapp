@@ -18,16 +18,24 @@ const styles = {
   }
 };
 
-const PaginationButton = ({ page, title, type }) =>
-  page && (
-    <RelativeLink params={{ page }} noUnderline>
-      <PagenatorButton type={type}>{title}</PagenatorButton>
-    </RelativeLink>
+const PaginationButton = ({ page, title, type, feg, obs }) => {
+  return (
+    page && (
+      <RelativeLink params={{ page }} noUnderline>
+        <PagenatorButton type={type} feg={feg} obs={obs}>
+          {title}
+        </PagenatorButton>
+      </RelativeLink>
+    )
   );
+};
 
 const Paginator = props => {
   const { t } = useTranslation();
-
+  // console.log(" Inside Paginator:: printing props for fe and obs");
+  // console.log(props);
+  // console.log(props.feg);
+  // console.log(props.obs);
   return (
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
@@ -35,11 +43,15 @@ const Paginator = props => {
           page={props.pageDetails.previousPageNumber}
           type={props.label.type}
           title={t(props.label.Previous)}
+          feg={props.feg}
+          obs={props.obs}
         />
 
         {!props.pageDetails.previousPageNumber && (
           <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
-            <PagenatorButton type={props.label.type}>{t(props.label.Previous)}</PagenatorButton>
+            <PagenatorButton type={props.label.type} feg={props.feg} obs={props.obs}>
+              {t(props.label.Previous)}
+            </PagenatorButton>
           </InternalLink>
         )}
       </Box>
@@ -51,10 +63,17 @@ const Paginator = props => {
           page={props.pageDetails.nextPageNumber}
           type={props.label.type}
           title={t(props.label.Next)}
+          feg={props.feg}
+          obs={props.obs}
         />
 
         {!props.pageDetails.nextPageNumber && props.onSave && (
-          <PagenatorButton type={props.label.type} onClick={props.onSave}>
+          <PagenatorButton
+            type={props.label.type}
+            feg={props.feg}
+            obs={props.obs}
+            onClick={props.onSave}
+          >
             {t(props.label.Save)}
           </PagenatorButton>
         )}

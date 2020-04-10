@@ -1,6 +1,11 @@
 import React from "react";
+import { connect } from "react-redux";
 import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import _ from "lodash";
+import { FormElementGroup, ValidationResults } from "avni-models";
+import { setMoveNext, setValidationResults } from "../reducers/registrationReducer";
+
 const useStyles = makeStyles(theme => ({
   privbuttonStyle: {
     color: "orange",
@@ -41,12 +46,30 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const onNextBtnClick = () => {
-  console.log("In next click method..");
-};
-
-export default ({ children, ...props }) => {
+const PagenatorButton = ({ children, feg, obs, ...props }) => {
+  console.log(" Inside PaginatorButton :: Printing.. props .that e want to look now..");
+  console.log(props);
+  console.log(props.moveNext);
   const classes = useStyles();
+  const onNextBtnClick = () => {
+    console.log("In next click method..");
+    console.log(" Inside PaginatorButton :: After next click.. props");
+    console.log(props);
+
+    const formElementGroup = new FormElementGroup();
+    const formElementGroupValidations = formElementGroup.validate(obs, feg.formElements);
+    console.log(" Printing.. props.validationResults from reducer");
+    console.log(props.validationResults);
+    props.setMoveNext(!new ValidationResults(formElementGroupValidations).hasValidationError());
+    console.log(" for move next value check..");
+    console.log(props.moveNext);
+    const allValidationResults = _.unionBy(
+      props.validationResults,
+      formElementGroupValidations,
+      "formIdentifier"
+    );
+    props.setValidationResults(allValidationResults);
+  };
   if (props.type === "text") {
     return (
       <Typography className={classes.topnav} variant="overline" {...props}>
@@ -77,3 +100,22 @@ export default ({ children, ...props }) => {
     );
   }
 };
+
+const mapStateToProps = state => ({
+  validationResults: state.dataEntry.registration.validationResults,
+  moveNext: state.dataEntry.registration.moveNext
+});
+// const mapDispatchToProps = dispatch => ({
+//   setValidationResults : setValidationResults,
+//   setMoveNext : setMoveNext
+// });
+
+const mapDispatchToProps = {
+  setValidationResults: setValidationResults,
+  setMoveNext: setMoveNext
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PagenatorButton);

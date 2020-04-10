@@ -10,7 +10,8 @@ import {
   updateObs,
   updateSubject,
   setSubject,
-  saveCompleteFalse
+  saveCompleteFalse,
+  setValidationResults
 } from "../../reducers/registrationReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -20,7 +21,6 @@ import _, { get, sortBy } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
-import PagenatorButton from "../../components/PagenatorButton";
 import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "dataEntryApp/views/registration/Stepper";
@@ -130,31 +130,31 @@ const DefaultPage = props => {
   };
 
   const nextHandler = () => {
-    console.log("in nextHandler ....");
-    setValidationResultToError(props.subject.validateRegistrationDate());
-    setValidationResultToError(props.subject.validateFirstName());
-    setValidationResultToError(props.subject.validateLastName());
-    setValidationResultToError(props.subject.validateDateOfBirth());
-    setValidationResultToError(props.subject.validateGender());
+    // setValidationResultToError(props.subject.validateRegistrationDate());
+    // setValidationResultToError(props.subject.validateFirstName());
+    // setValidationResultToError(props.subject.validateLastName());
+    // setValidationResultToError(props.subject.validateDateOfBirth());
+    // setValidationResultToError(props.subject.validateGender());
 
-    //needs to used when village location is set
-    //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
+    // //needs to used when village location is set
+    // //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
 
-    if (props.subject.subjectType.isIndividual()) {
-      if (
-        _.isEmpty(subjectRegErrors.FIRST_NAME) &&
-        _.isEmpty(subjectRegErrors.LAST_NAME) &&
-        _.isEmpty(subjectRegErrors.DOB) &&
-        _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
-        _.isEmpty(subjectRegErrors.GENDER)
-      ) {
-        nextBtnRef.current.click();
-      }
-    } else {
-      if (_.isEmpty(subjectRegErrors.FIRST_NAME) && _.isEmpty(subjectRegErrors.REGISTRATION_DATE)) {
-        nextBtnRef.current.click();
-      }
-    }
+    // if (props.subject.subjectType.isIndividual()) {
+    //   if (
+    //     _.isEmpty(subjectRegErrors.FIRST_NAME) &&
+    //     _.isEmpty(subjectRegErrors.LAST_NAME) &&
+    //     _.isEmpty(subjectRegErrors.DOB) &&
+    //     _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
+    //     _.isEmpty(subjectRegErrors.GENDER)
+    //   ) {
+    //     nextBtnRef.current.click();
+    //   }
+    // } else {
+    //   if (_.isEmpty(subjectRegErrors.FIRST_NAME) && _.isEmpty(subjectRegErrors.REGISTRATION_DATE)) {
+    //     nextBtnRef.current.click();
+    //   }
+    // }
+    nextBtnRef.current.click(); //need to be replaced once uncomment
   };
 
   React.useEffect(() => {
@@ -425,14 +425,16 @@ const mapFormStateToProps = state => ({
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
   onSaveGoto: "/app/search",
-  validationResults: state.dataEntry.registration.validationResults
+  validationResults: state.dataEntry.registration.validationResults,
+  moveNext: state.dataEntry.registration.moveNext
 });
 
 const mapFormDispatchToProps = {
   updateObs,
   onLoad,
   setSubject,
-  onSave: saveSubject
+  onSave: saveSubject,
+  setValidationResults
 };
 
 const RegistrationForm = withRouter(

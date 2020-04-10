@@ -13,7 +13,8 @@ export const types = {
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
   SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`,
   GET_VALIDATION_RESULTS: `${prefix}GET_VALIDATION_RESULTS`,
-  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`
+  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
+  SET_MOVE_NEXT: `${prefix}SET_MOVE_NEXT`
 };
 
 export const saveSubject = () => ({
@@ -77,9 +78,15 @@ export const getValidationResults = () => ({
   type: types.GET_VALIDATION_RESULTS
 });
 
+export const setMoveNext = moveNext => ({
+  type: types.SET_MOVE_NEXT,
+  moveNext
+});
+
 const initialState = {
   saved: false,
-  validationResults: []
+  validationResults: [],
+  moveNext: false
 };
 
 // reducer
@@ -131,6 +138,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         validationResults: action.validationResults
+      };
+    }
+    case types.SET_MOVE_NEXT: {
+      return {
+        ...state,
+        moveNext: action.moveNext
       };
     }
     default:
