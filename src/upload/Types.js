@@ -1,4 +1,4 @@
-import { map, findKey } from "lodash";
+import UploadTypes from "./UploadTypes";
 
 const types = Object.freeze({
   locations: "Locations",
@@ -6,14 +6,4 @@ const types = Object.freeze({
   metadataZip: "Metadata Zip"
 });
 
-export default class {
-  static get names() {
-    return map(types, name => ({ name }));
-  }
-  static getName(code) {
-    return types[code];
-  }
-  static getCode(name) {
-    return findKey(types, n => name === n);
-  }
-}
+export default new UploadTypes(types);

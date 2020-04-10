@@ -11,8 +11,14 @@ export default {
       //returns [response, error]
       .then(r => [r.text, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  fetchUploadTypes: () => http.fetchJson(http.withParams("/web/importTypes")).then(r => r.json),
   async downloadSample(type) {
     const file = await fetch(`/bulkuploads/sample/${type}.csv`);
+    const content = await file.text();
+    files.download(`sample-${type}.csv`, content);
+  },
+  async downloadDynamicSample(type) {
+    const file = await fetch(`/web/importSample?uploadType=${type}`);
     const content = await file.text();
     files.download(`sample-${type}.csv`, content);
   }

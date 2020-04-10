@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import { filter, get, isEmpty, isNil } from "lodash";
+import { filter, get, isEmpty, isNil, concat } from "lodash";
 import Status from "./Status";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -12,6 +12,8 @@ import FileUpload from "../common/components/FileUpload";
 import Types from "./Types";
 import api from "./api";
 import DropDown from "../common/components/DropDown";
+import { getStatuses, getUploadTypes } from "./reducers";
+import UploadTypes from "./UploadTypes";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -23,27 +25,44 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = () => {
+const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes() }) => {
   const classes = useStyles();
-  const [entity, setEntity] = React.useState("");
+  const [uploadType, setUploadType] = React.useState("");
   const [entityForDownload, setEntityForDownload] = React.useState("");
   const [file, setFile] = React.useState();
 
   const selectFile = (content, userfile) => setFile(userfile);
+  const getUploadTypeCode = name => Types.getCode(name) || uploadTypes.getCode(name);
 
   const uploadFile = async () => {
-    const [ok, error] = await api.bulkUpload(Types.getCode(entity), file);
+    const [ok, error] = await api.bulkUpload(getUploadTypeCode(uploadType), file);
     if (!ok && error) {
       alert(error);
     }
     setFile();
-    setEntity("");
+    setUploadType("");
+    setTimeout(() => {
+      getStatuses(0);
+    }, 1000);
   };
 
   const downloadSampleFile = async () => {
-    await api.downloadSample(Types.getCode(entityForDownload));
+    if (Types.getCode(entityForDownload)) {
+      await api.downloadSample(Types.getCode(entityForDownload));
+    } else if (uploadTypes.getCode(entityForDownload)) {
+      await api.downloadDynamicSample(uploadTypes.getCode(entityForDownload));
+    }
     setEntityForDownload("");
   };
+
+  React.useEffect(() => {
+    getUploadTypes();
+  }, []);
+
+  const uploadOptions = () => concat(Types.names, uploadTypes.names);
+
+  const downloadOptions = () =>
+    filter(uploadOptions(), ({ name }) => name !== Types.getName("metadataZip"));
 
   return (
     <Grid container spacing={2} className={classes.root}>
@@ -56,7 +75,12 @@ const Dashboard = () => {
               </Grid>
               <Grid container item spacing={2}>
                 <Grid container item xs={12} sm={3}>
-                  <DropDown name="Type" value={entity} onChange={setEntity} options={Types.names} />
+                  <DropDown
+                    name="Type"
+                    value={uploadType}
+                    onChange={setUploadType}
+                    options={uploadOptions()}
+                  />
                 </Grid>
                 <Grid
                   container
@@ -70,7 +94,7 @@ const Dashboard = () => {
                 >
                   <Grid item>
                     <FileUpload
-                      canSelect={!isEmpty(entity)}
+                      canSelect={!isEmpty(uploadType)}
                       canUpload={!isNil(file)}
                       onSelect={selectFile}
                       onUpload={uploadFile}
@@ -89,7 +113,7 @@ const Dashboard = () => {
                   name="Type"
                   value={entityForDownload}
                   onChange={setEntityForDownload}
-                  options={filter(Types.names, ({ name }) => name !== Types.getName("metadataZip"))}
+                  options={downloadOptions()}
                 />
                 <Button
                   color="primary"
@@ -113,7 +137,13 @@ const Dashboard = () => {
   );
 };
 const mapStateToProps = state => ({
-  statuses: state.bulkUpload.statuses
+  statuses: state.bulkUpload.statuses,
+  uploadTypes: state.bulkUpload.uploadTypes
 });
 
-export default withRouter(connect(mapStateToProps)(Dashboard));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { getUploadTypes, getStatuses }
+  )(Dashboard)
+);

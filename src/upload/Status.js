@@ -26,15 +26,13 @@ const createStyles = makeStyles(theme => ({
   }
 }));
 
-const Status = ({ viewVersion, statuses, getStatuses }) => {
+const Status = ({ viewVersion, statuses, getStatuses, page }) => {
   const classes = createStyles();
   React.useEffect(() => {
     getStatuses(0);
   }, [viewVersion]);
-  const [page, setPage] = useState(0);
 
   const changePage = (event, newPage) => {
-    setPage(newPage);
     getStatuses(newPage);
   };
 
@@ -100,7 +98,7 @@ const Status = ({ viewVersion, statuses, getStatuses }) => {
         </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[10]}
+        rowsPerPageOptions={[5]}
         component="div"
         count={get(statuses, "page.totalElements") || 0}
         rowsPerPage={10}
@@ -117,6 +115,7 @@ const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD
 
 const mapStateToProps = state => ({
   statuses: state.bulkUpload.statuses,
+  page: state.bulkUpload.page,
   viewVersion: state.admin.ui.viewVersion
 });
 
