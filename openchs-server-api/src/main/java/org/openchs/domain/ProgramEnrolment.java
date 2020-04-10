@@ -56,6 +56,9 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
     @Type(type = "observations")
     private ObservationCollection programExitObservations;
 
+    @Column
+    private String legacyId;
+
     public Program getProgram() {
         return program;
     }
@@ -141,5 +144,13 @@ public class ProgramEnrolment extends OrganisationAwareEntity {
 
     public void setExitLocation(Point exitLocation) {
         this.exitLocation = exitLocation;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
+    }
+
+    public String getLegacyId() {
+        return legacyId;
     }
 }

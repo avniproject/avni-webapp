@@ -61,4 +61,6 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
             "order by count desc " +
             "limit 1", nativeQuery = true)
     Long getMaxEncounterCount(String encounterTypeUUID, Calendar startDate, Calendar endDate);
+
+    Encounter findByLegacyId(String legacyId);
 }

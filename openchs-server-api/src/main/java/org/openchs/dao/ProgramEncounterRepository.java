@@ -63,4 +63,6 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
             DateTime now,
             String encounterType,
             Pageable pageable);
+
+    ProgramEncounter findByLegacyId(String legacyId);
 }
