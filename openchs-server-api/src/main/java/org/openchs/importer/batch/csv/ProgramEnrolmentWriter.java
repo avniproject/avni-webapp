@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     public enum FixedHeaders {
         id("Id"),
-        individualId("Individual Id"),
+        subjectId("Subject Id"),
         program("Program"),
         enrolmentDate("Enrolment Date"),
         exitDate("Exit Date"),
@@ -104,7 +104,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
 
         List<String> allErrorMsgs = new ArrayList<>();
 
-        setIndividual(programEnrolment, row, allErrorMsgs);
+        programEnrolment.setIndividual(getSubject(row, allErrorMsgs));
         programEnrolment.setEnrolmentDateTime(new DateTime(
                 getDate(
                         row,
@@ -140,20 +140,18 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         return program;
     }
 
-    private void setIndividual(ProgramEnrolment programEnrolment, Row row, List<String> errorMsgs) {
-        String individualExternalId = row.get(FixedHeaders.individualId.getHeader());
-        if (individualExternalId == null || individualExternalId.isEmpty()) {
-            errorMsgs.add(String.format("'%s' is required", FixedHeaders.individualId.getHeader()));
-            return;
+    private Individual getSubject(Row row, List<String> errorMsgs) {
+        String subjectExternalId = row.get(FixedHeaders.subjectId.getHeader());
+        if (subjectExternalId == null || subjectExternalId.isEmpty()) {
+            errorMsgs.add(String.format("'%s' is required", FixedHeaders.subjectId.getHeader()));
+            return null;
         }
-        Individual individual = individualRepository.findByLegacyId(individualExternalId);
+        Individual individual = individualRepository.findByLegacyId(subjectExternalId);
         if (individual == null) {
-            errorMsgs.add(String.format("'%s' not found in database", FixedHeaders.individualId.getHeader()));
-            return;
+            errorMsgs.add(String.format("'%s' not found in database", FixedHeaders.subjectId.getHeader()));
+            return null;
         }
-
-        programEnrolment.setIndividual(individual);
-
+        return individual;
     }
 
     private ProgramEnrolment getOrCreateProgramEnrolment(Row row) {
