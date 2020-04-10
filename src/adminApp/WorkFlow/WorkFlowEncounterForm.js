@@ -16,15 +16,13 @@ function WorkFlowEncounterForm(props) {
     showAvailableForms = [],
     removeDuplicate = [],
     existMapping = [],
-    formType,
-    isProgramEncounter;
+    formType;
 
   const encounters = props.formMapping.filter(l => l.encounterTypeUUID === props.rowDetails.uuid);
   if (props.whichForm === "encounter" && encounters[0] !== undefined && encounters[0] !== null) {
     formType = Object.keys(encounters[0]).includes("programUUID")
       ? "ProgramEncounter"
       : "Encounter";
-    isProgramEncounter = true;
   } else if (
     props.whichForm === "cancellation" &&
     encounters[0] !== undefined &&
@@ -33,7 +31,6 @@ function WorkFlowEncounterForm(props) {
     formType = Object.keys(encounters[0]).includes("programUUID")
       ? "ProgramEncounterCancellation"
       : "IndividualEncounterCancellation";
-    isProgramEncounter = formType === "ProgramEncounterCancellation" ? true : false;
   }
 
   let form = props.formMapping.filter(
@@ -176,14 +173,14 @@ function WorkFlowEncounterForm(props) {
           {error} <p />
         </span>
       )}
-      {clicked && isProgramEncounter && (
+      {clicked && (
         <Link href={"/#/appdesigner/forms/" + form[0].formUUID}>
           {form[0].formName === undefined || form[0].formName === null
             ? props.fillFormName
             : form[0].formName}
         </Link>
       )}
-      {!clicked && isProgramEncounter && (
+      {!clicked && (
         <>
           <FormControl>
             <InputLabel id="demo-simple-select-label">{props.placeholder}</InputLabel>
@@ -206,7 +203,6 @@ function WorkFlowEncounterForm(props) {
           </FormControl>
         </>
       )}
-      {!isProgramEncounter && <span style={{ fontSize: "48px" }}>-</span>}
       {redirect && (
         <Redirect
           to={{
