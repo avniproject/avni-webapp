@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 @Component
 public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
-    private enum FixedHeaders {
+    public enum FixedHeaders {
         id("Id"),
         encounterType("Encounter Type"),
         enrolmentId("Enrolment Id"),

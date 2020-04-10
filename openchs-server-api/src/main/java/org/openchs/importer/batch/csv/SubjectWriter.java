@@ -1,10 +1,6 @@
 package org.openchs.importer.batch.csv;
 
 import org.joda.time.LocalDate;
-import org.openchs.application.Form;
-import org.openchs.application.FormElement;
-import org.openchs.application.FormElementType;
-import org.openchs.application.FormType;
 import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
@@ -31,7 +27,7 @@ import java.util.stream.Stream;
 
 @Component
 public class SubjectWriter implements ItemWriter<Row>, Serializable {
-    private enum FixedHeaders {
+    public enum FixedHeaders{
         id("Id"),
         subjectType("Subject Type"),
         firstName("First Name"),
@@ -52,7 +48,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         }
 
         public static String[] getAllHeaders() {
-            return Arrays.stream(FixedHeaders.values()).map(FixedHeaders::getHeader).toArray(String[]::new);
+            return Arrays.stream(values()).map(FixedHeaders::getHeader).toArray(String[]::new);
         }
     }
 
@@ -61,7 +57,6 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private final LocationRepository locationRepository;
     private final ConceptRepository conceptRepository;
     private final ObservationService observationService;
-    private final FormRepository formRepository;
     private final IndividualRepository individualRepository;
     private static final String legacyIdUuid = "a503b679-e73f-4852-8c1f-dddef0de975f";
 
@@ -72,14 +67,12 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
                          LocationRepository locationRepository,
                          ConceptRepository conceptRepository,
                          ObservationService observationService,
-                         FormRepository formRepository,
                          IndividualRepository individualRepository) {
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.conceptRepository = conceptRepository;
         this.observationService = observationService;
-        this.formRepository = formRepository;
         this.individualRepository = individualRepository;
     }
 
@@ -288,31 +281,21 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private Object getObservationValue(Concept concept, String answerValue) throws Exception {
         switch (ConceptDataType.valueOf(concept.getDataType())) {
             case Coded:
-                List<Form> individualProfileForms = formRepository.findAllByFormType(FormType.IndividualProfile);
-                if (individualProfileForms.size() == 0)
-                    throw new Exception("No forms of type IndividualProfile found");
-
-                FormElement formElement = individualProfileForms.stream()
-                        .map(Form::getAllFormElements)
-                        .flatMap(List::stream)
-                        .filter(fel -> fel.getConcept().equals(concept))
-                        .findFirst()
-                        .orElseThrow(() -> new Exception("No form element linked to concept found"));
-
-                if (formElement.getType().equals(FormElementType.MultiSelect.name())) {
-                    /* For multi-select answers, expected input format would be:
-                       1. Answer 1, Answer 2, ...
-                       2. Answer 1, "Answer2, has, commas", Answer 3, ...
-                       ... etc.
-                    */
-                    String[] providedAnswers = Stream.of(answerValue.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"))
-                            .map(value -> value.trim().replaceAll("\"", ""))
-                            .toArray(String[]::new);
-                    return Stream.of(providedAnswers)
-                            .map(answer -> concept.findAnswerConcept(answer).getUuid())
-                            .collect(Collectors.toList());
+                Concept answerConcept = concept.findAnswerConcept(answerValue);
+                if (answerConcept != null) {
+                    return answerConcept.getUuid();
+                }
+                String[] providedAnswers = Stream.of(answerValue.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"))
+                        .map(value -> value.trim().replaceAll("\"", ""))
+                        .toArray(String[]::new);
+                List<String> answers = Stream.of(providedAnswers)
+                        .map(answer -> concept.findAnswerConcept(answer).getUuid())
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                if (answers.size() > 0) {
+                    return answers;
                 } else {
-                    return concept.findAnswerConcept(answerValue).getUuid();
+                    return null;
                 }
             case Numeric:
                 return Double.parseDouble(answerValue);

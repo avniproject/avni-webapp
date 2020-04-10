@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 @Component
 public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
-    private enum FixedHeaders {
+    public enum FixedHeaders {
         id("Id"),
         individualId("Individual Id"),
         program("Program"),
@@ -65,8 +65,6 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final ProgramRepository programRepository;
     private static Logger logger = LoggerFactory.getLogger(ProgramEnrolmentWriter.class);
-
-
 
     @Autowired
     public ProgramEnrolmentWriter(AddressLevelTypeRepository addressLevelTypeRepository,

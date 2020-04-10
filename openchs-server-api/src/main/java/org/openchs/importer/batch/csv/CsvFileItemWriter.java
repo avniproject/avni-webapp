@@ -36,16 +36,17 @@ public class CsvFileItemWriter implements ItemWriter<Row> {
         this.authService = authService;
         writers.put("locations", locationWriter);
         writers.put("usersAndCatchments", userAndCatchmentWriter);
-        writers.put("subjects", subjectWriter);
-        writers.put("programEnrolments", programEnrolmentWriter);
-        writers.put("programEncounters", programEncounterWriter);
+        writers.put("Subject", subjectWriter);
+        writers.put("ProgramEnrolment", programEnrolmentWriter);
+        writers.put("ProgramEncounter", programEncounterWriter);
     }
 
     private ItemWriter<Row> getWriter() {
-        if (writers.containsKey(type)) {
-            return writers.get(type);
+        String primaryType = type.split("---")[0];
+        if (writers.containsKey(primaryType)) {
+            return writers.get(primaryType);
         } else {
-            throw new RuntimeException(format("Unknown bulkupload type: '%s'", type));
+            throw new RuntimeException(format("Unknown bulkupload type: '%s'", primaryType));
         }
     }
 
