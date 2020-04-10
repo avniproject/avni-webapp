@@ -76,9 +76,4 @@ public class AddressLevelType extends OrganisationAwareEntity {
     public Boolean isVoidable() {
         return subTypes.stream().allMatch(CHSEntity::isVoided) && addressLevels.stream().allMatch(CHSEntity::isVoided);
     }
-
-    @Projection(name = "AddressLevelTypeProjection", types = {AddressLevelType.class})
-    public interface AddressLevelTypeProjection extends BaseProjection {
-        String getName();
-    }
 }
