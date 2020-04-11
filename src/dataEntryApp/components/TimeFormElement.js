@@ -1,11 +1,15 @@
 import React, { Fragment } from "react";
 import { TextField } from "@material-ui/core";
-import { isEmpty } from "lodash";
+import { isEmpty, find } from "lodash";
 
 const MIN = 60;
 
-const TimeFormElement = ({ formElement: fe, value, update }) => {
+const TimeFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   const [time, setTime] = React.useState(value ? value : "");
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   /*TODO:
    * TimeFormElement cannot be auto-calculated through rules, as of now.
@@ -30,6 +34,8 @@ const TimeFormElement = ({ formElement: fe, value, update }) => {
           shrink: true
         }}
         value={time}
+        helperText={validationResult && validationResult.messageKey}
+        error={validationResult && !validationResult.success}
         onChange={e => {
           const value = e.target.value;
           isEmpty(value) ? setTime("") : setTime(value);

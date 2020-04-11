@@ -1,9 +1,20 @@
 import React, { Fragment } from "react";
 import { TextField } from "@material-ui/core";
-import { isEmpty } from "lodash";
+import { isEmpty, find } from "lodash";
 
-const SimpleDateFormElement = ({ formElement: fe, type, value, update }) => {
+const SimpleDateFormElement = ({
+  formElement: fe,
+  type,
+  value,
+  update,
+  validationResults,
+  uuid
+}) => {
   const [date, setDate] = React.useState(value ? value.toISOString() : "");
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   /*TODO:
    * DateFormElement cannot be auto-calculated as of now.
@@ -29,6 +40,8 @@ const SimpleDateFormElement = ({ formElement: fe, type, value, update }) => {
           shrink: true
         }}
         value={date}
+        helperText={validationResult && validationResult.messageKey}
+        error={validationResult && !validationResult.success}
         onChange={e => {
           const value = e.target.value;
           isEmpty(value) ? setDate("") : setDate(value);

@@ -1,10 +1,14 @@
 import React, { Fragment, useState } from "react";
 import { FormControlLabel, TextField } from "@material-ui/core";
-import { isEmpty } from "lodash";
+import { isEmpty, find } from "lodash";
 import { CompositeDuration } from "avni-models";
 
-const DurationFormElement = ({ duration, mandatory, name, update }) => {
+const DurationFormElement = ({ duration, mandatory, name, update, validationResults, uuid }) => {
   const [localVal, setLocalVal] = useState((duration && duration.durationValue) || "");
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   return (
     <Fragment>
@@ -16,6 +20,8 @@ const DurationFormElement = ({ duration, mandatory, name, update }) => {
           shrink: true
         }}
         value={localVal}
+        helperText={validationResult && validationResult.messageKey}
+        error={validationResult && !validationResult.success}
         onChange={e => {
           const value = e.target.value;
           isEmpty(value) ? setLocalVal("") : setLocalVal(value);

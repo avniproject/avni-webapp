@@ -78,15 +78,9 @@ export const getValidationResults = () => ({
   type: types.GET_VALIDATION_RESULTS
 });
 
-export const setMoveNext = moveNext => ({
-  type: types.SET_MOVE_NEXT,
-  moveNext
-});
-
 const initialState = {
   saved: false,
-  validationResults: [],
-  moveNext: false
+  validationResults: []
 };
 
 // reducer
@@ -138,12 +132,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         validationResults: action.validationResults
-      };
-    }
-    case types.SET_MOVE_NEXT: {
-      return {
-        ...state,
-        moveNext: action.moveNext
       };
     }
     default:

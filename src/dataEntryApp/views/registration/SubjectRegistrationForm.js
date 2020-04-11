@@ -12,7 +12,6 @@ import { Box, Typography, Paper } from "@material-ui/core";
 import CustomizedDialog from "../../components/Dialog";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
-import { FormElementGroup, ValidationResults } from "avni-models";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -90,9 +89,7 @@ const SubjectRegistrationForm = ({
   subject,
   onLoad,
   setSubject,
-  validationResults,
-  setValidationResults,
-  moveNext
+  validationResults
 }) => {
   React.useEffect(() => {
     if (!subject) {
@@ -107,13 +104,7 @@ const SubjectRegistrationForm = ({
   });
   const classes = useStyle();
   const [redirect, setRedirect] = React.useState(false);
-  // const [isMoveNext, setMoveNext] = React.useState();
-
   const from = match.queryParams.from;
-  console.log(" Inside subject registration form :: printing fe and obs");
-  console.log(current);
-  console.log(obs);
-
   const firstPageNumber = form && form.firstFormElementGroup.displayOrder;
   const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
   const page =
@@ -122,12 +113,6 @@ const SubjectRegistrationForm = ({
       : +match.queryParams.page;
 
   const currentPageNumber = isNaN(page) ? firstPageNumber : page;
-  console.log("Here to print ... moveNext ");
-  console.log(moveNext);
-  // console.log(firstPageNumber);
-  // console.log(page);
-  // console.log(form && form.getNextFormElement(currentPageNumber).displayOrder);
-  // console.log(form && form.getNextFormElement(currentPageNumber -1).displayOrder);
   const showSummaryPage = page >= lastPageNumber + 1;
 
   const pageDetails = {
@@ -145,11 +130,6 @@ const SubjectRegistrationForm = ({
     location,
     from
   };
-  pageDetails.nextPageNumber = moveNext
-    ? pageDetails.nextPageNumber
-    : pageDetails.nextPageNumber - 1;
-  // pageDetails.previousPageNumber = isMoveNext ? pageDetails.previousPageNumber : pageDetails.nextPageNumber -1;
-  console.log(pageDetails);
 
   const current = showSummaryPage
     ? { name: "Summary" }
@@ -159,23 +139,6 @@ const SubjectRegistrationForm = ({
   const onOkHandler = data => {
     BrowserStore.clear("subject");
     setRedirect(data);
-  };
-  const nextHandler = () => {
-    //   console.log("ï ma at next button static");
-    //    console.log("cureentttt",current);
-    // console.log("validation results",validationResults);
-    // console.log("observations",obs);
-    const formElementGroup = new FormElementGroup();
-    const formElementGroupValidations = formElementGroup.validate(obs, current.formElements);
-    console.log(" Printing.. formElementGroupValidations.hasValidationError()");
-    console.log(formElementGroupValidations);
-    // setMoveNext(!(new ValidationResults(formElementGroupValidations).hasValidationError()));
-    const allValidationResults = _.unionBy(
-      validationResults,
-      formElementGroupValidations,
-      "formIdentifier"
-    );
-    setValidationResults(allValidationResults);
   };
 
   return (
@@ -188,7 +151,6 @@ const SubjectRegistrationForm = ({
               {" "}
               {currentPageNumber}. {t(current.name)}{" "}
             </Typography>
-            <button onClick={nextHandler}>next111</button>
             <Paginator
               pageDetails={pageDetails}
               onSave={onSave}

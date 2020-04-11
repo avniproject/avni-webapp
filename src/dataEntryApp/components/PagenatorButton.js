@@ -2,9 +2,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import _ from "lodash";
+import { unionBy, isEmpty } from "lodash";
 import { FormElementGroup, ValidationResults } from "avni-models";
-import { setMoveNext, setValidationResults } from "../reducers/registrationReducer";
+import { setValidationResults } from "../reducers/registrationReducer";
 
 const useStyles = makeStyles(theme => ({
   privbuttonStyle: {
@@ -47,29 +47,26 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const PagenatorButton = ({ children, feg, obs, ...props }) => {
-  console.log(" Inside PaginatorButton :: Printing.. props .that e want to look now..");
-  console.log(props);
-  console.log(props.moveNext);
   const classes = useStyles();
-  const onNextBtnClick = () => {
-    console.log("In next click method..");
-    console.log(" Inside PaginatorButton :: After next click.. props");
-    console.log(props);
 
+  const handleNext = event => {
     const formElementGroup = new FormElementGroup();
     const formElementGroupValidations = formElementGroup.validate(obs, feg.formElements);
-    console.log(" Printing.. props.validationResults from reducer");
-    console.log(props.validationResults);
-    props.setMoveNext(!new ValidationResults(formElementGroupValidations).hasValidationError());
-    console.log(" for move next value check..");
-    console.log(props.moveNext);
-    const allValidationResults = _.unionBy(
+    const allValidationResults = unionBy(
       props.validationResults,
       formElementGroupValidations,
       "formIdentifier"
     );
+
     props.setValidationResults(allValidationResults);
+
+    if (!isEmpty(allValidationResults)) {
+      if (new ValidationResults(allValidationResults).hasValidationError()) {
+        event.preventDefault();
+      }
+    }
   };
+
   if (props.type === "text") {
     return (
       <Typography className={classes.topnav} variant="overline" {...props}>
@@ -85,16 +82,18 @@ const PagenatorButton = ({ children, feg, obs, ...props }) => {
     );
   } else if (children === "Save") {
     return (
-      <div>
-        <Button className={classes.nextbuttonStyle} type="button" {...props}>
-          {children}
-        </Button>
-        {/* <Button className={classes.savebuttonStyle} type="button" {...props}>SAVE AND REGISTER ANOTHER INDIVIDUAL</Button> */}
-      </div>
+      <Button className={classes.nextbuttonStyle} type="button" {...props}>
+        {children}
+      </Button>
     );
   } else {
     return (
-      <Button className={classes.nextbuttonStyle} type="button" {...props} onClick={onNextBtnClick}>
+      <Button
+        className={classes.nextbuttonStyle}
+        type="button"
+        {...props}
+        onClick={e => handleNext(e)}
+      >
         {children}
       </Button>
     );
@@ -102,17 +101,11 @@ const PagenatorButton = ({ children, feg, obs, ...props }) => {
 };
 
 const mapStateToProps = state => ({
-  validationResults: state.dataEntry.registration.validationResults,
-  moveNext: state.dataEntry.registration.moveNext
+  validationResults: state.dataEntry.registration.validationResults
 });
-// const mapDispatchToProps = dispatch => ({
-//   setValidationResults : setValidationResults,
-//   setMoveNext : setMoveNext
-// });
 
 const mapDispatchToProps = {
-  setValidationResults: setValidationResults,
-  setMoveNext: setMoveNext
+  setValidationResults: setValidationResults
 };
 
 export default connect(

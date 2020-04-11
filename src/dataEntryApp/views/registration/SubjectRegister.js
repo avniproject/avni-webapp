@@ -2,7 +2,7 @@ import React, { Fragment, createRef } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
-import { ObservationsHolder, ValidationResults } from "avni-models";
+import { ObservationsHolder } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
@@ -10,8 +10,7 @@ import {
   updateObs,
   updateSubject,
   setSubject,
-  saveCompleteFalse,
-  setValidationResults
+  saveCompleteFalse
 } from "../../reducers/registrationReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -119,42 +118,41 @@ const DefaultPage = props => {
     GENDER: "",
     REGISTRATION_LOCATION: ""
   });
-  const nextBtnRef = React.useRef();
 
   const setValidationResultToError = validationResult => {
     subjectRegErrors[validationResult.formIdentifier] = validationResult.messageKey;
-    console.log("to print validationResult");
-    console.log(validationResult);
-    console.log(validationResult.messageKey);
     setSubjectRegErrors({ ...subjectRegErrors });
   };
 
-  const nextHandler = () => {
-    // setValidationResultToError(props.subject.validateRegistrationDate());
-    // setValidationResultToError(props.subject.validateFirstName());
-    // setValidationResultToError(props.subject.validateLastName());
-    // setValidationResultToError(props.subject.validateDateOfBirth());
-    // setValidationResultToError(props.subject.validateGender());
+  const handleNext = event => {
+    setValidationResultToError(props.subject.validateRegistrationDate());
+    setValidationResultToError(props.subject.validateFirstName());
+    setValidationResultToError(props.subject.validateLastName());
+    setValidationResultToError(props.subject.validateDateOfBirth());
+    setValidationResultToError(props.subject.validateGender());
 
-    // //needs to used when village location is set
-    // //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
+    //needs to used when village location is set
+    //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
 
-    // if (props.subject.subjectType.isIndividual()) {
-    //   if (
-    //     _.isEmpty(subjectRegErrors.FIRST_NAME) &&
-    //     _.isEmpty(subjectRegErrors.LAST_NAME) &&
-    //     _.isEmpty(subjectRegErrors.DOB) &&
-    //     _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
-    //     _.isEmpty(subjectRegErrors.GENDER)
-    //   ) {
-    //     nextBtnRef.current.click();
-    //   }
-    // } else {
-    //   if (_.isEmpty(subjectRegErrors.FIRST_NAME) && _.isEmpty(subjectRegErrors.REGISTRATION_DATE)) {
-    //     nextBtnRef.current.click();
-    //   }
-    // }
-    nextBtnRef.current.click(); //need to be replaced once uncomment
+    if (props.subject.subjectType.isIndividual()) {
+      if (
+        !(
+          _.isEmpty(subjectRegErrors.FIRST_NAME) &&
+          _.isEmpty(subjectRegErrors.LAST_NAME) &&
+          _.isEmpty(subjectRegErrors.DOB) &&
+          _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
+          _.isEmpty(subjectRegErrors.GENDER)
+        )
+      ) {
+        event.preventDefault();
+      }
+    } else {
+      if (
+        !(_.isEmpty(subjectRegErrors.FIRST_NAME) && _.isEmpty(subjectRegErrors.REGISTRATION_DATE))
+      ) {
+        event.preventDefault();
+      }
+    }
   };
 
   React.useEffect(() => {
@@ -218,9 +216,15 @@ const DefaultPage = props => {
                       1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}
                     </label>
                   )}
-                  <Chip style={{ display: "none" }} ref={nextBtnRef} label={t("next")} />
+                  <Typography
+                    variant="overline"
+                    className={classes.topnextnav}
+                    gutterBottom
+                    onClick={e => handleNext(e)}
+                  >
+                    {t("next")}>
+                  </Typography>
                 </RelativeLink>
-                <label className={classes.topnextnav}>{t("next")}</label>
               </Box>
             </Box>
 
@@ -375,9 +379,12 @@ const DefaultPage = props => {
                     }}
                     noUnderline
                   >
-                    <Chip style={{ display: "none" }} ref={nextBtnRef} label={t("next")} />
+                    <Chip
+                      className={classes.nextBtn}
+                      label={t("next")}
+                      onClick={e => handleNext(e)}
+                    />
                   </RelativeLink>
-                  <Chip className={classes.nextBtn} label={t("next")} onClick={nextHandler} />
                 </Box>
               </Box>
             </Paper>
@@ -425,16 +432,14 @@ const mapFormStateToProps = state => ({
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
   onSaveGoto: "/app/search",
-  validationResults: state.dataEntry.registration.validationResults,
-  moveNext: state.dataEntry.registration.moveNext
+  validationResults: state.dataEntry.registration.validationResults
 });
 
 const mapFormDispatchToProps = {
   updateObs,
   onLoad,
   setSubject,
-  onSave: saveSubject,
-  setValidationResults
+  onSave: saveSubject
 };
 
 const RegistrationForm = withRouter(
