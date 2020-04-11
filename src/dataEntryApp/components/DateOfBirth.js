@@ -81,9 +81,9 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           name={"ageYearsPart"}
           value={years}
           style={{ width: "30%" }}
+          error={_.isNil(dob) && dobErrorMsg}
+          helperText={_.isNil(dob) && dobErrorMsg}
           onChange={e => _onYearsChange(e.target.value)}
-          // error={_.isEqual(years,"")}
-          // helperText={_.isEqual(years, "") ? "There is no value specified!" : ""}
         />
       </Box>
     </Fragment>

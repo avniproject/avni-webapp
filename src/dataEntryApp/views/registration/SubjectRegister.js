@@ -236,20 +236,22 @@ const DefaultPage = props => {
                     required
                     name="registrationDate"
                     label={t("Date of registration")}
-                    value={new Date(props.subject.registrationDate)}
+                    value={
+                      _.isNil(props.subject.registrationDate)
+                        ? null
+                        : new Date(props.subject.registrationDate)
+                    }
                     error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
                     helperText={subjectRegErrors.REGISTRATION_DATE}
                     style={{ width: "30%" }}
                     margin="normal"
                     id="date-picker-dialog"
                     format="MM/dd/yyyy"
-                    minDate={null}
-                    maskChar=""
+                    placeholder="mm/dd/yyyy"
                     onChange={date => {
-                      console.log("Date of reg");
-                      console.log(date);
-                      props.updateSubject("registrationDate", new Date(date));
-                      props.subject.registrationDate = date;
+                      const dateOfReg = _.isNil(date) ? null : new Date(date);
+                      props.updateSubject("registrationDate", dateOfReg);
+                      props.subject.registrationDate = dateOfReg;
                       setValidationResultToError(props.subject.validateRegistrationDate());
                     }}
                     InputLabelProps={{
