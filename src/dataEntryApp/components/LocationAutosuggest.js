@@ -64,9 +64,11 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data, errorMsg }) => {
 
     return inputLength === 0
       ? []
-      : await http
-          .get(`locations/search/find?title=${inputValue}`)
-          .then(res => res.data._embedded.locations);
+      : await http.get(`locations/search/find?title=${inputValue}`).then(res => {
+          if (res.data._embedded) {
+            return res.data._embedded.locations;
+          } else return [];
+        });
   };
 
   const inputProps = {
@@ -87,6 +89,7 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data, errorMsg }) => {
         inputProps={inputProps}
         onSuggestionSelected={onSuggestionSelected}
       />
+      {/* {errorMsg && <span className={classes.errmsg}>{errorMsg}</span>} */}
     </div>
   );
 };
