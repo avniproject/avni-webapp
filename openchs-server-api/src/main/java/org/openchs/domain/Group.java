@@ -11,6 +11,9 @@ public class Group extends OrganisationAwareEntity {
     @Column
     private String name;
 
+    @Column
+    private boolean hasAllPrivileges;
+
     public String getName() {
         return name;
     }
@@ -18,4 +21,13 @@ public class Group extends OrganisationAwareEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    public boolean isHasAllPrivileges() {
+        return hasAllPrivileges;
+    }
+
+    public void setHasAllPrivileges(boolean hasAllPrivileges) {
+        this.hasAllPrivileges = hasAllPrivileges;
+    }
+
 }

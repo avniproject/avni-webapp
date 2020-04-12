@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface GroupRepository extends ReferenceDataRepository<Group>, FindByLastModifiedDateTime<Group> {
 
     Group findByNameAndOrganisationId(String name, Long groupId);
+
+    Group findByIdAndOrganisationId(Long groupId, Long organisationId);
 }
