@@ -70,6 +70,9 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
               "aria-label": "change date",
               color: "primary"
             }}
+            InputProps={{
+              readOnly: true
+            }}
           />
         </MuiPickersUtilsProvider>
         <LineBreak num={1} />

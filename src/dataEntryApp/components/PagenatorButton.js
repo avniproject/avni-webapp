@@ -68,12 +68,26 @@ const PagenatorButton = ({ children, feg, obs, ...props }) => {
   };
 
   if (props.type === "text") {
-    return (
-      <Typography className={classes.topnav} variant="overline" {...props}>
-        {" "}
-        {children}{" "}
-      </Typography>
-    );
+    if (children === "NEXT") {
+      return (
+        <Typography
+          className={classes.topnav}
+          variant="overline"
+          {...props}
+          onClick={e => handleNext(e)}
+        >
+          {" "}
+          {children}{" "}
+        </Typography>
+      );
+    } else {
+      return (
+        <Typography className={classes.topnav} variant="overline" {...props}>
+          {" "}
+          {children}{" "}
+        </Typography>
+      );
+    }
   } else if (children === "PREVIOUS") {
     return (
       <Button className={classes.privbuttonStyle} type="button" variant="outlined" {...props}>
