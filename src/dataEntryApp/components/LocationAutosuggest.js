@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
+const LocationAutosuggest = ({ onSelect, selectedVillage, data, errorMsg }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -53,7 +53,7 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
   };
 
   const onChange = (event, { newValue }) => {
-    setValue(newValue);  
+    setValue(newValue);
   };
 
   const onSuggestionSelected = (event, { suggestion }) => onSelect(suggestion);
@@ -78,17 +78,16 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
 
   return (
     <div>
-       <Autosuggest
-      suggestions={suggestions}
-      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-      onSuggestionsClearRequested={onSuggestionsClearRequested}
-      getSuggestionValue={getSuggestionValue}
-      renderSuggestion={renderSuggestion}
-      inputProps={inputProps}
-      onSuggestionSelected={onSuggestionSelected}
-    />
+      <Autosuggest
+        suggestions={suggestions}
+        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+        onSuggestionsClearRequested={onSuggestionsClearRequested}
+        getSuggestionValue={getSuggestionValue}
+        renderSuggestion={renderSuggestion}
+        inputProps={inputProps}
+        onSuggestionSelected={onSuggestionSelected}
+      />
     </div>
-   
   );
 };
 

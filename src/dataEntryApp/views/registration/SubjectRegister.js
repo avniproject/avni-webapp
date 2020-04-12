@@ -2,7 +2,7 @@ import React, { Fragment, createRef } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
-import { ObservationsHolder } from "avni-models";
+import { ObservationsHolder, AddressLevel } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
@@ -116,7 +116,7 @@ const DefaultPage = props => {
     LAST_NAME: "",
     DOB: "",
     GENDER: "",
-    REGISTRATION_LOCATION: ""
+    LOWEST_ADDRESS_LEVEL: ""
   });
 
   const setValidationResultToError = validationResult => {
@@ -130,6 +130,7 @@ const DefaultPage = props => {
     setValidationResultToError(props.subject.validateLastName());
     setValidationResultToError(props.subject.validateDateOfBirth());
     setValidationResultToError(props.subject.validateGender());
+    setValidationResultToError(props.subject.validateAddress());
 
     //needs to used when village location is set
     //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
@@ -329,7 +330,17 @@ const DefaultPage = props => {
                     <label className={classes.villagelabel}>{t("Village")}</label>
                     <LocationAutosuggest
                       selectedVillage={props.subject.lowestAddressLevel.title}
-                      onSelect={location => props.updateSubject("lowestAddressLevel", location)}
+                      errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
+                      onSelect={location => {
+                        props.updateSubject("lowestAddressLevel", location);
+                        props.subject.lowestAddressLevel = AddressLevel.create({
+                          uuid: location.uuid,
+                          title: location.title,
+                          level: location.level,
+                          typeString: location.typeString
+                        });
+                        setValidationResultToError(props.subject.validateAddress());
+                      }}
                       data={props}
                     />
                   </React.Fragment>
