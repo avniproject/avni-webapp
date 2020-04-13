@@ -8,11 +8,18 @@ export const types = {
   FETCH_ALL_LOCATIONS_SUCCESS: "app/FETCH_ALL_LOCATIONS_SUCCESS",
   AUTH_CONFIGURED: "app/AUTH_CONFIGURED",
   GET_ADMIN_ORGANISATIONS: "app/GET_ADMIN_ORGANISATIONS",
-  SET_ADMIN_ORGANISATIONS: "app/SET_ADMIN_ORGANISATIONS"
+  SET_ADMIN_ORGANISATIONS: "app/SET_ADMIN_ORGANISATIONS",
+  SET_TRANSLATIONS: "app/SET_TRANSLATIONS",
+  SAVE_USER_INFO: "app/SAVE_USER_INFO"
 };
 
 export const getAdminOrgs = () => ({
   type: types.GET_ADMIN_ORGANISATIONS
+});
+
+export const saveUserInfo = userInfo => ({
+  type: types.SAVE_USER_INFO,
+  userInfo
 });
 
 export const setAdminOrgs = organisations => ({
@@ -49,6 +56,11 @@ export const sendInitComplete = () => ({
 
 export const sendAuthConfigured = () => ({
   type: types.AUTH_CONFIGURED
+});
+
+export const setTranslations = translations => ({
+  type: types.SET_TRANSLATIONS,
+  translations
 });
 
 const initialState = {
@@ -112,6 +124,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         organisations: action.payload.organisations
+      };
+    }
+    case types.SET_TRANSLATIONS: {
+      return {
+        ...state,
+        translationData: action.translations
       };
     }
     default:

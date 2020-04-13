@@ -13,15 +13,26 @@ import {
   ReferenceArrayInput,
   SingleFieldList,
   AutocompleteArrayInput,
-  ReferenceArrayField
+  ReferenceArrayField,
+  Filter
 } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
 import { LineBreak } from "../common/components/utils";
 import LocationUtils from "./LocationUtils";
 import _ from "lodash";
-import { TitleChip } from "./components/TitleChip";
 import { Title } from "./components/Title";
+import Chip from "@material-ui/core/Chip";
+
+const CatchmentFilter = props => (
+  <Filter {...props}>
+    <TextInput label="Search catchment" source="name" resettable alwaysOn />
+  </Filter>
+);
+
+const TitleChip = props => {
+  return <Chip label={`${props.record.title} (${props.record.typeString})`} />;
+};
 
 export const CatchmentCreate = props => (
   <Create {...props}>
@@ -56,7 +67,7 @@ export const CatchmentDetail = props => {
 };
 
 export const CatchmentList = props => (
-  <List {...props} bulkActions={false}>
+  <List {...props} bulkActions={false} filters={<CatchmentFilter />}>
     <Datagrid rowClick="show">
       <TextField label="Catchment" source="name" />
       <TextField label="Type" source="type" />
@@ -117,7 +128,7 @@ const CatchmentForm = ({ edit, ...props }) => {
         source="locationIds"
         perPage={1000}
         label="Locations"
-        filterToQuery={searchText => ({ title: searchText })}
+        filterToQuery={searchText => ({ name: searchText })}
       >
         <LocationAutocomplete optionText={optionRenderer} />
       </ReferenceArrayInput>

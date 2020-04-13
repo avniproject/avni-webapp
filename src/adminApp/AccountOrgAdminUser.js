@@ -1,4 +1,4 @@
-import { isEmpty, isNil } from "lodash";
+import { isEmpty } from "lodash";
 import React, { Fragment, useState } from "react";
 import {
   Create,
@@ -153,6 +153,8 @@ const UserForm = ({ edit, user, ...props }) => {
     <SimpleForm toolbar={<CustomToolbar />} {...sanitizeProps(props)} redirect="list">
       <FormDataConsumer>
         {({ formData, dispatch, ...rest }) => {
+          formData.admin = !formData.orgAdmin;
+          formData.admin ? delete formData.organisationId : delete formData.accountIds;
           return (
             <Fragment>
               <BooleanInput source="orgAdmin" label="Organisation Admin" />

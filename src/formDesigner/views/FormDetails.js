@@ -19,6 +19,7 @@ import { Title } from "react-admin";
 import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import { Redirect } from "react-router-dom";
 
 import FormLevelRules from "../components/FormLevelRules";
 
@@ -61,7 +62,8 @@ class FormDetails extends Component {
       successAlert: false,
       defaultSnackbarStatus: true,
       detectBrowserCloseEvent: false,
-      nameError: false
+      nameError: false,
+      redirectToWorkflow: false
     };
     this.btnGroupClick = this.btnGroupClick.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
@@ -73,6 +75,7 @@ class FormDetails extends Component {
     this.handleModeForDate = this.handleModeForDate.bind(this);
     this.handleRegex = this.handleRegex.bind(this);
     this.validateForm = this.validateForm.bind(this);
+    console.log("PROPS:::" + JSON.stringify(this.props));
   }
 
   onUpdateFormName = name => {
@@ -133,7 +136,6 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
-            fe.showDateOrDuration = "durationOptions";
             //             if (fe["rule"]) {
             //               let ruleExtraction = fe["rule"];
             //               ruleExtraction = ruleExtraction.replace(
@@ -153,7 +155,6 @@ class FormDetails extends Component {
             let keyValueObject = {};
 
             fe.keyValues.map(keyValue => {
-              if (keyValue.key === "datePickerMode") fe.showDateOrDuration = "datePickerMode";
               return (keyValueObject[keyValue.key] = keyValue.value);
             });
 
@@ -483,7 +484,6 @@ class FormDetails extends Component {
           name: "",
           type: "",
           keyValues: {},
-          showDateOrDuration: "durationOptions",
           mandatory: false,
           voided: false,
           expanded: true,
@@ -651,6 +651,7 @@ class FormDetails extends Component {
       .then(response => {
         if (response.status === 200) {
           this.setState({
+            redirectToWorkflow: true,
             saveCall: false,
             successAlert: true,
             defaultSnackbarStatus: true,
@@ -850,11 +851,15 @@ class FormDetails extends Component {
         </Grid>
       </Grid>
     );
+    let redirectTo = this.props.history.location.state;
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title="Form Details" />
 
         {this.state.dataLoaded ? form : <div>Loading</div>}
+        {this.state.redirectToWorkflow && redirectTo !== undefined && (
+          <Redirect to={`/appdesigner/${redirectTo.stateName}`} />
+        )}
         {this.state.successAlert && (
           <CustomizedSnackbar
             message="Successfully updated the form"

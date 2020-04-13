@@ -12,16 +12,29 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
-import { programInitialState } from "../Constant";
+import { programInitialState, colorPickerCSS } from "../Constant";
 import { programReducer } from "../Reducers";
+import ColorPicker from "material-ui-rc-color-picker";
+import "material-ui-rc-color-picker/assets/index.css";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import _ from "lodash";
+import { default as UUID } from "uuid";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
+  const [subjectValidation, setSubjectValidation] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [programData, setProgramData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
+  const [subjectT, setSubjectT] = useState({});
+  const [formMapping, setMapping] = useState([]);
+  const [subjectType, setSubjectType] = useState([]);
+  const [existMapping, setExistMapping] = useState([]);
 
   useEffect(() => {
     http
@@ -30,36 +43,86 @@ const ProgramEdit = props => {
       .then(result => {
         setProgramData(result);
         dispatch({ type: "setData", payload: result });
+        http
+          .get("/web/operationalModules")
+          .then(response => {
+            setMapping(response.data.formMappings);
+            setSubjectType(response.data.subjectTypes);
+            const temp = response.data.formMappings.filter(l => l.programUUID === result.uuid);
+            setExistMapping(temp);
+            setSubjectT(
+              response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
+            );
+          })
+          .catch(error => {});
       });
   }, []);
 
   const onSubmit = () => {
-    if (program.name.trim() === "") {
+    if (program.name.trim() === "" || _.isEmpty(subjectT)) {
       setError("");
-      setNameValidation(true);
+      program.name.trim() === "" ? setNameValidation(true) : setNameValidation(false);
+      _.isEmpty(subjectT) ? setSubjectValidation(true) : setSubjectValidation(false);
     } else {
       setNameValidation(false);
-      http
-        .put("/web/program/" + props.match.params.id, {
-          name: program.name,
-          colour: program.colour,
-          programSubjectLabel: program.programSubjectLabel,
-          enrolmentSummaryRule: program.enrolmentSummaryRule,
-          enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
-          id: props.match.params.id,
-          organisationId: programData.organisationId,
-          programOrganisationId: programData.programOrganisationId,
-          voided: programData.voided
-        })
-        .then(response => {
-          if (response.status === 200) {
+      setSubjectValidation(false);
+      let temp =
+        existMapping.length === 0
+          ? [
+              {
+                uuid: UUID.v4(),
+                subjectTypeUUID: subjectT.uuid,
+                programUUID: programData.uuid,
+                isVoided: false
+              }
+            ]
+          : formMapping.filter(
+              l =>
+                l.subjectTypeUUID === existMapping[0].subjectTypeUUID &&
+                l.programUUID === programData.uuid
+            );
+
+      existMapping.length !== 0 &&
+        temp.map(l => ((l.subjectTypeUUID = subjectT.uuid), (l.isVoided = false)));
+
+      var promise = new Promise((resolve, reject) => {
+        http
+          .put("/web/program/" + props.match.params.id, {
+            name: program.name,
+            colour: program.colour === "" ? "#ff0000" : program.colour,
+            programSubjectLabel: program.programSubjectLabel,
+            enrolmentSummaryRule: program.enrolmentSummaryRule,
+            enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
+            id: props.match.params.id,
+            organisationId: programData.organisationId,
+            programOrganisationId: programData.programOrganisationId,
+            voided: programData.voided
+          })
+          .then(response => {
             setError("");
-            setRedirectShow(true);
-          }
-        })
-        .catch(error => {
-          setError(error.response.data.message);
-        });
+            resolve("Promise resolved ");
+          })
+          .catch(error => {
+            setError("error.response.data.message");
+            reject(Error("Promise rejected"));
+          });
+      });
+
+      promise.then(
+        () => {
+          http
+            .post("/emptyFormMapping", temp)
+            .then(response => {
+              setRedirectShow(true);
+            })
+            .catch(error => {
+              console.log(error.response.data.message);
+            });
+        },
+        function(error) {
+          console.log(error);
+        }
+      );
     }
   };
 
@@ -103,14 +166,41 @@ const ProgramEdit = props => {
             </FormLabel>
           )}
           <p />
-          <TextField
+          <p />
+          <FormControl>
+            <InputLabel id="subjectType">Select subject type</InputLabel>
+            <Select
+              label="Select subject type"
+              value={subjectT}
+              onChange={event => setSubjectT(event.target.value)}
+              style={{ width: "200px" }}
+            >
+              {subjectType.map(subject => {
+                return (
+                  <MenuItem value={subject} key={subject.name}>
+                    {subject.name}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <div />
+          {subjectValidation && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              Empty subject type is not allowed.
+            </FormLabel>
+          )}
+          <p />
+          <FormLabel>Colour picker</FormLabel>
+          <br />
+          <ColorPicker
             id="colour"
             label="Colour"
-            autoComplete="off"
-            value={program.colour}
-            onChange={event => dispatch({ type: "colour", payload: event.target.value })}
+            style={colorPickerCSS}
+            color={program.colour}
+            onChange={color => dispatch({ type: "colour", payload: color.color })}
           />
-          <p />
+          <br />
           <TextField
             id="programsubjectlabel"
             label="Program subject label"

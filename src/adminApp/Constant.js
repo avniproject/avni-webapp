@@ -12,5 +12,14 @@ export const encounterTypeInitialState = {
 };
 
 export const subjectTypeInitialState = {
-  name: ""
+  name: "",
+  group: false,
+  household: false,
+  groupRoles: []
+};
+
+export const colorPickerCSS = {
+  boxShadow: "5px 10px 8px 10px #888888",
+  border: "1px solid",
+  backgroundColor: "#fff"
 };

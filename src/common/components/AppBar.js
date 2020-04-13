@@ -46,7 +46,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 const AppBar = ({ getUserInfo, ...props }) => {
-  const { organisation, user, history, staticContext, dispatch, organisations, ...rest } = props;
+  const { organisation, user, history, organisations } = props;
   const classes = useStyle();
   const [anchorEl, setAnchorEl] = React.useState(null);
   function handleClick(event) {
