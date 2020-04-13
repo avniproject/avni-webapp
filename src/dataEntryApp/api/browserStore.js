@@ -1,8 +1,6 @@
 import { Individual, ObservationsHolder, Observation, Concept } from "avni-models";
 import { store } from "../../common/store/createStore";
 import { types } from "../../common/store/conceptReducer";
-import { mapConcept } from "../../common/subjectModelMapper";
-
 export default class {
   static fetchSubject() {
     if (sessionStorage.getItem("subject")) {
@@ -22,24 +20,20 @@ export default class {
       subject.relationship = localSavedSubject.relationship;
       subject.subjectType.name = localSavedSubject.subjectType.name;
       subject.subjectType.uuid = localSavedSubject.subjectType.uuid;
-      subject.observations = localSavedSubject.observations;
 
-      // addOrUpdateObservation
-      // const observationHolder = new ObservationsHolder(subject.observations);
-      //  let obs;
-      //  localSavedSubject.observations.map(element => {
-      //     // let concept = Concept.create(
-      //     //   element.concept.name,
-      //     //   element.concept.datatype,
-      //     //   element.concept.keyValues,
-      //     //   element.concept.uuid
-      //     // );
-
-      //    obs =  mapConcept(element);
-      //    // observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
-      //     //store.dispatch({ type: types.ADD_CONCEPT, value: concept });
-      //   });
-      //   subject.observations = obs;
+      //addOrUpdateObservation
+      const observationHolder = new ObservationsHolder(subject.observations);
+      localSavedSubject.observations.map(element => {
+        let concept = Concept.create(
+          element.concept.name,
+          element.concept.datatype,
+          element.concept.keyValues,
+          element.concept.uuid
+        );
+        observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
+        store.dispatch({ type: types.ADD_CONCEPT, value: concept });
+      });
+      subject.observations = observationHolder.observations;
       return subject;
     } else return;
   }

@@ -16,7 +16,7 @@ import DurationFormElement from "./DurationFormElement";
 const div = () => <div />;
 
 const elements = {
-  Date: DateAndDurationFormElement,
+  Date: DateFormElement,
   DateTime: DateTimeFormElement,
   Time: TimeFormElement,
   Duration: DurationFormElement,
