@@ -5,14 +5,18 @@ import NotesFormElement from "./NotesFormElement";
 import SingleSelectFormElement from "./SingleSelectFormElement";
 import MultiSelectFormElement from "./MultiSelectFormElement";
 import NumericFormElement from "./NumericFormElement";
-import { DateFormElement, DateTimeFormElement } from "./DateFormElement";
+import {
+  DateFormElement,
+  DateTimeFormElement,
+  DateAndDurationFormElement
+} from "./DateFormElement";
 import TimeFormElement from "./TimeFormElement";
 import DurationFormElement from "./DurationFormElement";
 
 const div = () => <div />;
 
 const elements = {
-  Date: DateFormElement,
+  Date: DateAndDurationFormElement,
   DateTime: DateTimeFormElement,
   Time: TimeFormElement,
   Duration: DurationFormElement,

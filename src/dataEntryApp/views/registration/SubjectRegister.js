@@ -111,17 +111,6 @@ const DefaultPage = props => {
       let subject = BrowserStore.fetchSubject();
       if (subject) props.setSubject(subject);
     })();
-
-    // if (!props.saved) {
-    //   if (!props.subject) {
-    //     props.onLoad(props.match.queryParams.type);
-    //   }
-    // } else {
-    //   let subject = Individual.createEmptyInstance();
-    //   subject.subjectType = props.subject.subjectType;
-    //   props.setSubject(subject);
-    //   props.saveCompleteFalse();
-    // }
   }, []);
 
   return (
@@ -337,7 +326,8 @@ const mapFormStateToProps = state => ({
   obsHolder:
     state.dataEntry.registration.subject &&
     new ObservationsHolder(state.dataEntry.registration.subject.observations),
-  observations: state.dataEntry.registration.subject.observations,
+  observations:
+    state.dataEntry.registration.subject && state.dataEntry.registration.subject.observations,
   //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
@@ -356,19 +346,45 @@ const RegistrationForm = withRouter(
   )(FormWizard)
 );
 
-const SubjectRegister = ({ match }) => {
+const SubjectRegister = props => {
   const classes = useStyles();
+
+  React.useEffect(() => {
+    (async function fetchData() {
+      await props.onLoad(props.match.queryParams.type);
+      props.saveCompleteFalse();
+      let subject = BrowserStore.fetchSubject();
+      if (subject) props.setSubject(subject);
+    })();
+  }, []);
 
   return (
     <Fragment>
-      <Breadcrumbs path={match.path} />
+      <Breadcrumbs path={props.match.path} />
       <Paper className={classes.root}>
         <Stepper />
-        <Route exact path={`${match.path}`} component={ConnectedDefaultPage} />
-        <Route path={`${match.path}/form`} component={RegistrationForm} />
+        <Route exact path={`${props.match.path}`} component={ConnectedDefaultPage} />
+        <Route path={`${props.match.path}/form`} component={RegistrationForm} />
       </Paper>
     </Fragment>
   );
 };
 
-export default withRouter(SubjectRegister);
+const mapRegisterStateToProps = state => ({
+  subject: state.dataEntry.registration.subject
+});
+
+const mapRegisterDispatchToProps = {
+  onLoad,
+  setSubject,
+  saveCompleteFalse
+};
+
+export default withRouter(
+  withParams(
+    connect(
+      mapRegisterStateToProps,
+      mapRegisterDispatchToProps
+    )(SubjectRegister)
+  )
+);
