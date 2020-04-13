@@ -19,7 +19,10 @@ const useStyles = makeStyles(theme => ({
     "border-radius": "4px"
   },
   errmsg: {
-    color: "red"
+    color: "#f44336",
+    "font-family": "Roboto",
+    "font-weight": 400,
+    "font-size": "0.75rem"
   }
 }));
 
@@ -89,7 +92,7 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data, errorMsg }) => {
         inputProps={inputProps}
         onSuggestionSelected={onSuggestionSelected}
       />
-      {/* {errorMsg && <span className={classes.errmsg}>{errorMsg}</span>} */}
+      {errorMsg && <span className={classes.errmsg}>{errorMsg}</span>}
     </div>
   );
 };

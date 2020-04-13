@@ -130,7 +130,7 @@ const DefaultPage = props => {
     setValidationResultToError(props.subject.validateLastName());
     setValidationResultToError(props.subject.validateDateOfBirth());
     setValidationResultToError(props.subject.validateGender());
-    //setValidationResultToError(props.subject.validateAddress());
+    setValidationResultToError(props.subject.validateAddress());
 
     //needs to used when village location is set
     //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
@@ -142,9 +142,9 @@ const DefaultPage = props => {
           _.isEmpty(subjectRegErrors.LAST_NAME) &&
           _.isEmpty(subjectRegErrors.DOB) &&
           _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
-          _.isEmpty(subjectRegErrors.GENDER)
+          _.isEmpty(subjectRegErrors.GENDER) &&
+          _.isEmpty(subjectRegErrors.LOWEST_ADDRESS_LEVEL)
         )
-        // _.isEmpty(subjectRegErrors.LOWEST_ADDRESS_LEVEL)
       ) {
         event.preventDefault();
       }
@@ -333,14 +333,16 @@ const DefaultPage = props => {
                       selectedVillage={props.subject.lowestAddressLevel.title}
                       errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
                       onSelect={location => {
-                        props.updateSubject("lowestAddressLevel", location);
-
-                        // props.updateSubject("lowestAddressLevel", AddressLevel.create({
-                        //   uuid: location.uuid,
-                        //   title: location.title,
-                        //   level: location.level,
-                        //   typeString: location.typeString
-                        // }));
+                        //props.updateSubject("lowestAddressLevel", location);
+                        props.updateSubject(
+                          "lowestAddressLevel",
+                          AddressLevel.create({
+                            uuid: location.uuid,
+                            title: location.title,
+                            level: location.level,
+                            typeString: location.typeString
+                          })
+                        );
                         props.subject.lowestAddressLevel = AddressLevel.create({
                           uuid: location.uuid,
                           title: location.title,
