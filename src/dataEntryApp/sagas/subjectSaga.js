@@ -75,15 +75,16 @@ function* updateObsWatcher() {
 
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
-  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
-  const validationResult = formElement.validate(value);
   const observationHolder = new ObservationsHolder(subject.observations);
   // observationHolder.updateObs(formElement, value);
   // observationHolder.observations.map((concept)=>{
   //   console.log(concept);
 
+  let shouldSendNullForMultiselect = false;
+
   if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-    observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
+    const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
+    shouldSendNullForMultiselect = _.isNil(answer);
   } else if (
     formElement.concept.datatype === Concept.dataType.Coded &&
     formElement.isSingleSelect()
@@ -96,6 +97,9 @@ export function* updateObsWorker({ formElement, value }) {
 
   subject.observations = observationHolder.observations;
   yield put(setSubject(subject));
+
+  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
+  const validationResult = formElement.validate(shouldSendNullForMultiselect ? null : value);
 
   _.remove(
     validationResults,
