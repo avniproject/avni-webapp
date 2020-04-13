@@ -1,6 +1,9 @@
 package org.openchs.web.request;
 
-import org.openchs.domain.*;
+import org.openchs.domain.ChecklistDetail;
+import org.openchs.domain.EncounterType;
+import org.openchs.domain.GroupPrivilege;
+import org.openchs.domain.Program;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -13,8 +16,8 @@ public class GroupPrivilegeContract {
     private String privilegeEntityType;
     private String privilegeName;
     private String privilegeDescription;
-    private Optional<Long> subjectTypeId;
-    private Optional<String> subjectTypeName;
+    private Long subjectTypeId;
+    private String subjectTypeName;
     private Optional<Long> programId;
     private Optional<String> programName;
     private Optional<Long> programEncounterTypeId;
@@ -33,8 +36,8 @@ public class GroupPrivilegeContract {
         groupPrivilegeContract.setPrivilegeEntityType(groupPrivilege.getPrivilege().getEntityType().toString());
         groupPrivilegeContract.setPrivilegeName(groupPrivilege.getPrivilege().getName());
         groupPrivilegeContract.setPrivilegeDescription(groupPrivilege.getPrivilege().getDescription());
-        groupPrivilegeContract.setSubjectTypeId(Optional.ofNullable(groupPrivilege.getSubjectType()).map(SubjectType::getId));
-        groupPrivilegeContract.setSubjectTypeName(Optional.ofNullable(groupPrivilege.getSubjectType()).map(SubjectType::getName));
+        groupPrivilegeContract.setSubjectTypeId(groupPrivilege.getSubjectType().getId());
+        groupPrivilegeContract.setSubjectTypeName(groupPrivilege.getSubjectType().getName());
         groupPrivilegeContract.setProgramId(Optional.ofNullable(groupPrivilege.getProgram()).map(Program::getId));
         groupPrivilegeContract.setProgramName(Optional.ofNullable(groupPrivilege.getProgram()).map(Program::getName).orElse(null));
         groupPrivilegeContract.setProgramEncounterTypeId(Optional.ofNullable(groupPrivilege.getProgramEncounterType()).map(EncounterType::getId));
@@ -48,11 +51,11 @@ public class GroupPrivilegeContract {
 
     }
 
-    public Optional<Long> getSubjectTypeId() {
+    public Long getSubjectTypeId() {
         return subjectTypeId;
     }
 
-    public void setSubjectTypeId(Optional<Long> subjectTypeId) {
+    public void setSubjectTypeId(Long subjectTypeId) {
         this.subjectTypeId = subjectTypeId;
     }
 
@@ -136,11 +139,11 @@ public class GroupPrivilegeContract {
         this.privilegeDescription = privilegeDescription;
     }
 
-    public Optional<String> getSubjectTypeName() {
+    public String getSubjectTypeName() {
         return subjectTypeName;
     }
 
-    public void setSubjectTypeName(Optional<String> subjectTypeName) {
+    public void setSubjectTypeName(String subjectTypeName) {
         this.subjectTypeName = subjectTypeName;
     }
 
@@ -191,7 +194,7 @@ public class GroupPrivilegeContract {
         GroupPrivilegeContract that = (GroupPrivilegeContract) o;
         return groupId.equals(that.groupId) &&
                 privilegeId.equals(that.privilegeId) &&
-                Objects.equals(subjectTypeId, that.subjectTypeId) &&
+                subjectTypeId.equals(that.subjectTypeId) &&
                 Objects.equals(programId, that.programId) &&
                 Objects.equals(programEncounterTypeId, that.programEncounterTypeId) &&
                 Objects.equals(encounterTypeId, that.encounterTypeId) &&

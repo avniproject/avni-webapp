@@ -4,6 +4,5 @@ public enum EntityType {
     Subject,
     Enrolment,
     Encounter,
-    Checklist,
-    Everything
+    Checklist
 }

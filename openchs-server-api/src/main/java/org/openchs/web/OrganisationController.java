@@ -3,7 +3,6 @@ package org.openchs.web;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.service.GroupPrivilegeService;
 import org.openchs.web.request.OrganisationContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,16 +25,14 @@ public class OrganisationController implements RestControllerResourceProcessor<O
     private final GenderRepository genderRepository;
     private final OrganisationConfigRepository organisationConfigRepository;
     private GroupRepository groupRepository;
-    private GroupPrivilegeService groupPrivilegeService;
 
     @Autowired
-    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository, GroupRepository groupRepository, GroupPrivilegeService groupPrivilegeService) {
+    public OrganisationController(OrganisationRepository organisationRepository, AccountRepository accountRepository, GenderRepository genderRepository, OrganisationConfigRepository organisationConfigRepository, GroupRepository groupRepository) {
         this.organisationRepository = organisationRepository;
         this.accountRepository = accountRepository;
         this.genderRepository = genderRepository;
         this.organisationConfigRepository = organisationConfigRepository;
         this.groupRepository = groupRepository;
-        this.groupPrivilegeService = groupPrivilegeService;
     }
 
     @RequestMapping(value = "/organisation", method = RequestMethod.POST)
@@ -56,7 +53,6 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         organisationRepository.save(org);
         createDefaultGenders(org);
         addDefaultGroup(org.getId());
-        groupPrivilegeService.assignEverythingPrivilegeToEveryoneGroup(org.getId());
         createDefaultOrgConfig(org);
 
         return new ResponseEntity<>(org, HttpStatus.CREATED);
@@ -92,6 +88,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         group.setName("Everyone");
         group.setOrganisationId(organisationId);
         group.setUuid(UUID.randomUUID().toString());
+        group.setHasAllPrivileges(true);
         group.setVersion(0);
         groupRepository.save(group);
     }

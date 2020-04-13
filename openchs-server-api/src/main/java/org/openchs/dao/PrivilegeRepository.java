@@ -25,6 +25,4 @@ public interface PrivilegeRepository extends PagingAndSortingRepository<Privileg
             @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable);
-
-    Privilege findByName(String name);
 }
