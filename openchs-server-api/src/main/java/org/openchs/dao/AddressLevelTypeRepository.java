@@ -1,10 +1,6 @@
 package org.openchs.dao;
 
 import org.openchs.domain.AddressLevelType;
-import org.openchs.domain.AddressLevelType.AddressLevelTypeProjection;
-import org.openchs.web.request.AddressLevelTypeContract;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;

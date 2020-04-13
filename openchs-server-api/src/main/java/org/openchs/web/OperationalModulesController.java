@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import org.openchs.application.FormMapping;
 import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.application.FormMapping;
 import org.openchs.application.Form;
