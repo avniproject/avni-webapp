@@ -225,10 +225,10 @@ const GroupPrivileges = ({
       )
     },
     { title: "Subject Type", field: "subjectTypeName", defaultGroupOrder: 0 },
-    { title: "Entity Type", field: "privilegeEntityType", defaultSort: "asc" },
+    { title: "Entity Type", field: "privilegeEntityType" },
     { title: "Privilege", field: "privilegeName" },
     { title: "Program", field: "programName" },
-    { title: "Program Encounter Type", field: "programEncounterTypeName" },
+    { title: "Program Encounter Type", field: "programEncounterTypeName", defaultSort: "asc" },
     { title: "General Encounter Type", field: "encounterTypeName" },
     { title: "Checklist Detail", field: "checklistDetailName" }
   ];
@@ -246,16 +246,20 @@ const GroupPrivileges = ({
         />
       </FormGroup>
       {!allPrivilegesAllowed && (
-        <MaterialTable
-          title="Privilege List"
-          columns={columns}
-          data={groupPrivilegeList}
-          options={{
-            grouping: true,
-            pageSize: 30
-            // filtering: true
-          }}
-        />
+        <div>
+          <hr />
+          <br />
+          <MaterialTable
+            title="Privilege List"
+            columns={columns}
+            data={groupPrivilegeList}
+            options={{
+              grouping: true,
+              pageSize: 20
+              // filtering: true
+            }}
+          />
+        </div>
       )}
     </div>
   );
