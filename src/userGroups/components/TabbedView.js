@@ -33,7 +33,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export const TabView = ({ groupId, groupName, userList, ...props }) => {
+export const TabView = ({ groupId, groupName, hasAllPrivileges, userList, ...props }) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -52,7 +52,12 @@ export const TabView = ({ groupId, groupName, userList, ...props }) => {
         <GroupUsers groupId={groupId} {...props} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <GroupPrivileges groupId={groupId} {...props} />
+        <GroupPrivileges
+          groupId={groupId}
+          groupName={groupName}
+          hasAllPrivileges={hasAllPrivileges}
+          {...props}
+        />
       </TabPanel>
     </div>
   );

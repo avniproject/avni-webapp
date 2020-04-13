@@ -1,17 +1,31 @@
 import React from "react";
 import { Switch } from "@material-ui/core";
+import FormGroup from "@material-ui/core/FormGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import MaterialTable from "material-table";
-import { getGroupPrivilegeList } from "../reducers";
+import { getGroupPrivilegeList, getGroups } from "../reducers";
 import api from "../api";
 
-const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList }) => {
+const GroupPrivileges = ({
+  groupId,
+  hasAllPrivileges,
+  setHasAllPrivileges,
+  groupName,
+  getGroups,
+  getGroupPrivilegeList,
+  groupPrivilegeList
+}) => {
   const [privilegeDependencies, setPrivilegeDependencies] = React.useState(null);
   const [privilegesCheckedState, setPrivilegesCheckedState] = React.useState(null);
+  const [allPrivilegesAllowed, setAllPrivilegesAllowed] = React.useState(hasAllPrivileges);
 
   React.useEffect(() => {
-    getGroupPrivilegeList(groupId);
+    groupPrivilegeList = null;
+    if (!allPrivilegesAllowed) {
+      getGroupPrivilegeList(groupId);
+    }
   }, []);
 
   React.useEffect(() => {
@@ -146,10 +160,27 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
 
     setPrivilegesCheckedState(new Map([...privilegesCheckedState, ...toggleCheckedStateMap]));
 
-    updatePrivilegesonServer(indexesToBeUpdated, isAllow);
+    modifyGroupPrivileges(indexesToBeUpdated, isAllow);
   };
 
-  const updatePrivilegesonServer = (indexesToBeUpdated, isAllow) => {
+  const onToggleAllPrivileges = event => {
+    let allowOptionSelected = event.target.checked;
+    api.updateGroup(groupId, groupName, allowOptionSelected).then(response => {
+      const [response_data, error] = response;
+      if (!response_data && error) {
+        alert(error);
+      }
+      getGroups();
+    });
+
+    if (!allowOptionSelected) {
+      getGroupPrivilegeList(groupId);
+    }
+    setAllPrivilegesAllowed(allowOptionSelected);
+    setHasAllPrivileges(allowOptionSelected);
+  };
+
+  const modifyGroupPrivileges = (indexesToBeUpdated, isAllow) => {
     let privilegesToBeUpdated = groupPrivilegeList.filter(
       privilege =>
         indexesToBeUpdated.includes(privilege.tableData.id) && privilege.allow !== isAllow
@@ -194,24 +225,38 @@ const GroupPrivileges = ({ groupId, getGroupPrivilegeList, groupPrivilegeList })
       )
     },
     { title: "Subject Type", field: "subjectTypeName", defaultGroupOrder: 0 },
-    { title: "Entity Type", field: "privilegeEntityType", defaultGroupOrder: 1 },
+    { title: "Entity Type", field: "privilegeEntityType", defaultSort: "asc" },
     { title: "Privilege", field: "privilegeName" },
     { title: "Program", field: "programName" },
-    { title: "Program Encounter Type", field: "programEncounterTypeName", defaultSort: "asc" },
-    { title: "General Encounter Type", field: "encounterTypeName", defaultSort: "asc" },
+    { title: "Program Encounter Type", field: "programEncounterTypeName" },
+    { title: "General Encounter Type", field: "encounterTypeName" },
     { title: "Checklist Detail", field: "checklistDetailName" }
   ];
   return (
     <div>
-      <MaterialTable
-        title="Privilege List"
-        columns={columns}
-        data={groupPrivilegeList}
-        options={{
-          grouping: true,
-          pageSize: 30
-        }}
-      />
+      <FormGroup row>
+        <FormControlLabel
+          control={
+            <Switch
+              onChange={event => onToggleAllPrivileges(event)}
+              checked={allPrivilegesAllowed}
+            />
+          }
+          label="Use default privileges. (All users are allowed to access all features.)"
+        />
+      </FormGroup>
+      {!allPrivilegesAllowed && (
+        <MaterialTable
+          title="Privilege List"
+          columns={columns}
+          data={groupPrivilegeList}
+          options={{
+            grouping: true,
+            pageSize: 30
+            // filtering: true
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -223,6 +268,6 @@ const mapStateToProps = state => ({
 export default withRouter(
   connect(
     mapStateToProps,
-    { getGroupPrivilegeList }
+    { getGroups, getGroupPrivilegeList }
   )(GroupPrivileges)
 );

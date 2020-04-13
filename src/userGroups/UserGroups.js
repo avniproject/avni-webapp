@@ -81,8 +81,9 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
         {map(groups, (group, index) => (
           <GroupCard
             key={index}
-            name={group.name}
-            href={`userGroupDetails/${group.id}/${group.name}/show`}
+            groupName={group.name}
+            hasAllPrivileges={group.hasAllPrivileges}
+            href={`userGroupDetails/${group.id}`}
           />
         ))}
       </Grid>

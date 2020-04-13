@@ -5,7 +5,7 @@ import React from "react";
 import Card from "@material-ui/core/Card";
 import { Link } from "react-router-dom";
 
-export const GroupCard = ({ name, href }) => {
+export const GroupCard = ({ groupName, href, hasAllPrivileges }) => {
   const classes = {
     card: {
       width: 150,
@@ -21,20 +21,21 @@ export const GroupCard = ({ name, href }) => {
     }
   };
 
-  // let newTo = {
-  //   pathname: href,
-  //   state: name
-  // };
+  let toUserGroupDetails = {
+    pathname: href,
+    search: `?groupName=${groupName}&hasAllPrivileges=${hasAllPrivileges}`
+    // state: {"groupName": groupName, "hasAllPrivileges": hasAllPrivileges} //TODO why isn't this working??
+  };
 
   return (
     <CardActionArea style={classes.cardArea}>
-      <Link to={href}>
+      <Link to={toUserGroupDetails}>
         <Card style={classes.card} raised={true}>
           <CardContent>
             <Typography align="center" color="primary" />
           </CardContent>
           <Typography variant="h5" component="h2" align="center" color="primary">
-            {name}
+            {groupName}
           </Typography>
         </Card>
       </Link>

@@ -10,6 +10,11 @@ export default {
       //returns [response, error]
       .then(r => [r.text, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
+  updateGroup: (id, name, hasAllPrivileges) =>
+    http
+      .putJson("web/group", { id, name, hasAllPrivileges })
+      .then(r => [r.data, null])
+      .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
   fetchAllUsers: () =>
     http
       .fetchJson("/user/search/find")

@@ -117,6 +117,10 @@ class HttpClient {
     return await this.post(url, body);
   }
 
+  async putJson(url, body) {
+    return await this.put(url, body);
+  }
+
   async deleteEntity(url) {
     return await this.delete(url);
   }

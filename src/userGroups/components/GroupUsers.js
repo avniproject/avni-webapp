@@ -80,12 +80,13 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
         columns={columns}
         data={groupUsers}
         actions={[
-          {
+          rowData => ({
             //          icon: 'remove_circle_outline',
             icon: "person_add_disabled",
             tooltip: "Remove user from group",
-            onClick: (event, rowData) => removeUserFromGroupHandler(event, rowData)
-          }
+            onClick: (event, rowData) => removeUserFromGroupHandler(event, rowData),
+            disabled: rowData.groupName === "Everyone"
+          })
         ]}
         options={{
           actionsColumnIndex: 3
