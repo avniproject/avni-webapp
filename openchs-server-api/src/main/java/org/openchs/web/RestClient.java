@@ -19,11 +19,10 @@ public class RestClient {
     @Value("${node.server.url}")
     private String NODE_SERVER_HOST;
 
-    public JsonNode post(String api,JSONObject jsonObj,HttpHeaders httpHeaders) throws IOException{
+    public <T> String post(String api,T jsonObj,HttpHeaders httpHeaders) throws IOException{
         String uri = NODE_SERVER_HOST.concat(api);
         RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> entityCredentials = new HttpEntity<>(jsonObj.toString(), httpHeaders);
-        String responseString = restTemplate.postForObject( uri, entityCredentials, String.class);
-        return ObjectMapperSingleton.getObjectMapper().readTree(responseString);
+        HttpEntity<Object> entityCredentials = new HttpEntity<>(jsonObj, httpHeaders);
+        return restTemplate.postForObject( uri, entityCredentials, String.class);
     }
 }

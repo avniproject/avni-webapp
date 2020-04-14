@@ -1,20 +1,23 @@
 package org.openchs.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.openchs.application.RuleType;
 import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.RestClient;
-import org.openchs.web.request.EncounterTypeContract;
-import org.openchs.web.request.EnrolmentContract;
-import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.RuleRequest;
+import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
+import org.openchs.web.request.rules.RulesContractWrapper.ProgramEncounterContractWrapper;
+import org.openchs.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
+import org.openchs.web.request.rules.constructWrappers.IndividualConstruct;
+import org.openchs.web.request.rules.constructWrappers.ProgramEncounterConstruct;
+import org.openchs.web.request.rules.constructWrappers.ProgramEnrolmentConstruct;
+import org.openchs.web.request.rules.request.RequestEntityWrapper;
+import org.openchs.web.request.rules.response.RuleResponseEntity;
+import org.openchs.web.request.rules.validateRules.DecisionRuleValidation;
 import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +29,9 @@ import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +43,11 @@ public class RuleService {
     private final Map<RuledEntityType, CHSRepository> ruledEntityRepositories;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final RestClient restClient;
+    private final IndividualConstruct individualConstruct;
+    private final DecisionRuleValidation decisionRuleValidation;
+    private final ProgramEncounterConstruct programEncounterConstruct;
+    private final ProgramEnrolmentConstruct programEnrolmentConstruct;
+
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
@@ -46,7 +56,12 @@ public class RuleService {
                        ProgramRepository programRepository,
                        EncounterTypeRepository encounterTypeRepository,
                        ProgramEnrolmentRepository programEnrolmentRepository,
-                       RestClient restClient) {
+                       RestClient restClient,
+                       IndividualConstruct individualConstruct,
+                       DecisionRuleValidation decisionRuleValidation,
+                       ProgramEncounterConstruct programEncounterConstruct,
+                       ProgramEnrolmentConstruct programEnrolmentConstruct
+    ) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
         this.ruleRepository = ruleRepository;
@@ -57,6 +72,10 @@ public class RuleService {
         }};
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.restClient = restClient;
+        this.individualConstruct = individualConstruct;
+        this.decisionRuleValidation = decisionRuleValidation;
+        this.programEncounterConstruct = programEncounterConstruct;
+        this.programEnrolmentConstruct = programEnrolmentConstruct;
     }
 
     @Transactional
@@ -128,46 +147,42 @@ public class RuleService {
         deletedRules.peek(vr -> vr.setVoided(true)).forEach(ruleRepository::save);
     }
 
-    private Set<ProgramEncountersContract> constructEncounters(Set<ProgramEncounter> encounters, String selfEncounterUuid) {
-        return encounters.stream().filter(encounter -> !encounter.getUuid().equalsIgnoreCase(selfEncounterUuid)).map(encounter -> {
-            ProgramEncountersContract encountersContract = new ProgramEncountersContract();
-            EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
-            encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
-            encountersContract.setUuid(encounter.getUuid());
-            encountersContract.setName(encounter.getName());
-            encountersContract.setEncounterType(encounterTypeContract);
-            encountersContract.setEncounterDateTime(encounter.getEncounterDateTime());
-            encountersContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
-            encountersContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
-            encountersContract.setVoided(encounter.isVoided());
-            return encountersContract;
-        }).collect(Collectors.toSet());
+    public RuleResponseEntity decisionRuleProgramEnrolmentWorkFlow(RequestEntityWrapper requestEntityWrapper){
+        ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstruct.constructProgramEnrolmentContract(requestEntityWrapper.getProgramEnrolmentRequestEntity());
+        programEnrolmentContractWrapper.setRule(requestEntityWrapper.getRule());
+        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Program Enrolment",requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid());
+        return createHttpHeaderAndSendRequest("/api/program_enrolment_rule",programEnrolmentContractWrapper,ruleFailureLog);
     }
 
-    public EnrolmentContract constructEnrolments(ProgramEnrolment programEnrolment) {
-        EnrolmentContract enrolmentContract = new EnrolmentContract();
-        enrolmentContract.setUuid(programEnrolment.getUuid());
-        enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getName());
-        enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
-        enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
-        enrolmentContract.setVoided(programEnrolment.isVoided());
-        return enrolmentContract;
+    public RuleResponseEntity decisionRuleProgramEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper){
+        ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstruct.constructProgramEncounterContract(requestEntityWrapper.getProgramEncounterRequestEntity());
+        programEncounterContractWrapper.setRule(requestEntityWrapper.getRule());
+        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Program Encounter",requestEntityWrapper.getProgramEncounterRequestEntity().getUuid());
+        return createHttpHeaderAndSendRequest("/api/program_encounter_rule",programEncounterContractWrapper,ruleFailureLog);
     }
 
-    public JsonNode decisionRule(String encounterData, UserContext userContext) throws JSONException, IOException {
-        ObjectMapper objectMapper = ObjectMapperSingleton.getObjectMapper();
-        JSONObject encounterJsonObj = new JSONObject(encounterData);
-        String programEnrolmentUUID = (String) encounterJsonObj.get("programEnrolmentUUID");
-        String encounterUuid = (String) encounterJsonObj.get("uuid");
-        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentUUID);
-        EnrolmentContract enrolmentContract = constructEnrolments(programEnrolment);
-        Set<ProgramEncountersContract> encountersContractList = constructEncounters(programEnrolment.getProgramEncounters(),encounterUuid);
-        enrolmentContract.setProgramEncounters(encountersContractList);
-        encounterJsonObj.put("programEnrolment",new JSONObject(objectMapper.writeValueAsString(enrolmentContract)));
-        encounterJsonObj.put("organisarionId",userContext.getUser().getOrganisationId());
-        encounterJsonObj.put("userId",userContext.getUser().getId());
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return restClient.post("/api/rules",encounterJsonObj,httpHeaders);
+    public RuleResponseEntity decisionRuleIndividualWorkFlow(RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
+        IndividualContractWrapper individualContractWrapper = individualConstruct.constructIndividualContract(requestEntityWrapper.getIndividualRequestEntity());
+        individualContractWrapper.setRule(requestEntityWrapper.getRule());
+        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Individual",requestEntityWrapper.getIndividualRequestEntity().getUuid());
+        return createHttpHeaderAndSendRequest("/api/individual_rule",individualContractWrapper,ruleFailureLog);
+    }
+
+    private RuleResponseEntity createHttpHeaderAndSendRequest(String url, Object contractObject,RuleFailureLog ruleFailureLog){
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+            String decisionResponse = restClient.post(url,contractObject,httpHeaders);
+            RuleResponseEntity ruleResponseEntity = mapper.readValue(decisionResponse, RuleResponseEntity.class);
+            ruleResponseEntity.getData().setRegistrationDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getRegistrationDecisions(),ruleFailureLog));
+            return ruleResponseEntity;
+        }
+        catch (Exception e){
+            RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
+            ruleResponseEntity.setMessage("SomeThing went wrong at server side");
+            ruleResponseEntity.setStatus("failure");
+            return ruleResponseEntity;
+        }
     }
 }

@@ -1,11 +1,12 @@
 package org.openchs.web;
 
 import org.codehaus.jettison.json.JSONException;
-import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.RuleService;
 import org.openchs.web.request.RuleDependencyRequest;
 import org.openchs.web.request.RuleRequest;
+import org.openchs.web.request.rules.request.RequestEntityWrapper;
+import org.openchs.web.request.rules.response.RuleResponseEntity;
 import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +62,26 @@ public class RuleController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/web/rule", method = RequestMethod.POST)
-    ResponseEntity<?> decisionRule(@RequestBody String JsonData) throws IOException, JSONException {
-        UserContext userContext = UserContextHolder.getUserContext();
-        return ResponseEntity.ok().body(ruleService.decisionRule(JsonData,userContext));
+    @RequestMapping(value = "/web/decisionrule", method = RequestMethod.POST)
+    ResponseEntity<?> decisionRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
+        RuleResponseEntity ruleResponseEntity = null;
+        if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
+            switch (requestEntityWrapper.getRule().getWorkFlowType().toLowerCase()) {
+                case "individual":
+                    ruleResponseEntity = ruleService.decisionRuleIndividualWorkFlow(requestEntityWrapper);
+                    break;
+                case "programencounter":
+                    ruleResponseEntity = ruleService.decisionRuleProgramEncounterWorkFlow(requestEntityWrapper);
+                    break;
+                case "programenrolment":
+                    ruleResponseEntity = ruleService.decisionRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
+                    break;
+            }
+        }
+        if(ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
+            return ResponseEntity.ok().body(ruleResponseEntity);
+        }else{
+            return ResponseEntity.badRequest().body(ruleResponseEntity);
+        }
     }
 }
