@@ -19,7 +19,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         name={fe.name}
         value={value}
         style={{ width: "30%" }}
-        helperText={validationResult && validationResult.messageKey}
+        helperText={validationResult && t(validationResult.messageKey)}
         error={validationResult && !validationResult.success}
         onChange={e => {
           const v = e.target.value;

@@ -80,11 +80,11 @@ export function* updateObsWorker({ formElement, value }) {
   // observationHolder.observations.map((concept)=>{
   //   console.log(concept);
 
-  let shouldSendNullForMultiselect = false;
+  let isNullForMultiselect = false;
 
   if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
     const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
-    shouldSendNullForMultiselect = _.isNil(answer);
+    isNullForMultiselect = _.isNil(answer);
   } else if (
     formElement.concept.datatype === Concept.dataType.Coded &&
     formElement.isSingleSelect()
@@ -99,7 +99,7 @@ export function* updateObsWorker({ formElement, value }) {
   yield put(setSubject(subject));
 
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
-  const validationResult = formElement.validate(shouldSendNullForMultiselect ? null : value);
+  const validationResult = formElement.validate(isNullForMultiselect ? null : value);
 
   _.remove(
     validationResults,

@@ -240,7 +240,7 @@ const DefaultPage = props => {
                     label={t("Date of registration")}
                     value={new Date(props.subject.registrationDate)}
                     error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
-                    helperText={subjectRegErrors.REGISTRATION_DATE}
+                    helperText={t(subjectRegErrors.REGISTRATION_DATE)}
                     style={{ width: "30%" }}
                     margin="normal"
                     id="date-picker-dialog"
@@ -274,7 +274,7 @@ const DefaultPage = props => {
                       name="firstName"
                       value={props.subject.firstName || ""}
                       error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
-                      helperText={subjectRegErrors.FIRST_NAME}
+                      helperText={t(subjectRegErrors.FIRST_NAME)}
                       style={{ width: "30%" }}
                       label={t("firstName")}
                       onChange={e => {
@@ -291,7 +291,7 @@ const DefaultPage = props => {
                       name="lastName"
                       value={props.subject.lastName || ""}
                       error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
-                      helperText={subjectRegErrors.LAST_NAME}
+                      helperText={t(subjectRegErrors.LAST_NAME)}
                       style={{ width: "30%" }}
                       label={t("lastName")}
                       onChange={e => {
@@ -320,7 +320,7 @@ const DefaultPage = props => {
                       items={sortBy(props.genders, "name")}
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                       mandatory={true}
-                      errorMsg={subjectRegErrors.GENDER}
+                      errorMsg={t(subjectRegErrors.GENDER)}
                       onChange={selected => {
                         props.updateSubject("gender", selected);
                         props.subject.gender = selected;
@@ -364,7 +364,7 @@ const DefaultPage = props => {
                       autoComplete="off"
                       required
                       error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
-                      helperText={subjectRegErrors.FIRST_NAME}
+                      helperText={t(subjectRegErrors.FIRST_NAME)}
                       name="firstName"
                       value={props.subject.firstName}
                       onChange={e => {

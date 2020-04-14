@@ -1,4 +1,4 @@
-import { includes, map, isNil } from "lodash";
+import { isNil } from "lodash";
 import React from "react";
 import { CodedConceptFormElement } from "./CodedConceptFormElement";
 import { MultipleCodedValues } from "avni-models";
@@ -21,7 +21,6 @@ export default ({ formElement: fe, value, update, obsHolder, validationResults, 
       }}
       onChange={answer => {
         update(answer.uuid);
-        //update(valueWrapper.isAnswerAlreadyPresent(answer.uuid) ? null : answer.uuid);
       }}
       validationResults={validationResults}
       uuid={uuid}

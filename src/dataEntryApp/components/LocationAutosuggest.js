@@ -92,7 +92,7 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data, errorMsg }) => {
         inputProps={inputProps}
         onSuggestionSelected={onSuggestionSelected}
       />
-      {errorMsg && <span className={classes.errmsg}>{errorMsg}</span>}
+      {errorMsg && <span className={classes.errmsg}>{t(errorMsg)}</span>}
     </div>
   );
 };

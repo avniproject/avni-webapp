@@ -51,7 +51,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
             error={!_.isEmpty(dobErrorMsg)}
-            helperText={dobErrorMsg}
+            helperText={t(dobErrorMsg)}
             required
             margin="normal"
             id="date-picker-dialog"
@@ -85,7 +85,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           value={years}
           style={{ width: "30%" }}
           error={_.isNil(dob) && dobErrorMsg}
-          helperText={_.isNil(dob) && dobErrorMsg}
+          helperText={_.isNil(dob) && t(dobErrorMsg)}
           onChange={e => _onYearsChange(e.target.value)}
         />
       </Box>
