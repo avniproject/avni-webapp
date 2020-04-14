@@ -32,10 +32,7 @@ const PaginationButton = ({ page, title, type, feg, obs }) => {
 
 const Paginator = props => {
   const { t } = useTranslation();
-  // console.log(" Inside Paginator:: printing props for fe and obs");
-  // console.log(props);
-  // console.log(props.feg);
-  // console.log(props.obs);
+
   return (
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>

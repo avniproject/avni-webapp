@@ -1,11 +1,13 @@
 import React, { Fragment } from "react";
 import { TextField } from "@material-ui/core";
 import { isEmpty, find } from "lodash";
+import { useTranslation } from "react-i18next";
 
 const MIN = 60;
 
 const TimeFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   const [time, setTime] = React.useState(value ? value : "");
+  const { t } = useTranslation();
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -34,7 +36,7 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
           shrink: true
         }}
         value={time}
-        helperText={validationResult && validationResult.messageKey}
+        helperText={validationResult && t(validationResult.messageKey)}
         error={validationResult && !validationResult.success}
         onChange={e => {
           const value = e.target.value;

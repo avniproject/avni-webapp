@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { TextField } from "@material-ui/core";
 import { isEmpty, find } from "lodash";
+import { useTranslation } from "react-i18next";
 
 const SimpleDateFormElement = ({
   formElement: fe,
@@ -11,6 +12,7 @@ const SimpleDateFormElement = ({
   uuid
 }) => {
   const [date, setDate] = React.useState(value ? value.toISOString() : "");
+  const { t } = useTranslation();
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -40,7 +42,7 @@ const SimpleDateFormElement = ({
           shrink: true
         }}
         value={date}
-        helperText={validationResult && validationResult.messageKey}
+        helperText={validationResult && t(validationResult.messageKey)}
         error={validationResult && !validationResult.success}
         onChange={e => {
           const value = e.target.value;

@@ -320,7 +320,7 @@ const DefaultPage = props => {
                       items={sortBy(props.genders, "name")}
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
                       mandatory={true}
-                      errorMsg={t(subjectRegErrors.GENDER)}
+                      errorMsg={subjectRegErrors.GENDER}
                       onChange={selected => {
                         props.updateSubject("gender", selected);
                         props.subject.gender = selected;

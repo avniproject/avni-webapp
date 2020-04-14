@@ -2,9 +2,11 @@ import React, { Fragment, useState } from "react";
 import { FormControlLabel, TextField } from "@material-ui/core";
 import { isEmpty, find } from "lodash";
 import { CompositeDuration } from "avni-models";
+import { useTranslation } from "react-i18next";
 
 const DurationFormElement = ({ duration, mandatory, name, update, validationResults, uuid }) => {
   const [localVal, setLocalVal] = useState((duration && duration.durationValue) || "");
+  const { t } = useTranslation();
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -20,7 +22,7 @@ const DurationFormElement = ({ duration, mandatory, name, update, validationResu
           shrink: true
         }}
         value={localVal}
-        helperText={validationResult && validationResult.messageKey}
+        helperText={validationResult && t(validationResult.messageKey)}
         error={validationResult && !validationResult.success}
         onChange={e => {
           const value = e.target.value;

@@ -18,13 +18,15 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         autoComplete="off"
         required={fe.mandatory}
         name={fe.name}
-        value={value}
+        //value={value}
+        value={isNaN(+value) ? undefined : value}
         style={{ width: "30%" }}
-        helperText={validationResult && validationResult.messageKey}
+        helperText={validationResult && t(validationResult.messageKey)}
         error={validationResult && !validationResult.success}
         onChange={e => {
           const v = e.target.value;
-          isEmpty(v) || isNaN(+v) ? update() : update(+v);
+          //isEmpty(v) || isNaN(+v) ? update() : update(+v);
+          isEmpty(v) ? update() : update(+v);
         }}
       />
     </Fragment>
