@@ -14,6 +14,7 @@ const ProgramList = ({ history }) => {
   const [subjectType, setSubjectType] = useState([]);
   const [notificationAlert, setNotificationAlert] = useState(false);
   const [message, setMessage] = useState("");
+  const [formList, setFormList] = useState([]);
 
   useEffect(() => {
     http
@@ -23,6 +24,7 @@ const ProgramList = ({ history }) => {
         formMap.map(l => (l["isVoided"] = false));
         setMapping(formMap);
         setSubjectType(response.data.subjectTypes);
+        setFormList(response.data.forms);
       })
       .catch(error => {});
   }, []);
@@ -56,6 +58,7 @@ const ProgramList = ({ history }) => {
           rowDetails={rowData}
           formMapping={formMapping}
           setMapping={setMapping}
+          formList={formList}
           formType="ProgramEnrolment"
           placeholder="Select enrolment form"
           customUUID="programUUID"
@@ -77,6 +80,7 @@ const ProgramList = ({ history }) => {
           rowDetails={rowData}
           formMapping={formMapping}
           setMapping={setMapping}
+          formList={formList}
           formType="ProgramExit"
           placeholder="Select exit form"
           customUUID="programUUID"

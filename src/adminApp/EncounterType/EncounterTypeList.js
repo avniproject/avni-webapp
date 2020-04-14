@@ -16,6 +16,7 @@ const EncounterTypeList = ({ history }) => {
   const [program, setProgram] = useState([]);
   const [notificationAlert, setNotificationAlert] = useState(false);
   const [message, setMessage] = useState("");
+  const [formList, setFormList] = useState([]);
 
   const tableRef = React.createRef();
 
@@ -28,6 +29,7 @@ const EncounterTypeList = ({ history }) => {
         setMapping(formMap);
         setSubjectType(response.data.subjectTypes);
         setProgram(response.data.programs);
+        setFormList(response.data.forms);
       })
       .catch(error => {});
   }, []);
@@ -75,6 +77,7 @@ const EncounterTypeList = ({ history }) => {
           rowDetails={rowData}
           formMapping={formMapping}
           setMapping={setMapping}
+          formList={formList}
           placeholder="Select encounter form"
           fillFormName="Encounter Form"
           notificationAlert={notificationAlert}
@@ -95,6 +98,7 @@ const EncounterTypeList = ({ history }) => {
           rowDetails={rowData}
           formMapping={formMapping}
           setMapping={setMapping}
+          formList={formList}
           placeholder="Select cancellation form"
           fillFormName="Cancellation form"
           notificationAlert={notificationAlert}
