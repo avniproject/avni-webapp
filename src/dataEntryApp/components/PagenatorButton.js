@@ -70,19 +70,14 @@ const PagenatorButton = ({ children, feg, obs, ...props }) => {
   if (props.type === "text") {
     if (children === "NEXT") {
       return (
-        <Typography
-          className={classes.topnav}
-          variant="overline"
-          {...props}
-          onClick={e => handleNext(e)}
-        >
+        <Typography className={classes.topnav} variant="overline" onClick={e => handleNext(e)}>
           {" "}
           {children}{" "}
         </Typography>
       );
     } else {
       return (
-        <Typography className={classes.topnav} variant="overline" {...props}>
+        <Typography className={classes.topnav} variant="overline">
           {" "}
           {children}{" "}
         </Typography>
@@ -90,24 +85,19 @@ const PagenatorButton = ({ children, feg, obs, ...props }) => {
     }
   } else if (children === "PREVIOUS") {
     return (
-      <Button className={classes.privbuttonStyle} type="button" variant="outlined" {...props}>
+      <Button className={classes.privbuttonStyle} type="button" variant="outlined">
         {children}{" "}
       </Button>
     );
   } else if (children === "Save") {
     return (
-      <Button className={classes.nextbuttonStyle} type="button" {...props}>
+      <Button className={classes.nextbuttonStyle} type="button">
         {children}
       </Button>
     );
   } else {
     return (
-      <Button
-        className={classes.nextbuttonStyle}
-        type="button"
-        {...props}
-        onClick={e => handleNext(e)}
-      >
+      <Button className={classes.nextbuttonStyle} type="button" onClick={e => handleNext(e)}>
         {children}
       </Button>
     );
@@ -119,7 +109,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  setValidationResults: setValidationResults
+  setValidationResults
 };
 
 export default connect(
