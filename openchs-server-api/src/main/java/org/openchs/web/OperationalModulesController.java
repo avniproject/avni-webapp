@@ -6,7 +6,6 @@ import org.openchs.dao.ProgramRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.JsonObject;
-import org.openchs.dao.application.FormRepository;
 import org.openchs.web.request.FormMappingContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,15 +23,13 @@ public class OperationalModulesController {
     private SubjectTypeRepository subjectTypeRepository;
     private ProgramRepository programRepository;
     private FormMappingRepository formMappingRepository;
-    private FormRepository formRepository;
 
     @Autowired
-    public OperationalModulesController(EncounterTypeRepository encounterTypeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, FormMappingRepository formMappingRepository, FormRepository formRepository) {
+    public OperationalModulesController(EncounterTypeRepository encounterTypeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, FormMappingRepository formMappingRepository) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.programRepository = programRepository;
         this.formMappingRepository = formMappingRepository;
-        this.formRepository = formRepository;
     }
 
     @GetMapping("/web/operationalModules")
@@ -48,7 +45,6 @@ public class OperationalModulesController {
                 .with("subjectTypes", subjectTypeRepository.findAllOperational())
                 .with("programs", programRepository.findAllOperational())
                 .with("encounterTypes", encounterTypeRepository.findAllOperational())
-                .with("formMappings", formMappingContracts)
-                .with("forms", formRepository.findAllByIsVoidedFalse());
+                .with("formMappings", formMappingContracts);
     }
 }
