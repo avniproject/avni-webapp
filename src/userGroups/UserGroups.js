@@ -32,9 +32,14 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
 
   const [openModal, setOpenModal] = React.useState(false);
   const [groupName, setGroupName] = React.useState("");
+  const [groupNameError, setGroupNameError] = React.useState(false);
 
   const groupCreationHandler = async () => {
-    const [ok, error] = await api.createGroups(groupName);
+    if (!groupName.trim().length > 0) {
+      setGroupNameError(true);
+      return;
+    }
+    const [ok, error] = await api.createGroups(groupName.trim());
     if (!ok && error) {
       alert(error);
     }
@@ -55,8 +60,15 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
           <h4 id="group-title">Create a new Group</h4>
           <Grid container item>
             <FormControl>
-              <InputLabel>Group name</InputLabel>
-              <Input value={groupName} onChange={event => setGroupName(event.target.value)} />
+              <InputLabel error={groupNameError}>Group name</InputLabel>
+              <Input
+                error={groupNameError}
+                value={groupName}
+                onChange={event => {
+                  setGroupName(event.target.value);
+                  setGroupNameError(false);
+                }}
+              />
             </FormControl>
           </Grid>
           <Box mt={3}>
