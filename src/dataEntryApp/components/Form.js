@@ -4,12 +4,12 @@ import { FormElementGroup } from "./FormElementGroup";
 
 import { withRouter } from "react-router-dom";
 
-const Form = ({ current, obs, updateObs, validationResults }) => {
+const Form = ({ current, obsHolder, updateObs, validationResults }) => {
   return (
     <Fragment>
       <FormElementGroup
         key={current.uuid}
-        obs={obs}
+        obsHolder={obsHolder}
         updateObs={updateObs}
         validationResults={validationResults}
       >

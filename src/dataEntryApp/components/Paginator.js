@@ -18,11 +18,11 @@ const styles = {
   }
 };
 
-const PaginationButton = ({ page, title, type, feg, obs }) => {
+const PaginationButton = ({ page, title, type, feg, obsHolder }) => {
   return (
     page && (
       <RelativeLink params={{ page }} noUnderline>
-        <PagenatorButton type={type} feg={feg} obs={obs}>
+        <PagenatorButton type={type} feg={feg} obsHolder={obsHolder}>
           {title}
         </PagenatorButton>
       </RelativeLink>
@@ -37,16 +37,20 @@ const Paginator = props => {
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
         <PaginationButton
-          page={props.pageDetails.previousPageNumber}
+          page={
+            props.pageDetails.nextPageNumber == null
+              ? props.pageDetails.previousPageNumber + 1
+              : props.pageDetails.previousPageNumber
+          }
           type={props.label.type}
           title={t(props.label.Previous)}
           feg={props.feg}
-          obs={props.obs}
+          obsHolder={props.obsHolder}
         />
 
         {!props.pageDetails.previousPageNumber && (
           <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
-            <PagenatorButton type={props.label.type} feg={props.feg} obs={props.obs}>
+            <PagenatorButton type={props.label.type} feg={props.feg} obsHolder={props.obsHolder}>
               {t(props.label.Previous)}
             </PagenatorButton>
           </InternalLink>
@@ -61,14 +65,14 @@ const Paginator = props => {
           type={props.label.type}
           title={t(props.label.Next)}
           feg={props.feg}
-          obs={props.obs}
+          obsHolder={props.obsHolder}
         />
 
         {!props.pageDetails.nextPageNumber && props.onSave && (
           <PagenatorButton
             type={props.label.type}
             feg={props.feg}
-            obs={props.obs}
+            obsHolder={props.obsHolder}
             onClick={props.onSave}
           >
             {t(props.label.Save)}

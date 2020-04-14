@@ -5,7 +5,11 @@ import NotesFormElement from "./NotesFormElement";
 import SingleSelectFormElement from "./SingleSelectFormElement";
 import MultiSelectFormElement from "./MultiSelectFormElement";
 import NumericFormElement from "./NumericFormElement";
-import { DateFormElement, DateTimeFormElement } from "./DateFormElement";
+import {
+  DateFormElement,
+  DateTimeFormElement,
+  DateAndDurationFormElement
+} from "./DateFormElement";
 import TimeFormElement from "./TimeFormElement";
 import DurationFormElement from "./DurationFormElement";
 

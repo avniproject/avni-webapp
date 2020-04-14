@@ -15,20 +15,20 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Summary = ({ subject }) => {
+const Summary = ({ observations }) => {
   const classes = useStyle();
   const { t } = useTranslation();
 
   return (
     <div className={classes.form}>
       <Typography variant="button" display="block" gutterBottom>
-        System Recommendations
+        {t("SYSTEM RECOMMENDATIONS")}
       </Typography>
       <Table className={classes.table} aria-label="simple table">
         <TableBody>
           <TableRow>
             <TableCell align="justify">
-              {t("Refer to the hospital immeditely for Baby  has got diarrohea")}
+              {t("Refer to the hospital immeditely for Baby has got diarrohea")}
             </TableCell>
           </TableRow>
         </TableBody>
@@ -36,11 +36,11 @@ const Summary = ({ subject }) => {
 
       <LineBreak num={2} />
       <Typography variant="button" display="block" gutterBottom>
-        Observations
+        {t("OBSERVATIONS")}
       </Typography>
       <Grid item xs={8}>
         <List>
-          <Observations observations={subject ? subject.observations : ""} />
+          <Observations observations={observations ? observations : ""} />
         </List>
         {/* <Button color="primary">{t("void")}</Button>
         <Button color="primary">{t("edit")}</Button> */}

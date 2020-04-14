@@ -24,7 +24,7 @@ import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import SubjectRegistrationForm from "./SubjectRegistrationForm";
+import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 
@@ -164,17 +164,6 @@ const DefaultPage = props => {
       // let subject = BrowserStore.fetchSubject();
       // if (subject) props.setSubject(subject);
     })();
-
-    // if (!props.saved) {
-    //   if (!props.subject) {
-    //     props.onLoad(props.match.queryParams.type);
-    //   }
-    // } else {
-    //   let subject = Individual.createEmptyInstance();
-    //   subject.subjectType = props.subject.subjectType;
-    //   props.setSubject(subject);
-    //   props.saveCompleteFalse();
-    // }
   }, []);
 
   return (
@@ -446,9 +435,11 @@ const ConnectedDefaultPage = withRouter(
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.registration.registrationForm,
-  obs:
+  obsHolder:
     state.dataEntry.registration.subject &&
     new ObservationsHolder(state.dataEntry.registration.subject.observations),
+  observations:
+    state.dataEntry.registration.subject && state.dataEntry.registration.subject.observations,
   //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
@@ -458,8 +449,6 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs,
-  onLoad,
-  setSubject,
   onSave: saveSubject
 };
 
@@ -467,22 +456,48 @@ const RegistrationForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
-  )(SubjectRegistrationForm)
+  )(FormWizard)
 );
 
-const SubjectRegister = ({ match: { path } }) => {
+const SubjectRegister = props => {
   const classes = useStyles();
+
+  React.useEffect(() => {
+    (async function fetchData() {
+      await props.onLoad(props.match.queryParams.type);
+      props.saveCompleteFalse();
+      let subject = BrowserStore.fetchSubject();
+      if (subject) props.setSubject(subject);
+    })();
+  }, []);
 
   return (
     <Fragment>
-      <Breadcrumbs path={path} />
+      <Breadcrumbs path={props.match.path} />
       <Paper className={classes.root}>
         <Stepper />
-        <Route exact path={`${path}`} component={ConnectedDefaultPage} />
-        <Route path={`${path}/form`} component={RegistrationForm} />
+        <Route exact path={`${props.match.path}`} component={ConnectedDefaultPage} />
+        <Route path={`${props.match.path}/form`} component={RegistrationForm} />
       </Paper>
     </Fragment>
   );
 };
 
-export default withRouter(SubjectRegister);
+const mapRegisterStateToProps = state => ({
+  subject: state.dataEntry.registration.subject
+});
+
+const mapRegisterDispatchToProps = {
+  onLoad,
+  setSubject,
+  saveCompleteFalse
+};
+
+export default withRouter(
+  withParams(
+    connect(
+      mapRegisterStateToProps,
+      mapRegisterDispatchToProps
+    )(SubjectRegister)
+  )
+);

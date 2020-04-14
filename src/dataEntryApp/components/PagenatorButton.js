@@ -46,12 +46,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PagenatorButton = ({ children, feg, obs, ...props }) => {
+const PagenatorButton = ({ children, feg, obsHolder, ...props }) => {
   const classes = useStyles();
 
   const handleNext = event => {
     const formElementGroup = new FormElementGroup();
-    const formElementGroupValidations = formElementGroup.validate(obs, feg.formElements);
+    const formElementGroupValidations = formElementGroup.validate(obsHolder, feg.formElements);
     const allValidationResults = unionBy(
       props.validationResults,
       formElementGroupValidations,

@@ -60,7 +60,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             format="MM/dd/yyyy"
             style={{ width: "30%" }}
             name="dateOfBirth"
-            label="Date Of birth"
+            label={t("date of birth")}
             value={dob}
             onChange={date => _onChange(date)}
             InputLabelProps={{

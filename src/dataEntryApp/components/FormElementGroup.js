@@ -4,7 +4,7 @@ import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
 import { ObservationsHolder } from "avni-models";
 
-export const FormElementGroup = ({ children: feg, obs, updateObs, validationResults }) => {
+export const FormElementGroup = ({ children: feg, obsHolder, updateObs, validationResults }) => {
   return (
     <div>
       <LineBreak num={1} />
@@ -12,8 +12,8 @@ export const FormElementGroup = ({ children: feg, obs, updateObs, validationResu
         <FormElement
           key={fe.uuid}
           concept={fe.concept}
-          obsHolder={obs}
-          value={get(obs.findObservation(fe.concept), "valueJSON.answer")}
+          obsHolder={obsHolder}
+          value={get(obsHolder.findObservation(fe.concept), "valueJSON.answer")}
           validationResults={validationResults}
           uuid={fe.uuid}
           update={value => {

@@ -13,8 +13,7 @@ export const types = {
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
   SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`,
   GET_VALIDATION_RESULTS: `${prefix}GET_VALIDATION_RESULTS`,
-  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
-  SET_MOVE_NEXT: `${prefix}SET_MOVE_NEXT`
+  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`
 };
 
 export const saveSubject = () => ({
@@ -107,9 +106,6 @@ export default function(state = initialState, action) {
     case types.UPDATE_SUBJECT: {
       const subject = state.subject.cloneForEdit();
       subject[action.field] = action.value;
-
-      console.log("Inside Registration reducer..update sub");
-      console.log(subject);
       sessionStorage.setItem("subject", JSON.stringify(subject));
       return {
         ...state,

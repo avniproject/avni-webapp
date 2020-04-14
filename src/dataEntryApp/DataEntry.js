@@ -8,6 +8,7 @@ import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
 import Loading from "./components/Loading";
 import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
 import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
+import ProgramEnrol from "./views/subjectDashBoard/components/ProgramEnrol";
 import AppBar from "dataEntryApp/components/AppBar";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
@@ -48,12 +49,8 @@ const DataEntry = ({
             <Route path={[path, `${path}/dashboard`]} component={DataEntryDashboard} />
             <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
             <Route path={`${path}/register`} component={SubjectRegister} />
-            <Route
-              exact
-              path={`${path}/subject`}
-              component={SubjectDashboard}
-              key={qs.parse(location.search).uuid}
-            />
+            <Route exact path={`${path}/subject`} component={SubjectDashboard} />
+            <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
           </Grid>
         </Grid>
       </div>

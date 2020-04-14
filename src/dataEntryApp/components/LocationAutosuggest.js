@@ -8,7 +8,7 @@ import SubjectValidation from "../views/registration/SubjectValidation";
 
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {
-    width: "23%",
+    width: "30%",
     height: "30px",
     padding: "20px 20px",
     "font-family": " Helvetica, sans-serif",

@@ -76,10 +76,11 @@ const Header = ({ subject }) => {
   );
 };
 
-const SubjectRegistrationForm = ({
+const FormWizard = ({
   form,
-  obs,
+  obsHolder,
   updateObs,
+  observations,
   location,
   title,
   match,
@@ -87,30 +88,19 @@ const SubjectRegistrationForm = ({
   onSaveGoto,
   onSave,
   subject,
-  onLoad,
-  setSubject,
   validationResults
 }) => {
-  React.useEffect(() => {
-    if (!subject) {
-      (async function fetchData() {
-        await onLoad(match.queryParams.type);
-        let subject = BrowserStore.fetchSubject();
-        if (subject) {
-          setSubject(subject);
-        }
-      })();
-    }
-  });
   const classes = useStyle();
+  const { t } = useTranslation();
+
   const [redirect, setRedirect] = React.useState(false);
   const from = match.queryParams.from;
   const firstPageNumber = form && form.firstFormElementGroup.displayOrder;
   const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
   const page =
-    match.queryParams.page === parseInt(lastPageNumber)
+    parseInt(match.queryParams.page) === parseInt(lastPageNumber)
       ? parseInt(match.queryParams.page)
-      : +match.queryParams.page;
+      : parseInt(+match.queryParams.page);
 
   const currentPageNumber = isNaN(page) ? firstPageNumber : page;
   const showSummaryPage = page >= lastPageNumber + 1;
@@ -132,10 +122,9 @@ const SubjectRegistrationForm = ({
   };
 
   const current = showSummaryPage
-    ? { name: "Summary" }
+    ? { name: `${t("Summary and Recommendations")}` }
     : form && form.formElementGroupAt(currentPageNumber);
   const pageCount = currentPageNumber + " / " + (lastPageNumber + 1);
-  const { t } = useTranslation();
   const onOkHandler = data => {
     BrowserStore.clear("subject");
     setRedirect(data);
@@ -158,16 +147,16 @@ const SubjectRegistrationForm = ({
               showCount={true}
               count={pageCount}
               feg={current}
-              obs={obs}
+              obsHolder={obsHolder}
             />
           </Box>
           <Paper className={classes.form}>
             {currentPageNumber >= lastPageNumber + 1 ? (
-              <Summary subject={subject} />
+              <Summary observations={observations} />
             ) : (
               <Form
                 current={current}
-                obs={obs}
+                obsHolder={obsHolder}
                 updateObs={updateObs}
                 validationResults={validationResults}
               />
@@ -176,7 +165,7 @@ const SubjectRegistrationForm = ({
             {saved && (
               <CustomizedDialog
                 showSuccessIcon="true"
-                message="Your details have been successfully registered."
+                message={t("Your details have been successfully registered.")}
                 showOkbtn="true"
                 openDialogContainer={true}
                 onOk={onOkHandler}
@@ -190,7 +179,7 @@ const SubjectRegistrationForm = ({
                 label={{ Previous: "previous", Next: "next", Save: "save" }}
                 showCount={false}
                 feg={current}
-                obs={obs}
+                obsHolder={obsHolder}
               />
             </div>
           </Paper>
@@ -200,4 +189,4 @@ const SubjectRegistrationForm = ({
   );
 };
 
-export default withRouter(withParams(SubjectRegistrationForm));
+export default withRouter(withParams(FormWizard));
