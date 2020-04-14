@@ -5,6 +5,7 @@ import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.batch.JobService;
 import org.openchs.service.BulkUploadS3Service;
+import org.openchs.service.ImportService;
 import org.openchs.service.OldDataImportService;
 import org.openchs.service.S3Service.ObjectInfo;
 import org.slf4j.Logger;
@@ -20,12 +21,14 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.PagedResources.PageMetadata;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -41,12 +44,14 @@ public class ImportController {
     private final Logger logger;
     private final JobService jobService;
     private final BulkUploadS3Service bulkUploadS3Service;
+    private final ImportService importService;
 
     @Autowired
-    public ImportController(OldDataImportService oldDataImportService, JobService jobService, BulkUploadS3Service bulkUploadS3Service) {
+    public ImportController(OldDataImportService oldDataImportService, JobService jobService, BulkUploadS3Service bulkUploadS3Service, ImportService importService) {
         this.oldDataImportService = oldDataImportService;
         this.jobService = jobService;
         this.bulkUploadS3Service = bulkUploadS3Service;
+        this.importService = importService;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -58,6 +63,19 @@ public class ImportController {
                                         @RequestParam List<Integer> activeSheets) throws Exception {
         oldDataImportService.importExcel(metaDataFile.getInputStream(), dataFile.getInputStream(), dataFile.getOriginalFilename(), true, maxNumberOfRecords, activeSheets);
         return new ResponseEntity<>(true, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/web/importSample", method = RequestMethod.GET)
+    public void getSampleImportFile(@RequestParam String uploadType, HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + uploadType + ".csv\"");
+        response.getWriter().write(importService.getSampleFile(uploadType));
+    }
+
+    @RequestMapping(value = "/web/importTypes", method = RequestMethod.GET)
+    public ResponseEntity getImportTypes(){
+        return ResponseEntity.ok(importService.getImportTypes());
     }
 
     @PostMapping("/import/new")

@@ -30,4 +30,6 @@ public interface OperationalSubjectTypeRepository extends ImplReferenceDataRepos
 
     @Query("select s.name from OperationalSubjectType s where s.isVoided = false")
     List<String> getAllNames();
+
+    OperationalSubjectType findByNameIgnoreCase(String name);
 }

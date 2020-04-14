@@ -2,17 +2,11 @@ package org.openchs.web;
 
 import org.openchs.dao.*;
 import org.openchs.domain.*;
-import org.openchs.dao.AccountRepository;
-import org.openchs.dao.GroupRepository;
-import org.openchs.dao.OrganisationRepository;
-import org.openchs.domain.Account;
-import org.openchs.domain.Group;
-import org.openchs.domain.Organisation;
-import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.request.OrganisationContract;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -94,6 +88,7 @@ public class OrganisationController implements RestControllerResourceProcessor<O
         group.setName("Everyone");
         group.setOrganisationId(organisationId);
         group.setUuid(UUID.randomUUID().toString());
+        group.setHasAllPrivileges(true);
         group.setVersion(0);
         groupRepository.save(group);
     }

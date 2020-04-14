@@ -36,6 +36,8 @@ public class AbstractEncounter extends OrganisationAwareEntity {
     @Type(type = "org.openchs.geo.PointType")
     @Column
     private Point cancelLocation;
+    @Column
+    private String legacyId;
 
     public EncounterType getEncounterType() {
         return encounterType;
@@ -132,5 +134,13 @@ public class AbstractEncounter extends OrganisationAwareEntity {
     public boolean isEncounteredOrCancelledBetween(DateTime startDate, DateTime endDate) {
         return (getEncounterDateTime() != null && getEncounterDateTime().isAfter(startDate) && getEncounterDateTime().isBefore(endDate)) ||
                 (getCancelDateTime() != null && getCancelDateTime().isAfter(startDate) && getCancelDateTime().isBefore(endDate));
+    }
+
+    public String getLegacyId() {
+        return legacyId;
+    }
+
+    public void setLegacyId(String legacyId) {
+        this.legacyId = legacyId;
     }
 }
