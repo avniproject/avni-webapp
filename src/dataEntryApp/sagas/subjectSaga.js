@@ -134,12 +134,17 @@ function* updateObsWatcher() {
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
   subject.observations = updateObservations(subject.observations, formElement, value);
-  const observationHolder = new ObservationsHolder(subject.observations);
-  const answers =
-    observationHolder.findObservation(formElement.concept) &&
-    observationHolder.findObservation(formElement.concept).getValue();
-  const isNullForMultiselect = _.isNil(answers);
   yield put(setSubject(subject));
+
+  let isNullForMultiselect = false;
+  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
+    const observationHolder = new ObservationsHolder(subject.observations);
+    const answers =
+      observationHolder.findObservation(formElement.concept) &&
+      observationHolder.findObservation(formElement.concept).getValue();
+
+    isNullForMultiselect = _.isNil(answers);
+  }
 
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
   const validationResult = formElement.validate(isNullForMultiselect ? null : value);
@@ -149,8 +154,8 @@ export function* updateObsWorker({ formElement, value }) {
     existingValidationResult =>
       existingValidationResult.formIdentifier === validationResult.formIdentifier
   );
-  validationResults.push(validationResult);
 
+  validationResults.push(validationResult);
   yield put(setValidationResults(validationResults));
   sessionStorage.setItem("subject", JSON.stringify(subject));
 }

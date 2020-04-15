@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: 12,
     borderColor: "orange",
     cursor: "pointer",
-    "border-radius": 50,
+    borderRadius: 50,
     padding: "4px 25px",
     backgroundColor: "white"
   },
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: 12,
     width: 110,
     cursor: "pointer",
-    "border-radius": 50,
+    borderRadius: 50,
     padding: "4px 25px"
   },
   savebuttonStyle: {
@@ -36,13 +36,25 @@ const useStyles = makeStyles(theme => ({
     fontSize: 12,
     width: 300,
     cursor: "pointer",
-    "border-radius": 50,
+    borderRadius: 50,
     padding: "4px 25px"
   },
   topnav: {
     color: "orange",
-    fontSize: "12px",
-    cursor: "pointer"
+    fontSize: "13px",
+    cursor: "pointer",
+    border: "none",
+    background: "white",
+
+    "&:hover": {
+      background: "none",
+      border: "none"
+    },
+
+    "&:active": {
+      border: "none",
+      outlineColor: "white"
+    }
   }
 }));
 
@@ -70,17 +82,15 @@ const PagenatorButton = ({ children, feg, obsHolder, ...props }) => {
   if (props.type === "text") {
     if (children === "NEXT") {
       return (
-        <Typography className={classes.topnav} variant="overline" onClick={e => handleNext(e)}>
-          {" "}
+        <Button className={classes.topnav} type="button" onClick={e => handleNext(e)}>
           {children}{" "}
-        </Typography>
+        </Button>
       );
     } else {
       return (
-        <Typography className={classes.topnav} variant="overline">
-          {" "}
+        <Button className={classes.topnav} type="button">
           {children}{" "}
-        </Typography>
+        </Button>
       );
     }
   } else if (children === "PREVIOUS") {
@@ -91,7 +101,7 @@ const PagenatorButton = ({ children, feg, obsHolder, ...props }) => {
     );
   } else if (children === "Save") {
     return (
-      <Button className={classes.nextbuttonStyle} type="button">
+      <Button className={classes.nextbuttonStyle} type="button" {...props}>
         {children}
       </Button>
     );

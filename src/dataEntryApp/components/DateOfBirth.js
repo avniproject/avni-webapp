@@ -81,7 +81,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           type={"numeric"}
           autoComplete="off"
           required
-          name={"ageYearsPart"}
+          name="ageYearsPart"
           value={years}
           style={{ width: "30%" }}
           error={_.isNil(dob) && dobErrorMsg}

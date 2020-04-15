@@ -1,7 +1,7 @@
 import React, { Fragment, createRef } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
+import { Box, TextField, Chip, Typography, Paper, Button } from "@material-ui/core";
 import { ObservationsHolder, AddressLevel } from "avni-models";
 import {
   getRegistrationForm,
@@ -59,8 +59,9 @@ const useStyles = makeStyles(theme => ({
   },
   topprevnav: {
     color: "#cecdcd",
-    marginRight: 8,
-    fontSize: "12px"
+    fontSize: "13px",
+    border: "none",
+    background: "white"
   },
   toppagenum: {
     backgroundColor: "silver",
@@ -70,10 +71,20 @@ const useStyles = makeStyles(theme => ({
   },
   topnextnav: {
     color: "orange",
-    marginLeft: 10,
-    marginRight: 10,
-    fontSize: "12px",
-    cursor: "pointer"
+    fontSize: "13px",
+    cursor: "pointer",
+    border: "none",
+    background: "white",
+
+    "&:hover": {
+      background: "none",
+      border: "none"
+    },
+
+    "&:active": {
+      border: "none",
+      outlineColor: "white"
+    }
   },
   prevbuttonspace: {
     color: "#cecdcd",
@@ -190,9 +201,15 @@ const DefaultPage = props => {
                 1. {t("Basic")} {t("details")}
               </Typography>
               <Box>
-                <label className={classes.topprevnav} disabled={true}>
+                <Button className={classes.topprevnav} type="button" disabled>
                   {t("previous")}
-                </label>
+                </Button>
+                {props.form && (
+                  <label className={classes.toppagenum}>
+                    {" "}
+                    1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}
+                  </label>
+                )}
                 <RelativeLink
                   to="form"
                   params={{
@@ -201,20 +218,9 @@ const DefaultPage = props => {
                   }}
                   noUnderline
                 >
-                  {props.form && (
-                    <label className={classes.toppagenum}>
-                      {" "}
-                      1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}
-                    </label>
-                  )}
-                  <Typography
-                    variant="overline"
-                    className={classes.topnextnav}
-                    gutterBottom
-                    onClick={e => handleNext(e)}
-                  >
+                  <Button className={classes.topnextnav} type="button" onClick={e => handleNext(e)}>
                     {t("next")}
-                  </Typography>
+                  </Button>
                 </RelativeLink>
               </Box>
             </Box>

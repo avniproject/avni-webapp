@@ -8,9 +8,10 @@ const styles = {
   marginRight20: {
     marginRight: 20
   },
+  marginRight5: {
+    marginRight: 5
+  },
   toppagenum: {
-    marginRight: 10,
-    marginTop: 5,
     backgroundColor: "silver",
     color: "black",
     fontSize: 12,
@@ -35,7 +36,10 @@ const Paginator = props => {
 
   return (
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
-      <Box component={"span"} style={styles.marginRight20}>
+      <Box
+        component={"span"}
+        style={props.label.type == "text" ? styles.marginRight5 : styles.marginRight20}
+      >
         <PaginationButton
           page={
             props.pageDetails.nextPageNumber == null
