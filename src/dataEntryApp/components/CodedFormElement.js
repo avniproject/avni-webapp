@@ -73,7 +73,8 @@ export const CodedFormElement = ({
         </Box>
       </FormGroup>
       <FormHelperText>
-        {(validationResult && t(validationResult.messageKey)) || t(errorMsg)}
+        {(validationResult && t(validationResult.messageKey, validationResult.extra)) ||
+          t(errorMsg)}
       </FormHelperText>
     </FormControl>
   );

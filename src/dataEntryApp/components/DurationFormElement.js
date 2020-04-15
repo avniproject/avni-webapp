@@ -30,7 +30,7 @@ const DurationFormElement = ({ duration, mandatory, name, update, validationResu
         name={name}
         type="numeric"
         value={localVal}
-        helperText={validationResult && t(validationResult.messageKey)}
+        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
         onChange={e => {
           const value = e.target.value;

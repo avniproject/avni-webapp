@@ -20,7 +20,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         name={fe.name}
         value={isNaN(parseInt(value)) ? undefined : value}
         style={{ width: "30%" }}
-        helperText={validationResult && t(validationResult.messageKey)}
+        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
         onChange={e => {
           const v = e.target.value;

@@ -20,9 +20,8 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
       multiline
       fullWidth
       variant="outlined"
-      helperText={validationResult && validationResult.messageKey}
+      helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
       error={validationResult && !validationResult.success}
-      s
       onChange={e => {
         const v = e.target.value;
         isEmpty(v) ? update() : update(v);
