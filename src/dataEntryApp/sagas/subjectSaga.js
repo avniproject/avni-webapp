@@ -120,6 +120,12 @@ function updateObservations(observations, formElement, value) {
     !_.isNil(formElement.durationOptions)
   ) {
     observationHolder.updateCompositeDurationValue(formElement.concept, value);
+  } else if (
+    formElement.concept.datatype === Concept.dataType.Date &&
+    !_.isNil(formElement.durationOptions)
+  ) {
+    //  addOrUpdatePrimitiveObs
+    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   } else {
     observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   }

@@ -93,12 +93,14 @@ export const DateAndDurationFormElement = ({ onChange, formElement: fe, value, u
     const durationDate = today.subtract(durationValue.target.value, values);
     setDate(durationDate);
     setduration(durationValue.target.value);
+    update(durationDate);
   };
 
   const onChangeTimeZone = timezoneValue => {
     setValue(timezoneValue.target.value);
     const durationDate = today.subtract(duration, timezoneValue.target.value);
     setDate(durationDate);
+    update(durationDate);
   };
   return (
     <FormControl style={{ width: "100%" }}>
