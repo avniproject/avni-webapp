@@ -33,30 +33,6 @@ import java.util.stream.Stream;
 
 @Component
 public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
-    public enum FixedHeaders {
-        id("Id"),
-        encounterType("Encounter Type"),
-        enrolmentId("Enrolment Id"),
-        visitDate("Visit Date"),
-        earliestVisitDate("Earliest Visit Date"),
-        maxVisitDate("Max Visit Date"),
-        encounterLocation("Encounter Location"),
-        cancelLocation("Cancel Location");
-
-        private final String headerValue;
-
-        FixedHeaders(String headerValue) {
-            this.headerValue = headerValue;
-        }
-
-        public String getHeader() {
-            return headerValue;
-        }
-
-        public static String[] getAllHeaders() {
-            return Arrays.stream(FixedHeaders.values()).map(FixedHeaders::getHeader).toArray(String[]::new);
-        }
-    }
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final ConceptRepository conceptRepository;
@@ -66,6 +42,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private final ProgramEncounterRepository programEncounterRepository;
     private final EncounterTypeRepository encounterTypeRepository;
     private static Logger logger = LoggerFactory.getLogger(ProgramEncounterWriter.class);
+    private static ProgramEncounterFixedHeaders headers = new ProgramEncounterFixedHeaders();
 
 
     @Autowired
@@ -93,7 +70,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
         List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAll();
         locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
 
-        Set<String> nonConceptHeaders = Stream.of(FixedHeaders.getAllHeaders()).collect(Collectors.toSet());
+        Set<String> nonConceptHeaders = Stream.of(headers.getAllHeaders()).collect(Collectors.toSet());
 
         List<Concept> obsConcepts = getConceptHeaders(row.getHeaders(), nonConceptHeaders)
                 .stream()
@@ -110,24 +87,24 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
         programEncounter.setEarliestVisitDateTime(new DateTime(
                 getDate(
                         row,
-                        FixedHeaders.earliestVisitDate.getHeader(),
+                        headers.earliestVisitDate,
                         allErrorMsgs, null
                 )));
         programEncounter.setMaxVisitDateTime(new DateTime(
                 getDate(
                         row,
-                        FixedHeaders.maxVisitDate.getHeader(),
+                        headers.maxVisitDate,
                         allErrorMsgs, null
                 )));
 
         programEncounter.setEncounterDateTime(new DateTime(
                 getDate(
                         row,
-                        FixedHeaders.visitDate.getHeader(),
-                        allErrorMsgs, String.format("%s is mandatory", FixedHeaders.visitDate.getHeader()
+                        headers.visitDate,
+                        allErrorMsgs, String.format("%s is mandatory", headers.visitDate
                 ))));
-        programEncounter.setEncounterLocation(getLocation(row, FixedHeaders.encounterLocation.getHeader(), allErrorMsgs));
-        programEncounter.setCancelLocation(getLocation(row, FixedHeaders.cancelLocation.getHeader(), allErrorMsgs));
+        programEncounter.setEncounterLocation(getLocation(row, headers.encounterLocation, allErrorMsgs));
+        programEncounter.setCancelLocation(getLocation(row, headers.cancelLocation, allErrorMsgs));
         programEncounter.setEncounterType(getEncounterType(row, allErrorMsgs));
         programEncounter.setObservations(setObservations(row, obsConcepts, allErrorMsgs));
 
@@ -142,35 +119,35 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     }
 
     private ProgramEnrolment getProgramEnrolment(Row row, List<String> errorMsgs) {
-        String programEnrolmentLegacyId = row.get(FixedHeaders.enrolmentId.getHeader());
+        String programEnrolmentLegacyId = row.get(headers.enrolmentId);
         if (programEnrolmentLegacyId == null || programEnrolmentLegacyId.isEmpty()) {
-            errorMsgs.add(String.format("'%s' is required", FixedHeaders.enrolmentId.getHeader()));
+            errorMsgs.add(String.format("'%s' is required", headers.enrolmentId));
             return null;
         }
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByLegacyId(programEnrolmentLegacyId);
         if (programEnrolment == null) {
-            errorMsgs.add(String.format("'%s' not found in database", FixedHeaders.enrolmentId.getHeader()));
+            errorMsgs.add(String.format("'%s' not found in database", headers.enrolmentId));
             return null;
         }
         return programEnrolment;
     }
 
     private EncounterType getEncounterType(Row row, List<String> errorMsgs) {
-        String encounterTypeName = row.get(FixedHeaders.encounterType.getHeader());
+        String encounterTypeName = row.get(headers.encounterType);
         if (encounterTypeName == null || encounterTypeName.isEmpty()) {
-            errorMsgs.add(String.format("'%s' is required", FixedHeaders.encounterType.getHeader()));
+            errorMsgs.add(String.format("'%s' is required", headers.encounterType));
             return null;
         }
         EncounterType encounterType = encounterTypeRepository.findByName(encounterTypeName);
         if (encounterType == null) {
-            errorMsgs.add(String.format("'%s' not found in database", FixedHeaders.encounterType.getHeader()));
+            errorMsgs.add(String.format("'%s' not found in database", headers.encounterType));
             return null;
         }
         return encounterType;
     }
 
     private ProgramEncounter getOrCreateProgramEncounter(Row row) {
-        String legacyId = row.get(FixedHeaders.id.getHeader());
+        String legacyId = row.get(headers.id);
         ProgramEncounter existingEncounter = null;
         if (legacyId != null && !legacyId.isEmpty()) {
             existingEncounter = programEncounterRepository.findByLegacyId(legacyId);

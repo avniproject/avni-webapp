@@ -33,29 +33,6 @@ import java.util.stream.Stream;
 
 @Component
 public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
-    public enum FixedHeaders {
-        id("Id"),
-        subjectId("Subject Id"),
-        program("Program"),
-        enrolmentDate("Enrolment Date"),
-        exitDate("Exit Date"),
-        enrolmentLocation("Enrolment Location"),
-        exitLocation("Exit Location");
-
-        private final String headerValue;
-
-        FixedHeaders(String headerValue) {
-            this.headerValue = headerValue;
-        }
-
-        public String getHeader() {
-            return headerValue;
-        }
-
-        public static String[] getAllHeaders() {
-            return Arrays.stream(FixedHeaders.values()).map(FixedHeaders::getHeader).toArray(String[]::new);
-        }
-    }
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final ConceptRepository conceptRepository;
@@ -65,6 +42,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final ProgramRepository programRepository;
     private static Logger logger = LoggerFactory.getLogger(ProgramEnrolmentWriter.class);
+    private static final ProgramEnrolmentFixedHeaders headers = new ProgramEnrolmentFixedHeaders();
 
     @Autowired
     public ProgramEnrolmentWriter(AddressLevelTypeRepository addressLevelTypeRepository,
@@ -92,7 +70,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAll();
         locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
 
-        Set<String> nonConceptHeaders = Stream.of(FixedHeaders.getAllHeaders()).collect(Collectors.toSet());
+        Set<String> nonConceptHeaders = Stream.of(headers.getAllHeaders()).collect(Collectors.toSet());
 
         List<Concept> obsConcepts = getConceptHeaders(row.getHeaders(), nonConceptHeaders)
                 .stream()
@@ -108,17 +86,17 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         programEnrolment.setEnrolmentDateTime(new DateTime(
                 getDate(
                         row,
-                        FixedHeaders.enrolmentDate.getHeader(),
-                        allErrorMsgs, String.format("%s is mandatory", FixedHeaders.enrolmentDate.getHeader())
+                        headers.enrolmentDate,
+                        allErrorMsgs, String.format("%s is mandatory", headers.enrolmentDate)
                 )));
         programEnrolment.setProgramExitDateTime(new DateTime(
                 getDate(
                         row,
-                        FixedHeaders.exitDate.getHeader(),
+                        headers.exitDate,
                         allErrorMsgs, null
                 )));
-        programEnrolment.setEnrolmentLocation(getLocation(row, FixedHeaders.enrolmentLocation.getHeader(), allErrorMsgs));
-        programEnrolment.setExitLocation(getLocation(row, FixedHeaders.exitLocation.getHeader(), allErrorMsgs));
+        programEnrolment.setEnrolmentLocation(getLocation(row, headers.enrolmentLocation, allErrorMsgs));
+        programEnrolment.setExitLocation(getLocation(row, headers.exitLocation, allErrorMsgs));
         programEnrolment.setProgram(getProgram(row, allErrorMsgs));
         programEnrolment.setObservations(setObservations(row, obsConcepts, allErrorMsgs));
 
@@ -133,29 +111,29 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
     }
 
     private Program getProgram(Row row, List<String> errorMsgs) {
-        Program program = programRepository.findByName(row.get(FixedHeaders.program.getHeader()));
+        Program program = programRepository.findByName(row.get(headers.program));
         if (program == null) {
-            errorMsgs.add(String.format("'%s' is required", FixedHeaders.program.getHeader()));
+            errorMsgs.add(String.format("'%s' is required", headers.program));
         }
         return program;
     }
 
     private Individual getSubject(Row row, List<String> errorMsgs) {
-        String subjectExternalId = row.get(FixedHeaders.subjectId.getHeader());
+        String subjectExternalId = row.get(headers.subjectId);
         if (subjectExternalId == null || subjectExternalId.isEmpty()) {
-            errorMsgs.add(String.format("'%s' is required", FixedHeaders.subjectId.getHeader()));
+            errorMsgs.add(String.format("'%s' is required", headers.subjectId));
             return null;
         }
         Individual individual = individualRepository.findByLegacyId(subjectExternalId);
         if (individual == null) {
-            errorMsgs.add(String.format("'%s' not found in database", FixedHeaders.subjectId.getHeader()));
+            errorMsgs.add(String.format("'%s' not found in database", headers.subjectId));
             return null;
         }
         return individual;
     }
 
     private ProgramEnrolment getOrCreateProgramEnrolment(Row row) {
-        String legacyId = row.get(FixedHeaders.id.getHeader());
+        String legacyId = row.get(headers.id);
         ProgramEnrolment existingEnrolment = null;
         if (legacyId != null && !legacyId.isEmpty()) {
             existingEnrolment = programEnrolmentRepository.findByLegacyId(legacyId);

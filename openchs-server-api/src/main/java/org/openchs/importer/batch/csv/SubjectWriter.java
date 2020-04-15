@@ -2,7 +2,6 @@ package org.openchs.importer.batch.csv;
 
 import org.joda.time.LocalDate;
 import org.openchs.dao.*;
-import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.geo.Point;
 import org.openchs.importer.batch.model.Row;
@@ -27,30 +26,6 @@ import java.util.stream.Stream;
 
 @Component
 public class SubjectWriter implements ItemWriter<Row>, Serializable {
-    public enum FixedHeaders{
-        id("Id"),
-        subjectType("Subject Type"),
-        firstName("First Name"),
-        lastName("Last Name"),
-        dateOfBirth("Date Of Birth"),
-        dobVerified("Date Of Birth Verified"),
-        registrationDate("Date Of Registration"),
-        registrationLocation("Registration Location");
-
-        private final String headerValue;
-
-        FixedHeaders(String headerValue) {
-            this.headerValue = headerValue;
-        }
-
-        public String getHeader() {
-            return headerValue;
-        }
-
-        public static String[] getAllHeaders() {
-            return Arrays.stream(values()).map(FixedHeaders::getHeader).toArray(String[]::new);
-        }
-    }
 
     private final OperationalSubjectTypeRepository operationalSubjectTypeRepository;
     private final AddressLevelTypeRepository addressLevelTypeRepository;
@@ -59,7 +34,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private final ObservationService observationService;
     private final IndividualRepository individualRepository;
     private static final String legacyIdUuid = "a503b679-e73f-4852-8c1f-dddef0de975f";
-
+    private static final SubjectFixedHeaders headers = new SubjectFixedHeaders();
 
     @Autowired
     public SubjectWriter(OperationalSubjectTypeRepository operationalSubjectTypeRepository,
@@ -89,7 +64,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
 
         Set<String> nonConceptHeaders = Stream.concat(
                 locationTypes.stream().map(AddressLevelType::getName),
-                Stream.of(FixedHeaders.getAllHeaders())).collect(Collectors.toSet());
+                Stream.of(headers.getAllHeaders())).collect(Collectors.toSet());
 
         List<Concept> obsConcepts = getConceptHeaders(row.getHeaders(), nonConceptHeaders)
                 .stream()
@@ -101,10 +76,10 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         List<String> allErrorMsgs = new ArrayList<>();
 
         setSubjectType(individual, row, allErrorMsgs);
-        individual.setFirstName(row.get(FixedHeaders.firstName.getHeader()));
-        individual.setLastName(row.get(FixedHeaders.lastName.getHeader()));
+        individual.setFirstName(row.get(SubjectFixedHeaders.firstName));
+        individual.setLastName(row.get(SubjectFixedHeaders.lastName));
         setDateOfBirth(individual, row, allErrorMsgs);
-        individual.setDateOfBirthVerified(row.getBool(FixedHeaders.dobVerified.getHeader()));
+        individual.setDateOfBirthVerified(row.getBool(SubjectFixedHeaders.dobVerified));
         setRegistrationDate(individual, row, allErrorMsgs);
         setRegistrationLocation(individual, row, allErrorMsgs);
         setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
@@ -121,7 +96,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     }
 
     private Individual getOrCreateIndividual(Row row) {
-        String externalId = row.get(FixedHeaders.id.getHeader());
+        String externalId = row.get(SubjectFixedHeaders.id);
         Individual existingIndividual = null;
         if (!(externalId == null && externalId.isEmpty())) {
             existingIndividual = individualRepository.findByLegacyId(externalId);
@@ -145,43 +120,43 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private void setSubjectType(Individual individual,
                                 Row row,
                                 List<String> errorMsgs) {
-        String subjectTypeValue = row.get(FixedHeaders.subjectType.getHeader());
+        String subjectTypeValue = row.get(SubjectFixedHeaders.subjectType);
         OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findByNameIgnoreCase(subjectTypeValue);
         if (operationalSubjectType == null)
-            errorMsgs.add(String.format("'%s' not found", FixedHeaders.subjectType.getHeader()));
+            errorMsgs.add(String.format("'%s' not found", SubjectFixedHeaders.subjectType));
         else
             individual.setSubjectType(operationalSubjectType.getSubjectType());
     }
 
     private void setDateOfBirth(Individual individual, Row row, List<String> errorMsgs) {
         try {
-            String dob = row.get(FixedHeaders.dateOfBirth.getHeader());
+            String dob = row.get(SubjectFixedHeaders.dateOfBirth);
             if (dob != null)
                 individual.setDateOfBirth(LocalDate.parse(dob));
         } catch (Exception ex) {
-            errorMsgs.add(String.format("Invalid '%s'", FixedHeaders.dateOfBirth.getHeader()));
+            errorMsgs.add(String.format("Invalid '%s'", SubjectFixedHeaders.dateOfBirth));
         }
     }
 
     private void setRegistrationDate(Individual individual, Row row, List<String> errorMsgs) {
         try {
-            String registrationDate = row.get(FixedHeaders.registrationDate.getHeader());
+            String registrationDate = row.get(SubjectFixedHeaders.registrationDate);
             individual.setRegistrationDate(registrationDate != null ? LocalDate.parse(registrationDate) : LocalDate.now());
         } catch (Exception ex) {
-            errorMsgs.add(String.format("Invalid '%s'", FixedHeaders.registrationDate.getHeader()));
+            errorMsgs.add(String.format("Invalid '%s'", SubjectFixedHeaders.registrationDate));
         }
     }
 
     private void setRegistrationLocation(Individual individual, Row row, List<String> errorMsgs) {
         try {
-            String registrationLocation = row.get(FixedHeaders.registrationLocation.getHeader());
+            String registrationLocation = row.get(SubjectFixedHeaders.registrationLocation);
             if (registrationLocation != null) {
                 String[] points = registrationLocation.split(",");
                 individual.setRegistrationLocation(
                         new Point(Double.parseDouble(points[0]), Double.parseDouble(points[1])));
             }
         } catch (Exception ex) {
-            errorMsgs.add(String.format("Invalid '%s'", FixedHeaders.registrationDate.getHeader()));
+            errorMsgs.add(String.format("Invalid '%s'", SubjectFixedHeaders.registrationDate));
         }
     }
 
@@ -270,7 +245,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
             observationRequests.add(observationRequest);
         }
         try {
-            observationRequests.add(createLegacyIdObservationRequest(row.get(FixedHeaders.id.getHeader())));
+            observationRequests.add(createLegacyIdObservationRequest(row.get(SubjectFixedHeaders.id)));
         } catch (Exception ex) {
             errorMsgs.add(ex.getMessage());
         }
