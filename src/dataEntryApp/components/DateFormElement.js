@@ -72,63 +72,34 @@ export const DateFormElement = ({ formElement: fe, value, update }) => {
   );
 };
 
-export const DateAndDurationFormElement = ({
-  onChange,
-  formElement: fe,
-  value,
-  update,
-  duration
-}) => {
+export const DateAndDurationFormElement = ({ onChange, formElement: fe, value, update }) => {
   const classes = useStyles();
 
   let durationValue = JSON.parse(fe.keyValues[1].value);
   const [values, setValue] = React.useState(durationValue[0]);
   const today = moment();
-  let [date1, setDate] = React.useState(today);
-
-  let [years1, setYears] = React.useState("");
-  // const [months, setMonths] = React.useState("");
-  // const [weeks, setWeeks] = React.useState("");
-  // const [days, setDays] = React.useState("");
-  // const [hours, setHours] = React.useState("");
-
-  //  let years;
-  //  let durationDays;
-  //  let durationWeek;
-  //  let durationMonth;
-  //  let durationHours;
-  //  durationHours = `${dateB.diff(dateC, 'hours')}`;
-  //  durationDays = `${dateB.diff(dateC, 'days')}`;
-  //  durationWeek = `${dateB.diff(dateC, 'weeks')}`;
-  //  durationMonth = `${dateB.diff(dateC, 'months')}`;
-  //  setMonths(durationMonth);
-  //  setWeeks(durationWeek);
-  //  setDays(durationDays);
-  //  setHours(durationHours);
-
-  // let years;
-  const _onChange = dateValue => {
-    const dateB = moment();
-    const dateC = moment(dateValue);
-    update(dateC);
-
-    let years = `${dateB.diff(dateC, values)}`;
-    setYears(years);
-    setDate(dateValue);
+  const [date, setDate] = React.useState(today);
+  const [duration, setduration] = React.useState("");
+  const onDateChange = dateValue => {
+    const currentDate = moment();
+    const slectedDate = moment(dateValue);
+    update(slectedDate);
+    const extractDuration = `${currentDate.diff(slectedDate, values)}`;
+    setduration(extractDuration);
+    setDate(slectedDate);
   };
 
-  const _onYearsChange = duration => {
-    let date = today.subtract(duration.target.value, values);
-    setDate(date);
-    setYears(duration.target.value);
+  const onDurationChange = durationValue => {
+    const durationDate = today.subtract(durationValue.target.value, values);
+    setDate(durationDate);
+    setduration(durationValue.target.value);
   };
 
-  const handleChange = event => {
-    setValue(event.target.value);
+  const onChangeTimeZone = timezoneValue => {
+    setValue(timezoneValue.target.value);
+    const durationDate = today.subtract(duration, timezoneValue.target.value);
+    setDate(durationDate);
   };
-
-  // rconst duration;
-
   return (
     <FormControl style={{ width: "100%" }}>
       <FormLabel>{fe.display || fe.name}</FormLabel>
@@ -137,8 +108,8 @@ export const DateAndDurationFormElement = ({
           autoOk
           label="Select Date"
           required={fe.mandatory}
-          value={date1}
-          onChange={dateValue => _onChange(dateValue)}
+          value={date}
+          onChange={dateValue => onDateChange(dateValue)}
           onError={console.log}
           format="dd/MM/yyyy"
           style={{ width: "30%" }}
@@ -152,7 +123,13 @@ export const DateAndDurationFormElement = ({
         <FormLabel>OR</FormLabel>
       </div>
       <form>
-        <RadioGroup row aria-label="gender" name="gender1" value={values} onChange={handleChange}>
+        <RadioGroup
+          row
+          aria-label="gender"
+          name="gender1"
+          value={values}
+          onChange={onChangeTimeZone}
+        >
           <TextField
             id="standard-number"
             label="Enter Duration"
@@ -161,8 +138,8 @@ export const DateAndDurationFormElement = ({
               shrink: true
             }}
             style={{ width: "30%" }}
-            value={years1}
-            onChange={duration => _onYearsChange(duration)}
+            value={duration}
+            onChange={durationValue => onDurationChange(durationValue)}
           />
           {durationValue.map(item => (
             <FormControlLabel value={item} control={<Radio color="primary" />} label={item} />
