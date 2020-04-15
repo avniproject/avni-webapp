@@ -5,9 +5,11 @@ export const types = {
   ON_LOAD: `${prefix}ON_LOAD`,
   UPDATE_SUBJECT: `${prefix}UPDATE_NEW_SUBJECT`,
   SAVE_SUBJECT: `${prefix}SAVE_SUBJECT`,
+  SAVE_PROGRAM_ENROLMENT: `${prefix}SAVE_PROGRAM_ENROLMENT`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
-  SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
-  SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`
+  SAVE_PROGRAM_COMPLETE: `${prefix}SAVE_PROGRAM_COMPLETE`,
+  SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
+  UPDATE_PROGRAM_ENROLMENT: `${prefix}UPDATE_PROGRAM_ENROLMENT`
 };
 
 export const setProgramEnrolment = programEnrolment => ({
@@ -17,6 +19,10 @@ export const setProgramEnrolment = programEnrolment => ({
 
 export const saveSubject = () => ({
   type: types.SAVE_SUBJECT
+});
+
+export const saveProgramEnrolment = () => ({
+  type: types.SAVE_PROGRAM_ENROLMENT
 });
 
 export const onLoad = (subjectTypeName, programName) => ({
@@ -36,8 +42,14 @@ export const updateObs = (formElement, value) => ({
   value
 });
 
-export const saveComplete = () => ({
-  type: types.SAVE_COMPLETE
+export const saveProgramComplete = () => ({
+  type: types.SAVE_PROGRAM_COMPLETE
+});
+
+export const updateProgramEnrolment = (field, value) => ({
+  type: types.UPDATE_PROGRAM_ENROLMENT,
+  field,
+  value
 });
 
 const initialState = {
@@ -53,7 +65,7 @@ export default function(state = initialState, action) {
         enrolForm: action.form
       };
     }
-    case types.SAVE_COMPLETE: {
+    case types.SAVE_PROGRAM_COMPLETE: {
       return {
         ...state,
         saved: true
@@ -65,6 +77,19 @@ export default function(state = initialState, action) {
         programEnrolment: action.programEnrolment
       };
     }
+    case types.UPDATE_PROGRAM_ENROLMENT: {
+      debugger;
+      const programEnrolment = state.programEnrolment.cloneForEdit();
+      programEnrolment[action.field] = action.value;
+      console.log("program__Enrolment--");
+      console.log(programEnrolment);
+      //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
+      return {
+        ...state,
+        programEnrolment
+      };
+    }
+
     default:
       return state;
   }
