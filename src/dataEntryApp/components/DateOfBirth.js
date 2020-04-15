@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 
 export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
-  const dob = (dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10)) || null;
+  const dob = (dateOfBirth && new Date(dateOfBirth)) || null;
   const [years, setYears] = React.useState("");
   const [months, setMonths] = React.useState("");
 

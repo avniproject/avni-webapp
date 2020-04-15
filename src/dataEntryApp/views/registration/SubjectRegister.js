@@ -161,8 +161,8 @@ const DefaultPage = props => {
     (async function fetchData() {
       await props.onLoad(props.match.queryParams.type);
       props.saveCompleteFalse();
-      // let subject = BrowserStore.fetchSubject();
-      // if (subject) props.setSubject(subject);
+      let subject = BrowserStore.fetchSubject();
+      if (subject) props.setSubject(subject);
     })();
   }, []);
 
