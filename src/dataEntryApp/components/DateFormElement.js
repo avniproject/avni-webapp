@@ -17,7 +17,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
 import { Duration } from "avni-models";
-import _, { isEmpty } from "lodash";
+import _, { isEmpty, get, find } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -51,8 +51,17 @@ export const DateTimeFormElement = ({ formElement: fe, value, update }) => {
   );
 };
 
+const getValue = (keyValues, key) => {
+  const keyValue = find(keyValues, keyValue => keyValue.key === key);
+  return get(keyValue, "value");
+};
+
 export const DateFormElement = ({ formElement: fe, value, update }) => {
-  return (
+  let durationValue = getValue(fe.keyValues, "durationOptions");
+
+  return durationValue ? (
+    <DateAndDurationFormElement formElement={fe} value={value} update={update} />
+  ) : (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDatePicker
         autoOk
@@ -72,13 +81,13 @@ export const DateFormElement = ({ formElement: fe, value, update }) => {
   );
 };
 
-export const DateAndDurationFormElement = ({ onChange, formElement: fe, value, update }) => {
+export const DateAndDurationFormElement = ({ formElement: fe, value, update }) => {
   const classes = useStyles();
 
-  let durationValue = JSON.parse(fe.keyValues[1].value);
+  let durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
   const [values, setValue] = React.useState(durationValue[0]);
   const today = moment();
-  const [date, setDate] = React.useState(today);
+  const [date, setDate] = React.useState(value);
   const [duration, setduration] = React.useState("");
   const onDateChange = dateValue => {
     const currentDate = moment();

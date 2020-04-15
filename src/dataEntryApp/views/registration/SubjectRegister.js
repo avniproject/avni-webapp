@@ -27,6 +27,7 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
+import { disableSession } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -108,8 +109,10 @@ const DefaultPage = props => {
     (async function fetchData() {
       await props.onLoad(props.match.queryParams.type);
       props.saveCompleteFalse();
-      let subject = BrowserStore.fetchSubject();
-      if (subject) props.setSubject(subject);
+      if (!disableSession) {
+        let subject = BrowserStore.fetchSubject();
+        if (subject) props.setSubject(subject);
+      }
     })();
   }, []);
 
@@ -353,8 +356,10 @@ const SubjectRegister = props => {
     (async function fetchData() {
       await props.onLoad(props.match.queryParams.type);
       props.saveCompleteFalse();
-      let subject = BrowserStore.fetchSubject();
-      if (subject) props.setSubject(subject);
+      if (!disableSession) {
+        let subject = BrowserStore.fetchSubject();
+        if (subject) props.setSubject(subject);
+      }
     })();
   }, []);
 
