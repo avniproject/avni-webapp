@@ -128,7 +128,7 @@ const CatchmentForm = ({ edit, ...props }) => {
         source="locationIds"
         perPage={1000}
         label="Locations"
-        filterToQuery={searchText => ({ name: searchText })}
+        filterToQuery={searchText => ({ title: searchText })}
       >
         <LocationAutocomplete optionText={optionRenderer} />
       </ReferenceArrayInput>
