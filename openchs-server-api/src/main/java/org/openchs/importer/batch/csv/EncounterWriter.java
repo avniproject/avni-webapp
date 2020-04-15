@@ -10,6 +10,7 @@ import org.openchs.dao.*;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.geo.Point;
+import org.openchs.importer.batch.csv.creator.ObservationCreator;
 import org.openchs.importer.batch.model.Row;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.ObservationRequest;
@@ -34,8 +35,6 @@ import java.util.stream.Stream;
 @Component
 public class EncounterWriter implements ItemWriter<Row>, Serializable {
 
-    private final AddressLevelTypeRepository addressLevelTypeRepository;
-    private final ConceptRepository conceptRepository;
     private final ObservationService observationService;
     private final FormRepository formRepository;
     private final EncounterTypeRepository encounterTypeRepository;
@@ -43,23 +42,22 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     private IndividualRepository individualRepository;
     private static Logger logger = LoggerFactory.getLogger(EncounterWriter.class);
     private static EncounterFixedHeaders headers = new EncounterFixedHeaders();
+    private ObservationCreator observationCreator;
 
 
     @Autowired
-    public EncounterWriter(AddressLevelTypeRepository addressLevelTypeRepository,
-                           ConceptRepository conceptRepository,
-                           ObservationService observationService,
+    public EncounterWriter(ObservationService observationService,
                            FormRepository formRepository,
                            EncounterTypeRepository encounterTypeRepository,
                            EncounterRepository encounterRepository,
-                           IndividualRepository individualRepository) {
-        this.addressLevelTypeRepository = addressLevelTypeRepository;
-        this.conceptRepository = conceptRepository;
+                           IndividualRepository individualRepository,
+                           ObservationCreator observationCreator) {
         this.observationService = observationService;
         this.formRepository = formRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
         this.individualRepository = individualRepository;
+        this.observationCreator = observationCreator;
     }
 
     @Override
@@ -68,16 +66,7 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
     }
 
     private void write(Row row) throws Exception {
-        List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAll();
-        locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
-
-        Set<String> nonConceptHeaders = Stream.of(headers.getAllHeaders()).collect(Collectors.toSet());
-
-        List<Concept> obsConcepts = getConceptHeaders(row.getHeaders(), nonConceptHeaders)
-                .stream()
-                .map(conceptRepository::findByName)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<Concept> obsConcepts = observationCreator.getConceptHeaders(headers, row.getHeaders());
 
         Encounter encounter = getOrCreateEncounter(row);
 
