@@ -6,11 +6,11 @@ export default class {
     if (sessionStorage.getItem("subject")) {
       let subject = Individual.createEmptyInstance();
       let localSavedSubject = JSON.parse(sessionStorage.getItem("subject"));
-
       subject.name = localSavedSubject.name;
       subject.firstName = localSavedSubject.firstName;
       subject.lastName = localSavedSubject.lastName;
-      subject.dateOfBirth = new Date(localSavedSubject.dateOfBirth);
+      subject.dateOfBirth =
+        localSavedSubject.dateOfBirth && new Date(localSavedSubject.dateOfBirth);
       subject.registrationDate = new Date(localSavedSubject.registrationDate);
       subject.dateOfBirthVerified = localSavedSubject.dateOfBirthVerified;
       subject.gender.name = localSavedSubject.gender.name;
