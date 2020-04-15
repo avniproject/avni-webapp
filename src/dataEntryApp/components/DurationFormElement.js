@@ -23,7 +23,7 @@ const DurationFormElement = ({ duration, mandatory, name, update }) => {
         label={t(duration.durationUnit)}
         required={mandatory}
         name={name}
-        type="numeric"
+        type="number"
         value={localVal}
         onChange={e => {
           const value = e.target.value;

@@ -14,6 +14,10 @@ const TimeFormElement = ({ formElement: fe, value, update }) => {
         onError={console.log}
         mask="__:__ _M"
         style={{ width: "30%" }}
+        KeyboardButtonProps={{
+          "aria-label": "change date",
+          color: "primary"
+        }}
       />
     </MuiPickersUtilsProvider>
   );
