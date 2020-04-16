@@ -11,6 +11,12 @@ export default {
       body: JSON.stringify(subject)
     }),
 
+  saveProgram: subject =>
+    httpClient.fetchJson("/programEnrolments", {
+      method: "POST",
+      body: JSON.stringify(subject)
+    }),
+
   fetchSubjectProfile: uuid =>
     httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
       return response.json;
