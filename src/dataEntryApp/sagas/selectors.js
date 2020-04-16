@@ -5,14 +5,15 @@ export const selectSubjectTypeFromName = subjectTypeName => state =>
     get(state, "dataEntry.metadata.operationalModules.subjectTypes"),
     subjectType => subjectType.name === subjectTypeName
   );
-
+//it is returning another funciton
 export const selectRegistrationFormMapping = subjectType => state =>
   find(
+    //get takes state from store you can print this
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     fm =>
-      isNil(fm.programUuid) &&
-      isNil(fm.encounterTypeUuid) &&
-      fm.subjectTypeUuid === subjectType.uuid
+      isNil(fm.programUUID) &&
+      isNil(fm.encounterTypeUUID) &&
+      fm.subjectTypeUUID === subjectType.uuid
   );
 
 export const selectRegistrationFormMappingForSubjectType = subjectTypeName => state =>

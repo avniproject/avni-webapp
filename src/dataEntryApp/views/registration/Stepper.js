@@ -1,10 +1,15 @@
 import React, { Fragment } from "react";
+import Typography from "@material-ui/core/Typography";
+import { useTranslation } from "react-i18next";
 
 const Stepper = () => {
+  const { t } = useTranslation();
+
   return (
     <Fragment>
-      <h3>Register and enroll - Mother Program</h3>
-      <h6>Stepper coming soon</h6>
+      <Typography variant="h6" gutterBottom>
+        {t("register")} {t("Individual")}
+      </Typography>
     </Fragment>
   );
 };

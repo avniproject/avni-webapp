@@ -74,7 +74,7 @@ function* setUserDetails() {
     resources: translationData,
     fallbackLng: "en",
     lng: userDetails.settings ? userDetails.settings.locale : "en",
-    debug: true,
+    debug: false,
     ns: ["translations"],
     defaultNS: "translations",
     keySeparator: false,

@@ -1,44 +1,25 @@
 import React, { Fragment } from "react";
-import { TextField } from "@material-ui/core";
-import { isEmpty } from "lodash";
-
-const MIN = 60;
+import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider, KeyboardTimePicker } from "@material-ui/pickers";
 
 const TimeFormElement = ({ formElement: fe, value, update }) => {
-  const [time, setTime] = React.useState(value ? value : "");
-
-  /*TODO:
-   * TimeFormElement cannot be auto-calculated through rules, as of now.
-   * Because the two way binding is not implemented.
-   *
-   * React.useEffect( fun {
-   *   if current element not focused {
-   *     setTime(value ? value : "")
-   *   }
-   * }, [value]);
-   *
-   * */
-
   return (
-    <Fragment>
-      <TextField
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <KeyboardTimePicker
+        autoOk
         label={fe.display || fe.name}
         required={fe.mandatory}
-        name={fe.name}
-        fullWidth
-        InputLabelProps={{
-          shrink: true
+        value={value}
+        onChange={update}
+        onError={console.log}
+        mask="__:__ _M"
+        style={{ width: "30%" }}
+        KeyboardButtonProps={{
+          "aria-label": "change date",
+          color: "primary"
         }}
-        value={time}
-        onChange={e => {
-          const value = e.target.value;
-          isEmpty(value) ? setTime("") : setTime(value);
-          isEmpty(value) ? update() : update(value);
-        }}
-        type="time"
-        inputProps={{ step: 5 * MIN }}
       />
-    </Fragment>
+    </MuiPickersUtilsProvider>
   );
 };
 

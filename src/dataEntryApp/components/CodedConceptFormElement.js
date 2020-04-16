@@ -7,6 +7,7 @@ export const CodedConceptFormElement = ({ children: fe, ...props }) => {
       groupName={fe.name}
       items={fe.concept.answers.map(answer => answer.concept)}
       multiSelect={fe.type === "MultiSelect"}
+      mandatory={fe.mandatory}
       {...props}
     />
   );

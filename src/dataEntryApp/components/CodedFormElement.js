@@ -4,28 +4,38 @@ import { xor, first, filter } from "lodash";
 import Checkbox from "./Checkbox";
 import Radio from "./Radio";
 import Box from "@material-ui/core/Box";
+import { useTranslation } from "react-i18next";
+
 export const CodedFormElement = ({
   groupName,
   items,
   isChecked,
   onChange,
   multiSelect,
+  mandatory,
   ...props
 }) => {
+  let genwidth = "";
+  if (groupName === "Gender") {
+    genwidth = "10%";
+  } else {
+    genwidth = "20%";
+  }
+  const { t } = useTranslation();
   return (
     <FormControl component="fieldset" {...props} style={{ width: "80%" }}>
-      <FormLabel component="legend">{groupName}</FormLabel>
+      <FormLabel component="legend">{t(groupName)}</FormLabel>
       <FormGroup>
         <Box display="flex" flexWrap="wrap" alignContent="flex-start">
           {items.map(item => (
-            <Box width="20%">
+            <Box width={genwidth}>
               <FormControlLabel
                 key={item.uuid}
                 control={
                   multiSelect ? (
                     <Checkbox
                       checked={isChecked(item)}
-                      onChange={() => onChange(xor([item], filter(items, isChecked)))}
+                      onChange={() => onChange(item)}
                       value={item.uuid}
                     />
                   ) : (
@@ -36,7 +46,7 @@ export const CodedFormElement = ({
                     />
                   )
                 }
-                label={item.name}
+                label={t(item.name)}
               />{" "}
             </Box>
           ))}

@@ -9,6 +9,7 @@ import reports from "../reports/reducers";
 import userGroups from "../userGroups/reducers";
 import app from "./ducks";
 import translationsReducer from "../i18nTranslations/TranslationReducers";
+import programs from "../dataEntryApp/reducers/programReducer";
 
 const LOCALE = "en";
 export default combineReducers({
@@ -22,5 +23,6 @@ export default combineReducers({
   translations,
   reports,
   translationsReducer,
+  programs,
   userGroups
 });

@@ -33,7 +33,7 @@ const SubjectDashboard = ({
   if (subjectProfile !== undefined) {
     paperInfo = (
       <Paper className={classes.root}>
-        <ProfileDetails profileDetails={subjectProfile} />
+        <ProfileDetails profileDetails={subjectProfile} subjectUuid={match.queryParams.uuid} />
         <SubjectDashboardTabs
           profile={subjectProfile}
           general={subjectGeneral}
