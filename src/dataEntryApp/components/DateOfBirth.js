@@ -84,7 +84,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           name="ageYearsPart"
           value={years}
           style={{ width: "30%" }}
-          error={_.isNil(dob) && dobErrorMsg}
+          error={Boolean(_.isNil(dob) && dobErrorMsg)}
           helperText={_.isNil(dob) && t(dobErrorMsg)}
           onChange={e => _onYearsChange(e.target.value)}
         />

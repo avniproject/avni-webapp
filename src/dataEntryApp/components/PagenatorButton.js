@@ -51,26 +51,33 @@ const useStyles = makeStyles(theme => ({
       border: "none"
     },
 
-    "&:active": {
+    "&:focus": {
       border: "none",
       outlineColor: "white"
     }
   }
 }));
 
-const PagenatorButton = ({ children, feg, obsHolder, ...props }) => {
+const PagenatorButton = ({
+  children,
+  feg,
+  obsHolder,
+  validationResults,
+  setValidationResults,
+  ...props
+}) => {
   const classes = useStyles();
 
   const handleNext = event => {
     const formElementGroup = new FormElementGroup();
     const formElementGroupValidations = formElementGroup.validate(obsHolder, feg.formElements);
     const allValidationResults = unionBy(
-      props.validationResults,
+      validationResults,
       formElementGroupValidations,
       "formIdentifier"
     );
 
-    props.setValidationResults(allValidationResults);
+    setValidationResults(allValidationResults);
 
     if (!isEmpty(allValidationResults)) {
       if (new ValidationResults(allValidationResults).hasValidationError()) {
@@ -88,14 +95,14 @@ const PagenatorButton = ({ children, feg, obsHolder, ...props }) => {
       );
     } else {
       return (
-        <Button className={classes.topnav} type="button">
+        <Button className={classes.topnav} {...props} type="button">
           {children}{" "}
         </Button>
       );
     }
   } else if (children === "PREVIOUS") {
     return (
-      <Button className={classes.privbuttonStyle} type="button" variant="outlined">
+      <Button className={classes.privbuttonStyle} type="button" variant="outlined" {...props}>
         {children}{" "}
       </Button>
     );

@@ -10,7 +10,6 @@ import CheckCircleOutlineRoundedIcon from "@material-ui/icons/CheckCircleOutline
 import { Box, Typography, Button } from "@material-ui/core";
 import { LineBreak } from "../../common/components/utils";
 import { makeStyles } from "@material-ui/core/styles";
-import Chip from "../components/PagenatorButton";
 
 const useStyles = makeStyles(theme => ({
   root: {
