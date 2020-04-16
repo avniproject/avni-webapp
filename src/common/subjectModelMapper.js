@@ -69,6 +69,12 @@ export const mapConcept = observationJson => {
 export const mapProfile = subjectProfile => {
   if (subjectProfile) {
     let individual = mapIndividual(subjectProfile);
+    individual.subjectType = {
+      uuid: "43d0800a-4f62-415b-920f-06c41432f73a",
+      name: "Individual",
+      voided: false
+    };
+    individual.gender = { uuid: "5805fd83-636d-46ad-8926-f50a163344bd", name: "Male", id: 30 };
     individual.observations = mapObservation(subjectProfile["observations"]);
     individual.relationships = mapRelationships(subjectProfile["relationships"]);
     return individual;
