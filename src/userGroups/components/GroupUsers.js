@@ -76,7 +76,7 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
   return (
     <div>
       <MaterialTable
-        title="Group Users List"
+        title=""
         columns={columns}
         data={groupUsers}
         actions={[
@@ -89,7 +89,8 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
           })
         ]}
         options={{
-          actionsColumnIndex: 3
+          actionsColumnIndex: 3,
+          searchFieldAlignment: "left"
         }}
         localization={{
           header: { actions: "Remove" }

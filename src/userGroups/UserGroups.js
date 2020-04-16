@@ -11,6 +11,7 @@ import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import FormControl from "@material-ui/core/FormControl";
 import api from "./api";
+import { Title } from "react-admin";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -50,6 +51,7 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
+      <Title title={"User Groups"} />
       <Modal
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
