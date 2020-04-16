@@ -1,8 +1,9 @@
-package org.openchs.importer.batch.csv;
+package org.openchs.importer.batch.csv.writer;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.ProgramEnrolment;
+import org.openchs.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.openchs.importer.batch.csv.creator.*;
 import org.openchs.importer.batch.model.Row;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
 
     private final ProgramEnrolmentRepository programEnrolmentRepository;
-    private static final ProgramEnrolmentFixedHeaders headers = new ProgramEnrolmentFixedHeaders();
+    private static final ProgramEnrolmentHeaders headers = new ProgramEnrolmentHeaders();
     private ObservationCreator observationCreator;
     private LocationCreator locationCreator;
     private SubjectCreator subjectCreator;

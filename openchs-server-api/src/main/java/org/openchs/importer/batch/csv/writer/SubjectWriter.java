@@ -1,4 +1,4 @@
-package org.openchs.importer.batch.csv;
+package org.openchs.importer.batch.csv.writer;
 
 import org.joda.time.LocalDate;
 import org.openchs.dao.AddressLevelTypeRepository;
@@ -7,6 +7,7 @@ import org.openchs.dao.LocationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Individual;
+import org.openchs.importer.batch.csv.writer.header.SubjectHeaders;
 import org.openchs.importer.batch.csv.creator.LocationCreator;
 import org.openchs.importer.batch.csv.creator.ObservationCreator;
 import org.openchs.importer.batch.csv.creator.SubjectTypeCreator;
@@ -29,8 +30,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final LocationRepository locationRepository;
     private final IndividualRepository individualRepository;
-    private static final String legacyIdUuid = "a503b679-e73f-4852-8c1f-dddef0de975f";
-    private static final SubjectFixedHeaders headers = new SubjectFixedHeaders();
+    private static final SubjectHeaders headers = new SubjectHeaders();
     private SubjectTypeCreator subjectTypeCreator;
     private ObservationCreator observationCreator;
     private LocationCreator locationCreator;
@@ -62,10 +62,10 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         List<String> allErrorMsgs = new ArrayList<>();
 
         individual.setSubjectType(subjectTypeCreator.getSubjectType(row.get(headers.subjectType), allErrorMsgs, headers.subjectType));
-        individual.setFirstName(row.get(SubjectFixedHeaders.firstName));
-        individual.setLastName(row.get(SubjectFixedHeaders.lastName));
+        individual.setFirstName(row.get(headers.firstName));
+        individual.setLastName(row.get(headers.lastName));
         setDateOfBirth(individual, row, allErrorMsgs);
-        individual.setDateOfBirthVerified(row.getBool(SubjectFixedHeaders.dobVerified));
+        individual.setDateOfBirthVerified(row.getBool(headers.dobVerified));
         setRegistrationDate(individual, row, allErrorMsgs);
         individual.setRegistrationLocation(locationCreator.getLocation(row, headers.registrationLocation, allErrorMsgs));
         setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
@@ -82,9 +82,9 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     }
 
     private Individual getOrCreateIndividual(Row row) {
-        String externalId = row.get(SubjectFixedHeaders.id);
+        String externalId = row.get(headers.id);
         Individual existingIndividual = null;
-        if (!(externalId == null && externalId.isEmpty())) {
+        if (!(externalId == null || externalId.isEmpty())) {
             existingIndividual = individualRepository.findByLegacyId(externalId);
         }
         return existingIndividual == null ? createNewIndividual(externalId) : existingIndividual;
@@ -98,20 +98,20 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
 
     private void setDateOfBirth(Individual individual, Row row, List<String> errorMsgs) {
         try {
-            String dob = row.get(SubjectFixedHeaders.dateOfBirth);
+            String dob = row.get(headers.dateOfBirth);
             if (dob != null)
                 individual.setDateOfBirth(LocalDate.parse(dob));
         } catch (Exception ex) {
-            errorMsgs.add(String.format("Invalid '%s'", SubjectFixedHeaders.dateOfBirth));
+            errorMsgs.add(String.format("Invalid '%s'", headers.dateOfBirth));
         }
     }
 
     private void setRegistrationDate(Individual individual, Row row, List<String> errorMsgs) {
         try {
-            String registrationDate = row.get(SubjectFixedHeaders.registrationDate);
+            String registrationDate = row.get(headers.registrationDate);
             individual.setRegistrationDate(registrationDate != null ? LocalDate.parse(registrationDate) : LocalDate.now());
         } catch (Exception ex) {
-            errorMsgs.add(String.format("Invalid '%s'", SubjectFixedHeaders.registrationDate));
+            errorMsgs.add(String.format("Invalid '%s'", headers.registrationDate));
         }
     }
 

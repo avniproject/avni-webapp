@@ -11,7 +11,7 @@ import org.openchs.domain.AddressLevelType;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
 import org.openchs.domain.ObservationCollection;
-import org.openchs.importer.batch.csv.Headers;
+import org.openchs.importer.batch.csv.writer.header.Headers;
 import org.openchs.importer.batch.model.Row;
 import org.openchs.service.ObservationService;
 import org.openchs.web.request.ObservationRequest;

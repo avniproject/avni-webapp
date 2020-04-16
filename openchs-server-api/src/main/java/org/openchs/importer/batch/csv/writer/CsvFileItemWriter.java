@@ -1,4 +1,4 @@
-package org.openchs.importer.batch.csv;
+package org.openchs.importer.batch.csv.writer;
 
 import org.openchs.framework.security.AuthService;
 import org.openchs.importer.batch.model.Row;

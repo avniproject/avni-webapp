@@ -1,7 +1,7 @@
-package org.openchs.importer.batch.csv;
+package org.openchs.importer.batch.csv.writer.header;
 
-public class ProgramEncounterFixedHeaders extends EncounterFixedHeaders implements Headers {
-    public static final String enrolmentId = "Enrolment Id";
+public class ProgramEncounterHeaders extends CommonEncounterHeaders implements Headers {
+    public final String enrolmentId = "Enrolment Id";
 
     @Override
     public String[] getAllHeaders() {
