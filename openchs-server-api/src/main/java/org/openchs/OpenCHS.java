@@ -1,5 +1,6 @@
 package org.openchs;
 
+import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementGroup;
 import org.openchs.application.FormMapping;
@@ -128,22 +129,28 @@ public class OpenCHS {
             public Resource<FormMapping> process(Resource<FormMapping> resource) {
                 FormMapping formMapping = resource.getContent();
                 resource.removeLinks();
-                resource.add(new Link(formMapping.getForm().getUuid(), "formUUID"));
-                String programUuid = formMapping.getProgramUuid();
-                if (programUuid != null) {
-                    resource.add(new Link(programUuid, "entityUUID"));
-                }
+                Form form = formMapping.getForm();
+                if(form != null){
+                    resource.add(new Link(formMapping.getForm().getUuid(), "formUUID"));
 
-                if (formMapping.getSubjectType() != null) {
-                    resource.add(new Link(formMapping.getSubjectType().getUuid(), "subjectTypeUUID"));
-                }
 
-                String encounterTypeUuid = formMapping.getEncounterTypeUuid();
-                if (encounterTypeUuid != null) {
-                    resource.add(new Link(encounterTypeUuid, "observationsTypeEntityUUID"));
-                }
+                    String programUuid = formMapping.getProgramUuid();
+                    if (programUuid != null) {
+                        resource.add(new Link(programUuid, "entityUUID"));
+                    }
 
-                return resource;
+                    if (formMapping.getSubjectType() != null) {
+                        resource.add(new Link(formMapping.getSubjectType().getUuid(), "subjectTypeUUID"));
+                    }
+
+                    String encounterTypeUuid = formMapping.getEncounterTypeUuid();
+                    if (encounterTypeUuid != null) {
+                        resource.add(new Link(encounterTypeUuid, "observationsTypeEntityUUID"));
+                    }
+
+                    return resource;
+                }
+                return null;
             }
         };
     }
