@@ -13,6 +13,7 @@ import ProgramEdit from "./Program/ProgramEdit";
 import EncounterTypeShow from "./EncounterType/EncounterTypeShow";
 import EncounterTypeCreate from "./EncounterType/EncounterTypeCreate";
 import EncounterTypeEdit from "./EncounterType/EncounterTypeEdit";
+import UserGroupDetails from "../userGroups/UserGroupDetails";
 
 const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
 
@@ -30,5 +31,6 @@ export default [
   <Route exact path="/program/:id" component={ProgramEdit} />,
   <Route exact path="/encounterType/:id/show" component={EncounterTypeShow} />,
   <Route exact path="/encounterType/create" component={EncounterTypeCreate} />,
-  <Route exact path="/encounterType/:id" component={EncounterTypeEdit} />
+  <Route exact path="/encounterType/:id" component={EncounterTypeEdit} />,
+  <Route exact path="/userGroupDetails/:id" component={UserGroupDetails} />
 ];

@@ -25,7 +25,9 @@ export const selectEnrolmentFormMapping = (subjectType, programUuid) => state =>
       !isNil(fm.programUUID) &&
       (fm.subjectTypeUUID === subjectType.uuid &&
         fm.programUUID === programUuid &&
-        fm.formUUID === "23d8763d-4759-4c7d-bb46-d57a1ee58673")
+        fm.formType === "ProgramEnrolment")
+    //&&
+    //fm.formUUID === "23d8763d-4759-4c7d-bb46-d57a1ee58673"
   );
 
 //For retriving the program uuid from program name
@@ -46,4 +48,5 @@ export const selectEnrolmentFormMappingForSubjectType = (subjectTypeName, progra
   )(state);
 };
 
-export const selectEnrolmentSubject = state => get(state, "dataEntry.registration.subject");
+export const selectEnrolmentSubject = state =>
+  get(state, "dataEntry.enrolmentReducer.programEnrolment");

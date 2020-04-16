@@ -194,7 +194,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                 <TableCell className={classes.tableCell}>{`${profileDetails.firstName} ${
                   profileDetails.lastName
                 }`}</TableCell>
-                <TableCell className={classes.tableCell}>{t(profileDetails.gender)}</TableCell>
+                <TableCell className={classes.tableCell}>{t(profileDetails.gender.name)}</TableCell>
                 <TableCell className={classes.tableCell}>
                   {new Date().getFullYear() -
                     new Date(profileDetails.dateOfBirth).getFullYear() +

@@ -6,6 +6,7 @@ import dataEntry from "../dataEntryApp/reducers/dataEntryReducer";
 import bulkUpload from "../upload/reducers";
 import translations from "../translations/reducers";
 import reports from "../reports/reducers";
+import userGroups from "../userGroups/reducers";
 import app from "./ducks";
 import translationsReducer from "../i18nTranslations/TranslationReducers";
 import programs from "../dataEntryApp/reducers/programReducer";
@@ -22,5 +23,6 @@ export default combineReducers({
   translations,
   reports,
   translationsReducer,
-  programs
+  programs,
+  userGroups
 });

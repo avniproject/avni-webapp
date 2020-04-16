@@ -13,9 +13,6 @@ export default ({ formElement: fe, value, update, obsHolder }) => {
     <CodedConceptFormElement
       isChecked={answer => {
         const answerAlreadyPresent = valueWrapper.isAnswerAlreadyPresent(answer.uuid);
-        console.log(
-          `MultiSelectFormElement: ${answer.name} ${answer.uuid} ${answerAlreadyPresent}`
-        );
         return answerAlreadyPresent;
       }}
       onChange={answer => update(answer.uuid)}
