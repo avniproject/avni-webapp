@@ -30,7 +30,10 @@ export default class {
           element.concept.keyValues,
           element.concept.uuid
         );
-        observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
+        observationHolder.addOrUpdateObservation(
+          concept,
+          concept.isDurationConcept() ? element.valueJSON : element.valueJSON.answer
+        );
         store.dispatch({ type: types.ADD_CONCEPT, value: concept });
       });
       subject.observations = observationHolder.observations;

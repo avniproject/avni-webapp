@@ -25,12 +25,17 @@ import {
   selectSubjectTypeFromName,
   selectRegistrationSubject
 } from "./selectors";
-import { selectEnrolmentFormMappingForSubjectType, selectProgram } from "./enrolmentSelectors";
+import {
+  selectEnrolmentFormMappingForSubjectType,
+  selectProgram,
+  selectEnrolmentSubject
+} from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
 import {
   onLoad,
   setEnrolForm,
   setProgramEnrolment,
+  saveProgramComplete,
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import _ from "lodash";
@@ -87,6 +92,18 @@ export function* saveSubjectWatcher() {
   yield takeLatest(subjectTypes.SAVE_SUBJECT, saveSubjectWorker);
 }
 
+export function* saveProgramEnrolmentWorker() {
+  debugger;
+  const programEnrolment = yield select(selectEnrolmentSubject);
+  let resource = programEnrolment.toResource;
+  yield call(api.saveProgram, resource);
+  yield put(saveProgramComplete());
+}
+
+export function* saveProgramEnrolmentWatcher() {
+  yield takeLatest(enrolmentTypes.SAVE_PROGRAM_ENROLMENT, saveProgramEnrolmentWorker);
+}
+
 function* loadRegistrationPageWatcher() {
   yield takeLatest(subjectTypes.ON_LOAD, loadRegistrationPageWorker);
 }
@@ -121,6 +138,12 @@ function updateObservations(observations, formElement, value) {
     !_.isNil(formElement.durationOptions)
   ) {
     observationHolder.updateCompositeDurationValue(formElement.concept, value);
+  } else if (
+    formElement.concept.datatype === Concept.dataType.Date &&
+    !_.isNil(formElement.durationOptions)
+  ) {
+    //  addOrUpdatePrimitiveObs
+    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   } else {
     observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   }
@@ -184,6 +207,7 @@ export default function* subjectSaga() {
       enrolmentOnLoadWatcher,
       saveSubjectWatcher,
       loadRegistrationPageWatcher,
+      saveProgramEnrolmentWatcher,
       updateObsWatcher,
       updateEnrolmentObsWatcher
     ].map(fork)

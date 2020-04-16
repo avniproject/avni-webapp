@@ -28,7 +28,7 @@ const DurationFormElement = ({ duration, mandatory, name, update, validationResu
         label={t(duration.durationUnit)}
         required={mandatory}
         name={name}
-        type="numeric"
+        type="number"
         value={localVal}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
@@ -52,12 +52,12 @@ const CompositeDurationFormElement = ({ formElement: fe, value, update }) => {
     <FormControl>
       <FormLabel>{fe.display || fe.name}</FormLabel>
       <form className={classes.root} noValidate autoComplete="off">
-        {fe.durationOptions.map((durationUnit, key) => {
+        {fe.durationOptions.map((durationUnit, index) => {
           return (
             <DurationFormElement
-              key={key}
+              key={index}
               mandatory={fe.mandatory}
-              name={fe.name + key}
+              name={fe.name + index}
               duration={compositeDuration.findByUnit(durationUnit)}
               update={val => {
                 isEmpty(val)

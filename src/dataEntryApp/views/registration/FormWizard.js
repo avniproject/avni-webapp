@@ -27,7 +27,7 @@ const useStyle = makeStyles(theme => ({
   },
   details: {
     color: "rgba(0, 0, 0, 0.54)",
-    backgroundColor: "#f8f4f4",
+    backgroundColor: "#F8F9F9",
     height: 40,
     width: "100%",
     padding: 8,
@@ -37,19 +37,21 @@ const useStyle = makeStyles(theme => ({
     position: "absolute",
     bottom: 0,
     left: 0,
-    backgroundColor: "#f8f4f4",
+    backgroundColor: "#F8F9F9",
     height: 80,
     width: "100%",
     padding: 25
   }
 }));
 
-const Header = ({ subject }) => {
+const Header = ({ subject, children }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const fullName = subject.firstName + " " + subject.lastName || "-";
-  const gender = subject.gender.name || "-";
-  const lowestAddressLevel = subject.lowestAddressLevel.title || "-";
+  const gender = subject.gender ? subject.gender.name || "-" : "";
+  const lowestAddressLevel = subject.lowestAddressLevel
+    ? subject.lowestAddressLevel.title || "-"
+    : "";
   const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
   return (
     <div className={classes.details}>
@@ -70,6 +72,9 @@ const Header = ({ subject }) => {
         <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
           {lowestAddressLevel}
         </Typography>
+        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+          {children}
+        </Typography>
       </Typography>
       <LineBreak num={2} />
     </div>
@@ -88,14 +93,20 @@ const FormWizard = ({
   onSaveGoto,
   onSave,
   subject,
-  validationResults
+  validationResults,
+  children
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
 
+  console.log("children..", children);
+
   const [redirect, setRedirect] = React.useState(false);
   const from = match.queryParams.from;
-  const firstPageNumber = form && form.firstFormElementGroup.displayOrder;
+  // console.log(page);
+
+  const firstPageNumber =
+    form && form.firstFormElementGroup && form.firstFormElementGroup.displayOrder;
   const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
   const page =
     parseInt(match.queryParams.page) === parseInt(lastPageNumber)
@@ -134,7 +145,7 @@ const FormWizard = ({
     <Fragment>
       {form && (
         <div>
-          <Header subject={subject} />
+          {subject ? <Header subject={subject} children={children} /> : ""}
           <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
             <Typography variant="subtitle1" gutterBottom>
               {" "}
