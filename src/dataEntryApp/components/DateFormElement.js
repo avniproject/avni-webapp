@@ -92,11 +92,11 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update }) =
   const [duration, setduration] = React.useState(firstDuration);
   const onDateChange = dateValue => {
     const currentDate = moment();
-    const slectedDate = moment(dateValue);
-    update(slectedDate);
-    const extractDuration = `${currentDate.diff(slectedDate, units)}`;
+    const selectedDate = moment(dateValue);
+    update(selectedDate);
+    const extractDuration = `${currentDate.diff(selectedDate, units)}`;
     setduration(extractDuration);
-    setDate(slectedDate);
+    setDate(selectedDate);
   };
 
   const onDurationChange = durationValue => {
