@@ -1,15 +1,60 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _ from "lodash";
+import _, { isEqual } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
+import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 
 const SubjectTypesList = ({ history }) => {
+  const [formMapping, setMapping] = useState([]);
+  const [notificationAlert, setNotificationAlert] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        const formMap = response.data.formMappings;
+        formMap.map(l => (l["isVoided"] = false));
+        setMapping(formMap);
+      })
+      .catch(error => {});
+  }, []);
+
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc" },
+    {
+      title: "Name",
+      defaultSort: "asc",
+      sorting: false,
+      render: rowData => <a href={`#/appDesigner/subjectType/${rowData.id}/show`}>{rowData.name}</a>
+    },
+    {
+      title: "Registration form name",
+      field: "formName",
+      sorting: false,
+      render: rowData => (
+        <WorkFlowFormCreation
+          key={rowData.uuid}
+          rowDetails={rowData}
+          formMapping={formMapping}
+          setMapping={setMapping}
+          formType="IndividualProfile"
+          placeholder="Select registration form"
+          customUUID="subjectTypeUUID"
+          fillFormName="Registration form"
+          notificationAlert={notificationAlert}
+          setNotificationAlert={setNotificationAlert}
+          message={message}
+          setMessage={setMessage}
+          redirectToWorkflow="subjectType"
+        />
+      )
+    },
+    { title: "Household", field: "household", type: "boolean" },
+    { title: "Group", field: "group", type: "boolean" },
     { title: "Organisation Id", field: "organisationId", type: "numeric" }
   ];
 
@@ -71,12 +116,6 @@ const SubjectTypesList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
-              onRowClick={(event, rowData) =>
-                history.push({
-                  pathname: `/appDesigner/subjectType/${rowData.id}/show`,
-                  state: {}
-                })
-              }
             />
           </div>
         </div>
@@ -85,5 +124,8 @@ const SubjectTypesList = ({ history }) => {
     </>
   );
 };
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
 
-export default withRouter(SubjectTypesList);
+export default withRouter(React.memo(SubjectTypesList, areEqual));

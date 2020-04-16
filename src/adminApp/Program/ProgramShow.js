@@ -10,10 +10,14 @@ import Moment from "react-moment";
 import Grid from "@material-ui/core/Grid";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 
 const ProgramShow = props => {
   const [program, setProgram] = useState({});
   const [editAlert, setEditAlert] = useState(false);
+  const [formMapping, setFormMapping] = useState([]);
+  const [subjectType, setSubjectType] = useState([]);
+
   useEffect(() => {
     http
       .get("/web/program/" + props.match.params.id)
@@ -21,6 +25,14 @@ const ProgramShow = props => {
       .then(result => {
         setProgram(result);
       });
+
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        setFormMapping(response.data.formMappings);
+        setSubjectType(response.data.subjectTypes);
+      })
+      .catch(error => {});
   }, []);
 
   return (
@@ -41,6 +53,17 @@ const ProgramShow = props => {
           </div>
           <p />
           <div>
+            <FormLabel style={{ fontSize: "13px" }}>Subject type</FormLabel>
+            <br />
+            <ShowSubjectType
+              rowDetails={program}
+              subjectType={subjectType}
+              formMapping={formMapping}
+              entityUUID="programUUID"
+            />
+          </div>
+          <p />
+          <div>
             <FormLabel style={{ fontSize: "13px" }}>Colour</FormLabel>
             <br />
             <div
@@ -55,6 +78,7 @@ const ProgramShow = props => {
             </div>
           </div>
           <p />
+
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Program Subject Label</FormLabel>
             <br />
