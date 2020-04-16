@@ -250,12 +250,13 @@ const GroupPrivileges = ({
           <hr />
           <br />
           <MaterialTable
-            title="Privilege List"
+            title=""
             columns={columns}
             data={groupPrivilegeList}
             options={{
               grouping: true,
-              pageSize: 20
+              pageSize: 20,
+              searchFieldAlignment: "left"
               // filtering: true
             }}
           />
