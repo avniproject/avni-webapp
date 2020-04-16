@@ -17,9 +17,6 @@ export default {
     const content = await file.text();
     files.download(`sample-${type}.csv`, content);
   },
-  async downloadDynamicSample(type) {
-    const file = await fetch(`/web/importSample?uploadType=${type}`);
-    const content = await file.text();
-    files.download(`sample-${type}.csv`, content);
-  }
+  downloadDynamicSample: type =>
+    http.downloadFile(`/web/importSample?uploadType=${type}`, `sample-${type}.csv`)
 };
