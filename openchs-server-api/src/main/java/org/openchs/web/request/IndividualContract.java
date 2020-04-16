@@ -16,6 +16,8 @@ public class IndividualContract extends CommonIndividualRequest {
 
     private Set<EncounterContract> encounters = new HashSet<>();
 
+    private SubjectTypeContract subjectType;
+
     public String getLowestAddressLevel() {
         return lowestAddressLevel;
     }
@@ -54,5 +56,13 @@ public class IndividualContract extends CommonIndividualRequest {
 
     public void setEncounters(Set<EncounterContract> encounters) {
         this.encounters = encounters;
+    }
+
+    public SubjectTypeContract getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(SubjectTypeContract subjectType) {
+        this.subjectType = subjectType;
     }
 }
