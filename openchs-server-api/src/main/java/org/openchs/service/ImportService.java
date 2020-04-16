@@ -115,7 +115,7 @@ public class ImportService {
 
     private String getProgramEnrolmentSampleFile(String[] uploadSpec, String response) {
         response = addToResponse(response, Arrays.asList(new ProgramEncounterHeaders().getAllHeaders()));
-        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[1]).getUuid(), getProgram(uploadSpec[2]).getUuid(), null, FormType.ProgramEnrolment);
+        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[2]).getUuid(), getProgram(uploadSpec[1]).getUuid(), null, FormType.ProgramEnrolment);
         return addToResponse(response, formMapping);
     }
 
