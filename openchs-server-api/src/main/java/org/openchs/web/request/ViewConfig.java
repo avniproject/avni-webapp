@@ -6,7 +6,7 @@ public class ViewConfig {
     private String program;
     // operationalEncounterType;
     private String encounterType;
-
+    // operationalSubjectType
     private String subjectType;
 
     private boolean spreadMultiSelectObs;
@@ -52,7 +52,7 @@ public class ViewConfig {
     }
 
     public enum Type {
-        Registration, ProgramEncounter
+        Registration, ProgramEncounter, Encounter
     }
 }
 

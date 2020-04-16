@@ -21,12 +21,15 @@ public class ViewGenController {
     @PostMapping(value = "/query")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public Map<String, String> query(@RequestBody ViewConfig viewConfig) {
-        if (Registration.equals(viewConfig.getType())) {
-            return viewGenService.registrationReport(viewConfig.getSubjectType(), viewConfig.getSpreadMultiSelectObs());
+        switch (viewConfig.getType()) {
+            case Registration:
+                return viewGenService.registrationReport(viewConfig.getSubjectType(), viewConfig.getSpreadMultiSelectObs());
+            case ProgramEncounter:
+                return viewGenService.getSqlsFor(viewConfig.getProgram(), viewConfig.getEncounterType(), viewConfig.getSpreadMultiSelectObs(), viewConfig.getSubjectType());
+            case Encounter:
+                return viewGenService.getSqlsFor(null, viewConfig.getEncounterType(), viewConfig.getSpreadMultiSelectObs(), viewConfig.getSubjectType());
+            default:
+                return new HashMap<>();
         }
-        if (ProgramEncounter.equals(viewConfig.getType())) {
-            return viewGenService.getSqlsFor(viewConfig.getProgram(), viewConfig.getEncounterType(), viewConfig.getSpreadMultiSelectObs(), viewConfig.getSubjectType());
-        }
-        return new HashMap<>();
     }
 }
