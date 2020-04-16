@@ -12,6 +12,7 @@ const SubjectTypesList = ({ history }) => {
   const [formMapping, setMapping] = useState([]);
   const [notificationAlert, setNotificationAlert] = useState(false);
   const [message, setMessage] = useState("");
+  const [formList, setFormList] = useState([]);
 
   useEffect(() => {
     http
@@ -20,6 +21,7 @@ const SubjectTypesList = ({ history }) => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
         setMapping(formMap);
+        setFormList(response.data.forms);
       })
       .catch(error => {});
   }, []);
@@ -41,6 +43,7 @@ const SubjectTypesList = ({ history }) => {
           rowDetails={rowData}
           formMapping={formMapping}
           setMapping={setMapping}
+          formList={formList}
           formType="IndividualProfile"
           placeholder="Select registration form"
           customUUID="subjectTypeUUID"

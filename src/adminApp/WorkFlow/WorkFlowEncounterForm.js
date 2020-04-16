@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Button from "@material-ui/core/Button";
-import Link from "@material-ui/core/Link";
 import { default as UUID } from "uuid";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -10,11 +9,12 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import { isEqual } from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
+import Chip from "@material-ui/core/Chip";
+import { cloneDeep } from "lodash";
 
 function WorkFlowEncounterForm(props) {
   let data,
     showAvailableForms = [],
-    removeDuplicate = [],
     existMapping = [],
     formType;
 
@@ -34,28 +34,24 @@ function WorkFlowEncounterForm(props) {
   }
 
   let form = props.formMapping.filter(
-    l => l.formType === formType && l.encounterTypeUUID === props.rowDetails.uuid
+    l =>
+      l.formType === formType &&
+      l.encounterTypeUUID === props.rowDetails.uuid &&
+      l.isVoided === false
   );
 
   const [error, setError] = useState("");
   const [redirect, setRedirect] = useState(false);
   const [clicked, setClicked] = useState(form.length === 0 ? false : true);
   const [uuid, setUUID] = useState("");
+  const [redirectToForm, setRedirectToForm] = useState(false);
 
   existMapping = props.formMapping.filter(l => l.encounterTypeUUID === props.rowDetails.uuid);
 
-  form.length === 0 &&
-    props.formMapping.map(l => {
-      if (
-        l.formType === formType &&
-        l.formName !== undefined &&
-        l.formName !== null &&
-        !removeDuplicate.includes(l.formName)
-      ) {
-        removeDuplicate.push(l.formName);
-        showAvailableForms.push(l);
-      }
-    });
+  showAvailableForms =
+    form.length === 0
+      ? props.formList.filter(form => form.formType === formType && form.formName !== undefined)
+      : [];
 
   showAvailableForms.unshift({ formName: "createform", formUUID: "11111" });
 
@@ -70,6 +66,32 @@ function WorkFlowEncounterForm(props) {
       .catch(error => {
         setError(error);
         setRedirect(false);
+      });
+  };
+
+  const onRemoveFormAssociation = () => {
+    let voidedFormAssociation = form[0];
+    const formMappingforEncounterTypeLength = props.formMapping.filter(
+      l => l.encounterTypeUUID === props.rowDetails.uuid
+    );
+    if (formMappingforEncounterTypeLength.length === 1) {
+      voidedFormAssociation["formUUID"] = null;
+    } else {
+      voidedFormAssociation["isVoided"] = true;
+    }
+    const formMappingClone = cloneDeep(props.formMapping);
+    formMappingClone.forEach(formMap => {
+      if (formMap.uuid === voidedFormAssociation.uuid) {
+        formMap.isVoided = true;
+      }
+    });
+    http
+      .post("/emptyFormMapping", [voidedFormAssociation])
+      .then(response => {
+        props.setMapping(formMappingClone);
+      })
+      .catch(error => {
+        console.log(error.response.data.message);
       });
   };
 
@@ -174,11 +196,18 @@ function WorkFlowEncounterForm(props) {
         </span>
       )}
       {clicked && (
-        <Link href={"/#/appdesigner/forms/" + form[0].formUUID}>
-          {form[0].formName === undefined || form[0].formName === null
-            ? props.fillFormName
-            : form[0].formName}
-        </Link>
+        <Chip
+          size="medium"
+          clickable
+          color="primary"
+          onClick={() => setRedirectToForm(true)}
+          label={
+            form[0].formName === undefined || form[0].formName === null
+              ? props.fillFormName
+              : form[0].formName
+          }
+          onDelete={() => onRemoveFormAssociation()}
+        />
       )}
       {!clicked && (
         <>
@@ -208,6 +237,13 @@ function WorkFlowEncounterForm(props) {
           to={{
             pathname: "/appdesigner/forms/" + uuid,
             state: { stateName: "encounterType" }
+          }}
+        />
+      )}
+      {redirectToForm && (
+        <Redirect
+          to={{
+            pathname: `/appdesigner/forms/${form[0].formUUID}`
           }}
         />
       )}
