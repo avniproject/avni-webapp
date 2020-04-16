@@ -85,29 +85,30 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update }) =
   const classes = useStyles();
 
   let durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
-  const [values, setValue] = React.useState(durationValue[0]);
+  const [units, setUnit] = React.useState(durationValue[0]);
   const today = moment();
   const [date, setDate] = React.useState(value);
-  const [duration, setduration] = React.useState("");
+  const firstDuration = `${today.diff(value, units ? units : "years")}`;
+  const [duration, setduration] = React.useState(firstDuration);
   const onDateChange = dateValue => {
     const currentDate = moment();
     const slectedDate = moment(dateValue);
     update(slectedDate);
-    const extractDuration = `${currentDate.diff(slectedDate, values)}`;
+    const extractDuration = `${currentDate.diff(slectedDate, units)}`;
     setduration(extractDuration);
     setDate(slectedDate);
   };
 
   const onDurationChange = durationValue => {
-    const durationDate = today.subtract(durationValue.target.value, values);
+    const durationDate = today.subtract(durationValue.target.value, units);
     setDate(durationDate);
     setduration(durationValue.target.value);
     update(durationDate);
   };
 
-  const onChangeTimeZone = timezoneValue => {
-    setValue(timezoneValue.target.value);
-    const durationDate = today.subtract(duration, timezoneValue.target.value);
+  const onChangeUnit = unitsValue => {
+    setUnit(unitsValue.target.value);
+    const durationDate = today.subtract(duration, unitsValue.target.value);
     setDate(durationDate);
     update(durationDate);
   };
@@ -134,13 +135,7 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update }) =
         <FormLabel>OR</FormLabel>
       </div>
       <form>
-        <RadioGroup
-          row
-          aria-label="gender"
-          name="gender1"
-          value={values}
-          onChange={onChangeTimeZone}
-        >
+        <RadioGroup row aria-label="gender" name="gender1" value={units} onChange={onChangeUnit}>
           <TextField
             id="standard-number"
             label="Enter Duration"
