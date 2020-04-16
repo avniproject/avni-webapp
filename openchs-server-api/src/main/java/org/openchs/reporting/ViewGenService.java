@@ -5,6 +5,7 @@ import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.OperationalEncounterTypeRepository;
 import org.openchs.dao.OperationalProgramRepository;
+import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,15 @@ public class ViewGenService {
 
     private final OperationalProgramRepository operationalProgramRepository;
     private final OperationalEncounterTypeRepository operationalEncounterTypeRepository;
+    private final OperationalSubjectTypeRepository operationalSubjectTypeRepository;
     private final FormMappingRepository formMappingRepository;
     private final String PLACE_HOLDER_FOR_COUNSELLING_FORM_ELEMENT = "b4e5a662-97bf-4846-b9b7-9baeab4d89c4";
 
     @Autowired
-    public ViewGenService(OperationalProgramRepository operationalProgramRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, FormMappingRepository formMappingRepository) throws IOException {
+    public ViewGenService(OperationalProgramRepository operationalProgramRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, OperationalSubjectTypeRepository operationalSubjectTypeRepository, FormMappingRepository formMappingRepository) throws IOException {
         this.operationalProgramRepository = operationalProgramRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
+        this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.formMappingRepository = formMappingRepository;
 
         ENCOUNTER_TEMPLATE = new BufferedReader(new InputStreamReader(new ClassPathResource("/pivot/pivot.sql").getInputStream()))
@@ -47,42 +50,45 @@ public class ViewGenService {
                 .collect(Collectors.joining("\n"));
     }
 
-    public Map<String, String> registrationReport(boolean spreadMultiSelectObs) {
-        List<FormElement> registrationFormElements = getRegistrationFormElements();
+    public Map<String, String> registrationReport(String subjectType, boolean spreadMultiSelectObs) {
 
-        String sql = REGISTRATION_TEMPLATE.replace("${selections}",
-                buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs));
-        return new HashMap<String, String>() {{
-            put("Registration", sql);
-        }};
+            List<FormElement> registrationFormElements = getRegistrationFormElements(getSubjectTypeId(subjectType));
+
+            String sql = REGISTRATION_TEMPLATE.replace("${selections}",
+                    buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs));
+            return new HashMap<String, String>() {{
+                put("Registration", sql);
+            }};
+
     }
 
-    public Map<String, String> getSqlsFor(String operationalProgramName, String operationalEncounterTypeName, boolean spreadMultiSelectObs) {
+    public Map<String, String> getSqlsFor(String operationalProgramName, String operationalEncounterTypeName, boolean spreadMultiSelectObs, String subjectTypeName) {
+        Long subjectTypeId = getSubjectTypeId(subjectTypeName);
         OperationalProgram operationalProgram = operationalProgramRepository.findByNameIgnoreCase(operationalProgramName);
         List<OperationalEncounterType> operationalEncounterTypes = operationalEncounterTypeName == null ?
                 operationalEncounterTypeRepository.findAll() :
                 singletonList(operationalEncounterTypeRepository.findByNameIgnoreCase(operationalEncounterTypeName));
         if (operationalProgram != null && operationalProgram.getProgram() != null) {
-            return getSqlsFor(operationalProgram, operationalEncounterTypes, spreadMultiSelectObs);
+            return getSqlsFor(operationalProgram, operationalEncounterTypes, spreadMultiSelectObs, subjectTypeId);
         }
         throw new IllegalArgumentException(String.format("Not found OperationalProgram{name='%s'}", operationalProgramName));
     }
 
-    private Map<String, String> getSqlsFor(OperationalProgram operationalProgram, List<OperationalEncounterType> types, boolean spreadMultiSelectObs) {
-        List<FormElement> registrationFormElements = getRegistrationFormElements();
-        List<FormElement> enrolmentFormElements = getProgramEnrolmentFormElements(operationalProgram);
+    private Map<String, String> getSqlsFor(OperationalProgram operationalProgram, List<OperationalEncounterType> types, boolean spreadMultiSelectObs, Long subjectTypeId) {
+        List<FormElement> registrationFormElements = getRegistrationFormElements(subjectTypeId);
+        List<FormElement> enrolmentFormElements = getProgramEnrolmentFormElements(operationalProgram, subjectTypeId);
 
         String mainViewQuery = ENCOUNTER_TEMPLATE.replace("${operationalProgramUuid}", operationalProgram.getUuid())
                 .replace("${individual}", buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs))
                 .replace("${programEnrolment}", buildObservationSelection("programEnrolment", enrolmentFormElements, "Enl", spreadMultiSelectObs));
 
         return types.stream()
-                .map(type -> new SimpleEntry<>(type, getProgramEncounterFormElements(operationalProgram, type)))
+                .map(type -> new SimpleEntry<>(type, getProgramEncounterFormElements(operationalProgram, type, subjectTypeId)))
                 .filter(pair -> !pair.getValue().isEmpty())
                 .map(pair -> {
                     OperationalEncounterType type = pair.getKey();
                     List<FormElement> formElements = pair.getValue();
-                    List<FormElement> cancelFormElements = getProgramEncounterCancelFormElements(operationalProgram, type);
+                    List<FormElement> cancelFormElements = getProgramEncounterCancelFormElements(operationalProgram, type, subjectTypeId);
                     return new SimpleEntry<>(type.getName(), getSqlForProgramEncounter(mainViewQuery, type, spreadMultiSelectObs,  formElements, cancelFormElements));
                 }).collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
     }
@@ -94,24 +100,24 @@ public class ViewGenService {
                 .replace("${programEncounterCancellation}", buildObservationSelection("programEncounter", cancelFormElements, "EncCancel", true));
     }
 
-    private List<FormElement> getRegistrationFormElements() {
-        return getFormElements(null, null, FormType.IndividualProfile);
+    private List<FormElement> getRegistrationFormElements(Long subjectTypeId) {
+        return getFormElements(null, null, FormType.IndividualProfile, subjectTypeId);
     }
 
-    private List<FormElement> getProgramEnrolmentFormElements(OperationalProgram operationalProgram) {
-        return getFormElements(operationalProgram.getProgram().getId(), null, FormType.ProgramEnrolment);
+    private List<FormElement> getProgramEnrolmentFormElements(OperationalProgram operationalProgram, Long subjectTypeId) {
+        return getFormElements(operationalProgram.getProgram().getId(), null, FormType.ProgramEnrolment, subjectTypeId);
     }
 
-    private List<FormElement> getProgramEncounterFormElements(OperationalProgram operationalProgram, OperationalEncounterType type) {
-        return getFormElements(operationalProgram.getProgram().getId(), type.getEncounterType().getId(), FormType.ProgramEncounter);
+    private List<FormElement> getProgramEncounterFormElements(OperationalProgram operationalProgram, OperationalEncounterType type, Long subjectTypeId) {
+        return getFormElements(operationalProgram.getProgram().getId(), type.getEncounterType().getId(), FormType.ProgramEncounter, subjectTypeId);
     }
 
-    private List<FormElement> getProgramEncounterCancelFormElements(OperationalProgram operationalProgram, OperationalEncounterType type) {
-        return getFormElements(operationalProgram.getProgram().getId(), type.getEncounterType().getId(), FormType.ProgramEncounterCancellation);
+    private List<FormElement> getProgramEncounterCancelFormElements(OperationalProgram operationalProgram, OperationalEncounterType type, Long subjectTypeId) {
+        return getFormElements(operationalProgram.getProgram().getId(), type.getEncounterType().getId(), FormType.ProgramEncounterCancellation, subjectTypeId);
     }
 
-    private List<FormElement> getFormElements(Long programId, Long typeId, FormType formType) {
-        FormMapping formMapping = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndIsVoidedFalse(programId, typeId, formType);
+    private List<FormElement> getFormElements(Long programId, Long typeId, FormType formType, Long subjectTypeId) {
+        FormMapping formMapping = formMappingRepository.findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(programId, typeId, formType, subjectTypeId);
         List<FormElement> formElements = formMapping == null ? Collections.EMPTY_LIST : formMapping.getForm().getApplicableFormElements();
         return formElements.stream().filter(fe -> !PLACE_HOLDER_FOR_COUNSELLING_FORM_ELEMENT.equals(fe.getConcept().getUuid())).collect(Collectors.toList());
     }
@@ -156,4 +162,13 @@ public class ViewGenService {
                 .collect(Collectors.joining(",\n"));
     }
 
+    private Long getSubjectTypeId (String subjectTypeName) {
+        OperationalSubjectType operationalSubjectType = operationalSubjectTypeRepository.findByNameIgnoreCase(subjectTypeName);
+
+        if(operationalSubjectType != null && operationalSubjectType.getSubjectType() != null) {
+            return operationalSubjectType.getSubjectType().getId();
+        } else {
+            throw new IllegalArgumentException(String.format("Not found operationalSubject{name='%s'}", subjectTypeName));
+        }
+    }
 }

@@ -22,10 +22,10 @@ public class ViewGenController {
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public Map<String, String> query(@RequestBody ViewConfig viewConfig) {
         if (Registration.equals(viewConfig.getType())) {
-            return viewGenService.registrationReport(viewConfig.getSpreadMultiSelectObs());
+            return viewGenService.registrationReport(viewConfig.getSubjectType(), viewConfig.getSpreadMultiSelectObs());
         }
         if (ProgramEncounter.equals(viewConfig.getType())) {
-            return viewGenService.getSqlsFor(viewConfig.getProgram(), viewConfig.getEncounterType(), viewConfig.getSpreadMultiSelectObs());
+            return viewGenService.getSqlsFor(viewConfig.getProgram(), viewConfig.getEncounterType(), viewConfig.getSpreadMultiSelectObs(), viewConfig.getSubjectType());
         }
         return new HashMap<>();
     }

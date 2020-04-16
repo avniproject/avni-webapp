@@ -29,7 +29,7 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
 
     List<FormMapping> findAllByProgramIdIsNullAndEncounterTypeIdIsNull();
 
-    FormMapping findByProgramIdAndEncounterTypeIdAndFormFormTypeAndIsVoidedFalse(Long programId, Long encounterTypeId, FormType formType);
+    FormMapping findByProgramIdAndEncounterTypeIdAndFormFormTypeAndSubjectTypeIdAndIsVoidedFalse(Long programId, Long encounterTypeId, FormType formType, Long subjectTypeId);
 
     List<FormMapping> findBySubjectTypeAndFormFormTypeAndIsVoidedFalse(SubjectType subjectType, FormType formType);
 
