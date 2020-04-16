@@ -1,4 +1,4 @@
-package org.openchs.importer.batch.csv;
+package org.openchs.importer.batch.csv.writer;
 
 import org.openchs.builder.BuilderException;
 import org.openchs.dao.LocationRepository;

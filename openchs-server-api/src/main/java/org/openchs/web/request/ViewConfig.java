@@ -6,6 +6,9 @@ public class ViewConfig {
     private String program;
     // operationalEncounterType;
     private String encounterType;
+
+    private String subjectType;
+
     private boolean spreadMultiSelectObs;
 
     public Type getType() {
@@ -34,6 +37,14 @@ public class ViewConfig {
 
     public boolean getSpreadMultiSelectObs() {
         return spreadMultiSelectObs;
+    }
+
+    public String getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(String subjectType) {
+        this.subjectType = subjectType;
     }
 
     public void setSpreadMultiSelectObs(boolean spreadMultiSelectObs) {

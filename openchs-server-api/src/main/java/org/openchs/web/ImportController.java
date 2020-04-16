@@ -66,6 +66,7 @@ public class ImportController {
     }
 
     @RequestMapping(value = "/web/importSample", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     public void getSampleImportFile(@RequestParam String uploadType, HttpServletResponse response) throws IOException {
         response.setContentType("text/csv");
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
