@@ -82,7 +82,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
     console.log("Profile---------------->", profile);
     //console.log("setSubject------------->",setSubject(profile));
     //sessionStorage.setItem("subject", JSON.stringify(sdata));
-    sessionStorage.setItem("subject", JSON.stringify(profile));
+    //sessionStorage.setItem("subject", JSON.stringify(profile));
     // store.dispatch({ type: types.ADD_CONCEPT, value: profile.observations});
     //console.log("profile-abs",setSubjectProfile(mapProfile(profile)));
 
@@ -123,7 +123,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
               <Button color="primary">{t("void")}</Button>
               {/* <Button color="primary">{t("edit")}</Button> */}
               <Button color="primary" onClick={handleClick}>
-                <InternalLink to={`/app/register?type=${profile.subjectType.name}`}>
+                <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
                   {t("edit")}{" "}
                 </InternalLink>
               </Button>

@@ -201,7 +201,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                     `${t("year")}`}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                  {profileDetails.lowestAddressLevel}
+                  {profileDetails.lowestAddressLevel.name}
                 </TableCell>
               </TableRow>
             </TableBody>

@@ -49,7 +49,7 @@ const Header = ({ subject }) => {
   const { t } = useTranslation();
   const fullName = subject.firstName + " " + subject.lastName || "-";
   const gender = subject.gender.name || "-";
-  const lowestAddressLevel = subject.lowestAddressLevel.title || "-";
+  const lowestAddressLevel = subject.lowestAddressLevel.name || "-";
   const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
   return (
     <div className={classes.details}>

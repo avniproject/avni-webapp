@@ -15,27 +15,37 @@ export default class {
       subject.dateOfBirth = localSavedSubject.dateOfBirth;
       subject.registrationDate = localSavedSubject.registrationDate;
       subject.dateOfBirthVerified = localSavedSubject.dateOfBirthVerified;
-      subject.gender.name = localSavedSubject.gender.name;
-      subject.gender.uuid = localSavedSubject.gender.uuid;
-      // subject.lowestAddressLevel = localSavedSubject.lowestAddressLevel;
       subject.registrationLocation = localSavedSubject.registrationLocation;
       subject.relationship = localSavedSubject.relationship;
-      subject.subjectType.name = localSavedSubject.subjectType.name;
-      subject.subjectType.uuid = localSavedSubject.subjectType.uuid;
+
+      const gender = new Gender();
+      gender.name = localSavedSubject.gender.name;
+      gender.uuid = localSavedSubject.gender.uuid;
+      subject.gender = gender;
+
+      const subjectType = new SubjectType();
+      subjectType.uuid = localSavedSubject.subjectType.uuid;
+      subjectType.name = localSavedSubject.subjectType.name;
+      subject.subjectType = subjectType;
+
+      const addressLevel = new AddressLevel();
+      subject.uuid = localSavedSubject.lowestAddressLevel.uuid;
+      subject.name = localSavedSubject.lowestAddressLevel.name;
+      subject.lowestAddressLevel = addressLevel;
 
       //addOrUpdateObservation
-      // const observationHolder = new ObservationsHolder(subject.observations);
-      // localSavedSubject.observations.map(element => {
-      //   let concept = Concept.create(
-      //     element.concept.name,
-      //     element.concept.datatype,
-      //     element.concept.keyValues,
-      //     element.concept.uuid
-      //   );
-      //   observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
-      //   store.dispatch({ type: types.ADD_CONCEPT, value: concept });
-      // });
-      // subject.observations = observationHolder.observations;
+      const observationHolder = new ObservationsHolder(subject.observations);
+      localSavedSubject.observations.map(element => {
+        let concept = Concept.create(
+          element.concept.name,
+          element.concept.datatype,
+          element.concept.keyValues,
+          element.concept.uuid
+        );
+        observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
+        store.dispatch({ type: types.ADD_CONCEPT, value: concept });
+      });
+      subject.observations = observationHolder.observations;
       return subject;
     } else return;
   }

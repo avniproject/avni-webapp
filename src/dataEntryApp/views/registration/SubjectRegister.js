@@ -12,6 +12,7 @@ import {
   setSubject,
   saveCompleteFalse
 } from "../../reducers/registrationReducer";
+import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { getGenders } from "../../reducers/metadataReducer";
@@ -106,10 +107,15 @@ const DefaultPage = props => {
 
   React.useEffect(() => {
     (async function fetchData() {
-      await props.onLoad(props.match.queryParams.type);
+      if (props.edit) {
+        const subjectUuid = props.match.queryParams.uuid;
+        await props.getSubjectProfile(subjectUuid);
+      } else {
+        await props.onLoad(props.match.queryParams.type);
+      }
       props.saveCompleteFalse();
-      let subject = BrowserStore.fetchSubject();
-      if (subject) props.setSubject(subject);
+      //let subject = BrowserStore.fetchSubject();
+      //if (subject) props.setSubject(subject);
     })();
 
     // if (!props.saved) {
@@ -246,7 +252,7 @@ const DefaultPage = props => {
                     <LineBreak num={1} />
                     <label className={classes.villagelabel}>{t("Village")}</label>
                     <LocationAutosuggest
-                      selectedVillage={props.subject.lowestAddressLevel.title}
+                      selectedVillage={props.subject.lowestAddressLevel.name}
                       onSelect={location => props.updateSubject("lowestAddressLevel", location)}
                       data={props}
                     />
@@ -320,6 +326,7 @@ const mapDispatchToProps = {
   saveSubject,
   onLoad,
   setSubject,
+  getSubjectProfile,
   saveCompleteFalse
 };
 
@@ -358,14 +365,21 @@ const RegistrationForm = withRouter(
 
 const SubjectRegister = ({ match }) => {
   const classes = useStyles();
-
+  console.log("path is", match.path);
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <Stepper />
-        <Route exact path={`${match.path}`} component={ConnectedDefaultPage} />
-        <Route path={`${match.path}/form`} component={RegistrationForm} />
+        <Route
+          exact
+          path={`${match.path}`}
+          component={() => <ConnectedDefaultPage edit={match.path === "/app/editSubject"} />}
+        />
+        <Route
+          path={`${match.path}/form`}
+          component={() => <RegistrationForm edit={match.path === "/app/editSubject"} />}
+        />
       </Paper>
     </Fragment>
   );

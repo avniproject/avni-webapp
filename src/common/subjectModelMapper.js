@@ -13,7 +13,9 @@ import {
   IndividualRelation,
   Encounter,
   EncounterType,
-  Gender
+  Gender,
+  AddressLevel,
+  SubjectType
 } from "avni-models";
 import { types } from "../common/store/conceptReducer";
 
@@ -25,7 +27,21 @@ export const mapIndividual = individualDetails => {
     ["uuid", "firstName", "lastName", "dateOfBirth"],
     ["registrationDate"]
   );
-  individual.gender = Gender.create(individualDetails.gender);
+  const gender = new Gender();
+  gender.name = individualDetails.gender;
+  gender.uuid = individualDetails.genderUUID;
+  individual.gender = gender;
+
+  const subjectType = new SubjectType();
+  subjectType.uuid = individualDetails.subjectType.uuid;
+  subjectType.name = individualDetails.subjectType.name;
+  individual.subjectType = subjectType;
+
+  const addressLevel = new AddressLevel();
+  addressLevel.uuid = individualDetails.addressLevelUUID;
+  addressLevel.name = individualDetails.addressLevel;
+  individual.lowestAddressLevel = addressLevel;
+
   return individual;
 };
 export const mapObservation = objservationList => {
@@ -57,7 +73,7 @@ export const mapConcept = observationJson => {
     } else {
       valueuuid = observationJson.value;
     }
-    const value = JSON.stringify(concept.getValueWrapperFor(valueuuid));
+    const value = concept.getValueWrapperFor(valueuuid);
     observation.concept = concept;
     observation.valueJSON = value;
     observation.abnormal = isAbnormalValue;
@@ -69,12 +85,6 @@ export const mapConcept = observationJson => {
 export const mapProfile = subjectProfile => {
   if (subjectProfile) {
     let individual = mapIndividual(subjectProfile);
-    individual.subjectType = {
-      uuid: "43d0800a-4f62-415b-920f-06c41432f73a",
-      name: "Individual",
-      voided: false
-    };
-    individual.gender = { uuid: "5805fd83-636d-46ad-8926-f50a163344bd", name: "Male", id: 30 };
     individual.observations = mapObservation(subjectProfile["observations"]);
     individual.relationships = mapRelationships(subjectProfile["relationships"]);
     return individual;
