@@ -104,17 +104,6 @@ const FormWizard = ({
   console.log("children..", children);
 
   const [redirect, setRedirect] = React.useState(false);
-  React.useEffect(() => {
-    if (!subject) {
-      (async function fetchData() {
-        await onLoad(match.queryParams.type);
-        let subject = BrowserStore.fetchSubject();
-        if (subject) {
-          setSubject(subject);
-        }
-      })();
-    }
-  });
 
   const from = match.queryParams.from;
   // console.log(page);

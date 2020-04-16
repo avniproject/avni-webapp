@@ -1,4 +1,12 @@
-import { Individual, ObservationsHolder, Observation, Concept } from "avni-models";
+import {
+  Individual,
+  ObservationsHolder,
+  Observation,
+  Concept,
+  Gender,
+  AddressLevel,
+  SubjectType
+} from "avni-models";
 import { store } from "../../common/store/createStore";
 import { types } from "../../common/store/conceptReducer";
 export default class {

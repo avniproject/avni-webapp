@@ -106,22 +106,6 @@ const DefaultPage = props => {
   const [lastnameerrormsg, setLastnamemsg] = React.useState("");
   // console.log(props);
 
-  React.useEffect(() => {
-    (async function fetchData() {
-      if (props.edit) {
-        const subjectUuid = props.match.queryParams.uuid;
-        await props.getSubjectProfile(subjectUuid);
-      } else {
-        await props.onLoad(props.match.queryParams.type);
-      }
-      props.saveCompleteFalse();
-      if (!disableSession) {
-        let subject = BrowserStore.fetchSubject();
-        if (subject) props.setSubject(subject);
-      }
-    })();
-  }, []);
-
   return (
     <div>
       <div className={classes.topcaption}>
@@ -358,10 +342,16 @@ const RegistrationForm = withRouter(
 
 const SubjectRegister = props => {
   const classes = useStyles();
+  const match = props.match;
 
   React.useEffect(() => {
     (async function fetchData() {
-      await props.onLoad(props.match.queryParams.type);
+      if (props.edit) {
+        const subjectUuid = props.match.queryParams.uuid;
+        await props.getSubjectProfile(subjectUuid);
+      } else {
+        await props.onLoad(props.match.queryParams.type);
+      }
       props.saveCompleteFalse();
       if (!disableSession) {
         let subject = BrowserStore.fetchSubject();
@@ -402,7 +392,7 @@ const mapRegisterDispatchToProps = {
 export default withRouter(
   withParams(
     connect(
-      mapRegisterStateToProps,
+      null,
       mapRegisterDispatchToProps
     )(SubjectRegister)
   )
