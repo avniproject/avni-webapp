@@ -343,10 +343,11 @@ const RegistrationForm = withRouter(
 const SubjectRegister = props => {
   const classes = useStyles();
   const match = props.match;
+  const edit = match.path === "/app/editSubject";
 
   React.useEffect(() => {
     (async function fetchData() {
-      if (props.edit) {
+      if (edit) {
         const subjectUuid = props.match.queryParams.uuid;
         await props.getSubjectProfile(subjectUuid);
       } else {
@@ -365,27 +366,17 @@ const SubjectRegister = props => {
       <Breadcrumbs path={props.match.path} />
       <Paper className={classes.root}>
         <Stepper />
-        <Route
-          exact
-          path={`${match.path}`}
-          component={() => <ConnectedDefaultPage edit={match.path === "/app/editSubject"} />}
-        />
-        <Route
-          path={`${match.path}/form`}
-          component={() => <RegistrationForm edit={match.path === "/app/editSubject"} />}
-        />
+        <Route exact path={`${match.path}`} component={() => <ConnectedDefaultPage />} />
+        <Route path={`${match.path}/form`} component={() => <RegistrationForm />} />
       </Paper>
     </Fragment>
   );
 };
 
-const mapRegisterStateToProps = state => ({
-  subject: state.dataEntry.registration.subject
-});
-
 const mapRegisterDispatchToProps = {
   onLoad,
   setSubject,
+  getSubjectProfile,
   saveCompleteFalse
 };
 
