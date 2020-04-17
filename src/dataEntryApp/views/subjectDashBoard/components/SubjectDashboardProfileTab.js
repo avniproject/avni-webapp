@@ -72,25 +72,6 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-  const handleClick = () => {
-    // const data =  getSubjectProfile(profile.uuid);
-    // console.log("Profile data------------->",data);
-
-    // var sdata = {"fullName":"1234 654","programEnrolments":[],"addressLevel":{"titleLineage":"Gandhi Nagar","title":"Gandhi Nagar","uuid":"fd1125be-8e1b-4f9a-ac16-caa1a6bc6a02","parentLocation":null,"id":8949},"gender":{"uuid":"5805fd83-636d-46ad-8926-f50a163344bd","name":"Male","id":30},"firstName":"1234","lastName":"654","dateOfBirth":"1997-04-10","registrationDate":"2020-04-10","registrationLocation":null,"uuid":"6f7c5872-135c-4f35-a80b-373681af5879","encounters":[],"facility":null,"observations":{"69e0acd4-e50f-4fe3-94aa-3e87c09aa116":9087654321,"a5b830e8-4a24-4e8c-bbaa-83421e32da95":"d69f8ff6-858c-4c2b-aba5-bf1c0fbaeef2","1e9815ef-8567-40c4-a1c3-a4b7495820e0":["df9bafd5-aae7-40f9-85c6-449d46364486","11f13a39-0f3e-48a1-9983-8a92d42029e9"],"5a7ecfaf-3f46-4966-8a4c-72d092df132a":12346,"fed0e423-de7e-490a-a1be-ad1267c83b63":"aaaaa1234","6975ef37-46e1-4669-bcde-008d04c6f7cb":"706c82b6-17ae-4ce7-9c15-891b76f2c389","355ef64b-7972-4572-9299-7ed1a1dc814f":"asdddd1233","95e333fd-577d-44ad-a97a-d2faa7a2f05c":"400e0767-4a95-4946-8045-9d75c9626cf4"},"activePrograms":[],"subjectType":{"operationalSubjectTypeName":"Individual","uuid":"43d0800a-4f62-415b-920f-06c41432f73a","name":"Individual","id":18},"id":1656};
-    //  // setSubjectProfile(profile);
-    //setSubjectProfile(mapProfile(profile))
-    console.log("Profile---------------->", profile);
-    //console.log("setSubject------------->",setSubject(profile));
-    //sessionStorage.setItem("subject", JSON.stringify(sdata));
-    //sessionStorage.setItem("subject", JSON.stringify(profile));
-    // store.dispatch({ type: types.ADD_CONCEPT, value: profile.observations});
-    //console.log("profile-abs",setSubjectProfile(mapProfile(profile)));
-
-    //setSubject(profile)
-    //sessionStorage.setItem("subject", JSON.stringify(setSubject(profile)));
-  };
-
-  //console.log("Profile--data",profile);
 
   return (
     <Fragment>
@@ -122,7 +103,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
               </List>
               <Button color="primary">{t("void")}</Button>
               {/* <Button color="primary">{t("edit")}</Button> */}
-              <Button color="primary" onClick={handleClick}>
+              <Button color="primary">
                 <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
                   {t("edit")}{" "}
                 </InternalLink>
