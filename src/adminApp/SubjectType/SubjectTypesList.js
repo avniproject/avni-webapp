@@ -1,28 +1,18 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import { isEmpty, isEqual } from "lodash";
-import { withRouter, Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import { findRegistrationForm } from "./formMapping";
+import { requireFormMappings } from "./effects";
 
 const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
 
-  useEffect(() => {
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        const formMap = response.data.formMappings;
-        formMap.map(l => (l["isVoided"] = false));
-        setFormMappings(formMap);
-      })
-      .catch(error => {});
-  }, []);
-
-  const findForm = subjectType => findRegistrationForm(formMappings, subjectType);
+  requireFormMappings(setFormMappings);
 
   const columns = [
     {
@@ -35,7 +25,7 @@ const SubjectTypesList = ({ history }) => {
       title: "Registration form name",
       field: "formName",
       sorting: false,
-      render: rowData => findForm(rowData).formName
+      render: rowData => findRegistrationForm(formMappings, rowData).formName
     },
     { title: "Household", field: "household", type: "boolean" },
     { title: "Group", field: "group", type: "boolean" },
