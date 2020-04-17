@@ -72,10 +72,17 @@ export default function(state = initialState, action) {
       };
     }
     case types.SET_PROGRAM_ENROLMENT: {
-      return {
-        ...state,
-        programEnrolment: action.programEnrolment
-      };
+      if (
+        (JSON.parse(sessionStorage.getItem("programEnrolment")) &&
+          (JSON.parse(sessionStorage.getItem("programEnrolment")).observations.length > 0 &&
+            action.programEnrolment.observations.length > 0)) ||
+        !JSON.parse(sessionStorage.getItem("programEnrolment"))
+      ) {
+        return {
+          ...state,
+          programEnrolment: action.programEnrolment
+        };
+      } else return { ...state };
     }
     case types.UPDATE_PROGRAM_ENROLMENT: {
       debugger;

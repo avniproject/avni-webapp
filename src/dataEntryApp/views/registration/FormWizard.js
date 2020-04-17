@@ -72,9 +72,9 @@ const Header = ({ subject, children }) => {
         <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
           {lowestAddressLevel}
         </Typography>
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+        {/* <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
           {children}
-        </Typography>
+        </Typography> */}
       </Typography>
       <LineBreak num={2} />
     </div>
@@ -146,7 +146,7 @@ const FormWizard = ({
     <Fragment>
       {form && (
         <div>
-          {subject ? <Header subject={subject} children={children} /> : ""}
+          {subject ? <Header subject={subject} /> : ""}
           <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
             <Typography variant="subtitle1" gutterBottom>
               {" "}
@@ -164,7 +164,12 @@ const FormWizard = ({
             {currentPageNumber >= lastPageNumber + 1 ? (
               <Summary observations={observations} />
             ) : (
-              <Form current={current} obsHolder={obsHolder} updateObs={updateObs} />
+              <Form
+                current={current}
+                obsHolder={obsHolder}
+                children={children}
+                updateObs={updateObs}
+              />
             )}
 
             {saved && (

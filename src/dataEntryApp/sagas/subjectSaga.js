@@ -60,11 +60,15 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));
 
+  //const program = yield select(selectProgram(programName));
   const program = yield select(selectProgram(programName));
 
   const state = yield select();
   const subject = state.dataEntry.subjectProfile.subjectProfile;
   subject.subjectType = SubjectType.create("Individual");
+
+  //sessionStorage.setItem("subject", JSON.stringify(subject));
+  //sessionStorage.setItem("program", JSON.stringify(program));
 
   let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
   yield put.resolve(setProgramEnrolment(programEnrolment));
@@ -168,6 +172,8 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
     formElement,
     value
   );
+
+  //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
   yield put(setProgramEnrolment(programEnrolment));
 }
 

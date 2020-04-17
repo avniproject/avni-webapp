@@ -1,6 +1,13 @@
-import { Individual, ObservationsHolder, Observation, Concept } from "avni-models";
+import {
+  Individual,
+  ObservationsHolder,
+  ProgramEnrolment,
+  Observation,
+  Concept
+} from "avni-models";
 import { store } from "../../common/store/createStore";
 import { types } from "../../common/store/conceptReducer";
+import { select } from "redux-saga/effects";
 export default class {
   static fetchSubject() {
     if (sessionStorage.getItem("subject")) {
@@ -36,6 +43,55 @@ export default class {
       subject.observations = observationHolder.observations;
       return subject;
     } else return;
+  }
+
+  static fetchProgramEnrolment() {
+    if (sessionStorage.getItem("programEnrolment")) {
+      let programEnrolment = ProgramEnrolment.createEmptyInstance();
+      //let programEnrolment = new ProgramEnrolment();
+      let localProgramEnrolment = JSON.parse(sessionStorage.getItem("programEnrolment"));
+
+      const observationHolder = new ObservationsHolder(programEnrolment.observations);
+      localProgramEnrolment.observations.map(element => {
+        let concept = Concept.create(
+          element.concept.name,
+          element.concept.datatype,
+          element.concept.keyValues,
+          element.concept.uuid
+        );
+        observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
+        store.dispatch({ type: types.ADD_CONCEPT, value: concept });
+      });
+      programEnrolment.observations = observationHolder.observations;
+      console.log("function");
+      console.log(programEnrolment);
+      debugger;
+
+      return programEnrolment;
+    }
+
+    return;
+    // if (sessionStorage.getItem("subject") && sessionStorage.getItem("programEnrolment")) {
+    //   let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
+
+    // }
+
+    //let subject = ProgramEnrolment.createEmptyInstance();
+    // let localSavedSubject = JSON.parse(sessionStorage.getItem("subject"));
+
+    // const observationHolder = new ObservationsHolder(subject.observations);
+    //   localSavedSubject.observations.map(element => {
+    //     let concept = Concept.create(
+    //       element.concept.name,
+    //       element.concept.datatype,
+    //       element.concept.keyValues,
+    //       element.concept.uuid
+    //     );
+    //     observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
+    //     store.dispatch({ type: types.ADD_CONCEPT, value: concept });
+    //   });
+    //   subject.observations = observationHolder.observations;
+    //   return subject;
   }
 
   static clear(key) {
