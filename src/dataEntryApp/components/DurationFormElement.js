@@ -14,13 +14,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DurationFormElement = ({ duration, mandatory, name, update, validationResults, uuid }) => {
+const DurationFormElement = ({ duration, mandatory, name, update, validationResult }) => {
   const [localVal, setLocalVal] = useState((duration && duration.durationValue) || "");
+
   const { t } = useTranslation();
-  const validationResult = find(
-    validationResults,
-    validationResult => validationResult.formIdentifier === uuid
-  );
 
   return (
     <Fragment>
@@ -42,11 +39,23 @@ const DurationFormElement = ({ duration, mandatory, name, update, validationResu
   );
 };
 
-const CompositeDurationFormElement = ({ formElement: fe, value, update }) => {
+const CompositeDurationFormElement = ({
+  formElement: fe,
+  value,
+  update,
+  validationResults,
+  uuid
+}) => {
   const compositeDuration = value
     ? CompositeDuration.fromObs(value)
     : CompositeDuration.fromOpts(fe.durationOptions);
   const classes = useStyles();
+
+  const { t } = useTranslation();
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   return (
     <FormControl>
@@ -59,6 +68,7 @@ const CompositeDurationFormElement = ({ formElement: fe, value, update }) => {
               mandatory={fe.mandatory}
               name={fe.name + index}
               duration={compositeDuration.findByUnit(durationUnit)}
+              validationResult={validationResult}
               update={val => {
                 isEmpty(val)
                   ? update(compositeDuration.changeValueByUnit(durationUnit, ""))
