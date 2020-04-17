@@ -120,6 +120,18 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   yield put.resolve(setLoaded());
 }
 
+function* loadEditRegistrationPageWatcher() {
+  yield takeLatest(subjectTypes.ON_LOAD_EDIT, loadEditRegistrationPageWorker);
+}
+
+export function* loadEditRegistrationPageWorker({ subject }) {
+  yield put.resolve(getOperationalModules());
+  yield put.resolve(getRegistrationForm(subject.subjectType.name));
+  yield put.resolve(getGenders());
+  yield put.resolve(setSubject(subject));
+  yield put.resolve(setLoaded());
+}
+
 /*
 Takes observations and returns updated observations. It do not modify the passed parameters.
  */
@@ -187,7 +199,8 @@ export default function* subjectSaga() {
       loadRegistrationPageWatcher,
       saveProgramEnrolmentWatcher,
       updateObsWatcher,
-      updateEnrolmentObsWatcher
+      updateEnrolmentObsWatcher,
+      loadEditRegistrationPageWatcher
     ].map(fork)
   );
 }
