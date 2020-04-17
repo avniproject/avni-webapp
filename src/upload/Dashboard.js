@@ -14,6 +14,7 @@ import api from "./api";
 import DropDown from "../common/components/DropDown";
 import { getStatuses, getUploadTypes } from "./reducers";
 import UploadTypes from "./UploadTypes";
+import { Title } from "react-admin";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -66,6 +67,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
 
   return (
     <Grid container spacing={2} className={classes.root}>
+      <Title title={"Upload"} />
       <Grid item style={{ minWidth: 1200, maxWidth: 1400 }}>
         <Paper className={classes.uploadDownloadSection}>
           <Grid container>
