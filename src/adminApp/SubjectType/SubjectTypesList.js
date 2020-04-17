@@ -7,12 +7,12 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import { findRegistrationForm } from "./formMapping";
-import { requireFormMappings } from "./effects";
+import { useFormMappings } from "./effects";
 
 const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
 
-  requireFormMappings(setFormMappings);
+  useFormMappings(setFormMappings);
 
   const columns = [
     {

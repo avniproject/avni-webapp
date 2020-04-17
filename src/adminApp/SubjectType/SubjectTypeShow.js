@@ -12,14 +12,14 @@ import Switch from "@material-ui/core/Switch";
 import _ from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "./formMapping";
-import { requireFormMappings } from "./effects";
+import { useFormMappings } from "./effects";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
   const [editAlert, setEditAlert] = useState(false);
   const [formMappings, setFormMappings] = useState([]);
 
-  requireFormMappings(setFormMappings);
+  useFormMappings(setFormMappings);
   useEffect(() => {
     http
       .get("/web/subjectType/" + props.match.params.id)
