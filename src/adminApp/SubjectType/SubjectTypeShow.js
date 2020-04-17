@@ -11,10 +11,15 @@ import Grid from "@material-ui/core/Grid";
 import Switch from "@material-ui/core/Switch";
 import _ from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
+import { findRegistrationForm } from "./formMapping";
+import { requireFormMappings } from "./effects";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
   const [editAlert, setEditAlert] = useState(false);
+  const [formMappings, setFormMappings] = useState([]);
+
+  requireFormMappings(setFormMappings);
   useEffect(() => {
     http
       .get("/web/subjectType/" + props.match.params.id)
@@ -63,11 +68,18 @@ const SubjectTypeShow = props => {
             </div>
             <p />
             <div>
+              <FormLabel style={{ fontSize: "13px" }}>Registration form name</FormLabel>
+              <br />
+              <span style={{ fontSize: "15px" }}>
+                {findRegistrationForm(formMappings, subjectType).formName}
+              </span>
+            </div>
+            <p />
+            <div>
               <FormLabel style={{ fontSize: "13px" }}>Organisation Id</FormLabel>
               <br />
               <span style={{ fontSize: "15px" }}>{subjectType.organisationId}</span>
             </div>
-            <p />
             <p />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}
             <div>
