@@ -6,6 +6,7 @@ import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
+import { findRegistrationForm } from "./formMapping";
 
 const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -21,13 +22,7 @@ const SubjectTypesList = ({ history }) => {
       .catch(error => {});
   }, []);
 
-  const findForm = subjectType =>
-    formMappings.find(
-      mapping =>
-        mapping.formType === "IndividualProfile" &&
-        mapping.isVoided === false &&
-        mapping.subjectTypeUUID === subjectType.uuid
-    );
+  const findForm = subjectType => findRegistrationForm(formMappings, subjectType);
 
   const columns = [
     {
@@ -113,6 +108,7 @@ const SubjectTypesList = ({ history }) => {
     </>
   );
 };
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }
