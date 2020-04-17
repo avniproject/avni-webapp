@@ -77,9 +77,11 @@ public class IndividualService {
         individualContract.setLastName(individual.getLastName());
         individualContract.setDateOfBirth(individual.getDateOfBirth());
         individualContract.setGender(individual.getGender().getName());
+        individualContract.setGenderUUID(individual.getGender().getUuid());
         individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
         individualContract.setRegistrationDate(individual.getRegistrationDate());
-        individualContract.setLowestAddressLevel(individual.getAddressLevel().getTitleLineage());
+        individualContract.setAddressLevel(individual.getAddressLevel().getTitle());
+        individualContract.setAddressLevelUUID(individual.getAddressLevel().getUuid());
         individualContract.setVoided(individual.isVoided());
         return individualContract;
     }
@@ -206,7 +208,8 @@ public class IndividualService {
             Object value = entry.getValue();
             if (questionConcept.getDataType().equalsIgnoreCase(ConceptDataType.Coded.toString())) {
                 List<String> answers = value instanceof List ? (List<String>) value : singletonList(value.toString());
-                List<ConceptContract> answerConceptList = questionConcept.getConceptAnswers().stream()
+                if (value instanceof List) {
+                    List<ConceptContract> answerConceptList = questionConcept.getConceptAnswers().stream()
                         .filter(it ->
                                 answers.contains(it.getAnswerConcept().getUuid())
                         ).map(it -> {
@@ -214,7 +217,17 @@ public class IndividualService {
                             cc.setAbnormal(it.isAbnormal());
                             return cc;
                         }).collect(Collectors.toList());
-                observationContract.setValue(answerConceptList != null && answerConceptList.size() == 1 ? answerConceptList.get(0) : answerConceptList);
+                    observationContract.setValue(answerConceptList);
+                } else {
+                    ConceptAnswer conceptAnswer = questionConcept.getConceptAnswers().stream()
+                    .filter(it -> value.equals(it.getAnswerConcept().getUuid())).findFirst().orElse(null);
+                    if(conceptAnswer != null) {
+                        ConceptContract cc = ConceptContract.create(conceptAnswer.getAnswerConcept());
+                        cc.setAbnormal(conceptAnswer.isAbnormal());
+                        observationContract.setValue(cc);
+                    }
+                    
+                }
             } else {
                 observationContract.setValue(value);
             }

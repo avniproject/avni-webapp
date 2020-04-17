@@ -6,8 +6,6 @@ import java.util.*;
 
 public class IndividualContract extends CommonIndividualRequest {
 
-    private String lowestAddressLevel;
-
     private List<RelationshipContract> relationships = new ArrayList<>();
 
     private List<ObservationContract> observations = new ArrayList<>();
@@ -17,14 +15,6 @@ public class IndividualContract extends CommonIndividualRequest {
     private Set<EncounterContract> encounters = new HashSet<>();
 
     private SubjectTypeContract subjectType;
-
-    public String getLowestAddressLevel() {
-        return lowestAddressLevel;
-    }
-
-    public void setLowestAddressLevel(String lowestAddressLevel) {
-        this.lowestAddressLevel = lowestAddressLevel;
-    }
 
     public List<RelationshipContract> getRelationships() {
         return relationships;
