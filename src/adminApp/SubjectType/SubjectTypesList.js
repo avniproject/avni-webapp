@@ -1,15 +1,14 @@
 import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _, { isEqual } from "lodash";
+import { get, isEmpty, isEqual } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
-import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 
 const SubjectTypesList = ({ history }) => {
-  const [formMapping, setMapping] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
   const [notificationAlert, setNotificationAlert] = useState(false);
   const [message, setMessage] = useState("");
   const [formList, setFormList] = useState([]);
@@ -20,11 +19,19 @@ const SubjectTypesList = ({ history }) => {
       .then(response => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
-        setMapping(formMap);
+        setFormMappings(formMap);
         setFormList(response.data.forms);
       })
       .catch(error => {});
   }, []);
+
+  const findForm = subjectType =>
+    formMappings.find(
+      mapping =>
+        mapping.formType === "IndividualProfile" &&
+        mapping.isVoided === false &&
+        mapping.subjectTypeUUID === subjectType.uuid
+    );
 
   const columns = [
     {
@@ -37,24 +44,7 @@ const SubjectTypesList = ({ history }) => {
       title: "Registration form name",
       field: "formName",
       sorting: false,
-      render: rowData => (
-        <WorkFlowFormCreation
-          key={rowData.uuid}
-          rowDetails={rowData}
-          formMapping={formMapping}
-          setMapping={setMapping}
-          formList={formList}
-          formType="IndividualProfile"
-          placeholder="Select registration form"
-          customUUID="subjectTypeUUID"
-          fillFormName="Registration form"
-          notificationAlert={notificationAlert}
-          setNotificationAlert={setNotificationAlert}
-          message={message}
-          setMessage={setMessage}
-          redirectToWorkflow="subjectType"
-        />
-      )
+      render: rowData => findForm(rowData).formName
     },
     { title: "Household", field: "household", type: "boolean" },
     { title: "Group", field: "group", type: "boolean" },
@@ -70,7 +60,7 @@ const SubjectTypesList = ({ history }) => {
       let apiUrl = "/web/subjectType?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.orderBy.field))
+      if (!isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .get(apiUrl)
