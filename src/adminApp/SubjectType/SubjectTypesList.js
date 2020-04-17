@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import { get, isEmpty, isEqual } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -9,9 +9,6 @@ import Button from "@material-ui/core/Button";
 
 const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
-  const [notificationAlert, setNotificationAlert] = useState(false);
-  const [message, setMessage] = useState("");
-  const [formList, setFormList] = useState([]);
 
   useEffect(() => {
     http
@@ -20,7 +17,6 @@ const SubjectTypesList = ({ history }) => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
         setFormMappings(formMap);
-        setFormList(response.data.forms);
       })
       .catch(error => {});
   }, []);
