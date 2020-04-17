@@ -135,14 +135,46 @@ const EncounterTypeEdit = props => {
   };
 
   const onDelete = () => {
-    http
-      .delete("/web/encounterType/" + props.match.params.id)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteAlert(true);
+    // const encounterTypeMapping = formMapping.filter(
+    //   l => l.encounterTypeUUID === encounterTypeData.uuid && l.formUUID !== undefined
+    // );
+    // if (encounterTypeMapping.length === 0) {
+    let removeAssociatedEncounterMapping = formMapping.filter(
+      l => l.encounterTypeUUID === encounterTypeData.uuid
+    );
+
+    if (window.confirm("Do you really want to delete encounter type?")) {
+      var promise = new Promise((resolve, reject) => {
+        if (removeAssociatedEncounterMapping.length === 0) {
+          resolve("Promise resolved ");
+        } else {
+          removeAssociatedEncounterMapping.forEach(l => (l["isVoided"] = true));
+          http
+            .post("/emptyFormMapping", removeAssociatedEncounterMapping)
+            .then(response => {
+              resolve("Promise resolved ");
+            })
+            .catch(error => {
+              console.log(error.response.data.message);
+              reject(Error("Promise rejected"));
+            });
         }
-      })
-      .catch(error => {});
+      });
+
+      promise.then(result => {
+        http
+          .delete("/web/encounterType/" + props.match.params.id)
+          .then(response => {
+            if (response.status === 200) {
+              setDeleteAlert(true);
+            }
+          })
+          .catch(error => {});
+      });
+    }
+    // } else {
+    //   alert("Please remove associated forms with this encounter type.");
+    // }
   };
 
   return (

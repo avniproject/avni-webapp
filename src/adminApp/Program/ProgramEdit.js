@@ -127,14 +127,48 @@ const ProgramEdit = props => {
   };
 
   const onDelete = () => {
-    http
-      .delete("/web/program/" + props.match.params.id)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteAlert(true);
-        }
-      })
-      .catch(error => {});
+    const programMapping = formMapping.filter(
+      l => l.programUUID === programData.uuid && l.formUUID !== undefined
+    );
+    if (programMapping.length === 0) {
+      let removeAssociatedProgramMapping = formMapping.filter(
+        l => l.programUUID === programData.uuid
+      );
+
+      if (window.confirm("Do you really want to delete program?")) {
+        var promise = new Promise((resolve, reject) => {
+          if (removeAssociatedProgramMapping.length === 0) {
+            resolve("Promise resolved ");
+          } else {
+            removeAssociatedProgramMapping.forEach(l => (l["isVoided"] = true));
+            http
+              .post("/emptyFormMapping", removeAssociatedProgramMapping)
+              .then(response => {
+                resolve("Promise resolved ");
+              })
+              .catch(error => {
+                console.log(error.response.data.message);
+                reject(Error("Promise rejected"));
+              });
+          }
+        });
+
+        promise.then(result => {
+          http
+            .delete("/web/program/" + props.match.params.id)
+            .then(response => {
+              if (response.status === 200) {
+                setDeleteAlert(true);
+              }
+            })
+            .catch(error => {});
+        });
+      }
+    } else {
+      alert(
+        "Please remove associated forms and delete associated encounter type with this program."
+      );
+    }
   };
 
   return (

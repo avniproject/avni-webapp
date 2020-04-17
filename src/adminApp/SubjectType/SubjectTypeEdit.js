@@ -24,7 +24,7 @@ const SubjectTypeEdit = props => {
   const [redirectShow, setRedirectShow] = useState(false);
   const [subjectTypeData, setSubjectTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
-
+  const [formMapping, setFormMapping] = useState([]);
   useEffect(() => {
     http
       .get("/web/subjectType/" + props.match.params.id)
@@ -33,6 +33,12 @@ const SubjectTypeEdit = props => {
         setSubjectTypeData(result);
         dispatch({ type: "setData", payload: result });
       });
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        setFormMapping(response.data.formMappings);
+      })
+      .catch(error => {});
   }, []);
 
   const onSubmit = () => {
@@ -66,14 +72,46 @@ const SubjectTypeEdit = props => {
   };
 
   const onDelete = () => {
-    http
-      .delete("/web/subjectType/" + props.match.params.id)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteAlert(true);
-        }
-      })
-      .catch(error => {});
+    const subjectTypeMapping = formMapping.filter(
+      l => l.subjectTypeUUID === subjectTypeData.uuid && l.formUUID !== undefined
+    );
+    if (subjectTypeMapping.length === 0) {
+      let removeAssociatedSubjectTypeMapping = formMapping.filter(
+        l => l.subjectTypeUUID === subjectTypeData.uuid
+      );
+
+      if (window.confirm("Do you really want to delete subject type?")) {
+        var promise = new Promise((resolve, reject) => {
+          if (removeAssociatedSubjectTypeMapping.length === 0) {
+            resolve("Promise resolved ");
+          } else {
+            removeAssociatedSubjectTypeMapping.forEach(l => (l["isVoided"] = true));
+            http
+              .post("/emptyFormMapping", removeAssociatedSubjectTypeMapping)
+              .then(response => {
+                resolve("Promise resolved ");
+              })
+              .catch(error => {
+                console.log(error.response.data.message);
+                reject(Error("Promise rejected"));
+              });
+          }
+        });
+
+        promise.then(result => {
+          http
+            .delete("/web/subjectType/" + props.match.params.id)
+            .then(response => {
+              if (response.status === 200) {
+                setDeleteAlert(true);
+              }
+            })
+            .catch(error => {});
+        });
+      }
+    } else {
+      alert("Please remove associated forms with this subject type.");
+    }
   };
 
   return (
