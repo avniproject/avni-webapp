@@ -121,6 +121,29 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   yield put.resolve(setLoaded());
 }
 
+function validate(formElement, value, observations, validationResults) {
+  let isNullForMultiselect = false;
+  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
+    const observationHolder = new ObservationsHolder(observations);
+    const answers =
+      observationHolder.findObservation(formElement.concept) &&
+      observationHolder.findObservation(formElement.concept).getValue();
+
+    isNullForMultiselect = _.isNil(answers);
+  }
+
+  const validationResult = formElement.validate(isNullForMultiselect ? null : value);
+
+  _.remove(
+    validationResults,
+    existingValidationResult =>
+      existingValidationResult.formIdentifier === validationResult.formIdentifier
+  );
+
+  validationResults.push(validationResult);
+  return validationResults;
+}
+
 /*
 Takes observations and returns updated observations. It do not modify the passed parameters.
  */
@@ -156,30 +179,34 @@ function* updateObsWatcher() {
 
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
+  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
   subject.observations = updateObservations(subject.observations, formElement, value);
   yield put(setSubject(subject));
-
-  let isNullForMultiselect = false;
-  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-    const observationHolder = new ObservationsHolder(subject.observations);
-    const answers =
-      observationHolder.findObservation(formElement.concept) &&
-      observationHolder.findObservation(formElement.concept).getValue();
-
-    isNullForMultiselect = _.isNil(answers);
-  }
-
-  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
-  const validationResult = formElement.validate(isNullForMultiselect ? null : value);
-
-  _.remove(
-    validationResults,
-    existingValidationResult =>
-      existingValidationResult.formIdentifier === validationResult.formIdentifier
+  yield put(
+    setValidationResults(validate(formElement, value, subject.observations, validationResults))
   );
 
-  validationResults.push(validationResult);
-  yield put(setValidationResults(validationResults));
+  // let isNullForMultiselect = false;
+  // if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
+  //   const observationHolder = new ObservationsHolder(subject.observations);
+  //   const answers =
+  //     observationHolder.findObservation(formElement.concept) &&
+  //     observationHolder.findObservation(formElement.concept).getValue();
+
+  //   isNullForMultiselect = _.isNil(answers);
+  // }
+
+  // const validationResults = yield select(state => state.dataEntry.registration.validationResults);
+  // const validationResult = formElement.validate(isNullForMultiselect ? null : value);
+
+  // _.remove(
+  //   validationResults,
+  //   existingValidationResult =>
+  //     existingValidationResult.formIdentifier === validationResult.formIdentifier
+  // );
+
+  // validationResults.push(validationResult);
+  // yield put(setValidationResults(validationResults));
   sessionStorage.setItem("subject", JSON.stringify(subject));
 }
 
@@ -190,6 +217,7 @@ function* updateEnrolmentObsWatcher() {
 export function* updateEnrolmentObsWorker({ formElement, value }) {
   const state = yield select();
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
+  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
   console.log("Program Enrolment Observations", programEnrolment.observations);
   programEnrolment.observations = updateObservations(
     programEnrolment.observations,
@@ -197,6 +225,12 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
     value
   );
   yield put(setProgramEnrolment(programEnrolment));
+  yield put(
+    setValidationResults(
+      validate(formElement, value, programEnrolment.observations, validationResults)
+    )
+  );
+  // yield put(setValidationResults(validationResults));
 }
 
 export default function* subjectSaga() {
