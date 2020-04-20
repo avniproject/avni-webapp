@@ -33,11 +33,11 @@ import java.util.stream.Stream;
 @Component
 public class ObservationCreator {
 
+    private static Logger logger = LoggerFactory.getLogger(ObservationCreator.class);
     private AddressLevelTypeRepository addressLevelTypeRepository;
     private ConceptRepository conceptRepository;
     private FormRepository formRepository;
     private ObservationService observationService;
-    private static Logger logger = LoggerFactory.getLogger(ObservationCreator.class);
 
     @Autowired
     public ObservationCreator(AddressLevelTypeRepository addressLevelTypeRepository,
@@ -65,8 +65,8 @@ public class ObservationCreator {
     }
 
     public ObservationCollection getObservations(Row row,
-                                                  Headers headers,
-                                                  List<String> errorMsgs) {
+                                                 Headers headers,
+                                                 List<String> errorMsgs, FormType formType) {
         List<ObservationRequest> observationRequests = new ArrayList<>();
 
         for (Concept concept : getConceptHeaders(headers, row.getHeaders())) {
@@ -77,7 +77,7 @@ public class ObservationCreator {
             observationRequest.setConceptName(concept.getName());
             observationRequest.setConceptUUID(concept.getUuid());
             try {
-                observationRequest.setValue(getObservationValue(concept, rowValue));
+                observationRequest.setValue(getObservationValue(concept, rowValue, formType));
             } catch (Exception ex) {
                 logger.error(String.format("Error processing observation %s in row %s", rowValue, row), ex);
                 errorMsgs.add(String.format("Invalid answer '%s' for '%s'", rowValue, concept.getName()));
@@ -87,14 +87,14 @@ public class ObservationCreator {
         return observationService.createObservations(observationRequests);
     }
 
-    private Object getObservationValue(Concept concept, String answerValue) throws Exception {
+    private Object getObservationValue(Concept concept, String answerValue, FormType formType) throws Exception {
         switch (ConceptDataType.valueOf(concept.getDataType())) {
             case Coded:
-                List<Form> individualProfileForms = formRepository.findAllByFormType(FormType.IndividualProfile);
-                if (individualProfileForms.size() == 0)
-                    throw new Exception("No forms of type IndividualProfile found");
+                List<Form> applicableForms = formRepository.findAllByFormType(formType);
+                if (applicableForms.size() == 0)
+                    throw new Exception(String.format("No forms of type %s found", formType));
 
-                FormElement formElement = individualProfileForms.stream()
+                FormElement formElement = applicableForms.stream()
                         .map(Form::getAllFormElements)
                         .flatMap(List::stream)
                         .filter(fel -> fel.getConcept().equals(concept))

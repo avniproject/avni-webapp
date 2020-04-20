@@ -1,5 +1,6 @@
 package org.openchs.importer.batch.csv.writer;
 
+import org.openchs.application.FormType;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.domain.ProgramEncounter;
@@ -39,7 +40,7 @@ public class ProgramEncounterWriter implements ItemWriter<Row>, Serializable {
     private void write(Row row) throws Exception {
         ProgramEncounter programEncounter = getOrCreateProgramEncounter(row);
         List<String> allErrorMsgs = new ArrayList<>();
-        basicEncounterCreator.updateEncounter(row, programEncounter, allErrorMsgs);
+        basicEncounterCreator.updateEncounter(row, programEncounter, allErrorMsgs, FormType.ProgramEncounter);
 
         programEncounter.setProgramEnrolment(programEnrolmentCreator.getProgramEnrolment(row.get(headers.enrolmentId), allErrorMsgs, headers.enrolmentId));
 

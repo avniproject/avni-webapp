@@ -1,6 +1,7 @@
 package org.openchs.importer.batch.csv.creator;
 
 import org.joda.time.DateTime;
+import org.openchs.application.FormType;
 import org.openchs.domain.AbstractEncounter;
 import org.openchs.importer.batch.csv.writer.header.ProgramEncounterHeaders;
 import org.openchs.importer.batch.model.Row;
@@ -29,7 +30,7 @@ public class BasicEncounterCreator {
         this.dateCreator = new DateCreator();
     }
 
-    public AbstractEncounter updateEncounter(Row row, AbstractEncounter basicEncounter, List<String> allErrorMsgs) throws Exception {
+    public AbstractEncounter updateEncounter(Row row, AbstractEncounter basicEncounter, List<String> allErrorMsgs, FormType formType) throws Exception {
 
         basicEncounter.setEarliestVisitDateTime(new DateTime(
                 dateCreator.getDate(
@@ -53,7 +54,7 @@ public class BasicEncounterCreator {
         basicEncounter.setEncounterLocation(locationCreator.getLocation(row, headers.encounterLocation, allErrorMsgs));
         basicEncounter.setCancelLocation(locationCreator.getLocation(row, headers.cancelLocation, allErrorMsgs));
         basicEncounter.setEncounterType(encounterTypeCreator.getEncounterType(row.get(headers.encounterType), allErrorMsgs, headers.encounterType));
-        basicEncounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs));
+        basicEncounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, formType));
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));

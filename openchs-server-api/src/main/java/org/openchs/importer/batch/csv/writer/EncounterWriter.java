@@ -1,5 +1,6 @@
 package org.openchs.importer.batch.csv.writer;
 
+import org.openchs.application.FormType;
 import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.Encounter;
@@ -43,7 +44,7 @@ public class EncounterWriter implements ItemWriter<Row>, Serializable {
         Encounter encounter = getOrCreateEncounter(row);
 
         List<String> allErrorMsgs = new ArrayList<>();
-        basicEncounterCreator.updateEncounter(row, encounter, allErrorMsgs);
+        basicEncounterCreator.updateEncounter(row, encounter, allErrorMsgs, FormType.Encounter);
 
         encounter.setIndividual(getSubject(row, allErrorMsgs));
 

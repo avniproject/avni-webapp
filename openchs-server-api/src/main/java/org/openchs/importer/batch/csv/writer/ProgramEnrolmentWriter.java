@@ -1,6 +1,7 @@
 package org.openchs.importer.batch.csv.writer;
 
 import org.joda.time.DateTime;
+import org.openchs.application.FormType;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
@@ -68,7 +69,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         programEnrolment.setEnrolmentLocation(locationCreator.getLocation(row, headers.enrolmentLocation, allErrorMsgs));
         programEnrolment.setExitLocation(locationCreator.getLocation(row, headers.exitLocation, allErrorMsgs));
         programEnrolment.setProgram(programCreator.getProgram(row.get(headers.program), allErrorMsgs, headers.program));
-        programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs));
+        programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment));
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));

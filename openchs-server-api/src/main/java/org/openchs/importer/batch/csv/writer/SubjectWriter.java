@@ -1,6 +1,7 @@
 package org.openchs.importer.batch.csv.writer;
 
 import org.joda.time.LocalDate;
+import org.openchs.application.FormType;
 import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.LocationRepository;
@@ -69,7 +70,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         setRegistrationDate(individual, row, allErrorMsgs);
         individual.setRegistrationLocation(locationCreator.getLocation(row, headers.registrationLocation, allErrorMsgs));
         setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
-        individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs));
+        individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile));
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));
