@@ -33,6 +33,8 @@ public class SubjectTypeService {
             subjectType = createSubjectType(subjectTypeRequest);
         }
         subjectType.setName(subjectTypeRequest.getName());
+        subjectType.setGroup(subjectTypeRequest.isGroup());
+        subjectType.setHousehold(subjectTypeRequest.isHousehold());
         subjectTypeRepository.save(subjectType);
     }
 

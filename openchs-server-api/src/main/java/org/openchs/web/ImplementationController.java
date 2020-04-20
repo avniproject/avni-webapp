@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,9 +82,9 @@ public class ImplementationController implements RestControllerResourceProcessor
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
-    @RequestMapping(value = "/implementation/export", method = RequestMethod.GET)
+    @RequestMapping(value = "/implementation/export/{includeLocations}", method = RequestMethod.GET)
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
-    public ResponseEntity<ByteArrayResource> export() throws IOException {
+    public ResponseEntity<ByteArrayResource> export(@PathVariable boolean includeLocations) throws IOException {
 
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         Long orgId = organisation.getId();
@@ -91,8 +92,10 @@ public class ImplementationController implements RestControllerResourceProcessor
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         //ZipOutputStream will be automatically closed because we are using try-with-resources.
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            //addAddressLevelTypesJson(orgId, zos);
-            //addAddressLevelsJson(orgId, zos);
+            if (includeLocations) {
+                addAddressLevelTypesJson(orgId, zos);
+                addAddressLevelsJson(orgId, zos);
+            }
             //addCatchmentsJson(organisation, zos);
             addSubjectTypesJson(orgId, zos);
             addOperationalSubjectTypesJson(organisation, zos);

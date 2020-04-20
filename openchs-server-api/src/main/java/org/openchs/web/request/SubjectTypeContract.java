@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.domain.SubjectType;
 
@@ -8,7 +9,11 @@ import org.openchs.domain.SubjectType;
 @JsonPropertyOrder({"name", "uuid"})
 public class SubjectTypeContract extends ReferenceDataContract {
 
+    @JsonProperty(value = "group")
     private boolean isGroup;
+
+    @JsonProperty(value = "household")
+    private boolean isHousehold;
 
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
@@ -16,7 +21,16 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setUuid(subjectType.getUuid());
         contract.setVoided(subjectType.isVoided());
         contract.setIsGroup(subjectType.isGroup());
+        contract.setHousehold(subjectType.isHousehold());
         return contract;
+    }
+
+    public boolean isHousehold() {
+        return isHousehold;
+    }
+
+    public void setHousehold(boolean household) {
+        isHousehold = household;
     }
 
     public boolean isGroup() {
