@@ -15,6 +15,8 @@ import { subjectTypeReducer } from "../Reducers";
 import Switch from "@material-ui/core/Switch";
 import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { useFormMappings } from "./effects";
+import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -24,6 +26,17 @@ const SubjectTypeEdit = props => {
   const [redirectShow, setRedirectShow] = useState(false);
   const [subjectTypeData, setSubjectTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
+  const [formMappings, setFormMappings] = useState([]);
+  const [formList, setFormList] = useState([]);
+  const [notificationAlert, setNotificationAlert] = useState([]);
+  const [message, setMessage] = useState([]);
+
+  const consumeFormMappingResult = (formMap, forms) => {
+    setFormMappings(formMap);
+    setFormList(forms);
+  };
+
+  useFormMappings(consumeFormMappingResult);
 
   useEffect(() => {
     http
@@ -105,6 +118,26 @@ const SubjectTypeEdit = props => {
             </Grid>
           </Grid>
           <p />
+          <Grid component="label" container alignItems="center" spacing={2}>
+            <Grid>Registration form name</Grid>
+            <Grid>
+              <WorkFlowFormCreation
+                rowDetails={subjectType}
+                formMapping={formMappings}
+                setMapping={() => {}}
+                formList={formList}
+                formType="IndividualProfile"
+                placeholder="Select registration form"
+                customUUID="subjectTypeUUID"
+                fillFormName="Registration form"
+                notificationAlert={notificationAlert}
+                setNotificationAlert={setNotificationAlert}
+                message={message}
+                setMessage={setMessage}
+                redirectToWorkflow="subjectType"
+              />
+            </Grid>
+          </Grid>
           <Grid component="label" container alignItems="center" spacing={2}>
             <Grid>Group</Grid>
             <Grid>

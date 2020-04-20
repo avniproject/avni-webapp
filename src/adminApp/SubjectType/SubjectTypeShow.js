@@ -9,7 +9,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import Moment from "react-moment";
 import Grid from "@material-ui/core/Grid";
 import Switch from "@material-ui/core/Switch";
-import _ from "lodash";
+import _, { get } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "./formMapping";
 import { useFormMappings } from "./effects";
@@ -71,7 +71,7 @@ const SubjectTypeShow = props => {
               <FormLabel style={{ fontSize: "13px" }}>Registration form name</FormLabel>
               <br />
               <span style={{ fontSize: "15px" }}>
-                {findRegistrationForm(formMappings, subjectType).formName}
+                {get(findRegistrationForm(formMappings, subjectType), "formName")}
               </span>
             </div>
             <p />

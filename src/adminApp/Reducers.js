@@ -63,7 +63,8 @@ export function subjectTypeReducer(subjectType, action) {
         name: action.payload.name,
         group: action.payload.group,
         household: action.payload.household,
-        groupRoles: action.payload.groupRoles
+        groupRoles: action.payload.groupRoles,
+        uuid: action.payload.uuid
       };
     default:
       return subjectType;

@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import { isEmpty, isEqual } from "lodash";
+import { get, isEmpty, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -13,6 +13,7 @@ const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
 
   useFormMappings(setFormMappings);
+  console.log(formMappings);
 
   const columns = [
     {
@@ -25,7 +26,16 @@ const SubjectTypesList = ({ history }) => {
       title: "Registration form name",
       field: "formName",
       sorting: false,
-      render: rowData => findRegistrationForm(formMappings, rowData).formName
+      render: rowData => (
+        <a
+          href={`#/appdesigner/forms/${get(
+            findRegistrationForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findRegistrationForm(formMappings, rowData), "formName")}
+        </a>
+      )
     },
     { title: "Household", field: "household", type: "boolean" },
     { title: "Group", field: "group", type: "boolean" },
