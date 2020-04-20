@@ -13,7 +13,6 @@ const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
 
   useFormMappings(setFormMappings);
-  console.log(formMappings);
 
   const columns = [
     {
