@@ -236,7 +236,11 @@ const DefaultPage = props => {
                     required
                     name="registrationDate"
                     label={t("Date of registration")}
-                    value={new Date(props.subject.registrationDate)}
+                    value={
+                      _.isNil(props.subject.registrationDate)
+                        ? null
+                        : new Date(props.subject.registrationDate)
+                    }
                     error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
                     helperText={t(subjectRegErrors.REGISTRATION_DATE)}
                     style={{ width: "30%" }}
@@ -245,8 +249,9 @@ const DefaultPage = props => {
                     format="MM/dd/yyyy"
                     placeholder="mm/dd/yyyy"
                     onChange={date => {
-                      props.updateSubject("registrationDate", new Date(date));
-                      props.subject.registrationDate = date;
+                      const dateOfReg = _.isNil(date) ? undefined : new Date(date);
+                      props.updateSubject("registrationDate", dateOfReg);
+                      props.subject.registrationDate = dateOfReg;
                       setValidationResultToError(props.subject.validateRegistrationDate());
                     }}
                     InputLabelProps={{
@@ -255,9 +260,6 @@ const DefaultPage = props => {
                     KeyboardButtonProps={{
                       "aria-label": "change date",
                       color: "primary"
-                    }}
-                    InputProps={{
-                      readOnly: true
                     }}
                   />
                 </MuiPickersUtilsProvider>
@@ -304,8 +306,9 @@ const DefaultPage = props => {
                       dateOfBirthVerified={props.subject.dateOfBirthVerified}
                       dobErrorMsg={subjectRegErrors.DOB}
                       onChange={date => {
-                        props.updateSubject("dateOfBirth", date);
-                        props.subject.setDateOfBirth(date);
+                        const dateOfBirth = _.isNil(date) ? undefined : new Date(date);
+                        props.updateSubject("dateOfBirth", dateOfBirth);
+                        props.subject.setDateOfBirth(dateOfBirth);
                         setValidationResultToError(props.subject.validateDateOfBirth());
                       }}
                       markVerified={verified =>
@@ -331,7 +334,6 @@ const DefaultPage = props => {
                       selectedVillage={props.subject.lowestAddressLevel.title}
                       errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
                       onSelect={location => {
-                        //props.updateSubject("lowestAddressLevel", location);
                         props.updateSubject(
                           "lowestAddressLevel",
                           AddressLevel.create({

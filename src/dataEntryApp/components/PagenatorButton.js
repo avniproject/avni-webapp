@@ -71,16 +71,16 @@ const PagenatorButton = ({
   const handleNext = event => {
     const formElementGroup = new FormElementGroup();
     const formElementGroupValidations = formElementGroup.validate(obsHolder, feg.formElements);
-    const allValidationResults = unionBy(
-      validationResults,
-      formElementGroupValidations,
-      "formIdentifier"
-    );
+    // const allValidationResults = unionBy(
+    //   validationResults,
+    //   formElementGroupValidations,
+    //   "formIdentifier"
+    // );
 
-    setValidationResults(allValidationResults);
+    setValidationResults(formElementGroupValidations);
 
-    if (!isEmpty(allValidationResults)) {
-      if (new ValidationResults(allValidationResults).hasValidationError()) {
+    if (!isEmpty(formElementGroupValidations)) {
+      if (new ValidationResults(formElementGroupValidations).hasValidationError()) {
         event.preventDefault();
       }
     }

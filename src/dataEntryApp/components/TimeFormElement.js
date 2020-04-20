@@ -19,11 +19,7 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
         required={fe.mandatory}
         value={value}
         onChange={update}
-        onError={(error, value) => {
-          console.log("in onError");
-          console.log(error);
-          console.log(value);
-        }}
+        onError={console.log}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
         mask="__:__ _M"

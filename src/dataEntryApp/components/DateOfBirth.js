@@ -13,7 +13,6 @@ import { useTranslation } from "react-i18next";
 
 export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
-  const dob = (dateOfBirth && new Date(dateOfBirth)) || null;
   const [years, setYears] = React.useState("");
   const [months, setMonths] = React.useState("");
 
@@ -28,8 +27,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   }, [dateOfBirth]);
 
   const _onChange = date => {
-    const date1 = new Date(date);
-    onChange(moment(date1).isValid() ? date1 : undefined);
+    onChange(date);
   };
 
   const _onYearsChange = value => {
@@ -40,9 +38,6 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
         .subtract(months, "months")
         .toDate()
     );
-    if (value > 120) {
-      dobErrorMsg = "Age is person is above 120 years";
-    }
   };
 
   return (
@@ -61,17 +56,14 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             style={{ width: "30%" }}
             name="dateOfBirth"
             label={t("date of birth")}
-            value={dob}
-            onChange={date => _onChange(date)}
+            value={_.isNil(dateOfBirth) ? null : dateOfBirth}
+            onChange={date => onChange(date)}
             InputLabelProps={{
               shrink: true
             }}
             KeyboardButtonProps={{
               "aria-label": "change date",
               color: "primary"
-            }}
-            InputProps={{
-              readOnly: true
             }}
           />
         </MuiPickersUtilsProvider>
@@ -82,10 +74,10 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           autoComplete="off"
           required
           name="ageYearsPart"
-          value={years}
+          value={_.isNaN(years) ? "" : years}
           style={{ width: "30%" }}
-          error={Boolean(_.isNil(dob) && dobErrorMsg)}
-          helperText={_.isNil(dob) && t(dobErrorMsg)}
+          error={Boolean(_.isEmpty(dateOfBirth) && dobErrorMsg)}
+          helperText={_.isEmpty(dateOfBirth) && t(dobErrorMsg)}
           onChange={e => _onYearsChange(e.target.value)}
         />
       </Box>

@@ -1,9 +1,10 @@
 import React, { Fragment, useState } from "react";
 import { TextField, FormLabel, FormControl } from "@material-ui/core";
-import { isEmpty, find } from "lodash";
+import _, { isEmpty, find } from "lodash";
 import { CompositeDuration } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
+import { __esModule } from "react-router-dom/cjs/react-router-dom.min";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,8 +28,12 @@ const DurationFormElement = ({ duration, mandatory, name, update, validationResu
         name={name}
         type="number"
         value={localVal}
-        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
-        error={validationResult && !validationResult.success}
+        helperText={
+          validationResult &&
+          duration.isEmpty &&
+          t(validationResult.messageKey, validationResult.extra)
+        }
+        error={validationResult && !validationResult.success && duration.isEmpty}
         onChange={e => {
           const value = e.target.value;
           isEmpty(value) ? setLocalVal("") : setLocalVal(value);

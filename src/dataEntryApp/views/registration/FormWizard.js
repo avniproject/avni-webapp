@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import _, { isNaN } from "lodash";
+import { isNaN } from "lodash";
 import { withParams } from "../../../common/components/utils";
 import Paginator from "../../components/Paginator";
 import { withRouter, Redirect } from "react-router-dom";
@@ -98,13 +98,8 @@ const FormWizard = ({
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-
-  console.log("children..", children);
-
   const [redirect, setRedirect] = React.useState(false);
   const from = match.queryParams.from;
-  // console.log(page);
-
   const firstPageNumber =
     form && form.firstFormElementGroup && form.firstFormElementGroup.displayOrder;
   const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;

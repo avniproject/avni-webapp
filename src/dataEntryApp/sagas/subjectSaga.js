@@ -185,28 +185,6 @@ export function* updateObsWorker({ formElement, value }) {
   yield put(
     setValidationResults(validate(formElement, value, subject.observations, validationResults))
   );
-
-  // let isNullForMultiselect = false;
-  // if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-  //   const observationHolder = new ObservationsHolder(subject.observations);
-  //   const answers =
-  //     observationHolder.findObservation(formElement.concept) &&
-  //     observationHolder.findObservation(formElement.concept).getValue();
-
-  //   isNullForMultiselect = _.isNil(answers);
-  // }
-
-  // const validationResults = yield select(state => state.dataEntry.registration.validationResults);
-  // const validationResult = formElement.validate(isNullForMultiselect ? null : value);
-
-  // _.remove(
-  //   validationResults,
-  //   existingValidationResult =>
-  //     existingValidationResult.formIdentifier === validationResult.formIdentifier
-  // );
-
-  // validationResults.push(validationResult);
-  // yield put(setValidationResults(validationResults));
   sessionStorage.setItem("subject", JSON.stringify(subject));
 }
 
@@ -230,7 +208,6 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
       validate(formElement, value, programEnrolment.observations, validationResults)
     )
   );
-  // yield put(setValidationResults(validationResults));
 }
 
 export default function* subjectSaga() {
