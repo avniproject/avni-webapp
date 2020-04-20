@@ -16,10 +16,10 @@ import Switch from "@material-ui/core/Switch";
 import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
-import DropDown from "../../common/components/DropDown";
 import { findRegistrationForms } from "./formMapping";
 import { default as UUID } from "uuid";
 import _ from "lodash";
+import SelectForm from "./SelectForm";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -30,18 +30,10 @@ const SubjectTypeEdit = props => {
   const [subjectTypeData, setSubjectTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [formList, setFormList] = useState([]);
-  const [notificationAlert, setNotificationAlert] = useState([]);
-  const [message, setMessage] = useState([]);
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormList(forms);
   };
-
-  const convertFormListForDisplay = (list = []) =>
-    list.map(form => ({
-      name: form.formName,
-      value: form
-    }));
 
   useFormMappings(consumeFormMappingResult);
 
@@ -142,16 +134,15 @@ const SubjectTypeEdit = props => {
           <Grid component="label" container alignItems="center" spacing={2}>
             <Grid>Registration form name</Grid>
             <Grid>
-              <DropDown
-                name="Registration form name"
+              <SelectForm
                 value={_.get(subjectType, "registrationForm.formName")}
-                onChange={selectedFormName =>
+                onChange={selectedForm =>
                   dispatch({
                     type: "registrationForm",
-                    payload: _.find(formList, form => form.formName === selectedFormName)
+                    payload: selectedForm
                   })
                 }
-                options={convertFormListForDisplay(findRegistrationForms(formList))}
+                formList={findRegistrationForms(formList)}
               />
             </Grid>
           </Grid>

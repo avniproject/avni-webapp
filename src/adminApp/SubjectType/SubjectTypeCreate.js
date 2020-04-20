@@ -11,9 +11,12 @@ import { subjectTypeReducer } from "../Reducers";
 import Switch from "@material-ui/core/Switch";
 import { Grid } from "@material-ui/core";
 import GroupRoles from "./GroupRoles";
-import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
-import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
+import _ from "lodash";
+import { findRegistrationForms } from "./formMapping";
+import SelectForm from "./SelectForm";
+import { default as UUID } from "uuid";
 
 const SubjectTypeCreate = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -24,8 +27,6 @@ const SubjectTypeCreate = props => {
   const [id, setId] = useState();
   const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
-  const [notificationAlert, setNotificationAlert] = useState([]);
-  const [message, setMessage] = useState([]);
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormMappings(formMap);
@@ -41,12 +42,17 @@ const SubjectTypeCreate = props => {
     if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
-    } else {
-      setNameValidation(false);
+      return;
+    }
+    setNameValidation(false);
+    let subjectTypeUuid;
+
+    let subjectTypeSavePromise = () =>
       http
         .post("/web/subjectType", subjectType)
         .then(response => {
           if (response.status === 200) {
+            subjectTypeUuid = response.data.uuid;
             setError("");
             setAlert(true);
             setId(response.data.id);
@@ -55,7 +61,18 @@ const SubjectTypeCreate = props => {
         .catch(error => {
           setError(error.response.data.message);
         });
-    }
+
+    const formMappingPromise = () =>
+      http.post("/emptyFormMapping", [
+        {
+          uuid: UUID.v4(),
+          subjectTypeUUID: subjectTypeUuid,
+          formUUID: subjectType.registrationForm.formUUID,
+          isVoided: false
+        }
+      ]);
+
+    return subjectTypeSavePromise().then(formMappingPromise);
   };
 
   return (
@@ -87,31 +104,15 @@ const SubjectTypeCreate = props => {
             <Grid component="label" container alignItems="center" spacing={2}>
               <Grid>Registration form name</Grid>
               <Grid>
-                <WorkFlowFormCreation
-                  rowDetails={subjectType}
-                  formMapping={formMappings}
-                  setMapping={() => {}}
-                  formList={formList}
-                  formType="IndividualProfile"
-                  placeholder="Select registration form"
-                  customUUID="subjectTypeUUID"
-                  fillFormName="Registration form"
-                  notificationAlert={notificationAlert}
-                  setNotificationAlert={setNotificationAlert}
-                  message={message}
-                  setMessage={setMessage}
-                  redirectToWorkflow="subjectType"
-                />
-              </Grid>
-            </Grid>
-            <p />
-            <Grid component="label" container alignItems="center" spacing={2}>
-              <Grid>Group</Grid>
-              <Grid>
-                <Switch
-                  checked={subjectType.group}
-                  onChange={event => handleGroupChange(event, subjectType, dispatch)}
-                  name="group"
+                <SelectForm
+                  value={_.get(subjectType, "registrationForm.formName")}
+                  onChange={selectedForm =>
+                    dispatch({
+                      type: "registrationForm",
+                      payload: selectedForm
+                    })
+                  }
+                  formList={findRegistrationForms(formList)}
                 />
               </Grid>
             </Grid>
