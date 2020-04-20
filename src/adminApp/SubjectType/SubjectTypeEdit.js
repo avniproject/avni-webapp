@@ -16,7 +16,7 @@ import Switch from "@material-ui/core/Switch";
 import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
-import { findRegistrationForms } from "./formMapping";
+import { findRegistrationForm, findRegistrationForms } from "./formMapping";
 import { default as UUID } from "uuid";
 import _ from "lodash";
 import SelectForm from "./SelectForm";
@@ -30,8 +30,11 @@ const SubjectTypeEdit = props => {
   const [subjectTypeData, setSubjectTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [formList, setFormList] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
+  const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(false);
 
   const consumeFormMappingResult = (formMap, forms) => {
+    setFormMappings(formMap);
     setFormList(forms);
   };
 
@@ -54,6 +57,12 @@ const SubjectTypeEdit = props => {
       setNameValidation(true);
       return;
     }
+
+    if (_.isEmpty(subjectType.registrationForm)) {
+      setError("Please select registration form");
+      return;
+    }
+
     setNameValidation(false);
     let subjectTypeUuid;
     let subjectTypeSavePromise = () =>

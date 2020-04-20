@@ -44,6 +44,11 @@ const SubjectTypeCreate = props => {
       setNameValidation(true);
       return;
     }
+    if (_.isEmpty(subjectType.registrationForm)) {
+      setError("Please select registration form");
+      return;
+    }
+
     setNameValidation(false);
     let subjectTypeUuid;
 
