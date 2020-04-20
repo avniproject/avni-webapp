@@ -111,6 +111,17 @@ const SubjectTypeEdit = props => {
       .catch(error => {});
   };
 
+  if (
+    !_.isEmpty(formMappings) &&
+    !_.isEmpty(subjectType.uuid) &&
+    !firstTimeFormValueToggle &&
+    _.isEmpty(subjectType.registrationForm)
+  ) {
+    setFirstTimeFormValueToggle(true);
+    let payload = findRegistrationForm(formMappings, subjectType);
+    dispatch({ type: "registrationForm", payload: payload });
+  }
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
