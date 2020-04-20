@@ -8,6 +8,7 @@ export const types = {
   UPDATE_SUBJECT: `${prefix}UPDATE_NEW_SUBJECT`,
   SAVE_SUBJECT: `${prefix}SAVE_SUBJECT`,
   ON_LOAD: `${prefix}ON_LOAD`,
+  ON_LOAD_EDIT: `${prefix}ON_LOAD_EDIT`,
   SET_LOADED: `${prefix}SET_LOADED`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
@@ -46,6 +47,11 @@ export const updateSubject = (field, value) => ({
 export const onLoad = subjectTypeName => ({
   type: types.ON_LOAD,
   subjectTypeName
+});
+
+export const onLoadEdit = subject => ({
+  type: types.ON_LOAD_EDIT,
+  subject
 });
 
 export const setLoaded = () => ({

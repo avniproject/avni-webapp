@@ -4,6 +4,7 @@ import dataEntrySaga from "../dataEntryApp/sagas";
 import translationsSaga from "../translations/sagas";
 import uploadSagas from "../upload/sagas";
 import reportSagas from "../reports/sagas";
+import userGroupsSagas from "../userGroups/sagas";
 import { organisationConfigWatcher } from "../i18nTranslations/TranslationSaga";
 
 import {
@@ -28,7 +29,8 @@ export default function* rootSaga() {
       dataEntrySaga,
       translationsSaga,
       uploadSagas,
-      reportSagas
+      reportSagas,
+      userGroupsSagas
     ].map(fork)
   );
 }

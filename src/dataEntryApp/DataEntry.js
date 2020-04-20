@@ -49,6 +49,7 @@ const DataEntry = ({
             <Route path={[path, `${path}/dashboard`]} component={DataEntryDashboard} />
             <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
             <Route path={`${path}/register`} component={SubjectRegister} />
+            <Route path={`${path}/editSubject`} component={SubjectRegister} />
             <Route exact path={`${path}/subject`} component={SubjectDashboard} />
             <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
           </Grid>

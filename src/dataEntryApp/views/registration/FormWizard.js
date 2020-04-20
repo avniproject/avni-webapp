@@ -50,7 +50,7 @@ const Header = ({ subject, children }) => {
   const fullName = subject.firstName + " " + subject.lastName || "-";
   const gender = subject.gender ? subject.gender.name || "-" : "";
   const lowestAddressLevel = subject.lowestAddressLevel
-    ? subject.lowestAddressLevel.title || "-"
+    ? subject.lowestAddressLevel.name || "-"
     : "";
   const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
   return (
@@ -93,9 +93,12 @@ const FormWizard = ({
   onSaveGoto,
   onSave,
   subject,
+  onLoad,
+  setSubject,
   children
 }) => {
   const classes = useStyle();
+
   const { t } = useTranslation();
 
   console.log("children..", children);

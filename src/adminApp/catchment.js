@@ -13,7 +13,8 @@ import {
   ReferenceArrayInput,
   SingleFieldList,
   AutocompleteArrayInput,
-  ReferenceArrayField
+  ReferenceArrayField,
+  Filter
 } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
@@ -22,6 +23,12 @@ import LocationUtils from "./LocationUtils";
 import _ from "lodash";
 import { Title } from "./components/Title";
 import Chip from "@material-ui/core/Chip";
+
+const CatchmentFilter = props => (
+  <Filter {...props}>
+    <TextInput label="Search catchment" source="name" resettable alwaysOn />
+  </Filter>
+);
 
 const TitleChip = props => {
   return <Chip label={`${props.record.title} (${props.record.typeString})`} />;
@@ -60,7 +67,7 @@ export const CatchmentDetail = props => {
 };
 
 export const CatchmentList = props => (
-  <List {...props} bulkActions={false}>
+  <List {...props} bulkActions={false} filters={<CatchmentFilter />}>
     <Datagrid rowClick="show">
       <TextField label="Catchment" source="name" />
       <TextField label="Type" source="type" />

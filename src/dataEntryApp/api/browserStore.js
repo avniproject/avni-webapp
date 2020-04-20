@@ -2,31 +2,45 @@ import {
   Individual,
   ObservationsHolder,
   ProgramEnrolment,
-  Observation,
-  Concept
+  Concept,
+  Gender,
+  AddressLevel,
+  SubjectType
 } from "avni-models";
 import { store } from "../../common/store/createStore";
 import { types } from "../../common/store/conceptReducer";
-import { select } from "redux-saga/effects";
+
 export default class {
   static fetchSubject() {
     if (sessionStorage.getItem("subject")) {
       let subject = Individual.createEmptyInstance();
       let localSavedSubject = JSON.parse(sessionStorage.getItem("subject"));
-
+      if (subject.uuid) {
+        subject.uuid = localSavedSubject.uuid;
+      }
       subject.name = localSavedSubject.name;
       subject.firstName = localSavedSubject.firstName;
       subject.lastName = localSavedSubject.lastName;
       subject.dateOfBirth = localSavedSubject.dateOfBirth;
       subject.registrationDate = localSavedSubject.registrationDate;
       subject.dateOfBirthVerified = localSavedSubject.dateOfBirthVerified;
-      subject.gender.name = localSavedSubject.gender.name;
-      subject.gender.uuid = localSavedSubject.gender.uuid;
-      subject.lowestAddressLevel = localSavedSubject.lowestAddressLevel;
       subject.registrationLocation = localSavedSubject.registrationLocation;
       subject.relationship = localSavedSubject.relationship;
-      subject.subjectType.name = localSavedSubject.subjectType.name;
-      subject.subjectType.uuid = localSavedSubject.subjectType.uuid;
+
+      const gender = new Gender();
+      gender.name = localSavedSubject.gender.name;
+      gender.uuid = localSavedSubject.gender.uuid;
+      subject.gender = gender;
+
+      const subjectType = new SubjectType();
+      subjectType.uuid = localSavedSubject.subjectType.uuid;
+      subjectType.name = localSavedSubject.subjectType.name;
+      subject.subjectType = subjectType;
+
+      const addressLevel = new AddressLevel();
+      subject.uuid = localSavedSubject.lowestAddressLevel.uuid;
+      subject.name = localSavedSubject.lowestAddressLevel.name;
+      subject.lowestAddressLevel = addressLevel;
 
       //addOrUpdateObservation
       const observationHolder = new ObservationsHolder(subject.observations);
@@ -37,7 +51,10 @@ export default class {
           element.concept.keyValues,
           element.concept.uuid
         );
-        observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
+        observationHolder.addOrUpdateObservation(
+          concept,
+          concept.isDurationConcept() ? element.valueJSON : element.valueJSON.answer
+        );
         store.dispatch({ type: types.ADD_CONCEPT, value: concept });
       });
       subject.observations = observationHolder.observations;

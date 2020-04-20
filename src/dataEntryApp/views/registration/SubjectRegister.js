@@ -12,6 +12,7 @@ import {
   setSubject,
   saveCompleteFalse
 } from "../../reducers/registrationReducer";
+import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { getGenders } from "../../reducers/metadataReducer";
@@ -27,6 +28,7 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
+import { disableSession } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -103,15 +105,6 @@ const DefaultPage = props => {
   const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
   const [lastnameerrormsg, setLastnamemsg] = React.useState("");
   // console.log(props);
-
-  React.useEffect(() => {
-    (async function fetchData() {
-      await props.onLoad(props.match.queryParams.type);
-      props.saveCompleteFalse();
-      let subject = BrowserStore.fetchSubject();
-      if (subject) props.setSubject(subject);
-    })();
-  }, []);
 
   return (
     <div>
@@ -235,7 +228,7 @@ const DefaultPage = props => {
                     <LineBreak num={1} />
                     <label className={classes.villagelabel}>{t("Village")}</label>
                     <LocationAutosuggest
-                      selectedVillage={props.subject.lowestAddressLevel.title}
+                      selectedVillage={props.subject.lowestAddressLevel.name}
                       onSelect={location => props.updateSubject("lowestAddressLevel", location)}
                       data={props}
                     />
@@ -309,6 +302,7 @@ const mapDispatchToProps = {
   saveSubject,
   onLoad,
   setSubject,
+  getSubjectProfile,
   saveCompleteFalse
 };
 
@@ -348,13 +342,22 @@ const RegistrationForm = withRouter(
 
 const SubjectRegister = props => {
   const classes = useStyles();
+  const match = props.match;
+  const edit = match.path === "/app/editSubject";
 
   React.useEffect(() => {
     (async function fetchData() {
-      await props.onLoad(props.match.queryParams.type);
+      if (edit) {
+        const subjectUuid = props.match.queryParams.uuid;
+        await props.getSubjectProfile(subjectUuid);
+      } else {
+        await props.onLoad(props.match.queryParams.type);
+      }
       props.saveCompleteFalse();
-      let subject = BrowserStore.fetchSubject();
-      if (subject) props.setSubject(subject);
+      if (!disableSession) {
+        let subject = BrowserStore.fetchSubject();
+        if (subject) props.setSubject(subject);
+      }
     })();
   }, []);
 
@@ -363,27 +366,24 @@ const SubjectRegister = props => {
       <Breadcrumbs path={props.match.path} />
       <Paper className={classes.root}>
         <Stepper />
-        <Route exact path={`${props.match.path}`} component={ConnectedDefaultPage} />
-        <Route path={`${props.match.path}/form`} component={RegistrationForm} />
+        <Route exact path={`${match.path}`} component={() => <ConnectedDefaultPage />} />
+        <Route path={`${match.path}/form`} component={() => <RegistrationForm />} />
       </Paper>
     </Fragment>
   );
 };
 
-const mapRegisterStateToProps = state => ({
-  subject: state.dataEntry.registration.subject
-});
-
 const mapRegisterDispatchToProps = {
   onLoad,
   setSubject,
+  getSubjectProfile,
   saveCompleteFalse
 };
 
 export default withRouter(
   withParams(
     connect(
-      mapRegisterStateToProps,
+      null,
       mapRegisterDispatchToProps
     )(SubjectRegister)
   )

@@ -124,6 +124,18 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   yield put.resolve(setLoaded());
 }
 
+function* loadEditRegistrationPageWatcher() {
+  yield takeLatest(subjectTypes.ON_LOAD_EDIT, loadEditRegistrationPageWorker);
+}
+
+export function* loadEditRegistrationPageWorker({ subject }) {
+  yield put.resolve(getOperationalModules());
+  yield put.resolve(getRegistrationForm(subject.subjectType.name));
+  yield put.resolve(getGenders());
+  yield put.resolve(setSubject(subject));
+  yield put.resolve(setLoaded());
+}
+
 /*
 Takes observations and returns updated observations. It do not modify the passed parameters.
  */
@@ -141,6 +153,12 @@ function updateObservations(observations, formElement, value) {
     !_.isNil(formElement.durationOptions)
   ) {
     observationHolder.updateCompositeDurationValue(formElement.concept, value);
+  } else if (
+    formElement.concept.datatype === Concept.dataType.Date &&
+    !_.isNil(formElement.durationOptions)
+  ) {
+    //  addOrUpdatePrimitiveObs
+    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   } else {
     observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
   }
@@ -187,7 +205,8 @@ export default function* subjectSaga() {
       loadRegistrationPageWatcher,
       saveProgramEnrolmentWatcher,
       updateObsWatcher,
-      updateEnrolmentObsWatcher
+      updateEnrolmentObsWatcher,
+      loadEditRegistrationPageWatcher
     ].map(fork)
   );
 }
