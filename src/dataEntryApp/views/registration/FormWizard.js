@@ -101,12 +101,9 @@ const FormWizard = ({
 
   const { t } = useTranslation();
 
-  console.log("children..", children);
-
   const [redirect, setRedirect] = React.useState(false);
 
   const from = match.queryParams.from;
-  // console.log(page);
 
   const firstPageNumber =
     form && form.firstFormElementGroup && form.firstFormElementGroup.displayOrder;
@@ -123,7 +120,7 @@ const FormWizard = ({
   const pageDetails = {
     nextPageNumber: showSummaryPage
       ? null
-      : form && form.getNextFormElement(currentPageNumber) != undefined
+      : form && form.getNextFormElement(currentPageNumber) !== undefined
       ? form.getNextFormElement(currentPageNumber).displayOrder
       : currentPageNumber + 1,
     previousPageNumber:

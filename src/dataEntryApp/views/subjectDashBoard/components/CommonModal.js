@@ -10,7 +10,6 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import SubjectButton from "./Button";
 import Fab from "@material-ui/core/Fab";
-import { InternalLink } from "common/components/utils";
 //import Link from "@material-ui/core/Link";
 import { Link } from "react-router-dom";
 
@@ -83,7 +82,6 @@ const useStyles = makeStyles(theme => ({
 const styles = theme => ({
   root: {
     margin: 0,
-    padding: theme.spacing(2),
     backgroundColor: "black",
     padding: "6px 16px",
     color: "white"
@@ -124,7 +122,7 @@ const CommonModal = ({ content, buttonsSet, title }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
-  const { t } = useTranslation();
+  //const { t } = useTranslation();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -132,11 +130,10 @@ const CommonModal = ({ content, buttonsSet, title }) => {
   const handleClose = () => {
     setOpen(false);
   };
-  const preventDefault = event => event.preventDefault();
 
-  const mainButton = buttonsSet.filter(element => element.buttonType == "openButton").shift();
-  const saveButton = buttonsSet.filter(element => element.buttonType == "saveButton").shift();
-  const cancelButton = buttonsSet.filter(element => element.buttonType == "cancelButton").shift();
+  const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
+  const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
+  const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
 
   return (
     <React.Fragment>
@@ -171,7 +168,6 @@ const CommonModal = ({ content, buttonsSet, title }) => {
                 btnClass={saveButton.classes}
                 btnClick={handleClose}
               />
-              {/* TEst */}
             </Link>
           ) : (
             ""

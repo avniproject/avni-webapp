@@ -72,25 +72,14 @@ export default function(state = initialState, action) {
       };
     }
     case types.SET_PROGRAM_ENROLMENT: {
-      if (
-        (JSON.parse(sessionStorage.getItem("programEnrolment")) &&
-          (JSON.parse(sessionStorage.getItem("programEnrolment")).observations.length > 0 &&
-            action.programEnrolment.observations.length > 0)) ||
-        !JSON.parse(sessionStorage.getItem("programEnrolment"))
-      ) {
-        return {
-          ...state,
-          programEnrolment: action.programEnrolment
-        };
-      } else return { ...state };
+      return {
+        ...state,
+        programEnrolment: action.programEnrolment
+      };
     }
     case types.UPDATE_PROGRAM_ENROLMENT: {
-      debugger;
       const programEnrolment = state.programEnrolment.cloneForEdit();
       programEnrolment[action.field] = action.value;
-      console.log("program__Enrolment--");
-      console.log(programEnrolment);
-      //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
       return {
         ...state,
         programEnrolment

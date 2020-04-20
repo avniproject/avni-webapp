@@ -80,35 +80,10 @@ export default class {
         store.dispatch({ type: types.ADD_CONCEPT, value: concept });
       });
       programEnrolment.observations = observationHolder.observations;
-      console.log("function");
-      console.log(programEnrolment);
-      debugger;
-
       return programEnrolment;
     }
 
     return;
-    // if (sessionStorage.getItem("subject") && sessionStorage.getItem("programEnrolment")) {
-    //   let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
-
-    // }
-
-    //let subject = ProgramEnrolment.createEmptyInstance();
-    // let localSavedSubject = JSON.parse(sessionStorage.getItem("subject"));
-
-    // const observationHolder = new ObservationsHolder(subject.observations);
-    //   localSavedSubject.observations.map(element => {
-    //     let concept = Concept.create(
-    //       element.concept.name,
-    //       element.concept.datatype,
-    //       element.concept.keyValues,
-    //       element.concept.uuid
-    //     );
-    //     observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
-    //     store.dispatch({ type: types.ADD_CONCEPT, value: concept });
-    //   });
-    //   subject.observations = observationHolder.observations;
-    //   return subject;
   }
 
   static clear(key) {
