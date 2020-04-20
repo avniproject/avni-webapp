@@ -71,7 +71,14 @@ const SubjectTypeShow = props => {
               <FormLabel style={{ fontSize: "13px" }}>Registration form name</FormLabel>
               <br />
               <span style={{ fontSize: "15px" }}>
-                {get(findRegistrationForm(formMappings, subjectType), "formName")}
+                <a
+                  href={`#/appdesigner/forms/${get(
+                    findRegistrationForm(formMappings, subjectType),
+                    "formUUID"
+                  )}`}
+                >
+                  {get(findRegistrationForm(formMappings, subjectType), "formName")}
+                </a>
               </span>
             </div>
             <p />
