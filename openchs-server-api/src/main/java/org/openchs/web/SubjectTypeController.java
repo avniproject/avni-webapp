@@ -192,6 +192,10 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
 
     private void createDefaultHouseholdRoles(SubjectType groupSubjectType) {
         SubjectType memberSubjectType = subjectTypeRepository.findByName("Individual");
+        if (memberSubjectType == null) {
+            logger.info("Individual subject type does not exists creating one");
+            memberSubjectType = subjectTypeService.createIndividualSubjectType();
+        }
         createRole(groupSubjectType, memberSubjectType, "Head of household", 1L);
         createRole(groupSubjectType, memberSubjectType, "Member", 100L);
     }

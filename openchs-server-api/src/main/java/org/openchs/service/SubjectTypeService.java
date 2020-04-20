@@ -64,4 +64,21 @@ public class SubjectTypeService {
         operationalSubjectType.setVoided(operationalSubjectTypeContract.isVoided());
         operationalSubjectTypeRepository.save(operationalSubjectType);
     }
+
+    public SubjectType createIndividualSubjectType() {
+        SubjectType subjectType = new SubjectType();
+        subjectType.assignUUID();
+        subjectType.setName("Individual");
+        SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
+        saveIndividualOperationalSubjectType(savedSubjectType);
+        return savedSubjectType;
+    }
+
+    private void saveIndividualOperationalSubjectType(SubjectType subjectType) {
+        OperationalSubjectType operationalSubjectType = new OperationalSubjectType();
+        operationalSubjectType.assignUUID();
+        operationalSubjectType.setName(subjectType.getName());
+        operationalSubjectType.setSubjectType(subjectType);
+        operationalSubjectTypeRepository.save(operationalSubjectType);
+    }
 }
