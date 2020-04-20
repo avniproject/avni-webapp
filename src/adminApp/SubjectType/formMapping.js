@@ -5,3 +5,6 @@ export const findRegistrationForm = (formMappings, subjectType) =>
       mapping.isVoided === false &&
       mapping.subjectTypeUUID === subjectType.uuid
   );
+
+export const findRegistrationForms = (formList = []) =>
+  formList.filter(form => form.formType === "IndividualProfile");

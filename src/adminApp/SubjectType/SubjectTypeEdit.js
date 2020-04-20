@@ -16,7 +16,10 @@ import Switch from "@material-ui/core/Switch";
 import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
-import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
+import DropDown from "../../common/components/DropDown";
+import { findRegistrationForms } from "./formMapping";
+import { default as UUID } from "uuid";
+import _ from "lodash";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -26,15 +29,19 @@ const SubjectTypeEdit = props => {
   const [redirectShow, setRedirectShow] = useState(false);
   const [subjectTypeData, setSubjectTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
-  const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
   const [notificationAlert, setNotificationAlert] = useState([]);
   const [message, setMessage] = useState([]);
 
   const consumeFormMappingResult = (formMap, forms) => {
-    setFormMappings(formMap);
     setFormList(forms);
   };
+
+  const convertFormListForDisplay = (list = []) =>
+    list.map(form => ({
+      name: form.formName,
+      value: form
+    }));
 
   useFormMappings(consumeFormMappingResult);
 
@@ -53,8 +60,11 @@ const SubjectTypeEdit = props => {
     if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
-    } else {
-      setNameValidation(false);
+      return;
+    }
+    setNameValidation(false);
+    let subjectTypeUuid;
+    let subjectTypeSavePromise = () =>
       http
         .put("/web/subjectType/" + props.match.params.id, {
           name: subjectType.name,
@@ -68,6 +78,7 @@ const SubjectTypeEdit = props => {
         })
         .then(response => {
           if (response.status === 200) {
+            subjectTypeUuid = response.data.uuid;
             setError("");
             setRedirectShow(true);
           }
@@ -75,7 +86,17 @@ const SubjectTypeEdit = props => {
         .catch(error => {
           setError(error.response.data.message);
         });
-    }
+    const formMappingPromise = () =>
+      http.post("/emptyFormMapping", [
+        {
+          uuid: UUID.v4(),
+          subjectTypeUUID: subjectTypeUuid,
+          formUUID: subjectType.registrationForm.formUUID,
+          isVoided: false
+        }
+      ]);
+
+    return subjectTypeSavePromise().then(formMappingPromise);
   };
 
   const onDelete = () => {
@@ -121,20 +142,16 @@ const SubjectTypeEdit = props => {
           <Grid component="label" container alignItems="center" spacing={2}>
             <Grid>Registration form name</Grid>
             <Grid>
-              <WorkFlowFormCreation
-                rowDetails={subjectType}
-                formMapping={formMappings}
-                setMapping={() => {}}
-                formList={formList}
-                formType="IndividualProfile"
-                placeholder="Select registration form"
-                customUUID="subjectTypeUUID"
-                fillFormName="Registration form"
-                notificationAlert={notificationAlert}
-                setNotificationAlert={setNotificationAlert}
-                message={message}
-                setMessage={setMessage}
-                redirectToWorkflow="subjectType"
+              <DropDown
+                name="Registration form name"
+                value={_.get(subjectType, "registrationForm.formName")}
+                onChange={selectedFormName =>
+                  dispatch({
+                    type: "registrationForm",
+                    payload: _.find(formList, form => form.formName === selectedFormName)
+                  })
+                }
+                options={convertFormListForDisplay(findRegistrationForms(formList))}
               />
             </Grid>
           </Grid>

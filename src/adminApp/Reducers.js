@@ -56,7 +56,8 @@ export function subjectTypeReducer(subjectType, action) {
       };
     case "groupRole":
       return { ...subjectType, groupRoles: action.payload };
-
+    case "registrationForm":
+      return { ...subjectType, registrationForm: action.payload };
     case "setData":
       return {
         ...subjectType,
