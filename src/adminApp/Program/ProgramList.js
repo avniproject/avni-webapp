@@ -1,16 +1,21 @@
 import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _, { isEqual } from "lodash";
+import _, { get, isEqual } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
+import {
+  findProgramEncounterForm,
+  findProgramEnrolmentForm,
+  findProgramExitForm
+} from "../domain/formMapping";
 
 const ProgramList = ({ history }) => {
-  const [formMapping, setMapping] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
   const [notificationAlert, setNotificationAlert] = useState(false);
   const [message, setMessage] = useState("");
@@ -22,7 +27,7 @@ const ProgramList = ({ history }) => {
       .then(response => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
-        setMapping(formMap);
+        setFormMappings(formMap);
         setSubjectType(response.data.subjectTypes);
         setFormList(response.data.forms);
       })
@@ -43,54 +48,40 @@ const ProgramList = ({ history }) => {
         <ShowSubjectType
           rowDetails={rowData}
           subjectType={subjectType}
-          formMapping={formMapping}
-          setMapping={setMapping}
+          formMapping={formMappings}
+          setMapping={setFormMappings}
           entityUUID="programUUID"
         />
       )
     },
     {
       title: "Enrolment form name",
+      field: "formName",
       sorting: false,
       render: rowData => (
-        <WorkFlowFormCreation
-          key={rowData.uuid}
-          rowDetails={rowData}
-          formMapping={formMapping}
-          setMapping={setMapping}
-          formList={formList}
-          formType="ProgramEnrolment"
-          placeholder="Select enrolment form"
-          customUUID="programUUID"
-          fillFormName="Enrolment form"
-          notificationAlert={notificationAlert}
-          setNotificationAlert={setNotificationAlert}
-          message={message}
-          setMessage={setMessage}
-          redirectToWorkflow="program"
-        />
+        <a
+          href={`#/appdesigner/forms/${get(
+            findProgramEnrolmentForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findProgramEnrolmentForm(formMappings, rowData), "formName")}
+        </a>
       )
     },
     {
       title: "Exit form name",
+      field: "formName",
       sorting: false,
       render: rowData => (
-        <WorkFlowFormCreation
-          key={rowData.uuid}
-          rowDetails={rowData}
-          formMapping={formMapping}
-          setMapping={setMapping}
-          formList={formList}
-          formType="ProgramExit"
-          placeholder="Select exit form"
-          customUUID="programUUID"
-          fillFormName="Exit form"
-          notificationAlert={notificationAlert}
-          setNotificationAlert={setNotificationAlert}
-          message={message}
-          setMessage={setMessage}
-          redirectToWorkflow="program"
-        />
+        <a
+          href={`#/appdesigner/forms/${get(
+            findProgramExitForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findProgramExitForm(formMappings, rowData), "formName")}
+        </a>
       )
     },
     {

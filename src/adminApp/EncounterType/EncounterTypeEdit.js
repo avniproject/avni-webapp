@@ -137,6 +137,7 @@ const EncounterTypeEdit = props => {
       .then(response => {
         if (response.status === 200) {
           setError("");
+          setRedirectShow(true);
         }
       });
   };

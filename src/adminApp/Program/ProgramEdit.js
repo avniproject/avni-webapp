@@ -22,17 +22,30 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import _ from "lodash";
 import { default as UUID } from "uuid";
+import {
+  findProgramEncounterCancellationForm,
+  findProgramEncounterForm,
+  findProgramEncounterForms,
+  findProgramEnrolmentForm,
+  findProgramEnrolmentForms,
+  findProgramExitForm,
+  findProgramExitForms
+} from "../domain/formMapping";
+import SelectForm from "../SubjectType/SelectForm";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [subjectValidation, setSubjectValidation] = useState(false);
+  const [programEnrolmentFormValidation, setProgramEnrolmentFormValidation] = useState(false);
+  const [programExitFormValidation, setProgramExitFormValidation] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [programData, setProgramData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [subjectT, setSubjectT] = useState({});
-  const [formMapping, setMapping] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
+  const [formList, setFormList] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
   const [existMapping, setExistMapping] = useState([]);
 
@@ -46,84 +59,84 @@ const ProgramEdit = props => {
         http
           .get("/web/operationalModules")
           .then(response => {
-            setMapping(response.data.formMappings);
+            const formMap = response.data.formMappings;
+            formMap.map(l => (l["isVoided"] = false));
+            setFormMappings(formMap);
+            setFormList(response.data.forms);
             setSubjectType(response.data.subjectTypes);
             const temp = response.data.formMappings.filter(l => l.programUUID === result.uuid);
             setExistMapping(temp);
             setSubjectT(
               response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
             );
+
+            const enrolmentForm = findProgramEnrolmentForm(formMap, result);
+            dispatch({ type: "programEnrolmentForm", payload: enrolmentForm });
+
+            const exitForm = findProgramExitForm(formMap, result);
+            dispatch({ type: "programExitForm", payload: exitForm });
           })
           .catch(error => {});
       });
   }, []);
 
   const onSubmit = () => {
-    if (program.name.trim() === "" || _.isEmpty(subjectT)) {
+    let hasError = false;
+
+    if (program.name.trim() === "") {
       setError("");
-      program.name.trim() === "" ? setNameValidation(true) : setNameValidation(false);
-      _.isEmpty(subjectT) ? setSubjectValidation(true) : setSubjectValidation(false);
-    } else {
-      setNameValidation(false);
-      setSubjectValidation(false);
-      let temp =
-        existMapping.length === 0
-          ? [
-              {
-                uuid: UUID.v4(),
-                subjectTypeUUID: subjectT.uuid,
-                programUUID: programData.uuid,
-                isVoided: false
-              }
-            ]
-          : formMapping.filter(
-              l =>
-                l.subjectTypeUUID === existMapping[0].subjectTypeUUID &&
-                l.programUUID === programData.uuid
-            );
-
-      existMapping.length !== 0 &&
-        temp.map(l => ((l.subjectTypeUUID = subjectT.uuid), (l.isVoided = false)));
-
-      var promise = new Promise((resolve, reject) => {
-        http
-          .put("/web/program/" + props.match.params.id, {
-            name: program.name,
-            colour: program.colour === "" ? "#ff0000" : program.colour,
-            programSubjectLabel: program.programSubjectLabel,
-            enrolmentSummaryRule: program.enrolmentSummaryRule,
-            enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
-            id: props.match.params.id,
-            organisationId: programData.organisationId,
-            programOrganisationId: programData.programOrganisationId,
-            voided: programData.voided
-          })
-          .then(response => {
-            setError("");
-            resolve("Promise resolved ");
-          })
-          .catch(error => {
-            setError("error.response.data.message");
-            reject(Error("Promise rejected"));
-          });
-      });
-
-      promise.then(
-        () => {
-          http
-            .post("/emptyFormMapping", temp)
-            .then(response => {
-              setRedirectShow(true);
-            })
-            .catch(error => {
-              console.log(error.response.data.message);
-            });
-        },
-        function(error) {
-          console.log(error);
-        }
-      );
+      setNameValidation(true);
+      hasError = true;
     }
+
+    if (_.isEmpty(subjectT)) {
+      setError("");
+      setSubjectValidation(true);
+      hasError = true;
+    }
+
+    if (_.isEmpty(program.programEnrolmentForm)) {
+      setProgramEnrolmentFormValidation(true);
+      console.log("value is empty");
+      hasError = true;
+    }
+
+    if (_.isEmpty(program.programExitForm)) {
+      setProgramExitFormValidation(true);
+      hasError = true;
+    }
+
+    if (hasError) {
+      return;
+    }
+
+    setNameValidation(false);
+    setSubjectValidation(false);
+    setProgramEnrolmentFormValidation(false);
+    setProgramExitFormValidation(false);
+
+    http
+      .put("/web/program/" + props.match.params.id, {
+        name: program.name,
+        colour: program.colour === "" ? "#ff0000" : program.colour,
+        programSubjectLabel: program.programSubjectLabel,
+        enrolmentSummaryRule: program.enrolmentSummaryRule,
+        enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
+        id: props.match.params.id,
+        organisationId: programData.organisationId,
+        programOrganisationId: programData.programOrganisationId,
+        subjectTypeUuid: subjectT.uuid,
+        programEnrolmentFormUuid: _.get(program, "programEnrolmentForm.formUUID"),
+        programExitFormUuid: _.get(program, "programExitForm.formUUID"),
+        voided: programData.voided
+      })
+      .then(response => {
+        setError("");
+        setRedirectShow(true);
+      })
+      .catch(error => {
+        setError("error.response.data.message");
+      });
   };
 
   const onDelete = () => {
@@ -210,6 +223,44 @@ const ProgramEdit = props => {
               dispatch({ type: "programSubjectLabel", payload: event.target.value })
             }
           />
+          <p />
+          <FormControl>
+            <SelectForm
+              label={"Select Enrolment form"}
+              value={_.get(program, "programEnrolmentForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "programEnrolmentForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findProgramEnrolmentForms(formList)}
+            />
+          </FormControl>
+          {programEnrolmentFormValidation && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              Empty enrolment form is not allowed.
+            </FormLabel>
+          )}
+          <p />
+          <FormControl>
+            <SelectForm
+              label={"Select Exit form"}
+              value={_.get(program, "programExitForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "programExitForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findProgramExitForms(formList)}
+            />
+          </FormControl>
+          {programExitFormValidation && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              Empty exit form is not allowed.
+            </FormLabel>
+          )}
           <p />
           <FormLabel>Enrolment summary rule</FormLabel>
           <Editor

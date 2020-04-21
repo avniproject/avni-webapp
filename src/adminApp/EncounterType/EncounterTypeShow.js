@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -10,12 +10,11 @@ import Moment from "react-moment";
 import Grid from "@material-ui/core/Grid";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
-import { ShowSubjectType, ShowPrograms } from "../WorkFlow/ShowSubjectType";
+import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get } from "lodash";
 import {
   findProgramEncounterCancellationForm,
-  findProgramEncounterForm,
-  findRegistrationForm
+  findProgramEncounterForm
 } from "../domain/formMapping";
 
 const EncounterTypeShow = props => {

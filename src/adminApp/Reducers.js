@@ -10,6 +10,10 @@ export function programReducer(program, action) {
       return { ...program, enrolmentSummaryRule: action.payload };
     case "enrolmentEligibilityCheckRule":
       return { ...program, enrolmentEligibilityCheckRule: action.payload };
+    case "programEnrolmentForm":
+      return { ...program, programEnrolmentForm: action.payload };
+    case "programExitForm":
+      return { ...program, programExitForm: action.payload };
     case "setData":
       return {
         ...program,

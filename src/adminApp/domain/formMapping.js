@@ -1,3 +1,11 @@
+export const findProgramEncounterForm = (formMappings, encounterType) =>
+  formMappings.find(
+    mapping =>
+      mapping.formType === "ProgramEncounter" &&
+      mapping.isVoided === false &&
+      mapping.encounterTypeUUID === encounterType.uuid
+  );
+
 export const findProgramEncounterCancellationForm = (formMappings, encounterType) =>
   formMappings.find(
     mapping =>
@@ -6,12 +14,20 @@ export const findProgramEncounterCancellationForm = (formMappings, encounterType
       mapping.encounterTypeUUID === encounterType.uuid
   );
 
-export const findProgramEncounterForm = (formMappings, encounterType) =>
+export const findProgramEnrolmentForm = (formMappings, program) =>
   formMappings.find(
     mapping =>
-      mapping.formType === "ProgramEncounter" &&
+      mapping.formType === "ProgramEnrolment" &&
       mapping.isVoided === false &&
-      mapping.encounterTypeUUID === encounterType.uuid
+      mapping.programUUID === program.uuid
+  );
+
+export const findProgramExitForm = (formMappings, program) =>
+  formMappings.find(
+    mapping =>
+      mapping.formType === "ProgramExit" &&
+      mapping.isVoided === false &&
+      mapping.programUUID === program.uuid
   );
 
 export const findRegistrationForm = (formMappings, subjectType) =>
@@ -22,11 +38,19 @@ export const findRegistrationForm = (formMappings, subjectType) =>
       mapping.subjectTypeUUID === subjectType.uuid
   );
 
+const findFormsOfType = (formList = [], formType = "IndividualProfile") =>
+  formList.filter(form => form.formType === formType);
+
 export const findRegistrationForms = (formList = []) =>
-  formList.filter(form => form.formType === "IndividualProfile");
+  findFormsOfType(formList, "IndividualProfile");
 
 export const findProgramEncounterForms = (formList = []) =>
-  formList.filter(form => form.formType === "ProgramEncounter");
+  findFormsOfType(formList, "ProgramEncounter");
 
 export const findProgramEncounterCancellationForms = (formList = []) =>
-  formList.filter(form => form.formType === "ProgramEncounterCancellation");
+  findFormsOfType(formList, "ProgramEncounterCancellation");
+
+export const findProgramEnrolmentForms = (formList = []) =>
+  findFormsOfType(formList, "ProgramEnrolment");
+
+export const findProgramExitForms = (formList = []) => findFormsOfType(formList, "ProgramExit");
