@@ -1,4 +1,12 @@
-import { Individual, ObservationsHolder, Observation, Concept } from "avni-models";
+import {
+  Individual,
+  ObservationsHolder,
+  Observation,
+  Concept,
+  Gender,
+  AddressLevel,
+  SubjectType
+} from "avni-models";
 import { store } from "../../common/store/createStore";
 import { types } from "../../common/store/conceptReducer";
 export default class {
@@ -6,6 +14,9 @@ export default class {
     if (sessionStorage.getItem("subject")) {
       let subject = Individual.createEmptyInstance();
       let localSavedSubject = JSON.parse(sessionStorage.getItem("subject"));
+      if (subject.uuid) {
+        subject.uuid = localSavedSubject.uuid;
+      }
       subject.name = localSavedSubject.name;
       subject.firstName = localSavedSubject.firstName;
       subject.lastName = localSavedSubject.lastName;
@@ -13,13 +24,23 @@ export default class {
         localSavedSubject.dateOfBirth && new Date(localSavedSubject.dateOfBirth);
       subject.registrationDate = new Date(localSavedSubject.registrationDate);
       subject.dateOfBirthVerified = localSavedSubject.dateOfBirthVerified;
-      subject.gender.name = localSavedSubject.gender.name;
-      subject.gender.uuid = localSavedSubject.gender.uuid;
-      subject.lowestAddressLevel = localSavedSubject.lowestAddressLevel;
       subject.registrationLocation = localSavedSubject.registrationLocation;
       subject.relationship = localSavedSubject.relationship;
-      subject.subjectType.name = localSavedSubject.subjectType.name;
-      subject.subjectType.uuid = localSavedSubject.subjectType.uuid;
+
+      const gender = new Gender();
+      gender.name = localSavedSubject.gender.name;
+      gender.uuid = localSavedSubject.gender.uuid;
+      subject.gender = gender;
+
+      const subjectType = new SubjectType();
+      subjectType.uuid = localSavedSubject.subjectType.uuid;
+      subjectType.name = localSavedSubject.subjectType.name;
+      subject.subjectType = subjectType;
+
+      const addressLevel = new AddressLevel();
+      subject.uuid = localSavedSubject.lowestAddressLevel.uuid;
+      subject.name = localSavedSubject.lowestAddressLevel.name;
+      subject.lowestAddressLevel = addressLevel;
 
       //addOrUpdateObservation
       const observationHolder = new ObservationsHolder(subject.observations);

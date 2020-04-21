@@ -12,7 +12,10 @@ export const encounterTypeInitialState = {
 };
 
 export const subjectTypeInitialState = {
-  name: ""
+  name: "",
+  group: false,
+  household: false,
+  groupRoles: []
 };
 
 export const colorPickerCSS = {

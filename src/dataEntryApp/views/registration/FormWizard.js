@@ -50,7 +50,7 @@ const Header = ({ subject, children }) => {
   const fullName = subject.firstName + " " + subject.lastName || "-";
   const gender = subject.gender ? subject.gender.name || "-" : "";
   const lowestAddressLevel = subject.lowestAddressLevel
-    ? subject.lowestAddressLevel.title || "-"
+    ? subject.lowestAddressLevel.name || "-"
     : "";
   const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
   return (
@@ -94,9 +94,12 @@ const FormWizard = ({
   onSave,
   subject,
   validationResults,
+  onLoad,
+  setSubject,
   children
 }) => {
   const classes = useStyle();
+
   const { t } = useTranslation();
   const [redirect, setRedirect] = React.useState(false);
   const from = match.queryParams.from;

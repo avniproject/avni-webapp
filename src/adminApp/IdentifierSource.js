@@ -40,7 +40,7 @@ const Title = ({ record }) => {
 };
 
 export const IdentifierSourceList = props => (
-  <List {...props} bulkActions={false}>
+  <List {...props} bulkActions={false} title={"Identifier Source"}>
     <Datagrid rowClick="show">
       <TextField source="name" />
       <ChipField source="type" />

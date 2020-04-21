@@ -5,5 +5,6 @@ export const constFormType = {
   IndividualProfile: "Individual Profile (Registration)",
   ProgramEnrolment: "Program enrolment",
   ProgramExit: "Program exit",
-  ProgramEncounterCancellation: "Program encounter cancellation"
+  ProgramEncounterCancellation: "Program encounter cancellation",
+  IndividualEncounterCancellation: "Individual Encounter Cancellation"
 };

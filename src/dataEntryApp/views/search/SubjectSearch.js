@@ -71,10 +71,12 @@ const SubjectsTable = ({ type, subjects }) => {
               <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
             </TableCell>
             {type.name === "Individual" && (
-              <TableCell align="center">{t(row.gender.name)}</TableCell>
+              <TableCell align="center">{row.gender ? t(row.gender.name) : ""}</TableCell>
             )}
             {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
-            <TableCell align="center">{row.addressLevel.titleLineage}</TableCell>
+            <TableCell align="center">
+              {row.addressLevel ? row.addressLevel.titleLineage : ""}
+            </TableCell>
             <TableCell align="center">
               {row.activePrograms.map((p, key) => (
                 <Button

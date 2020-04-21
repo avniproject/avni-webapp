@@ -45,11 +45,25 @@ export function subjectTypeReducer(subjectType, action) {
   switch (action.type) {
     case "name":
       return { ...subjectType, name: action.payload };
+    case "group":
+      return { ...subjectType, group: action.payload.group, groupRoles: action.payload.groupRoles };
+    case "household":
+      return {
+        ...subjectType,
+        group: action.payload.group,
+        household: action.payload.household,
+        groupRoles: action.payload.groupRoles
+      };
+    case "groupRole":
+      return { ...subjectType, groupRoles: action.payload };
 
     case "setData":
       return {
         ...subjectType,
-        name: action.payload.name
+        name: action.payload.name,
+        group: action.payload.group,
+        household: action.payload.household,
+        groupRoles: action.payload.groupRoles
       };
     default:
       return subjectType;
