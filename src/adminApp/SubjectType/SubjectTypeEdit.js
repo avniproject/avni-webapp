@@ -16,7 +16,7 @@ import Switch from "@material-ui/core/Switch";
 import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
-import { findRegistrationForm, findRegistrationForms } from "./formMapping";
+import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
 import { default as UUID } from "uuid";
 import _ from "lodash";
 import SelectForm from "./SelectForm";

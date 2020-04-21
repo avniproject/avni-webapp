@@ -1,5 +1,5 @@
 import TextField from "@material-ui/core/TextField";
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
@@ -13,16 +13,27 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
-import { default as UUID } from "uuid";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import _ from "lodash";
+import SelectForm from "../SubjectType/SelectForm";
+import {
+  findProgramEncounterCancellationForm,
+  findProgramEncounterCancellationForms,
+  findProgramEncounterForm,
+  findProgramEncounterForms
+} from "../domain/formMapping";
 
 const EncounterTypeEdit = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
+  const [programEncounterFormValidation, setProgramEncounterFormValidation] = useState(false);
+  const [
+    programEncounterCancellationFormValidation,
+    setProgramEncounterCancellationFormValidation
+  ] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [encounterTypeData, setEncounterTypeData] = useState({});
@@ -32,8 +43,10 @@ const EncounterTypeEdit = props => {
   const [existMapping, setExistMapping] = useState([]);
   const [programT, setProgramT] = useState({});
   const [program, setProgram] = useState([]);
-  const [formMapping, setMapping] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
+  const [formList, setFormList] = useState([]);
   const [subjectValidation, setSubjectValidation] = useState(false);
+  const [encounterFormsInitialized, setEncounterFormsInitialized] = useState(false);
 
   useEffect(() => {
     http
@@ -45,7 +58,10 @@ const EncounterTypeEdit = props => {
         http
           .get("/web/operationalModules")
           .then(response => {
-            setMapping(response.data.formMappings);
+            const formMap = response.data.formMappings;
+            formMap.map(l => (l["isVoided"] = false));
+            setFormMappings(formMap);
+            setFormList(response.data.forms);
             setSubjectType(response.data.subjectTypes);
             setProgram(response.data.programs);
             const temp = response.data.formMappings.filter(
@@ -61,77 +77,68 @@ const EncounterTypeEdit = props => {
             setSubjectT(
               response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
             );
+
+            const form = findProgramEncounterForm(formMap, result);
+            dispatch({ type: "programEncounterForm", payload: form });
+
+            const cancellationForm = findProgramEncounterCancellationForm(formMap, result);
+            dispatch({ type: "programEncounterCancellationForm", payload: cancellationForm });
           })
           .catch(error => {});
       });
   }, []);
 
   const onSubmit = () => {
-    if (encounterType.name.trim() === "" || _.isEmpty(subjectT)) {
-      setError("");
-      encounterType.name.trim() === "" ? setNameValidation(true) : setNameValidation(false);
-      _.isEmpty(subjectT) ? setSubjectValidation(true) : setSubjectValidation(false);
-    } else {
-      setNameValidation(false);
-      setSubjectValidation(false);
-      let temp =
-        existMapping.length === 0
-          ? [
-              {
-                uuid: UUID.v4(),
-                subjectTypeUUID: subjectT.uuid,
-                programUUID: programT === undefined ? null : programT.uuid,
-                encounterTypeUUID: encounterTypeData.uuid,
-                isVoided: false
-              }
-            ]
-          : formMapping.filter(l => l.encounterTypeUUID === encounterTypeData.uuid);
-
-      existMapping.length !== 0 &&
-        temp.map(
-          l => (
-            (l.subjectTypeUUID = subjectT.uuid),
-            (l.programUUID = programT === undefined ? null : programT.uuid),
-            (l.isVoided = false)
-          )
-        );
-      var promise = new Promise((resolve, reject) => {
-        http
-          .put("/web/encounterType/" + props.match.params.id, {
-            name: encounterType.name,
-            encounterEligibilityCheckRule: encounterType.encounterEligibilityCheckRule,
-            id: props.match.params.id,
-            organisationId: encounterTypeData.organisationId,
-            encounterTypeOrganisationId: encounterTypeData.encounterTypeOrganisationId,
-            voided: encounterTypeData.voided
-          })
-          .then(response => {
-            if (response.status === 200) {
-              setError("");
-              resolve("Promise resolved ");
-            }
-          })
-          .catch(error => {
-            setError(error.response.data.message);
-            reject(Error("Promise rejected"));
-          });
-      });
-      promise.then(
-        result => {
-          http
-            .post("/emptyFormMapping", temp)
-            .then(response => {
-              setRedirectShow(true);
-            })
-            .catch(error => {
-              console.log(error.response.data.message);
-            });
-        },
-        function(error) {
-          console.log(error);
-        }
-      );
+    let hasError = false;
+    if (encounterType.name.trim() === "") {
+      setNameValidation(true);
+      hasError = true;
     }
+
+    if (_.isEmpty(subjectT)) {
+      setSubjectValidation(true);
+      hasError = true;
+    }
+
+    if (_.isEmpty(encounterType.programEncounterForm)) {
+      setProgramEncounterFormValidation(true);
+      console.log("value is empty");
+      hasError = true;
+    }
+
+    if (_.isEmpty(encounterType.programEncounterCancellationForm)) {
+      setProgramEncounterCancellationFormValidation(true);
+      hasError = true;
+    }
+
+    if (hasError) {
+      return;
+    }
+
+    setNameValidation(false);
+    setSubjectValidation(false);
+    setProgramEncounterFormValidation(false);
+    setProgramEncounterCancellationFormValidation(false);
+
+    http
+      .put("/web/encounterType/" + props.match.params.id, {
+        name: encounterType.name,
+        encounterEligibilityCheckRule: encounterType.encounterEligibilityCheckRule,
+        id: props.match.params.id,
+        subjectTypeUuid: subjectT.uuid,
+        programEncounterFormUuid: _.get(encounterType, "programEncounterForm.formUUID"),
+        programEncounterCancelFormUuid: _.get(
+          encounterType,
+          "programEncounterCancellationForm.formUUID"
+        ),
+        programUuid: _.get(programT, "uuid"),
+        voided: encounterTypeData.voided
+      })
+      .then(response => {
+        if (response.status === 200) {
+          setError("");
+        }
+      });
   };
 
   const onDelete = () => {
@@ -217,6 +224,44 @@ const EncounterTypeEdit = props => {
               })}
             </Select>
           </FormControl>
+          <p />
+          <FormControl>
+            <SelectForm
+              label={"Select Encounter form"}
+              value={_.get(encounterType, "programEncounterForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "programEncounterForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findProgramEncounterForms(formList)}
+            />
+          </FormControl>
+          {programEncounterFormValidation && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              Empty encounter form is not allowed.
+            </FormLabel>
+          )}
+          <p />
+          <FormControl>
+            <SelectForm
+              label={"Select Encounter cancellation form"}
+              value={_.get(encounterType, "programEncounterCancellationForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "programEncounterCancellationForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findProgramEncounterCancellationForms(formList)}
+            />
+          </FormControl>
+          {programEncounterCancellationFormValidation && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              Empty encounter cancellation form is not allowed.
+            </FormLabel>
+          )}
           <p />
           <FormLabel>Enrolment eligibility check rule</FormLabel>
           <Editor

@@ -11,7 +11,7 @@ import Grid from "@material-ui/core/Grid";
 import Switch from "@material-ui/core/Switch";
 import _, { get } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
-import { findRegistrationForm } from "./formMapping";
+import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 
 const SubjectTypeShow = props => {
@@ -68,7 +68,7 @@ const SubjectTypeShow = props => {
             </div>
             <p />
             <div>
-              <FormLabel style={{ fontSize: "13px" }}>Registration form name</FormLabel>
+              <FormLabel style={{ fontSize: "13px" }}>Encounter form</FormLabel>
               <br />
               <span style={{ fontSize: "15px" }}>
                 <a

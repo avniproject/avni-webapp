@@ -14,7 +14,7 @@ import GroupRoles from "./GroupRoles";
 import { handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
 import _ from "lodash";
-import { findRegistrationForms } from "./formMapping";
+import { findRegistrationForms } from "../domain/formMapping";
 import SelectForm from "./SelectForm";
 import { default as UUID } from "uuid";
 

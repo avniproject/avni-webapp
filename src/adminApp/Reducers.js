@@ -30,6 +30,10 @@ export function encounterTypeReducer(encounterType, action) {
       return { ...encounterType, name: action.payload };
     case "encounterEligibilityCheckRule":
       return { ...encounterType, encounterEligibilityCheckRule: action.payload };
+    case "programEncounterForm":
+      return { ...encounterType, programEncounterForm: action.payload };
+    case "programEncounterCancellationForm":
+      return { ...encounterType, programEncounterCancellationForm: action.payload };
     case "setData":
       return {
         ...encounterType,

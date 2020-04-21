@@ -6,7 +6,7 @@ import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
-import { findRegistrationForm } from "./formMapping";
+import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 
 const SubjectTypesList = ({ history }) => {
