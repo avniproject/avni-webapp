@@ -61,6 +61,7 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));
 
+  // if(!sessionStorage.getItem("programEnrolment")) {
   const program = yield select(selectProgram(programName));
 
   const state = yield select();
@@ -69,6 +70,8 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
 
   let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
   yield put.resolve(setProgramEnrolment(programEnrolment));
+
+  //}
 }
 
 function* dataEntrySearchWorker() {
@@ -93,9 +96,11 @@ export function* saveSubjectWatcher() {
 }
 
 export function* saveProgramEnrolmentWorker() {
-  debugger;
   const programEnrolment = yield select(selectEnrolmentSubject);
   let resource = programEnrolment.toResource;
+
+  //sessionStorage.removeItem("programEnrolment");
+
   yield call(api.saveProgram, resource);
   yield put(saveProgramComplete());
 }
@@ -214,6 +219,8 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
     formElement,
     value
   );
+
+  //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
   yield put(setProgramEnrolment(programEnrolment));
   yield put(
     setValidationResults(

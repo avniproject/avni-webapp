@@ -40,7 +40,7 @@ export const TabView = ({ groupId, groupName, hasAllPrivileges, userList, ...pro
     setValue(newValue);
   };
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <h5>{groupName}</h5>
       <AppBar position="static">
         <Tabs value={value} onChange={handleChange}>

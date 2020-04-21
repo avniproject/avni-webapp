@@ -8,6 +8,8 @@ export const FormElementGroup = ({ children: feg, obsHolder, updateObs, validati
   return (
     <div>
       <LineBreak num={1} />
+      {parentChildren && feg.isFirst ? parentChildren : ""}
+
       {feg.getFormElements().map(fe => {
         const observation = obsHolder.findObservation(fe.concept);
         const observationValue = observation

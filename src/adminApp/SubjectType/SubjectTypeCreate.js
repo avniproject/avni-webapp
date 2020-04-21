@@ -11,7 +11,12 @@ import { subjectTypeReducer } from "../Reducers";
 import Switch from "@material-ui/core/Switch";
 import { Grid } from "@material-ui/core";
 import GroupRoles from "./GroupRoles";
-import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { useFormMappings } from "./effects";
+import _ from "lodash";
+import { findRegistrationForms } from "../domain/formMapping";
+import SelectForm from "./SelectForm";
+import { default as UUID } from "uuid";
 
 const SubjectTypeCreate = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -20,6 +25,15 @@ const SubjectTypeCreate = props => {
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
+  const [formMappings, setFormMappings] = useState([]);
+  const [formList, setFormList] = useState([]);
+
+  const consumeFormMappingResult = (formMap, forms) => {
+    setFormMappings(formMap);
+    setFormList(forms);
+  };
+
+  useFormMappings(consumeFormMappingResult);
 
   const onSubmit = event => {
     event.preventDefault();
@@ -28,12 +42,22 @@ const SubjectTypeCreate = props => {
     if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
-    } else {
-      setNameValidation(false);
+      return;
+    }
+    if (_.isEmpty(subjectType.registrationForm)) {
+      setError("Please select registration form");
+      return;
+    }
+
+    setNameValidation(false);
+    let subjectTypeUuid;
+
+    let subjectTypeSavePromise = () =>
       http
         .post("/web/subjectType", subjectType)
         .then(response => {
           if (response.status === 200) {
+            subjectTypeUuid = response.data.uuid;
             setError("");
             setAlert(true);
             setId(response.data.id);
@@ -42,7 +66,18 @@ const SubjectTypeCreate = props => {
         .catch(error => {
           setError(error.response.data.message);
         });
-    }
+
+    const formMappingPromise = () =>
+      http.post("/emptyFormMapping", [
+        {
+          uuid: UUID.v4(),
+          subjectTypeUUID: subjectTypeUuid,
+          formUUID: subjectType.registrationForm.formUUID,
+          isVoided: false
+        }
+      ]);
+
+    return subjectTypeSavePromise().then(formMappingPromise);
   };
 
   return (
@@ -72,12 +107,17 @@ const SubjectTypeCreate = props => {
             </Grid>
             <p />
             <Grid component="label" container alignItems="center" spacing={2}>
-              <Grid>Group</Grid>
+              <Grid>Registration form name</Grid>
               <Grid>
-                <Switch
-                  checked={subjectType.group}
-                  onChange={event => handleGroupChange(event, subjectType, dispatch)}
-                  name="group"
+                <SelectForm
+                  value={_.get(subjectType, "registrationForm.formName")}
+                  onChange={selectedForm =>
+                    dispatch({
+                      type: "registrationForm",
+                      payload: selectedForm
+                    })
+                  }
+                  formList={findRegistrationForms(formList)}
                 />
               </Grid>
             </Grid>

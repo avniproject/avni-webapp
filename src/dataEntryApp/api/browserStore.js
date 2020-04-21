@@ -1,7 +1,7 @@
 import {
   Individual,
   ObservationsHolder,
-  Observation,
+  ProgramEnrolment,
   Concept,
   Gender,
   AddressLevel,
@@ -9,6 +9,7 @@ import {
 } from "avni-models";
 import { store } from "../../common/store/createStore";
 import { types } from "../../common/store/conceptReducer";
+
 export default class {
   static fetchSubject() {
     if (sessionStorage.getItem("subject")) {
@@ -60,6 +61,30 @@ export default class {
       subject.observations = observationHolder.observations;
       return subject;
     } else return;
+  }
+
+  static fetchProgramEnrolment() {
+    if (sessionStorage.getItem("programEnrolment")) {
+      let programEnrolment = ProgramEnrolment.createEmptyInstance();
+      //let programEnrolment = new ProgramEnrolment();
+      let localProgramEnrolment = JSON.parse(sessionStorage.getItem("programEnrolment"));
+
+      const observationHolder = new ObservationsHolder(programEnrolment.observations);
+      localProgramEnrolment.observations.map(element => {
+        let concept = Concept.create(
+          element.concept.name,
+          element.concept.datatype,
+          element.concept.keyValues,
+          element.concept.uuid
+        );
+        observationHolder.addOrUpdateObservation(concept, element.valueJSON.answer);
+        store.dispatch({ type: types.ADD_CONCEPT, value: concept });
+      });
+      programEnrolment.observations = observationHolder.observations;
+      return programEnrolment;
+    }
+
+    return;
   }
 
   static clear(key) {

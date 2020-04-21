@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -11,11 +11,13 @@ import Grid from "@material-ui/core/Grid";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
+import { get } from "lodash";
+import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
 
 const ProgramShow = props => {
   const [program, setProgram] = useState({});
   const [editAlert, setEditAlert] = useState(false);
-  const [formMapping, setFormMapping] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
   const [subjectType, setSubjectType] = useState([]);
 
   useEffect(() => {
@@ -29,7 +31,9 @@ const ProgramShow = props => {
     http
       .get("/web/operationalModules")
       .then(response => {
-        setFormMapping(response.data.formMappings);
+        const formMap = response.data.formMappings;
+        formMap.map(l => (l["isVoided"] = false));
+        setFormMappings(formMap);
         setSubjectType(response.data.subjectTypes);
       })
       .catch(error => {});
@@ -58,7 +62,7 @@ const ProgramShow = props => {
             <ShowSubjectType
               rowDetails={program}
               subjectType={subjectType}
-              formMapping={formMapping}
+              formMapping={formMappings}
               entityUUID="programUUID"
             />
           </div>
@@ -83,6 +87,36 @@ const ProgramShow = props => {
             <FormLabel style={{ fontSize: "13px" }}>Program Subject Label</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>{program.programSubjectLabel}</span>
+          </div>
+          <p />
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Enrolment form name</FormLabel>
+            <br />
+            <span style={{ fontSize: "15px" }}>
+              <a
+                href={`#/appdesigner/forms/${get(
+                  findProgramEnrolmentForm(formMappings, program),
+                  "formUUID"
+                )}`}
+              >
+                {get(findProgramEnrolmentForm(formMappings, program), "formName")}
+              </a>
+            </span>
+          </div>
+          <p />
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Exit form name</FormLabel>
+            <br />
+            <span style={{ fontSize: "15px" }}>
+              <a
+                href={`#/appdesigner/forms/${get(
+                  findProgramExitForm(formMappings, program),
+                  "formUUID"
+                )}`}
+              >
+                {get(findProgramExitForm(formMappings, program), "formName")}
+              </a>
+            </span>
           </div>
           <p />
           <div>

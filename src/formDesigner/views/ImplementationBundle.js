@@ -8,11 +8,14 @@ import fileDownload from "js-file-download";
 import { connect } from "react-redux";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 function ImplementationBundle({ organisation }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = React.useState(false);
   const showUploadFeature = false; //Feature toggle to hide upload function
+  const [includeLocations, setIncludeLocations] = React.useState(false);
 
   const onFileSelected = event => {
     setSelectedFile(event.target.files[0]);
@@ -53,7 +56,7 @@ function ImplementationBundle({ organisation }) {
 
   function onDownloadHandler() {
     http
-      .get("/implementation/export", {
+      .get(`/implementation/export/${includeLocations}`, {
         responseType: "blob"
       })
       .then(response => {
@@ -89,6 +92,17 @@ function ImplementationBundle({ organisation }) {
         </>
       )}
       <p>Download Implementation Bundle</p>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={includeLocations}
+            onChange={event => setIncludeLocations(event.target.checked)}
+            name="location"
+          />
+        }
+        label="Include Locations"
+      />
+      <p />
       <Button variant="contained" color="primary" onClick={onDownloadHandler}>
         Download
       </Button>

@@ -1,21 +1,22 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _ from "lodash";
-import { withRouter, Redirect } from "react-router-dom";
+import _, { get } from "lodash";
+import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
-import { ShowSubjectType, ShowPrograms } from "../WorkFlow/ShowSubjectType";
-import WorkFlowEncounterForm from "../WorkFlow/WorkFlowEncounterForm";
+import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
+import {
+  findProgramEncounterCancellationForm,
+  findProgramEncounterForm
+} from "../domain/formMapping";
 
 const EncounterTypeList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
-  const [formMapping, setMapping] = useState([]);
-  const [subjectType, setSubjectType] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
+  const [subjectTypes, setSubjectTypes] = useState([]);
   const [program, setProgram] = useState([]);
-  const [notificationAlert, setNotificationAlert] = useState(false);
-  const [message, setMessage] = useState("");
   const [formList, setFormList] = useState([]);
 
   const tableRef = React.createRef();
@@ -26,8 +27,8 @@ const EncounterTypeList = ({ history }) => {
       .then(response => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
-        setMapping(formMap);
-        setSubjectType(response.data.subjectTypes);
+        setFormMappings(formMap);
+        setSubjectTypes(response.data.subjectTypes);
         setProgram(response.data.programs);
         setFormList(response.data.forms);
       })
@@ -49,9 +50,9 @@ const EncounterTypeList = ({ history }) => {
       render: rowData => (
         <ShowSubjectType
           rowDetails={rowData}
-          subjectType={subjectType}
-          formMapping={formMapping}
-          setMapping={setMapping}
+          subjectType={subjectTypes}
+          formMapping={formMappings}
+          setMapping={setFormMappings}
           entityUUID="encounterTypeUUID"
         />
       )
@@ -63,52 +64,39 @@ const EncounterTypeList = ({ history }) => {
         <ShowPrograms
           rowDetails={rowData}
           program={program}
-          formMapping={formMapping}
-          setMapping={setMapping}
+          formMapping={formMappings}
+          setMapping={setFormMappings}
         />
       )
     },
     {
       title: "Encounter form",
+      field: "formName",
       sorting: false,
       render: rowData => (
-        <WorkFlowEncounterForm
-          key={rowData.uuid}
-          rowDetails={rowData}
-          formMapping={formMapping}
-          setMapping={setMapping}
-          formList={formList}
-          placeholder="Select encounter form"
-          fillFormName="Encounter Form"
-          notificationAlert={notificationAlert}
-          setNotificationAlert={setNotificationAlert}
-          message={message}
-          setMessage={setMessage}
-          whichForm="encounter"
-          redirectToWorkflow="encountertType"
-        />
+        <a
+          href={`#/appdesigner/forms/${get(
+            findProgramEncounterForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findProgramEncounterForm(formMappings, rowData), "formName")}
+        </a>
       )
     },
     {
       title: "Cancellation form",
+      field: "formName",
       sorting: false,
       render: rowData => (
-        <WorkFlowEncounterForm
-          key={rowData.uuid}
-          rowDetails={rowData}
-          formMapping={formMapping}
-          setMapping={setMapping}
-          formList={formList}
-          placeholder="Select cancellation form"
-          fillFormName="Cancellation form"
-          notificationAlert={notificationAlert}
-          setNotificationAlert={setNotificationAlert}
-          message={message}
-          setMessage={setMessage}
-          isProgramEncounter={true}
-          whichForm="cancellation"
-          redirectToWorkflow="encountertType"
-        />
+        <a
+          href={`#/appdesigner/forms/${get(
+            findProgramEncounterCancellationForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findProgramEncounterCancellationForm(formMappings, rowData), "formName")}
+        </a>
       )
     }
   ];
