@@ -23,6 +23,9 @@ public class ProgramContractWeb {
     private String lastModifiedBy;
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
+    private String subjectTypeUuid;
+    private String programEnrolmentFormUuid;
+    private String programExitFormUuid;
     private String uuid;
 
     public String getName() {
@@ -157,5 +160,29 @@ public class ProgramContractWeb {
 
     public DateTime getModifiedDateTime(){
         return lastModifiedDateTime;
+    }
+
+    public String getProgramEnrolmentFormUuid() {
+        return programEnrolmentFormUuid;
+    }
+
+    public void setProgramEnrolmentFormUuid(String programEnrolmentFormUuid) {
+        this.programEnrolmentFormUuid = programEnrolmentFormUuid;
+    }
+
+    public String getProgramExitFormUuid() {
+        return programExitFormUuid;
+    }
+
+    public void setProgramExitFormUuid(String programExitFormUuid) {
+        this.programExitFormUuid = programExitFormUuid;
+    }
+
+    public String getSubjectTypeUuid() {
+        return subjectTypeUuid;
+    }
+
+    public void setSubjectTypeUuid(String subjectTypeUuid) {
+        this.subjectTypeUuid = subjectTypeUuid;
     }
 }

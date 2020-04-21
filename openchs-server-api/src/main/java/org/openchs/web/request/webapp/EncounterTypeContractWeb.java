@@ -21,6 +21,10 @@ public class EncounterTypeContractWeb {
     private DateTime createdDateTime;
     private DateTime lastModifiedDateTime;
     private String uuid;
+    private String subjectTypeUuid;
+    private String programEncounterFormUuid;
+    private String programEncounterCancelFormUuid;
+    private String programUuid;
 
     public String getName() {
         return name;
@@ -124,5 +128,37 @@ public class EncounterTypeContractWeb {
 
     public DateTime getModifiedDateTime(){
         return lastModifiedDateTime;
+    }
+
+    public String getSubjectTypeUuid() {
+        return subjectTypeUuid;
+    }
+
+    public void setSubjectTypeUuid(String subjectTypeUuid) {
+        this.subjectTypeUuid = subjectTypeUuid;
+    }
+
+    public String getProgramEncounterCancelFormUuid() {
+        return programEncounterCancelFormUuid;
+    }
+
+    public void setProgramEncounterCancelFormUuid(String programEncounterCancelFormUuid) {
+        this.programEncounterCancelFormUuid = programEncounterCancelFormUuid;
+    }
+
+    public String getProgramEncounterFormUuid() {
+        return programEncounterFormUuid;
+    }
+
+    public void setProgramEncounterFormUuid(String programEncounterFormUuid) {
+        this.programEncounterFormUuid = programEncounterFormUuid;
+    }
+
+    public String getProgramUuid() {
+        return programUuid;
+    }
+
+    public void setProgramUuid(String programUuid) {
+        this.programUuid = programUuid;
     }
 }
