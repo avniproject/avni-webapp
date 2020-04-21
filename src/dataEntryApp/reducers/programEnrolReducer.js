@@ -78,12 +78,8 @@ export default function(state = initialState, action) {
       };
     }
     case types.UPDATE_PROGRAM_ENROLMENT: {
-      debugger;
       const programEnrolment = state.programEnrolment.cloneForEdit();
       programEnrolment[action.field] = action.value;
-      console.log("program__Enrolment--");
-      console.log(programEnrolment);
-      //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
       return {
         ...state,
         programEnrolment

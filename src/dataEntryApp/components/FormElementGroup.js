@@ -3,10 +3,12 @@ import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
 
-export const FormElementGroup = ({ children: feg, obsHolder, updateObs }) => {
+export const FormElementGroup = ({ children: feg, parentChildren, obsHolder, updateObs }) => {
   return (
     <div>
       <LineBreak num={1} />
+      {parentChildren && feg.isFirst ? parentChildren : ""}
+
       {feg.getFormElements().map(fe => {
         const observation = obsHolder.findObservation(fe.concept);
         const observationValue = observation
