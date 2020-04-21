@@ -93,6 +93,7 @@ const FormWizard = ({
   onSaveGoto,
   onSave,
   subject,
+  validationResults,
   onLoad,
   setSubject,
   children
@@ -102,7 +103,6 @@ const FormWizard = ({
   const { t } = useTranslation();
 
   const [redirect, setRedirect] = React.useState(false);
-
   const from = match.queryParams.from;
 
   const firstPageNumber =
@@ -114,7 +114,6 @@ const FormWizard = ({
       : parseInt(+match.queryParams.page);
 
   const currentPageNumber = isNaN(page) ? firstPageNumber : page;
-
   const showSummaryPage = page >= lastPageNumber + 1;
 
   const pageDetails = {
@@ -158,6 +157,8 @@ const FormWizard = ({
               label={{ Previous: "previous", Next: "next", Save: "save", type: "text" }}
               showCount={true}
               count={pageCount}
+              feg={current}
+              obsHolder={obsHolder}
             />
           </Box>
           <Paper className={classes.form}>
@@ -167,8 +168,9 @@ const FormWizard = ({
               <Form
                 current={current}
                 obsHolder={obsHolder}
-                children={children}
                 updateObs={updateObs}
+                validationResults={validationResults}
+                children={children}
               />
             )}
 
@@ -188,6 +190,8 @@ const FormWizard = ({
                 onSave={onSave}
                 label={{ Previous: "previous", Next: "next", Save: "save" }}
                 showCount={false}
+                feg={current}
+                obsHolder={obsHolder}
               />
             </div>
           </Paper>

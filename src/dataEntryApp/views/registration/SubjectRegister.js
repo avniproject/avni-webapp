@@ -1,8 +1,8 @@
-import React, { Fragment } from "react";
+import React, { Fragment, createRef } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
-import { ObservationsHolder } from "avni-models";
+import { Box, TextField, Chip, Typography, Paper, Button } from "@material-ui/core";
+import { ObservationsHolder, AddressLevel } from "avni-models";
 import {
   getRegistrationForm,
   onLoad,
@@ -15,12 +15,12 @@ import {
 import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import moment from "moment/moment";
 import { getGenders } from "../../reducers/metadataReducer";
-import { get, sortBy } from "lodash";
+import _, { get, sortBy } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
-import PagenatorButton from "../../components/PagenatorButton";
 import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "dataEntryApp/views/registration/Stepper";
@@ -61,8 +61,9 @@ const useStyles = makeStyles(theme => ({
   },
   topprevnav: {
     color: "#cecdcd",
-    marginRight: 8,
-    fontSize: "12px"
+    fontSize: "13px",
+    border: "none",
+    background: "white"
   },
   toppagenum: {
     backgroundColor: "silver",
@@ -72,10 +73,20 @@ const useStyles = makeStyles(theme => ({
   },
   topnextnav: {
     color: "orange",
-    marginLeft: 10,
-    marginRight: 10,
-    fontSize: "12px",
-    cursor: "pointer"
+    fontSize: "13px",
+    cursor: "pointer",
+    border: "none",
+    background: "white",
+
+    "&:hover": {
+      background: "none",
+      border: "none"
+    },
+
+    "&:active": {
+      border: "none",
+      outlineColor: "white"
+    }
   },
   prevbuttonspace: {
     color: "#cecdcd",
@@ -96,15 +107,68 @@ const useStyles = makeStyles(theme => ({
   },
   errmsg: {
     color: "red"
+  },
+  nextBtn: {
+    color: "white",
+    width: 110,
+    cursor: "pointer",
+    height: 30,
+    padding: "4px 25px",
+    fontSize: 12,
+    borderRadius: 50,
+    backgroundColor: "orange"
   }
 }));
 
 const DefaultPage = props => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
-  const [lastnameerrormsg, setLastnamemsg] = React.useState("");
-  // console.log(props);
+  const [subjectRegErrors, setSubjectRegErrors] = React.useState({
+    REGISTRATION_DATE: "",
+    FIRST_NAME: "",
+    LAST_NAME: "",
+    DOB: "",
+    GENDER: "",
+    LOWEST_ADDRESS_LEVEL: ""
+  });
+
+  const setValidationResultToError = validationResult => {
+    subjectRegErrors[validationResult.formIdentifier] = validationResult.messageKey;
+    setSubjectRegErrors({ ...subjectRegErrors });
+  };
+
+  const handleNext = event => {
+    setValidationResultToError(props.subject.validateRegistrationDate());
+    setValidationResultToError(props.subject.validateFirstName());
+    setValidationResultToError(props.subject.validateLastName());
+    setValidationResultToError(props.subject.validateDateOfBirth());
+    setValidationResultToError(props.subject.validateGender());
+    setValidationResultToError(props.subject.validateAddress());
+
+    //needs to used when village location is set
+    //setDisableNext(new ValidationResults(props.subject.validate()).hasValidationError());
+
+    if (props.subject.subjectType.isIndividual()) {
+      if (
+        !(
+          _.isEmpty(subjectRegErrors.FIRST_NAME) &&
+          _.isEmpty(subjectRegErrors.LAST_NAME) &&
+          _.isEmpty(subjectRegErrors.DOB) &&
+          _.isEmpty(subjectRegErrors.REGISTRATION_DATE) &&
+          _.isEmpty(subjectRegErrors.GENDER) &&
+          _.isEmpty(subjectRegErrors.LOWEST_ADDRESS_LEVEL)
+        )
+      ) {
+        event.preventDefault();
+      }
+    } else {
+      if (
+        !(_.isEmpty(subjectRegErrors.FIRST_NAME) && _.isEmpty(subjectRegErrors.REGISTRATION_DATE))
+      ) {
+        event.preventDefault();
+      }
+    }
+  };
 
   return (
     <div>
@@ -130,9 +194,15 @@ const DefaultPage = props => {
                 1. {t("Basic")} {t("details")}
               </Typography>
               <Box>
-                <label className={classes.topprevnav} disabled={true}>
+                <Button className={classes.topprevnav} type="button" disabled>
                   {t("previous")}
-                </label>
+                </Button>
+                {props.form && (
+                  <label className={classes.toppagenum}>
+                    {" "}
+                    1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}
+                  </label>
+                )}
                 <RelativeLink
                   to="form"
                   params={{
@@ -141,39 +211,41 @@ const DefaultPage = props => {
                   }}
                   noUnderline
                 >
-                  {props.form && (
-                    <label className={classes.toppagenum}>
-                      {" "}
-                      1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}
-                    </label>
-                  )}
-                  <label className={classes.topnextnav}>{t("next")}</label>
+                  <Button className={classes.topnextnav} type="button" onClick={e => handleNext(e)}>
+                    {t("next")}
+                  </Button>
                 </RelativeLink>
               </Box>
             </Box>
 
             <Paper className={classes.form}>
               <Box className={classes.topboxstyle} display="flex" flexDirection="column">
-                {/* <Typography
-                  className={classes.caption}
-                  variant="caption"
-                  display="block"
-                  gutterBottom
-                >
-                  {" "}
-                  {t("date")} of {t("registration")}{" "}
-                </Typography> */}
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
+                    autoComplete="off"
+                    required
+                    name="registrationDate"
+                    label={t("Date of registration")}
+                    value={
+                      _.isNil(props.subject.registrationDate)
+                        ? null
+                        : new Date(props.subject.registrationDate)
+                    }
+                    error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
+                    helperText={t(subjectRegErrors.REGISTRATION_DATE)}
                     style={{ width: "30%" }}
                     margin="normal"
                     id="date-picker-dialog"
                     format="MM/dd/yyyy"
-                    name="registrationDate"
-                    label={t("Date of registration")}
-                    value={new Date(props.subject.registrationDate)}
+                    placeholder="mm/dd/yyyy"
                     onChange={date => {
-                      props.updateSubject("registrationDate", new Date(date));
+                      const dateOfReg = _.isNil(date) ? undefined : new Date(date);
+                      props.updateSubject("registrationDate", dateOfReg);
+                      props.subject.registrationDate = dateOfReg;
+                      setValidationResultToError(props.subject.validateRegistrationDate());
+                    }}
+                    InputLabelProps={{
+                      shrink: true
                     }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -181,39 +253,54 @@ const DefaultPage = props => {
                     }}
                   />
                 </MuiPickersUtilsProvider>
+
                 <LineBreak num={1} />
                 {get(props, "subject.subjectType.name") === "Individual" && (
                   <React.Fragment>
                     <TextField
-                      style={{ width: "30%" }}
-                      label={t("firstName")}
                       type="text"
                       autoComplete="off"
                       required
                       name="firstName"
                       value={props.subject.firstName || ""}
+                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
+                      helperText={t(subjectRegErrors.FIRST_NAME)}
+                      style={{ width: "30%" }}
+                      label={t("firstName")}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
+                        props.subject.setFirstName(e.target.value);
+                        setValidationResultToError(props.subject.validateFirstName());
                       }}
                     />
                     <LineBreak num={1} />
                     <TextField
-                      style={{ width: "30%" }}
-                      label={t("lastName")}
                       type="text"
                       autoComplete="off"
                       required
                       name="lastName"
                       value={props.subject.lastName || ""}
+                      error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
+                      helperText={t(subjectRegErrors.LAST_NAME)}
+                      style={{ width: "30%" }}
+                      label={t("lastName")}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
+                        props.subject.setLastName(e.target.value);
+                        setValidationResultToError(props.subject.validateLastName());
                       }}
                     />
                     <LineBreak num={1} />
                     <DateOfBirth
                       dateOfBirth={props.subject.dateOfBirth || ""}
                       dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                      onChange={date => props.updateSubject("dateOfBirth", date)}
+                      dobErrorMsg={subjectRegErrors.DOB}
+                      onChange={date => {
+                        const dateOfBirth = _.isNil(date) ? undefined : new Date(date);
+                        props.updateSubject("dateOfBirth", dateOfBirth);
+                        props.subject.setDateOfBirth(dateOfBirth);
+                        setValidationResultToError(props.subject.validateDateOfBirth());
+                      }}
                       markVerified={verified =>
                         props.updateSubject("dateOfBirthVerified", verified)
                       }
@@ -223,13 +310,42 @@ const DefaultPage = props => {
                       groupName={t("gender")}
                       items={sortBy(props.genders, "name")}
                       isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
-                      onChange={selected => props.updateSubject("gender", selected)}
+                      mandatory={true}
+                      errorMsg={subjectRegErrors.GENDER}
+                      onChange={selected => {
+                        props.updateSubject("gender", selected);
+                        props.subject.gender = selected;
+                        setValidationResultToError(props.subject.validateGender());
+                      }}
                     />
                     <LineBreak num={1} />
                     <label className={classes.villagelabel}>{t("Village")}</label>
                     <LocationAutosuggest
                       selectedVillage={props.subject.lowestAddressLevel.name}
-                      onSelect={location => props.updateSubject("lowestAddressLevel", location)}
+                      errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
+                      onSelect={location => {
+                        props.updateSubject(
+                          "lowestAddressLevel",
+                          AddressLevel.create({
+                            uuid: location.uuid,
+                            title: location.title,
+                            level: location.level,
+                            typeString: location.typeString
+                          })
+                        );
+                        props.subject.lowestAddressLevel = AddressLevel.create({
+                          uuid: location.uuid,
+                          title: location.title,
+                          level: location.level,
+                          typeString: location.typeString
+                        });
+                        setValidationResultToError(props.subject.validateAddress());
+                      }}
+                      //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
+                      //   setValidationResultToError(props.subject.validateAddress());
+                      // }
+
+                      // }
                       data={props}
                     />
                   </React.Fragment>
@@ -242,10 +358,14 @@ const DefaultPage = props => {
                       type="text"
                       autoComplete="off"
                       required
+                      error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
+                      helperText={t(subjectRegErrors.FIRST_NAME)}
                       name="firstName"
                       value={props.subject.firstName}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
+                        props.subject.setFirstName(e.target.value);
+                        setValidationResultToError(props.subject.validateFirstName());
                       }}
                     />
                   </React.Fragment>
@@ -266,6 +386,7 @@ const DefaultPage = props => {
                     disabled
                     variant="outlined"
                   />
+
                   <RelativeLink
                     to="form"
                     params={{
@@ -274,7 +395,11 @@ const DefaultPage = props => {
                     }}
                     noUnderline
                   >
-                    <PagenatorButton formdata={props.subject}>{t("next")}</PagenatorButton>
+                    <Chip
+                      className={classes.nextBtn}
+                      label={t("next")}
+                      onClick={e => handleNext(e)}
+                    />
                   </RelativeLink>
                 </Box>
               </Box>
@@ -325,7 +450,8 @@ const mapFormStateToProps = state => ({
   //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
-  onSaveGoto: "/app/search"
+  onSaveGoto: "/app/search",
+  validationResults: state.dataEntry.registration.validationResults
 });
 
 const mapFormDispatchToProps = {

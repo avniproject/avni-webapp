@@ -21,8 +21,9 @@ export default class {
       subject.name = localSavedSubject.name;
       subject.firstName = localSavedSubject.firstName;
       subject.lastName = localSavedSubject.lastName;
-      subject.dateOfBirth = localSavedSubject.dateOfBirth;
-      subject.registrationDate = localSavedSubject.registrationDate;
+      subject.dateOfBirth =
+        localSavedSubject.dateOfBirth && new Date(localSavedSubject.dateOfBirth);
+      subject.registrationDate = new Date(localSavedSubject.registrationDate);
       subject.dateOfBirthVerified = localSavedSubject.dateOfBirthVerified;
       subject.registrationLocation = localSavedSubject.registrationLocation;
       subject.relationship = localSavedSubject.relationship;

@@ -1,6 +1,12 @@
 import React from "react";
-import { FormControl, FormControlLabel, FormGroup, FormLabel } from "@material-ui/core";
-import { xor, first, filter } from "lodash";
+import {
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  FormHelperText
+} from "@material-ui/core";
+import { xor, first, filter, find } from "lodash";
 import Checkbox from "./Checkbox";
 import Radio from "./Radio";
 import Box from "@material-ui/core/Box";
@@ -13,6 +19,9 @@ export const CodedFormElement = ({
   onChange,
   multiSelect,
   mandatory,
+  validationResults,
+  uuid,
+  errorMsg,
   ...props
 }) => {
   let genwidth = "";
@@ -22,8 +31,19 @@ export const CodedFormElement = ({
     genwidth = "20%";
   }
   const { t } = useTranslation();
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
+
   return (
-    <FormControl component="fieldset" {...props} style={{ width: "80%" }}>
+    <FormControl
+      component="fieldset"
+      {...props}
+      style={{ width: "80%" }}
+      required={mandatory}
+      error={(validationResult && !validationResult.success) || errorMsg}
+    >
       <FormLabel component="legend">{t(groupName)}</FormLabel>
       <FormGroup>
         <Box display="flex" flexWrap="wrap" alignContent="flex-start">
@@ -52,6 +72,10 @@ export const CodedFormElement = ({
           ))}
         </Box>
       </FormGroup>
+      <FormHelperText>
+        {(validationResult && t(validationResult.messageKey, validationResult.extra)) ||
+          t(errorMsg)}
+      </FormHelperText>
     </FormControl>
   );
 };

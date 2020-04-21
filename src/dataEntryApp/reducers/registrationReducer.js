@@ -12,7 +12,9 @@ export const types = {
   SET_LOADED: `${prefix}SET_LOADED`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
-  SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`
+  SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`,
+  GET_VALIDATION_RESULTS: `${prefix}GET_VALIDATION_RESULTS`,
+  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`
 };
 
 export const saveSubject = () => ({
@@ -72,8 +74,18 @@ export const saveCompleteFalse = () => ({
   type: types.SAVE_COMPLETE_FALSE
 });
 
+export const setValidationResults = validationResults => ({
+  type: types.SET_VALIDATION_RESULTS,
+  validationResults
+});
+
+export const getValidationResults = () => ({
+  type: types.GET_VALIDATION_RESULTS
+});
+
 const initialState = {
-  saved: false
+  saved: false,
+  validationResults: []
 };
 
 // reducer
@@ -116,6 +128,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         saved: false
+      };
+    }
+    case types.SET_VALIDATION_RESULTS: {
+      return {
+        ...state,
+        validationResults: action.validationResults
       };
     }
     default:

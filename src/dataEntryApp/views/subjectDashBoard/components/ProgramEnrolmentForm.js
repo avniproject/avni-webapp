@@ -14,7 +14,8 @@ const mapFormStateToProps = state => ({
   obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),
   title: `New Enrolment`,
   saved: state.dataEntry.enrolmentReducer.saved,
-  onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid
+  onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
+  validationResults: state.dataEntry.registration.validationResults
 });
 
 const mapFormDispatchToProps = {
