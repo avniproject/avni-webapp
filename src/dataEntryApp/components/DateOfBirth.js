@@ -15,6 +15,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
   const [years, setYears] = React.useState("");
   const [months, setMonths] = React.useState("");
+  const dob = (dateOfBirth && moment(dateOfBirth).isValid() && new Date(dateOfBirth)) || null;
 
   React.useEffect(() => {
     if (dateOfBirth) {
@@ -76,8 +77,10 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           name="ageYearsPart"
           value={_.isNaN(years) ? "" : years}
           style={{ width: "30%" }}
-          error={Boolean(_.isEmpty(dateOfBirth) && dobErrorMsg)}
-          helperText={_.isEmpty(dateOfBirth) && t(dobErrorMsg)}
+          // error={Boolean(_.isEmpty(dateOfBirth) && dobErrorMsg)}
+          // helperText={_.isEmpty(dateOfBirth) && t(dobErrorMsg)}
+          error={Boolean(_.isNil(dob) && dobErrorMsg)}
+          helperText={_.isNil(dob) && dobErrorMsg && t("emptyValidationMessage")}
           onChange={e => _onYearsChange(e.target.value)}
         />
       </Box>
