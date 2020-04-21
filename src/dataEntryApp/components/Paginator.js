@@ -18,48 +18,56 @@ const styles = {
   }
 };
 
-const PaginationButton = ({ page, title, type }) =>
-  page && (
-    <RelativeLink params={{ page }} noUnderline>
-      <PagenatorButton type={type}>{title}</PagenatorButton>
-    </RelativeLink>
-  );
+const PaginationButton = ({ page, title, type }) => (
+  <RelativeLink params={{ page }} noUnderline>
+    <PagenatorButton type={type}>{title}</PagenatorButton>
+  </RelativeLink>
+);
 
-const Paginator = props => {
+const Paginator = ({ pageDetails, label, showCount, onSave, isForRegistration }) => {
   const { t } = useTranslation();
 
   return (
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
-        <PaginationButton
-          page={
-            props.pageDetails.nextPageNumber == null
-              ? props.pageDetails.previousPageNumber + 1
-              : props.pageDetails.previousPageNumber
-          }
-          type={props.label.type}
-          title={t(props.label.Previous)}
-        />
+        {pageDetails.previousPageNumber && (
+          <PaginationButton
+            page={pageDetails.previousPageNumber}
+            type={label.type}
+            title={t(label.Previous)}
+          />
+        )}
 
-        {!props.pageDetails.previousPageNumber && (
+        {/* {props.pageDetails.previousPageNumber && (
           <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
             <PagenatorButton type={props.label.type}>{t(props.label.Previous)}</PagenatorButton>
           </InternalLink>
-        )}
+        )} */}
       </Box>
 
-      {props.showCount && <label style={styles.toppagenum}> {props.count} </label>}
+      {showCount && !pageDetails.isOnSummaryPage && (
+        <label style={styles.toppagenum}>
+          {" "}
+          {`${
+            isForRegistration ? pageDetails.currentPageNumber + 1 : pageDetails.currentPageNumber
+          } / ${
+            isForRegistration ? pageDetails.totalNumberOfPages : pageDetails.totalNumberOfPages + 1
+          }`}{" "}
+        </label>
+      )}
 
       <Box component={"span"}>
-        <PaginationButton
-          page={props.pageDetails.nextPageNumber}
-          type={props.label.type}
-          title={t(props.label.Next)}
-        />
+        {!pageDetails.isOnSummaryPage && (
+          <PaginationButton
+            page={pageDetails.nextPageNumber}
+            type={label.type}
+            title={t(label.Next)}
+          />
+        )}
 
-        {!props.pageDetails.nextPageNumber && props.onSave && (
-          <PagenatorButton type={props.label.type} onClick={props.onSave}>
-            {t(props.label.Save)}
+        {pageDetails.isOnSummaryPage && (
+          <PagenatorButton type={label.type} onClick={onSave}>
+            {t(label.Save)}
           </PagenatorButton>
         )}
       </Box>

@@ -25,7 +25,7 @@ import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import FormWizard from "./FormWizard";
+import FormWizardNew from "./FormWizardNew";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 import { disableSession } from "common/constants";
@@ -325,7 +325,8 @@ const mapFormStateToProps = state => ({
   //title: `${state.dataEntry.registration.subject.subjectType.name} Registration`,
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
-  onSaveGoto: "/app/search"
+  onSaveGoto: "/app/search",
+  isForRegistration: true
 });
 
 const mapFormDispatchToProps = {
@@ -337,7 +338,7 @@ const RegistrationForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
-  )(FormWizard)
+  )(FormWizardNew)
 );
 
 const SubjectRegister = props => {
