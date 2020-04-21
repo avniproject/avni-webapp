@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { unionBy, isEmpty } from "lodash";
+import _, { unionBy, isEmpty } from "lodash";
 import { FormElementGroup, ValidationResults } from "avni-models";
 import { setValidationResults } from "../reducers/registrationReducer";
 
@@ -69,14 +69,16 @@ const PagenatorButton = ({
   const classes = useStyles();
 
   const handleNext = event => {
+    //Filtered Form Elements where voided is false, can be removed once handled generically (API/UI)
+    const filteredFormElement = _.filter(feg.formElements, fe => fe.voided === false);
     const formElementGroup = new FormElementGroup();
-    const formElementGroupValidations = formElementGroup.validate(obsHolder, feg.formElements);
+    //const formElementGroupValidations = formElementGroup.validate(obsHolder, feg.formElements);
     // const allValidationResults = unionBy(
     //   validationResults,
     //   formElementGroupValidations,
     //   "formIdentifier"
     // );
-
+    const formElementGroupValidations = formElementGroup.validate(obsHolder, filteredFormElement);
     setValidationResults(formElementGroupValidations);
 
     if (!isEmpty(formElementGroupValidations)) {
