@@ -38,6 +38,8 @@ import {
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import _ from "lodash";
+import BrowserStore from "../api/browserStore";
+import { disableSession } from "../../common/constants";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -125,11 +127,23 @@ function* loadEditRegistrationPageWatcher() {
 }
 
 export function* loadEditRegistrationPageWorker({ subject }) {
-  yield put.resolve(getOperationalModules());
-  yield put.resolve(getRegistrationForm(subject.subjectType.name));
-  yield put.resolve(getGenders());
-  yield put.resolve(setSubject(subject));
-  yield put.resolve(setLoaded());
+  let localSavedSubject = JSON.parse(sessionStorage.getItem("subject"));
+  if (localSavedSubject == null) {
+    yield put.resolve(getOperationalModules());
+    yield put.resolve(getRegistrationForm(subject.subjectType.name));
+    yield put.resolve(getGenders());
+    yield put.resolve(setSubject(subject));
+    yield put.resolve(setLoaded());
+  } else {
+    yield put.resolve(getOperationalModules());
+    yield put.resolve(getRegistrationForm(subject.subjectType.name));
+    yield put.resolve(getGenders());
+    if (!disableSession) {
+      let subject = BrowserStore.fetchSubject();
+      if (subject) yield put.resolve(setSubject(subject));
+    }
+    yield put.resolve(setLoaded());
+  }
 }
 
 /*

@@ -15,12 +15,6 @@ import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
-import { setSubjectProfile, getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
-import { setSubject } from "../../../reducers/registrationReducer";
-import { mapProfile } from "../../../../common/subjectModelMapper";
-import { store } from "../../../../common/store//createStore";
-import { types } from "../../../../common/store/conceptReducer";
-import Link from "@material-ui/core/Link";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {

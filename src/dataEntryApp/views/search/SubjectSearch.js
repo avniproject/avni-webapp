@@ -110,6 +110,7 @@ const SubjectSearch = props => {
 
   useEffect(() => {
     props.search();
+    sessionStorage.clear("subject");
   }, []);
 
   return (
