@@ -14,8 +14,6 @@ import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
 import org.openchs.util.ApiException;
 import org.openchs.web.request.FormMappingContract;
-import org.openchs.web.request.webapp.CreateUpdateFormRequest;
-import org.openchs.web.request.webapp.FormMappingRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,30 +63,6 @@ public class FormMappingService {
         formMapping.setForm(form);
 
         formMappingRepository.save(formMapping);
-    }
-
-    public void createOrUpdateFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
-        validateRequest(createUpdateFormRequest, form.getFormType());
-        List<FormMapping> formMappings = formMappingRepository.findByFormId(form.getId());
-        for (FormMappingRequest formMappingRequest : createUpdateFormRequest.getFormMappings()) {
-            FormMapping formMapping = null;
-            for (FormMapping fromMap : formMappings) {
-                if (fromMap.getUuid().equals(formMappingRequest.getUuid())) {
-                    formMapping = fromMap;
-                }
-            }
-
-            if (formMapping == null) {
-                formMapping = new FormMapping();
-                formMapping.setUuid(formMappingRequest.getUuid());
-                formMapping.setForm(form);
-            }
-            setSubjectTypeIfRequired(formMapping, formMappingRequest.getSubjectTypeUuid());
-            setProgramNameIfRequired(formMapping, form.getFormType(), formMappingRequest.getProgramUuid());
-            setEncounterTypeIfRequired(formMapping, form.getFormType(), formMappingRequest.getEncounterTypeUuid());
-            formMapping.setVoided(formMappingRequest.getVoided());
-            formMappingRepository.save(formMapping);
-        }
     }
 
     public void createOrUpdateFormMapping(FormMappingContract formMappingRequest) {
@@ -164,24 +138,6 @@ public class FormMappingService {
 
         formMapping.setVoided(formMappingRequest.getIsVoided());
         formMappingRepository.save(formMapping);
-    }
-
-    private void validateRequest(CreateUpdateFormRequest createUpdateFormRequest, FormType formType) {
-        for (FormMappingRequest formMappingRequest : createUpdateFormRequest.getFormMappings()) {
-            if (!formMappingRequest.getVoided()) {
-                if (formType.isLinkedToEncounterType() && formMappingRequest.getEncounterTypeUuid() == null) {
-                    throw new ApiException("Form of type %s must pass encounterType", formType);
-                }
-
-                if (formMappingRequest.getSubjectTypeUuid() == null) {
-                    throw new ApiException("Subject type must be specified");
-                }
-
-                if (formType.isLinkedToProgram() && formMappingRequest.getProgramUuid() == null) {
-                    throw new ApiException("Form of type %s must pass programName", formType);
-                }
-            }
-        }
     }
 
     private void setEncounterTypeIfRequired(FormMapping formMapping, FormType formType, String encounterTypeUuid) {
