@@ -25,11 +25,6 @@ const EncounterTypeCreate = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [subjectValidation, setSubjectValidation] = useState(false);
-  const [programEncounterFormValidation, setProgramEncounterFormValidation] = useState(false);
-  const [
-    programEncounterCancellationFormValidation,
-    setProgramEncounterCancellationFormValidation
-  ] = useState(false);
   const [subjectT, setSubjectT] = useState({});
   const [subjectType, setSubjectType] = useState([]);
   const [programT, setProgramT] = useState({});
@@ -67,25 +62,12 @@ const EncounterTypeCreate = props => {
       hasError = true;
     }
 
-    if (_.isEmpty(encounterType.programEncounterForm)) {
-      setProgramEncounterFormValidation(true);
-      console.log("value is empty");
-      hasError = true;
-    }
-
-    if (_.isEmpty(encounterType.programEncounterCancellationForm)) {
-      setProgramEncounterCancellationFormValidation(true);
-      hasError = true;
-    }
-
     if (hasError) {
       return;
     }
 
     setNameValidation(false);
     setSubjectValidation(false);
-    setProgramEncounterFormValidation(false);
-    setProgramEncounterCancellationFormValidation(false);
     http
       .post("/web/encounterType", {
         name: encounterType.name,
@@ -193,11 +175,6 @@ const EncounterTypeCreate = props => {
                 formList={findProgramEncounterForms(formList)}
               />
             </FormControl>
-            {programEncounterFormValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty encounter form is not allowed.
-              </FormLabel>
-            )}
             <p />
             <FormControl>
               <SelectForm
@@ -212,11 +189,6 @@ const EncounterTypeCreate = props => {
                 formList={findProgramEncounterCancellationForms(formList)}
               />
             </FormControl>
-            {programEncounterCancellationFormValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty encounter cancellation form is not allowed.
-              </FormLabel>
-            )}
             <p />
             <FormLabel>Encounter Eligibility Check Rule</FormLabel>
             <Editor

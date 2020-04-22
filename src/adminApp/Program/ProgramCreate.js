@@ -1,6 +1,6 @@
 import TextField from "@material-ui/core/TextField";
 import { Redirect } from "react-router-dom";
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -8,11 +8,10 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
-import { programInitialState, colorPickerCSS } from "../Constant";
+import { colorPickerCSS, programInitialState } from "../Constant";
 import { programReducer } from "../Reducers";
 import ColorPicker from "material-ui-rc-color-picker";
 import "material-ui-rc-color-picker/assets/index.css";
-import { default as UUID } from "uuid";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -25,8 +24,6 @@ const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [subjectValidation, setSubjectValidation] = useState(false);
-  const [programEnrolmentFormValidation, setProgramEnrolmentFormValidation] = useState(false);
-  const [programExitFormValidation, setProgramExitFormValidation] = useState(false);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
@@ -64,25 +61,12 @@ const ProgramCreate = props => {
       hasError = true;
     }
 
-    if (_.isEmpty(program.programEnrolmentForm)) {
-      setProgramEnrolmentFormValidation(true);
-      console.log("value is empty");
-      hasError = true;
-    }
-
-    if (_.isEmpty(program.programExitForm)) {
-      setProgramExitFormValidation(true);
-      hasError = true;
-    }
-
     if (hasError) {
       return;
     }
 
     setNameValidation(false);
     setSubjectValidation(false);
-    setProgramEnrolmentFormValidation(false);
-    setProgramExitFormValidation(false);
 
     setNameValidation(false);
     http
@@ -180,45 +164,30 @@ const ProgramCreate = props => {
               }
             />
             <p />
-            <FormControl>
-              <SelectForm
-                label={"Select Enrolment form"}
-                value={_.get(program, "programEnrolmentForm.formName")}
-                onChange={selectedForm =>
-                  dispatch({
-                    type: "programEnrolmentForm",
-                    payload: selectedForm
-                  })
-                }
-                formList={findProgramEnrolmentForms(formList)}
-              />
-            </FormControl>
-            {programEnrolmentFormValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty enrolment form is not allowed.
-              </FormLabel>
-            )}
+            <SelectForm
+              label={"Select Enrolment form"}
+              value={_.get(program, "programEnrolmentForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "programEnrolmentForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findProgramEnrolmentForms(formList)}
+            />
             <p />
-            <FormControl>
-              <SelectForm
-                label={"Select Exit form"}
-                value={_.get(program, "programExitForm.formName")}
-                onChange={selectedForm =>
-                  dispatch({
-                    type: "programExitForm",
-                    payload: selectedForm
-                  })
-                }
-                formList={findProgramExitForms(formList)}
-              />
-            </FormControl>
-            {programExitFormValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty exit form is not allowed.
-              </FormLabel>
-            )}
+            <SelectForm
+              label={"Select Exit form"}
+              value={_.get(program, "programExitForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "programExitForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findProgramExitForms(formList)}
+            />
             <p />
-
             <FormLabel>Enrolment summary rule</FormLabel>
             <Editor
               value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}

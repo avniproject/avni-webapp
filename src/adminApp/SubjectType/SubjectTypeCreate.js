@@ -16,7 +16,6 @@ import { useFormMappings } from "./effects";
 import _ from "lodash";
 import { findRegistrationForms } from "../domain/formMapping";
 import SelectForm from "./SelectForm";
-import { default as UUID } from "uuid";
 
 const SubjectTypeCreate = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -27,6 +26,7 @@ const SubjectTypeCreate = props => {
   const [id, setId] = useState();
   const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
+  const [age, setAge] = useState();
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormMappings(formMap);
@@ -44,17 +44,16 @@ const SubjectTypeCreate = props => {
       setNameValidation(true);
       return;
     }
-    if (_.isEmpty(subjectType.registrationForm)) {
-      setError("Please select registration form");
-      return;
-    }
 
     setNameValidation(false);
     let subjectTypeUuid;
 
     let subjectTypeSavePromise = () =>
       http
-        .post("/web/subjectType", subjectType)
+        .post("/web/subjectType", {
+          ...subjectType,
+          registrationFormUuid: _.get(subjectType, "registrationForm.formUUID")
+        })
         .then(response => {
           if (response.status === 200) {
             subjectTypeUuid = response.data.uuid;
@@ -67,17 +66,7 @@ const SubjectTypeCreate = props => {
           setError(error.response.data.message);
         });
 
-    const formMappingPromise = () =>
-      http.post("/emptyFormMapping", [
-        {
-          uuid: UUID.v4(),
-          subjectTypeUUID: subjectTypeUuid,
-          formUUID: subjectType.registrationForm.formUUID,
-          isVoided: false
-        }
-      ]);
-
-    return subjectTypeSavePromise().then(formMappingPromise);
+    return subjectTypeSavePromise();
   };
 
   return (
@@ -106,21 +95,17 @@ const SubjectTypeCreate = props => {
               </Grid>
             </Grid>
             <p />
-            <Grid component="label" container alignItems="center" spacing={2}>
-              <Grid>Registration form name</Grid>
-              <Grid>
-                <SelectForm
-                  value={_.get(subjectType, "registrationForm.formName")}
-                  onChange={selectedForm =>
-                    dispatch({
-                      type: "registrationForm",
-                      payload: selectedForm
-                    })
-                  }
-                  formList={findRegistrationForms(formList)}
-                />
-              </Grid>
-            </Grid>
+            <SelectForm
+              label={"Registration form name"}
+              value={_.get(subjectType, "registrationForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "registrationForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findRegistrationForms(formList)}
+            />
             <p />
             {!subjectType.household && subjectType.group && (
               <>
