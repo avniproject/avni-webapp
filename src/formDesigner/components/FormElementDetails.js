@@ -632,7 +632,7 @@ function FormElementDetails(props) {
           </Grid>
         )}
       </Grid>
-      {props.identifierSource.length > 0 && (
+      {props.formElementData.concept.dataType === "Id" && (
         <Grid item sm={6}>
           <FormControl fullWidth>
             <InputLabel>Identifier Source</InputLabel>
