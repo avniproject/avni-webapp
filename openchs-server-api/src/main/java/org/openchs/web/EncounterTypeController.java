@@ -1,13 +1,14 @@
 package org.openchs.web;
 
 import org.openchs.application.Form;
-import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
-import org.openchs.dao.*;
-import org.openchs.dao.application.FormMappingRepository;
+import org.openchs.dao.EncounterTypeRepository;
+import org.openchs.dao.OperationalEncounterTypeRepository;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.OperationalEncounterType;
 import org.openchs.service.EncounterTypeService;
+import org.openchs.service.FormMappingParameterObject;
+import org.openchs.service.FormMappingService;
 import org.openchs.service.FormService;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.EncounterTypeContract;
@@ -32,26 +33,20 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
     private final OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private final EncounterTypeService encounterTypeService;
     private EncounterTypeRepository encounterTypeRepository;
-    private FormMappingRepository formMappingRepository;
-    private SubjectTypeRepository subjectTypeRepository;
-    private ProgramRepository programRepository;
     private FormService formService;
+    private FormMappingService formMappingSevice;
 
     @Autowired
     public EncounterTypeController(EncounterTypeRepository encounterTypeRepository,
                                    OperationalEncounterTypeRepository operationalEncounterTypeRepository,
                                    EncounterTypeService encounterTypeService,
-                                   FormMappingRepository formMappingRepository,
-                                   SubjectTypeRepository subjectTypeRepository,
-                                   ProgramRepository programRepository,
-                                   FormService formService) {
+                                   FormService formService,
+                                   FormMappingService formMappingSevice) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.encounterTypeService = encounterTypeService;
-        this.formMappingRepository = formMappingRepository;
-        this.subjectTypeRepository = subjectTypeRepository;
-        this.programRepository = programRepository;
         this.formService = formService;
+        this.formMappingSevice = formMappingSevice;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -148,40 +143,12 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
         return ResponseEntity.ok(EncounterTypeContractWeb.fromOperationalEncounterType(operationalEncounterType));
     }
 
-    private void saveFormsAndMapping(@RequestBody EncounterTypeContractWeb request, EncounterType encounterType) {
+    private void saveFormsAndMapping(EncounterTypeContractWeb request, EncounterType encounterType) {
         Form encounterForm = formService.getOrCreateForm(request.getProgramEncounterFormUuid(), String.format("%s Encounter", encounterType.getName()), FormType.ProgramEncounter);
-        saveFormMapping(request, encounterType, FormType.ProgramEncounter, encounterForm);
+        formMappingSevice.saveFormMapping(new FormMappingParameterObject(request.getSubjectTypeUuid(), request.getProgramUuid(), encounterType.getUuid()), encounterForm);
 
         Form cancellationForm = formService.getOrCreateForm(request.getProgramEncounterCancelFormUuid(), String.format("%s Encounter Cancellation", encounterType.getName()), FormType.ProgramEncounterCancellation);
-        saveFormMapping(request, encounterType, FormType.ProgramEncounterCancellation, cancellationForm);
-    }
-
-    private void saveFormMapping(EncounterTypeContractWeb request, EncounterType encounterType, FormType formType, Form form) {
-        FormMapping formMappingForProgramEncounter;
-        formMappingForProgramEncounter = getOrCreateFormMapping(formType, encounterType.getUuid(), request.getSubjectTypeUuid());
-
-        formMappingForProgramEncounter.setSubjectType(subjectTypeRepository.findByUuid(request.getSubjectTypeUuid()));
-        formMappingForProgramEncounter.setEncounterType(encounterType);
-        formMappingForProgramEncounter.setProgram(programRepository.findByUuid(request.getProgramUuid()));
-        formMappingForProgramEncounter.setForm(form);
-
-        formMappingRepository.save(formMappingForProgramEncounter);
-    }
-
-    private FormMapping getOrCreateFormMapping(FormType formType, String encounterTypeUuid, String subjectTypeUuid) {
-        FormMapping formMappingForProgramEncounter = formMappingRepository.getRequiredFormMapping(subjectTypeUuid, null, encounterTypeUuid, formType);
-        if (formMappingForProgramEncounter == null) {
-            formMappingForProgramEncounter = createFormMapping();
-        }
-        return formMappingForProgramEncounter;
-    }
-
-    private FormMapping createFormMapping() {
-        FormMapping formMappingForProgramEncounter;
-        formMappingForProgramEncounter = new FormMapping();
-        formMappingForProgramEncounter.assignUUID();
-        formMappingForProgramEncounter.setVoided(false);
-        return formMappingForProgramEncounter;
+        formMappingSevice.saveFormMapping(new FormMappingParameterObject(request.getSubjectTypeUuid(), request.getProgramUuid(), encounterType.getUuid()), cancellationForm);
     }
 
     @DeleteMapping(value = "/web/encounterType/{id}")

@@ -37,15 +37,34 @@ public class FormMappingService {
     @Autowired
     public FormMappingService(FormMappingRepository formMappingRepository,
                               EncounterTypeRepository encounterTypeRepository,
-                              FormRepository formRepository,
                               ProgramRepository programRepository,
                               SubjectTypeRepository subjectTypeRepository,
-                              FormRepository formRepository1) {
+                              FormRepository formRepository) {
         this.formMappingRepository = formMappingRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.programRepository = programRepository;
         this.subjectTypeRepository = subjectTypeRepository;
-        this.formRepository = formRepository1;
+        this.formRepository = formRepository;
+    }
+
+    public void saveFormMapping(FormMappingParameterObject parameters, Form form) {
+        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(
+                parameters.subjectTypeUuid,
+                parameters.programUuid,
+                parameters.encounterTypeUuid,
+                form.getFormType());
+        if (formMapping == null) {
+            formMapping = new FormMapping();
+            formMapping.assignUUID();
+            formMapping.setVoided(false);
+        }
+
+        setSubjectTypeIfRequired(formMapping, parameters.subjectTypeUuid);
+        setProgramNameIfRequired(formMapping, form.getFormType(), parameters.programUuid);
+        setEncounterTypeIfRequired(formMapping, form.getFormType(), parameters.encounterTypeUuid);
+        formMapping.setForm(form);
+
+        formMappingRepository.save(formMapping);
     }
 
     public void createOrUpdateFormMapping(CreateUpdateFormRequest createUpdateFormRequest, Form form) {
@@ -165,11 +184,10 @@ public class FormMappingService {
         }
     }
 
-    private void setEncounterTypeIfRequired(FormMapping formMapping, FormType formType, String requestEncounterType) {
-        if (formType.isLinkedToEncounterType() && requestEncounterType != null) {
-            EncounterType encounterType = encounterTypeRepository.findByUuid(requestEncounterType);
-            //EncounterType encounterType = encounterTypeRepository.findByNameIgnoreCase(requestEncounterType);
-            if (encounterType == null) throw new ApiException("Encounter Type %s not found", requestEncounterType);
+    private void setEncounterTypeIfRequired(FormMapping formMapping, FormType formType, String encounterTypeUuid) {
+        if (formType.isLinkedToEncounterType() && encounterTypeUuid != null) {
+            EncounterType encounterType = encounterTypeRepository.findByUuid(encounterTypeUuid);
+            if (encounterType == null) throw new ApiException("Encounter Type %s not found", encounterTypeUuid);
             formMapping.setEncounterType(encounterType);
         }
     }
@@ -177,7 +195,6 @@ public class FormMappingService {
     private void setProgramNameIfRequired(FormMapping formMapping, FormType formType, String programName) {
         if (formType.isLinkedToProgram()) {
             Program program = programRepository.findByUuid(programName);
-            //Program program = programRepository.findByNameIgnoreCase(programName);
             if (program == null) throw new ApiException("Program %s not found", programName);
             formMapping.setProgram(program);
         }
@@ -185,7 +202,6 @@ public class FormMappingService {
 
     private void setSubjectTypeIfRequired(FormMapping formMapping, String requestSubjectType) {
         SubjectType subjectType = subjectTypeRepository.findByUuid(requestSubjectType);
-        //SubjectType subjectType = subjectTypeRepository.findByNameIgnoreCase(requestSubjectType);
         if (subjectType == null) throw new ApiException("Subject type %s not found", requestSubjectType);
         formMapping.setSubjectType(subjectType);
     }

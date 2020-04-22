@@ -1,16 +1,14 @@
 package org.openchs.web;
 
-import org.openchs.application.Form;
-import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.GroupRoleRepository;
 import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.SubjectTypeRepository;
-import org.openchs.dao.application.FormMappingRepository;
-import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.GroupRole;
 import org.openchs.domain.OperationalSubjectType;
 import org.openchs.domain.SubjectType;
+import org.openchs.service.FormMappingParameterObject;
+import org.openchs.service.FormMappingService;
 import org.openchs.service.FormService;
 import org.openchs.service.SubjectTypeService;
 import org.openchs.util.ReactAdminUtil;
@@ -40,22 +38,21 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     private final SubjectTypeService subjectTypeService;
     private final GroupRoleRepository groupRoleRepository;
     private SubjectTypeRepository subjectTypeRepository;
-    private FormMappingRepository formMappingRepository;
     private FormService formService;
+    private FormMappingService formMappingService;
 
     @Autowired
     public SubjectTypeController(SubjectTypeRepository subjectTypeRepository,
                                  OperationalSubjectTypeRepository operationalSubjectTypeRepository,
                                  SubjectTypeService subjectTypeService,
                                  GroupRoleRepository groupRoleRepository,
-                                 FormMappingRepository formMappingRepository,
-                                 FormService formService) {
+                                 FormService formService, FormMappingService formMappingService) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.subjectTypeService = subjectTypeService;
         this.groupRoleRepository = groupRoleRepository;
-        this.formMappingRepository = formMappingRepository;
         this.formService = formService;
+        this.formMappingService = formMappingService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -117,33 +114,9 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         operationalSubjectType.setSubjectType(subjectType);
         operationalSubjectTypeRepository.save(operationalSubjectType);
 
-        saveFormMapping(subjectType, formService.getOrCreateForm(request.getRegistrationFormUuid(), String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
+        formMappingService.saveFormMapping(new FormMappingParameterObject(subjectType.getUuid(), null, null), formService.getOrCreateForm(request.getRegistrationFormUuid(), String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
 
         return ResponseEntity.ok(SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType));
-    }
-
-    private void saveFormMapping(SubjectType subjectType, Form form) {
-        FormMapping formMapping = getOrCreateFormMapping(subjectType.getUuid());
-        formMapping.setSubjectType(subjectType);
-        formMapping.setForm(form);
-
-        formMappingRepository.save(formMapping);
-    }
-
-    private FormMapping getOrCreateFormMapping(String subjectTypeUuid) {
-        FormMapping formMappingForProgramEncounter = formMappingRepository.getRequiredFormMapping(subjectTypeUuid, null, null, FormType.IndividualProfile);
-        if (formMappingForProgramEncounter == null) {
-            formMappingForProgramEncounter = createFormMapping();
-        }
-        return formMappingForProgramEncounter;
-    }
-
-    private FormMapping createFormMapping() {
-        FormMapping formMappingForProgramEncounter;
-        formMappingForProgramEncounter = new FormMapping();
-        formMappingForProgramEncounter.assignUUID();
-        formMappingForProgramEncounter.setVoided(false);
-        return formMappingForProgramEncounter;
     }
 
     @PutMapping(value = "/web/subjectType/{id}")
@@ -177,7 +150,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         operationalSubjectType.setName(request.getName());
         operationalSubjectTypeRepository.save(operationalSubjectType);
 
-        saveFormMapping(subjectType, formService.getOrCreateForm(request.getRegistrationFormUuid(), String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
+        formMappingService.saveFormMapping(new FormMappingParameterObject(subjectType.getUuid(), null, null), formService.getOrCreateForm(request.getRegistrationFormUuid(), String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
 
         return ResponseEntity.ok(SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType));
     }
