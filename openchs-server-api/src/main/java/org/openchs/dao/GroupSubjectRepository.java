@@ -20,17 +20,17 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
         throw new UnsupportedOperationException("No field 'name' in GroupSubject");
     }
 
-    Page<GroupSubject> findByGroupSubjectAddressLevelVirtualCatchmentsIdAndGroupRoleMemberSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<GroupSubject> findByGroupSubjectAddressLevelVirtualCatchmentsIdAndGroupRoleGroupSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,
-            String memberSubjectTypeUUID,
+            String groupSubjectTypeUUID,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable
     );
 
-    Page<GroupSubject> findByGroupSubjectFacilityIdAndGroupRoleMemberSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
+    Page<GroupSubject> findByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long facilityId,
-            String memberSubjectTypeUUID,
+            String groupSubjectTypeUUID,
             DateTime lastModifiedDateTime,
             DateTime now,
             Pageable pageable
@@ -38,11 +38,11 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
 
     @Override
     default Page<GroupSubject> findByCatchmentIndividualOperatingScopeAndFilterByType(long catchmentId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
-        return findByGroupSubjectAddressLevelVirtualCatchmentsIdAndGroupRoleMemberSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
+        return findByGroupSubjectAddressLevelVirtualCatchmentsIdAndGroupRoleGroupSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(catchmentId, filter, lastModifiedDateTime, now, pageable);
     }
 
     @Override
     default Page<GroupSubject> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
-        return findByGroupSubjectFacilityIdAndGroupRoleMemberSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
+        return findByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
     }
 }
