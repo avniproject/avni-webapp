@@ -143,14 +143,16 @@ const EncounterTypeEdit = props => {
   };
 
   const onDelete = () => {
-    http
-      .delete("/web/encounterType/" + props.match.params.id)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteAlert(true);
-        }
-      })
-      .catch(error => {});
+    if (window.confirm("Do you really want to delete encounter type?")) {
+      http
+        .delete("/web/encounterType/" + props.match.params.id)
+        .then(response => {
+          if (response.status === 200) {
+            setDeleteAlert(true);
+          }
+        })
+        .catch(error => {});
+    }
   };
 
   return (
