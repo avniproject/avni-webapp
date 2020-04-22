@@ -17,12 +17,9 @@ class NewFormModal extends Component {
     this.state = {
       name: props.name,
       formType: "",
-      programName: "",
-      subjectType: "",
-      encounterType: "",
       data: {},
       toFormDetails: "",
-      errors: { name: "", formType: "", programName: "", subjectType: "", encounterType: "" },
+      errors: { name: "", formType: "" },
       showUpdateAlert: false,
       defaultSnackbarStatus: true
     };
@@ -32,25 +29,6 @@ class NewFormModal extends Component {
     let errorsList = {};
     if (this.state.name === "") errorsList["name"] = "Please enter form name.";
     if (this.state.formType === "") errorsList["formType"] = "Please select form type.";
-    if (this.state.formType !== "ChecklistItem" && this.state.subjectType === "")
-      errorsList["subjectType"] = "Please select subject type.";
-    if (
-      (this.state.formType === "ProgramEncounter" ||
-        this.state.formType === "ProgramExit" ||
-        this.state.formType === "ProgramEnrolment" ||
-        this.state.formType === "ProgramEncounterCancellation") &&
-      this.state.programName === ""
-    )
-      errorsList["programName"] = "Please select program name.";
-    if (
-      (this.state.formType === "Encounter" ||
-        this.state.formType === "ProgramEncounter" ||
-        this.state.formType === "ProgramEncounterCancellation" ||
-        this.state.formType === "IndividualEncounterCancellation") &&
-      this.state.encounterType === ""
-    )
-      errorsList["encounterType"] = "Please select encounter type.";
-
     this.setState({
       errors: errorsList
     });
@@ -71,15 +49,6 @@ class NewFormModal extends Component {
         name: this.state.name,
         formType: this.state.formType
       };
-      dataSend["formMappings"] = [];
-      if (this.state.formType !== "ChecklistItem") {
-        let mapping = {};
-        mapping["uuid"] = UUID.v4();
-        mapping["subjectTypeUuid"] = this.state.subjectType;
-        mapping["programUuid"] = this.state.programName;
-        mapping["encounterTypeUuid"] = this.state.encounterType;
-        dataSend["formMappings"].push(mapping);
-      }
       http
         .post("/web/forms", dataSend)
         .then(response => {
@@ -155,63 +124,6 @@ class NewFormModal extends Component {
     this.setState(Object.assign({}, this.state, { [event.target.name]: event.target.value }));
   }
 
-  handleClickOpen() {
-    this.setState({
-      formType: "",
-      subjectType: "",
-      programName: "",
-      encounterType: ""
-    });
-  }
-
-  programNameElement() {
-    return (
-      <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="programName">Program Name</InputLabel>
-        <Select
-          id="programName"
-          name="programName"
-          value={this.state.programName}
-          onChange={this.onChangeField.bind(this)}
-        >
-          {this.state.data.programs != null &&
-            this.state.data.programs.map(program => (
-              <MenuItem key={program.uuid} value={program.uuid}>
-                {program.operationalProgramName}
-              </MenuItem>
-            ))}
-        </Select>
-        {this.state.errors.programName && (
-          <FormHelperText error>{this.state.errors.programName}</FormHelperText>
-        )}
-      </FormControl>
-    );
-  }
-
-  subjectTypeElement() {
-    return (
-      <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="subjectType">Subject Type</InputLabel>
-        <Select
-          id="subjectType"
-          name="subjectType"
-          value={this.state.subjectType}
-          onChange={this.onChangeField.bind(this)}
-        >
-          {this.state.data.subjectTypes != null &&
-            this.state.data.subjectTypes.map(subjectType => (
-              <MenuItem key={subjectType.uuid} value={subjectType.uuid}>
-                {subjectType.operationalSubjectTypeName}
-              </MenuItem>
-            ))}
-        </Select>
-        {this.state.errors.subjectType && (
-          <FormHelperText error>{this.state.errors.subjectType}</FormHelperText>
-        )}
-      </FormControl>
-    );
-  }
-
   formTypeElement() {
     const formTypes = [
       "IndividualProfile",
@@ -232,46 +144,10 @@ class NewFormModal extends Component {
       );
     });
   }
-
-  encounterTypesElement() {
-    return (
-      <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="encounterType">Encounter Type</InputLabel>
-        <Select
-          id="encounterType"
-          name="encounterType"
-          value={this.state.encounterType}
-          onChange={this.onChangeField.bind(this)}
-        >
-          {this.state.data.encounterTypes != null &&
-            this.state.data.encounterTypes.map(encounterType => (
-              <MenuItem key={encounterType.uuid} value={encounterType.uuid}>
-                {encounterType.name}
-              </MenuItem>
-            ))}
-        </Select>
-        {this.state.errors.encounterType && (
-          <FormHelperText error>{this.state.errors.encounterType}</FormHelperText>
-        )}
-      </FormControl>
-    );
-  }
-
   render() {
     if (this.state.toFormDetails !== "") {
       return <Redirect to={"/appdesigner/forms/" + this.state.toFormDetails} />;
     }
-    const encounterTypes =
-      this.state.formType === "Encounter" ||
-      this.state.formType === "ProgramEncounter" ||
-      this.state.formType === "ProgramEncounterCancellation" ||
-      this.state.formType === "IndividualEncounterCancellation";
-    const programBased =
-      this.state.formType === "ProgramEncounter" ||
-      this.state.formType === "ProgramExit" ||
-      this.state.formType === "ProgramEnrolment" ||
-      this.state.formType === "ProgramEncounterCancellation";
-    const subjectTypeBased = this.state.formType !== "" && this.state.formType !== "ChecklistItem";
 
     return (
       <div>
@@ -312,9 +188,6 @@ class NewFormModal extends Component {
               <FormHelperText error>{this.state.errors.name}</FormHelperText>
             )}
           </FormControl>
-          {subjectTypeBased && this.subjectTypeElement()}
-          {programBased && this.programNameElement()}
-          {encounterTypes && this.encounterTypesElement()}
         </form>
         <Button
           variant="contained"
