@@ -37,9 +37,13 @@ public class GroupsController implements RestControllerResourceProcessor<Program
     @Transactional
     public ResponseEntity saveProgramForWeb(@RequestBody Group group) {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        if (group.getName() == null || group.getName().trim().equals("")) {
+            return ResponseEntity.badRequest().body(String.format("Group name cannot be blank."));
+        }
         if (groupRepository.findByNameAndOrganisationId(group.getName(), organisation.getId()) != null) {
             return ResponseEntity.badRequest().body(String.format("Group with name %s already exists.", group.getName()));
         }
+        group.setHasAllPrivileges(false);
         group.setOrganisationId(organisation.getId());
         group.setUuid(UUID.randomUUID().toString());
         return ResponseEntity.ok(groupRepository.save(group));
