@@ -76,7 +76,7 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
                 }
 
                 GroupPrivilege newGroupPrivilege = new GroupPrivilege();
-                newGroupPrivilege.assignUUID();
+                newGroupPrivilege.setUuid(groupPrivilege.getUuid());
                 newGroupPrivilege.setPrivilege(optionalPrivilege.get());
                 newGroupPrivilege.setGroup(group);
                 newGroupPrivilege.setSubjectType(subjectType);

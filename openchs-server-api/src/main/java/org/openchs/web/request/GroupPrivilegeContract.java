@@ -27,6 +27,7 @@ public class GroupPrivilegeContract {
     private Optional<Long> checklistDetailId;
     private Optional<String> checklistDetailName;
     private boolean allow;
+    private String uuid;
 
     public static GroupPrivilegeContract fromEntity(GroupPrivilege groupPrivilege) {
         GroupPrivilegeContract groupPrivilegeContract = new GroupPrivilegeContract();
@@ -47,6 +48,7 @@ public class GroupPrivilegeContract {
         groupPrivilegeContract.setChecklistDetailId(Optional.ofNullable(groupPrivilege.getChecklistDetail()).map(ChecklistDetail::getId));
         groupPrivilegeContract.setChecklistDetailName(Optional.ofNullable(groupPrivilege.getChecklistDetail()).map(ChecklistDetail::getName).orElse(null));
         groupPrivilegeContract.setAllow(groupPrivilege.isAllow());
+        groupPrivilegeContract.setUuid(groupPrivilege.getUuid());
         return groupPrivilegeContract;
 
     }
@@ -185,6 +187,14 @@ public class GroupPrivilegeContract {
 
     public void setAllow(boolean allow) {
         this.allow = allow;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     @Override

@@ -66,6 +66,7 @@ public class GroupPrivilegeService {
                                 groupPrivilege.setPrivilege(subjectPrivilege);
                                 groupPrivilege.setSubjectType(subjectType);
                                 groupPrivilege.setAllow(false);
+                                groupPrivilege.assignUUID();
                                 allPrivileges.add(groupPrivilege);
                             }
                     );
@@ -84,6 +85,7 @@ public class GroupPrivilegeService {
                                 groupPrivilege.setSubjectType(subjectType);
                                 groupPrivilege.setProgram(program);
                                 groupPrivilege.setAllow(false);
+                                groupPrivilege.assignUUID();
                                 allPrivileges.add(groupPrivilege);
                             });
 
@@ -99,6 +101,7 @@ public class GroupPrivilegeService {
                                 groupPrivilege.setProgram(program);
                                 groupPrivilege.setProgramEncounterType(encounterType);
                                 groupPrivilege.setAllow(false);
+                                groupPrivilege.assignUUID();
                                 allPrivileges.add(groupPrivilege);
                             });
                 } else {
@@ -111,6 +114,7 @@ public class GroupPrivilegeService {
                                 groupPrivilege.setSubjectType(subjectType);
                                 groupPrivilege.setEncounterType(operationalFormMapping.getEncounterType());
                                 groupPrivilege.setAllow(false);
+                                groupPrivilege.assignUUID();
                                 allPrivileges.add(groupPrivilege);
                             });
                 }
@@ -125,6 +129,8 @@ public class GroupPrivilegeService {
                                 groupPrivilege.setPrivilege(privilege);
                                 groupPrivilege.setSubjectType(subjectType);
                                 groupPrivilege.setChecklistDetail(checklistDetail);
+                                groupPrivilege.setAllow(false);
+                                groupPrivilege.assignUUID();
                                 allPrivileges.add(groupPrivilege);
                             })
             );
