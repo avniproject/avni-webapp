@@ -4,7 +4,13 @@ import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
 import { ObservationsHolder } from "avni-models";
 
-export const FormElementGroup = ({ children: feg, obsHolder, updateObs, validationResults }) => {
+export const FormElementGroup = ({
+  children: feg,
+  obsHolder,
+  updateObs,
+  parentChildren,
+  validationResults
+}) => {
   return (
     <div>
       <LineBreak num={1} />
