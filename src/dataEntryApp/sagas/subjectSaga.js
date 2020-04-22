@@ -128,16 +128,13 @@ function* loadEditRegistrationPageWatcher() {
 
 export function* loadEditRegistrationPageWorker({ subject }) {
   let localSavedSubject = JSON.parse(sessionStorage.getItem("subject"));
+  yield put.resolve(getOperationalModules());
+  yield put.resolve(getRegistrationForm(subject.subjectType.name));
+  yield put.resolve(getGenders());
   if (localSavedSubject == null) {
-    yield put.resolve(getOperationalModules());
-    yield put.resolve(getRegistrationForm(subject.subjectType.name));
-    yield put.resolve(getGenders());
     yield put.resolve(setSubject(subject));
     yield put.resolve(setLoaded());
   } else {
-    yield put.resolve(getOperationalModules());
-    yield put.resolve(getRegistrationForm(subject.subjectType.name));
-    yield put.resolve(getGenders());
     if (!disableSession) {
       let subject = BrowserStore.fetchSubject();
       if (subject) yield put.resolve(setSubject(subject));

@@ -14,9 +14,9 @@ export default class {
     if (sessionStorage.getItem("subject")) {
       let subject = Individual.createEmptyInstance();
       let localSavedSubject = JSON.parse(sessionStorage.getItem("subject"));
-      if (subject.uuid) {
-        subject.uuid = localSavedSubject.uuid;
-      }
+      // if (subject.uuid) {
+      //   subject.uuid = localSavedSubject.uuid;
+      // }
       subject.name = localSavedSubject.name;
       subject.firstName = localSavedSubject.firstName;
       subject.lastName = localSavedSubject.lastName;
