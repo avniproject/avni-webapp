@@ -17,10 +17,10 @@ function WorkFlowFormCreation(props) {
     showAvailableForms = [],
     existMapping = [],
     form = props.formMapping.filter(
-      l =>
-        l.formType === props.formType &&
-        l[props.customUUID] === props.rowDetails.uuid &&
-        l.isVoided === false
+      formMapping =>
+        formMapping.formType === props.formType &&
+        formMapping[props.customUUID] === props.rowDetails.uuid &&
+        formMapping.isVoided === false
     );
 
   const [error, setError] = useState("");

@@ -1,18 +1,14 @@
 import React from "react";
 import { TextField } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import { isEmpty } from "lodash";
-import SubjectValidation from "../views/registration/SubjectValidation";
-import { makeStyles } from "@material-ui/core/styles";
+import { isEmpty, find } from "lodash";
 import { useTranslation } from "react-i18next";
-const useStyles = makeStyles(theme => ({
-  errmsg: {
-    color: "red"
-  }
-}));
 
-export default ({ formElement: fe, value, update }) => {
+export default ({ formElement: fe, value, update, validationResults, uuid }) => {
   const { t } = useTranslation();
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
   return (
     <div>
       <TextField
@@ -23,6 +19,8 @@ export default ({ formElement: fe, value, update }) => {
         name={fe.name}
         value={value}
         style={{ width: "30%" }}
+        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+        error={validationResult && !validationResult.success}
         onChange={e => {
           const v = e.target.value;
           isEmpty(v) ? update() : update(v);

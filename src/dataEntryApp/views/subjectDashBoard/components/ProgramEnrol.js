@@ -4,7 +4,11 @@ import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import { onLoad, updateProgramEnrolment } from "../../../reducers/programEnrolReducer";
+import {
+  onLoad,
+  updateProgramEnrolment,
+  setProgramEnrolment
+} from "../../../reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -13,8 +17,7 @@ import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
-import { TextField } from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+//import BrowserStore from "../../../api/browserStore";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,13 +36,18 @@ const useStyles = makeStyles(theme => ({
   },
   container: {
     display: "inline",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    fontSize: "13px"
   },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 200,
-    display: "inline"
+    display: "inline",
+    fontSize: "13px"
+  },
+  input: {
+    fontSize: "13px"
   }
 }));
 
@@ -48,9 +56,9 @@ const ProgramEnrol = ({
   onLoad,
   enrolForm,
   getSubjectProfile,
-  subjectProfile,
   programEnrolment,
   updateProgramEnrolment
+  //setProgramEnrolment
 }) => {
   const [value, setValue] = React.useState("Yes");
 
@@ -61,21 +69,17 @@ const ProgramEnrol = ({
   };
   const classes = useStyles();
 
-  if (programEnrolment && programEnrolment.enrolmentDateTime) {
-    const enrolmentDate = new Date(programEnrolment.enrolmentDateTime);
-
-    const enrolmentFullDate =
-      enrolmentDate.getFullYear() + "-" + enrolmentDate.getMonth() + "-" + enrolmentDate.getDate();
-
-    console.log("Enrolment date..");
-    console.log(
-      enrolmentDate.getFullYear() + "-" + enrolmentDate.getMonth() + "-" + enrolmentDate.getDate()
-    );
-  }
-
   useEffect(() => {
-    onLoad("Individual", match.queryParams.programName);
-    getSubjectProfile(match.queryParams.uuid);
+    //onLoad("Individual", match.queryParams.programName);
+    //getSubjectProfile(match.queryParams.uuid);
+
+    (async function fetchData() {
+      await onLoad("Individual", match.queryParams.programName);
+      getSubjectProfile(match.queryParams.uuid);
+
+      // let programEnrolment = BrowserStore.fetchProgramEnrolment();
+      // setProgramEnrolment(programEnrolment);
+    })();
   }, []);
 
   return (
@@ -88,63 +92,15 @@ const ProgramEnrol = ({
           </Typography>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
-              {/* <p
-                style={{
-                  padding: "9px",
-                  backgroundColor: "#F8F9F9",
-                  color: "gray",
-                  marginTop: "20px",
-                  fontSize: "12px"
-                }}
-              >
-                {subjectProfile ? (
-                  <span>
-                    Name:{" "}
-                    <span style={{ color: "black" }}>
-                      {subjectProfile.firstName} {subjectProfile.lastName}
-                    </span>{" "}
-                    &nbsp;&nbsp;|&nbsp;&nbsp; Age:{" "}
-                    <span style={{ color: "black" }}>
-                      {subjectProfile.getAge()._durationValue}{" "}
-                      {subjectProfile.getAge().durationUnit}
-                    </span>{" "}
-                    &nbsp;&nbsp;|&nbsp;&nbsp; Gender:{" "}
-                    <span style={{ color: "black" }}>{subjectProfile.gender.name}</span>{" "}
-                    &nbsp;&nbsp;|&nbsp;&nbsp; Village:{" "}
-                    <span style={{ color: "black" }}>{subjectProfile.lowestAddressLevel}</span>
-                  
-                    &nbsp;&nbsp;|&nbsp;&nbsp; Enrolment details:{" "}
-                    <span style={{ color: "black" }}>29-01-2020</span>
-                  </span>
-                ) : (
-                  ""
-                )}
-              </p> */}
               {enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
                 <ProgramEnrolmentForm>
-                  Enrolment Date :
-                  {/* <form className={classes.container} noValidate>
-                  <TextField
-                    id="date-picker-dialog"
-                    type="date"
-                    name="enrolmentDateTime"
-                    defaultValue={new Date(programEnrolment.enrolmentDateTime).getFullYear() + "-" + new Date(programEnrolment.enrolmentDateTime).getMonth() + "-" + new Date(programEnrolment.enrolmentDateTime).getDate()}
-                    className={classes.textField}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    onChange={date => {
-                      updateProgramEnrolment("enrolmentDateTime", new Date(date));
-                    }}
-                  />
-                </form> */}
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
-                      style={{ width: "13%" }}
+                      style={{ width: "30%" }}
+                      label="Enrolment Date"
                       margin="none"
                       size="small"
                       id="date-picker-dialog"
-                      variant="inline"
                       format="MM/dd/yyyy"
                       name="enrolmentDateTime"
                       value={new Date(programEnrolment.enrolmentDateTime)}
@@ -155,7 +111,6 @@ const ProgramEnrol = ({
                         "aria-label": "change date",
                         color: "primary"
                       }}
-                      keyboardIcon={<ExpandMoreIcon />}
                     />
                   </MuiPickersUtilsProvider>
                 </ProgramEnrolmentForm>
@@ -179,7 +134,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   onLoad,
   getSubjectProfile,
-  updateProgramEnrolment
+  updateProgramEnrolment,
+  setProgramEnrolment
 };
 
 export default withRouter(

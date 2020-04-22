@@ -1,30 +1,18 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _, { isEqual } from "lodash";
-import { withRouter, Redirect } from "react-router-dom";
+import { get, isEmpty, isEqual } from "lodash";
+import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
-import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
+import { findRegistrationForm } from "../domain/formMapping";
+import { useFormMappings } from "./effects";
 
 const SubjectTypesList = ({ history }) => {
-  const [formMapping, setMapping] = useState([]);
-  const [notificationAlert, setNotificationAlert] = useState(false);
-  const [message, setMessage] = useState("");
-  const [formList, setFormList] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
 
-  useEffect(() => {
-    http
-      .get("/web/operationalModules")
-      .then(response => {
-        const formMap = response.data.formMappings;
-        formMap.map(l => (l["isVoided"] = false));
-        setMapping(formMap);
-        setFormList(response.data.forms);
-      })
-      .catch(error => {});
-  }, []);
+  useFormMappings(setFormMappings);
 
   const columns = [
     {
@@ -38,22 +26,14 @@ const SubjectTypesList = ({ history }) => {
       field: "formName",
       sorting: false,
       render: rowData => (
-        <WorkFlowFormCreation
-          key={rowData.uuid}
-          rowDetails={rowData}
-          formMapping={formMapping}
-          setMapping={setMapping}
-          formList={formList}
-          formType="IndividualProfile"
-          placeholder="Select registration form"
-          customUUID="subjectTypeUUID"
-          fillFormName="Registration form"
-          notificationAlert={notificationAlert}
-          setNotificationAlert={setNotificationAlert}
-          message={message}
-          setMessage={setMessage}
-          redirectToWorkflow="subjectType"
-        />
+        <a
+          href={`#/appdesigner/forms/${get(
+            findRegistrationForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findRegistrationForm(formMappings, rowData), "formName")}
+        </a>
       )
     },
     { title: "Household", field: "household", type: "boolean" },
@@ -70,7 +50,7 @@ const SubjectTypesList = ({ history }) => {
       let apiUrl = "/web/subjectType?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.orderBy.field))
+      if (!isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .get(apiUrl)
@@ -127,6 +107,7 @@ const SubjectTypesList = ({ history }) => {
     </>
   );
 };
+
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
 }

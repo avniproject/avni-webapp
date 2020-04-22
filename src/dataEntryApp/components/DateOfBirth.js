@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { Box, TextField } from "@material-ui/core";
 import moment from "moment/moment";
+import _ from "lodash";
 import { LineBreak } from "../../../src/common/components/utils";
 import {
   MuiPickersUtilsProvider,
@@ -10,11 +11,11 @@ import {
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 
-export const DateOfBirth = ({ dateOfBirth, onChange }) => {
+export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
   const { t } = useTranslation();
-  const dob = (dateOfBirth && new Date(dateOfBirth).toISOString().substr(0, 10)) || null;
   const [years, setYears] = React.useState("");
   const [months, setMonths] = React.useState("");
+  const dob = (dateOfBirth && moment(dateOfBirth).isValid() && new Date(dateOfBirth)) || null;
 
   React.useEffect(() => {
     if (dateOfBirth) {
@@ -27,8 +28,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
   }, [dateOfBirth]);
 
   const _onChange = date => {
-    const date1 = new Date(date);
-    onChange(moment(date1).isValid() ? date1 : undefined);
+    onChange(date);
   };
 
   const _onYearsChange = value => {
@@ -46,6 +46,9 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
       <Box display="flex" flexDirection="column">
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
+            error={!_.isEmpty(dobErrorMsg)}
+            helperText={t(dobErrorMsg)}
+            required
             margin="normal"
             id="date-picker-dialog"
             autoComplete="off"
@@ -54,8 +57,8 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
             style={{ width: "30%" }}
             name="dateOfBirth"
             label={t("date of birth")}
-            value={dob}
-            onChange={date => _onChange(date)}
+            value={_.isNil(dateOfBirth) ? null : dateOfBirth}
+            onChange={date => onChange(date)}
             InputLabelProps={{
               shrink: true
             }}
@@ -70,9 +73,14 @@ export const DateOfBirth = ({ dateOfBirth, onChange }) => {
           label={t("age")}
           type={"numeric"}
           autoComplete="off"
-          name={"ageYearsPart"}
-          value={years}
+          required
+          name="ageYearsPart"
+          value={_.isNaN(years) ? "" : years}
           style={{ width: "30%" }}
+          // error={Boolean(_.isEmpty(dateOfBirth) && dobErrorMsg)}
+          // helperText={_.isEmpty(dateOfBirth) && t(dobErrorMsg)}
+          error={Boolean(_.isNil(dob) && dobErrorMsg)}
+          helperText={_.isNil(dob) && dobErrorMsg && t("emptyValidationMessage")}
           onChange={e => _onYearsChange(e.target.value)}
         />
       </Box>

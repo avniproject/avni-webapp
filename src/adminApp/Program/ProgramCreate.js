@@ -18,16 +18,22 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import _ from "lodash";
+import SelectForm from "../SubjectType/SelectForm";
+import { findProgramEnrolmentForms, findProgramExitForms } from "../domain/formMapping";
 
 const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [subjectValidation, setSubjectValidation] = useState(false);
+  const [programEnrolmentFormValidation, setProgramEnrolmentFormValidation] = useState(false);
+  const [programExitFormValidation, setProgramExitFormValidation] = useState(false);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
   const [subjectT, setSubjectT] = useState({});
   const [subjectType, setSubjectType] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
+  const [formList, setFormList] = useState([]);
 
   useEffect(() => {
     http
@@ -35,6 +41,8 @@ const ProgramCreate = props => {
       .then(response => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
+        setFormMappings(formMap);
+        setFormList(response.data.forms);
         setSubjectType(response.data.subjectTypes);
       })
       .catch(error => {});
@@ -42,59 +50,62 @@ const ProgramCreate = props => {
 
   const onSubmit = event => {
     event.preventDefault();
-    let programUUID = "";
+    let hasError = false;
 
-    if (program.name.trim() === "" || _.isEmpty(subjectT)) {
+    if (program.name.trim() === "") {
       setError("");
-      program.name.trim() === "" ? setNameValidation(true) : setNameValidation(false);
-      _.isEmpty(subjectT) ? setSubjectValidation(true) : setSubjectValidation(false);
-    } else {
-      setNameValidation(false);
-      var promise = new Promise((resolve, reject) => {
-        http
-          .post("/web/program", {
-            name: program.name,
-            colour: program.colour === "" ? "#ff0000" : program.colour,
-            programSubjectLabel: program.programSubjectLabel,
-            enrolmentSummaryRule: program.enrolmentSummaryRule,
-            enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule
-          })
-          .then(response => {
-            if (response.status === 200) {
-              setError("");
-              setAlert(true);
-              setId(response.data.id);
-              programUUID = response.data.uuid;
-
-              resolve("Promise resolved ");
-            }
-          })
-          .catch(error => {
-            setError(error.response.data.message);
-            reject(Error("Promise rejected"));
-          });
-      });
-      promise.then(
-        result => {
-          http
-            .post("/emptyFormMapping", [
-              {
-                uuid: UUID.v4(),
-                subjectTypeUUID: subjectT.uuid,
-                programUUID: programUUID,
-                isVoided: false
-              }
-            ])
-            .then(response => {})
-            .catch(error => {
-              console.log(error.response.data.message);
-            });
-        },
-        function(error) {
-          console.log(error);
-        }
-      );
+      setNameValidation(true);
+      hasError = true;
     }
+
+    if (_.isEmpty(subjectT)) {
+      setError("");
+      setSubjectValidation(true);
+      hasError = true;
+    }
+
+    if (_.isEmpty(program.programEnrolmentForm)) {
+      setProgramEnrolmentFormValidation(true);
+      console.log("value is empty");
+      hasError = true;
+    }
+
+    if (_.isEmpty(program.programExitForm)) {
+      setProgramExitFormValidation(true);
+      hasError = true;
+    }
+
+    if (hasError) {
+      return;
+    }
+
+    setNameValidation(false);
+    setSubjectValidation(false);
+    setProgramEnrolmentFormValidation(false);
+    setProgramExitFormValidation(false);
+
+    setNameValidation(false);
+    http
+      .post("/web/program", {
+        name: program.name,
+        colour: program.colour === "" ? "#ff0000" : program.colour,
+        programSubjectLabel: program.programSubjectLabel,
+        enrolmentSummaryRule: program.enrolmentSummaryRule,
+        subjectTypeUuid: subjectT.uuid,
+        programEnrolmentFormUuid: _.get(program, "programEnrolmentForm.formUUID"),
+        programExitFormUuid: _.get(program, "programExitForm.formUUID"),
+        enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule
+      })
+      .then(response => {
+        if (response.status === 200) {
+          setError("");
+          setAlert(true);
+          setId(response.data.id);
+        }
+      })
+      .catch(error => {
+        setError(error.response.data.message);
+      });
   };
 
   return (
@@ -169,6 +180,45 @@ const ProgramCreate = props => {
               }
             />
             <p />
+            <FormControl>
+              <SelectForm
+                label={"Select Enrolment form"}
+                value={_.get(program, "programEnrolmentForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "programEnrolmentForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={findProgramEnrolmentForms(formList)}
+              />
+            </FormControl>
+            {programEnrolmentFormValidation && (
+              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                Empty enrolment form is not allowed.
+              </FormLabel>
+            )}
+            <p />
+            <FormControl>
+              <SelectForm
+                label={"Select Exit form"}
+                value={_.get(program, "programExitForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "programExitForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={findProgramExitForms(formList)}
+              />
+            </FormControl>
+            {programExitFormValidation && (
+              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                Empty exit form is not allowed.
+              </FormLabel>
+            )}
+            <p />
+
             <FormLabel>Enrolment summary rule</FormLabel>
             <Editor
               value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}

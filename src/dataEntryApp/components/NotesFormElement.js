@@ -1,10 +1,14 @@
 import React from "react";
 import { TextField } from "@material-ui/core";
-import { isEmpty } from "lodash";
+import { isEmpty, find } from "lodash";
 import { useTranslation } from "react-i18next";
 
-export default ({ formElement: fe, value, update }) => {
+export default ({ formElement: fe, value, update, validationResults, uuid }) => {
   const { t } = useTranslation();
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   return (
     <TextField
@@ -16,6 +20,8 @@ export default ({ formElement: fe, value, update }) => {
       multiline
       fullWidth
       variant="outlined"
+      helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+      error={validationResult && !validationResult.success}
       onChange={e => {
         const v = e.target.value;
         isEmpty(v) ? update() : update(v);

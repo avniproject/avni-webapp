@@ -26,8 +26,8 @@ export const selectEnrolmentFormMapping = (subjectType, programUuid) => state =>
       (fm.subjectTypeUUID === subjectType.uuid &&
         fm.programUUID === programUuid &&
         fm.formType === "ProgramEnrolment")
-      //&&
-      //fm.formUUID === "23d8763d-4759-4c7d-bb46-d57a1ee58673"
+    //&&
+    //fm.formUUID === "23d8763d-4759-4c7d-bb46-d57a1ee58673"
   );
 
 //For retriving the program uuid from program name

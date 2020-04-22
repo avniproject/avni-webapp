@@ -12,7 +12,8 @@ import {
   setLoaded,
   setRegistrationForm,
   types as subjectTypes,
-  saveComplete
+  saveComplete,
+  setValidationResults
 } from "../reducers/registrationReducer";
 import SubjectService from "../services/SubjectService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
@@ -60,6 +61,7 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));
 
+  // if(!sessionStorage.getItem("programEnrolment")) {
   const program = yield select(selectProgram(programName));
 
   const state = yield select();
@@ -68,6 +70,8 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
 
   let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
   yield put.resolve(setProgramEnrolment(programEnrolment));
+
+  //}
 }
 
 function* dataEntrySearchWorker() {
@@ -92,9 +96,11 @@ export function* saveSubjectWatcher() {
 }
 
 export function* saveProgramEnrolmentWorker() {
-  debugger;
   const programEnrolment = yield select(selectEnrolmentSubject);
   let resource = programEnrolment.toResource;
+
+  //sessionStorage.removeItem("programEnrolment");
+
   yield call(api.saveProgram, resource);
   yield put(saveProgramComplete());
 }
@@ -120,13 +126,48 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
   yield put.resolve(setLoaded());
 }
 
+function validate(formElement, value, observations, validationResults) {
+  let isNullForMultiselect = false;
+  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
+    const observationHolder = new ObservationsHolder(observations);
+    const answers =
+      observationHolder.findObservation(formElement.concept) &&
+      observationHolder.findObservation(formElement.concept).getValue();
+
+    isNullForMultiselect = _.isNil(answers);
+  }
+
+  const validationResult = formElement.validate(isNullForMultiselect ? null : value);
+
+  _.remove(
+    validationResults,
+    existingValidationResult =>
+      existingValidationResult.formIdentifier === validationResult.formIdentifier
+  );
+
+  validationResults.push(validationResult);
+  return validationResults;
+}
+
+function* loadEditRegistrationPageWatcher() {
+  yield takeLatest(subjectTypes.ON_LOAD_EDIT, loadEditRegistrationPageWorker);
+}
+
+export function* loadEditRegistrationPageWorker({ subject }) {
+  yield put.resolve(getOperationalModules());
+  yield put.resolve(getRegistrationForm(subject.subjectType.name));
+  yield put.resolve(getGenders());
+  yield put.resolve(setSubject(subject));
+  yield put.resolve(setLoaded());
+}
+
 /*
 Takes observations and returns updated observations. It do not modify the passed parameters.
  */
 function updateObservations(observations, formElement, value) {
   const observationHolder = new ObservationsHolder(observations);
   if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-    observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
+    const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
   } else if (
     formElement.concept.datatype === Concept.dataType.Coded &&
     formElement.isSingleSelect()
@@ -155,9 +196,12 @@ function* updateObsWatcher() {
 
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
-  console.log(subject.observations);
+  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
   subject.observations = updateObservations(subject.observations, formElement, value);
   yield put(setSubject(subject));
+  yield put(
+    setValidationResults(validate(formElement, value, subject.observations, validationResults))
+  );
   sessionStorage.setItem("subject", JSON.stringify(subject));
 }
 
@@ -168,13 +212,21 @@ function* updateEnrolmentObsWatcher() {
 export function* updateEnrolmentObsWorker({ formElement, value }) {
   const state = yield select();
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
+  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
   console.log("Program Enrolment Observations", programEnrolment.observations);
   programEnrolment.observations = updateObservations(
     programEnrolment.observations,
     formElement,
     value
   );
+
+  //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
   yield put(setProgramEnrolment(programEnrolment));
+  yield put(
+    setValidationResults(
+      validate(formElement, value, programEnrolment.observations, validationResults)
+    )
+  );
 }
 
 export default function* subjectSaga() {
@@ -187,7 +239,8 @@ export default function* subjectSaga() {
       loadRegistrationPageWatcher,
       saveProgramEnrolmentWatcher,
       updateObsWatcher,
-      updateEnrolmentObsWatcher
+      updateEnrolmentObsWatcher,
+      loadEditRegistrationPageWatcher
     ].map(fork)
   );
 }

@@ -10,6 +10,10 @@ export function programReducer(program, action) {
       return { ...program, enrolmentSummaryRule: action.payload };
     case "enrolmentEligibilityCheckRule":
       return { ...program, enrolmentEligibilityCheckRule: action.payload };
+    case "programEnrolmentForm":
+      return { ...program, programEnrolmentForm: action.payload };
+    case "programExitForm":
+      return { ...program, programExitForm: action.payload };
     case "setData":
       return {
         ...program,
@@ -30,6 +34,10 @@ export function encounterTypeReducer(encounterType, action) {
       return { ...encounterType, name: action.payload };
     case "encounterEligibilityCheckRule":
       return { ...encounterType, encounterEligibilityCheckRule: action.payload };
+    case "programEncounterForm":
+      return { ...encounterType, programEncounterForm: action.payload };
+    case "programEncounterCancellationForm":
+      return { ...encounterType, programEncounterCancellationForm: action.payload };
     case "setData":
       return {
         ...encounterType,
@@ -56,14 +64,16 @@ export function subjectTypeReducer(subjectType, action) {
       };
     case "groupRole":
       return { ...subjectType, groupRoles: action.payload };
-
+    case "registrationForm":
+      return { ...subjectType, registrationForm: action.payload };
     case "setData":
       return {
         ...subjectType,
         name: action.payload.name,
         group: action.payload.group,
         household: action.payload.household,
-        groupRoles: action.payload.groupRoles
+        groupRoles: action.payload.groupRoles,
+        uuid: action.payload.uuid
       };
     default:
       return subjectType;

@@ -1,10 +1,14 @@
 import React, { Fragment } from "react";
 import { TextField } from "@material-ui/core";
-import { isNaN, isEmpty } from "lodash";
+import { isNaN, isEmpty, find } from "lodash";
 import { useTranslation } from "react-i18next";
 
-export default ({ formElement: fe, value, update }) => {
+export default ({ formElement: fe, value, update, validationResults, uuid }) => {
   const { t } = useTranslation();
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   return (
     <Fragment>
@@ -14,11 +18,13 @@ export default ({ formElement: fe, value, update }) => {
         autoComplete="off"
         required={fe.mandatory}
         name={fe.name}
-        value={value}
+        value={isNaN(parseInt(value)) ? undefined : value}
         style={{ width: "30%" }}
+        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+        error={validationResult && !validationResult.success}
         onChange={e => {
           const v = e.target.value;
-          isEmpty(v) || isNaN(+v) ? update() : update(+v);
+          isEmpty(v) ? update(null) : update(parseInt(v));
         }}
       />
     </Fragment>

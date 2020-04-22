@@ -13,15 +13,11 @@ import { useTranslation } from "react-i18next";
 import DialogContent from "@material-ui/core/DialogContent";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
 import Modal from "./CommonModal";
-import programs from "./programsJson";
 import { getPrograms } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { withParams, InternalLink } from "common/components/utils";
-
+import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 
 const useStyles = makeStyles(theme => ({
@@ -116,7 +112,6 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
   };
 
   const { t } = useTranslation();
-  console.log("programs coming from api", programs);
 
   useEffect(() => {
     getPrograms(subjectUuid);
@@ -129,20 +124,6 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           <InputLabel shrink id="demo-simple-select-placeholder-label-label">
             Program
           </InputLabel>
-          {/* <Select
-            labelId="demo-simple-select-placeholder-label-label"
-            id="demo-simple-select-placeholder-label"
-            value={age}
-            onChange={handleChange}
-            displayEmpty
-            className={classes.selectEmpty}
-          >
-            {programs
-              ? programs.map((element, index) => (
-                  <MenuItem value={element.uuid}>{element.name}</MenuItem>
-                ))
-              : ""}
-          </Select> */}
 
           <NativeSelect
             value={selectedProgram}
@@ -201,7 +182,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                     `${t("year")}`}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                  {profileDetails.lowestAddressLevel}
+                  {profileDetails.lowestAddressLevel.name}
                 </TableCell>
               </TableRow>
             </TableBody>

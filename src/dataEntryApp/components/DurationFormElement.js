@@ -1,9 +1,10 @@
 import React, { Fragment, useState } from "react";
 import { TextField, FormLabel, FormControl } from "@material-ui/core";
-import { isEmpty } from "lodash";
+import _, { isEmpty, find } from "lodash";
 import { CompositeDuration } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
+import { __esModule } from "react-router-dom/cjs/react-router-dom.min";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -14,9 +15,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DurationFormElement = ({ duration, mandatory, name, update }) => {
+const DurationFormElement = ({ duration, mandatory, name, update, validationResult }) => {
   const [localVal, setLocalVal] = useState((duration && duration.durationValue) || "");
+
   const { t } = useTranslation();
+
   return (
     <Fragment>
       <TextField
@@ -25,6 +28,12 @@ const DurationFormElement = ({ duration, mandatory, name, update }) => {
         name={name}
         type="number"
         value={localVal}
+        helperText={
+          validationResult &&
+          duration.isEmpty &&
+          t(validationResult.messageKey, validationResult.extra)
+        }
+        error={validationResult && !validationResult.success && duration.isEmpty}
         onChange={e => {
           const value = e.target.value;
           isEmpty(value) ? setLocalVal("") : setLocalVal(value);
@@ -35,11 +44,23 @@ const DurationFormElement = ({ duration, mandatory, name, update }) => {
   );
 };
 
-const CompositeDurationFormElement = ({ formElement: fe, value, update }) => {
+const CompositeDurationFormElement = ({
+  formElement: fe,
+  value,
+  update,
+  validationResults,
+  uuid
+}) => {
   const compositeDuration = value
     ? CompositeDuration.fromObs(value)
     : CompositeDuration.fromOpts(fe.durationOptions);
   const classes = useStyles();
+
+  const { t } = useTranslation();
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   return (
     <FormControl>
@@ -52,6 +73,7 @@ const CompositeDurationFormElement = ({ formElement: fe, value, update }) => {
               mandatory={fe.mandatory}
               name={fe.name + index}
               duration={compositeDuration.findByUnit(durationUnit)}
+              validationResult={validationResult}
               update={val => {
                 isEmpty(val)
                   ? update(compositeDuration.changeValueByUnit(durationUnit, ""))

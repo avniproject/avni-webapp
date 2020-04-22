@@ -15,6 +15,11 @@ import { subjectTypeReducer } from "../Reducers";
 import Switch from "@material-ui/core/Switch";
 import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { useFormMappings } from "./effects";
+import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
+import { default as UUID } from "uuid";
+import _ from "lodash";
+import SelectForm from "./SelectForm";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -24,6 +29,16 @@ const SubjectTypeEdit = props => {
   const [redirectShow, setRedirectShow] = useState(false);
   const [subjectTypeData, setSubjectTypeData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
+  const [formList, setFormList] = useState([]);
+  const [formMappings, setFormMappings] = useState([]);
+  const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(false);
+
+  const consumeFormMappingResult = (formMap, forms) => {
+    setFormMappings(formMap);
+    setFormList(forms);
+  };
+
+  useFormMappings(consumeFormMappingResult);
 
   useEffect(() => {
     http
@@ -40,8 +55,17 @@ const SubjectTypeEdit = props => {
     if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
-    } else {
-      setNameValidation(false);
+      return;
+    }
+
+    if (_.isEmpty(subjectType.registrationForm)) {
+      setError("Please select registration form");
+      return;
+    }
+
+    setNameValidation(false);
+    let subjectTypeUuid;
+    let subjectTypeSavePromise = () =>
       http
         .put("/web/subjectType/" + props.match.params.id, {
           name: subjectType.name,
@@ -55,6 +79,7 @@ const SubjectTypeEdit = props => {
         })
         .then(response => {
           if (response.status === 200) {
+            subjectTypeUuid = response.data.uuid;
             setError("");
             setRedirectShow(true);
           }
@@ -62,7 +87,17 @@ const SubjectTypeEdit = props => {
         .catch(error => {
           setError(error.response.data.message);
         });
-    }
+    const formMappingPromise = () =>
+      http.post("/emptyFormMapping", [
+        {
+          uuid: UUID.v4(),
+          subjectTypeUUID: subjectTypeUuid,
+          formUUID: subjectType.registrationForm.formUUID,
+          isVoided: false
+        }
+      ]);
+
+    return subjectTypeSavePromise().then(formMappingPromise);
   };
 
   const onDelete = () => {
@@ -75,6 +110,17 @@ const SubjectTypeEdit = props => {
       })
       .catch(error => {});
   };
+
+  if (
+    !_.isEmpty(formMappings) &&
+    !_.isEmpty(subjectType.uuid) &&
+    !firstTimeFormValueToggle &&
+    _.isEmpty(subjectType.registrationForm)
+  ) {
+    setFirstTimeFormValueToggle(true);
+    let payload = findRegistrationForm(formMappings, subjectType);
+    dispatch({ type: "registrationForm", payload: payload });
+  }
 
   return (
     <>
@@ -105,6 +151,21 @@ const SubjectTypeEdit = props => {
             </Grid>
           </Grid>
           <p />
+          <Grid component="label" container alignItems="center" spacing={2}>
+            <Grid>Registration form name</Grid>
+            <Grid>
+              <SelectForm
+                value={_.get(subjectType, "registrationForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "registrationForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={findRegistrationForms(formList)}
+              />
+            </Grid>
+          </Grid>
           <Grid component="label" container alignItems="center" spacing={2}>
             <Grid>Group</Grid>
             <Grid>
