@@ -202,8 +202,8 @@ const GroupPrivileges = ({
       const [response_data, error] = response;
       if (!response_data && error) {
         alert(error);
-        getGroupPrivilegeList(groupId);
       }
+      getGroupPrivilegeList(groupId);
     });
   };
 
