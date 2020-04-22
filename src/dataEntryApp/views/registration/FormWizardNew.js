@@ -97,7 +97,8 @@ const FormWizardNew = ({
   onLoad,
   setSubject,
   children,
-  isForRegistration
+  staticPage,
+  staticPageTitle
 }) => {
   const classes = useStyle();
 
@@ -111,9 +112,11 @@ const FormWizardNew = ({
     .getFormElementGroups()
     .filter(feg => !isEmpty(feg.nonVoidedFormElements()));
 
-  const totalNumberOfPages = formElementGroups.length;
+  const totalNumberOfPages = staticPage ? formElementGroups.length + 1 : formElementGroups.length;
   const isOnSummaryPage = currentPageNumber > totalNumberOfPages;
-  const currentFormElementGroup = isOnSummaryPage ? null : formElementGroups[currentPageNumber - 1];
+  const isOnStaticPage = currentPageNumber === 1 && staticPage;
+  const currentFormElementGroup =
+    isOnSummaryPage || isOnStaticPage ? null : formElementGroups[currentPageNumber - 1];
 
   const pageDetails = {
     nextPageNumber: currentPageNumber + 1,
@@ -131,8 +134,8 @@ const FormWizardNew = ({
 
   const pageTitle = isOnSummaryPage
     ? t("summaryAndRecommendations")
-    : `${isForRegistration ? currentPageNumber + 1 : currentPageNumber}. ${t(
-        currentFormElementGroup.name
+    : `${currentPageNumber}. ${t(
+        isOnStaticPage ? staticPageTitle : currentFormElementGroup.name
       )} `;
 
   return (
@@ -151,11 +154,12 @@ const FormWizardNew = ({
               label={{ Previous: "previous", Next: "next", Save: "save", type: "text" }}
               showCount={true}
               count={totalNumberOfPages}
-              isForRegistration={isForRegistration}
             />
           </Box>
           <Paper className={classes.form}>
-            {isOnSummaryPage ? (
+            {staticPage ? (
+              staticPage
+            ) : isOnSummaryPage ? (
               <Summary observations={observations} />
             ) : (
               <FormElementGroup
@@ -184,7 +188,6 @@ const FormWizardNew = ({
                 onSave={onSave}
                 label={{ Previous: "previous", Next: "next", Save: "save" }}
                 showCount={false}
-                isForRegistration={isForRegistration}
               />
             </div>
           </Paper>
