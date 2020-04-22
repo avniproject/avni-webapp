@@ -1,5 +1,5 @@
 package org.openchs.web.request.webapp;
-import org.openchs.web.request.webapp.FormMappingRequest;
+
 import java.util.List;
 
 public class CreateUpdateFormRequest {
@@ -27,10 +27,6 @@ public class CreateUpdateFormRequest {
     public List<FormMappingRequest> getFormMappings()
     {
       return formMappings;
-    }
-
-    public FormMappingRequest getFormMappingByIndex(int index){
-        return formMappings.get(index);
     }
 
     public void setFormMappings(List<FormMappingRequest> formMapping){
