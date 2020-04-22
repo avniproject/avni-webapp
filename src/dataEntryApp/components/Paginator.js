@@ -30,12 +30,14 @@ const Paginator = ({ pageDetails, label, showCount, onSave, isForRegistration })
   return (
     <Box justifyContent={"space-start"} flexDirection={"row"} display={"flex"}>
       <Box component={"span"} style={styles.marginRight20}>
-        {pageDetails.previousPageNumber && (
+        {pageDetails.previousPageNumber ? (
           <PaginationButton
             page={pageDetails.previousPageNumber}
             type={label.type}
             title={t(label.Previous)}
           />
+        ) : (
+          ""
         )}
 
         {/* {props.pageDetails.previousPageNumber && (

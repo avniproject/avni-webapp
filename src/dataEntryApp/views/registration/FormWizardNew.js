@@ -56,28 +56,34 @@ const Header = ({ subject, children }) => {
   const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
   return (
     <div className={classes.details}>
-      <Typography variant="caption" gutterBottom>
-        {t("name")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {fullName}
-        </Typography>{" "}
-        | {t("age")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {dateOfBirth}
-        </Typography>{" "}
-        | {t("gender")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {gender}
-        </Typography>{" "}
-        | {t("Village")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {lowestAddressLevel}
-        </Typography>
-        {/* <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+      {subject.firstName ? (
+        <>
+          <Typography variant="caption" gutterBottom>
+            {t("name")}:{" "}
+            <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+              {fullName}
+            </Typography>{" "}
+            | {t("age")}:{" "}
+            <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+              {dateOfBirth}
+            </Typography>{" "}
+            | {t("gender")}:{" "}
+            <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+              {gender}
+            </Typography>{" "}
+            | {t("Village")}:{" "}
+            <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+              {lowestAddressLevel}
+            </Typography>
+            {/* <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
           {children}
         </Typography> */}
-      </Typography>
-      <LineBreak num={2} />
+          </Typography>
+          <LineBreak num={2} />
+        </>
+      ) : (
+        "No details"
+      )}
     </div>
   );
 };
@@ -157,7 +163,7 @@ const FormWizardNew = ({
             />
           </Box>
           <Paper className={classes.form}>
-            {staticPage ? (
+            {isOnStaticPage ? (
               staticPage
             ) : isOnSummaryPage ? (
               <Summary observations={observations} />
