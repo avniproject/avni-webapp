@@ -63,7 +63,8 @@ class FormDetails extends Component {
       defaultSnackbarStatus: true,
       detectBrowserCloseEvent: false,
       nameError: false,
-      redirectToWorkflow: false
+      redirectToWorkflow: false,
+      availableDataTypes: []
     };
     this.btnGroupClick = this.btnGroupClick.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
@@ -75,7 +76,7 @@ class FormDetails extends Component {
     this.handleModeForDate = this.handleModeForDate.bind(this);
     this.handleRegex = this.handleRegex.bind(this);
     this.validateForm = this.validateForm.bind(this);
-    console.log("PROPS:::" + JSON.stringify(this.props));
+    this.handleConceptFormLibrary = this.handleConceptFormLibrary.bind(this);
   }
 
   onUpdateFormName = name => {
@@ -100,6 +101,17 @@ class FormDetails extends Component {
 
   componentDidMount() {
     this.setupBeforeUnloadListener();
+    http
+      .get("/concept/dataTypes")
+      .then(response => {
+        this.setState({
+          availableDataTypes: response.data
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
     http.get(`/web/identifierSource`).then(response => {
       const identifierSources = [];
       if (response.data["_embedded"]) {
@@ -136,6 +148,7 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
+            fe.showConceptLibrary = "chooseFromLibrary";
             //             if (fe["rule"]) {
             //               let ruleExtraction = fe["rule"];
             //               ruleExtraction = ruleExtraction.replace(
@@ -383,7 +396,9 @@ class FormDetails extends Component {
           handleExcludedAnswers: this.handleExcludedAnswers,
           updateSkipLogicRule: this.updateSkipLogicRule,
           handleModeForDate: this.handleModeForDate,
-          handleRegex: this.handleRegex
+          handleRegex: this.handleRegex,
+          handleConceptFormLibrary: this.handleConceptFormLibrary,
+          onSaveInlineConcept: this.onSaveInlineConcept
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -405,6 +420,14 @@ class FormDetails extends Component {
           }
         );
         draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
+  handleConceptFormLibrary = (index, value, elementIndex) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex].showConceptLibrary = value;
       })
     );
   };
@@ -488,7 +511,12 @@ class FormDetails extends Component {
           voided: false,
           expanded: true,
           concept: { name: "", dataType: "" },
-          errorMessage: { name: false, concept: false, type: false }
+          errorMessage: { name: false, concept: false, type: false },
+          inlineConceptErrorMessage: { name: "", dataType: "", inlineConceptError: "" },
+          showConceptLibrary: "",
+          availableDataTypes: this.state.availableDataTypes,
+          inlineConceptName: "",
+          inlineConceptDataType: ""
         };
         if (elementIndex === -1) {
           form.formElementGroups.splice(index + 1, 0, {
@@ -712,6 +740,73 @@ class FormDetails extends Component {
         draft.detectBrowserCloseEvent = true;
       })
     );
+  };
+
+  onSaveInlineConcept = (groupIndex, elementIndex) => {
+    let clonedForm = cloneDeep(this.state.form);
+    const inlineConceptObject = {
+      name:
+        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex].inlineConceptName,
+      uuid: UUID.v4(),
+      dataType:
+        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex]
+          .inlineConceptDataType
+    };
+    if (inlineConceptObject.dataType !== "" && inlineConceptObject.name.trim() !== "") {
+      clonedForm["formElementGroups"][groupIndex]["formElements"][
+        elementIndex
+      ].inlineConceptErrorMessage["name"] = "";
+      clonedForm["formElementGroups"][groupIndex]["formElements"][
+        elementIndex
+      ].inlineConceptErrorMessage["dataType"] = "";
+      clonedForm["formElementGroups"][groupIndex]["formElements"][
+        elementIndex
+      ].inlineConceptErrorMessage["inlineConceptError"] = "";
+
+      http
+        .post("/concepts", [inlineConceptObject])
+        .then(response => {
+          if (response.status === 200) {
+            clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+              "concept"
+            ].name = inlineConceptObject.name;
+            clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex]["concept"][
+              "uuid"
+            ] = inlineConceptObject.uuid;
+            clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+              "concept"
+            ].dataType = inlineConceptObject.dataType;
+
+            clonedForm["formElementGroups"][groupIndex]["formElements"][
+              elementIndex
+            ].showConceptLibrary = "chooseFromLibrary";
+
+            this.setState({
+              form: clonedForm
+            });
+          }
+        })
+        .catch(error => {
+          clonedForm["formElementGroups"][groupIndex]["formElements"][
+            elementIndex
+          ].inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
+          this.setState({
+            form: clonedForm
+          });
+        });
+    } else {
+      clonedForm["formElementGroups"][groupIndex]["formElements"][
+        elementIndex
+      ].inlineConceptErrorMessage["name"] =
+        inlineConceptObject.name.trim() === "" ? "concept name is required" : "";
+      clonedForm["formElementGroups"][groupIndex]["formElements"][
+        elementIndex
+      ].inlineConceptErrorMessage["dataType"] =
+        inlineConceptObject.dataType === "" ? "concept datatype is required" : "";
+      this.setState({
+        form: clonedForm
+      });
+    }
   };
 
   onToggleExpandPanel = name => {

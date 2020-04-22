@@ -154,7 +154,10 @@ function FormElementGroup(props) {
           handleExcludedAnswers: props.handleExcludedAnswers,
           updateSkipLogicRule: props.updateSkipLogicRule,
           handleModeForDate: props.handleModeForDate,
-          handleRegex: props.handleRegex
+          handleRegex: props.handleRegex,
+          handleConceptFormLibrary: props.handleConceptFormLibrary,
+          availableDataTypes: props.availableDataTypes,
+          onSaveInlineConcept: props.onSaveInlineConcept
         };
         formElements.push(
           <Draggable
