@@ -1,6 +1,7 @@
 package org.openchs.service;
 
 import org.openchs.application.Form;
+import org.openchs.application.FormType;
 import org.openchs.builder.FormBuilder;
 import org.openchs.builder.FormBuilderException;
 import org.openchs.dao.application.FormRepository;
@@ -32,5 +33,19 @@ public class FormService {
                 .withChecklistRule(formRequest.getChecklistsRule())
                 .build();
         formRepository.save(form);
+    }
+
+    public Form getOrCreateForm(String formUuid, String formName, FormType formType) {
+        Form form = formRepository.findByUuid(formUuid);
+        if (form != null) {
+            return form;
+        }
+
+        form = Form.create();
+        form.setName(formName);
+        form.assignUUID();
+        form.setFormType(formType);
+        formRepository.save(form);
+        return form;
     }
 }

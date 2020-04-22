@@ -24,6 +24,7 @@ public class SubjectTypeContractWeb {
     private DateTime lastModifiedDateTime;
     private String uuid;
     private List<GroupRoleContract> groupRoles;
+    private String registrationFormUuid;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -145,5 +146,13 @@ public class SubjectTypeContractWeb {
 
     public void setModifiedDateTime(DateTime lastModifiedDateTime) {
         this.lastModifiedDateTime = lastModifiedDateTime;
+    }
+
+    public String getRegistrationFormUuid() {
+        return registrationFormUuid;
+    }
+
+    public void setRegistrationFormUuid(String registrationFormUuid) {
+        this.registrationFormUuid = registrationFormUuid;
     }
 }

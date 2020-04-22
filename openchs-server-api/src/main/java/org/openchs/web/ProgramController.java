@@ -5,13 +5,12 @@ import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
 import org.openchs.dao.*;
 import org.openchs.dao.application.FormMappingRepository;
-import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
+import org.openchs.service.FormService;
 import org.openchs.service.ProgramService;
 import org.openchs.util.ApiException;
 import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ProgramRequest;
-import org.openchs.web.request.webapp.EncounterTypeContractWeb;
 import org.openchs.web.request.webapp.ProgramContractWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,18 +36,24 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     private ProgramService programService;
     private final IndividualRepository individualRepository;
     private FormMappingRepository formMappingRepository;
-    private FormRepository formRepository;
     private SubjectTypeRepository subjectTypeRepository;
+    private FormService formService;
 
     @Autowired
-    public ProgramController(ProgramRepository programRepository, OperationalProgramRepository operationalProgramRepository, ProgramService programService, IndividualRepository individualRepository, FormMappingRepository formMappingRepository, FormRepository formRepository, SubjectTypeRepository subjectTypeRepository) {
+    public ProgramController(ProgramRepository programRepository,
+                             OperationalProgramRepository operationalProgramRepository,
+                             ProgramService programService,
+                             IndividualRepository individualRepository,
+                             FormMappingRepository formMappingRepository,
+                             SubjectTypeRepository subjectTypeRepository,
+                             FormService formService) {
         this.programRepository = programRepository;
         this.operationalProgramRepository = operationalProgramRepository;
         this.programService = programService;
         this.individualRepository = individualRepository;
         this.formMappingRepository = formMappingRepository;
-        this.formRepository = formRepository;
         this.subjectTypeRepository = subjectTypeRepository;
+        this.formService = formService;
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -85,15 +90,25 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         operationalProgram.setProgram(program);
         operationalProgramRepository.save(operationalProgram);
 
-        saveFormMapping(request, program,
-                request.getProgramEnrolmentFormUuid(), FormType.ProgramEnrolment,
-                formRepository.findByUuid(request.getProgramEnrolmentFormUuid()));
-
-        saveFormMapping(request, program,
-                request.getProgramExitFormUuid(), FormType.ProgramExit,
-                formRepository.findByUuid(request.getProgramExitFormUuid()));
+        saveFormsAndMapping(request, program);
 
         return ResponseEntity.ok(ProgramContractWeb.fromOperationalProgram(operationalProgram));
+    }
+
+    private void saveFormsAndMapping(@RequestBody ProgramContractWeb request, Program program) {
+        Form enrolmentForm = formService.getOrCreateForm(request.getProgramEnrolmentFormUuid(),
+                String.format("%s Encounter", program.getName()),
+                FormType.ProgramEnrolment);
+        saveFormMapping(request, program,
+                FormType.ProgramEnrolment,
+                enrolmentForm);
+
+        Form exitForm = formService.getOrCreateForm(request.getProgramExitFormUuid(),
+                String.format("%s Exit", program.getName()),
+                FormType.ProgramExit);
+        saveFormMapping(request, program,
+                FormType.ProgramExit,
+                exitForm);
     }
 
     @PutMapping(value = "/web/program/{id}")
@@ -124,24 +139,14 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         operationalProgram.setName(request.getName());
         operationalProgramRepository.save(operationalProgram);
 
-        saveFormMapping(request, program,
-                request.getProgramEnrolmentFormUuid(), FormType.ProgramEnrolment,
-                formRepository.findByUuid(request.getProgramEnrolmentFormUuid()));
-
-        saveFormMapping(request, program,
-                request.getProgramExitFormUuid(), FormType.ProgramExit,
-                formRepository.findByUuid(request.getProgramExitFormUuid()));
+        saveFormsAndMapping(request, program);
 
         return ResponseEntity.ok(ProgramContractWeb.fromOperationalProgram(operationalProgram));
     }
 
-    private void saveFormMapping(ProgramContractWeb request, Program program, String formUuid, FormType formType, Form form) {
+    private void saveFormMapping(ProgramContractWeb request, Program program, FormType formType, Form form) {
         FormMapping formMappingForProgramEncounter;
-        if (formUuid != null && !formUuid.isEmpty()) {
-            formMappingForProgramEncounter = getOrCreateFormMapping(formType, program, request.getSubjectTypeUuid());
-        } else {
-            formMappingForProgramEncounter = createFormMapping();
-        }
+        formMappingForProgramEncounter = getOrCreateFormMapping(formType, program, request.getSubjectTypeUuid());
 
         formMappingForProgramEncounter.setSubjectType(subjectTypeRepository.findByUuid(request.getSubjectTypeUuid()));
         formMappingForProgramEncounter.setProgram(program);
@@ -204,7 +209,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         if (individual == null) throw new ApiException("Subject %s not found", subjectUuid);
         List<Program> eligiblePrograms = programService.getEligiblePrograms(individual);
         List<OperationalProgram> operationalPrograms = new ArrayList<>();
-        for (Program p: eligiblePrograms) {
+        for (Program p : eligiblePrograms) {
             operationalPrograms.addAll(p.getOperationalPrograms());
         }
         return operationalPrograms.stream()
