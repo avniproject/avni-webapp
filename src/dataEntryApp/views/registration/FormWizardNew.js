@@ -122,7 +122,9 @@ const FormWizardNew = ({
   const isOnSummaryPage = currentPageNumber > totalNumberOfPages;
   const isOnStaticPage = currentPageNumber === 1 && staticPage;
   const currentFormElementGroup =
-    isOnSummaryPage || isOnStaticPage ? null : formElementGroups[currentPageNumber - 1];
+    isOnSummaryPage || isOnStaticPage
+      ? null
+      : formElementGroups[currentPageNumber - +!!staticPage - 1];
 
   const pageDetails = {
     nextPageNumber: currentPageNumber + 1,

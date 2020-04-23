@@ -13,6 +13,17 @@ const useStyles = makeStyles(theme => ({
     padding: "4px 25px",
     backgroundColor: "white"
   },
+  privbuttonDisabledStyle: {
+    color: "#B3B6B7",
+    width: 110,
+    height: 30,
+    fontSize: 12,
+    borderColor: "#B3B6B7",
+    cursor: "pointer",
+    "border-radius": 50,
+    padding: "4px 25px",
+    backgroundColor: "#F8F9F9"
+  },
   nextbuttonStyle: {
     backgroundColor: "orange",
     color: "white",
@@ -38,6 +49,11 @@ const useStyles = makeStyles(theme => ({
     color: "orange",
     fontSize: "12px",
     cursor: "pointer"
+  },
+  topnavDisable: {
+    color: "gray",
+    fontSize: "12px",
+    cursor: "pointer"
   }
 }));
 
@@ -45,14 +61,23 @@ export default ({ children, ...props }) => {
   const classes = useStyles();
   if (props.type === "text") {
     return (
-      <Typography className={classes.topnav} variant="overline" {...props}>
+      <Typography
+        className={props.isDisable ? classes.topnavDisable : classes.topnav}
+        variant="overline"
+        {...props}
+      >
         {" "}
         {children}{" "}
       </Typography>
     );
   } else if (children === "PREVIOUS") {
     return (
-      <Button className={classes.privbuttonStyle} type="button" variant="outlined" {...props}>
+      <Button
+        className={props.isDisable ? classes.privbuttonDisabledStyle : classes.privbuttonStyle}
+        type="button"
+        variant="outlined"
+        {...props}
+      >
         {children}{" "}
       </Button>
     );

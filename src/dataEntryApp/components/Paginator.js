@@ -40,11 +40,13 @@ const Paginator = ({ pageDetails, label, showCount, onSave, isForRegistration })
           ""
         )}
 
-        {/* {props.pageDetails.previousPageNumber && (
-          <InternalLink to={props.pageDetails.from} params={{ page: "" }} noUnderline>
-            <PagenatorButton type={props.label.type}>{t(props.label.Previous)}</PagenatorButton>
+        {!pageDetails.previousPageNumber && (
+          <InternalLink to={pageDetails.from} params={{ page: "" }} noUnderline>
+            <PagenatorButton type={label.type} isDisable={true}>
+              {t(label.Previous)}
+            </PagenatorButton>
           </InternalLink>
-        )} */}
+        )}
       </Box>
 
       {showCount && !pageDetails.isOnSummaryPage && (
