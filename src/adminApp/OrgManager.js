@@ -58,6 +58,7 @@ import {
 import { ROLES } from "../common/constants";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
+import Footer from "../common/components/Footer";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -93,32 +94,7 @@ class OrgManager extends Component {
         {!isEmpty(httpClient.getOrgId()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
           ? this.renderOrgAdminResources(user, organisation, csvUploadToggle, uiDesignerToggle)
           : this.renderAdminResources(user)}
-        <div
-          style={{
-            position: "fixed",
-            right: 0,
-            bottom: 0,
-            left: 0,
-            zIndex: 100,
-            padding: 6,
-            backgroundColor: "#2196f3",
-            textAlign: "center"
-          }}
-        >
-          <div style={{ color: "white" }}>
-            This app is in beta. Please share your feedback by clicking{" "}
-            <Link
-              component="button"
-              variant="body2"
-              onClick={() => {
-                window.open("https://forms.gle/65q4DkxbS4onroys9", "_blank");
-              }}
-              style={{ color: "black", fontSize: 18 }}
-            >
-              here
-            </Link>
-          </div>
-        </div>
+        <Footer />
       </React.Fragment>
     );
   }

@@ -10,7 +10,6 @@ import SubjectTypesList from "./SubjectType/SubjectTypesList";
 import ProgramList from "./Program/ProgramList";
 import EncounterTypeList from "./EncounterType/EncounterTypeList";
 import { WithProps } from "../common/components/utils";
-import Link from "@material-ui/core/Link";
 import customRoutes from "./customRoutes";
 import AdminLayout from "../common/components/AdminLayout";
 import Forms from "../formDesigner/views/Forms";
@@ -19,6 +18,7 @@ import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import FormSettings from "../formDesigner/components/FormSettings";
 import customFilters from "./CustomFilters";
 import { WorklistUpdationRule } from "./WorklistUpdationRule";
+import Footer from "../common/components/Footer";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -93,32 +93,7 @@ class OrgManagerAppDesigner extends Component {
             list={uiDesignerToggle && WorklistUpdationRule}
           />
         </Admin>
-        <div
-          style={{
-            position: "fixed",
-            right: 0,
-            bottom: 0,
-            left: 0,
-            zIndex: 100,
-            padding: 6,
-            backgroundColor: "#2196f3",
-            textAlign: "center"
-          }}
-        >
-          <div style={{ color: "white" }}>
-            This app is in beta. Please share your feedback by clicking{" "}
-            <Link
-              component="button"
-              variant="body2"
-              onClick={() => {
-                window.open("https://forms.gle/65q4DkxbS4onroys9", "_blank");
-              }}
-              style={{ color: "black", fontSize: 18 }}
-            >
-              here
-            </Link>
-          </div>
-        </div>
+        <Footer />
       </React.Fragment>
     );
   }
