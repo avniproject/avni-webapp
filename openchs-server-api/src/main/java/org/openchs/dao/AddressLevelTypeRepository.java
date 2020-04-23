@@ -23,5 +23,5 @@ public interface AddressLevelTypeRepository extends ReferenceDataRepository<Addr
     List<String> getAllNames();
 
     @Query("select st from AddressLevelType st where id not in (select distinct parent from AddressLevelType d where d.parent is not null)")
-    List<AddressLevelType> getAllLowestAddressLevel();
+    List<AddressLevelType> getAllLowestAddressLevelTypes();
 }

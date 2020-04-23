@@ -52,7 +52,7 @@ public class OperationalModulesController {
                 .stream()
                 .map(FormMappingContract::fromFormMapping)
                 .collect(Collectors.toList());
-        List<AddressLevelTypeContract> addressLevelTypeContracts = addressLevelTypeRepository.getAllLowestAddressLevel()
+        List<AddressLevelTypeContract> addressLevelTypeContracts = addressLevelTypeRepository.getAllLowestAddressLevelTypes()
                 .stream()
                 .map(AddressLevelTypeContract::fromAddressLevelType)
                 .collect(Collectors.toList());
