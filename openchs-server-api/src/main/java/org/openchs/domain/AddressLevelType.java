@@ -2,6 +2,8 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.BatchSize;
+import org.openchs.application.projections.BaseProjection;
+import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import java.util.HashSet;
