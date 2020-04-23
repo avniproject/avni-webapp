@@ -52,8 +52,7 @@ const useStyles = makeStyles(theme => ({
   },
   topnavDisable: {
     color: "gray",
-    fontSize: "12px",
-    cursor: "pointer"
+    fontSize: "12px"
   }
 }));
 
@@ -77,6 +76,7 @@ export default ({ children, ...props }) => {
         type="button"
         variant="outlined"
         {...props}
+        disabled={props.isDisable}
       >
         {children}{" "}
       </Button>
