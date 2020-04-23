@@ -25,7 +25,7 @@ import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import FormWizardNew from "./FormWizardNew";
+import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 import { disableSession } from "common/constants";
@@ -262,11 +262,7 @@ const mapFormDispatchToProps = {
 
 const FormWizardWrapped = props => {
   return (
-    <FormWizardNew
-      {...props}
-      staticPage={<ConnectedDefaultPage />}
-      staticPageTitle="Basic Details"
-    />
+    <FormWizard {...props} staticPage={<ConnectedDefaultPage />} staticPageTitle="Basic Details" />
   );
 };
 

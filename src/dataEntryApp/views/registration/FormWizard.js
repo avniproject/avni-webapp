@@ -1,13 +1,13 @@
 import React, { Fragment } from "react";
-import { isNaN } from "lodash";
+import { isEmpty } from "lodash";
 import { withParams } from "../../../common/components/utils";
 import Paginator from "../../components/Paginator";
 import { withRouter, Redirect } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import { LineBreak } from "../../../common/components/utils";
 import moment from "moment/moment";
-import Form from "../../components/Form";
 import Summary from "./Summary";
+import { FormElementGroup } from "../../components/FormElementGroup";
 import { Box, Typography, Paper } from "@material-ui/core";
 import CustomizedDialog from "../../components/Dialog";
 import { useTranslation } from "react-i18next";
@@ -55,28 +55,34 @@ const Header = ({ subject, children }) => {
   const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
   return (
     <div className={classes.details}>
-      <Typography variant="caption" gutterBottom>
-        {t("name")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {fullName}
-        </Typography>{" "}
-        | {t("age")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {dateOfBirth}
-        </Typography>{" "}
-        | {t("gender")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {gender}
-        </Typography>{" "}
-        | {t("Village")}:{" "}
-        <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
-          {lowestAddressLevel}
-        </Typography>
-        {/* <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+      {subject.firstName ? (
+        <>
+          <Typography variant="caption" gutterBottom>
+            {t("name")}:{" "}
+            <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+              {fullName}
+            </Typography>{" "}
+            | {t("age")}:{" "}
+            <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+              {dateOfBirth}
+            </Typography>{" "}
+            | {t("gender")}:{" "}
+            <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+              {gender}
+            </Typography>{" "}
+            | {t("Village")}:{" "}
+            <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
+              {lowestAddressLevel}
+            </Typography>
+            {/* <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
           {children}
         </Typography> */}
-      </Typography>
-      <LineBreak num={2} />
+          </Typography>
+          <LineBreak num={2} />
+        </>
+      ) : (
+        "No details"
+      )}
     </div>
   );
 };
@@ -95,7 +101,9 @@ const FormWizard = ({
   subject,
   onLoad,
   setSubject,
-  children
+  children,
+  staticPage,
+  staticPageTitle
 }) => {
   const classes = useStyle();
 
@@ -104,43 +112,38 @@ const FormWizard = ({
   const [redirect, setRedirect] = React.useState(false);
 
   const from = match.queryParams.from;
+  const currentPageNumber = match.queryParams.page ? parseInt(match.queryParams.page) : 1;
+  const formElementGroups = form
+    .getFormElementGroups()
+    .filter(feg => !isEmpty(feg.nonVoidedFormElements()));
 
-  const firstPageNumber =
-    form && form.firstFormElementGroup && form.firstFormElementGroup.displayOrder;
-  const lastPageNumber = form && form.getLastFormElementElementGroup().displayOrder;
-  const page =
-    parseInt(match.queryParams.page) === parseInt(lastPageNumber)
-      ? parseInt(match.queryParams.page)
-      : parseInt(+match.queryParams.page);
-
-  const currentPageNumber = isNaN(page) ? firstPageNumber : page;
-
-  const showSummaryPage = page >= lastPageNumber + 1;
+  const totalNumberOfPages = staticPage ? formElementGroups.length + 1 : formElementGroups.length;
+  const isOnSummaryPage = currentPageNumber > totalNumberOfPages;
+  const isOnStaticPage = currentPageNumber === 1 && staticPage;
+  const currentFormElementGroup =
+    isOnSummaryPage || isOnStaticPage
+      ? null
+      : formElementGroups[currentPageNumber - +!!staticPage - 1];
 
   const pageDetails = {
-    nextPageNumber: showSummaryPage
-      ? null
-      : form && form.getNextFormElement(currentPageNumber) !== undefined
-      ? form.getNextFormElement(currentPageNumber).displayOrder
-      : currentPageNumber + 1,
-    previousPageNumber:
-      currentPageNumber === firstPageNumber
-        ? null
-        : showSummaryPage
-        ? form && form.getPrevFormElement(currentPageNumber - 1).displayOrder
-        : form && form.getPrevFormElement(currentPageNumber).displayOrder,
-    location,
-    from
+    nextPageNumber: currentPageNumber + 1,
+    previousPageNumber: currentPageNumber - 1,
+    currentPageNumber: currentPageNumber,
+    totalNumberOfPages: totalNumberOfPages,
+    isOnSummaryPage: isOnSummaryPage,
+    from: from
   };
 
-  const current = showSummaryPage
-    ? { name: `${t("Summary and Recommendations")}` }
-    : form && form.formElementGroupAt(currentPageNumber);
-  const pageCount = currentPageNumber + " / " + (lastPageNumber + 1);
   const onOkHandler = data => {
     BrowserStore.clear("subject");
     setRedirect(data);
   };
+
+  const pageTitle = isOnSummaryPage
+    ? t("summaryAndRecommendations")
+    : `${currentPageNumber}. ${t(
+        isOnStaticPage ? staticPageTitle : currentFormElementGroup.name
+      )} `;
 
   return (
     <Fragment>
@@ -150,26 +153,30 @@ const FormWizard = ({
           <Box display="flex" flexDirection={"row"} flexWrap="wrap" justifyContent="space-between">
             <Typography variant="subtitle1" gutterBottom>
               {" "}
-              {currentPageNumber}. {t(current.name)}{" "}
+              {pageTitle}
             </Typography>
             <Paginator
               pageDetails={pageDetails}
               onSave={onSave}
               label={{ Previous: "previous", Next: "next", Save: "save", type: "text" }}
               showCount={true}
-              count={pageCount}
+              count={totalNumberOfPages}
             />
           </Box>
           <Paper className={classes.form}>
-            {currentPageNumber >= lastPageNumber + 1 ? (
+            {isOnStaticPage ? (
+              staticPage
+            ) : isOnSummaryPage ? (
               <Summary observations={observations} />
             ) : (
-              <Form
-                current={current}
+              <FormElementGroup
+                parentChildren={children}
+                key={currentFormElementGroup.uuid}
                 obsHolder={obsHolder}
-                children={children}
                 updateObs={updateObs}
-              />
+              >
+                {currentFormElementGroup}
+              </FormElementGroup>
             )}
 
             {saved && (

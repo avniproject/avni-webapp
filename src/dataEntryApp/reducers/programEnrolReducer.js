@@ -9,7 +9,8 @@ export const types = {
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
   SAVE_PROGRAM_COMPLETE: `${prefix}SAVE_PROGRAM_COMPLETE`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
-  UPDATE_PROGRAM_ENROLMENT: `${prefix}UPDATE_PROGRAM_ENROLMENT`
+  UPDATE_PROGRAM_ENROLMENT: `${prefix}UPDATE_PROGRAM_ENROLMENT`,
+  SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`
 };
 
 export const setProgramEnrolment = programEnrolment => ({
@@ -52,6 +53,10 @@ export const updateProgramEnrolment = (field, value) => ({
   value
 });
 
+export const setInitialState = () => ({
+  type: types.SET_INITIAL_STATE
+});
+
 const initialState = {
   saved: false
 };
@@ -63,6 +68,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         enrolForm: action.form
+      };
+    }
+    case types.SET_INITIAL_STATE: {
+      return {
+        ...state,
+        saved: false
       };
     }
     case types.SAVE_PROGRAM_COMPLETE: {

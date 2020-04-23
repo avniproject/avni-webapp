@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import FormWizardNew from "dataEntryApp/views/registration/FormWizardNew";
+import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import { ObservationsHolder, Individual, SubjectType } from "avni-models";
 import { updateObs, saveProgramEnrolment } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
@@ -27,7 +27,7 @@ const ProgramEnrolmentForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
-  )(FormWizardNew)
+  )(FormWizard)
 );
 
 export default ProgramEnrolmentForm;
