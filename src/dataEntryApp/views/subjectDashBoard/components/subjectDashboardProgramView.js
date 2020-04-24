@@ -17,6 +17,7 @@ import { onLoad } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
+import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -111,7 +112,16 @@ const ProgramView = ({ programData, onLoad }) => {
         <Grid item xs={6}>
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
           <SubjectButton btnLabel={t("vaccinations")} />
-          <SubjectButton btnLabel={t("newProgramVisit")} btnClick={getVisits} />
+          {/* <SubjectButton btnLabel={t("newProgramVisit")} btnClick={getVisits} /> */}
+
+          <InternalLink
+            noUnderline
+            to={`/app/subject/newProgramVisit?operationalProgramName=${
+              programData.program.operationalProgramName
+            }`}
+          >
+            <SubjectButton btnLabel={t("newProgramVisit")}> {t("newProgramVisit")} </SubjectButton>
+          </InternalLink>
         </Grid>
       </Grid>
       <Paper className={classes.root}>
