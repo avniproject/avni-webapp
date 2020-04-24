@@ -13,6 +13,10 @@ import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
+import { onLoad } from "../../../reducers/programReducer";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { withParams } from "common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -81,13 +85,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({ programData }) => {
+const ProgramView = ({ programData, onLoad }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [expandedPanel, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+
+  const getVisits = () => {
+    console.log("on click of newProgramEncounter");
+    console.log(onLoad);
+    onLoad("9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3", "fdf5c253-c49f-43e1-9591-4556a3ea36d4");
   };
 
   return (
@@ -101,7 +111,7 @@ const ProgramView = ({ programData }) => {
         <Grid item xs={6}>
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
           <SubjectButton btnLabel={t("vaccinations")} />
-          <SubjectButton btnLabel={t("newProgramVisit")} />
+          <SubjectButton btnLabel={t("newProgramVisit")} btnClick={getVisits} />
         </Grid>
       </Grid>
       <Paper className={classes.root}>
@@ -202,4 +212,18 @@ const ProgramView = ({ programData }) => {
   );
 };
 
-export default ProgramView;
+// export default ProgramView;
+const mapStateToProps = state => ({
+  //programs: state.dataEntry.programs ? state.dataEntry.programs.programs : ""
+});
+const mapDispatchToProps = {
+  onLoad
+};
+export default withRouter(
+  withParams(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(ProgramView)
+  )
+);

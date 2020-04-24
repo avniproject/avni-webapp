@@ -1,9 +1,10 @@
-import { all, call, fork, put, takeLatest } from "redux-saga/effects";
+import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import { types, setPrograms } from "../reducers/programReducer";
 import api from "../api";
+import { selectProgramEncounterFormMappingForSubjectType } from "./programEncounterSelector";
 
 export default function*() {
-  yield all([programFetchWatcher].map(fork));
+  yield all([programFetchWatcher, programEncounterOnLoadWatcher].map(fork));
 }
 
 export function* programFetchWatcher() {
@@ -13,4 +14,21 @@ export function* programFetchWatcher() {
 export function* programFetchWorker({ subjectUuid }) {
   const programs = yield call(api.fetchPrograms, subjectUuid);
   yield put(setPrograms(programs));
+}
+
+export function* programEncounterOnLoadWatcher() {
+  yield takeLatest(types.ON_LOAD, setupNewProgramEncounterWorker);
+}
+
+function* programEncounterOnLoadWatcher() {
+  yield takeLatest(types.ON_LOAD, setupNewProgramEncounterWorker);
+}
+
+function* setupNewProgramEncounterWorker({ subjectTypeUuid, programUuid }) {
+  console.log("inside program saga ...");
+  // const formMapping = yield select(
+  //   selectProgramEncounterFormMappingForSubjectType(subjectTypeUuid, programUuid)
+  // );
+  console.log("Printing FM");
+  // console.log(formMapping);
 }
