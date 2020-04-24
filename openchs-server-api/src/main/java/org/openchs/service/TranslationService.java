@@ -5,6 +5,7 @@ import org.openchs.dao.PlatformTranslationRepository;
 import org.openchs.dao.TranslationRepository;
 import org.openchs.domain.*;
 import org.openchs.domain.Locale;
+import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,14 @@ public class TranslationService {
         this.platformTranslationRepository = platformTranslationRepository;
     }
 
-    public Map<String, Map<String, JsonObject>> createTransactionAndPlatformTransaction(OrganisationConfig organisationConfig, String locale) throws IOException {
+    public Map<String, Map<String, JsonObject>> createTransactionAndPlatformTransaction(String locale) throws IOException {
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        
         Map<String, Map<String, JsonObject>> responseObject = new HashMap<>();
+        if(organisation == null) 
+            return responseObject;
+        
+        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisation.getId());
         if (organisationConfig != null && organisationConfig.getSettings() != null) {
             List<String> languages = (ArrayList<String>) organisationConfig.getSettings().get("languages");
             List<String> localeLanguages = new ArrayList<>();
