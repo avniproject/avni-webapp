@@ -146,6 +146,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 .withUUID(UUID.randomUUID().toString())
                 .build();
         formRepository.save(form);
+        if (request.getFormMappings().size() > 0) {
+            formMappingService.createOrUpdateFormMapping(request, form);
+        }
         return ResponseEntity.ok(form);
     }
 
@@ -184,6 +187,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         form.setName(request.getName());
         form.setFormType(FormType.valueOf(request.getFormType()));
         formRepository.save(form);
+        if (request.getFormMappings().size() > 0) {
+            formMappingService.createOrUpdateFormMapping(request, form);
+        }
         return ResponseEntity.ok(null);
     }
 
