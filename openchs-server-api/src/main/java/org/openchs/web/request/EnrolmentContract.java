@@ -14,6 +14,8 @@ public class EnrolmentContract extends ReferenceDataContract{
 
     private DateTime programExitDateTime;
 
+    private String programUuid;
+
     private Set<ProgramEncountersContract> programEncounters = new HashSet<>();
 
     private List<ObservationContract> observations = new ArrayList<>();
@@ -22,7 +24,15 @@ public class EnrolmentContract extends ReferenceDataContract{
         return exitObservations;
     }
 
-    public void setExitObservations(List<ObservationContract> exitObservations) {
+    public String getProgramUuid() {
+		return programUuid;
+	}
+
+	public void setProgramUuid(String programUuid) {
+		this.programUuid = programUuid;
+	}
+
+	public void setExitObservations(List<ObservationContract> exitObservations) {
         this.exitObservations = exitObservations;
     }
 

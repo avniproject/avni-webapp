@@ -20,20 +20,15 @@ import java.util.Map;
 public class WebTranslationController {
 
     private final TranslationService translationService;
-    private final OrganisationConfigRepository organisationConfigRepository;
-
     @Autowired
-    WebTranslationController(TranslationService translationService, OrganisationConfigRepository organisationConfigRepository) {
+    WebTranslationController(TranslationService translationService) {
         this.translationService = translationService;
-        this.organisationConfigRepository = organisationConfigRepository;
     }
 
     @RequestMapping(value = "/web/translations", method = RequestMethod.GET)
     public ResponseEntity<?> translationInfo(@RequestParam(value = "locale",required = false) String locale) throws IOException {
-        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisation.getId());
 
-        Map<String, Map<String, JsonObject>> translationLanguage = translationService.createTransactionAndPlatformTransaction(organisationConfig, locale);
+        Map<String, Map<String, JsonObject>> translationLanguage = translationService.createTransactionAndPlatformTransaction(locale);
         if (translationLanguage == null) {
             return ResponseEntity.notFound().build();
         }

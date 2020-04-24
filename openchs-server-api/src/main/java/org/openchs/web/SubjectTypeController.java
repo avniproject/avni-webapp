@@ -5,6 +5,7 @@ import org.openchs.dao.GroupRoleRepository;
 import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.GroupRole;
+import org.openchs.domain.Individual;
 import org.openchs.domain.OperationalSubjectType;
 import org.openchs.domain.SubjectType;
 import org.openchs.service.FormMappingParameterObject;
@@ -218,11 +219,14 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
     }
 
     private void createRole(SubjectType groupSubjectType, SubjectType memberSubjectType, String role, Long maxMembers) {
-        GroupRole groupRole = new GroupRole();
+        GroupRole groupRole = groupRoleRepository.findByRoleAndGroupSubjectTypeUuid(role, groupSubjectType.getUuid());
+        if (groupRole == null) {
+            groupRole = new GroupRole();
+        }
         groupRole.setGroupSubjectType(groupSubjectType);
         groupRole.setMemberSubjectType(memberSubjectType);
         groupRole.setRole(role);
-        groupRole.setUuid(UUID.randomUUID().toString());
+        groupRole.assignUUIDIfRequired();
         groupRole.setMaximumNumberOfMembers(maxMembers);
         groupRole.setMinimumNumberOfMembers(1L);
         groupRoleRepository.save(groupRole);
