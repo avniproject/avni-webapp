@@ -58,4 +58,4 @@ export const localeChoices = [
 
 export const withoutDataEntry = false;
 
-export const disableSession = true;
+export const disableSession = false;

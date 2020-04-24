@@ -29,11 +29,6 @@ import {
 const EncounterTypeEdit = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
-  const [programEncounterFormValidation, setProgramEncounterFormValidation] = useState(false);
-  const [
-    programEncounterCancellationFormValidation,
-    setProgramEncounterCancellationFormValidation
-  ] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [encounterTypeData, setEncounterTypeData] = useState({});
@@ -100,25 +95,12 @@ const EncounterTypeEdit = props => {
       hasError = true;
     }
 
-    if (_.isEmpty(encounterType.programEncounterForm)) {
-      setProgramEncounterFormValidation(true);
-      console.log("value is empty");
-      hasError = true;
-    }
-
-    if (_.isEmpty(encounterType.programEncounterCancellationForm)) {
-      setProgramEncounterCancellationFormValidation(true);
-      hasError = true;
-    }
-
     if (hasError) {
       return;
     }
 
     setNameValidation(false);
     setSubjectValidation(false);
-    setProgramEncounterFormValidation(false);
-    setProgramEncounterCancellationFormValidation(false);
 
     http
       .put("/web/encounterType/" + props.match.params.id, {
@@ -143,14 +125,16 @@ const EncounterTypeEdit = props => {
   };
 
   const onDelete = () => {
-    http
-      .delete("/web/encounterType/" + props.match.params.id)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteAlert(true);
-        }
-      })
-      .catch(error => {});
+    if (window.confirm("Do you really want to delete encounter type?")) {
+      http
+        .delete("/web/encounterType/" + props.match.params.id)
+        .then(response => {
+          if (response.status === 200) {
+            setDeleteAlert(true);
+          }
+        })
+        .catch(error => {});
+    }
   };
 
   return (
@@ -239,11 +223,6 @@ const EncounterTypeEdit = props => {
               formList={findProgramEncounterForms(formList)}
             />
           </FormControl>
-          {programEncounterFormValidation && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              Empty encounter form is not allowed.
-            </FormLabel>
-          )}
           <p />
           <FormControl>
             <SelectForm
@@ -258,11 +237,6 @@ const EncounterTypeEdit = props => {
               formList={findProgramEncounterCancellationForms(formList)}
             />
           </FormControl>
-          {programEncounterCancellationFormValidation && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              Empty encounter cancellation form is not allowed.
-            </FormLabel>
-          )}
           <p />
           <FormLabel>Enrolment eligibility check rule</FormLabel>
           <Editor

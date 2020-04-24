@@ -58,11 +58,6 @@ const SubjectTypeEdit = props => {
       return;
     }
 
-    if (_.isEmpty(subjectType.registrationForm)) {
-      setError("Please select registration form");
-      return;
-    }
-
     setNameValidation(false);
     let subjectTypeUuid;
     let subjectTypeSavePromise = () =>
@@ -75,7 +70,8 @@ const SubjectTypeEdit = props => {
           voided: subjectTypeData.voided,
           group: subjectType.group,
           household: subjectType.household,
-          groupRoles: subjectType.groupRoles
+          groupRoles: subjectType.groupRoles,
+          registrationFormUuid: _.get(subjectType, "registrationForm.formUUID")
         })
         .then(response => {
           if (response.status === 200) {
@@ -87,28 +83,21 @@ const SubjectTypeEdit = props => {
         .catch(error => {
           setError(error.response.data.message);
         });
-    const formMappingPromise = () =>
-      http.post("/emptyFormMapping", [
-        {
-          uuid: UUID.v4(),
-          subjectTypeUUID: subjectTypeUuid,
-          formUUID: subjectType.registrationForm.formUUID,
-          isVoided: false
-        }
-      ]);
 
-    return subjectTypeSavePromise().then(formMappingPromise);
+    return subjectTypeSavePromise();
   };
 
   const onDelete = () => {
-    http
-      .delete("/web/subjectType/" + props.match.params.id)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteAlert(true);
-        }
-      })
-      .catch(error => {});
+    if (window.confirm("Do you really want to delete subject type?")) {
+      http
+        .delete("/web/subjectType/" + props.match.params.id)
+        .then(response => {
+          if (response.status === 200) {
+            setDeleteAlert(true);
+          }
+        })
+        .catch(error => {});
+    }
   };
 
   if (
@@ -144,6 +133,7 @@ const SubjectTypeEdit = props => {
             <Grid>Household</Grid>
             <Grid>
               <Switch
+                color={"primary"}
                 checked={subjectType.household}
                 onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
                 name="household"
@@ -151,21 +141,16 @@ const SubjectTypeEdit = props => {
             </Grid>
           </Grid>
           <p />
-          <Grid component="label" container alignItems="center" spacing={2}>
-            <Grid>Registration form name</Grid>
-            <Grid>
-              <SelectForm
-                value={_.get(subjectType, "registrationForm.formName")}
-                onChange={selectedForm =>
-                  dispatch({
-                    type: "registrationForm",
-                    payload: selectedForm
-                  })
-                }
-                formList={findRegistrationForms(formList)}
-              />
-            </Grid>
-          </Grid>
+          <SelectForm
+            value={_.get(subjectType, "registrationForm.formName")}
+            onChange={selectedForm =>
+              dispatch({
+                type: "registrationForm",
+                payload: selectedForm
+              })
+            }
+            formList={findRegistrationForms(formList)}
+          />
           <Grid component="label" container alignItems="center" spacing={2}>
             <Grid>Group</Grid>
             <Grid>

@@ -37,8 +37,6 @@ const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
   const [subjectValidation, setSubjectValidation] = useState(false);
-  const [programEnrolmentFormValidation, setProgramEnrolmentFormValidation] = useState(false);
-  const [programExitFormValidation, setProgramExitFormValidation] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [programData, setProgramData] = useState({});
@@ -95,25 +93,12 @@ const ProgramEdit = props => {
       hasError = true;
     }
 
-    if (_.isEmpty(program.programEnrolmentForm)) {
-      setProgramEnrolmentFormValidation(true);
-      console.log("value is empty");
-      hasError = true;
-    }
-
-    if (_.isEmpty(program.programExitForm)) {
-      setProgramExitFormValidation(true);
-      hasError = true;
-    }
-
     if (hasError) {
       return;
     }
 
     setNameValidation(false);
     setSubjectValidation(false);
-    setProgramEnrolmentFormValidation(false);
-    setProgramExitFormValidation(false);
 
     http
       .put("/web/program/" + props.match.params.id, {
@@ -140,14 +125,16 @@ const ProgramEdit = props => {
   };
 
   const onDelete = () => {
-    http
-      .delete("/web/program/" + props.match.params.id)
-      .then(response => {
-        if (response.status === 200) {
-          setDeleteAlert(true);
-        }
-      })
-      .catch(error => {});
+    if (window.confirm("Do you really want to delete program?")) {
+      http
+        .delete("/web/program/" + props.match.params.id)
+        .then(response => {
+          if (response.status === 200) {
+            setDeleteAlert(true);
+          }
+        })
+        .catch(error => {});
+    }
   };
 
   return (
@@ -237,11 +224,6 @@ const ProgramEdit = props => {
               formList={findProgramEnrolmentForms(formList)}
             />
           </FormControl>
-          {programEnrolmentFormValidation && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              Empty enrolment form is not allowed.
-            </FormLabel>
-          )}
           <p />
           <FormControl>
             <SelectForm
@@ -256,11 +238,6 @@ const ProgramEdit = props => {
               formList={findProgramExitForms(formList)}
             />
           </FormControl>
-          {programExitFormValidation && (
-            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-              Empty exit form is not allowed.
-            </FormLabel>
-          )}
           <p />
           <FormLabel>Enrolment summary rule</FormLabel>
           <Editor

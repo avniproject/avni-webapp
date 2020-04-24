@@ -10,20 +10,28 @@ import {
   TextInput,
   ReferenceField,
   SelectInput,
-  ChipField,
   FormDataConsumer,
   ReferenceInput,
   REDUX_FORM_NAME
 } from "react-admin";
 import React, { Fragment } from "react";
+import Chip from "@material-ui/core/Chip";
+import { FormLabel } from "@material-ui/core";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import Typography from "@material-ui/core/Typography";
 
-const sourceType = [
-  { id: "userBasedIdentifierGenerator", name: "userBasedIdentifierGenerator" },
-  { id: "userPoolBasedIdentifierGenerator", name: "userPoolBasedIdentifierGenerator" }
-];
+const sourceType = {
+  userBasedIdentifierGenerator: {
+    id: "userBasedIdentifierGenerator",
+    name: "User based identifier generator"
+  },
+  userPoolBasedIdentifierGenerator: {
+    id: "userPoolBasedIdentifierGenerator",
+    name: "User pool based identifier generator"
+  }
+};
+
 const operatingScopes = Object.freeze({
   NONE: "None",
   FACILITY: "ByFacility",
@@ -39,11 +47,25 @@ const Title = ({ record }) => {
   );
 };
 
+const ShowSourceType = props => {
+  return (
+    <>
+      {" "}
+      {props.showSourceTypeLabel && (
+        <>
+          <FormLabel style={{ fontSize: "12px" }}>Type</FormLabel> <br />
+        </>
+      )}
+      <Chip label={sourceType[props.record.type].name} />
+    </>
+  );
+};
+
 export const IdentifierSourceList = props => (
   <List {...props} bulkActions={false} title={"Identifier Source"}>
     <Datagrid rowClick="show">
       <TextField source="name" />
-      <ChipField source="type" />
+      <ShowSourceType source="type" showSourceTypeLabel={false} />
       <TextField source="batchGenerationSize" />
       <TextField source="minLength" />
       <TextField source="maxLength" />
@@ -59,7 +81,7 @@ export const IdentifierSourceDetail = props => {
     <Show title={<Title />} {...props}>
       <SimpleShowLayout>
         <TextField source="name" />
-        <ChipField source="type" />
+        <ShowSourceType source="type" showSourceTypeLabel={true} />
         <TextField source="batchGenerationSize" />
         <TextField source="minLength" />
         <TextField source="maxLength" />
@@ -76,7 +98,7 @@ export const IdentifierSourceEdit = props => {
     <Edit undoable={false} title="Edit identifier source" {...props}>
       <SimpleForm redirect="show">
         <TextInput source="name" required />
-        <SelectInput source="type" choices={sourceType} required />
+        <SelectInput source="type" choices={Object.values(sourceType)} required />
         <FormDataConsumer>
           {({ formData, dispatch, ...rest }) =>
             !formData.orgAdmin && (
@@ -122,7 +144,7 @@ export const IdentifierSourceCreate = props => {
     <Create title="Add a new Identifier Source" {...props}>
       <SimpleForm redirect="show">
         <TextInput source="name" required />
-        <SelectInput source="type" choices={sourceType} required />
+        <SelectInput source="type" choices={Object.values(sourceType)} required />
         <FormDataConsumer>
           {({ formData, dispatch, ...rest }) =>
             !formData.orgAdmin && (

@@ -2,9 +2,7 @@ import React from "react";
 import Autosuggest from "react-autosuggest";
 import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
-import SubjectValidation from "../views/registration/SubjectValidation";
 
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {

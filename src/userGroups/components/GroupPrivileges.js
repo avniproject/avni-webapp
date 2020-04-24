@@ -43,10 +43,10 @@ const GroupPrivileges = ({
     let checkedState = new Map();
 
     groupPrivilegeList.forEach(privilegeListItem => {
-      checkedState.set(privilegeListItem.tableData.id, { checkedState: privilegeListItem.allow });
+      checkedState.set(privilegeListItem.uuid, { checkedState: privilegeListItem.allow });
       switch (privilegeListItem.privilegeId) {
         case 1: // View subject
-          dependencies.set(privilegeListItem.tableData.id, {
+          dependencies.set(privilegeListItem.uuid, {
             dependencies: []
           });
           break;
@@ -59,20 +59,20 @@ const GroupPrivileges = ({
         case 16: // Add member
         case 17: // Edit member
         case 18: // Remove member
-          dependencies.set(privilegeListItem.tableData.id, {
+          dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
                   privilege.privilegeId === 1 &&
                   privilege.subjectTypeId === privilegeListItem.subjectTypeId
               )
-              .map(filteredPrivileges => filteredPrivileges.tableData.id)
+              .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
         case 5: // Enrol subject
         case 7: // Edit enrolment details
         case 8: // Exit enrolment
-          dependencies.set(privilegeListItem.tableData.id, {
+          dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
@@ -82,14 +82,14 @@ const GroupPrivileges = ({
                   (privilege.privilegeId === 1 &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
-              .map(filteredPrivileges => filteredPrivileges.tableData.id)
+              .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
         case 10: // Schedule visit
         case 11: // Perform visit
         case 12: // Edit visit
         case 13: // Cancel visit
-          dependencies.set(privilegeListItem.tableData.id, {
+          dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
@@ -101,11 +101,11 @@ const GroupPrivileges = ({
                   (privilege.privilegeId === 1 &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
-              .map(filteredPrivileges => filteredPrivileges.tableData.id)
+              .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
         case 15: // Edit checklist
-          dependencies.set(privilegeListItem.tableData.id, {
+          dependencies.set(privilegeListItem.uuid, {
             dependencies: groupPrivilegeList
               .filter(
                 privilege =>
@@ -115,7 +115,7 @@ const GroupPrivileges = ({
                   (privilege.privilegeId === 1 &&
                     privilege.subjectTypeId === privilegeListItem.subjectTypeId)
               )
-              .map(filteredPrivileges => filteredPrivileges.tableData.id)
+              .map(filteredPrivileges => filteredPrivileges.uuid)
           });
           break;
         default:
@@ -141,18 +141,22 @@ const GroupPrivileges = ({
 
   const onTogglePermissionClick = (event, rowData) => {
     let isAllow = event.target.checked;
-    let indexesToBeUpdated;
+    let deps;
 
     if (isAllow) {
-      indexesToBeUpdated = privilegeDependencies.get(rowData.tableData.id).dependencies || [];
+      deps = privilegeDependencies.get(rowData.uuid).dependencies || [];
     } else {
-      indexesToBeUpdated = privilegeDependencies.get(rowData.tableData.id).dependents || [];
+      deps = privilegeDependencies.get(rowData.uuid).dependents || [];
     }
 
-    indexesToBeUpdated.push(rowData.tableData.id);
+    let privilegeUuidsToBeUpdated = deps.filter(
+      uuid => privilegesCheckedState.get(uuid).checkedState !== isAllow
+    );
+
+    privilegeUuidsToBeUpdated.push(rowData.uuid);
 
     let toggleCheckedStateMap = new Map();
-    indexesToBeUpdated.forEach(index => {
+    privilegeUuidsToBeUpdated.forEach(index => {
       toggleCheckedStateMap.set(index, {
         checkedState: isAllow
       });
@@ -160,7 +164,34 @@ const GroupPrivileges = ({
 
     setPrivilegesCheckedState(new Map([...privilegesCheckedState, ...toggleCheckedStateMap]));
 
-    modifyGroupPrivileges(indexesToBeUpdated, isAllow);
+    modifyGroupPrivileges(privilegeUuidsToBeUpdated, isAllow);
+  };
+
+  const modifyGroupPrivileges = (privilegeUuidsToBeUpdated, isAllow) => {
+    let privilegesToBeUpdated = groupPrivilegeList.filter(groupPrivilege =>
+      privilegeUuidsToBeUpdated.includes(groupPrivilege.uuid)
+    );
+
+    let request_body = privilegesToBeUpdated.map(privilege => ({
+      groupPrivilegeId: privilege.groupPrivilegeId,
+      groupId: privilege.groupId,
+      privilegeId: privilege.privilegeId,
+      subjectTypeId: privilege.subjectTypeId,
+      programId: privilege.programId,
+      programEncounterTypeId: privilege.programEncounterTypeId,
+      encounterTypeId: privilege.encounterTypeId,
+      checklistDetailId: privilege.checklistDetailId,
+      allow: isAllow,
+      uuid: privilege.uuid
+    }));
+
+    api.modifyGroupPrivileges(request_body).then(response => {
+      const [response_data, error] = response;
+      if (!response_data && error) {
+        alert(error);
+        getGroupPrivilegeList(groupId);
+      }
+    });
   };
 
   const onToggleAllPrivileges = event => {
@@ -180,33 +211,6 @@ const GroupPrivileges = ({
     setHasAllPrivileges(allowOptionSelected);
   };
 
-  const modifyGroupPrivileges = (indexesToBeUpdated, isAllow) => {
-    let privilegesToBeUpdated = groupPrivilegeList.filter(
-      privilege =>
-        indexesToBeUpdated.includes(privilege.tableData.id) && privilege.allow !== isAllow
-    );
-
-    let request_body = privilegesToBeUpdated.map(privilege => ({
-      groupPrivilegeId: privilege.groupPrivilegeId,
-      groupId: privilege.groupId,
-      privilegeId: privilege.privilegeId,
-      subjectTypeId: privilege.subjectTypeId,
-      programId: privilege.programId,
-      programEncounterTypeId: privilege.programEncounterTypeId,
-      encounterTypeId: privilege.encounterTypeId,
-      checklistDetailId: privilege.checklistDetailId,
-      allow: isAllow
-    }));
-
-    api.modifyGroupPrivileges(request_body).then(response => {
-      const [response_data, error] = response;
-      if (!response_data && error) {
-        alert(error);
-        getGroupPrivilegeList(groupId);
-      }
-    });
-  };
-
   const columns = [
     {
       title: "Allowed",
@@ -217,9 +221,7 @@ const GroupPrivileges = ({
         <Switch
           onChange={event => onTogglePermissionClick(event, rowData)}
           checked={
-            privilegesCheckedState
-              ? privilegesCheckedState.get(rowData.tableData.id).checkedState
-              : false
+            privilegesCheckedState ? privilegesCheckedState.get(rowData.uuid).checkedState : false
           }
         />
       )
