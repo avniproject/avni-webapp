@@ -34,7 +34,8 @@ class OrgManagerAppDesigner extends Component {
     const uiDesignerToggle =
       window.location.href.includes("localhost") ||
       window.location.href.includes("staging") ||
-      window.location.href.includes("uat");
+      window.location.href.includes("uat") ||
+      window.location.href.includes("prerelease");
 
     return (
       <React.Fragment>
