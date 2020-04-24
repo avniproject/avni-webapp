@@ -11,7 +11,7 @@ import { subjectTypeReducer } from "../Reducers";
 import Switch from "@material-ui/core/Switch";
 import { Grid } from "@material-ui/core";
 import GroupRoles from "./GroupRoles";
-import { handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
 import _ from "lodash";
 import { findRegistrationForms } from "../domain/formMapping";
@@ -91,6 +91,17 @@ const SubjectTypeCreate = props => {
                   checked={subjectType.household}
                   onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
                   name="household"
+                />
+              </Grid>
+            </Grid>
+            <p />
+            <Grid component="label" container alignItems="center" spacing={2}>
+              <Grid>Group</Grid>
+              <Grid>
+                <Switch
+                  checked={subjectType.group}
+                  onChange={event => handleGroupChange(event, subjectType, dispatch)}
+                  name="group"
                 />
               </Grid>
             </Grid>
