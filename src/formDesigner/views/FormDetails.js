@@ -77,6 +77,7 @@ class FormDetails extends Component {
     this.handleRegex = this.handleRegex.bind(this);
     this.validateForm = this.validateForm.bind(this);
     this.handleConceptFormLibrary = this.handleConceptFormLibrary.bind(this);
+    this.handleInlineNumericAttributes = this.handleInlineNumericAttributes.bind(this);
   }
 
   onUpdateFormName = name => {
@@ -398,7 +399,8 @@ class FormDetails extends Component {
           handleModeForDate: this.handleModeForDate,
           handleRegex: this.handleRegex,
           handleConceptFormLibrary: this.handleConceptFormLibrary,
-          onSaveInlineConcept: this.onSaveInlineConcept
+          onSaveInlineConcept: this.onSaveInlineConcept,
+          handleInlineNumericAttributes: this.handleInlineNumericAttributes
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -496,6 +498,26 @@ class FormDetails extends Component {
     );
   }
 
+  handleInlineNumericAttributes(index, propertyName, value, elementIndex) {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex][
+          "inlineNumericDataTypeAttributes"
+        ][propertyName] = value;
+      })
+    );
+  }
+
+  updateConceptElementData(index, propertyName, value, elementIndex = -1) {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex]["concept"][
+          propertyName
+        ] = value;
+      })
+    );
+  }
+
   btnGroupAdd(index, elementIndex = -1) {
     this.setState(
       produce(draft => {
@@ -513,6 +535,14 @@ class FormDetails extends Component {
           concept: { name: "", dataType: "" },
           errorMessage: { name: false, concept: false, type: false },
           inlineConceptErrorMessage: { name: "", dataType: "", inlineConceptError: "" },
+          inlineNumericDataTypeAttributes: {
+            lowAbsolute: null,
+            highAbsolute: null,
+            lowNormal: null,
+            highNormal: null,
+            unit: "",
+            error: {}
+          },
           showConceptLibrary: "",
           availableDataTypes: this.state.availableDataTypes,
           inlineConceptName: "",
@@ -750,7 +780,31 @@ class FormDetails extends Component {
       uuid: UUID.v4(),
       dataType:
         clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex]
-          .inlineConceptDataType
+          .inlineConceptDataType,
+      lowAbsolute:
+        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+          "inlineNumericDataTypeAttributes"
+        ].lowAbsolute,
+      highAbsolute:
+        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+          "inlineNumericDataTypeAttributes"
+        ].highAbsolute,
+      lowNormal:
+        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+          "inlineNumericDataTypeAttributes"
+        ].lowNormal,
+      highNormal:
+        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+          "inlineNumericDataTypeAttributes"
+        ].highNormal,
+      unit:
+        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+          "inlineNumericDataTypeAttributes"
+        ].unit === ""
+          ? null
+          : clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+              "inlineNumericDataTypeAttributes"
+            ].unit
     };
     if (inlineConceptObject.dataType !== "" && inlineConceptObject.name.trim() !== "") {
       clonedForm["formElementGroups"][groupIndex]["formElements"][
@@ -780,6 +834,21 @@ class FormDetails extends Component {
             clonedForm["formElementGroups"][groupIndex]["formElements"][
               elementIndex
             ].showConceptLibrary = "chooseFromLibrary";
+            clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+              "concept"
+            ].lowAbsolute = inlineConceptObject.lowAbsolute;
+            clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+              "concept"
+            ].highAbsolute = inlineConceptObject.highAbsolute;
+            clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+              "concept"
+            ].lowNormal = inlineConceptObject.lowNormal;
+            clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+              "concept"
+            ].highNormal = inlineConceptObject.highNormal;
+            clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
+              "concept"
+            ].unit = inlineConceptObject.unit;
 
             this.setState({
               form: clonedForm

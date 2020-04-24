@@ -13,6 +13,8 @@ import Grid from "@material-ui/core/Grid";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
+import InlineConcept from "./InlineConcept";
+
 import MenuItem from "@material-ui/core/MenuItem";
 import _, { isEqual, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
@@ -149,77 +151,14 @@ function FormElementDetails(props) {
           </div>
         )}
         {props.formElementData.showConceptLibrary === "addNewConcept" && (
-          <>
-            {props.formElementData.inlineConceptErrorMessage.inlineConceptError !== "" && (
-              <div style={{ color: "red", fontSize: "10px" }}>
-                {props.formElementData.inlineConceptErrorMessage.inlineConceptError}
-              </div>
-            )}
-            <Grid item sm={12}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="elementNameDetails">Concept Name</InputLabel>
-                <Input
-                  id="elementName"
-                  value={props.formElementData.inlineConceptName}
-                  autoComplete="off"
-                  onChange={event =>
-                    props.handleGroupElementChange(
-                      props.groupIndex,
-                      "inlineConceptName",
-                      event.target.value,
-                      props.index
-                    )
-                  }
-                />
-              </FormControl>
-            </Grid>
-            {props.formElementData.inlineConceptErrorMessage.name !== "" && (
-              <div style={{ color: "red", fontSize: "10px" }}>
-                {props.formElementData.inlineConceptErrorMessage.name}
-              </div>
-            )}
-            <Grid item sm={12}>
-              <FormControl>
-                <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
-                <Select
-                  id="dataType"
-                  label="DataType"
-                  value={props.formElementData.inlineConceptDataType}
-                  onChange={event =>
-                    props.handleGroupElementChange(
-                      props.groupIndex,
-                      "inlineConceptDataType",
-                      event.target.value,
-                      props.index
-                    )
-                  }
-                  style={{ width: "140px" }}
-                >
-                  {props.formElementData.availableDataTypes.map(datatype => {
-                    return (
-                      <MenuItem value={datatype} key={datatype}>
-                        {datatype}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-                {props.formElementData.inlineConceptErrorMessage.dataType !== "" && (
-                  <div style={{ color: "red", fontSize: "10px" }}>
-                    {props.formElementData.inlineConceptErrorMessage.dataType}
-                  </div>
-                )}
-              </FormControl>
-            </Grid>
-            <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              margin="normal"
-              onClick={event => props.onSaveInlineConcept(props.groupIndex, props.index)}
-            >
-              Save concept
-            </Button>
-          </>
+          <InlineConcept
+            onSaveInlineConcept={props.onSaveInlineConcept}
+            formElementData={props.formElementData}
+            index={props.index}
+            groupIndex={props.groupIndex}
+            handleGroupElementChange={props.handleGroupElementChange}
+            handleInlineNumericAttributes={props.handleInlineNumericAttributes}
+          />
         )}
         {props.formElementData.showConceptLibrary === "chooseFromLibrary" && (
           <>

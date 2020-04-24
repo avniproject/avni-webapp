@@ -157,7 +157,8 @@ function FormElementGroup(props) {
           handleRegex: props.handleRegex,
           handleConceptFormLibrary: props.handleConceptFormLibrary,
           availableDataTypes: props.availableDataTypes,
-          onSaveInlineConcept: props.onSaveInlineConcept
+          onSaveInlineConcept: props.onSaveInlineConcept,
+          handleInlineNumericAttributes: props.handleInlineNumericAttributes
         };
         formElements.push(
           <Draggable
