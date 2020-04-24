@@ -2,11 +2,7 @@ import React, { Fragment } from "react";
 import { Box, TextField } from "@material-ui/core";
 import moment from "moment/moment";
 import { LineBreak } from "../../../src/common/components/utils";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 

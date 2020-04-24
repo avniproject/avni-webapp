@@ -3,8 +3,7 @@ import {
   ObservationsHolder,
   Concept,
   ProgramEnrolment,
-  SubjectType,
-  PrimitiveValue
+  SubjectType
 } from "avni-models";
 import {
   setSubject,
@@ -31,7 +30,6 @@ import {
 } from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
 import {
-  onLoad,
   setEnrolForm,
   setProgramEnrolment,
   saveProgramComplete,

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, withRouter, useLocation } from "react-router-dom";
+import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import SubjectSearch from "./views/search/SubjectSearch";
 import SubjectRegister from "./views/registration/SubjectRegister";
@@ -12,7 +12,6 @@ import ProgramEnrol from "./views/subjectDashBoard/components/ProgramEnrol";
 import AppBar from "dataEntryApp/components/AppBar";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import qs from "query-string";
 import i18n from "i18next";
 
 import { I18nextProvider } from "react-i18next";
@@ -31,7 +30,6 @@ const DataEntry = ({
   orgConfig
 }) => {
   const classes = useStyles();
-  let location = useLocation();
 
   useEffect(() => {
     getOperationalModules();

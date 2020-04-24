@@ -44,7 +44,7 @@ export default class {
 
       //addOrUpdateObservation
       const observationHolder = new ObservationsHolder(subject.observations);
-      localSavedSubject.observations.map(element => {
+      localSavedSubject.observations.forEach(element => {
         let concept = Concept.create(
           element.concept.name,
           element.concept.datatype,
@@ -69,7 +69,7 @@ export default class {
       let localProgramEnrolment = JSON.parse(sessionStorage.getItem("programEnrolment"));
 
       const observationHolder = new ObservationsHolder(programEnrolment.observations);
-      localProgramEnrolment.observations.map(element => {
+      localProgramEnrolment.observations.forEach(element => {
         let concept = Concept.create(
           element.concept.name,
           element.concept.datatype,

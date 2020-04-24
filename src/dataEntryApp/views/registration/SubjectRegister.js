@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { Box, TextField, Chip, Typography, Paper } from "@material-ui/core";
+import { Box, TextField, Paper } from "@material-ui/core";
 import { ObservationsHolder } from "avni-models";
 import {
   getRegistrationForm,
@@ -17,10 +17,9 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import DateFnsUtils from "@date-io/date-fns";
 import { getGenders } from "../../reducers/metadataReducer";
 import { get, sortBy } from "lodash";
-import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
+import { LineBreak, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
-import PagenatorButton from "../../components/PagenatorButton";
 import LocationAutosuggest from "dataEntryApp/components/LocationAutosuggest";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "dataEntryApp/views/registration/Stepper";
@@ -102,16 +101,15 @@ const useStyles = makeStyles(theme => ({
 const DefaultPage = props => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
-  const [lastnameerrormsg, setLastnamemsg] = React.useState("");
   // console.log(props);
 
   return (
     <>
       {props.subject && (
         <>
-          <LineBreak num={1} />
-          {/* <Typography
+          <Box display="flex" flexDirection="column">
+            <LineBreak num={1} />
+            {/* <Typography
                   className={classes.caption}
                   variant="caption"
                   display="block"
@@ -120,92 +118,93 @@ const DefaultPage = props => {
                   {" "}
                   {t("date")} of {t("registration")}{" "}
                 </Typography> */}
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              style={{ width: "30%" }}
-              margin="normal"
-              id="date-picker-dialog"
-              format="MM/dd/yyyy"
-              name="registrationDate"
-              label={t("Date of registration")}
-              value={new Date(props.subject.registrationDate)}
-              onChange={date => {
-                props.updateSubject("registrationDate", new Date(date));
-              }}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-                color: "primary"
-              }}
-            />
-          </MuiPickersUtilsProvider>
-          <LineBreak num={1} />
-          {get(props, "subject.subjectType.name") === "Individual" && (
-            <React.Fragment>
-              <TextField
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
                 style={{ width: "30%" }}
-                label={t("firstName")}
-                type="text"
-                autoComplete="off"
-                required
-                name="firstName"
-                value={props.subject.firstName || ""}
-                onChange={e => {
-                  props.updateSubject("firstName", e.target.value);
+                margin="normal"
+                id="date-picker-dialog"
+                format="MM/dd/yyyy"
+                name="registrationDate"
+                label={t("Date of registration")}
+                value={new Date(props.subject.registrationDate)}
+                onChange={date => {
+                  props.updateSubject("registrationDate", new Date(date));
+                }}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                  color: "primary"
                 }}
               />
-              <LineBreak num={1} />
-              <TextField
-                style={{ width: "30%" }}
-                label={t("lastName")}
-                type="text"
-                autoComplete="off"
-                required
-                name="lastName"
-                value={props.subject.lastName || ""}
-                onChange={e => {
-                  props.updateSubject("lastName", e.target.value);
-                }}
-              />
-              <LineBreak num={1} />
-              <DateOfBirth
-                dateOfBirth={props.subject.dateOfBirth || ""}
-                dateOfBirthVerified={props.subject.dateOfBirthVerified}
-                onChange={date => props.updateSubject("dateOfBirth", date)}
-                markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
-              />
-              <LineBreak num={1} />
-              <CodedFormElement
-                groupName={t("gender")}
-                items={sortBy(props.genders, "name")}
-                isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
-                onChange={selected => props.updateSubject("gender", selected)}
-              />
-              <LineBreak num={1} />
-              <label className={classes.villagelabel}>{t("Village")}</label>
-              <LocationAutosuggest
-                selectedVillage={props.subject.lowestAddressLevel.name}
-                onSelect={location => props.updateSubject("lowestAddressLevel", location)}
-                data={props}
-              />
-            </React.Fragment>
-          )}
+            </MuiPickersUtilsProvider>
+            <LineBreak num={1} />
+            {get(props, "subject.subjectType.name") === "Individual" && (
+              <React.Fragment>
+                <TextField
+                  style={{ width: "30%" }}
+                  label={t("firstName")}
+                  type="text"
+                  autoComplete="off"
+                  required
+                  name="firstName"
+                  value={props.subject.firstName || ""}
+                  onChange={e => {
+                    props.updateSubject("firstName", e.target.value);
+                  }}
+                />
+                <LineBreak num={1} />
+                <TextField
+                  style={{ width: "30%" }}
+                  label={t("lastName")}
+                  type="text"
+                  autoComplete="off"
+                  required
+                  name="lastName"
+                  value={props.subject.lastName || ""}
+                  onChange={e => {
+                    props.updateSubject("lastName", e.target.value);
+                  }}
+                />
+                <LineBreak num={1} />
+                <DateOfBirth
+                  dateOfBirth={props.subject.dateOfBirth || ""}
+                  dateOfBirthVerified={props.subject.dateOfBirthVerified}
+                  onChange={date => props.updateSubject("dateOfBirth", date)}
+                  markVerified={verified => props.updateSubject("dateOfBirthVerified", verified)}
+                />
+                <LineBreak num={1} />
+                <CodedFormElement
+                  groupName={t("gender")}
+                  items={sortBy(props.genders, "name")}
+                  isChecked={item => item && get(props, "subject.gender.uuid") === item.uuid}
+                  onChange={selected => props.updateSubject("gender", selected)}
+                />
+                <LineBreak num={1} />
+                <label className={classes.villagelabel}>{t("Village")}</label>
+                <LocationAutosuggest
+                  selectedVillage={props.subject.lowestAddressLevel.name}
+                  onSelect={location => props.updateSubject("lowestAddressLevel", location)}
+                  data={props}
+                />
+              </React.Fragment>
+            )}
 
-          {get(props, "subject.subjectType.name") !== "Individual" && (
-            <React.Fragment>
-              <TextField
-                label="Name"
-                type="text"
-                autoComplete="off"
-                required
-                name="firstName"
-                value={props.subject.firstName}
-                onChange={e => {
-                  props.updateSubject("firstName", e.target.value);
-                }}
-              />
-            </React.Fragment>
-          )}
-          <LineBreak num={1} />
+            {get(props, "subject.subjectType.name") !== "Individual" && (
+              <React.Fragment>
+                <TextField
+                  label="Name"
+                  type="text"
+                  autoComplete="off"
+                  required
+                  name="firstName"
+                  value={props.subject.firstName}
+                  onChange={e => {
+                    props.updateSubject("firstName", e.target.value);
+                  }}
+                />
+              </React.Fragment>
+            )}
+            <LineBreak num={1} />
+          </Box>
         </>
       )}
     </>

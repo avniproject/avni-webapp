@@ -17,7 +17,6 @@ import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import { useTranslation } from "react-i18next";
 //import BrowserStore from "../../../api/browserStore";
 
 const useStyles = makeStyles(theme => ({
@@ -62,13 +61,6 @@ const ProgramEnrol = ({
   setInitialState
   //setProgramEnrolment
 }) => {
-  const [value, setValue] = React.useState("Yes");
-
-  const { t } = useTranslation();
-
-  const handleChange = event => {
-    setValue(event.target.value);
-  };
   const classes = useStyles();
 
   useEffect(() => {

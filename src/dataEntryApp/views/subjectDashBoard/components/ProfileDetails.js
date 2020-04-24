@@ -5,7 +5,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Grid from "@material-ui/core/Grid";
-import Fab from "@material-ui/core/Fab";
 import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -86,22 +85,6 @@ const useStyles = makeStyles(theme => ({
     display: "inline"
   }
 }));
-
-const styles = theme => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-    backgroundColor: "black",
-    padding: "6px 16px",
-    color: "white"
-  },
-  closeButton: {
-    position: "absolute",
-    right: theme.spacing(1),
-    top: "0px",
-    color: "white"
-  }
-});
 
 const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match }) => {
   const classes = useStyles();

@@ -2,7 +2,6 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { useTranslation } from "react-i18next";
 import Dialog from "@material-ui/core/Dialog";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import MuiDialogActions from "@material-ui/core/DialogActions";
@@ -121,8 +120,6 @@ const DialogActions = withStyles(theme => ({
 const CommonModal = ({ content, buttonsSet, title }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-
-  //const { t } = useTranslation();
 
   const handleClickOpen = () => {
     setOpen(true);

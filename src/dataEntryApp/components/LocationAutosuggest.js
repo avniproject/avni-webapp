@@ -2,9 +2,7 @@ import React from "react";
 import Autosuggest from "react-autosuggest";
 import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
-import SubjectValidation from "../views/registration/SubjectValidation";
 
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {
@@ -31,13 +29,10 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
     selectedVillage = "";
   } else if (data.saved === false && selectedVillage === undefined) {
     selectedVillage = "";
-  } else {
-    selectedVillage = selectedVillage;
   }
 
   const [value, setValue] = React.useState(selectedVillage);
   const [suggestions, setSuggestions] = React.useState([]);
-  const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
 
   const getSuggestionValue = suggestion => suggestion.title;
 
@@ -71,7 +66,7 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
 
   const inputProps = {
     className: classes.rautosuggestinput,
-    placeholder: `${t("Village")}` + " " + `${t("name")}`,
+    placeholder: `${t("Village")} ${t("name")}`,
     value,
     onChange
   };

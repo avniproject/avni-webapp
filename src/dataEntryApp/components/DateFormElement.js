@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React from "react";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
@@ -14,19 +14,8 @@ import {
   TextField,
   FormLabel
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
-import { Duration } from "avni-models";
-import _, { isEmpty, get, find } from "lodash";
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "20ch"
-    }
-  }
-}));
+import { get, find } from "lodash";
 
 export const DateTimeFormElement = ({ formElement: fe, value, update }) => {
   return (
@@ -82,8 +71,6 @@ export const DateFormElement = ({ formElement: fe, value, update }) => {
 };
 
 export const DateAndDurationFormElement = ({ formElement: fe, value, update }) => {
-  const classes = useStyles();
-
   let durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
   const [units, setUnit] = React.useState(durationValue[0]);
   const today = moment();

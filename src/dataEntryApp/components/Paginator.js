@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import { InternalLink, RelativeLink } from "../../common/components/utils";
 import PagenatorButton from "./PagenatorButton";
 import { useTranslation } from "react-i18next";
