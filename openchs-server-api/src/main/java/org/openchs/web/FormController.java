@@ -22,6 +22,7 @@ import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.application.FormElementContract;
 import org.openchs.web.request.application.FormElementGroupContract;
 import org.openchs.web.request.webapp.CreateUpdateFormRequest;
+import org.openchs.web.request.webapp.FormMappingRequest;
 import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,6 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     private OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private RepositoryEntityLinks entityLinks;
     private ProjectionFactory projectionFactory;
-
 
     @Autowired
     public FormController(FormRepository formRepository,
@@ -146,9 +146,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 .withUUID(UUID.randomUUID().toString())
                 .build();
         formRepository.save(form);
-        if (request.getFormMappings().size() > 0) {
-            formMappingService.createOrUpdateFormMapping(request, form);
-        }
+  
         return ResponseEntity.ok(form);
     }
 
@@ -184,12 +182,21 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     public ResponseEntity updateMetadata(@RequestBody CreateUpdateFormRequest request, @PathVariable String formUUID) {
         Form form = validateUpdateMetadata(request, formUUID);
+        List<FormMappingRequest> formMappingRequests = request.getFormMappings();
         form.setName(request.getName());
         form.setFormType(FormType.valueOf(request.getFormType()));
+
         formRepository.save(form);
-        if (request.getFormMappings().size() > 0) {
-            formMappingService.createOrUpdateFormMapping(request, form);
-        }
+        formMappingRequests.forEach(formMappingRequest ->{
+            FormMappingContract formMappingContract = new FormMappingContract();
+            formMappingContract.setEncounterTypeUUID(formMappingRequest.getEncounterTypeUuid());
+            formMappingContract.setProgramUUID(formMappingRequest.getProgramUuid());
+            formMappingContract.setSubjectTypeUUID(formMappingRequest.getSubjectTypeUuid());
+            formMappingContract.setVoided(formMappingRequest.getVoided());
+            formMappingContract.setFormUUID(formUUID);
+            formMappingContract.setUuid(formMappingRequest.getUuid());
+            formMappingService.createOrUpdateFormMapping(formMappingContract);
+        });
         return ResponseEntity.ok(null);
     }
 
