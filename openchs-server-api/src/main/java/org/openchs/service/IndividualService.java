@@ -98,6 +98,7 @@ public class IndividualService {
         return individual.getProgramEnrolments().stream().filter(x -> !x.isVoided()).map(programEnrolment -> {
             EnrolmentContract enrolmentContract = new EnrolmentContract();
             enrolmentContract.setUuid(programEnrolment.getUuid());
+            enrolmentContract.setProgramUuid(programEnrolment.getProgram().getUuid());
             enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getName());
             enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
             enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
