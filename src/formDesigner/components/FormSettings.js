@@ -377,7 +377,8 @@ class FormSettings extends Component {
           subjectTypeUuid: "",
           programUuid: program ? "" : null,
           encounterTypeUuid: encounter ? "" : null,
-          newFlag: true
+          newFlag: true,
+          formType: this.state.formType
         }
       ]
     });
