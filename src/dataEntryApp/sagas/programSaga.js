@@ -20,11 +20,7 @@ export function* programEncounterOnLoadWatcher() {
   yield takeLatest(types.ON_LOAD, setupNewProgramEncounterWorker);
 }
 
-function* programEncounterOnLoadWatcher() {
-  yield takeLatest(types.ON_LOAD, setupNewProgramEncounterWorker);
-}
-
-function* setupNewProgramEncounterWorker({ subjectTypeUuid, programUuid }) {
+export function* setupNewProgramEncounterWorker({ subjectTypeUuid, programUuid }) {
   console.log("inside program saga ...");
   // const formMapping = yield select(
   //   selectProgramEncounterFormMappingForSubjectType(subjectTypeUuid, programUuid)
