@@ -22,6 +22,11 @@ public class GroupPrivilegeService {
     private EncounterTypeRepository encounterTypeRepository;
     private ChecklistDetailRepository checklistDetailRepository;
     private FormMappingRepository formMappingRepository;
+    private List<String> groupSubjectPrivileges = new ArrayList<String>() {{
+        add("Add member");
+        add("Edit member");
+        add("Remove member");
+    }};
 
     public GroupPrivilegeService(GroupRepository groupRepository, PrivilegeRepository privilegeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, ChecklistDetailRepository checklistDetailRepository, FormMappingRepository formMappingRepository) {
         this.groupRepository = groupRepository;
@@ -33,9 +38,16 @@ public class GroupPrivilegeService {
         this.formMappingRepository = formMappingRepository;
     }
 
+    private boolean isGroupSubjectTypePrivilege(SubjectType subjectType, String privilegeName) {
+        if (!subjectType.isGroup()) {
+            return !groupSubjectPrivileges.contains(privilegeName);
+        }
+        return true;
+    }
+
     public List<GroupPrivilege> getAllGroupPrivileges(Long groupId) {
 
-        List<FormMapping> formMappings = formMappingRepository.findAll();
+        List<FormMapping> formMappings = formMappingRepository.findAllByIsVoidedFalse();
         List<SubjectType.SubjectTypeProjection> subjectTypes = subjectTypeRepository.findAllOperational();
 
         List<Program.ProgramProjection> operationalPrograms = programRepository.findAllOperational();
@@ -59,7 +71,7 @@ public class GroupPrivilegeService {
         subjectTypes.forEach(subjectTypeProjection -> {
             SubjectType subjectType = subjectTypeRepository.findByUuid(subjectTypeProjection.getUuid());
             privilegeList.stream()
-                    .filter(privilege -> privilege.getEntityType() == EntityType.Subject)
+                    .filter(privilege -> privilege.getEntityType() == EntityType.Subject && isGroupSubjectTypePrivilege(subjectType, privilege.getName()))
                     .forEach(subjectPrivilege -> {
                                 GroupPrivilege groupPrivilege = new GroupPrivilege();
                                 groupPrivilege.setGroup(currentGroup);
@@ -104,6 +116,19 @@ public class GroupPrivilegeService {
                                 groupPrivilege.assignUUID();
                                 allPrivileges.add(groupPrivilege);
                             });
+
+                    checklistDetails.forEach(checklistDetail ->
+                            privilegeList.stream()
+                                    .filter(privilege -> privilege.getEntityType() == EntityType.Checklist)
+                                    .forEach(privilege -> {
+                                        GroupPrivilege groupPrivilege = new GroupPrivilege();
+                                        groupPrivilege.setGroup(currentGroup);
+                                        groupPrivilege.setPrivilege(privilege);
+                                        groupPrivilege.setSubjectType(subjectType);
+                                        groupPrivilege.setChecklistDetail(checklistDetail);
+                                        allPrivileges.add(groupPrivilege);
+                                    })
+                    );
                 } else {
                     privilegeList.stream()
                             .filter(privilege -> privilege.getEntityType() == EntityType.Encounter)
@@ -119,21 +144,6 @@ public class GroupPrivilegeService {
                             });
                 }
             });
-
-            checklistDetails.forEach(checklistDetail ->
-                    privilegeList.stream()
-                            .filter(privilege -> privilege.getEntityType() == EntityType.Checklist)
-                            .forEach(privilege -> {
-                                GroupPrivilege groupPrivilege = new GroupPrivilege();
-                                groupPrivilege.setGroup(currentGroup);
-                                groupPrivilege.setPrivilege(privilege);
-                                groupPrivilege.setSubjectType(subjectType);
-                                groupPrivilege.setChecklistDetail(checklistDetail);
-                                groupPrivilege.setAllow(false);
-                                groupPrivilege.assignUUID();
-                                allPrivileges.add(groupPrivilege);
-                            })
-            );
         });
 
         return allPrivileges;
