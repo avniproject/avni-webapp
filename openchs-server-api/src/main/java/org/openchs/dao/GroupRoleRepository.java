@@ -22,5 +22,7 @@ public interface GroupRoleRepository extends ReferenceDataRepository<GroupRole>,
 
     GroupRole findByRole(String role);
 
+    GroupRole findByRoleAndGroupSubjectTypeUuid(String role, String uuid);
+
     List<GroupRole> findByGroupSubjectType_IdAndIsVoidedFalse(Long groupSubjectTypeId);
 }
