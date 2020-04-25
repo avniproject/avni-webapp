@@ -145,16 +145,17 @@ export const mapProgram = subjectProgram => {
 };
 export const mapEnrolment = enrolmentList => {
   if (enrolmentList)
-    return enrolmentList.map(enrolments => {
+    return enrolmentList.map(enrolment => {
       let programEnrolment = General.assignFields(
-        enrolments,
+        enrolment,
         new ProgramEnrolment(),
         [],
         ["programExitDateTime", "enrolmentDateTime"]
       );
-      programEnrolment.observations = mapObservation(enrolments["observations"]);
-      programEnrolment.encounters = mapProgramEncounters(enrolments["programEncounters"]);
-      programEnrolment.program = mapOperationalProgramName(enrolments);
+      programEnrolment.observations = mapObservation(enrolment["observations"]);
+      programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
+      programEnrolment.program = mapOperationalProgramName(enrolment);
+      programEnrolment.uuid = enrolment.uuid;
       return programEnrolment;
     });
 };

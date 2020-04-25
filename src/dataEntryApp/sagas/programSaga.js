@@ -1,5 +1,5 @@
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
-import { types, setPrograms } from "../reducers/programReducer";
+import { types, setPrograms, setProgramPlannedVisits } from "../reducers/programReducer";
 import api from "../api";
 import {
   selectProgramEncounterFormMappingForSubjectType,
@@ -7,7 +7,9 @@ import {
 } from "./programEncounterSelector";
 
 export default function*() {
-  yield all([programFetchWatcher, programEncounterOnLoadWatcher].map(fork));
+  yield all(
+    [programFetchWatcher, programEncounterOnLoadWatcher, programVisitsFetchWatcher].map(fork)
+  );
 }
 
 export function* programFetchWatcher() {
@@ -33,15 +35,12 @@ export function* setupNewProgramEncounterWorker({ subjectTypeUuid, programUuid }
 }
 
 export function* programVisitsFetchWatcher() {
-  yield takeLatest(types.GET_PROGRAM_VISITS, programVisitsFetchWorker);
+  yield takeLatest(types.GET_PROGRAM_PLANNED_VISITS, programVisitsFetchWorker);
 }
 
-export function* programVisitsFetchWorker({ operationalProgramName }) {
-  const programObj = yield select(selectProgramUUID(operationalProgramName));
-  console.log("programObj", programObj);
-  const enrolmentUuid = "";
-
-  const programVisits = yield call(api.fetchProgramVisitsByEnrolmentUUID, enrolmentUuid);
-  console.log("programVisists", programVisits);
+export function* programVisitsFetchWorker({ enrolmentUuid }) {
+  const response = yield call(api.fetchProgramPlannedVisits, enrolmentUuid);
+  console.log("programVisists", response);
+  yield put(setProgramPlannedVisits(response.programEncounters));
   //yield put(setPrograms(programs));
 }

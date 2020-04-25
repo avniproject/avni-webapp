@@ -4,8 +4,8 @@ export const types = {
   GET_PROGRAMS: `${prefix}GET_PROGRAMS`,
   SET_PROGRAMS: `${prefix}SET_PROGRAMS`,
   ON_LOAD: `${prefix}ON_LOAD`,
-  GET_PROGRAM_VISITS: `${prefix}GET_PROGRAM_VISITS`,
-  SET_PROGRAM_VISITS: `${prefix}SET_PROGRAM_VISITS`
+  GET_PROGRAM_PLANNED_VISITS: `${prefix}GET_PROGRAM_PLANNED_VISITS`,
+  SET_PROGRAM_PLANNED_VISITS: `${prefix}SET_PROGRAM_PLANNED_VISITS`
 };
 
 export const getPrograms = subjectUuid => ({
@@ -24,14 +24,14 @@ export const onLoad = (subjectTypeUuid, programUuid) => ({
   programUuid
 });
 
-export const getProgramVisits = operationalProgramName => ({
-  type: types.GET_PROGRAM_VISITS,
-  operationalProgramName
+export const getProgramPlannedVisits = enrolmentUuid => ({
+  type: types.GET_PROGRAM_PLANNED_VISITS,
+  enrolmentUuid
 });
 
-export const setProgramVisits = programVisits => ({
-  type: types.SET_PROGRAM_VISITS,
-  programVisits
+export const setProgramPlannedVisits = programPlannedVisits => ({
+  type: types.SET_PROGRAM_PLANNED_VISITS,
+  programPlannedVisits
 });
 
 export default function(state = {}, action) {
@@ -40,6 +40,14 @@ export default function(state = {}, action) {
       return {
         ...state,
         programs: action.programs
+      };
+    }
+    case types.SET_PROGRAM_PLANNED_VISITS: {
+      console.log("at state", action.programPlannedVisits);
+      // console.log("state at reducer",{...state,programPlannedVisits:action.programPlannedVisits});
+      return {
+        ...state,
+        programPlannedVisits: action.programPlannedVisits
       };
     }
     default:
