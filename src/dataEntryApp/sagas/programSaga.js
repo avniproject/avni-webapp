@@ -1,5 +1,5 @@
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
-import { types, setPrograms, setProgramPlannedVisits } from "../reducers/programReducer";
+import { types, setPrograms, setProgramEnrolment } from "../reducers/programReducer";
 import api from "../api";
 import {
   selectProgramEncounterFormMappingForSubjectType,
@@ -8,7 +8,12 @@ import {
 
 export default function*() {
   yield all(
-    [programFetchWatcher, programEncounterOnLoadWatcher, programVisitsFetchWatcher].map(fork)
+    [
+      programFetchWatcher,
+      //programEncounterOnLoadWatcher,
+      programEnrolmentFetchWatcher,
+      programEncounterFetchWatcher
+    ].map(fork)
   );
 }
 
@@ -21,26 +26,39 @@ export function* programFetchWorker({ subjectUuid }) {
   yield put(setPrograms(programs));
 }
 
-export function* programEncounterOnLoadWatcher() {
-  yield takeLatest(types.ON_LOAD, setupNewProgramEncounterWorker);
+// export function* programEncounterOnLoadWatcher() {
+//   yield takeLatest(types.ON_LOAD, setupNewProgramEncounterWorker);
+// }
+
+// export function* setupNewProgramEncounterWorker({ subjectTypeUuid, programUuid }) {
+//   console.log("inside program saga ...");
+//   // const formMapping = yield select(
+//   //   selectProgramEncounterFormMappingForSubjectType(subjectTypeUuid, programUuid)
+//   // );
+//   console.log("Printing FM");
+//   // console.log(formMapping);
+// }
+
+export function* programEncounterFetchWatcher() {
+  yield takeLatest(types.GET_PROGRAM_ENCOUNTER, ProgramEncounterFetchWorker);
 }
 
-export function* setupNewProgramEncounterWorker({ subjectTypeUuid, programUuid }) {
+export function* ProgramEncounterFetchWorker({ subjectTypeName, programUuid }) {
   console.log("inside program saga ...");
-  // const formMapping = yield select(
-  //   selectProgramEncounterFormMappingForSubjectType(subjectTypeUuid, programUuid)
-  // );
+  const formMapping = yield select(
+    selectProgramEncounterFormMappingForSubjectType(subjectTypeName, programUuid)
+  );
   console.log("Printing FM");
-  // console.log(formMapping);
+  console.log(formMapping);
 }
 
-export function* programVisitsFetchWatcher() {
-  yield takeLatest(types.GET_PROGRAM_PLANNED_VISITS, programVisitsFetchWorker);
+export function* programEnrolmentFetchWatcher() {
+  yield takeLatest(types.GET_PROGRAM_ENROLMENT, programEnrolmentFetchWorker);
 }
 
-export function* programVisitsFetchWorker({ enrolmentUuid }) {
-  const response = yield call(api.fetchProgramPlannedVisits, enrolmentUuid);
-  console.log("programVisists", response);
-  yield put(setProgramPlannedVisits(response.programEncounters));
+export function* programEnrolmentFetchWorker({ enrolmentUuid }) {
+  const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
+  console.log("programVisists", programEnrolment);
+  yield put(setProgramEnrolment(programEnrolment));
   //yield put(setPrograms(programs));
 }

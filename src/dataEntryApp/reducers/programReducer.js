@@ -3,9 +3,10 @@ const prefix = "app/dataEntry/reducer/programs/";
 export const types = {
   GET_PROGRAMS: `${prefix}GET_PROGRAMS`,
   SET_PROGRAMS: `${prefix}SET_PROGRAMS`,
-  ON_LOAD: `${prefix}ON_LOAD`,
-  GET_PROGRAM_PLANNED_VISITS: `${prefix}GET_PROGRAM_PLANNED_VISITS`,
-  SET_PROGRAM_PLANNED_VISITS: `${prefix}SET_PROGRAM_PLANNED_VISITS`
+  //ON_LOAD: `${prefix}ON_LOAD`,
+  GET_PROGRAM_ENROLMENT: `${prefix}GET_PROGRAM_ENROLMENT`,
+  SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
+  GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`
 };
 
 export const getPrograms = subjectUuid => ({
@@ -18,20 +19,20 @@ export const setPrograms = programs => ({
   programs
 });
 
-export const onLoad = (subjectTypeUuid, programUuid) => ({
-  type: types.ON_LOAD,
-  subjectTypeUuid,
+export const getProgramEncounter = (subjectTypeName, programUuid) => ({
+  type: types.GET_PROGRAM_ENCOUNTER,
+  subjectTypeName,
   programUuid
 });
 
-export const getProgramPlannedVisits = enrolmentUuid => ({
-  type: types.GET_PROGRAM_PLANNED_VISITS,
+export const getProgramEnrolment = enrolmentUuid => ({
+  type: types.GET_PROGRAM_ENROLMENT,
   enrolmentUuid
 });
 
-export const setProgramPlannedVisits = programPlannedVisits => ({
-  type: types.SET_PROGRAM_PLANNED_VISITS,
-  programPlannedVisits
+export const setProgramEnrolment = programEnrolment => ({
+  type: types.SET_PROGRAM_ENROLMENT,
+  programEnrolment
 });
 
 export default function(state = {}, action) {
@@ -42,12 +43,10 @@ export default function(state = {}, action) {
         programs: action.programs
       };
     }
-    case types.SET_PROGRAM_PLANNED_VISITS: {
-      console.log("at state", action.programPlannedVisits);
-      // console.log("state at reducer",{...state,programPlannedVisits:action.programPlannedVisits});
+    case types.SET_PROGRAM_ENROLMENT: {
       return {
         ...state,
-        programPlannedVisits: action.programPlannedVisits
+        programEnrolment: action.programEnrolment
       };
     }
     default:

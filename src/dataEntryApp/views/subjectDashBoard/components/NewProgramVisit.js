@@ -2,16 +2,13 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { getProgramPlannedVisits } from "../../../reducers/programReducer";
+import { getProgramEnrolment, getProgramEncounter } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableRow from "@material-ui/core/TableRow";
-
+import { Table, TableBody, TableHead, TableCell, TableRow, Typography } from "@material-ui/core";
+import { LineBreak } from "../../../../common/components/utils";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3, 2),
@@ -20,14 +17,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewProgramVisit = ({ match, getProgramPlannedVisits, programPlannedVisits }) => {
+const NewProgramVisit = ({ match, ...props }) => {
   const { t } = useTranslation();
 
   const classes = useStyles();
 
   useEffect(() => {
     console.log("Heloo I am at program visit");
-    getProgramPlannedVisits(match.queryParams.uuid);
+    props.getProgramEnrolment(match.queryParams.uuid);
+    props.getProgramEncounter("Individual", props.program.uuid);
 
     // (async function fetchData() {
     //   await onLoad("Individual", match.queryParams.programName);
@@ -37,18 +35,31 @@ const NewProgramVisit = ({ match, getProgramPlannedVisits, programPlannedVisits 
     //   // setProgramEnrolment(programEnrolment);
     // })();
   }, []);
+  console.log("program", props.program);
+  console.log("plannedVisits", props.plannedEncounters);
 
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <div>Loading</div>
-        {programPlannedVisits ? (
-          programPlannedVisits.map((visit, index) => {
-            return (
-              <Fragment key={index}>
-                <Table className={classes.table} size="small" aria-label="a dense table">
+        {/* <Typography variant="button" display="block" gutterBottom>
+          New program visit
+        </Typography>
+        <LineBreak num={1}/>
+        {plannedEncounters ? (
+            <Paper>
+                <Typography gutterBottom>
+                  Planned visits 
+                </Typography>                
+                <Table className={classes.table} size="small" aria-label="a dense table" >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{t("Name")}</TableCell>
+                      <TableCell>{t("Date")}</TableCell>
+                    </TableRow>
+                  </TableHead>    
                   <TableBody>
+                  {plannedEncounters.map(visit => (
                     <TableRow>
                       <TableCell
                         style={{ color: "#555555" }}
@@ -56,22 +67,21 @@ const NewProgramVisit = ({ match, getProgramPlannedVisits, programPlannedVisits 
                         scope="row"
                         width="50%"
                       >
-                        visit.name
+                        {visit.name}
                       </TableCell>
                       <TableCell align="left" width="50%">
-                        <div>visit.name</div>
+                        <div>visit.date</div>
                       </TableCell>
                     </TableRow>
+                  ))}
                   </TableBody>
                 </Table>
-              </Fragment>
-            );
-          })
+              </Paper>
         ) : (
           <div>
             <p>no visits panned</p>
           </div>
-        )}
+        )} */}
       </Paper>
     </Fragment>
   );
@@ -81,11 +91,16 @@ const mapStateToProps = state => ({
   //   enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
   //   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   //   programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment
-  programPlannedVisits: state.programPlannedVisits
+  plannedEncounters: state.programs.programEnrolment
+    ? state.programs.programEnrolment.programEncounters
+    : [],
+  program: state.programs.programEnrolment ? state.programs.programEnrolment.program : {},
+  x: state
 });
 
 const mapDispatchToProps = {
-  getProgramPlannedVisits
+  getProgramEnrolment,
+  getProgramEncounter
 };
 
 export default withRouter(

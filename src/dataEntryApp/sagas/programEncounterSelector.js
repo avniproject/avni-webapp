@@ -41,12 +41,15 @@ export const selectProgramUUID = programName => state =>
   );
 
 export const selectProgramEncounterFormMappingForSubjectType = (
-  subjectTypeUuid,
+  subjectTypeName,
   programUuid
 ) => state => {
   //const program = selectProgramUUID(programName)(state);
   console.log("inside programE selector >> select... method");
-  return selectProgramEncounterFormMapping(subjectTypeUuid, programUuid)(state);
+  return selectProgramEncounterFormMapping(
+    selectProgramEncounterSubjectType(subjectTypeName)(state),
+    programUuid
+  )(state);
   //   return selectProgramEncounterFormMapping(
   //     selectProgramEncounterSubjectType(subjectTypeName)(state),
   //     program.uuid
