@@ -90,7 +90,8 @@ const ProgramView = ({ programData }) => {
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-
+  console.log("program data");
+  console.log(programData);
   return (
     <div>
       <Grid container spacing={3}>
@@ -103,7 +104,12 @@ const ProgramView = ({ programData }) => {
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
           <SubjectButton btnLabel={t("vaccinations")} />
           {/* <SubjectButton btnLabel={t("newProgramVisit")} /> */}
-          <InternalLink to={`/app/subject/newProgramVisit?uuid=${programData.uuid}`} noUnderline>
+          <InternalLink
+            to={`/app/subject/newProgramVisit?uuid=${programData.uuid}&programUuid=${
+              programData.program.uuid
+            }`}
+            noUnderline
+          >
             <SubjectButton btnLabel={t("newProgramVisit")} />
           </InternalLink>
         </Grid>

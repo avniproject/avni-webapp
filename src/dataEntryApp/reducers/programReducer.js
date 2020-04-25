@@ -6,7 +6,8 @@ export const types = {
   //ON_LOAD: `${prefix}ON_LOAD`,
   GET_PROGRAM_ENROLMENT: `${prefix}GET_PROGRAM_ENROLMENT`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
-  GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`
+  GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`,
+  SET_PROGRAM_ENCOUNTER: `${prefix}SET_PROGRAM_ENCOUNTER`
 };
 
 export const getPrograms = subjectUuid => ({
@@ -23,6 +24,11 @@ export const getProgramEncounter = (subjectTypeName, programUuid) => ({
   type: types.GET_PROGRAM_ENCOUNTER,
   subjectTypeName,
   programUuid
+});
+
+export const setProgramEncounter = programEncounter => ({
+  type: types.SET_PROGRAM_ENCOUNTER,
+  programEncounter
 });
 
 export const getProgramEnrolment = enrolmentUuid => ({
@@ -47,6 +53,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         programEnrolment: action.programEnrolment
+      };
+    }
+    case types.SET_PROGRAM_ENCOUNTER: {
+      return {
+        ...state,
+        programEncounter: action.programEncounter
       };
     }
     default:

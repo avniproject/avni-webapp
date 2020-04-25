@@ -154,7 +154,7 @@ export const mapEnrolment = enrolmentList => {
       );
       programEnrolment.observations = mapObservation(enrolment["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
-      programEnrolment.program = mapOperationalProgramName(enrolment);
+      programEnrolment.program = mapOperationalProgram(enrolment);
       programEnrolment.uuid = enrolment.uuid;
       return programEnrolment;
     });
@@ -174,8 +174,12 @@ export const mapProgramEncounters = programEncountersList => {
     });
 };
 
-export const mapOperationalProgramName = operationalProgramName => {
-  return General.assignFields(operationalProgramName, new Program(), ["operationalProgramName"]);
+export const mapOperationalProgram = enrolment => {
+  const operationalProgram = General.assignFields(enrolment, new Program(), [
+    "operationalProgramName"
+  ]);
+  operationalProgram.uuid = enrolment.programUuid;
+  return operationalProgram;
 };
 
 export const mapEncounterType = encounterType => {

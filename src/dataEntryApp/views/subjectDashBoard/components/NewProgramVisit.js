@@ -9,6 +9,7 @@ import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableHead, TableCell, TableRow, Typography } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
+import { ModelGeneral as General } from "avni-models";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3, 2),
@@ -24,16 +25,17 @@ const NewProgramVisit = ({ match, ...props }) => {
 
   useEffect(() => {
     console.log("Heloo I am at program visit");
-    props.getProgramEnrolment(match.queryParams.uuid);
-    props.getProgramEncounter("Individual", props.program.uuid);
+    // props.getProgramEnrolment(match.queryParams.uuid);
+    //props.getProgramEncounter("Individual", props.program.uuid);
 
-    // (async function fetchData() {
-    //   await onLoad("Individual", match.queryParams.programName);
-    //   getSubjectProfile(match.queryParams.uuid);
-
-    //   // let programEnrolment = BrowserStore.fetchProgramEnrolment();
-    //   // setProgramEnrolment(programEnrolment);
-    // })();
+    (async function fetchData() {
+      await props.getProgramEnrolment(match.queryParams.uuid);
+      console.log("NewProgramEncounter ...");
+      console.log(props);
+      props.getProgramEncounter("Individual", match.queryParams.programUuid);
+      // let programEnrolment = BrowserStore.fetchProgramEnrolment();
+      // setProgramEnrolment(programEnrolment);
+    })();
   }, []);
   console.log("program", props.program);
   console.log("plannedVisits", props.plannedEncounters);
@@ -42,46 +44,67 @@ const NewProgramVisit = ({ match, ...props }) => {
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        {/* <Typography variant="button" display="block" gutterBottom>
+        <Typography variant="button" display="block" gutterBottom>
           New program visit
         </Typography>
-        <LineBreak num={1}/>
-        {plannedEncounters ? (
-            <Paper>
-                <Typography gutterBottom>
-                  Planned visits 
-                </Typography>                
-                <Table className={classes.table} size="small" aria-label="a dense table" >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t("Name")}</TableCell>
-                      <TableCell>{t("Date")}</TableCell>
-                    </TableRow>
-                  </TableHead>    
-                  <TableBody>
-                  {plannedEncounters.map(visit => (
-                    <TableRow>
-                      <TableCell
-                        style={{ color: "#555555" }}
-                        component="th"
-                        scope="row"
-                        width="50%"
-                      >
-                        {visit.name}
-                      </TableCell>
-                      <TableCell align="left" width="50%">
-                        <div>visit.date</div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  </TableBody>
-                </Table>
-              </Paper>
+        <LineBreak num={1} />
+        {props.plannedEncounters ? (
+          <Paper>
+            <Typography gutterBottom>Planned visits</Typography>
+            <Table className={classes.table} size="small" aria-label="a dense table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t("Name")}</TableCell>
+                  <TableCell>{t("Date")}</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {props.plannedEncounters.map(plannedEncounter => (
+                  <TableRow>
+                    <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+                      {plannedEncounter.name}
+                    </TableCell>
+                    <TableCell align="left" width="50%">
+                      {/* {plannedEncounter.earliestVisitDateTime} */}
+                      {General.toDisplayDate(plannedEncounter.earliestVisitDateTime)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
         ) : (
           <div>
             <p>no visits panned</p>
           </div>
-        )} */}
+        )}
+        <LineBreak num={1} />
+        {/* Iterating Unplanned Encounters */}
+        {props.unplannedEncounters ? (
+          <Paper>
+            <Typography gutterBottom>Unplanned visits</Typography>
+            <Table className={classes.table} size="small" aria-label="a dense table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t("Name")}</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {props.unplannedEncounters.map(unplannedEncounter => (
+                  <TableRow>
+                    <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+                      {unplannedEncounter.formName}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
+        ) : (
+          <div>
+            <p>no visits planned</p>
+          </div>
+        )}
       </Paper>
     </Fragment>
   );
@@ -94,6 +117,9 @@ const mapStateToProps = state => ({
   plannedEncounters: state.programs.programEnrolment
     ? state.programs.programEnrolment.programEncounters
     : [],
+
+  unplannedEncounters: state.programs.programEncounter ? state.programs.programEncounter : [],
+
   program: state.programs.programEnrolment ? state.programs.programEnrolment.program : {},
   x: state
 });

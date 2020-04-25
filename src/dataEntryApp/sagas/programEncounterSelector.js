@@ -1,4 +1,4 @@
-import { find, get, isNil } from "lodash";
+import { find, get, isNil, filter } from "lodash";
 
 export const selectProgramEncounterSubjectType = subjectTypeName => (
   state //Individual
@@ -15,17 +15,18 @@ export const selectProgram = programName => state =>
   );
 
 //it is returning another funciton
-export const selectProgramEncounterFormMapping = (subjectTypeuuid, programUuid) => state =>
-  find(
+export const selectProgramEncounterFormMapping = (subjectType, programUuid) => state =>
+  filter(
     //get takes state from store you can print this
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     (
       fm //this is function fm is parameter it is just like map form uuid from saga
     ) =>
       !isNil(fm.programUUID) &&
-      (fm.subjectTypeUUID === subjectTypeuuid &&
+      (fm.subjectTypeUUID === subjectType.uuid &&
         fm.programUUID === programUuid &&
         fm.formType === "ProgramEncounter")
+
     //&&
     //fm.formUUID === "23d8763d-4759-4c7d-bb46-d57a1ee58673"
   );
@@ -46,6 +47,8 @@ export const selectProgramEncounterFormMappingForSubjectType = (
 ) => state => {
   //const program = selectProgramUUID(programName)(state);
   console.log("inside programE selector >> select... method");
+  console.log(selectProgramEncounterSubjectType(subjectTypeName)(state));
+  console.log(programUuid);
   return selectProgramEncounterFormMapping(
     selectProgramEncounterSubjectType(subjectTypeName)(state),
     programUuid
