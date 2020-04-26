@@ -14,13 +14,25 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DropDown = ({ name, value, onChange, options, style, required = true, disabled = false }) => {
+const DropDown = ({
+  name,
+  value,
+  onChange,
+  options,
+  style,
+  shrink = false,
+  required = true,
+  disabled = false
+}) => {
   const classes = useStyles();
 
   return (
     <FormControl required={required} style={style} className={classes.formControl}>
-      <InputLabel htmlFor={`${name}-required`}>{name}</InputLabel>
+      <InputLabel shrink={shrink} htmlFor={`${name}-required`}>
+        {name}
+      </InputLabel>
       <Select
+        id={`${name}-required`}
         disabled={disabled}
         native
         value={value}

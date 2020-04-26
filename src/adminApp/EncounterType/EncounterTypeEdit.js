@@ -20,6 +20,8 @@ import FormControl from "@material-ui/core/FormControl";
 import _ from "lodash";
 import SelectForm from "../SubjectType/SelectForm";
 import {
+  findEncounterCancellationForms,
+  findEncounterForms,
   findProgramEncounterCancellationForm,
   findProgramEncounterCancellationForms,
   findProgramEncounterForm,
@@ -137,6 +139,45 @@ const EncounterTypeEdit = props => {
     }
   };
 
+  function getCancellationForms() {
+    return _.isEmpty(programT)
+      ? findEncounterCancellationForms(formList)
+      : findProgramEncounterCancellationForms(formList);
+  }
+
+  function getEncounterForms() {
+    return _.isEmpty(programT) ? findEncounterForms(formList) : findProgramEncounterForms(formList);
+  }
+
+  function resetValue(type) {
+    dispatch({
+      type,
+      payload: null
+    });
+  }
+
+  function updateProgram(program) {
+    setProgramT(program);
+    const formType = _.get(encounterType, "programEncounterForm.formType");
+    const cancelFormType = _.get(encounterType, "programEncounterCancellationForm.formType");
+
+    if (_.isEmpty(programT)) {
+      if (formType === "ProgramEncounter") {
+        resetValue("programEncounterForm");
+      }
+      if (cancelFormType === "ProgramEncounterCancellation") {
+        resetValue("programEncounterCancellationForm");
+      }
+    } else {
+      if (formType === "Encounter") {
+        resetValue("programEncounterForm");
+      }
+      if (cancelFormType === "IndividualEncounterCancellation") {
+        resetValue("programEncounterCancellationForm");
+      }
+    }
+  }
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -196,10 +237,11 @@ const EncounterTypeEdit = props => {
             <Select
               label="Select program"
               value={_.isEmpty(programT) ? "" : programT}
-              onChange={event => setProgramT(event.target.value)}
+              onChange={event => updateProgram(event.target.value)}
               style={{ width: "200px" }}
               required
             >
+              <MenuItem value={""}>Select Program</MenuItem>
               {program.map(prog => {
                 return (
                   <MenuItem value={prog} key={prog.uuid}>
@@ -210,33 +252,29 @@ const EncounterTypeEdit = props => {
             </Select>
           </FormControl>
           <p />
-          <FormControl>
-            <SelectForm
-              label={"Select Encounter form"}
-              value={_.get(encounterType, "programEncounterForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programEncounterForm",
-                  payload: selectedForm
-                })
-              }
-              formList={findProgramEncounterForms(formList)}
-            />
-          </FormControl>
+          <SelectForm
+            label={"Select Encounter form"}
+            value={_.get(encounterType, "programEncounterForm.formName")}
+            onChange={selectedForm =>
+              dispatch({
+                type: "programEncounterForm",
+                payload: selectedForm
+              })
+            }
+            formList={getEncounterForms()}
+          />
           <p />
-          <FormControl>
-            <SelectForm
-              label={"Select Encounter cancellation form"}
-              value={_.get(encounterType, "programEncounterCancellationForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programEncounterCancellationForm",
-                  payload: selectedForm
-                })
-              }
-              formList={findProgramEncounterCancellationForms(formList)}
-            />
-          </FormControl>
+          <SelectForm
+            label={"Select Encounter cancellation form"}
+            value={_.get(encounterType, "programEncounterCancellationForm.formName")}
+            onChange={selectedForm =>
+              dispatch({
+                type: "programEncounterCancellationForm",
+                payload: selectedForm
+              })
+            }
+            formList={getCancellationForms()}
+          />
           <p />
           <FormLabel>Enrolment eligibility check rule</FormLabel>
           <Editor

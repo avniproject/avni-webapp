@@ -103,6 +103,7 @@ const ProgramCreate = props => {
               id="name"
               label="Name"
               autoComplete="off"
+              required
               value={program.name}
               onChange={event => dispatch({ type: "name", payload: event.target.value })}
             />

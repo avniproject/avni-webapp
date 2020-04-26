@@ -140,7 +140,6 @@ const SubjectTypeEdit = props => {
               />
             </Grid>
           </Grid>
-          <p />
           <Grid component="label" container alignItems="center" spacing={2}>
             <Grid>Group</Grid>
             <Grid>
@@ -151,6 +150,18 @@ const SubjectTypeEdit = props => {
               />
             </Grid>
           </Grid>
+          <p />
+          <SelectForm
+            label={"Registration form name"}
+            value={_.get(subjectType, "registrationForm.formName")}
+            onChange={selectedForm =>
+              dispatch({
+                type: "registrationForm",
+                payload: selectedForm
+              })
+            }
+            formList={findRegistrationForms(formList)}
+          />
           <p />
           <SelectForm
             value={_.get(subjectType, "registrationForm.formName")}

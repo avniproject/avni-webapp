@@ -47,8 +47,13 @@ export const findRegistrationForms = (formList = []) =>
 export const findProgramEncounterForms = (formList = []) =>
   findFormsOfType(formList, "ProgramEncounter");
 
+export const findEncounterForms = (formList = []) => findFormsOfType(formList, "Encounter");
+
 export const findProgramEncounterCancellationForms = (formList = []) =>
   findFormsOfType(formList, "ProgramEncounterCancellation");
+
+export const findEncounterCancellationForms = (formList = []) =>
+  findFormsOfType(formList, "IndividualEncounterCancellation");
 
 export const findProgramEnrolmentForms = (formList = []) =>
   findFormsOfType(formList, "ProgramEnrolment");
