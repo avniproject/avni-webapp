@@ -5,7 +5,6 @@ import org.openchs.dao.GroupRoleRepository;
 import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.GroupRole;
-import org.openchs.domain.Individual;
 import org.openchs.domain.OperationalSubjectType;
 import org.openchs.domain.SubjectType;
 import org.openchs.service.FormMappingParameterObject;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -115,7 +113,12 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         operationalSubjectType.setSubjectType(subjectType);
         operationalSubjectTypeRepository.save(operationalSubjectType);
 
-        formMappingService.saveFormMapping(new FormMappingParameterObject(subjectType.getUuid(), null, null), formService.getOrCreateForm(request.getRegistrationFormUuid(), String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
+        formMappingService.saveFormMapping(
+                new FormMappingParameterObject(subjectType.getUuid(), null, null),
+                new FormMappingParameterObject(subjectType.getUuid(), null, null),
+                formService.getOrCreateForm(request.getRegistrationFormUuid(),
+                        String.format("%s Registration", subjectType.getName()),
+                        FormType.IndividualProfile));
 
         return ResponseEntity.ok(SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType));
     }
@@ -151,7 +154,11 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         operationalSubjectType.setName(request.getName());
         operationalSubjectTypeRepository.save(operationalSubjectType);
 
-        formMappingService.saveFormMapping(new FormMappingParameterObject(subjectType.getUuid(), null, null), formService.getOrCreateForm(request.getRegistrationFormUuid(), String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
+        formMappingService.saveFormMapping(
+                new FormMappingParameterObject(subjectType.getUuid(), null, null),
+                new FormMappingParameterObject(subjectType.getUuid(), null, null),
+                formService.getOrCreateForm(request.getRegistrationFormUuid(),
+                        String.format("%s Registration", subjectType.getName()), FormType.IndividualProfile));
 
         return ResponseEntity.ok(SubjectTypeContractWeb.fromOperationalSubjectType(operationalSubjectType));
     }

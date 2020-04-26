@@ -144,11 +144,22 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
     }
 
     private void saveFormsAndMapping(EncounterTypeContractWeb request, EncounterType encounterType) {
-        Form encounterForm = formService.getOrCreateForm(request.getProgramEncounterFormUuid(), String.format("%s Encounter", encounterType.getName()), FormType.ProgramEncounter);
-        formMappingSevice.saveFormMapping(new FormMappingParameterObject(request.getSubjectTypeUuid(), request.getProgramUuid(), encounterType.getUuid()), encounterForm);
+        FormType encounterFormType = request.getProgramUuid() == null?
+                FormType.Encounter: FormType.ProgramEncounter;
+        FormType cancellationFormType = request.getProgramUuid() == null?
+                FormType.IndividualEncounterCancellation: FormType.ProgramEncounterCancellation;
 
-        Form cancellationForm = formService.getOrCreateForm(request.getProgramEncounterCancelFormUuid(), String.format("%s Encounter Cancellation", encounterType.getName()), FormType.ProgramEncounterCancellation);
-        formMappingSevice.saveFormMapping(new FormMappingParameterObject(request.getSubjectTypeUuid(), request.getProgramUuid(), encounterType.getUuid()), cancellationForm);
+        Form encounterForm = formService.getOrCreateForm(request.getProgramEncounterFormUuid(), String.format("%s Encounter", encounterType.getName()), encounterFormType);
+        formMappingSevice.saveFormMapping(
+                new FormMappingParameterObject(request.getSubjectTypeUuid(), request.getProgramUuid(), encounterType.getUuid()),
+                new FormMappingParameterObject(null, null, encounterType.getUuid()),
+                encounterForm);
+
+        Form cancellationForm = formService.getOrCreateForm(request.getProgramEncounterCancelFormUuid(), String.format("%s Encounter Cancellation", encounterType.getName()), cancellationFormType);
+        formMappingSevice.saveFormMapping(
+                new FormMappingParameterObject(request.getSubjectTypeUuid(), request.getProgramUuid(), encounterType.getUuid()),
+                new FormMappingParameterObject(null, null, encounterType.getUuid()),
+                cancellationForm);
     }
 
     @DeleteMapping(value = "/web/encounterType/{id}")

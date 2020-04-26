@@ -98,14 +98,20 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
 
     private void saveFormsAndMapping(@RequestBody ProgramContractWeb request, Program program) {
         Form enrolmentForm = formService.getOrCreateForm(request.getProgramEnrolmentFormUuid(),
-                String.format("%s Encounter", program.getName()),
+                String.format("%s Enrolment", program.getName()),
                 FormType.ProgramEnrolment);
-        formMappingService.saveFormMapping(new FormMappingParameterObject(request.getSubjectTypeUuid(), program.getUuid(), null), enrolmentForm);
+        formMappingService.saveFormMapping(
+                new FormMappingParameterObject(request.getSubjectTypeUuid(), program.getUuid(), null),
+                new FormMappingParameterObject(null, program.getUuid(), null),
+                enrolmentForm);
 
         Form exitForm = formService.getOrCreateForm(request.getProgramExitFormUuid(),
                 String.format("%s Exit", program.getName()),
                 FormType.ProgramExit);
-        formMappingService.saveFormMapping(new FormMappingParameterObject(request.getSubjectTypeUuid(), program.getUuid(), null), exitForm);
+        formMappingService.saveFormMapping(
+                new FormMappingParameterObject(request.getSubjectTypeUuid(), program.getUuid(), null),
+                new FormMappingParameterObject(null, program.getUuid(), null),
+                exitForm);
     }
 
     @PutMapping(value = "/web/program/{id}")

@@ -45,11 +45,31 @@ public class FormMappingService {
         this.formRepository = formRepository;
     }
 
-    public void saveFormMapping(FormMappingParameterObject parameters, Form form) {
+    public void saveFormMapping(FormMappingParameterObject parametersForNewMapping,
+                                FormMappingParameterObject mappingsToVoid,
+                                Form form) {
+        voidExistingFormMappings(mappingsToVoid, form);
+
+        saveMatchingFormMappings(parametersForNewMapping, form);
+    }
+
+    private void voidExistingFormMappings(FormMappingParameterObject mappingsToVoid, Form form) {
+        List<FormMapping> formMappingsToVoid = formMappingRepository.findRequiredFormMappings(
+                mappingsToVoid.subjectTypeUuid,
+                mappingsToVoid.programUuid,
+                mappingsToVoid.encounterTypeUuid,
+                form.getFormType()
+        );
+
+        formMappingsToVoid.forEach(formMapping -> formMapping.setVoided(true));
+        formMappingsToVoid.forEach(formMapping -> formMappingRepository.save(formMapping));
+    }
+
+    private void saveMatchingFormMappings(FormMappingParameterObject parametersForNewMapping, Form form) {
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(
-                parameters.subjectTypeUuid,
-                parameters.programUuid,
-                parameters.encounterTypeUuid,
+                parametersForNewMapping.subjectTypeUuid,
+                parametersForNewMapping.programUuid,
+                parametersForNewMapping.encounterTypeUuid,
                 form.getFormType());
         if (formMapping == null) {
             formMapping = new FormMapping();
@@ -57,9 +77,9 @@ public class FormMappingService {
             formMapping.setVoided(false);
         }
 
-        setSubjectTypeIfRequired(formMapping, parameters.subjectTypeUuid);
-        setProgramNameIfRequired(formMapping, form.getFormType(), parameters.programUuid);
-        setEncounterTypeIfRequired(formMapping, form.getFormType(), parameters.encounterTypeUuid);
+        setSubjectTypeIfRequired(formMapping, parametersForNewMapping.subjectTypeUuid);
+        setProgramIfRequired(formMapping, form.getFormType(), parametersForNewMapping.programUuid);
+        setEncounterTypeIfRequired(formMapping, form.getFormType(), parametersForNewMapping.encounterTypeUuid);
         formMapping.setForm(form);
 
         formMappingRepository.save(formMapping);
@@ -148,10 +168,9 @@ public class FormMappingService {
         }
     }
 
-    private void setProgramNameIfRequired(FormMapping formMapping, FormType formType, String programName) {
+    private void setProgramIfRequired(FormMapping formMapping, FormType formType, String programUuid) {
         if (formType.isLinkedToProgram()) {
-            Program program = programRepository.findByUuid(programName);
-            if (program == null) throw new ApiException("Program %s not found", programName);
+            Program program = programRepository.findByUuid(programUuid);
             formMapping.setProgram(program);
         }
     }

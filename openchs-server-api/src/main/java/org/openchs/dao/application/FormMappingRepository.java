@@ -60,5 +60,22 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
             "and fm.subjectType.uuid = :subjectTypeUUID " +
             "and f.formType = :formType " +
             "and fm.isVoided = false ")
-    FormMapping getRequiredFormMapping(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType);
+    FormMapping getRequiredFormMapping(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType);    //left join to fetch eagerly in first select
+
+    @Query("select fm from FormMapping fm " +
+            "left join fetch fm.form f " +
+            "left join fetch f.formElementGroups fg " +
+            "left join fetch fg.formElements fe " +
+            "left join fetch fe.concept q " +
+            "left join fetch q.conceptAnswers ca " +
+            "left join fetch ca.answerConcept a " +
+            "left join fetch fm.encounterType et " +
+            "left join fetch fm.program p " +
+            "left join fetch fm.subjectType s " +
+            "where (:encounterTypeUUID is null or fm.encounterType.uuid = :encounterTypeUUID) " +
+            "and (:programUUID is null or fm.program.uuid = :programUUID) " +
+            "and (:subjectTypeUUID is null or fm.subjectType.uuid = :subjectTypeUUID) " +
+            "and f.formType = :formType " +
+            "and fm.isVoided = false ")
+    List<FormMapping> findRequiredFormMappings(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType);
 }
