@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Entity
@@ -88,10 +89,21 @@ public class SubjectType extends OrganisationAwareEntity {
         return groupRoles.stream().map(GroupRoleContract::fromEntity).collect(Collectors.toList());
     }
 
+    @JsonIgnore
+    public List<String> getMemberSubjectUUIDs() {
+        return isGroup() ? groupRoles.stream()
+                .filter(gr -> !gr.getMemberSubjectType().isVoided())
+                .map(gr -> gr.getMemberSubjectType().getUuid()).collect(Collectors.toList()) : Collections.emptyList();
+    }
+
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})
     public interface SubjectTypeProjection extends BaseProjection {
         String getName();
 
         String getOperationalSubjectTypeName();
+
+        boolean isGroup();
+
+        String getMemberSubjectUUIDs();
     }
 }
