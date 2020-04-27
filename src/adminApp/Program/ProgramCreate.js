@@ -120,9 +120,9 @@ const ProgramCreate = props => {
             )}
             <p />
             <FormControl>
-              <InputLabel id="subjectType">Select subject type</InputLabel>
+              <InputLabel id="subjectType">Select subject type *</InputLabel>
               <Select
-                label="Select subject type"
+                label="Select subject type *"
                 value={_.isEmpty(subjectT) ? "" : subjectT}
                 onChange={event => setSubjectT(event.target.value)}
                 style={{ width: "200px" }}
