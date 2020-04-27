@@ -20,6 +20,67 @@ const useStyles = makeStyles(theme => ({
     marginTop: 20
   }
 }));
+
+export const CodedConceptUI = props => {
+  return (
+    <>
+      <FormControl>
+        <AutoSuggestSingleSelection
+          visibility={!props.answer.editable}
+          showAnswer={props.answer}
+          onChangeAnswerName={props.onChangeAnswerName}
+          index={props.index}
+          showSuggestionStartsWith={true}
+          placeholder="Enter answer"
+          label="Answer"
+        />
+        {props.answer.isEmptyAnswer && <FormHelperText error>Answer is required.</FormHelperText>}
+      </FormControl>
+      <FormControl>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={props.answer.abnormal}
+              onChange={e => props.onToggleAnswerField(e, props.index)}
+              value={props.answer.abnormal}
+              color="primary"
+              id="abnormal"
+            />
+          }
+          label="abnormal"
+          style={{ marginTop: 15, marginLeft: 2 }}
+        />
+      </FormControl>
+      <FormControl>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={props.answer.unique}
+              onChange={e => props.onToggleAnswerField(e, props.index)}
+              value={props.answer.unique}
+              color="primary"
+              id="unique"
+            />
+          }
+          label="unique"
+          style={{ marginTop: 15 }}
+        />
+      </FormControl>
+      <FormControl>
+        <IconButton
+          aria-label="delete"
+          onClick={() => {
+            props.onDeleteAnswer(props.index);
+          }}
+          style={{ marginTop: 10 }}
+        >
+          <DeleteIcon fontSize="inherit" />
+        </IconButton>
+      </FormControl>
+    </>
+  );
+};
+
 export default function CodedConcept(props) {
   return (
     <>
@@ -40,61 +101,14 @@ export default function CodedConcept(props) {
                           {...provided.dragHandleProps}
                           ref={provided.innerRef}
                         >
-                          <FormControl>
-                            <AutoSuggestSingleSelection
-                              visibility={!answer.editable}
-                              showAnswer={answer}
-                              onChangeAnswerName={props.onChangeAnswerName}
-                              index={index}
-                              showSuggestionStartsWith={true}
-                              placeholder="Enter answer"
-                              label="Answer"
-                            />
-                            {answer.isEmptyAnswer && (
-                              <FormHelperText error>Answer is required.</FormHelperText>
-                            )}
-                          </FormControl>
-                          <FormControl>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={answer.abnormal}
-                                  onChange={e => props.onToggleAnswerField(e, index)}
-                                  value={answer.abnormal}
-                                  color="primary"
-                                  id="abnormal"
-                                />
-                              }
-                              label="abnormal"
-                              style={{ marginTop: 15, marginLeft: 2 }}
-                            />
-                          </FormControl>
-                          <FormControl>
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={answer.unique}
-                                  onChange={e => props.onToggleAnswerField(e, index)}
-                                  value={answer.unique}
-                                  color="primary"
-                                  id="unique"
-                                />
-                              }
-                              label="unique"
-                              style={{ marginTop: 15 }}
-                            />
-                          </FormControl>
-                          <FormControl>
-                            <IconButton
-                              aria-label="delete"
-                              onClick={() => {
-                                props.onDeleteAnswer(index);
-                              }}
-                              style={{ marginTop: 10 }}
-                            >
-                              <DeleteIcon fontSize="inherit" />
-                            </IconButton>
-                          </FormControl>
+                          <CodedConceptUI
+                            answer={answer}
+                            index={index}
+                            onDeleteAnswer={props.onDeleteAnswer}
+                            onAddAnswer={props.onAddAnswer}
+                            onChangeAnswerName={props.onChangeAnswerName}
+                            onToggleAnswerField={props.onToggleAnswerField}
+                          />
                         </Grid>
                       )}
                     </Draggable>

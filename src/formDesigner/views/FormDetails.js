@@ -543,6 +543,18 @@ class FormDetails extends Component {
             unit: "",
             error: {}
           },
+          inlineCodedAnswers: [
+            {
+              name: "",
+              uuid: "",
+              unique: false,
+              abnormal: false,
+              editable: true,
+              voided: false,
+              order: 0,
+              isEmptyAnswer: false
+            }
+          ],
           showConceptLibrary: "",
           availableDataTypes: this.state.availableDataTypes,
           inlineConceptName: "",
