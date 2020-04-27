@@ -165,6 +165,8 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         operationalProgramRepository.save(operationalProgram);
         programRepository.save(program);
 
+        formMappingService.voidExistingFormMappings(new FormMappingParameterObject(null, program.getUuid(), null), null);
+
         return ResponseEntity.ok(null);
     }
 

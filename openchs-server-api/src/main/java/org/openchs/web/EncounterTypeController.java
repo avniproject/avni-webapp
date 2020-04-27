@@ -180,6 +180,8 @@ public class EncounterTypeController extends AbstractController<EncounterType> i
         operationalEncounterTypeRepository.save(operationalEncounterType);
         encounterTypeRepository.save(encounterType);
 
+        formMappingSevice.voidExistingFormMappings(new FormMappingParameterObject(null, null, encounterType.getUuid()), null);
+
         return ResponseEntity.ok(null);
     }
 }

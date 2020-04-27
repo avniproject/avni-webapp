@@ -183,6 +183,9 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         if (subjectType.isGroup()) {
             voidAllGroupRoles(subjectType);
         }
+
+        formMappingService.voidExistingFormMappings(new FormMappingParameterObject(subjectType.getUuid(), null, null), null);
+
         return ResponseEntity.ok(null);
     }
 

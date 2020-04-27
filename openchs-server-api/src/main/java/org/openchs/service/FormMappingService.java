@@ -53,12 +53,13 @@ public class FormMappingService {
         saveMatchingFormMappings(parametersForNewMapping, form);
     }
 
-    private void voidExistingFormMappings(FormMappingParameterObject mappingsToVoid, Form form) {
+    public void voidExistingFormMappings(FormMappingParameterObject mappingsToVoid, Form form) {
+        FormType formType = form !=null? form.getFormType(): null;
         List<FormMapping> formMappingsToVoid = formMappingRepository.findRequiredFormMappings(
                 mappingsToVoid.subjectTypeUuid,
                 mappingsToVoid.programUuid,
                 mappingsToVoid.encounterTypeUuid,
-                form.getFormType()
+                formType
         );
 
         formMappingsToVoid.forEach(formMapping -> formMapping.setVoided(true));
