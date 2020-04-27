@@ -8,7 +8,7 @@ export const useFormMappings = cb =>
       .then(response => {
         const formMap = response.data.formMappings;
         formMap.map(l => (l["isVoided"] = false));
-        cb(formMap, response.data.forms);
+        cb(formMap, response.data.forms, response.data.subjectTypes);
       })
       .catch(error => {});
   }, []);
