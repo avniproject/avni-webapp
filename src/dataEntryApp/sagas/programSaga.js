@@ -3,13 +3,15 @@ import {
   types,
   setPrograms,
   setProgramEnrolment,
-  setProgramEncounter
+  setProgramEncounter,
+  setProgramEncounterForm
 } from "../reducers/programReducer";
 import api from "../api";
 import {
   selectProgramEncounterFormMappingForSubjectType,
   selectProgramUUID
 } from "./programEncounterSelector";
+import { mapForm } from "../../common/adapters";
 
 export default function*() {
   yield all(
@@ -17,7 +19,8 @@ export default function*() {
       programFetchWatcher,
       //programEncounterOnLoadWatcher,
       programEnrolmentFetchWatcher,
-      programEncounterFetchWatcher
+      programEncounterFetchWatcher,
+      programEncounterFetchFormWatcher
     ].map(fork)
   );
 }
@@ -69,4 +72,15 @@ export function* programEnrolmentFetchWorker({ enrolmentUuid }) {
   console.log("programVisists", programEnrolment);
   yield put(setProgramEnrolment(programEnrolment));
   //yield put(setPrograms(programs));
+}
+
+export function* programEncounterFetchFormWatcher() {
+  yield takeLatest(types.GET_PROGRAM_ENCOUNTER_FORM, programEncounterFetchFormWorker);
+}
+
+export function* programEncounterFetchFormWorker({ formUuid }) {
+  const programEncounterForm = yield call(api.fetchForm, formUuid);
+  console.log("Here we are getting dynamic form elements");
+  console.log(programEncounterForm);
+  yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
 }

@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableHead, TableCell, TableRow, Typography } from "@material-ui/core";
-import { LineBreak } from "../../../../common/components/utils";
+import { LineBreak, InternalLink } from "../../../../common/components/utils";
 import { ModelGeneral as General } from "avni-models";
 const useStyles = makeStyles(theme => ({
   root: {
@@ -93,7 +93,11 @@ const NewProgramVisit = ({ match, ...props }) => {
                 {props.unplannedEncounters.map(unplannedEncounter => (
                   <TableRow>
                     <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-                      {unplannedEncounter.formName}
+                      <InternalLink
+                        to={`/app/subject/programEncounter?uuid=${unplannedEncounter.formUUID}`}
+                      >
+                        {unplannedEncounter.formName}
+                      </InternalLink>
                     </TableCell>
                   </TableRow>
                 ))}
