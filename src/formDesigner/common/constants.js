@@ -2,7 +2,7 @@ export const constFormType = {
   ChecklistItem: "Check list item",
   Encounter: "Encounter",
   ProgramEncounter: "Program encounter",
-  IndividualProfile: "Individual Profile (Registration)",
+  IndividualProfile: "Subject Registration",
   ProgramEnrolment: "Program enrolment",
   ProgramExit: "Program exit",
   ProgramEncounterCancellation: "Program encounter cancellation",
