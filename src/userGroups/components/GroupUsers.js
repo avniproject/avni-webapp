@@ -69,9 +69,9 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
   };
 
   const columns = [
-    { title: "Name", field: "name" },
-    { title: "Login ID", field: "userName" },
-    { title: "Email", field: "email" }
+    { title: "Name", field: "name", searchable: false },
+    { title: "Login ID", field: "userName", searchable: true },
+    { title: "Email", field: "email", searchable: false }
   ];
   return (
     <div>
