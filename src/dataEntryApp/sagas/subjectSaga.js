@@ -56,9 +56,9 @@ export function* enrolmentOnLoadWatcher() {
   yield takeLatest(enrolmentTypes.ON_LOAD, setupNewEnrolmentWorker);
 }
 
-function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
+function* setupNewEnrolmentWorker({ subjectTypeName, programName, formType }) {
   const formMapping = yield select(
-    selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName)
+    selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
   );
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));

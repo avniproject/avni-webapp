@@ -25,7 +25,7 @@ const programDetails = ({ tabPanelValue, programData }) => {
         ? programData.enrolments.map((element, index) => (
             <Fragment key={index}>
               <TabPanel value={tabPanelValue} index={index}>
-                <ProgramView programData={element} key={index} />
+                <ProgramView subjectUuid={programData.uuid} programData={element} key={index} />
               </TabPanel>
             </Fragment>
           ))

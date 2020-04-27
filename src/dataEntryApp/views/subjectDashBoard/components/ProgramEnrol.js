@@ -68,13 +68,14 @@ const ProgramEnrol = ({
     setValue(event.target.value);
   };
   const classes = useStyles();
+  const formType = match.queryParams.formType;
 
   useEffect(() => {
     //onLoad("Individual", match.queryParams.programName);
     //getSubjectProfile(match.queryParams.uuid);
 
     (async function fetchData() {
-      await onLoad("Individual", match.queryParams.programName);
+      await onLoad("Individual", match.queryParams.programName, formType);
       getSubjectProfile(match.queryParams.uuid);
 
       // let programEnrolment = BrowserStore.fetchProgramEnrolment();
@@ -92,7 +93,10 @@ const ProgramEnrol = ({
           </Typography>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
-              {enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
+              {enrolForm &&
+              programEnrolment &&
+              programEnrolment.enrolmentDateTime &&
+              formType === "ProgramEnrolment" ? (
                 <ProgramEnrolmentForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
@@ -114,6 +118,8 @@ const ProgramEnrol = ({
                     />
                   </MuiPickersUtilsProvider>
                 </ProgramEnrolmentForm>
+              ) : enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
+                <ProgramEnrolmentForm />
               ) : (
                 <div>Loading</div>
               )}

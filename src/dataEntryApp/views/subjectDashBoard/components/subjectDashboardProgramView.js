@@ -13,6 +13,7 @@ import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -81,7 +82,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({ programData }) => {
+const ProgramView = ({ programData, subjectUuid }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [expandedPanel, setExpanded] = React.useState("");
@@ -124,7 +125,13 @@ const ProgramView = ({ programData }) => {
               <List>
                 <Observations observations={programData ? programData.observations : ""} />
               </List>
-              <Button color="primary">{t("void")}</Button>
+              <Link
+                to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                  programData.program.operationalProgramName
+                }&formType=ProgramExit`}
+              >
+                <Button color="primary">{t("Exit")}</Button>
+              </Link>
               <Button color="primary">{t("edit")}</Button>
             </Grid>
           </ExpansionPanelDetails>

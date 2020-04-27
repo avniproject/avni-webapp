@@ -15,7 +15,7 @@ export const selectProgram = programName => state =>
   );
 
 //it is returning another funciton
-export const selectEnrolmentFormMapping = (subjectType, programUuid) => state =>
+export const selectEnrolmentFormMapping = (subjectType, programUuid, formType) => state =>
   find(
     //get takes state from store you can print this
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
@@ -25,7 +25,7 @@ export const selectEnrolmentFormMapping = (subjectType, programUuid) => state =>
       !isNil(fm.programUUID) &&
       (fm.subjectTypeUUID === subjectType.uuid &&
         fm.programUUID === programUuid &&
-        fm.formType === "ProgramEnrolment")
+        fm.formType === formType)
     //&&
     //fm.formUUID === "23d8763d-4759-4c7d-bb46-d57a1ee58673"
   );
@@ -40,11 +40,16 @@ export const selectProgramUUID = programName => state =>
     ) => fm.displayName === programName
   );
 
-export const selectEnrolmentFormMappingForSubjectType = (subjectTypeName, programName) => state => {
+export const selectEnrolmentFormMappingForSubjectType = (
+  subjectTypeName,
+  programName,
+  formType
+) => state => {
   const program = selectProgramUUID(programName)(state);
   return selectEnrolmentFormMapping(
     selectEnrolSubjectTypeFromName(subjectTypeName)(state),
-    program.uuid
+    program.uuid,
+    formType
   )(state);
 };
 

@@ -25,10 +25,11 @@ export const saveProgramEnrolment = () => ({
   type: types.SAVE_PROGRAM_ENROLMENT
 });
 
-export const onLoad = (subjectTypeName, programName) => ({
+export const onLoad = (subjectTypeName, programName, formType) => ({
   type: types.ON_LOAD,
   subjectTypeName,
-  programName
+  programName,
+  formType
 });
 
 export const setEnrolForm = form => ({
