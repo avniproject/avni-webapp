@@ -9,7 +9,8 @@ export const types = {
   GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`,
   SET_PROGRAM_ENCOUNTER: `${prefix}SET_PROGRAM_ENCOUNTER`,
   GET_PROGRAM_ENCOUNTER_FORM: `${prefix}GET_PROGRAM_ENCOUNTER_FORM`,
-  SET_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_PROGRAM_ENCOUNTER_FORM`
+  SET_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_PROGRAM_ENCOUNTER_FORM`,
+  UPDATE_OBS: `${prefix}UPDATE_OBS`
 };
 
 export const getPrograms = subjectUuid => ({
@@ -51,6 +52,12 @@ export const getProgramEncounterForm = formUuid => ({
 export const setProgramEncounterForm = programEncounterForm => ({
   type: types.SET_PROGRAM_ENCOUNTER_FORM,
   programEncounterForm
+});
+
+export const updateObs = (formElement, value) => ({
+  type: types.UPDATE_OBS,
+  formElement,
+  value
 });
 
 export default function(state = {}, action) {

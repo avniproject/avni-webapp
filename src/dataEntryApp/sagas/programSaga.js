@@ -4,7 +4,8 @@ import {
   setPrograms,
   setProgramEnrolment,
   setProgramEncounter,
-  setProgramEncounterForm
+  setProgramEncounterForm,
+  getProgramEncounter
 } from "../reducers/programReducer";
 import api from "../api";
 import {
@@ -12,6 +13,9 @@ import {
   selectProgramUUID
 } from "./programEncounterSelector";
 import { mapForm } from "../../common/adapters";
+import { find, get, isNil, filter } from "lodash";
+import { ProgramEncounter, ProgramEnrolment } from "avni-models";
+import { ModelGeneral as General } from "avni-models";
 
 export default function*() {
   yield all(
@@ -83,4 +87,51 @@ export function* programEncounterFetchFormWorker({ formUuid }) {
   console.log("Here we are getting dynamic form elements");
   console.log(programEncounterForm);
   yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
+
+  const formMapping = yield select(state =>
+    find(
+      //get takes state from store you can print this
+      get(state, "dataEntry.metadata.operationalModules.formMappings"),
+      (
+        fm //this is function fm is parameter it is just like map form uuid from saga
+      ) => !isNil(formUuid) && (fm.formUUID === formUuid && fm.formType === "ProgramEncounter")
+    )
+  );
+
+  const encounterType = yield select(state =>
+    find(
+      //get takes state from store you can print this
+      get(state, "dataEntry.metadata.operationalModules.encounterTypes"),
+      (
+        eT //this is function fm is parameter it is just like map form uuid from saga
+      ) => eT.uuid === formMapping.encounterTypeUUID
+    )
+  );
+
+  const unplannedVisit = new ProgramEncounter();
+  unplannedVisit.uuid = General.randomUUID();
+  unplannedVisit.encounterType = encounterType;
+  unplannedVisit.name = unplannedVisit.encounterType.name;
+  unplannedVisit.encounterDateTime = new Date();
+  // const programEnrolment = new ProgramEnrolment();
+  // programEnrolment.uuid = enrolmentUuid;
+  //unplannedVisit.programEnrolment = programEnrolment;
+  unplannedVisit.observations = [];
+
+  //yield put.resolve(setProggramEncounterObj(unplannedVisit));
+
+  console.log("unplanned visit", unplannedVisit);
+
+  yield select(state => {
+    console.log("state", state);
+  });
+
+  // const program = yield select(selectProgram(programName));
+
+  // const state = yield select();
+  // const subject = state.dataEntry.subjectProfile.subjectProfile;
+  // subject.subjectType = SubjectType.create("Individual");
+
+  // let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
+  // yield put.resolve(setProgramEnrolment(programEnrolment));
 }

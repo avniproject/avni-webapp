@@ -9,7 +9,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
-//import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
+import ProgramEncounterForm from "./ProgramEncounterForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
@@ -64,20 +64,22 @@ const ProgramEncounter = ({ match, getProgramEncounterForm, programEncounterForm
         <div className={classes.tableView}>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
-              {/* {enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
-                <ProgramEnrolmentForm>
+              {/* {enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? ( */}
+              {programEncounterForm ? (
+                <ProgramEncounterForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}
-                      label="Enrolment Date"
+                      label="Visit Date"
                       margin="none"
                       size="small"
                       id="date-picker-dialog"
                       format="MM/dd/yyyy"
-                      name="enrolmentDateTime"
-                      value={new Date(programEnrolment.enrolmentDateTime)}
+                      name="visitDateTime"
+                      value={new Date()}
+                      // value={new Date(programEnrolment.enrolmentDateTime)}
                       onChange={date => {
-                        updateProgramEnrolment("enrolmentDateTime", new Date(date));
+                        //updateProgramEnrolment("enrolmentDateTime", new Date(date));
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -85,10 +87,10 @@ const ProgramEncounter = ({ match, getProgramEncounterForm, programEncounterForm
                       }}
                     />
                   </MuiPickersUtilsProvider>
-                </ProgramEnrolmentForm>
+                </ProgramEncounterForm>
               ) : (
                 <div>Loading</div>
-              )} */}
+              )}
             </Grid>
           </Grid>
         </div>
@@ -100,6 +102,7 @@ const ProgramEncounter = ({ match, getProgramEncounterForm, programEncounterForm
 const mapStateToProps = state => ({
   //programEncounterForm: state.dataEntry.programReducer.programEncounterForm
   programEncounterForm: state.programs.programEncounterForm
+  // programEncounter: state.programs.programEncounter
 });
 
 const mapDispatchToProps = {
@@ -114,5 +117,3 @@ export default withRouter(
     )(ProgramEncounter)
   )
 );
-
-//export ProgramEncounter
