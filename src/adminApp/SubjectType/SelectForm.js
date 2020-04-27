@@ -29,7 +29,6 @@ const SelectForm = ({ label = "Please select", formList, value, onChange }) => {
           disabled={shouldCreateNewForm}
           name={label}
           value={value}
-          shrink={!_.isEmpty(value)}
           onChange={selectedFormName =>
             onChange(_.find(formList, form => form.formName === selectedFormName))
           }
