@@ -170,16 +170,6 @@ const SubjectTypeEdit = props => {
             formList={findRegistrationForms(formList)}
           />
           <p />
-          <SelectForm
-            value={_.get(subjectType, "registrationForm.formName")}
-            onChange={selectedForm =>
-              dispatch({
-                type: "registrationForm",
-                payload: selectedForm
-              })
-            }
-            formList={findRegistrationForms(formList)}
-          />
           {subjectType.group && (
             <>
               <Grid component="label" container alignItems="center" spacing={2}>

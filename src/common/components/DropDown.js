@@ -15,16 +15,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DropDown = ({
-  name,
-  value,
-  onChange,
-  options,
-  style,
-  shrink = false,
-  required = true,
-  disabled = false
-}) => {
+const DropDown = ({ name, value, onChange, options, style, required = true, disabled = false }) => {
   const classes = useStyles();
 
   return (
