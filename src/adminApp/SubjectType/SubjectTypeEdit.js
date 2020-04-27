@@ -17,7 +17,6 @@ import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
 import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
-import { default as UUID } from "uuid";
 import _ from "lodash";
 import SelectForm from "./SelectForm";
 
@@ -32,10 +31,12 @@ const SubjectTypeEdit = props => {
   const [formList, setFormList] = useState([]);
   const [formMappings, setFormMappings] = useState([]);
   const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(false);
+  const [subjectTypes, setSubjectTypes] = useState([]);
 
-  const consumeFormMappingResult = (formMap, forms) => {
+  const consumeFormMappingResult = (formMap, forms, subjectTypes) => {
     setFormMappings(formMap);
     setFormList(forms);
+    setSubjectTypes(subjectTypes);
   };
 
   useFormMappings(consumeFormMappingResult);
@@ -110,6 +111,12 @@ const SubjectTypeEdit = props => {
     let payload = findRegistrationForm(formMappings, subjectType);
     dispatch({ type: "registrationForm", payload: payload });
   }
+
+  const disableDelete = _.find(
+    subjectTypes,
+    ({ group, memberSubjectUUIDs }) =>
+      group && _.includes(memberSubjectUUIDs.split(","), subjectType.uuid)
+  );
 
   return (
     <>
@@ -212,7 +219,18 @@ const SubjectTypeEdit = props => {
             </Button>
           </Grid>
           <Grid item sm={11}>
-            <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()}>
+            <Button
+              disabled={!_.isEmpty(disableDelete)}
+              style={
+                !_.isEmpty(disableDelete)
+                  ? { float: "right" }
+                  : {
+                      float: "right",
+                      color: "red"
+                    }
+              }
+              onClick={() => onDelete()}
+            >
               <DeleteIcon /> Delete
             </Button>
           </Grid>
