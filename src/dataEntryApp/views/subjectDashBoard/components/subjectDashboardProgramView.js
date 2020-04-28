@@ -110,12 +110,12 @@ const ProgramView = ({ programData }) => {
             // }`}
             to={{
               pathname: "/app/subject/newProgramVisit",
-              search: `?uuid=${programData.uuid}&programUuid=${programData.program.uuid}`,
+              search: `?uuid=${programData.uuid}&programUuid=${programData.program.uuid}`
 
-              state: {
-                enrolmentUuid: `${programData.uuid}`,
-                programUuid: `${programData.program.uuid}`
-              }
+              // state: {
+              //   enrolmentUuid: `${programData.uuid}`,
+              //   programUuid: `${programData.program.uuid}`
+              // }
             }}
             noUnderline
           >

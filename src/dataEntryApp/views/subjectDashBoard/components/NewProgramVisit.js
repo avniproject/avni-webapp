@@ -5,11 +5,14 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getProgramEnrolment, getProgramEncounter } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import moment from "moment";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableHead, TableCell, TableRow, Typography } from "@material-ui/core";
 import { LineBreak, InternalLink } from "../../../../common/components/utils";
-import { ModelGeneral as General } from "avni-models";
+import { ModelGeneral as General, ProgramEncounter, ProgramEnrolment } from "avni-models";
+import NewProgramVisitMenuView from "./NewProgramVisitMenuView";
+
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(3, 2),
@@ -23,22 +26,65 @@ const NewProgramVisit = ({ match, ...props }) => {
 
   const classes = useStyles();
 
+  const plannedEncounterList = [];
+  const unplannedEncounterList = [];
+
   useEffect(() => {
-    console.log("Heloo I am at program visit");
+    console.log("Heloo I am at New program visit");
     // props.getProgramEnrolment(match.queryParams.uuid);
     //props.getProgramEncounter("Individual", props.program.uuid);
 
-    (async function fetchData() {
-      await props.getProgramEnrolment(match.queryParams.uuid);
-      console.log("NewProgramEncounter ...");
-      console.log(props);
-      props.getProgramEncounter("Individual", match.queryParams.programUuid);
-      // let programEnrolment = BrowserStore.fetchProgramEnrolment();
-      // setProgramEnrolment(programEnrolment);
-    })();
+    // (async function fetchData() {
+    //   await props.getProgramEnrolment(match.queryParams.uuid);
+    //   props.getProgramEncounter("Individual", match.queryParams.programUuid);
+    //   // let programEnrolment = BrowserStore.fetchProgramEnrolment();
+    //   // setProgramEnrolment(programEnrolment);
+    // })();
+    //For Planned Encounters List : To get list of ProgramEncounters from api
+    props.getProgramEnrolment(match.queryParams.uuid);
+    //For Unplanned Encounters List : To get possible encounters from FormMapping
+    // Using form type as "ProgramEncounter", program uuid, subject type uuid
+    props.getProgramEncounter("Individual", match.queryParams.programUuid);
   }, []);
   console.log("program", props.program);
   console.log("plannedVisits", props.plannedEncounters);
+  //Creating New programEncounter Object for Planned Encounter
+  props.plannedEncounters.map(planEncounter => {
+    const plannedVisit = new ProgramEncounter();
+    plannedVisit.uuid = planEncounter.uuid;
+    plannedVisit.encounterType = planEncounter.encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
+    plannedVisit.encounterDateTime = moment().toDate(); //new Date(); or planEncounter.encounterDateTime
+    plannedVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
+    plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
+    plannedVisit.name = planEncounter.name;
+    const programEnrolment = new ProgramEnrolment();
+    programEnrolment.uuid = match.queryParams.uuid;
+    plannedVisit.programEnrolment = programEnrolment;
+    plannedVisit.observations = [];
+    plannedEncounterList.push(plannedVisit);
+  });
+
+  //Creating New programEncounter Object for Unplanned Encounter
+  props.unplannedEncounters.map(unplanEncounter => {
+    const plannedVisit = new ProgramEncounter();
+    console.log("New approach ..printing unplanEncounter");
+    console.log(unplanEncounter);
+    const unplannedVisit = new ProgramEncounter();
+    unplannedVisit.uuid = General.randomUUID();
+    // unplannedVisit.encounterType = select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
+    // unplannedVisit.name = unplannedVisit.encounterType.name;
+    // unplannedVisit.encounterDateTime = new Date();
+    // const programEnrolment = new ProgramEnrolment();
+    // programEnrolment.uuid = enrolmentUuid;
+    // unplannedVisit.programEnrolment = programEnrolment;
+    // unplannedVisit.observations = [];
+  });
+
+  console.log("New plannedEncounterList...", plannedEncounterList);
+  const sections = [
+    { title: t("plannedVisits"), data: plannedEncounterList },
+    { title: t("unplannedVisits"), data: unplannedEncounterList } //(!this.state.hideUnplanned)
+  ];
 
   return (
     <Fragment>
@@ -48,67 +94,7 @@ const NewProgramVisit = ({ match, ...props }) => {
           New program visit
         </Typography>
         <LineBreak num={1} />
-        {props.plannedEncounters ? (
-          <Paper>
-            <Typography gutterBottom>Planned visits</Typography>
-            <Table className={classes.table} size="small" aria-label="a dense table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t("Name")}</TableCell>
-                  <TableCell>{t("Date")}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {props.plannedEncounters.map(plannedEncounter => (
-                  <TableRow>
-                    <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-                      {plannedEncounter.name}
-                    </TableCell>
-                    <TableCell align="left" width="50%">
-                      {/* {plannedEncounter.earliestVisitDateTime} */}
-                      {General.toDisplayDate(plannedEncounter.earliestVisitDateTime)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-        ) : (
-          <div>
-            <p>no visits panned</p>
-          </div>
-        )}
-        <LineBreak num={1} />
-        {/* Iterating Unplanned Encounters */}
-        {props.unplannedEncounters ? (
-          <Paper>
-            <Typography gutterBottom>Unplanned visits</Typography>
-            <Table className={classes.table} size="small" aria-label="a dense table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t("Name")}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {props.unplannedEncounters.map(unplannedEncounter => (
-                  <TableRow>
-                    <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-                      <InternalLink
-                        to={`/app/subject/programEncounter?uuid=${unplannedEncounter.formUUID}`}
-                      >
-                        {unplannedEncounter.formName}
-                      </InternalLink>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-        ) : (
-          <div>
-            <p>no visits planned</p>
-          </div>
-        )}
+        <NewProgramVisitMenuView sections={sections} />
       </Paper>
     </Fragment>
   );
