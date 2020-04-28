@@ -1,16 +1,14 @@
-import React from "react";
+import React, { lazy } from "react";
 import { includes, intersection, isEmpty } from "lodash";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
-import { OrgManager } from "../adminApp";
 import { ROLES, withoutDataEntry } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
 import Translations from "../translations";
 import Export from "../reports/Export";
-import OrgManagerAppDesigner from "../adminApp/OrgManagerAppDesigner";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -24,6 +22,9 @@ const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest
     }
   />
 );
+
+const OrgManager = lazy(() => import("../adminApp/OrgManager"));
+const OrgManagerAppDesigner = lazy(() => import("../adminApp/OrgManagerAppDesigner"));
 
 const Routes = ({ user, organisation }) => (
   <Switch>
