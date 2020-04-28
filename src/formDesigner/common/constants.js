@@ -8,3 +8,17 @@ export const constFormType = {
   ProgramEncounterCancellation: "Program encounter cancellation",
   IndividualEncounterCancellation: "Individual Encounter Cancellation"
 };
+
+export const inlineConceptDataType = [
+  "Numeric",
+  "Text",
+  "Notes",
+  "Coded",
+  "Date",
+  "DateTime",
+  "Time",
+  "Duration",
+  "Image",
+  "Id",
+  "Video"
+];

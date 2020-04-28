@@ -33,6 +33,9 @@ export const CodedConceptUI = props => {
           showSuggestionStartsWith={true}
           placeholder="Enter answer"
           label="Answer"
+          inlineConcept={props.inlineConcept}
+          elementIndex={props.elementIndex}
+          groupIndex={props.groupIndex}
         />
         {props.answer.isEmptyAnswer && <FormHelperText error>Answer is required.</FormHelperText>}
       </FormControl>
@@ -41,7 +44,16 @@ export const CodedConceptUI = props => {
           control={
             <Checkbox
               checked={props.answer.abnormal}
-              onChange={e => props.onToggleAnswerField(e, props.index)}
+              onChange={e =>
+                props.inlineConcept
+                  ? props.onToggleAnswerField(
+                      "abnormal",
+                      props.groupIndex,
+                      props.elementIndex,
+                      props.index
+                    )
+                  : props.onToggleAnswerField(e, props.index)
+              }
               value={props.answer.abnormal}
               color="primary"
               id="abnormal"
@@ -56,7 +68,16 @@ export const CodedConceptUI = props => {
           control={
             <Checkbox
               checked={props.answer.unique}
-              onChange={e => props.onToggleAnswerField(e, props.index)}
+              onChange={e =>
+                props.inlineConcept
+                  ? props.onToggleAnswerField(
+                      "unique",
+                      props.groupIndex,
+                      props.elementIndex,
+                      props.index
+                    )
+                  : props.onToggleAnswerField(e, props.index)
+              }
               value={props.answer.unique}
               color="primary"
               id="unique"
@@ -70,7 +91,9 @@ export const CodedConceptUI = props => {
         <IconButton
           aria-label="delete"
           onClick={() => {
-            props.onDeleteAnswer(props.index);
+            props.inlineConcept
+              ? props.onDeleteAnswer(props.groupIndex, props.elementIndex, props.index)
+              : props.onDeleteAnswer(props.index);
           }}
           style={{ marginTop: 10 }}
         >
@@ -79,6 +102,12 @@ export const CodedConceptUI = props => {
       </FormControl>
     </>
   );
+};
+
+CodedConceptUI.defaultProps = {
+  inlineConcept: false,
+  elementIndex: -1,
+  groupIndex: -1
 };
 
 export default function CodedConcept(props) {
@@ -108,6 +137,7 @@ export default function CodedConcept(props) {
                             onAddAnswer={props.onAddAnswer}
                             onChangeAnswerName={props.onChangeAnswerName}
                             onToggleAnswerField={props.onToggleAnswerField}
+                            key={index}
                           />
                         </Grid>
                       )}

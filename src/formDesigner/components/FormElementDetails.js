@@ -65,7 +65,6 @@ const showDatePicker = (cssClasses, props) => {
 function FormElementDetails(props) {
   const classes = useStyles();
   const { t } = useTranslation();
-  console.log("*" + JSON.stringify(props));
 
   const cssClasses = {
     label: {
@@ -124,9 +123,16 @@ function FormElementDetails(props) {
           />
         </FormControl>
       </Grid>
-      <Paper style={{ width: "100%" }}>
+      <Paper style={{ width: "100%", marginBottom: "15px" }}>
         {props.formElementData.showConceptLibrary === "" && (
-          <div style={{ margin: "5px" }}>
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
             <Button
               color="primary"
               type="button"
@@ -151,17 +157,40 @@ function FormElementDetails(props) {
           </div>
         )}
         {props.formElementData.showConceptLibrary === "addNewConcept" && (
-          <InlineConcept
-            onSaveInlineConcept={props.onSaveInlineConcept}
-            formElementData={props.formElementData}
-            index={props.index}
-            groupIndex={props.groupIndex}
-            handleGroupElementChange={props.handleGroupElementChange}
-            handleInlineNumericAttributes={props.handleInlineNumericAttributes}
-          />
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
+            <InlineConcept
+              onSaveInlineConcept={props.onSaveInlineConcept}
+              formElementData={props.formElementData}
+              index={props.index}
+              groupIndex={props.groupIndex}
+              handleGroupElementChange={props.handleGroupElementChange}
+              handleInlineNumericAttributes={props.handleInlineNumericAttributes}
+              handleInlineCodedConceptAnswers={props.handleInlineCodedConceptAnswers}
+              onToggleInlineConceptCodedAnswerAttribute={
+                props.onToggleInlineConceptCodedAnswerAttribute
+              }
+              onDeleteInlineConceptCodedAnswerDelete={props.onDeleteInlineConceptCodedAnswerDelete}
+              handleInlineCodedAnswerAddition={props.handleInlineCodedAnswerAddition}
+              onDragInlineCodedConceptAnswer={props.onDragInlineCodedConceptAnswer}
+            />
+          </div>
         )}
         {props.formElementData.showConceptLibrary === "chooseFromLibrary" && (
-          <>
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
             {" "}
             <Grid item sm={12}>
               {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
@@ -297,7 +326,7 @@ function FormElementDetails(props) {
                 </Grid>
               </>
             )}
-          </>
+          </div>
         )}
       </Paper>
       {props.formElementData.concept.dataType === "Coded" && (

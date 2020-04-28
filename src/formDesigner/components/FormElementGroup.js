@@ -158,7 +158,13 @@ function FormElementGroup(props) {
           handleConceptFormLibrary: props.handleConceptFormLibrary,
           availableDataTypes: props.availableDataTypes,
           onSaveInlineConcept: props.onSaveInlineConcept,
-          handleInlineNumericAttributes: props.handleInlineNumericAttributes
+          handleInlineNumericAttributes: props.handleInlineNumericAttributes,
+          handleInlineCodedConceptAnswers: props.handleInlineCodedConceptAnswers,
+          onToggleInlineConceptCodedAnswerAttribute:
+            props.onToggleInlineConceptCodedAnswerAttribute,
+          onDeleteInlineConceptCodedAnswerDelete: props.onDeleteInlineConceptCodedAnswerDelete,
+          handleInlineCodedAnswerAddition: props.handleInlineCodedAnswerAddition,
+          onDragInlineCodedConceptAnswer: props.onDragInlineCodedConceptAnswer
         };
         formElements.push(
           <Draggable
