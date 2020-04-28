@@ -21,21 +21,28 @@ const SelectForm = ({ label = "Please select", formList, value, onChange }) => {
 
   const switchLabel = "Create new form";
 
+  let options = convertFormListForDisplay(formList);
   return (
-    <Grid container direction="row" alignItems="center" spacing={10} justify="flex-start">
-      <Grid item>
-        <DropDown
-          required={!shouldCreateNewForm}
-          disabled={shouldCreateNewForm}
-          name={label}
-          value={value}
-          onChange={selectedFormName =>
-            onChange(_.find(formList, form => form.formName === selectedFormName))
-          }
-          options={convertFormListForDisplay(formList)}
-        />
-      </Grid>
-      <Grid item>OR</Grid>
+    <Grid container direction="row" alignItems="center" justify="flex-start">
+      {!_.isEmpty(options) && (
+        <Grid item>
+          <DropDown
+            required={!shouldCreateNewForm}
+            disabled={shouldCreateNewForm}
+            name={label}
+            value={value}
+            onChange={selectedFormName =>
+              onChange(_.find(formList, form => form.formName === selectedFormName))
+            }
+            options={options}
+          />
+        </Grid>
+      )}
+      {!_.isEmpty(options) && (
+        <Grid item style={{ width: 100, textAlign: "center" }}>
+          OR
+        </Grid>
+      )}
       <Grid item>
         <FormControlLabel
           control={

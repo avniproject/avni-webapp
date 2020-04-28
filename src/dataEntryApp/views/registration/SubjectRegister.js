@@ -1,5 +1,5 @@
 import React, { Fragment, createRef } from "react";
-import { Route, withRouter } from "react-router-dom";
+import { Route, withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField, Chip, Typography, Paper, Button } from "@material-ui/core";
 import { ObservationsHolder, AddressLevel } from "avni-models";
@@ -10,14 +10,15 @@ import {
   updateObs,
   updateSubject,
   setSubject,
-  saveCompleteFalse
+  saveCompleteFalse,
+  setValidationResults
 } from "../../reducers/registrationReducer";
 import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import moment from "moment/moment";
 import { getGenders } from "../../reducers/metadataReducer";
-import _, { get, sortBy } from "lodash";
+import _, { get, sortBy, isEmpty } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { DateOfBirth } from "../../components/DateOfBirth";
 import { CodedFormElement } from "../../components/CodedFormElement";
@@ -29,6 +30,7 @@ import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 import { disableSession } from "common/constants";
+import qs from "query-string";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -117,10 +119,16 @@ const useStyles = makeStyles(theme => ({
     fontSize: 12,
     borderRadius: 50,
     backgroundColor: "orange"
+  },
+  noUnderline: {
+    "&:hover, &:focus": {
+      textDecoration: "none"
+    }
   }
 }));
 
 const DefaultPage = props => {
+  if (!props.form) return <div />;
   const classes = useStyles();
   const { t } = useTranslation();
   const [subjectRegErrors, setSubjectRegErrors] = React.useState({
@@ -170,6 +178,11 @@ const DefaultPage = props => {
     }
   };
 
+  const formElementGroups = props.form
+    .getFormElementGroups()
+    .filter(feg => !isEmpty(feg.nonVoidedFormElements()));
+  const totalNumberOfPages = formElementGroups.length + 2;
+
   return (
     <div>
       <div className={classes.topcaption}>
@@ -198,10 +211,7 @@ const DefaultPage = props => {
                   {t("previous")}
                 </Button>
                 {props.form && (
-                  <label className={classes.toppagenum}>
-                    {" "}
-                    1 / {props.form.getLastFormElementElementGroup().displayOrder + 1}
-                  </label>
+                  <label className={classes.toppagenum}> 1 / {totalNumberOfPages}</label>
                 )}
                 <RelativeLink
                   to="form"
@@ -227,9 +237,7 @@ const DefaultPage = props => {
                     name="registrationDate"
                     label={t("Date of registration")}
                     value={
-                      _.isNil(props.subject.registrationDate)
-                        ? null
-                        : new Date(props.subject.registrationDate)
+                      _.isNil(props.subject.registrationDate) ? "" : props.subject.registrationDate
                     }
                     error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
                     helperText={t(subjectRegErrors.REGISTRATION_DATE)}
@@ -451,12 +459,14 @@ const mapFormStateToProps = state => ({
   saved: state.dataEntry.registration.saved,
   subject: state.dataEntry.registration.subject,
   onSaveGoto: "/app/search",
-  validationResults: state.dataEntry.registration.validationResults
+  validationResults: state.dataEntry.registration.validationResults,
+  registrationFlow: true
 });
 
 const mapFormDispatchToProps = {
   updateObs,
-  onSave: saveSubject
+  onSave: saveSubject,
+  setValidationResults
 };
 
 const RegistrationForm = withRouter(

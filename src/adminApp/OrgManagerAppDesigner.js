@@ -31,11 +31,6 @@ class OrgManagerAppDesigner extends Component {
 
   render() {
     const { organisation, user } = this.props;
-    const uiDesignerToggle =
-      window.location.href.includes("localhost") ||
-      window.location.href.includes("staging") ||
-      window.location.href.includes("uat") ||
-      window.location.href.includes("prerelease");
 
     return (
       <React.Fragment>
@@ -50,29 +45,16 @@ class OrgManagerAppDesigner extends Component {
           <Resource
             name="subjectType"
             options={{ label: "Subject Types" }}
-            list={uiDesignerToggle && SubjectTypesList}
+            list={SubjectTypesList}
           />
-          <Resource
-            name="program"
-            options={{ label: "Programs" }}
-            list={uiDesignerToggle && ProgramList}
-          />
+          <Resource name="program" options={{ label: "Programs" }} list={ProgramList} />
           <Resource
             name="encounterType"
             options={{ label: "Encounter Types" }}
-            list={uiDesignerToggle && EncounterTypeList}
+            list={EncounterTypeList}
           />
-          <Resource
-            name="forms"
-            options={{ label: "Forms" }}
-            list={uiDesignerToggle && Forms}
-            edit={FormSettings}
-          />
-          <Resource
-            name="concepts"
-            options={{ label: "Concepts" }}
-            list={uiDesignerToggle && Concepts}
-          />
+          <Resource name="forms" options={{ label: "Forms" }} list={Forms} edit={FormSettings} />
+          <Resource name="concepts" options={{ label: "Concepts" }} list={Concepts} />
           <Resource
             name="myDashboardFilters"
             options={{ label: "My Dashboard Filters" }}
@@ -83,15 +65,11 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Search Filters" }}
             list={WithProps({ organisation }, customFilters)}
           />
-          <Resource
-            name="bundle"
-            options={{ label: "Bundle" }}
-            list={uiDesignerToggle && ImplementationBundle}
-          />
+          <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
           <Resource
             name="worklistUpdationRule"
             options={{ label: "Worklist Updation Rule" }}
-            list={uiDesignerToggle && WorklistUpdationRule}
+            list={WorklistUpdationRule}
           />
         </Admin>
         <Footer />

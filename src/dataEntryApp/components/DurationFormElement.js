@@ -4,7 +4,6 @@ import _, { isEmpty, find } from "lodash";
 import { CompositeDuration } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
-import { __esModule } from "react-router-dom/cjs/react-router-dom.min";
 
 const useStyles = makeStyles(theme => ({
   root: {
