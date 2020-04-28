@@ -26,11 +26,11 @@ const mapFormDispatchToProps = {
   //   onSave: saveProgramEnrolment
 };
 
-const ProgramEnrolmentForm = withRouter(
+const ProgramEncounterForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
   )(FormWizard)
 );
 
-export default ProgramEnrolmentForm;
+export default ProgramEncounterForm;
