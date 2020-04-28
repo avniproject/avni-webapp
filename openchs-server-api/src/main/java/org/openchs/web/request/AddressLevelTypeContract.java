@@ -33,6 +33,7 @@ public class AddressLevelTypeContract extends ReferenceDataContract {
 
     public static AddressLevelTypeContract fromAddressLevelType(AddressLevelType addressLevelType) {
         AddressLevelTypeContract contract = new AddressLevelTypeContract();
+        contract.setId(addressLevelType.getId());
         contract.setUuid(addressLevelType.getUuid());
         contract.setName(addressLevelType.getName());
         contract.setLevel(addressLevelType.getLevel());
