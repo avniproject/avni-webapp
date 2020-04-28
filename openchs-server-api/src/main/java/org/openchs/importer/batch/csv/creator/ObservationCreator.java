@@ -1,5 +1,6 @@
 package org.openchs.importer.batch.csv.creator;
 
+import org.apache.commons.io.FileUtils;
 import org.openchs.application.Form;
 import org.openchs.application.FormElement;
 import org.openchs.application.FormElementType;
@@ -14,12 +15,16 @@ import org.openchs.domain.ObservationCollection;
 import org.openchs.importer.batch.csv.writer.header.Headers;
 import org.openchs.importer.batch.model.Row;
 import org.openchs.service.ObservationService;
+import org.openchs.service.S3Service;
+import org.openchs.util.S;
 import org.openchs.web.request.ObservationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
+import java.net.URL;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +35,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.String.format;
+
 @Component
 public class ObservationCreator {
 
@@ -38,14 +45,16 @@ public class ObservationCreator {
     private ConceptRepository conceptRepository;
     private FormRepository formRepository;
     private ObservationService observationService;
+    private S3Service s3Service;
 
     @Autowired
     public ObservationCreator(AddressLevelTypeRepository addressLevelTypeRepository,
-                              ConceptRepository conceptRepository, FormRepository formRepository, ObservationService observationService) {
+                              ConceptRepository conceptRepository, FormRepository formRepository, ObservationService observationService, S3Service s3Service) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.conceptRepository = conceptRepository;
         this.formRepository = formRepository;
         this.observationService = observationService;
+        this.s3Service = s3Service;
     }
 
     public List<Concept> getConceptHeaders(Headers fixedHeaders, String[] fileHeaders) {
@@ -66,7 +75,7 @@ public class ObservationCreator {
 
     public ObservationCollection getObservations(Row row,
                                                  Headers headers,
-                                                 List<String> errorMsgs, FormType formType) {
+                                                 List<String> errorMsgs, FormType formType, ObservationCollection oldObservations) {
         List<ObservationRequest> observationRequests = new ArrayList<>();
 
         for (Concept concept : getConceptHeaders(headers, row.getHeaders())) {
@@ -76,8 +85,9 @@ public class ObservationCreator {
             ObservationRequest observationRequest = new ObservationRequest();
             observationRequest.setConceptName(concept.getName());
             observationRequest.setConceptUUID(concept.getUuid());
+                Object oldValue = oldObservations == null ? null : oldObservations.getOrDefault(concept.getUuid(), null);
             try {
-                observationRequest.setValue(getObservationValue(concept, rowValue, formType));
+                observationRequest.setValue(getObservationValue(concept, rowValue, formType, errorMsgs, oldValue));
             } catch (Exception ex) {
                 logger.error(String.format("Error processing observation %s in row %s", rowValue, row), ex);
                 errorMsgs.add(String.format("Invalid answer '%s' for '%s'", rowValue, concept.getName()));
@@ -87,7 +97,7 @@ public class ObservationCreator {
         return observationService.createObservations(observationRequests);
     }
 
-    private Object getObservationValue(Concept concept, String answerValue, FormType formType) throws Exception {
+    private Object getObservationValue(Concept concept, String answerValue, FormType formType, List<String> errorMsgs, Object oldValue) throws Exception {
         switch (ConceptDataType.valueOf(concept.getDataType())) {
             case Coded:
                 List<Form> applicableForms = formRepository.findAllByFormType(formType);
@@ -121,6 +131,9 @@ public class ObservationCreator {
             case Date:
             case DateTime:
                 return (answerValue.trim().equals("")) ? null : toISODateFormat(answerValue);
+            case Image:
+            case Video:
+                return (answerValue.trim().equals("")) ? null : processMediaObservation(answerValue, errorMsgs, oldValue);
             default:
                 return answerValue;
         }
@@ -149,5 +162,25 @@ public class ObservationCreator {
                 .stream(allHeaders)
                 .filter(header -> !nonConceptHeaders.contains(header))
                 .collect(Collectors.toSet());
+    }
+
+    private String processMediaObservation(String mediaURL, List<String> errorMsgs, Object oldValue) throws IOException {
+        if (oldValue != null) {
+            s3Service.deleteObject(S.getLastStringAfter((String) oldValue, "/"));
+        }
+        String extension = S.getLastStringAfter(mediaURL, ".");
+        File file = new File(format("%s/imports/%s", System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString().concat(format(".%s", extension))));
+        downloadMediaToFile(mediaURL, errorMsgs, file);
+        return s3Service.uploadFileToS3(file);
+    }
+
+    private void downloadMediaToFile(String mediaURL, List<String> errorMsgs, File file) {
+        try {
+            FileUtils.copyURLToFile(new URL(mediaURL), file, 5000, 5000);
+        } catch (IOException e) {
+            String message = format("Error while downloading media '%s' ", mediaURL);
+            logger.error(message, e);
+            errorMsgs.add(message);
+        }
     }
 }

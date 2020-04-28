@@ -11,6 +11,7 @@ import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
 import org.openchs.importer.batch.csv.writer.header.EncounterHeaders;
 import org.openchs.importer.batch.csv.writer.header.ProgramEncounterHeaders;
+import org.openchs.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.openchs.importer.batch.csv.writer.header.SubjectHeaders;
 import org.openchs.importer.batch.csv.writer.ProgramEnrolmentWriter;
 import org.slf4j.Logger;
@@ -114,7 +115,7 @@ public class ImportService {
     }
 
     private String getProgramEnrolmentSampleFile(String[] uploadSpec, String response) {
-        response = addToResponse(response, Arrays.asList(new ProgramEncounterHeaders().getAllHeaders()));
+        response = addToResponse(response, Arrays.asList(new ProgramEnrolmentHeaders().getAllHeaders()));
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[2]).getUuid(), getProgram(uploadSpec[1]).getUuid(), null, FormType.ProgramEnrolment);
         return addToResponse(response, formMapping);
     }

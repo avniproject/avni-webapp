@@ -54,7 +54,7 @@ public class BasicEncounterCreator {
         basicEncounter.setEncounterLocation(locationCreator.getLocation(row, headers.encounterLocation, allErrorMsgs));
         basicEncounter.setCancelLocation(locationCreator.getLocation(row, headers.cancelLocation, allErrorMsgs));
         basicEncounter.setEncounterType(encounterTypeCreator.getEncounterType(row.get(headers.encounterType), allErrorMsgs, headers.encounterType));
-        basicEncounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, formType));
+        basicEncounter.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, formType, basicEncounter.getObservations()));
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));

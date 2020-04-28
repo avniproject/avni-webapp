@@ -7,6 +7,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3URI;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.openchs.domain.UserContext;
@@ -78,9 +79,7 @@ public class S3Service {
 
     public URL generateMediaUploadUrl(String fileName) {
         authorizeUser();
-        String mediaDirectory = getOrgDirectoryName();
-
-        String objectKey = format("%s/%s", mediaDirectory, fileName);
+        String objectKey = getS3KeyForMediaUpload(fileName);
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
                 new GeneratePresignedUrlRequest(bucketName, objectKey)
@@ -89,6 +88,11 @@ public class S3Service {
                         .withExpiration(getExpireDate(UPLOAD_EXPIRY_DURATION));
 
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+    }
+
+    private String getS3KeyForMediaUpload(String fileName) {
+        String mediaDirectory = getOrgDirectoryName();
+        return format("%s/%s", mediaDirectory, fileName);
     }
 
     public URL generateMediaDownloadUrl(String url) {
@@ -232,6 +236,30 @@ public class S3Service {
                 fileName
         );
         return s3Client.getObject(bucketName, s3Key).getObjectContent();
+    }
+
+    public String uploadFileToS3(File file) throws IOException {
+        if (!file.exists() || isDev) {
+            logger.info("Skipping media upload to S3");
+            return null;
+        }
+        String s3Key = getS3KeyForMediaUpload(file.getName());
+        s3Client.putObject(new PutObjectRequest(bucketName, s3Key, file));
+        Files.delete(file.toPath());
+        return getObjectURL(file);
+    }
+
+    public void deleteObject(String objectName) {
+        if (isDev) {
+            return;
+        }
+        String s3Key = getS3KeyForMediaUpload(objectName);
+        s3Client.deleteObject(new DeleteObjectRequest(bucketName, s3Key));
+    }
+
+    private String getObjectURL(File file) {
+        String s3Key = getS3KeyForMediaUpload(file.getName());
+        return s3Client.getUrl(bucketName, s3Key).toString();
     }
 
     public class ObjectInfo implements Serializable {

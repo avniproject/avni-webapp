@@ -70,7 +70,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         setRegistrationDate(individual, row, allErrorMsgs);
         individual.setRegistrationLocation(locationCreator.getLocation(row, headers.registrationLocation, allErrorMsgs));
         setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
-        individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile));
+        individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));

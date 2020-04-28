@@ -69,7 +69,7 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         programEnrolment.setEnrolmentLocation(locationCreator.getLocation(row, headers.enrolmentLocation, allErrorMsgs));
         programEnrolment.setExitLocation(locationCreator.getLocation(row, headers.exitLocation, allErrorMsgs));
         programEnrolment.setProgram(programCreator.getProgram(row.get(headers.program), allErrorMsgs, headers.program));
-        programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment));
+        programEnrolment.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.ProgramEnrolment, programEnrolment.getObservations()));
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));
