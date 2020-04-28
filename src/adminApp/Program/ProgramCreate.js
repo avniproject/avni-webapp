@@ -178,7 +178,7 @@ const ProgramCreate = props => {
             />
             <p />
             <SelectForm
-              label={"Select Exit form"}
+              label={"Select Exit Form"}
               value={_.get(program, "programExitForm.formName")}
               onChange={selectedForm =>
                 dispatch({

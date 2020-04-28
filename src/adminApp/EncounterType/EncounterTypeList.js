@@ -70,7 +70,7 @@ const EncounterTypeList = ({ history }) => {
       )
     },
     {
-      title: "Encounter form",
+      title: "Encounter Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -85,7 +85,7 @@ const EncounterTypeList = ({ history }) => {
       )
     },
     {
-      title: "Cancellation form",
+      title: "Cancellation Form",
       field: "formName",
       sorting: false,
       render: rowData => (

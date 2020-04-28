@@ -206,7 +206,7 @@ const EncounterTypeCreate = props => {
             <div />
             <p />
             <SelectForm
-              label={"Select Encounter form"}
+              label={"Select Encounter Form"}
               value={_.get(encounterType, "programEncounterForm.formName")}
               onChange={selectedForm =>
                 dispatch({
@@ -218,7 +218,7 @@ const EncounterTypeCreate = props => {
             />
             <p />
             <SelectForm
-              label={"Select Encounter cancellation form"}
+              label={"Select Encounter Cancellation Form"}
               value={_.get(encounterType, "programEncounterCancellationForm.formName")}
               onChange={selectedForm =>
                 dispatch({

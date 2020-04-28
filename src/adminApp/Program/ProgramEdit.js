@@ -213,7 +213,7 @@ const ProgramEdit = props => {
           <p />
           <FormControl>
             <SelectForm
-              label={"Select Enrolment form"}
+              label={"Select Enrolment Form"}
               value={_.get(program, "programEnrolmentForm.formName")}
               onChange={selectedForm =>
                 dispatch({
@@ -227,7 +227,7 @@ const ProgramEdit = props => {
           <p />
           <FormControl>
             <SelectForm
-              label={"Select Exit form"}
+              label={"Select Exit Form"}
               value={_.get(program, "programExitForm.formName")}
               onChange={selectedForm =>
                 dispatch({

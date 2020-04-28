@@ -160,7 +160,7 @@ const SubjectTypeEdit = props => {
           </Grid>
           <p />
           <SelectForm
-            label={"Registration form name"}
+            label={"Registration Form"}
             value={_.get(subjectType, "registrationForm.formName")}
             onChange={selectedForm =>
               dispatch({

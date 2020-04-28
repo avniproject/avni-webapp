@@ -84,7 +84,7 @@ const EncounterTypeShow = props => {
           </div>
           <p />
           <div>
-            <FormLabel style={{ fontSize: "13px" }}>Encounter form</FormLabel>
+            <FormLabel style={{ fontSize: "13px" }}>Encounter Form</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>
               <a
@@ -99,7 +99,7 @@ const EncounterTypeShow = props => {
           </div>
           <p />
           <div>
-            <FormLabel style={{ fontSize: "13px" }}>Encounter cancellation form</FormLabel>
+            <FormLabel style={{ fontSize: "13px" }}>Encounter Cancellation Form</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>
               <a

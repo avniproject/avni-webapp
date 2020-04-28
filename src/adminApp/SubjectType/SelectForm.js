@@ -1,61 +1,39 @@
-import DropDown from "../../common/components/DropDown";
 import _ from "lodash";
-import React, { useState } from "react";
-import { Grid } from "@material-ui/core";
-import Switch from "@material-ui/core/Switch";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import React from "react";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+
+const blankOption = { name: "New Form", value: "__blankForm__" };
 
 const SelectForm = ({ label = "Please select", formList, value, onChange }) => {
-  const [shouldCreateNewForm, setCreateForm] = useState(false);
-
   const convertFormListForDisplay = (list = []) =>
     list.map(form => ({
       name: form.formName,
       value: form
     }));
 
-  const handleCreateNewForm = event => {
-    setCreateForm(event.target.checked);
-    onChange(undefined);
-  };
+  const showValue = _.isEmpty(value) ? blankOption.value : value;
 
-  const switchLabel = "Create new form";
+  let options = _.concat([], blankOption, convertFormListForDisplay(formList));
 
-  let options = convertFormListForDisplay(formList);
   return (
-    <Grid container direction="row" alignItems="center" justify="flex-start">
-      {!_.isEmpty(options) && (
-        <Grid item>
-          <DropDown
-            required={!shouldCreateNewForm}
-            disabled={shouldCreateNewForm}
-            name={label}
-            value={value}
-            onChange={selectedFormName =>
-              onChange(_.find(formList, form => form.formName === selectedFormName))
-            }
-            options={options}
-          />
-        </Grid>
-      )}
-      {!_.isEmpty(options) && (
-        <Grid item style={{ width: 100, textAlign: "center" }}>
-          OR
-        </Grid>
-      )}
-      <Grid item>
-        <FormControlLabel
-          control={
-            <Switch
-              color={"primary"}
-              checked={shouldCreateNewForm}
-              onChange={handleCreateNewForm}
-            />
-          }
-          label={switchLabel}
-        />
-      </Grid>
-    </Grid>
+    <FormControl style={{ minWidth: 200 }}>
+      <InputLabel id={label}>{label}</InputLabel>
+      <Select
+        labelId={label}
+        value={showValue}
+        autoWidth
+        native
+        onChange={event => onChange(_.find(formList, form => form.formName === event.target.value))}
+      >
+        {options.map((option, index) => (
+          <option key={index} value={option.name}>
+            {option.name}
+          </option>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
 

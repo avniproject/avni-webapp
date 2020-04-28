@@ -68,7 +68,7 @@ const SubjectTypeShow = props => {
             </div>
             <p />
             <div>
-              <FormLabel style={{ fontSize: "13px" }}>Encounter form</FormLabel>
+              <FormLabel style={{ fontSize: "13px" }}>Registration Form</FormLabel>
               <br />
               <span style={{ fontSize: "15px" }}>
                 <a

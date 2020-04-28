@@ -55,7 +55,7 @@ const ProgramList = ({ history }) => {
       )
     },
     {
-      title: "Enrolment form name",
+      title: "Enrolment Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -70,7 +70,7 @@ const ProgramList = ({ history }) => {
       )
     },
     {
-      title: "Exit form name",
+      title: "Exit Form",
       field: "formName",
       sorting: false,
       render: rowData => (

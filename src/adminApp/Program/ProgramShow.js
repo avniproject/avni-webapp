@@ -82,7 +82,6 @@ const ProgramShow = props => {
             </div>
           </div>
           <p />
-
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Program Subject Label</FormLabel>
             <br />
@@ -90,7 +89,7 @@ const ProgramShow = props => {
           </div>
           <p />
           <div>
-            <FormLabel style={{ fontSize: "13px" }}>Enrolment form name</FormLabel>
+            <FormLabel style={{ fontSize: "13px" }}>Enrolment Form</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>
               <a
@@ -105,7 +104,7 @@ const ProgramShow = props => {
           </div>
           <p />
           <div>
-            <FormLabel style={{ fontSize: "13px" }}>Exit form name</FormLabel>
+            <FormLabel style={{ fontSize: "13px" }}>Exit Form</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>
               <a

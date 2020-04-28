@@ -22,7 +22,7 @@ const SubjectTypesList = ({ history }) => {
       render: rowData => <a href={`#/appDesigner/subjectType/${rowData.id}/show`}>{rowData.name}</a>
     },
     {
-      title: "Registration form name",
+      title: "Registration Form",
       field: "formName",
       sorting: false,
       render: rowData => (
