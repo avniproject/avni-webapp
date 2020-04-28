@@ -17,7 +17,6 @@ import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
 import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
-import { default as UUID } from "uuid";
 import _ from "lodash";
 import SelectForm from "./SelectForm";
 
@@ -32,10 +31,12 @@ const SubjectTypeEdit = props => {
   const [formList, setFormList] = useState([]);
   const [formMappings, setFormMappings] = useState([]);
   const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(false);
+  const [subjectTypes, setSubjectTypes] = useState([]);
 
-  const consumeFormMappingResult = (formMap, forms) => {
+  const consumeFormMappingResult = (formMap, forms, subjectTypes) => {
     setFormMappings(formMap);
     setFormList(forms);
+    setSubjectTypes(subjectTypes);
   };
 
   useFormMappings(consumeFormMappingResult);
@@ -111,6 +112,12 @@ const SubjectTypeEdit = props => {
     dispatch({ type: "registrationForm", payload: payload });
   }
 
+  const disableDelete = _.find(
+    subjectTypes,
+    ({ group, memberSubjectUUIDs }) =>
+      group && _.includes(memberSubjectUUIDs.split(","), subjectType.uuid)
+  );
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -144,6 +151,7 @@ const SubjectTypeEdit = props => {
             <Grid>Group</Grid>
             <Grid>
               <Switch
+                disabled={subjectType.household}
                 checked={subjectType.group}
                 onChange={event => handleGroupChange(event, subjectType, dispatch)}
                 name="group"
@@ -163,16 +171,6 @@ const SubjectTypeEdit = props => {
             formList={findRegistrationForms(formList)}
           />
           <p />
-          <SelectForm
-            value={_.get(subjectType, "registrationForm.formName")}
-            onChange={selectedForm =>
-              dispatch({
-                type: "registrationForm",
-                payload: selectedForm
-              })
-            }
-            formList={findRegistrationForms(formList)}
-          />
           {subjectType.group && (
             <>
               <Grid component="label" container alignItems="center" spacing={2}>
@@ -212,7 +210,18 @@ const SubjectTypeEdit = props => {
             </Button>
           </Grid>
           <Grid item sm={11}>
-            <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()}>
+            <Button
+              disabled={!_.isEmpty(disableDelete)}
+              style={
+                !_.isEmpty(disableDelete)
+                  ? { float: "right" }
+                  : {
+                      float: "right",
+                      color: "red"
+                    }
+              }
+              onClick={() => onDelete()}
+            >
               <DeleteIcon /> Delete
             </Button>
           </Grid>

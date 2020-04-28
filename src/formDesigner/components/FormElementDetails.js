@@ -95,7 +95,7 @@ function FormElementDetails(props) {
 
   function identifierSourceList() {
     var identifierSourceArr = [];
-    _.forEach(props.identifierSource, (idSource, i) => {
+    _.forEach(props.identifierSources, (idSource, i) => {
       identifierSourceArr.push(<MenuItem value={idSource.value}>{idSource.label}</MenuItem>);
     });
     return identifierSourceArr;
@@ -698,11 +698,11 @@ function FormElementDetails(props) {
             <InputLabel>Identifier Source</InputLabel>
             <Select
               name="identifierSource"
-              value={props.formElementData.keyValues.identifierSource}
+              value={props.formElementData.keyValues.IdSourceUUID}
               onChange={event =>
                 props.handleGroupElementKeyValueChange(
                   props.groupIndex,
-                  "identifierSource",
+                  "IdSourceUUID",
                   event.target.value,
                   props.index
                 )

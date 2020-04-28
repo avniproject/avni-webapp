@@ -70,6 +70,7 @@ export const OrganisationDetails = props => {
           source="accountId"
           reference="account"
           label="Account Name"
+          linkType="show"
           allowEmpty
         >
           <TextField source="name" />

@@ -4,6 +4,7 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
+import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -14,21 +15,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const DropDown = ({
-  name,
-  value,
-  onChange,
-  options,
-  style,
-  shrink = false,
-  required = true,
-  disabled = false
-}) => {
+const DropDown = ({ name, value, onChange, options, style, required = true, disabled = false }) => {
   const classes = useStyles();
 
   return (
     <FormControl required={required} style={style} className={classes.formControl}>
-      <InputLabel shrink={shrink} htmlFor={`${name}-required`}>
+      <InputLabel shrink={!_.isEmpty(value)} htmlFor={`${name}-required`}>
         {name}
       </InputLabel>
       <Select

@@ -99,6 +99,7 @@ const SubjectTypeCreate = props => {
               <Grid>Group</Grid>
               <Grid>
                 <Switch
+                  disabled={subjectType.household}
                   checked={subjectType.group}
                   onChange={event => handleGroupChange(event, subjectType, dispatch)}
                   name="group"

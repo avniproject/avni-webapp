@@ -3,6 +3,7 @@ import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import { ObservationsHolder, Individual, SubjectType } from "avni-models";
 import { updateObs, saveProgramEnrolment } from "dataEntryApp/reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
+import { setValidationResults } from "dataEntryApp/reducers/registrationReducer";
 
 let subject = Individual.createEmptyInstance();
 subject.subjectType = SubjectType.create("Individual");
@@ -20,7 +21,8 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs,
-  onSave: saveProgramEnrolment
+  onSave: saveProgramEnrolment,
+  setValidationResults
 };
 
 const ProgramEnrolmentForm = withRouter(

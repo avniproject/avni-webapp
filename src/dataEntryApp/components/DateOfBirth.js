@@ -57,7 +57,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             style={{ width: "30%" }}
             name="dateOfBirth"
             label={t("date of birth")}
-            value={_.isNil(dateOfBirth) ? null : dateOfBirth}
+            value={_.isNil(dateOfBirth) ? new Date() : dateOfBirth}
             onChange={date => onChange(date)}
             InputLabelProps={{
               shrink: true

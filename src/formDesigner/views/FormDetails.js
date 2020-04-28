@@ -53,7 +53,7 @@ class FormDetails extends Component {
     super(props);
     this.state = {
       form: [],
-      identifierSource: [],
+      identifierSources: [],
       name: "",
       errorMsg: "",
       saveCall: false,
@@ -102,15 +102,14 @@ class FormDetails extends Component {
 
   componentDidMount() {
     this.setupBeforeUnloadListener();
+    const transformIdentifierSources = identifierSourcesFromServer =>
+      _.map(identifierSourcesFromServer, source => ({ value: source.uuid, label: source.name }));
 
     http.get(`/web/identifierSource`).then(response => {
-      const identifierSources = [];
-      if (response.data["_embedded"]) {
-        _.forEach(response.data["_embedded"]["identifierSource"], (source, index) => {
-          identifierSources.push({ value: source.uuid, label: source.name });
-        });
-      }
-      this.setState({ identifierSource: identifierSources });
+      let responseData = _.get(response, "data._embedded.identifierSource", []);
+      this.setState({
+        identifierSources: transformIdentifierSources(responseData)
+      });
     });
 
     return http
@@ -118,7 +117,7 @@ class FormDetails extends Component {
       .then(response => response.data)
       .then(form => {
         /*
-        
+
         Below visitScheduleRule, decisionRule, validationRule are for handling form level rules and
         decisionExpand, visitScheduleExpand, validationExpand are for handling expand button.
 
@@ -364,7 +363,7 @@ class FormDetails extends Component {
           index: index,
           deleteGroup: this.deleteGroup,
           btnGroupAdd: this.btnGroupAdd,
-          identifierSource: this.state.identifierSource,
+          identifierSources: this.state.identifierSources,
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
@@ -417,7 +416,7 @@ class FormDetails extends Component {
     this.setState(
       produce(draft => {
         const formElement = draft.form.formElementGroups[index].formElements[elementIndex];
-        if (propertyName === "identifierSource") {
+        if (propertyName === "IdSourceUUID") {
           formElement.keyValues[propertyName] = value;
         } else if (propertyName === "editable") {
           value === "undefined"
