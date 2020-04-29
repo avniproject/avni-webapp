@@ -53,15 +53,13 @@ const NewProgramVisitMenuView = ({ sections, formMappings }) => {
                           scope="row"
                           width="50%"
                         >
-                          {/* <NewProgramVisitMenuItem title={section.title} encounter={encounter}> </NewProgramVisitMenuItem> */}
-                          {/* <PagenatorButton type={props.label.type} feg={props.feg} obsHolder={props.obsHolder}>
-                          {t(props.label.Previous)}
-                        </PagenatorButton> */}
-                          <InternalLink to={`/app/subject/programEncounter`}>
-                            <NewProgramVisitMenuItem title={section.title} encounter={encounter}>
-                              {" "}
-                            </NewProgramVisitMenuItem>
-                            {/* {encounter.name} */}
+                          <InternalLink
+                            to={`/app/subject/programEncounter?uuid=${
+                              encounter.encounterType.uuid
+                            }`}
+                            encounter={encounter}
+                          >
+                            {encounter.encounterType.name}
                           </InternalLink>
                         </TableCell>
                         <TableCell align="left" width="50%">

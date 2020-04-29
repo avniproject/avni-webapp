@@ -82,21 +82,19 @@ export function* programEncounterFetchFormWatcher() {
   yield takeLatest(types.GET_PROGRAM_ENCOUNTER_FORM, programEncounterFetchFormWorker);
 }
 
-export function* programEncounterFetchFormWorker({ formUuid }) {
-  const programEncounterForm = yield call(api.fetchForm, formUuid);
-  console.log("Here we are getting dynamic form elements");
-  console.log(programEncounterForm);
-  yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
-
+export function* programEncounterFetchFormWorker({ encounterTypeUuid }) {
   const formMapping = yield select(state =>
     find(
-      //get takes state from store you can print this
       get(state, "dataEntry.metadata.operationalModules.formMappings"),
       (
         fm //this is function fm is parameter it is just like map form uuid from saga
-      ) => !isNil(formUuid) && (fm.formUUID === formUuid && fm.formType === "ProgramEncounter")
+      ) =>
+        !isNil(encounterTypeUuid) &&
+        (fm.encounterTypeUUID === encounterTypeUuid && fm.formType === "ProgramEncounter")
     )
   );
+  const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
 
   const encounterType = yield select(state =>
     find(
@@ -118,20 +116,9 @@ export function* programEncounterFetchFormWorker({ formUuid }) {
   //unplannedVisit.programEnrolment = programEnrolment;
   unplannedVisit.observations = [];
 
-  //yield put.resolve(setProggramEncounterObj(unplannedVisit));
-
   console.log("unplanned visit", unplannedVisit);
 
-  yield select(state => {
-    console.log("state", state);
-  });
-
-  // const program = yield select(selectProgram(programName));
-
-  // const state = yield select();
-  // const subject = state.dataEntry.subjectProfile.subjectProfile;
-  // subject.subjectType = SubjectType.create("Individual");
-
-  // let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
-  // yield put.resolve(setProgramEnrolment(programEnrolment));
+  // yield select(state => {
+  //   console.log("state", state);
+  // });
 }

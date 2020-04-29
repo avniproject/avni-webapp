@@ -8,8 +8,8 @@ import { connect } from "react-redux";
 import moment from "moment";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
-import { Table, TableBody, TableHead, TableCell, TableRow, Typography } from "@material-ui/core";
-import { LineBreak, InternalLink } from "../../../../common/components/utils";
+import { Typography } from "@material-ui/core";
+import { LineBreak } from "../../../../common/components/utils";
 import { ModelGeneral as General, ProgramEncounter, ProgramEnrolment } from "avni-models";
 import NewProgramVisitMenuView from "./NewProgramVisitMenuView";
 
@@ -31,23 +31,20 @@ const NewProgramVisit = ({ match, ...props }) => {
 
   useEffect(() => {
     console.log("Heloo I am at New program visit");
-    // props.getProgramEnrolment(match.queryParams.uuid);
-    //props.getProgramEncounter("Individual", props.program.uuid);
-
     // (async function fetchData() {
     //   await props.getProgramEnrolment(match.queryParams.uuid);
     //   props.getProgramEncounter("Individual", match.queryParams.programUuid);
     //   // let programEnrolment = BrowserStore.fetchProgramEnrolment();
     //   // setProgramEnrolment(programEnrolment);
     // })();
+
     //For Planned Encounters List : To get list of ProgramEncounters from api
     props.getProgramEnrolment(match.queryParams.uuid);
     //For Unplanned Encounters List : To get possible encounters from FormMapping
     // Using form type as "ProgramEncounter", program uuid, subject type uuid
     props.getProgramEncounter("Individual", match.queryParams.programUuid);
   }, []);
-  console.log("program", props.program);
-  console.log("plannedVisits", props.plannedEncounters);
+
   //Creating New programEncounter Object for Planned Encounter
   props.plannedEncounters.map(planEncounter => {
     const plannedVisit = new ProgramEncounter();
@@ -71,16 +68,18 @@ const NewProgramVisit = ({ match, ...props }) => {
     console.log(unplanEncounter);
     const unplannedVisit = new ProgramEncounter();
     unplannedVisit.uuid = General.randomUUID();
-    // unplannedVisit.encounterType = select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
-    // unplannedVisit.name = unplannedVisit.encounterType.name;
-    // unplannedVisit.encounterDateTime = new Date();
-    // const programEnrolment = new ProgramEnrolment();
-    // programEnrolment.uuid = enrolmentUuid;
-    // unplannedVisit.programEnrolment = programEnrolment;
-    // unplannedVisit.observations = [];
+    unplannedVisit.encounterType = props.operationalModules.encounterTypes.find(
+      eT => eT.uuid === unplanEncounter.encounterTypeUUID
+    );
+    unplannedVisit.name = unplannedVisit.encounterType.name;
+    unplannedVisit.encounterDateTime = new Date();
+    const programEnrolment = new ProgramEnrolment();
+    programEnrolment.uuid = match.queryParams.uuid;
+    unplannedVisit.programEnrolment = programEnrolment;
+    unplannedVisit.observations = [];
+    unplannedEncounterList.push(unplannedVisit);
   });
 
-  console.log("New plannedEncounterList...", plannedEncounterList);
   const sections = [
     { title: t("plannedVisits"), data: plannedEncounterList },
     { title: t("unplannedVisits"), data: unplannedEncounterList } //(!this.state.hideUnplanned)
@@ -101,16 +100,11 @@ const NewProgramVisit = ({ match, ...props }) => {
 };
 
 const mapStateToProps = state => ({
-  //   enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
-  //   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  //   programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment
   plannedEncounters: state.programs.programEnrolment
     ? state.programs.programEnrolment.programEncounters
     : [],
-
   unplannedEncounters: state.programs.programEncounter ? state.programs.programEncounter : [],
-
-  program: state.programs.programEnrolment ? state.programs.programEnrolment.program : {},
+  operationalModules: state.dataEntry.metadata.operationalModules,
   x: state
 });
 
@@ -127,16 +121,3 @@ export default withRouter(
     )(NewProgramVisit)
   )
 );
-
-// const mapStateToProps = state => ({
-//   validationResults: state.dataEntry.registration.validationResults
-// });
-
-// const mapDispatchToProps = {
-//   setValidationResults
-// };
-
-// export default connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(NewProgramVisit);
