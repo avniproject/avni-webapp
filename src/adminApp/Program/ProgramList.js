@@ -13,6 +13,7 @@ import {
   findProgramEnrolmentForm,
   findProgramExitForm
 } from "../domain/formMapping";
+import { CreateComponent } from "../../common/components/CreateComponent";
 
 const ProgramList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -134,10 +135,7 @@ const ProgramList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <Button color="primary" onClick={addNewConcept}>
-                {" "}
-                + CREATE{" "}
-              </Button>
+              <CreateComponent onSubmit={addNewConcept} name=" + CREATE" />
             </div>
 
             <MaterialTable

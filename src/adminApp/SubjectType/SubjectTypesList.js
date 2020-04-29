@@ -8,6 +8,7 @@ import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
+import { CreateComponent } from "../../common/components/CreateComponent";
 
 const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -76,10 +77,7 @@ const SubjectTypesList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <Button color="primary" onClick={addNewConcept}>
-                {" "}
-                + CREATE{" "}
-              </Button>
+              <CreateComponent onSubmit={addNewConcept} name=" + CREATE" />
             </div>
 
             <MaterialTable

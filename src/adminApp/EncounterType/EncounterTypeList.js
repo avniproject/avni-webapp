@@ -11,6 +11,7 @@ import {
   findProgramEncounterCancellationForm,
   findProgramEncounterForm
 } from "../domain/formMapping";
+import { CreateComponent } from "../../common/components/CreateComponent";
 
 const EncounterTypeList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
@@ -132,10 +133,7 @@ const EncounterTypeList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <Button color="primary" onClick={addNewConcept}>
-                {" "}
-                + CREATE{" "}
-              </Button>
+              <CreateComponent onSubmit={addNewConcept} name=" + CREATE" />
             </div>
 
             <MaterialTable

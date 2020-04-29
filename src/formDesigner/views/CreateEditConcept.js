@@ -4,7 +4,6 @@ import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import http from "common/utils/httpClient";
-import Button from "@material-ui/core/Button";
 import { default as UUID } from "uuid";
 import NumericConcept from "../components/NumericConcept";
 import CodedConcept from "../components/CodedConcept";
@@ -18,6 +17,7 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
 import { filter, trim } from "lodash";
+import { SaveComponent } from "../../common/components/SaveComponent";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -567,15 +567,7 @@ class CreateEditConcept extends Component {
           error={this.state.error.keyValueError}
         />
         <Grid>
-          <Button
-            type="button"
-            color="primary"
-            variant="contained"
-            style={classes.button}
-            onClick={this.handleSubmit}
-          >
-            Save
-          </Button>
+          <SaveComponent name="Save" onSubmit={this.handleSubmit} styleClass={classes.button} />
         </Grid>
 
         {!this.props.isCreatePage && (

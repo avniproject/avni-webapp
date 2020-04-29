@@ -27,6 +27,7 @@ import {
   findProgramEncounterForm,
   findProgramEncounterForms
 } from "../domain/formMapping";
+import { SaveComponent } from "../../common/components/SaveComponent";
 
 const EncounterTypeEdit = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -300,14 +301,7 @@ const EncounterTypeEdit = props => {
         </div>
         <Grid container item sm={12}>
           <Grid item sm={1}>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => onSubmit()}
-              style={{ marginLeft: "14px" }}
-            >
-              <i className="material-icons">save</i>Save
-            </Button>
+            <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
           </Grid>
           <Grid item sm={11}>
             <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()}>

@@ -12,6 +12,7 @@ import { Title } from "react-admin";
 import AsyncSelect from "react-select/async";
 import { CustomFilter, Concept } from "avni-models";
 import { useTranslation } from "react-i18next";
+import { SaveComponent } from "../../common/components/SaveComponent";
 
 export const CreateEditFilters = props => {
   const { t } = useTranslation();
@@ -380,15 +381,11 @@ export const CreateEditFilters = props => {
                   )}
               </Grid>
               <Box m={0.5}>
-                <Button
-                  variant="contained"
-                  onClick={saveFilter}
-                  color="primary"
-                  aria-haspopup="false"
-                  disabled={saveDisabled()}
-                >
-                  {t("save")}
-                </Button>
+                <SaveComponent
+                  name={t("save")}
+                  onSubmit={saveFilter}
+                  disabledFlag={saveDisabled()}
+                />
               </Box>
               <p />
             </>
