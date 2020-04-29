@@ -45,7 +45,7 @@ const EncounterTypeList = ({ history }) => {
       )
     },
     {
-      title: "Subject type",
+      title: "Subject Type",
       sorting: false,
       render: rowData => (
         <ShowSubjectType

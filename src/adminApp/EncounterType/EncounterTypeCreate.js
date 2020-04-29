@@ -160,7 +160,7 @@ const EncounterTypeCreate = props => {
             )}
             <p />
             <FormControl>
-              <InputLabel id="subjectType">Select subject type*</InputLabel>
+              <InputLabel id="subjectType">Select Subject Type*</InputLabel>
               <Select
                 label="Select subject type"
                 value={_.isEmpty(subjectT) ? "" : subjectT}
@@ -185,9 +185,9 @@ const EncounterTypeCreate = props => {
             )}
             <p />
             <FormControl>
-              <InputLabel id="program">Select program</InputLabel>
+              <InputLabel id="program">Select Program</InputLabel>
               <Select
-                label="Select program"
+                label="Select Program"
                 value={_.isEmpty(programT) ? "" : programT}
                 onChange={event => updateProgram(event.target.value)}
                 style={{ width: "200px" }}

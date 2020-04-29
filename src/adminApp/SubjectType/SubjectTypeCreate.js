@@ -108,7 +108,7 @@ const SubjectTypeCreate = props => {
             </Grid>
             <p />
             <SelectForm
-              label={"Registration form"}
+              label={"Registration Form"}
               value={_.get(subjectType, "registrationForm.formName")}
               onChange={selectedForm =>
                 dispatch({

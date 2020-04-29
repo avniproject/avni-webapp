@@ -168,7 +168,7 @@ const ProgramEdit = props => {
           <p />
           <p />
           <FormControl>
-            <InputLabel id="subjectType">Select subject type</InputLabel>
+            <InputLabel id="subjectType">Select Subject Type</InputLabel>
             <Select
               label="Select subject type"
               value={subjectT}
@@ -191,7 +191,7 @@ const ProgramEdit = props => {
             </FormLabel>
           )}
           <p />
-          <FormLabel>Colour picker</FormLabel>
+          <FormLabel>Colour Picker</FormLabel>
           <br />
           <ColorPicker
             id="colour"
@@ -203,7 +203,7 @@ const ProgramEdit = props => {
           <br />
           <TextField
             id="programsubjectlabel"
-            label="Program subject label"
+            label="Program Subject Label"
             autoComplete="off"
             value={program.programSubjectLabel}
             onChange={event =>
@@ -239,7 +239,7 @@ const ProgramEdit = props => {
             />
           </FormControl>
           <p />
-          <FormLabel>Enrolment summary rule</FormLabel>
+          <FormLabel>Enrolment Summary Rule</FormLabel>
           <Editor
             value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
             onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
@@ -254,7 +254,7 @@ const ProgramEdit = props => {
             }}
           />
           <p />
-          <FormLabel>Enrolment eligibility check rule</FormLabel>
+          <FormLabel>Enrolment Eligibility Check Rule</FormLabel>
           <Editor
             value={
               program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""

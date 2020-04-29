@@ -42,7 +42,7 @@ const ProgramList = ({ history }) => {
       render: rowData => <a href={`#/appDesigner/program/${rowData.id}/show`}>{rowData.name}</a>
     },
     {
-      title: "Subject type",
+      title: "Subject Type",
       sorting: false,
       render: rowData => (
         <ShowSubjectType
