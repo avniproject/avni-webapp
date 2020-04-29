@@ -574,7 +574,7 @@ class CreateEditConcept extends Component {
             style={classes.button}
             onClick={this.handleSubmit}
           >
-            Submit
+            Save
           </Button>
         </Grid>
 
