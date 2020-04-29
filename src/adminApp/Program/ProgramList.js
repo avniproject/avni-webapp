@@ -103,6 +103,7 @@ const ProgramList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
 
   const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   const fetchData = query =>
     new Promise(resolve => {
@@ -127,6 +128,31 @@ const ProgramList = ({ history }) => {
     setRedirect(true);
   };
 
+  const editProgram = rowData => ({
+    icon: "edit",
+    tooltip: "Edit program",
+    onClick: event => history.push(`/appDesigner/program/${rowData.id}`),
+    disabled: rowData.voided
+  });
+
+  const voidProgram = rowData => ({
+    icon: "delete_outline",
+    tooltip: "Void program",
+    onClick: (event, rowData) => {
+      const voidedMessage = "Do you really want to void the program " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        http
+          .delete("/web/program/" + rowData.id)
+          .then(response => {
+            if (response.status === 200) {
+              refreshTable(tableRef);
+            }
+          })
+          .catch(error => {});
+      }
+    }
+  });
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -135,7 +161,7 @@ const ProgramList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={addNewConcept} name=" + CREATE" />
+              <CreateComponent onSubmit={addNewConcept} name="New Program" />
             </div>
 
             <MaterialTable
@@ -155,6 +181,7 @@ const ProgramList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
+              actions={[editProgram, voidProgram]}
             />
           </div>
         </div>
