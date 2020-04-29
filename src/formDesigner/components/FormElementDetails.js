@@ -22,6 +22,7 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const FormControl = withStyles({
   root: {
@@ -62,8 +63,20 @@ const showDatePicker = (cssClasses, props) => {
   );
 };
 
+const BackButton = props => {
+  return (
+    <Button
+      size="small"
+      onClick={() => props.handleConceptFormLibrary(props.groupIndex, "", props.elementIndex, true)}
+    >
+      <ArrowBackIcon /> Back
+    </Button>
+  );
+};
+
 function FormElementDetails(props) {
   const classes = useStyles();
+  console.log(JSON.stringify(props));
   const { t } = useTranslation();
 
   const cssClasses = {
@@ -140,7 +153,7 @@ function FormElementDetails(props) {
                 props.handleConceptFormLibrary(props.groupIndex, "chooseFromLibrary", props.index)
               }
             >
-              Choose concept from library
+              Select from library
             </Button>
             <br />
             OR
@@ -152,7 +165,7 @@ function FormElementDetails(props) {
                 props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)
               }
             >
-              Add new concept
+              Create new
             </Button>
           </div>
         )}
@@ -165,6 +178,14 @@ function FormElementDetails(props) {
               marginBottom: "15px"
             }}
           >
+            {props.formElementData.newFlag && (
+              <BackButton
+                handleConceptFormLibrary={props.handleConceptFormLibrary}
+                groupIndex={props.groupIndex}
+                elementIndex={props.index}
+              />
+            )}
+
             <InlineConcept
               onSaveInlineConcept={props.onSaveInlineConcept}
               formElementData={props.formElementData}
@@ -192,6 +213,13 @@ function FormElementDetails(props) {
             }}
           >
             {" "}
+            {props.formElementData.newFlag && (
+              <BackButton
+                handleConceptFormLibrary={props.handleConceptFormLibrary}
+                groupIndex={props.groupIndex}
+                elementIndex={props.index}
+              />
+            )}
             <Grid item sm={12}>
               {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
                 <div style={{ color: "red" }}>Please enter concept </div>

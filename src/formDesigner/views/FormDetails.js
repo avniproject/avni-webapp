@@ -203,7 +203,7 @@ class FormDetails extends Component {
       this.setState(
         produce(draft => {
           let form = draft.form;
-          if (form.formElementGroups[index].newFlag === "true") {
+          if (form.formElementGroups[index].newFlag === true) {
             form.formElementGroups.splice(index, 1);
           } else {
             form.formElementGroups[index].voided = true;
@@ -404,10 +404,31 @@ class FormDetails extends Component {
     );
   };
 
-  handleConceptFormLibrary = (index, value, elementIndex) => {
+  handleConceptFormLibrary = (index, value, elementIndex, inlineConcept = false) => {
     this.setState(
       produce(draft => {
-        draft.form.formElementGroups[index].formElements[elementIndex].showConceptLibrary = value;
+        if (inlineConcept) {
+          draft.form.formElementGroups[index].formElements[elementIndex].showConceptLibrary = value;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].inlineConceptErrorMessage = this.assignEmptyFormElementMetaData().inlineConceptErrorMessage;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].inlineNumericDataTypeAttributes = this.assignEmptyFormElementMetaData().inlineNumericDataTypeAttributes;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].inlineCodedAnswers = this.assignEmptyFormElementMetaData().inlineCodedAnswers;
+          draft.form.formElementGroups[index].formElements[elementIndex].inlineConceptName = "";
+          draft.form.formElementGroups[index].formElements[elementIndex].inlineConceptDataType = "";
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].concept = this.assignEmptyFormElementMetaData().concept;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].errorMessage = this.assignEmptyFormElementMetaData().errorMessage;
+        } else {
+          draft.form.formElementGroups[index].formElements[elementIndex].showConceptLibrary = value;
+        }
       })
     );
   };
@@ -553,6 +574,46 @@ class FormDetails extends Component {
     );
   }
 
+  assignEmptyFormElementMetaData = () => {
+    return {
+      uuid: UUID.v4(),
+      displayOrder: -1,
+      newFlag: true,
+      name: "",
+      type: "",
+      keyValues: {},
+      mandatory: false,
+      voided: false,
+      expanded: true,
+      concept: { name: "", dataType: "" },
+      errorMessage: { name: false, concept: false, type: false },
+      inlineConceptErrorMessage: { name: "", dataType: "", inlineConceptError: "" },
+      inlineNumericDataTypeAttributes: {
+        lowAbsolute: null,
+        highAbsolute: null,
+        lowNormal: null,
+        highNormal: null,
+        unit: "",
+        error: {}
+      },
+      inlineCodedAnswers: [
+        {
+          name: "",
+          uuid: "",
+          unique: false,
+          abnormal: false,
+          editable: true,
+          voided: false,
+          order: 0,
+          isEmptyAnswer: false
+        }
+      ],
+      showConceptLibrary: "",
+      inlineConceptName: "",
+      inlineConceptDataType: ""
+    };
+  };
+
   onDragInlineCodedConceptAnswer = result => {
     const { destination, source } = result;
     if (!destination) {
@@ -584,47 +645,11 @@ class FormDetails extends Component {
     this.setState(
       produce(draft => {
         let form = draft.form;
-        const formElement_temp = {
-          uuid: UUID.v4(),
-          displayOrder: -1,
-          newFlag: "true",
-          name: "",
-          type: "",
-          keyValues: {},
-          mandatory: false,
-          voided: false,
-          expanded: true,
-          concept: { name: "", dataType: "" },
-          errorMessage: { name: false, concept: false, type: false },
-          inlineConceptErrorMessage: { name: "", dataType: "", inlineConceptError: "" },
-          inlineNumericDataTypeAttributes: {
-            lowAbsolute: null,
-            highAbsolute: null,
-            lowNormal: null,
-            highNormal: null,
-            unit: "",
-            error: {}
-          },
-          inlineCodedAnswers: [
-            {
-              name: "",
-              uuid: "",
-              unique: false,
-              abnormal: false,
-              editable: true,
-              voided: false,
-              order: 0,
-              isEmptyAnswer: false
-            }
-          ],
-          showConceptLibrary: "",
-          inlineConceptName: "",
-          inlineConceptDataType: ""
-        };
+        const formElement_temp = this.assignEmptyFormElementMetaData();
         if (elementIndex === -1) {
           form.formElementGroups.splice(index + 1, 0, {
             uuid: UUID.v4(),
-            newFlag: "true",
+            newFlag: true,
             expanded: true,
             displayOrder: -1,
             name: "",
@@ -885,6 +910,7 @@ class FormDetails extends Component {
           clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
             "concept"
           ].answers = inlineConceptObject.answers;
+          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex].newFlag = false;
 
           this.setState({
             form: clonedForm
