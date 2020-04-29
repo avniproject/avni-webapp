@@ -9,7 +9,6 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import { default as UUID } from "uuid";
-import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
@@ -21,6 +20,7 @@ import TextField from "@material-ui/core/TextField";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { Redirect } from "react-router-dom";
 
+import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
@@ -1152,21 +1152,16 @@ class FormDetails extends Component {
 
           {!this.state.createFlag && (
             <Grid item sm={2}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="secondary"
-                margin="normal"
-                onClick={this.validateForm}
-                style={{
+              <SaveComponent
+                name="Save"
+                onSubmit={this.validateForm}
+                styleClass={{
                   marginTop: "30px",
                   marginBottom: "2px"
                 }}
-                disabled={!this.state.detectBrowserCloseEvent}
-              >
-                <SaveIcon />
-                &nbsp;Save
-              </Button>
+                disabledFlag={!this.state.detectBrowserCloseEvent}
+                fullWidth={true}
+              />
             </Grid>
           )}
         </Grid>

@@ -19,6 +19,7 @@ import { useFormMappings } from "./effects";
 import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
 import _ from "lodash";
 import SelectForm from "./SelectForm";
+import { SaveComponent } from "../../common/components/SaveComponent";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -160,7 +161,7 @@ const SubjectTypeEdit = props => {
           </Grid>
           <p />
           <SelectForm
-            label={"Registration form name"}
+            label={"Registration Form"}
             value={_.get(subjectType, "registrationForm.formName")}
             onChange={selectedForm =>
               dispatch({
@@ -200,14 +201,7 @@ const SubjectTypeEdit = props => {
         </div>
         <Grid container item sm={12}>
           <Grid item sm={1}>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => onSubmit()}
-              style={{ marginLeft: "14px" }}
-            >
-              <i className="material-icons">save</i>Save
-            </Button>
+            <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
           </Grid>
           <Grid item sm={11}>
             <Button

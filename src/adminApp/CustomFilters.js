@@ -10,6 +10,7 @@ import Box from "@material-ui/core/Box";
 import { connect } from "react-redux";
 import { getOperationalModules } from "../reports/reducers";
 import { withRouter } from "react-router-dom";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles({
   root: {
@@ -149,28 +150,30 @@ const customFilters = ({ operationalModules, getOperationalModules, history, org
     }
   });
 
-  const addFilter = (filterType, title) => ({
-    icon: "add_outline",
-    tooltip: "Add Filter",
-    isFreeAction: true,
-    onClick: event => {
-      history.push({
-        pathname: "/appdesigner/filters",
-        state: {
-          filterType,
-          selectedFilter: null,
-          settings,
-          omitTableData,
-          operationalModules,
-          title,
-          worklistUpdationRule
-        }
-      });
-    }
-  });
-
   const renderFilterTable = filterType => (
     <Box m={2}>
+      <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={event => {
+            history.push({
+              pathname: "/appdesigner/filters",
+              state: {
+                filterType,
+                selectedFilter: null,
+                settings,
+                omitTableData,
+                operationalModules,
+                title: `Add ${_.startCase(filterType)}`,
+                worklistUpdationRule
+              }
+            });
+          }}
+        >
+          NEW {_.startCase(filterType)}
+        </Button>
+      </div>
       <MaterialTable
         title={_.startCase(filterType)}
         components={{
@@ -180,9 +183,8 @@ const customFilters = ({ operationalModules, getOperationalModules, history, org
         data={filterData(settings.settings[filterType])}
         options={{ search: false, paging: false }}
         actions={[
-          addFilter(filterType, `Add ${_.startCase(filterType)}`),
-          deleteFilter(filterType),
-          editFilter(filterType, `Edit ${_.startCase(filterType)}`)
+          editFilter(filterType, `Edit ${_.startCase(filterType)}`),
+          deleteFilter(filterType)
         ]}
       />
     </Box>
