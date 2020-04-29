@@ -122,7 +122,6 @@ export const WorklistUpdationRule = () => {
             onSubmit={onSaveWorklistUpdationRule}
             styleClass={{ marginLeft: "25px", marginBottom: "10px" }}
             disabledFlag={!enableRuleSave}
-            fullWidth={true}
           />
         </ExpansionPanel>
       </Paper>
