@@ -98,22 +98,7 @@ export const WorklistUpdationRule = () => {
                   Worklist updation rule
                 </span>
               </Grid>
-              <Grid item sm={8} />
-
-              <Grid item sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={event => onSaveWorklistUpdationRule(event)}
-                  style={{
-                    marginLeft: "60%"
-                  }}
-                  disabled={!enableRuleSave}
-                >
-                  <SaveIcon />
-                  &nbsp;Save
-                </Button>
-              </Grid>
+              <Grid item sm={10} />
             </Grid>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -132,6 +117,16 @@ export const WorklistUpdationRule = () => {
               }}
             />
           </ExpansionPanelDetails>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={event => onSaveWorklistUpdationRule(event)}
+            style={{ marginLeft: "25px", marginBottom: "10px" }}
+            disabled={!enableRuleSave}
+          >
+            <SaveIcon />
+            &nbsp;Save
+          </Button>
         </ExpansionPanel>
       </Paper>
       {notificationAlert && (
