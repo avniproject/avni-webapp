@@ -13,7 +13,7 @@ export const SaveComponent = props => {
       fullWidth={props.fullWidth}
     >
       <i className="material-icons">save</i>
-      {props.name}
+      {props.name.toUpperCase()}
     </Button>
   );
 };
