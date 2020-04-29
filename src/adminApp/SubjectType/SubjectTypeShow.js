@@ -13,6 +13,8 @@ import _, { get } from "lodash";
 import { GroupRoleShow } from "./GroupRoleShow";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
+import RemoveIcon from "@material-ui/icons/Remove";
+import CheckIcon from "@material-ui/icons/Check";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
@@ -50,21 +52,15 @@ const SubjectTypeShow = props => {
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Household</FormLabel>
               <br />
-              <Switch
-                checked={subjectType.household}
-                name="household"
-                inputProps={{ "aria-label": "primary checkbox" }}
-              />
+
+              {subjectType.household ? <CheckIcon /> : <RemoveIcon />}
             </div>
             <p />
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Group</FormLabel>
               <br />
-              <Switch
-                checked={subjectType.group}
-                name="group"
-                inputProps={{ "aria-label": "primary checkbox" }}
-              />
+
+              {subjectType.group ? <CheckIcon /> : <RemoveIcon />}
             </div>
             <p />
             <div>
