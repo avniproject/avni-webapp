@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramEncounter = ({ match, getProgramEncounterForm, programEncounterForm }) => {
+const ProgramEncounter = ({ match, getProgramEncounterForm, programEncounterForm, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   useEffect(() => {
@@ -55,8 +55,8 @@ const ProgramEncounter = ({ match, getProgramEncounterForm, programEncounterForm
     //    await getProgramEncounterForm(match.queryParams.uuid);
     // })();
   }, []);
-  console.log("Inside new page >> programEncounter >> programEncounterForm");
-  console.log(programEncounterForm);
+  console.log("Inside new page >> programEncounter ..printing states");
+  console.log(props.x);
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -101,7 +101,9 @@ const ProgramEncounter = ({ match, getProgramEncounterForm, programEncounterForm
 
 const mapStateToProps = state => ({
   //programEncounterForm: state.dataEntry.programReducer.programEncounterForm
-  programEncounterForm: state.programs.programEncounterForm
+  programEncounterForm: state.programs.programEncounterForm,
+  x: state
+  //subject: state.dataEntry.subjectProfile.subjectProfile,
   // programEncounter: state.programs.programEncounter
 });
 

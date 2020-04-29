@@ -16,6 +16,12 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3, 2),
     margin: theme.spacing(1, 3),
     flexGrow: 1
+  },
+  tableHeader: {
+    // fontSize: "12px",
+    // // fontFamily: "Roboto Reg",
+    // fontWeight: 500,
+    color: "black"
   }
 }));
 
@@ -25,56 +31,68 @@ const NewProgramVisitMenuView = ({ sections, formMappings }) => {
   const classes = useStyles();
 
   console.log("Innn NewProgramVisitMenuView", sections);
-
-  //const matchedFM = formMappings.find(fm => fm.encounterTypeUUID === encounter.encounterType.uuid && fm.formType === "ProgramEncounter")
-  //console.log(matchedFM);
   return (
     <Fragment>
-      <Paper className={classes.root}>
-        {sections
-          ? sections.map(section => (
-              <Paper>
+      {/* <Paper className={classes.root}> */}
+      {sections
+        ? sections.map(section => (
+            <div>
+              <Paper className={classes.root}>
                 <Typography gutterBottom>{section.title}</Typography>
-                <Table className={classes.table} size="small" aria-label="a dense table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t("Name")}</TableCell>
-                      {_.isEqual(section.title, t("plannedVisits")) && (
-                        <TableCell>{t("Date")}</TableCell>
-                      )}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {section.data.map(encounter => (
+
+                <Paper>
+                  <Table className={classes.table} size="small" aria-label="a dense table">
+                    <TableHead>
                       <TableRow>
-                        <TableCell
-                          style={{ color: "#555555" }}
-                          component="th"
-                          scope="row"
-                          width="50%"
-                        >
-                          <InternalLink
-                            to={`/app/subject/programEncounter?uuid=${
-                              encounter.encounterType.uuid
-                            }`}
-                            encounter={encounter}
-                          >
-                            {encounter.encounterType.name}
-                          </InternalLink>
-                        </TableCell>
-                        <TableCell align="left" width="50%">
-                          {/* {plannedEncounter.earliestVisitDateTime} */}
-                          {encounter.earliestVisitDateTime &&
-                            General.toDisplayDate(encounter.earliestVisitDateTime)}
-                        </TableCell>
+                        <TableCell className={classes.tableHeader}>{t("Name")}</TableCell>
+                        {_.isEqual(section.title, t("plannedVisits")) ? (
+                          <TableCell className={classes.tableHeader}>{t("Date")}</TableCell>
+                        ) : (
+                          <TableCell />
+                        )}
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHead>
+                    <TableBody>
+                      {section.data
+                        .filter(e => !_.isNil(e.encounterType))
+                        .map(encounter => (
+                          <TableRow>
+                            {encounter.encounterType ? (
+                              <TableCell
+                                style={{ color: "#555555" }}
+                                component="th"
+                                scope="row"
+                                width="50%"
+                              >
+                                <InternalLink
+                                  to={`/app/subject/programEncounter?uuid=${
+                                    encounter.encounterType.uuid
+                                  }`}
+                                  encounter={encounter}
+                                >
+                                  {encounter.encounterType.name}
+                                </InternalLink>
+                              </TableCell>
+                            ) : (
+                              ""
+                            )}
+
+                            <TableCell align="left" width="50%">
+                              {/* {plannedEncounter.earliestVisitDateTime} */}
+                              {encounter.earliestVisitDateTime &&
+                                General.toDisplayDate(encounter.earliestVisitDateTime)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Paper>
               </Paper>
-            ))
-          : ""}
-      </Paper>
+              <LineBreak num={1} />
+            </div>
+          ))
+        : ""}
+      {/* </Paper> */}
     </Fragment>
   );
 };

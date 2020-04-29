@@ -105,13 +105,9 @@ const ProgramView = ({ programData }) => {
           <SubjectButton btnLabel={t("vaccinations")} />
           {/* <SubjectButton btnLabel={t("newProgramVisit")} /> */}
           <InternalLink
-            //  to={`/app/subject/newProgramVisit?uuid=${programData.uuid}&programUuid=${
-            //   programData.program.uuid
-            // }`}
             to={{
               pathname: "/app/subject/newProgramVisit",
               search: `?uuid=${programData.uuid}&programUuid=${programData.program.uuid}`
-
               // state: {
               //   enrolmentUuid: `${programData.uuid}`,
               //   programUuid: `${programData.program.uuid}`

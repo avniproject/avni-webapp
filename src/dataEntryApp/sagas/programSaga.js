@@ -38,27 +38,11 @@ export function* programFetchWorker({ subjectUuid }) {
   yield put(setPrograms(programs));
 }
 
-// export function* programEncounterOnLoadWatcher() {
-//   yield takeLatest(types.ON_LOAD, setupNewProgramEncounterWorker);
-// }
-
-// export function* setupNewProgramEncounterWorker({ subjectTypeUuid, programUuid }) {
-//   console.log("inside program saga ...");
-//   // const formMapping = yield select(
-//   //   selectProgramEncounterFormMappingForSubjectType(subjectTypeUuid, programUuid)
-//   // );
-//   console.log("Printing FM");
-//   // console.log(formMapping);
-// }
-
 export function* programEncounterFetchWatcher() {
   yield takeLatest(types.GET_PROGRAM_ENCOUNTER, ProgramEncounterFetchWorker);
 }
 
 export function* ProgramEncounterFetchWorker({ subjectTypeName, programUuid }) {
-  console.log("inside program saga ...");
-  console.log(subjectTypeName);
-  console.log(programUuid);
   const programEncounterFormMapping = yield select(
     selectProgramEncounterFormMappingForSubjectType(subjectTypeName, programUuid)
   );
@@ -75,7 +59,6 @@ export function* programEnrolmentFetchWorker({ enrolmentUuid }) {
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
   console.log("programVisists", programEnrolment);
   yield put(setProgramEnrolment(programEnrolment));
-  //yield put(setPrograms(programs));
 }
 
 export function* programEncounterFetchFormWatcher() {
@@ -86,9 +69,7 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid }) {
   const formMapping = yield select(state =>
     find(
       get(state, "dataEntry.metadata.operationalModules.formMappings"),
-      (
-        fm //this is function fm is parameter it is just like map form uuid from saga
-      ) =>
+      fm =>
         !isNil(encounterTypeUuid) &&
         (fm.encounterTypeUUID === encounterTypeUuid && fm.formType === "ProgramEncounter")
     )
@@ -96,27 +77,27 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid }) {
   const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
 
-  const encounterType = yield select(state =>
-    find(
-      //get takes state from store you can print this
-      get(state, "dataEntry.metadata.operationalModules.encounterTypes"),
-      (
-        eT //this is function fm is parameter it is just like map form uuid from saga
-      ) => eT.uuid === formMapping.encounterTypeUUID
-    )
-  );
+  // const encounterType = yield select(state =>
+  //   find(
+  //     //get takes state from store you can print this
+  //     get(state, "dataEntry.metadata.operationalModules.encounterTypes"),
+  //     (
+  //       eT //this is function fm is parameter it is just like map form uuid from saga
+  //     ) => eT.uuid === formMapping.encounterTypeUUID
+  //   )
+  // );
 
-  const unplannedVisit = new ProgramEncounter();
-  unplannedVisit.uuid = General.randomUUID();
-  unplannedVisit.encounterType = encounterType;
-  unplannedVisit.name = unplannedVisit.encounterType.name;
-  unplannedVisit.encounterDateTime = new Date();
+  // const unplannedVisit = new ProgramEncounter();
+  // unplannedVisit.uuid = General.randomUUID();
+  // unplannedVisit.encounterType = encounterType;
+  // unplannedVisit.name = unplannedVisit.encounterType.name;
+  // unplannedVisit.encounterDateTime = new Date();
   // const programEnrolment = new ProgramEnrolment();
   // programEnrolment.uuid = enrolmentUuid;
-  //unplannedVisit.programEnrolment = programEnrolment;
-  unplannedVisit.observations = [];
+  // unplannedVisit.programEnrolment = programEnrolment;
+  // unplannedVisit.observations = [];
 
-  console.log("unplanned visit", unplannedVisit);
+  // console.log("unplanned visit", unplannedVisit);
 
   // yield select(state => {
   //   console.log("state", state);
