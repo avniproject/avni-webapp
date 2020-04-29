@@ -12,7 +12,7 @@ export const CreateComponent = props => {
       disabled={props.disabledFlag}
       fullWidth={props.fullWidth}
     >
-      {props.name}
+      {props.name.toUpperCase()}
     </Button>
   );
 };
