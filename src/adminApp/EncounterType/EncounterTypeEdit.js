@@ -209,9 +209,9 @@ const EncounterTypeEdit = props => {
           )}
           <p />
           <FormControl>
-            <InputLabel id="subjectType">Select subject type*</InputLabel>
+            <InputLabel id="subjectType">Select Subject Type*</InputLabel>
             <Select
-              label="Select subject type"
+              label="Select Subject Type"
               value={_.isEmpty(subjectT) ? "" : subjectT}
               onChange={event => setSubjectT(event.target.value)}
               style={{ width: "200px" }}
@@ -234,9 +234,9 @@ const EncounterTypeEdit = props => {
           )}
           <p />
           <FormControl>
-            <InputLabel id="program">Select program</InputLabel>
+            <InputLabel id="program">Select Program</InputLabel>
             <Select
-              label="Select program"
+              label="Select Program"
               value={_.isEmpty(programT) ? "" : programT}
               onChange={event => updateProgram(event.target.value)}
               style={{ width: "200px" }}
@@ -277,7 +277,7 @@ const EncounterTypeEdit = props => {
             formList={getCancellationForms()}
           />
           <p />
-          <FormLabel>Enrolment eligibility check rule</FormLabel>
+          <FormLabel>Enrolment Eligibility Check Rule</FormLabel>
           <Editor
             value={
               encounterType.encounterEligibilityCheckRule

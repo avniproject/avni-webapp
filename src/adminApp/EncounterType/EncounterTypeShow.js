@@ -62,7 +62,7 @@ const EncounterTypeShow = props => {
           </div>
           <p />
           <div>
-            <FormLabel style={{ fontSize: "13px" }}>Subject type</FormLabel>
+            <FormLabel style={{ fontSize: "13px" }}>Subject Type</FormLabel>
             <br />
             <ShowSubjectType
               rowDetails={encounterType}
