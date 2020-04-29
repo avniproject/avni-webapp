@@ -181,8 +181,8 @@ const customFilters = ({ operationalModules, getOperationalModules, history, org
         options={{ search: false, paging: false }}
         actions={[
           addFilter(filterType, `Add ${_.startCase(filterType)}`),
-          deleteFilter(filterType),
-          editFilter(filterType, `Edit ${_.startCase(filterType)}`)
+          editFilter(filterType, `Edit ${_.startCase(filterType)}`),
+          deleteFilter(filterType)
         ]}
       />
     </Box>
