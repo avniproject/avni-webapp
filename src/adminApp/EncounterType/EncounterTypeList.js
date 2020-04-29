@@ -21,6 +21,7 @@ const EncounterTypeList = ({ history }) => {
   const [formList, setFormList] = useState([]);
 
   const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   useEffect(() => {
     http
@@ -125,6 +126,31 @@ const EncounterTypeList = ({ history }) => {
     setRedirect(true);
   };
 
+  const editEncounterType = rowData => ({
+    icon: "edit",
+    tooltip: "Edit encounter type",
+    onClick: event => history.push(`/appDesigner/encounterType/${rowData.id}`),
+    disabled: rowData.voided
+  });
+
+  const voidEncounterType = rowData => ({
+    icon: "delete_outline",
+    tooltip: "Void encounter type",
+    onClick: (event, rowData) => {
+      const voidedMessage = "Do you really want to void the encounter type " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        http
+          .delete("/web/encounterType/" + rowData.id)
+          .then(response => {
+            if (response.status === 200) {
+              refreshTable(tableRef);
+            }
+          })
+          .catch(error => {});
+      }
+    }
+  });
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -133,7 +159,7 @@ const EncounterTypeList = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={addNewConcept} name=" + CREATE" />
+              <CreateComponent onSubmit={addNewConcept} name="New Encounter type" />
             </div>
 
             <MaterialTable
@@ -153,6 +179,7 @@ const EncounterTypeList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
+              actions={[editEncounterType, voidEncounterType]}
             />
           </div>
         </div>
