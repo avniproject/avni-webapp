@@ -9,7 +9,6 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import { default as UUID } from "uuid";
-import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
@@ -21,6 +20,7 @@ import TextField from "@material-ui/core/TextField";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { Redirect } from "react-router-dom";
 
+import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
@@ -53,7 +53,7 @@ class FormDetails extends Component {
     super(props);
     this.state = {
       form: [],
-      identifierSource: [],
+      identifierSources: [],
       name: "",
       errorMsg: "",
       saveCall: false,
@@ -100,14 +100,14 @@ class FormDetails extends Component {
 
   componentDidMount() {
     this.setupBeforeUnloadListener();
+    const transformIdentifierSources = identifierSourcesFromServer =>
+      _.map(identifierSourcesFromServer, source => ({ value: source.uuid, label: source.name }));
+
     http.get(`/web/identifierSource`).then(response => {
-      const identifierSources = [];
-      if (response.data["_embedded"]) {
-        _.forEach(response.data["_embedded"]["identifierSource"], (source, index) => {
-          identifierSources.push({ value: source.uuid, label: source.name });
-        });
-      }
-      this.setState({ identifierSource: identifierSources });
+      let responseData = _.get(response, "data._embedded.identifierSource", []);
+      this.setState({
+        identifierSources: transformIdentifierSources(responseData)
+      });
     });
 
     return http
@@ -115,7 +115,7 @@ class FormDetails extends Component {
       .then(response => response.data)
       .then(form => {
         /*
-        
+
         Below visitScheduleRule, decisionRule, validationRule are for handling form level rules and
         decisionExpand, visitScheduleExpand, validationExpand are for handling expand button.
 
@@ -376,7 +376,7 @@ class FormDetails extends Component {
           index: index,
           deleteGroup: this.deleteGroup,
           btnGroupAdd: this.btnGroupAdd,
-          identifierSource: this.state.identifierSource,
+          identifierSources: this.state.identifierSources,
           onUpdateDragDropOrder: this.onUpdateDragDropOrder,
           handleGroupElementChange: this.handleGroupElementChange,
           handleGroupElementKeyValueChange: this.handleGroupElementKeyValueChange,
@@ -413,7 +413,7 @@ class FormDetails extends Component {
     this.setState(
       produce(draft => {
         const formElement = draft.form.formElementGroups[index].formElements[elementIndex];
-        if (propertyName === "identifierSource") {
+        if (propertyName === "IdSourceUUID") {
           formElement.keyValues[propertyName] = value;
         } else if (propertyName === "editable") {
           value === "undefined"
@@ -763,21 +763,16 @@ class FormDetails extends Component {
 
           {!this.state.createFlag && (
             <Grid item sm={2}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="secondary"
-                margin="normal"
-                onClick={this.validateForm}
-                style={{
+              <SaveComponent
+                name="Save"
+                onSubmit={this.validateForm}
+                styleClass={{
                   marginTop: "30px",
                   marginBottom: "2px"
                 }}
-                disabled={!this.state.detectBrowserCloseEvent}
-              >
-                <SaveIcon />
-                &nbsp;Save
-              </Button>
+                disabledFlag={!this.state.detectBrowserCloseEvent}
+                fullWidth={true}
+              />
             </Grid>
           )}
         </Grid>

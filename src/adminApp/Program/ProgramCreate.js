@@ -103,6 +103,7 @@ const ProgramCreate = props => {
               id="name"
               label="Name"
               autoComplete="off"
+              required
               value={program.name}
               onChange={event => dispatch({ type: "name", payload: event.target.value })}
             />
@@ -119,9 +120,9 @@ const ProgramCreate = props => {
             )}
             <p />
             <FormControl>
-              <InputLabel id="subjectType">Select subject type</InputLabel>
+              <InputLabel id="subjectType">Select Subject Type *</InputLabel>
               <Select
-                label="Select subject type"
+                label="Select Subject Type *"
                 value={_.isEmpty(subjectT) ? "" : subjectT}
                 onChange={event => setSubjectT(event.target.value)}
                 style={{ width: "200px" }}
@@ -143,7 +144,7 @@ const ProgramCreate = props => {
               </FormLabel>
             )}
             <p />
-            <FormLabel>Colour picker</FormLabel>
+            <FormLabel>Colour Picker</FormLabel>
             <br />
 
             <ColorPicker
@@ -156,7 +157,7 @@ const ProgramCreate = props => {
             <br />
             <TextField
               id="programsubjectlabel"
-              label="Program subject label"
+              label="Program Subject Label"
               autoComplete="off"
               value={program.programSubjectLabel}
               onChange={event =>
@@ -165,7 +166,7 @@ const ProgramCreate = props => {
             />
             <p />
             <SelectForm
-              label={"Select Enrolment form"}
+              label={"Select Enrolment Form"}
               value={_.get(program, "programEnrolmentForm.formName")}
               onChange={selectedForm =>
                 dispatch({
@@ -177,7 +178,7 @@ const ProgramCreate = props => {
             />
             <p />
             <SelectForm
-              label={"Select Exit form"}
+              label={"Select Exit Form"}
               value={_.get(program, "programExitForm.formName")}
               onChange={selectedForm =>
                 dispatch({
@@ -188,7 +189,7 @@ const ProgramCreate = props => {
               formList={findProgramExitForms(formList)}
             />
             <p />
-            <FormLabel>Enrolment summary rule</FormLabel>
+            <FormLabel>Enrolment Summary Rule</FormLabel>
             <Editor
               value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
               onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
@@ -203,7 +204,7 @@ const ProgramCreate = props => {
               }}
             />
             <p />
-            <FormLabel>Enrolment eligibility check rule</FormLabel>
+            <FormLabel>Enrolment Eligibility Check Rule</FormLabel>
             <Editor
               value={
                 program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""

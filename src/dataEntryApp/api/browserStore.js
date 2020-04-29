@@ -36,8 +36,8 @@ export default class {
       subject.subjectType = subjectType;
 
       const addressLevel = new AddressLevel();
-      subject.uuid = localSavedSubject.lowestAddressLevel.uuid;
-      subject.name = localSavedSubject.lowestAddressLevel.name;
+      addressLevel.uuid = localSavedSubject.lowestAddressLevel.uuid;
+      addressLevel.name = localSavedSubject.lowestAddressLevel.name;
       subject.lowestAddressLevel = addressLevel;
 
       //addOrUpdateObservation

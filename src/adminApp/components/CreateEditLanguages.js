@@ -8,6 +8,7 @@ import http from "common/utils/httpClient";
 import _ from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
+import { SaveComponent } from "../../common/components/SaveComponent";
 
 const options = localeChoices.map(l => ({ label: l.name, value: l.id }));
 
@@ -55,9 +56,7 @@ export const CreateEditLanguages = props => {
           <Select isMulti value={lang} options={options} onChange={name => setLang(name)} />
         </Box>
         <Box m={2} display="flex" justifyContent="left">
-          <Button variant="contained" onClick={saveLanguage} color="primary" aria-haspopup="false">
-            Save
-          </Button>
+          <SaveComponent name="Save" onSubmit={saveLanguage} />
         </Box>
         {messageStatus.display && (
           <CustomizedSnackbar

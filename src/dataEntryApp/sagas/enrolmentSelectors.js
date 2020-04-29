@@ -11,7 +11,7 @@ export const selectEnrolSubjectTypeFromName = subjectTypeName => (
 export const selectProgram = programName => state =>
   find(
     get(state, "dataEntry.metadata.operationalModules.programs"),
-    program => program.name === programName
+    program => program.operationalProgramName === programName
   );
 
 //it is returning another funciton

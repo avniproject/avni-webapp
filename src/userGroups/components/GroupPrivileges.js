@@ -244,7 +244,7 @@ const GroupPrivileges = ({
               checked={allPrivilegesAllowed}
             />
           }
-          label="Use default privileges. (All users are allowed to access all features.)"
+          label="All privileges"
         />
       </FormGroup>
       {!allPrivilegesAllowed && (
