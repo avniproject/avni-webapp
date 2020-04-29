@@ -11,9 +11,8 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../formDesigner/components/CustomizedSnackbar";
+import { SaveComponent } from "../common/components/SaveComponent";
 
 export const WorklistUpdationRule = () => {
   const emptyOrgSettings = {
@@ -98,22 +97,7 @@ export const WorklistUpdationRule = () => {
                   Worklist updation rule
                 </span>
               </Grid>
-              <Grid item sm={8} />
-
-              <Grid item sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={event => onSaveWorklistUpdationRule(event)}
-                  style={{
-                    marginLeft: "60%"
-                  }}
-                  disabled={!enableRuleSave}
-                >
-                  <SaveIcon />
-                  &nbsp;Save
-                </Button>
-              </Grid>
+              <Grid item sm={10} />
             </Grid>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -132,6 +116,13 @@ export const WorklistUpdationRule = () => {
               }}
             />
           </ExpansionPanelDetails>
+
+          <SaveComponent
+            name="Save"
+            onSubmit={onSaveWorklistUpdationRule}
+            styleClass={{ marginLeft: "25px", marginBottom: "10px" }}
+            disabledFlag={!enableRuleSave}
+          />
         </ExpansionPanel>
       </Paper>
       {notificationAlert && (

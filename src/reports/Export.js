@@ -101,18 +101,18 @@ const Export = ({
   const renderProgramOrEncounters = () => {
     const { programs, formMappings, encounterTypes } = operationalModules;
     const validFormMappingsForSelectedSubject = formMappings.filter(
-      fm => fm.subjectTypeUuid === selectedSubjectType.uuid
+      fm => fm.subjectTypeUUID === selectedSubjectType.uuid
     );
     const validPrograms = _.intersectionWith(
       programs,
       validFormMappingsForSelectedSubject,
-      (a, b) => a.uuid === b.programUuid
+      (a, b) => a.uuid === b.programUUID
     );
     if (_.isEmpty(validPrograms)) {
       const validEncounters = _.intersectionWith(
         encounterTypes,
         validFormMappingsForSelectedSubject,
-        (a, b) => a.uuid === b.encounterTypeUuid
+        (a, b) => a.uuid === b.encounterTypeUUID
       );
       return (
         <ExportOptions
@@ -124,12 +124,12 @@ const Export = ({
       );
     } else {
       const validFormMappingsForSelectedProgram = formMappings.filter(
-        fm => fm.programUuid === selectedProgram.uuid
+        fm => fm.programUUID === selectedProgram.uuid
       );
       const validEncounters = _.intersectionWith(
         encounterTypes,
         validFormMappingsForSelectedProgram,
-        (a, b) => a.uuid === b.encounterTypeUuid
+        (a, b) => a.uuid === b.encounterTypeUUID
       );
       return renderProgramsAndEncounters(validPrograms, validEncounters);
     }

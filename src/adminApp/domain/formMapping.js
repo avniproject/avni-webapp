@@ -1,7 +1,7 @@
 export const findProgramEncounterForm = (formMappings, encounterType) =>
   formMappings.find(
     mapping =>
-      mapping.formType === "ProgramEncounter" &&
+      (mapping.formType === "ProgramEncounter" || mapping.formType === "Encounter") &&
       mapping.isVoided === false &&
       mapping.encounterTypeUUID === encounterType.uuid
   );
@@ -9,7 +9,8 @@ export const findProgramEncounterForm = (formMappings, encounterType) =>
 export const findProgramEncounterCancellationForm = (formMappings, encounterType) =>
   formMappings.find(
     mapping =>
-      mapping.formType === "ProgramEncounterCancellation" &&
+      (mapping.formType === "ProgramEncounterCancellation" ||
+        mapping.formType === "IndividualEncounterCancellation") &&
       mapping.isVoided === false &&
       mapping.encounterTypeUUID === encounterType.uuid
   );
@@ -47,8 +48,13 @@ export const findRegistrationForms = (formList = []) =>
 export const findProgramEncounterForms = (formList = []) =>
   findFormsOfType(formList, "ProgramEncounter");
 
+export const findEncounterForms = (formList = []) => findFormsOfType(formList, "Encounter");
+
 export const findProgramEncounterCancellationForms = (formList = []) =>
   findFormsOfType(formList, "ProgramEncounterCancellation");
+
+export const findEncounterCancellationForms = (formList = []) =>
+  findFormsOfType(formList, "IndividualEncounterCancellation");
 
 export const findProgramEnrolmentForms = (formList = []) =>
   findFormsOfType(formList, "ProgramEnrolment");

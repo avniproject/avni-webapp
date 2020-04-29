@@ -81,18 +81,10 @@ class OrgManager extends Component {
 
   render() {
     const { organisation, user } = this.props;
-    const uiDesignerToggle =
-      window.location.href.includes("localhost") ||
-      window.location.href.includes("staging") ||
-      window.location.href.includes("uat");
-    const csvUploadToggle =
-      window.location.href.includes("localhost") ||
-      window.location.href.includes("staging") ||
-      window.location.href.includes("uat");
     return (
       <React.Fragment>
         {!isEmpty(httpClient.getOrgId()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
-          ? this.renderOrgAdminResources(user, organisation, csvUploadToggle, uiDesignerToggle)
+          ? this.renderOrgAdminResources(user, organisation)
           : this.renderAdminResources(user)}
         <Footer />
       </React.Fragment>
@@ -145,7 +137,7 @@ class OrgManager extends Component {
     );
   }
 
-  renderOrgAdminResources(user, organisation, csvUploadToggle, uiDesignerToggle) {
+  renderOrgAdminResources(user, organisation) {
     return (
       <Admin
         title="Manage Organisation"
@@ -190,16 +182,8 @@ class OrgManager extends Component {
           show={WithProps({ user }, UserDetail)}
           edit={WithProps({ user }, UserEdit)}
         />
-        <Resource
-          name="userGroups"
-          options={{ label: "User Groups" }}
-          list={csvUploadToggle && UserGroups}
-        />
-        <Resource
-          name="upload"
-          options={{ label: "Upload" }}
-          list={csvUploadToggle && UploadDashboard}
-        />
+        <Resource name="userGroups" options={{ label: "User Groups" }} list={UserGroups} />
+        <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
         <Resource
           name="identifierSource"
           options={{ label: "Identifier source" }}

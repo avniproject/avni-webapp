@@ -17,9 +17,9 @@ import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
 import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
-import { default as UUID } from "uuid";
 import _ from "lodash";
 import SelectForm from "./SelectForm";
+import { SaveComponent } from "../../common/components/SaveComponent";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -32,10 +32,12 @@ const SubjectTypeEdit = props => {
   const [formList, setFormList] = useState([]);
   const [formMappings, setFormMappings] = useState([]);
   const [firstTimeFormValueToggle, setFirstTimeFormValueToggle] = useState(false);
+  const [subjectTypes, setSubjectTypes] = useState([]);
 
-  const consumeFormMappingResult = (formMap, forms) => {
+  const consumeFormMappingResult = (formMap, forms, subjectTypes) => {
     setFormMappings(formMap);
     setFormList(forms);
+    setSubjectTypes(subjectTypes);
   };
 
   useFormMappings(consumeFormMappingResult);
@@ -111,6 +113,12 @@ const SubjectTypeEdit = props => {
     dispatch({ type: "registrationForm", payload: payload });
   }
 
+  const disableDelete = _.find(
+    subjectTypes,
+    ({ group, memberSubjectUUIDs }) =>
+      group && _.includes(memberSubjectUUIDs.split(","), subjectType.uuid)
+  );
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -140,8 +148,20 @@ const SubjectTypeEdit = props => {
               />
             </Grid>
           </Grid>
+          <Grid component="label" container alignItems="center" spacing={2}>
+            <Grid>Group</Grid>
+            <Grid>
+              <Switch
+                disabled={subjectType.household}
+                checked={subjectType.group}
+                onChange={event => handleGroupChange(event, subjectType, dispatch)}
+                name="group"
+              />
+            </Grid>
+          </Grid>
           <p />
           <SelectForm
+            label={"Registration Form"}
             value={_.get(subjectType, "registrationForm.formName")}
             onChange={selectedForm =>
               dispatch({
@@ -151,16 +171,6 @@ const SubjectTypeEdit = props => {
             }
             formList={findRegistrationForms(formList)}
           />
-          <Grid component="label" container alignItems="center" spacing={2}>
-            <Grid>Group</Grid>
-            <Grid>
-              <Switch
-                checked={subjectType.group}
-                onChange={event => handleGroupChange(event, subjectType, dispatch)}
-                name="group"
-              />
-            </Grid>
-          </Grid>
           <p />
           {subjectType.group && (
             <>
@@ -191,17 +201,21 @@ const SubjectTypeEdit = props => {
         </div>
         <Grid container item sm={12}>
           <Grid item sm={1}>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => onSubmit()}
-              style={{ marginLeft: "14px" }}
-            >
-              <i className="material-icons">save</i>Save
-            </Button>
+            <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
           </Grid>
           <Grid item sm={11}>
-            <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()}>
+            <Button
+              disabled={!_.isEmpty(disableDelete)}
+              style={
+                !_.isEmpty(disableDelete)
+                  ? { float: "right" }
+                  : {
+                      float: "right",
+                      color: "red"
+                    }
+              }
+              onClick={() => onDelete()}
+            >
               <DeleteIcon /> Delete
             </Button>
           </Grid>

@@ -13,6 +13,7 @@ import { default as UUID } from "uuid";
 import { constFormType } from "../common/constants";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
+import { SaveComponent } from "../../common/components/SaveComponent";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -480,15 +481,12 @@ class FormSettings extends Component {
             </Button>
           )}
           <div>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!this.state.dirtyFlag}
-              onClick={this.onFormSubmit.bind(this)}
-              style={{ marginTop: 10 }}
-            >
-              Save
-            </Button>
+            <SaveComponent
+              name="Save"
+              onSubmit={this.onFormSubmit.bind(this)}
+              styleClass={{ marginTop: 10 }}
+              disabledFlag={!this.state.dirtyFlag}
+            />
           </div>
           {this.state.showUpdateAlert && (
             <CustomizedSnackbar
