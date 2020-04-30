@@ -8,8 +8,6 @@ import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 
 const Relationships = ({ history }) => {
-  const [formMappings, setFormMappings] = useState([]);
-
   const columns = [
     {
       title: "Name",
@@ -21,7 +19,7 @@ const Relationships = ({ history }) => {
       title: "Genders",
       render: rowData =>
         rowData.genders.map(gender => {
-          return gender.name;
+          return gender.name + ", ";
         })
     }
   ];

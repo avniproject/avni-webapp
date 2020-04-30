@@ -17,6 +17,7 @@ import { Redirect } from "react-router-dom";
 function RelationshipEdit(props) {
   const [relationshipName, setRelationshipName] = useState("");
   const [error, setError] = useState("");
+  const [uuid, setUUID] = useState("");
   const [relationshipGenders, setRelationshipGenders] = useState([]);
   const [isIndividualSubjectTypeAvailable, setIsIndividualSubjectTypeAvailable] = useState(true);
   const [genders, setGenders] = useState([]);
@@ -47,6 +48,8 @@ function RelationshipEdit(props) {
       .then(response => {
         const gender = response.data.genders.map(l => l.name);
         setRelationshipGenders(gender);
+        setRelationshipName(response.data.name);
+        setUUID(response.data.uuid);
       })
       .catch(error => {});
   }, []);
@@ -72,21 +75,20 @@ function RelationshipEdit(props) {
       });
 
       http
-        .post("/web/relation" + props.match.params.id, {
+        .post("/web/relation/" + props.match.params.id, {
           name: relationshipName,
-          uuid: UUID.v4(),
+          uuid: uuid,
           genders: genderToBesubmit
         })
         .then(response => {
           if (response.status === 200) {
-            setError("existName");
           }
         })
         .catch(error => {
-          setError("emptyName");
+          setError("existName");
         });
     } else {
-      setError(true);
+      setError("emptyName");
     }
   };
 
@@ -102,6 +104,7 @@ function RelationshipEdit(props) {
         .catch(error => {});
     }
   };
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">

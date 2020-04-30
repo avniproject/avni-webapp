@@ -64,14 +64,13 @@ function RelationshipCreate() {
         })
         .then(response => {
           if (response.status === 200) {
-            setError("existName");
           }
         })
         .catch(error => {
-          setError("emptyName");
+          setError("existName");
         });
     } else {
-      setError(true);
+      setError("emptyName");
     }
   };
 
