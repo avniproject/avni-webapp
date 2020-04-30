@@ -2,6 +2,7 @@ package org.openchs.service;
 
 import org.openchs.application.FormMapping;
 import org.openchs.application.FormType;
+import org.openchs.dao.AddressLevelTypeRepository;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramRepository;
 import org.openchs.dao.SubjectTypeRepository;
@@ -33,13 +34,15 @@ public class ImportService {
     private static Logger logger = LoggerFactory.getLogger(ProgramEnrolmentWriter.class);
     private ProgramRepository programRepository;
     private EncounterTypeRepository encounterTypeRepository;
+    private AddressLevelTypeRepository addressLevelTypeRepository;
 
     @Autowired
-    public ImportService(SubjectTypeRepository subjectTypeRepository, FormMappingRepository formMappingRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository) {
+    public ImportService(SubjectTypeRepository subjectTypeRepository, FormMappingRepository formMappingRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, AddressLevelTypeRepository addressLevelTypeRepository) {
         this.subjectTypeRepository = subjectTypeRepository;
         this.formMappingRepository = formMappingRepository;
         this.programRepository = programRepository;
         this.encounterTypeRepository = encounterTypeRepository;
+        this.addressLevelTypeRepository = addressLevelTypeRepository;
     }
 
     public HashMap<String, String> getImportTypes() {
@@ -110,6 +113,7 @@ public class ImportService {
 
     private String getSubjectSampleFile(String[] uploadSpec, String response) {
         response = addToResponse(response, Arrays.asList(new SubjectHeaders().getAllHeaders()));
+        response = addToResponse(response, addressLevelTypeRepository.getAllNames());
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[1]).getUuid(), null, null, FormType.IndividualProfile);
         return addToResponse(response, formMapping);
     }
