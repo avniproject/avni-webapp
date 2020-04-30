@@ -61,11 +61,12 @@ export function* programEnrolmentFetchWorker({ enrolmentUuid }) {
   yield put(setProgramEnrolment(programEnrolment));
 }
 
+// For ProgramEncounter
 export function* programEncounterFetchFormWatcher() {
   yield takeLatest(types.GET_PROGRAM_ENCOUNTER_FORM, programEncounterFetchFormWorker);
 }
 
-export function* programEncounterFetchFormWorker({ encounterTypeUuid }) {
+export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentUuid }) {
   const formMapping = yield select(state =>
     find(
       get(state, "dataEntry.metadata.operationalModules.formMappings"),
@@ -87,19 +88,33 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid }) {
   //   )
   // );
 
-  // const unplannedVisit = new ProgramEncounter();
-  // unplannedVisit.uuid = General.randomUUID();
-  // unplannedVisit.encounterType = encounterType;
-  // unplannedVisit.name = unplannedVisit.encounterType.name;
-  // unplannedVisit.encounterDateTime = new Date();
-  // const programEnrolment = new ProgramEnrolment();
-  // programEnrolment.uuid = enrolmentUuid;
-  // unplannedVisit.programEnrolment = programEnrolment;
-  // unplannedVisit.observations = [];
+  //Creating New programEncounter Object for Planned Encounter
+  const plannedEncounters = yield select(state => {
+    find(
+      get(state, "dataEntry.programs.programEnrolment.programEncounters"),
+      (
+        pe //check condition
+      ) =>
+        !isNil(encounterTypeUuid) &&
+        (pe.encounterType.uuid === enrolmentUuid && fm.formType === "ProgramEncounter")
+    );
+  });
+  plannedEncounters.map(planEncounter => {
+    const plannedVisit = new ProgramEncounter();
+    plannedVisit.uuid = planEncounter.uuid;
+    plannedVisit.encounterType = planEncounter.encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
+    plannedVisit.encounterDateTime = moment().toDate(); //new Date(); or planEncounter.encounterDateTime
+    plannedVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
+    plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
+    plannedVisit.name = planEncounter.name;
+    const programEnrolment = new ProgramEnrolment();
+    programEnrolment.uuid = enrolmentUuid;
+    plannedVisit.programEnrolment = programEnrolment;
+    plannedVisit.observations = [];
+    plannedEncounterList.push(plannedVisit);
+  });
 
-  // console.log("unplanned visit", unplannedVisit);
-
-  // yield select(state => {
-  //   console.log("state", state);
-  // });
+  yield select(state => {
+    console.log("from Program Saga...state", state);
+  });
 }

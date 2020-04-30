@@ -44,9 +44,10 @@ export const setProgramEnrolment = programEnrolment => ({
   programEnrolment
 });
 
-export const getProgramEncounterForm = encounterTypeUuid => ({
+export const getProgramEncounterForm = (encounterTypeUuid, enrolmentUuid) => ({
   type: types.GET_PROGRAM_ENCOUNTER_FORM,
-  encounterTypeUuid
+  encounterTypeUuid,
+  enrolmentUuid
 });
 
 export const setProgramEncounterForm = programEncounterForm => ({

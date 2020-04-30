@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewProgramVisitMenuView = ({ sections, formMappings }) => {
+const NewProgramVisitMenuView = ({ sections, enrolmentUuid, formMappings }) => {
   const { t } = useTranslation();
 
   const classes = useStyles();
@@ -67,7 +67,7 @@ const NewProgramVisitMenuView = ({ sections, formMappings }) => {
                                 <InternalLink
                                   to={`/app/subject/programEncounter?uuid=${
                                     encounter.encounterType.uuid
-                                  }`}
+                                  }&enrolUuid=${enrolmentUuid}`}
                                   encounter={encounter}
                                 >
                                   {encounter.encounterType.name}

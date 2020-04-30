@@ -32,13 +32,15 @@ const NewProgramVisit = ({ match, ...props }) => {
 
   const plannedEncounterList = [];
   const unplannedEncounterList = [];
+  const enrolmentUuid = match.queryParams.uuid;
+  const programUuid = match.queryParams.programUuid;
   console.log("props from NewProgramVisit", props);
   useEffect(() => {
     //For Planned Encounters List : To get list of ProgramEncounters from api
-    props.getProgramEnrolment(match.queryParams.uuid);
+    props.getProgramEnrolment(enrolmentUuid);
     //For Unplanned Encounters List : To get possible encounters from FormMapping
     // Using form type as "ProgramEncounter", program uuid, subject type uuid
-    props.getProgramEncounter("Individual", match.queryParams.programUuid);
+    props.getProgramEncounter("Individual", programUuid);
   }, []);
 
   //Creating New programEncounter Object for Planned Encounter
@@ -51,7 +53,7 @@ const NewProgramVisit = ({ match, ...props }) => {
     plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
     plannedVisit.name = planEncounter.name;
     const programEnrolment = new ProgramEnrolment();
-    programEnrolment.uuid = match.queryParams.uuid;
+    programEnrolment.uuid = enrolmentUuid;
     plannedVisit.programEnrolment = programEnrolment;
     plannedVisit.observations = [];
     plannedEncounterList.push(plannedVisit);
@@ -67,7 +69,7 @@ const NewProgramVisit = ({ match, ...props }) => {
     unplannedVisit.name = unplannedVisit.encounterType && unplannedVisit.encounterType.name;
     unplannedVisit.encounterDateTime = new Date();
     const programEnrolment = new ProgramEnrolment();
-    programEnrolment.uuid = match.queryParams.uuid;
+    programEnrolment.uuid = enrolmentUuid;
     unplannedVisit.programEnrolment = programEnrolment;
     unplannedVisit.observations = [];
     unplannedEncounterList.push(unplannedVisit);
@@ -91,7 +93,7 @@ const NewProgramVisit = ({ match, ...props }) => {
         </Typography>
         <LineBreak num={1} />
 
-        <NewProgramVisitMenuView sections={sections} />
+        <NewProgramVisitMenuView sections={sections} enrolmentUuid={enrolmentUuid} />
       </Paper>
     </Fragment>
   );
