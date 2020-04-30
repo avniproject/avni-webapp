@@ -287,7 +287,6 @@ export const CreateEditFilters = props => {
       <Title title="Filter Config" />
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Box mr={80}>
-          {!_.isEmpty(programs) && !_.isEmpty(encounterTypes) && (
             <>
               <Grid container justify="flex-start">
                 <Grid item sm={12}>
@@ -389,7 +388,6 @@ export const CreateEditFilters = props => {
               </Box>
               <p />
             </>
-          )}
         </Box>
         {messageStatus.display && (
           <CustomizedSnackbar
