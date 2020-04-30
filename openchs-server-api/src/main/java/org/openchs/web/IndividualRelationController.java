@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -103,15 +104,12 @@ public class IndividualRelationController {
 
     private void saveGenderMappings(IndividualRelationContract individualRelationContract, IndividualRelation relation) {
         List<IndividualRelationGenderMapping> existingMappings = genderMappingRepository.findAllByRelation(relation);
+        List<IndividualRelationGenderMapping> newMappings = new ArrayList<>();
         List<GenderContract> genders = individualRelationContract.getGenders();
 
         existingMappings.forEach(existingMapping -> {
-            if (genders.stream().anyMatch(genderContract -> genderContract.getName().equals(existingMapping.getGender().getName()))) {
-                existingMapping.setVoided(false);
-            } else {
-                existingMapping.setVoided(true);
-            }
-            genderMappingRepository.save(existingMapping);
+            boolean shouldKeepMapping = genders.stream().anyMatch(genderContract -> genderContract.getName().equals(existingMapping.getGender().getName()));
+            existingMapping.setVoided(!shouldKeepMapping);
         });
 
         genders.forEach(genderContract -> {
@@ -121,16 +119,18 @@ public class IndividualRelationController {
             if (matchingMappings.size() > 0) {
                 IndividualRelationGenderMapping matchingMapping = matchingMappings.get(0);
                 matchingMapping.setVoided(false);
-                genderMappingRepository.save(matchingMapping);
             } else {
                 IndividualRelationGenderMapping mapping = new IndividualRelationGenderMapping(
                         relation,
                         genderRepository.findByName(genderContract.getName())
                 );
                 mapping.assignUUID();
-                genderMappingRepository.save(mapping);
+                newMappings.add(mapping);
             }
         });
+
+        existingMappings.forEach(genderMapping -> genderMappingRepository.save(genderMapping));
+        newMappings.forEach(genderMapping -> genderMappingRepository.save(genderMapping));
     }
 
     private IndividualRelation createRelation(String name) {
