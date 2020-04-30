@@ -19,6 +19,7 @@ import FormSettings from "../formDesigner/components/FormSettings";
 import customFilters from "./CustomFilters";
 import { WorklistUpdationRule } from "./WorklistUpdationRule";
 import Footer from "../common/components/Footer";
+import Relationships from "../formDesigner/components/Relationships/Relationships";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -71,6 +72,7 @@ class OrgManagerAppDesigner extends Component {
             options={{ label: "Worklist Updation Rule" }}
             list={WorklistUpdationRule}
           />
+          <Resource name="relationship" options={{ label: "Relationships" }} list={Relationships} />
         </Admin>
         <Footer />
       </React.Fragment>

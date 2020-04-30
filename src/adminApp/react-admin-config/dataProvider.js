@@ -45,7 +45,8 @@ const urlMapping = {
   organisation: "organisation",
   accountOrgAdmin: "user/accountOrgAdmin",
   account: "account",
-  organisationGroup: "organisationGroup"
+  organisationGroup: "organisationGroup",
+  relationship: "/web/relations"
 };
 export default apiUrl => {
   /**
