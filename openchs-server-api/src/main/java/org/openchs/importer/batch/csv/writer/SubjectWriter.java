@@ -54,10 +54,10 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     }
 
     private void write(Row row) throws Exception {
-        List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAll();
+        List<AddressLevelType> locationTypes = addressLevelTypeRepository.findAllByIsVoidedFalse();
         locationTypes.sort(Comparator.comparingDouble(AddressLevelType::getLevel).reversed());
 
-        List<AddressLevel> locations = locationRepository.findAll();
+        List<AddressLevel> locations = locationRepository.findAllByIsVoidedFalse();
 
         Individual individual = getOrCreateIndividual(row);
         List<String> allErrorMsgs = new ArrayList<>();
