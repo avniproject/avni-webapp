@@ -24,7 +24,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const LocationAutosuggest = ({ onSelect, selectedVillage, data, errorMsg }) => {
+const LocationAutosuggest = ({
+  onSelect,
+  selectedVillage,
+  data,
+  errorMsg,
+  placeholder,
+  typeId
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -65,16 +72,21 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data, errorMsg }) => {
 
     return inputLength === 0
       ? []
-      : await http.get(`locations/search/find?title=${inputValue}`).then(res => {
-          if (res.data._embedded) {
-            return res.data._embedded.locations;
-          } else return [];
-        });
+      : // .get(`locations/search/autocompleteLocationsOfType?title=${inputValue}&typeId=${typeId}`)
+        // : await http.get(`locations/search/find?title=${inputValue}`).then(res => {
+        await http
+          .get(`locations/search/autocompleteLocationsOfType?title=${inputValue}&typeId=${typeId}`)
+          .then(res => {
+            if (res.data._embedded) {
+              return res.data._embedded.locations;
+            } else return [];
+          });
   };
 
   const inputProps = {
     className: classes.rautosuggestinput,
-    placeholder: `${t("Village")}` + " " + `${t("name")}`,
+    // placeholder: `${t("Village")}` + " " + `${t("name")}`,
+    placeholder: `${t(placeholder)}` + " " + `${t("name")}`,
     value,
     onChange
   };

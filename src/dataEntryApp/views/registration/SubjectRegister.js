@@ -327,7 +327,7 @@ const DefaultPage = props => {
                       }}
                     />
                     <LineBreak num={1} />
-                    <label className={classes.villagelabel}>{t("Village")}</label>
+                    {/* <label className={classes.villagelabel}>{t("Village")}</label>
                     <LocationAutosuggest
                       selectedVillage={props.subject.lowestAddressLevel.name}
                       errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
@@ -355,7 +355,55 @@ const DefaultPage = props => {
 
                       // }
                       data={props}
+                    /> */}
+
+                    <CodedFormElement
+                      groupName={t("Address")}
+                      items={sortBy(props.locations, "name")}
+                      isChecked={item =>
+                        (item.id && get(props, "subject.lowestAddressType.id") === item.id) ||
+                        (item.name &&
+                          get(props, "subject.lowestAddressLevel.typeString") === item.name)
+                      }
+                      onChange={selected => props.updateSubject("lowestAddressType", selected)}
                     />
+                    <div>
+                      {props.subject.lowestAddressType === "" ||
+                      props.subject.lowestAddressType === undefined ? null : (
+                        <div>
+                          <LocationAutosuggest
+                            selectedVillage={props.subject.lowestAddressLevel.name}
+                            errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
+                            onSelect={location => {
+                              props.updateSubject(
+                                "lowestAddressLevel",
+                                AddressLevel.create({
+                                  uuid: location.uuid,
+                                  title: location.title,
+                                  level: location.level,
+                                  typeString: location.typeString
+                                })
+                              );
+                              props.subject.lowestAddressLevel = AddressLevel.create({
+                                uuid: location.uuid,
+                                title: location.title,
+                                level: location.level,
+                                typeString: location.typeString
+                              });
+                              setValidationResultToError(props.subject.validateAddress());
+                            }}
+                            //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
+                            //   setValidationResultToError(props.subject.validateAddress());
+                            // }
+
+                            // }
+                            data={props}
+                            placeholder={props.subject.lowestAddressType.name || "Slum"}
+                            typeId={props.subject.lowestAddressType.id || 100}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </React.Fragment>
                 )}
 
@@ -422,6 +470,7 @@ const DefaultPage = props => {
 const mapStateToProps = state => ({
   user: state.app.user,
   genders: state.dataEntry.metadata.genders,
+  locations: state.dataEntry.metadata.operationalModules.addressLevelTypes,
   form: state.dataEntry.registration.registrationForm,
   subject: state.dataEntry.registration.subject,
   loaded: state.dataEntry.registration.loaded,
