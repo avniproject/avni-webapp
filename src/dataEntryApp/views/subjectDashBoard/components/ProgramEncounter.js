@@ -6,8 +6,8 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import {
   getProgramEncounterForm,
-  getProgramEnrolment
-  //getProgramEncounters
+  getProgramEnrolment,
+  getProgramEncounters
 } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -55,29 +55,34 @@ const ProgramEncounter = ({
   getProgramEncounterForm,
   getProgramEnrolment,
   programEncounterForm,
+  getProgramEncounters,
+  programEnrolment,
   ...props
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const enrolmentUuid = match.queryParams.enrolUuid;
   const encounterTypeUuid = match.queryParams.uuid;
+  // console.log("Printing programEnrolment", props.programEnrolment);
   useEffect(() => {
     (async function fetchData() {
       //For Planned Encounters List : To get list of ProgramEncounters from api
       await getProgramEnrolment(enrolmentUuid);
+      //For Unplanned Encounters List : To get possible encounters from FormMapping
+      // Using form type as "ProgramEncounter", program uuid, subject type uuid
+
+      await getProgramEncounters("Individual", programEnrolment.program.uuid);
+      //To get Form Mappings for dynamic loaded encounter type
       getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
 
       // let programEnrolment = BrowserStore.fetchProgramEnrolment();
       // setProgramEnrolment(programEnrolment);
     })();
-
-    //For Unplanned Encounters List : To get possible encounters from FormMapping
-    // Using form type as "ProgramEncounter", program uuid, subject type uuid
-    //getProgramEncounters("Individual", programUuid);
   }, []);
+
   console.log("Inside new page >> programEncounter ..printing states");
   console.log(props.x);
-  console.log("programEncounter", props.programEncounter);
+
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -121,9 +126,13 @@ const ProgramEncounter = ({
 };
 
 const mapStateToProps = state => ({
-  //programEncounterForm: state.dataEntry.programReducer.programEncounterForm
+  //state for Form Mapping
   programEncounterForm: state.programs.programEncounterForm,
-  plannedEncounters: state.programs.programEnrolment,
+  //state to get planned encounters
+  programEnrolment: state.programs.programEnrolment,
+  //state to get unplanned encounters
+  programEncounters: state.programs.programEncounters,
+  //state to save program encounter
   programEncounter: state.programs.programEncounter,
   x: state
   //subject: state.dataEntry.subjectProfile.subjectProfile,
@@ -132,7 +141,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   getProgramEncounterForm,
-  getProgramEnrolment
+  getProgramEnrolment,
+  getProgramEncounters
 };
 
 export default withRouter(

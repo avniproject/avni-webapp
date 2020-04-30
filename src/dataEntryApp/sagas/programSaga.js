@@ -82,16 +82,6 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
   const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
 
-  const encounterType = yield select(state =>
-    find(
-      //get takes state from store you can print this
-      get(state, "dataEntry.metadata.operationalModules.encounterTypes"),
-      (
-        eT //this is function fm is parameter it is just like map form uuid from saga
-      ) => eT.uuid === formMapping.encounterTypeUUID
-    )
-  );
-
   //Creating New programEncounter Object for Planned Encounter
   const plannedEncounters = yield select(
     state => state.dataEntry.programs.programEnrolment.programEncounters
@@ -121,26 +111,37 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
   // yield put.resolve(setProgramEnrolment(programEnrolment));
 
   console.log("plannedEncounters", plannedEncounters);
-  // plannedEncounters.map(planEncounter => {
-  //   const plannedVisit = new ProgramEncounter();
-  //   plannedVisit.uuid = planEncounter.uuid;
-  //   plannedVisit.encounterType = planEncounter.encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
-  //   plannedVisit.encounterDateTime = moment().toDate(); //new Date(); or planEncounter.encounterDateTime
-  //   plannedVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
-  //   plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
-  //   plannedVisit.name = planEncounter.name;
-  //   const programEnrolment = new ProgramEnrolment();
-  //   programEnrolment.uuid = enrolmentUuid;
-  //   plannedVisit.programEnrolment = programEnrolment;
-  //   plannedVisit.observations = [];
-  //   plannedEncounterList.push(plannedVisit);
-  // });
 
-  //   yield select(state => {
-  //     console.log("dataEntry.programs.programEnrolment.programEncounters",
-  // state.dataEntry.programs.programEnrolment.programEncounters);
+  const unplannedEncounters = yield select(state => state.dataEntry.programs.programEncounters);
+  console.log("to get state for unplanned", unplannedEncounters);
 
-  //   });
+  const unplanEncounter = find(
+    unplannedEncounters,
+    ue => !isNil(ue.encounterTypeUUID) && ue.encounterTypeUUID === encounterTypeUuid
+  );
+  console.log("to get current unplanned encounter", unplanEncounter);
+
+  const unplanEncounterType = yield select(state =>
+    find(
+      //get takes state from store you can print this
+      get(state, "dataEntry.metadata.operationalModules.encounterTypes"),
+      eT => eT.uuid === encounterTypeUuid
+    )
+  );
+
+  if (unplanEncounter) {
+    let unplannedVisit = new ProgramEncounter();
+    unplannedVisit.uuid = General.randomUUID();
+    unplannedVisit.encounterType = unplanEncounterType;
+    unplannedVisit.name = unplannedVisit.encounterType.name;
+    unplannedVisit.encounterDateTime = new Date();
+    const programEnrolment = new ProgramEnrolment();
+    programEnrolment.uuid = enrolmentUuid;
+    unplannedVisit.programEnrolment = programEnrolment;
+    unplannedVisit.observations = [];
+    console.log("unplannedVisit object from saga", unplannedVisit);
+    yield put.resolve(setProgramEncounter(unplannedVisit));
+  }
 }
 
 function* updateEncounterObsWatcher() {
@@ -203,7 +204,7 @@ export function* saveProgramEncounterWorker() {
 
   //sessionStorage.removeItem("programEnrolment");
 
-  // yield call(api.saveProgram, resource);
+  yield call(api.saveProgramEncouter, resource);
   // yield put(saveProgramComplete());
 }
 

@@ -12,10 +12,15 @@ subject.subjectType = SubjectType.create("Individual");
 const mapFormStateToProps = state => ({
   form: state.programs.programEncounterForm,
   subject: state.dataEntry.subjectProgram.subjectProgram,
+  // observations: [],
+  // obsHolder: new ObservationsHolder([]),
   observations: state.programs.programEncounter && state.programs.programEncounter.observations,
   obsHolder:
     state.programs.programEncounter &&
-    new ObservationsHolder(state.programs.programEncounter.observations),
+    (state.programs.programEncounter.observations
+      ? new ObservationsHolder(state.programs.programEncounter.observations)
+      : new ObservationsHolder([])),
+  //state.programs.programEncounter.observations
 
   //   observations: state.dataEntry.enrolmentReducer.programEnrolment.observations,
   //   obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),

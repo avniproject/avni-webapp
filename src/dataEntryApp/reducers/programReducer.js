@@ -33,9 +33,9 @@ export const getProgramEncounters = (subjectTypeName, programUuid) => ({
   programUuid
 });
 
-export const setProgramEncounters = programEncounter => ({
+export const setProgramEncounters = programEncounters => ({
   type: types.SET_PROGRAM_ENCOUNTERS,
-  programEncounter
+  programEncounters
 });
 
 export const getProgramEnrolment = enrolmentUuid => ({
@@ -91,7 +91,7 @@ export default function(state = {}, action) {
     case types.SET_PROGRAM_ENCOUNTERS: {
       return {
         ...state,
-        programEncounter: action.programEncounter
+        programEncounters: action.programEncounters
       };
     }
     case types.SET_PROGRAM_ENCOUNTER_FORM: {

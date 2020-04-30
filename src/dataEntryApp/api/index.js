@@ -17,6 +17,12 @@ export default {
       body: JSON.stringify(subject)
     }),
 
+  saveProgramEncouter: programEncounter =>
+    httpClient.fetchJson("/programEncounters", {
+      method: "POST",
+      body: JSON.stringify(programEncounter)
+    }),
+
   fetchSubjectProfile: uuid =>
     httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
       return response.json;

@@ -103,7 +103,7 @@ const mapStateToProps = state => ({
   plannedEncounters: state.programs.programEnrolment
     ? state.programs.programEnrolment.programEncounters
     : [],
-  unplannedEncounters: state.programs.programEncounter ? state.programs.programEncounter : [],
+  unplannedEncounters: state.programs.programEncounters ? state.programs.programEncounters : [],
   operationalModules: state.dataEntry.metadata.operationalModules,
   x: state
 });
