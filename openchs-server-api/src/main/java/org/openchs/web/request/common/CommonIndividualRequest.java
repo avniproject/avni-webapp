@@ -22,8 +22,6 @@ public class CommonIndividualRequest extends CHSRequest {
     // Specify address uuid or specify catchment uuid along with address name
     private String addressLevelUUID;
     private String addressLevel;
-    private String addressLevelTypeName;
-    private Long addressLevelTypeId;
     private String catchmentUUID;
     private LocalDate registrationDate;
     private PointRequest registrationLocation;
@@ -32,23 +30,7 @@ public class CommonIndividualRequest extends CHSRequest {
         return firstName;
     }
 
-    public Long getAddressLevelTypeId() {
-		return addressLevelTypeId;
-	}
-
-	public void setAddressLevelTypeId(Long addressLevelTypeId) {
-		this.addressLevelTypeId = addressLevelTypeId;
-	}
-
-	public String getAddressLevelTypeName() {
-		return addressLevelTypeName;
-	}
-
-	public void setAddressLevelTypeName(String addressLevelTypeName) {
-		this.addressLevelTypeName = addressLevelTypeName;
-	}
-
-	public void setFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
