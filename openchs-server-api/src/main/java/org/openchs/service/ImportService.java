@@ -157,7 +157,7 @@ public class ImportService {
         String concatenatedString = addCommaIfNecessary(str);
         List<String> conceptNames = formMapping
                 .getForm()
-                .getAllFormElements()
+                .getApplicableFormElements()
                 .stream()
                 .map(formElement -> formElement.getConcept().getName())
                 .collect(Collectors.toList());
