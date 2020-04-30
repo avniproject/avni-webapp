@@ -7,7 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import {
   getProgramEncounterForm,
   getProgramEnrolment
-  //getProgramEncounter
+  //getProgramEncounters
 } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -62,15 +62,22 @@ const ProgramEncounter = ({
   const enrolmentUuid = match.queryParams.enrolUuid;
   const encounterTypeUuid = match.queryParams.uuid;
   useEffect(() => {
-    getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
-    //For Planned Encounters List : To get list of ProgramEncounters from api
-    getProgramEnrolment(enrolmentUuid);
+    (async function fetchData() {
+      //For Planned Encounters List : To get list of ProgramEncounters from api
+      await getProgramEnrolment(enrolmentUuid);
+      getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
+
+      // let programEnrolment = BrowserStore.fetchProgramEnrolment();
+      // setProgramEnrolment(programEnrolment);
+    })();
+
     //For Unplanned Encounters List : To get possible encounters from FormMapping
     // Using form type as "ProgramEncounter", program uuid, subject type uuid
-    //getProgramEncounter("Individual", programUuid);
+    //getProgramEncounters("Individual", programUuid);
   }, []);
   console.log("Inside new page >> programEncounter ..printing states");
   console.log(props.x);
+  console.log("programEncounter", props.programEncounter);
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -117,6 +124,7 @@ const mapStateToProps = state => ({
   //programEncounterForm: state.dataEntry.programReducer.programEncounterForm
   programEncounterForm: state.programs.programEncounterForm,
   plannedEncounters: state.programs.programEnrolment,
+  programEncounter: state.programs.programEncounter,
   x: state
   //subject: state.dataEntry.subjectProfile.subjectProfile,
   // programEncounter: state.programs.programEncounter

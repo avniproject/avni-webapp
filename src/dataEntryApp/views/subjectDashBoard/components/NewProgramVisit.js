@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { getProgramEnrolment, getProgramEncounter } from "../../../reducers/programReducer";
+import { getProgramEnrolment, getProgramEncounters } from "../../../reducers/programReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -40,7 +40,7 @@ const NewProgramVisit = ({ match, ...props }) => {
     props.getProgramEnrolment(enrolmentUuid);
     //For Unplanned Encounters List : To get possible encounters from FormMapping
     // Using form type as "ProgramEncounter", program uuid, subject type uuid
-    props.getProgramEncounter("Individual", programUuid);
+    props.getProgramEncounters("Individual", programUuid);
   }, []);
 
   //Creating New programEncounter Object for Planned Encounter
@@ -110,7 +110,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   getProgramEnrolment,
-  getProgramEncounter
+  getProgramEncounters
 };
 
 export default withRouter(

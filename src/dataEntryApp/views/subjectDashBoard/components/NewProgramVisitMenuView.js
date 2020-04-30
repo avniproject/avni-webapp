@@ -103,7 +103,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   // getProgramEnrolment,
-  // getProgramEncounter
+  // getProgramEncounters
 };
 
 export default withRouter(

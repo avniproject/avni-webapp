@@ -6,10 +6,14 @@ export const types = {
   //ON_LOAD: `${prefix}ON_LOAD`,
   GET_PROGRAM_ENROLMENT: `${prefix}GET_PROGRAM_ENROLMENT`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
-  GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`,
-  SET_PROGRAM_ENCOUNTER: `${prefix}SET_PROGRAM_ENCOUNTER`,
+  GET_PROGRAM_ENCOUNTERS: `${prefix}GET_PROGRAM_ENCOUNTERS`,
+  SET_PROGRAM_ENCOUNTERS: `${prefix}SET_PROGRAM_ENCOUNTERS`,
   GET_PROGRAM_ENCOUNTER_FORM: `${prefix}GET_PROGRAM_ENCOUNTER_FORM`,
   SET_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_PROGRAM_ENCOUNTER_FORM`,
+  // GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`,
+  SET_PROGRAM_ENCOUNTER: `${prefix}SET_PROGRAM_ENCOUNTER`,
+  SAVE_PROGRAM_ENCOUNTER: `${prefix}SAVE_PROGRAM_ENCOUNTER`,
+
   UPDATE_OBS: `${prefix}UPDATE_OBS`
 };
 
@@ -23,14 +27,14 @@ export const setPrograms = programs => ({
   programs
 });
 
-export const getProgramEncounter = (subjectTypeName, programUuid) => ({
-  type: types.GET_PROGRAM_ENCOUNTER,
+export const getProgramEncounters = (subjectTypeName, programUuid) => ({
+  type: types.GET_PROGRAM_ENCOUNTERS,
   subjectTypeName,
   programUuid
 });
 
-export const setProgramEncounter = programEncounter => ({
-  type: types.SET_PROGRAM_ENCOUNTER,
+export const setProgramEncounters = programEncounter => ({
+  type: types.SET_PROGRAM_ENCOUNTERS,
   programEncounter
 });
 
@@ -55,10 +59,19 @@ export const setProgramEncounterForm = programEncounterForm => ({
   programEncounterForm
 });
 
+export const setProgramEncounter = programEncounter => ({
+  type: types.SET_PROGRAM_ENCOUNTER,
+  programEncounter
+});
+
 export const updateObs = (formElement, value) => ({
   type: types.UPDATE_OBS,
   formElement,
   value
+});
+
+export const saveProgramEncounter = () => ({
+  type: types.SAVE_PROGRAM_ENCOUNTER
 });
 
 export default function(state = {}, action) {
@@ -75,7 +88,7 @@ export default function(state = {}, action) {
         programEnrolment: action.programEnrolment
       };
     }
-    case types.SET_PROGRAM_ENCOUNTER: {
+    case types.SET_PROGRAM_ENCOUNTERS: {
       return {
         ...state,
         programEncounter: action.programEncounter
@@ -85,6 +98,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         programEncounterForm: action.programEncounterForm
+      };
+    }
+    case types.SET_PROGRAM_ENCOUNTER: {
+      return {
+        ...state,
+        programEncounter: action.programEncounter
       };
     }
     default:
