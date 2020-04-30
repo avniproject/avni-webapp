@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
 
 const LocationAutosuggest = ({
   onSelect,
-  selectedVillage,
+  selectedLocation,
   data,
   errorMsg,
   placeholder,
@@ -35,15 +35,15 @@ const LocationAutosuggest = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  if (data.saved === true) {
-    selectedVillage = "";
-  } else if (data.saved === false && selectedVillage === undefined) {
-    selectedVillage = "";
-  } else {
-    selectedVillage = selectedVillage;
-  }
+  // if (data.saved === true) {
+  //   selectedLocation = "";
+  // } else if (data.saved === false && selectedLocation === undefined) {
+  //   selectedLocation = "";
+  // } else {
+  //   selectedLocation = selectedLocation;
+  // }
 
-  const [value, setValue] = React.useState(selectedVillage);
+  const [value, setValue] = React.useState(selectedLocation);
   const [suggestions, setSuggestions] = React.useState([]);
   const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
 
