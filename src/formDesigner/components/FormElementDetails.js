@@ -330,58 +330,57 @@ function FormElementDetails(props) {
                     return "";
                   })}
                 </Grid>
-                <Grid container item sm={12}>
-                  <InputLabel style={{ paddingTop: 10 }}>Excluded Answers:</InputLabel>{" "}
-                  {props.formElementData.concept.answers.map(function(d) {
-                    if (d.excluded && !d.voided) {
-                      return (
-                        <Chip
-                          key={d.name}
-                          label={d.name}
-                          onDelete={event =>
-                            props.handleExcludedAnswers(
-                              d.name,
-                              false,
-                              props.groupIndex,
-                              props.index
-                            )
-                          }
-                        />
-                      );
-                    }
-                    return "";
-                  })}
-                </Grid>
               </>
             )}
           </div>
         )}
       </Paper>
       {props.formElementData.concept.dataType === "Coded" && (
-        <Grid item sm={6}>
-          {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
-            <div style={{ color: "red" }}>Please select type</div>
-          )}
-          <FormControl fullWidth>
-            <InputLabel>Type</InputLabel>
-            <Select
-              name="type"
-              value={props.formElementData.type}
-              onChange={event =>
-                props.handleGroupElementChange(
-                  props.groupIndex,
-                  "type",
-                  event.target.value,
-                  props.index
-                )
+        <>
+          <Grid item sm={6}>
+            {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
+              <div style={{ color: "red" }}>Please select type</div>
+            )}
+            <FormControl fullWidth>
+              <InputLabel>Type</InputLabel>
+              <Select
+                name="type"
+                value={props.formElementData.type}
+                onChange={event =>
+                  props.handleGroupElementChange(
+                    props.groupIndex,
+                    "type",
+                    event.target.value,
+                    props.index
+                  )
+                }
+                required
+              >
+                <MenuItem value="SingleSelect">SingleSelect</MenuItem>
+                <MenuItem value="MultiSelect">MultiSelect</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <br />
+          <Grid container item sm={12}>
+            <InputLabel style={{ paddingTop: 10 }}>Excluded Answers:</InputLabel>{" "}
+            {props.formElementData.concept.answers.map(function(d) {
+              if (d.excluded && !d.voided) {
+                return (
+                  <Chip
+                    key={d.name}
+                    label={d.name}
+                    onDelete={event =>
+                      props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
+                    }
+                  />
+                );
               }
-              required
-            >
-              <MenuItem value="SingleSelect">SingleSelect</MenuItem>
-              <MenuItem value="MultiSelect">MultiSelect</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
+              return "";
+            })}
+          </Grid>
+        </>
       )}
 
       {props.formElementData.concept.dataType === "Video" && (
