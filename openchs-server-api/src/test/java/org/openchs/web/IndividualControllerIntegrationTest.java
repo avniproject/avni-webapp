@@ -97,7 +97,7 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
     }
 
     @Test
-    public void shouldSearchWithinOperatingIndividualScope() throws IOException {
+    public void shouldSearchRegardlessOfOperatingIndividualScope() throws IOException {
         String url = "/individual/search?size=10&page=0";
         Function<String, Integer> countOfIndividuals = (user) -> {
             setUser(user);
@@ -115,7 +115,7 @@ public class IndividualControllerIntegrationTest extends AbstractControllerInteg
 
         Assert.assertEquals(1, countOfIndividuals.apply(catchmentXUser) - totalIndividualsInCatchmentXBeforeTest);
 
-        Assert.assertEquals(0, countOfIndividuals.apply(catchmentYUser) - totalIndividualsInCatchmentYBeforeTest);
+        Assert.assertEquals(1, countOfIndividuals.apply(catchmentYUser) - totalIndividualsInCatchmentYBeforeTest);
     }
 
 }

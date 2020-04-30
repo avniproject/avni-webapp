@@ -91,7 +91,7 @@ build_testdb: ## Creates new empty database of test database
 	make _build_db database=openchs_test
 #	make _create_demo_organisation database=openchs_test
 
-rebuild_testdb: clean_testdb build_testdb deploy_test_schema ## clean + build test db
+rebuild_testdb: clean_testdb build_testdb ## clean + build test db
 # </testdb>
 
 
