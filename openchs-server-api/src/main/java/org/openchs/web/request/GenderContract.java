@@ -2,7 +2,11 @@ package org.openchs.web.request;
 
 public class GenderContract extends CHSRequest {
     private String name;
-    private String uuid;
+
+    public GenderContract(String uuid, String name) {
+        super(uuid);
+        this.name = name;
+    }
 
     public String getName() {
         return name;
@@ -10,15 +14,5 @@ public class GenderContract extends CHSRequest {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public String getUuid() {
-        return uuid;
-    }
-
-    @Override
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 }
