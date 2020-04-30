@@ -20,6 +20,14 @@ public class IndividualRelationGenderMapping extends OrganisationAwareEntity {
     @JoinColumn(name = "gender_id")
     private Gender gender;
 
+    public IndividualRelationGenderMapping() {
+    }
+
+    public IndividualRelationGenderMapping(IndividualRelation relation, Gender gender) {
+        this.relation = relation;
+        this.gender = gender;
+    }
+
     public IndividualRelation getRelation() {
         return relation;
     }

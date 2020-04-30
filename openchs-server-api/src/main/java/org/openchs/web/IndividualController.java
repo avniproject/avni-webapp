@@ -13,7 +13,6 @@ import org.openchs.service.IndividualService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.util.S;
-import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.IndividualContract;
 import org.openchs.web.request.IndividualRequest;
 import org.openchs.web.request.PointRequest;
@@ -35,7 +34,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
