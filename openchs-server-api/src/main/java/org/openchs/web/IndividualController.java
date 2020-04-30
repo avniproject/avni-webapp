@@ -138,16 +138,14 @@ public class IndividualController extends AbstractController<Individual> impleme
         IndividualRepository repo = this.individualRepository;
         if (query != null && !"".equals(query.trim())) {
             return repo.findAll(
-                    where(repo.getFilterSpecForOperatingSubjectScope(userService.getCurrentUser())).and(
                             where(repo.getFilterSpecForAddress(query))
                                     .or(repo.getFilterSpecForObs(query))
                                     .or(repo.getFilterSpecForName(query))
-                    ), pageable)
+                    , pageable)
                     .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
         }
         return repo.findAll(
-                where(repo.getFilterSpecForOperatingSubjectScope(userService.getCurrentUser()))
-                        .and(repo.getFilterSpecForVoid(includeVoided))
+                where(repo.getFilterSpecForVoid(includeVoided))
                         .and(repo.getFilterSpecForName(name))
                         .and(repo.getFilterSpecForObs(obs))
                         .and(repo.getFilterSpecForLocationIds(locationIds))
