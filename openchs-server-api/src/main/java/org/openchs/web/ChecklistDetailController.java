@@ -3,6 +3,7 @@ package org.openchs.web;
 import org.openchs.builder.ChecklistDetailBuilder;
 import org.openchs.dao.ChecklistDetailRepository;
 import org.openchs.dao.ChecklistItemDetailRepository;
+import org.openchs.domain.CHSEntity;
 import org.openchs.domain.ChecklistDetail;
 import org.openchs.web.request.application.ChecklistDetailRequest;
 import org.slf4j.Logger;
@@ -17,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ChecklistDetailController {
-    private final ChecklistDetailRepository checklistDetailRepository;
     private static Logger logger = LoggerFactory.getLogger(ChecklistDetailController.class);
+    private final ChecklistDetailRepository checklistDetailRepository;
 
     @Autowired
     public ChecklistDetailController(ChecklistDetailRepository checklistDetailRepository) {
@@ -32,6 +35,9 @@ public class ChecklistDetailController {
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     public ResponseEntity<?> save(@RequestBody ChecklistDetailRequest checklistDetail) {
+        if (checklistDetail.getItems() == null) {
+            throw new IllegalArgumentException("No checklist item found in the request");
+        }
         logger.info(String.format("Saving checklist detail: %s, with UUID: %s", checklistDetail.getName(), checklistDetail.getUuid()));
         ChecklistDetail checklist = checklistDetailRepository.findByUuid(checklistDetail.getUuid());
         checklist = new ChecklistDetailBuilder(checklist)
@@ -40,8 +46,19 @@ public class ChecklistDetailController {
                 .withUUID(checklistDetail.getUuid())
                 .withVoided(checklistDetail.isVoided())
                 .build();
+        checklist.updateLastModifiedDateTime();
         checklistDetailRepository.save(checklist);
         return new ResponseEntity<>("Created", HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/web/checklistDetails", method = RequestMethod.GET)
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    public List<ChecklistDetailRequest> getChecklistDetails() {
+        return checklistDetailRepository.findAllByIsVoidedFalse()
+                .stream()
+                .map(ChecklistDetailRequest::fromEntity)
+                .collect(Collectors.toList());
     }
 
 }

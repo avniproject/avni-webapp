@@ -43,8 +43,8 @@ public class ChecklistDetailBuilder extends BaseBuilder<ChecklistDetail, Checkli
     public ChecklistDetailBuilder withItems(List<ChecklistItemDetailRequest> items) {
         Map<String, ChecklistItemDetail> builtItems = new HashMap<>();
         items.forEach(item -> {
-            Form form = formRepository.findByUuid(item.getFormUUID());
-            Concept concept = conceptService.get(item.getConcept().getUuid());
+            Form form = getChecklistForm(item.getFormUUID());
+            Concept concept = getConcept(item.getConcept().getUuid());
             ChecklistItemDetail builtItemDetail = new ChecklistItemDetailBuilder(this.get(), getExistingChecklistItemDetail(this.get(), item))
                     .withUUID(item.getUuid())
                     .withChecklistItemStatus(item.getStatus())
@@ -57,9 +57,26 @@ public class ChecklistDetailBuilder extends BaseBuilder<ChecklistDetail, Checkli
                     .withMinDaysFromDependent(item.getMinDaysFromDependent())
                     .withExpiresAfter(item.getExpiresAfter())
                     .build();
+            builtItemDetail.updateLastModifiedDateTime();
             builtItems.put(builtItemDetail.getUuid(), builtItemDetail);
         });
         return this;
+    }
+
+    private Concept getConcept(String conceptUUID) {
+        Concept concept = conceptService.get(conceptUUID);
+        if (concept == null) {
+            throw new IllegalArgumentException(String.format("No concept found for UUID %s", conceptUUID));
+        }
+        return concept;
+    }
+
+    private Form getChecklistForm(String formUUID) {
+        Form form = formRepository.findByUuid(formUUID);
+        if (form == null) {
+            throw new IllegalArgumentException(String.format("No form found for UUID %s", formUUID));
+        }
+        return form;
     }
 
     public ChecklistDetailBuilder withVoided(Boolean voided) {

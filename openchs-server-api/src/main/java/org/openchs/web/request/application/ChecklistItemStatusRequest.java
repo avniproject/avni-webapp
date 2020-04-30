@@ -1,6 +1,11 @@
 package org.openchs.web.request.application;
 
+import org.openchs.domain.ChecklistItemStatus;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ChecklistItemStatusRequest implements Serializable {
     private Object from;
@@ -11,6 +16,23 @@ public class ChecklistItemStatusRequest implements Serializable {
     private Integer start;
     private Integer end;
 
+
+    public static List<ChecklistItemStatusRequest> fromEntity(ChecklistItemStatus checklistItemStatus) {
+        List<ChecklistItemStatusRequest> checklistItemStatusRequests = new ArrayList<>();
+        checklistItemStatus.forEach(cs -> {
+            ChecklistItemStatusRequest checklistItemStatusRequest = new ChecklistItemStatusRequest();
+            Map<String, Object> dbState = (Map<String, Object>) cs;
+            checklistItemStatusRequest.setColor((String) dbState.get("color"));
+            checklistItemStatusRequest.setDisplayOrder((Double) dbState.get("displayOrder"));
+            checklistItemStatusRequest.setEnd((Integer) dbState.get("end"));
+            checklistItemStatusRequest.setFrom(dbState.get("from"));
+            checklistItemStatusRequest.setStart((Integer) dbState.get("start"));
+            checklistItemStatusRequest.setState((String) dbState.get("state"));
+            checklistItemStatusRequest.setTo(dbState.get("to"));
+            checklistItemStatusRequests.add(checklistItemStatusRequest);
+        });
+        return checklistItemStatusRequests;
+    }
 
     public Object getFrom() {
         return from;

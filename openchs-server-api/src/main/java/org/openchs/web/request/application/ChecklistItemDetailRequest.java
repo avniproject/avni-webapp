@@ -1,5 +1,6 @@
 package org.openchs.web.request.application;
 
+import org.openchs.domain.ChecklistItemDetail;
 import org.openchs.web.request.CHSRequest;
 import org.openchs.web.request.ConceptContract;
 
@@ -15,6 +16,22 @@ public class ChecklistItemDetailRequest extends CHSRequest {
     private Integer minDaysFromStartDate;
     private Integer minDaysFromDependent;
     private Integer expiresAfter;
+
+
+    static ChecklistItemDetailRequest fromEntity(ChecklistItemDetail checklistItemDetail) {
+        ChecklistItemDetailRequest request = new ChecklistItemDetailRequest();
+        request.setUuid(checklistItemDetail.getUuid());
+        request.setConcept(ConceptContract.create(checklistItemDetail.getConcept()));
+        request.setStatus(ChecklistItemStatusRequest.fromEntity(checklistItemDetail.getChecklistItemStatus()));
+        request.setFormUUID(checklistItemDetail.getForm().getUuid());
+        ChecklistItemDetail leadChecklistItemDetail = checklistItemDetail.getLeadChecklistItemDetail();
+        request.setDependentOn(leadChecklistItemDetail == null ? null : leadChecklistItemDetail.getUuid());
+        request.setScheduleOnExpiryOfDependency(checklistItemDetail.getScheduleOnExpiryOfDependency());
+        request.setMinDaysFromStartDate(checklistItemDetail.getMinDaysFromStartDate());
+        request.setMinDaysFromDependent(checklistItemDetail.getMinDaysFromDependent());
+        request.setExpiresAfter(checklistItemDetail.getExpiresAfter());
+        return request;
+    }
 
     public ConceptContract getConcept() {
         return concept;
