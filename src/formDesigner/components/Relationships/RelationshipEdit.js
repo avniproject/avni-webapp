@@ -8,6 +8,11 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { cloneDeep } from "lodash";
 import { default as UUID } from "uuid";
+import Grid from "@material-ui/core/Grid";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Button from "@material-ui/core/Button";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import { Redirect } from "react-router-dom";
 
 function RelationshipEdit(props) {
   const [relationshipName, setRelationshipName] = useState("");
@@ -15,6 +20,8 @@ function RelationshipEdit(props) {
   const [relationshipGenders, setRelationshipGenders] = useState([]);
   const [isIndividualSubjectTypeAvailable, setIsIndividualSubjectTypeAvailable] = useState(true);
   const [genders, setGenders] = useState([]);
+  const [redirectShow, setRedirectShow] = useState(false);
+  const [redirectAfterDelete, setRedirectAfterDelete] = useState(false);
 
   useEffect(() => {
     http
@@ -65,7 +72,7 @@ function RelationshipEdit(props) {
       });
 
       http
-        .post("/web/relation", {
+        .post("/web/relation" + props.match.params.id, {
           name: relationshipName,
           uuid: UUID.v4(),
           genders: genderToBesubmit
@@ -83,10 +90,28 @@ function RelationshipEdit(props) {
     }
   };
 
+  const onDeleteRelationship = () => {
+    if (window.confirm("Do you really want to delete relationship?")) {
+      http
+        .delete("/web/relationship/" + props.match.params.id)
+        .then(response => {
+          if (response.status === 200) {
+            setRedirectAfterDelete(true);
+          }
+        })
+        .catch(error => {});
+    }
+  };
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={"Edit relationship"} />
+        <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+          <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
+            <VisibilityIcon /> Show
+          </Button>
+        </Grid>
+
         {!isIndividualSubjectTypeAvailable && (
           <div style={{ color: "red", size: "10" }}>
             Go to subject type and please create Individual named subject type{" "}
@@ -125,13 +150,25 @@ function RelationshipEdit(props) {
             );
           })}
           <br />
-          <SaveComponent
-            name="save"
-            onSubmit={() => onSubmitRelationship()}
-            disabledFlag={!setIsIndividualSubjectTypeAvailable}
-          />
         </div>
+
+        <Grid container item sm={12}>
+          <Grid item sm={1}>
+            <SaveComponent
+              name="save"
+              onSubmit={() => onSubmitRelationship()}
+              disabledFlag={!setIsIndividualSubjectTypeAvailable}
+            />{" "}
+          </Grid>
+          <Grid item sm={11}>
+            <Button style={{ float: "right", color: "red" }} onClick={() => onDeleteRelationship()}>
+              <DeleteIcon /> Delete
+            </Button>
+          </Grid>
+        </Grid>
       </Box>
+      {redirectShow && <Redirect to={`/appDesigner/relationship/${props.match.params.id}/show`} />}
+      {redirectAfterDelete && <Redirect to="/appDesigner/relationship" />}
     </>
   );
 }

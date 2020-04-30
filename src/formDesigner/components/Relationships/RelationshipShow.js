@@ -19,6 +19,7 @@ const RelationshipShow = props => {
       .get("/web/relation/" + props.match.params.id)
       .then(response => {
         console.log(response);
+        setRelationship(response.data);
       })
       .catch(error => {});
   }, []);
@@ -26,7 +27,7 @@ const RelationshipShow = props => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={"Show relationship : "} />
+        <Title title={"Show relationship : " + relationship.name} />
         <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
           <Button color="primary" type="button" onClick={() => setEditAlert(true)}>
             <EditIcon />
