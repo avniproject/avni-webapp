@@ -362,14 +362,18 @@ const DefaultPage = props => {
                       items={sortBy(props.locations, "name")}
                       isChecked={item =>
                         (item.id && get(props, "subject.lowestAddressType.id") === item.id) ||
-                        (item.name &&
-                          get(props, "subject.lowestAddressLevel.typeString") === item.name)
+                        (item.name && get(props, "subject.lowestAddressLevel.type") === item.name)
                       }
+                      // isChecked={item =>
+                      //   (item.name && get(props, "subject.lowestAddressLevel.type") === item.name)
+                      // }
                       onChange={selected => props.updateSubject("lowestAddressType", selected)}
                     />
                     <div>
-                      {props.subject.lowestAddressType === "" ||
-                      props.subject.lowestAddressType === undefined ? null : (
+                      {(props.subject.lowestAddressType === "" &&
+                        props.subject.lowestAddressLevel.name === "") ||
+                      (props.subject.lowestAddressType === undefined &&
+                        props.subject.lowestAddressLevel.name === "") ? null : (
                         <div>
                           <LocationAutosuggest
                             selectedVillage={props.subject.lowestAddressLevel.name}
@@ -398,8 +402,16 @@ const DefaultPage = props => {
 
                             // }
                             data={props}
-                            placeholder={props.subject.lowestAddressType.name || "Slum"}
-                            typeId={props.subject.lowestAddressType.id || 100}
+                            placeholder={
+                              props.subject.lowestAddressType === undefined
+                                ? props.subject.lowestAddressLevel.type
+                                : props.subject.lowestAddressType.name
+                            }
+                            typeId={
+                              props.subject.lowestAddressType === undefined
+                                ? 100
+                                : props.subject.lowestAddressType.id
+                            }
                           />
                         </div>
                       )}
