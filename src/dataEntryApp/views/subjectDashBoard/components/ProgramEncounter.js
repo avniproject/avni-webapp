@@ -7,8 +7,9 @@ import Grid from "@material-ui/core/Grid";
 import {
   getProgramEncounterForm,
   getProgramEnrolment,
-  getProgramEncounters
-} from "../../../reducers/programReducer";
+  getUnplanProgramEncounters,
+  setProgramEncounter
+} from "../../../reducers/programEncounterReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -55,28 +56,26 @@ const ProgramEncounter = ({
   getProgramEncounterForm,
   getProgramEnrolment,
   programEncounterForm,
-  getProgramEncounters,
+  programEncounter,
+  getUnplanProgramEncounters,
   programEnrolment,
+  setProgramEncounter,
   ...props
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const enrolmentUuid = match.queryParams.enrolUuid;
   const encounterTypeUuid = match.queryParams.uuid;
-  // console.log("Printing programEnrolment", props.programEnrolment);
   useEffect(() => {
     (async function fetchData() {
+      setProgramEncounter();
       //For Planned Encounters List : To get list of ProgramEncounters from api
       await getProgramEnrolment(enrolmentUuid);
       //For Unplanned Encounters List : To get possible encounters from FormMapping
       // Using form type as "ProgramEncounter", program uuid, subject type uuid
+      await getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
 
-      await getProgramEncounters("Individual", programEnrolment.program.uuid);
-      //To get Form Mappings for dynamic loaded encounter type
       getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
-
-      // let programEnrolment = BrowserStore.fetchProgramEnrolment();
-      // setProgramEnrolment(programEnrolment);
     })();
   }, []);
 
@@ -91,7 +90,7 @@ const ProgramEncounter = ({
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
               {/* {enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? ( */}
-              {programEncounterForm ? (
+              {programEncounterForm && programEncounter ? (
                 <ProgramEncounterForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
@@ -126,23 +125,19 @@ const ProgramEncounter = ({
 };
 
 const mapStateToProps = state => ({
-  //state for Form Mapping
-  programEncounterForm: state.programs.programEncounterForm,
-  //state to get planned encounters
-  programEnrolment: state.programs.programEnrolment,
-  //state to get unplanned encounters
-  programEncounters: state.programs.programEncounters,
-  //state to save program encounter
-  programEncounter: state.programs.programEncounter,
-  x: state
+  programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
+  programEnrolment: state.dataEntry.programEncounterReducer.programEnrolment,
+  unplannedEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters,
+  x: state,
   //subject: state.dataEntry.subjectProfile.subjectProfile,
-  // programEncounter: state.programs.programEncounter
+  programEncounter: state.dataEntry.programEncounterReducer.programEncounter
 });
 
 const mapDispatchToProps = {
   getProgramEncounterForm,
   getProgramEnrolment,
-  getProgramEncounters
+  getUnplanProgramEncounters,
+  setProgramEncounter
 };
 
 export default withRouter(

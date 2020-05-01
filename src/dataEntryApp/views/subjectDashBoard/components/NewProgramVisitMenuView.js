@@ -25,12 +25,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewProgramVisitMenuView = ({ sections, enrolmentUuid, formMappings }) => {
+const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
   const { t } = useTranslation();
 
   const classes = useStyles();
 
-  console.log("Innn NewProgramVisitMenuView", sections);
   return (
     <Fragment>
       {/* <Paper className={classes.root}> */}
@@ -70,7 +69,7 @@ const NewProgramVisitMenuView = ({ sections, enrolmentUuid, formMappings }) => {
                                   }&enrolUuid=${enrolmentUuid}`}
                                   encounter={encounter}
                                 >
-                                  {encounter.encounterType.name}
+                                  {encounter.name}
                                 </InternalLink>
                               </TableCell>
                             ) : (
@@ -103,7 +102,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   // getProgramEnrolment,
-  // getProgramEncounters
+  // getUnplanProgramEncounters
 };
 
 export default withRouter(
