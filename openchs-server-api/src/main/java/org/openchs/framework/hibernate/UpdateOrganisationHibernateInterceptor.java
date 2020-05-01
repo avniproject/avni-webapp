@@ -10,10 +10,14 @@ import org.openchs.domain.User;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.UserContext;
 import org.openchs.framework.security.UserContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
 public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
+    private static final Logger logger = LoggerFactory.getLogger(UpdateOrganisationHibernateInterceptor.class.getName());
+
     @Override
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
         return updateOrganisationId(entity, state, propertyNames);
@@ -27,6 +31,8 @@ public class UpdateOrganisationHibernateInterceptor extends EmptyInterceptor {
             Audit audit = (Audit) currentState[indexOf];
             UserContext userContext = UserContextHolder.getUserContext();
             User user = userContext.getUser();
+            logger.info(String.format("Username is %s", user.getUsername()));
+            logger.info(String.format("Updating organisation interceptor for id %s", audit.getId()));
             if (audit.getCreatedBy() == null) {
                 audit.setCreatedBy(user);
             }
