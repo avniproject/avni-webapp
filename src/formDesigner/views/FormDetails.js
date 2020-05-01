@@ -824,7 +824,6 @@ class FormDetails extends Component {
   };
 
   onDragEnd = result => {
-    console.log(result);
     const { destination, source } = result;
 
     if (!destination) {
@@ -870,7 +869,7 @@ class FormDetails extends Component {
     );
   };
 
-  onSubmitInlineConcept = (inlineConceptObject, clonedForm, groupIndex, elementIndex) => {
+  onSubmitInlineConcept = (inlineConceptObject, clonedForm, formElement) => {
     inlineConceptObject.answers.forEach((answer, index) => {
       answer.order = index;
     });
@@ -878,39 +877,19 @@ class FormDetails extends Component {
       .post("/concepts", [inlineConceptObject])
       .then(response => {
         if (response.status === 200) {
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-            "concept"
-          ].name = inlineConceptObject.name;
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex]["concept"][
-            "uuid"
-          ] = inlineConceptObject.uuid;
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-            "concept"
-          ].dataType = inlineConceptObject.dataType;
+          formElement["concept"].name = inlineConceptObject.name;
+          formElement["concept"]["uuid"] = inlineConceptObject.uuid;
+          formElement["concept"].dataType = inlineConceptObject.dataType;
 
-          clonedForm["formElementGroups"][groupIndex]["formElements"][
-            elementIndex
-          ].showConceptLibrary = "chooseFromLibrary";
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-            "concept"
-          ].lowAbsolute = inlineConceptObject.lowAbsolute;
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-            "concept"
-          ].highAbsolute = inlineConceptObject.highAbsolute;
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-            "concept"
-          ].lowNormal = inlineConceptObject.lowNormal;
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-            "concept"
-          ].highNormal = inlineConceptObject.highNormal;
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-            "concept"
-          ].unit = inlineConceptObject.unit;
+          formElement.showConceptLibrary = "chooseFromLibrary";
+          formElement["concept"].lowAbsolute = inlineConceptObject.lowAbsolute;
+          formElement["concept"].highAbsolute = inlineConceptObject.highAbsolute;
+          formElement["concept"].lowNormal = inlineConceptObject.lowNormal;
+          formElement["concept"].highNormal = inlineConceptObject.highNormal;
+          formElement["concept"].unit = inlineConceptObject.unit;
 
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-            "concept"
-          ].answers = inlineConceptObject.answers;
-          clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex].newFlag = false;
+          formElement["concept"].answers = inlineConceptObject.answers;
+          formElement.newFlag = false;
 
           this.setState({
             form: clonedForm
@@ -918,77 +897,61 @@ class FormDetails extends Component {
         }
       })
       .catch(error => {
-        clonedForm["formElementGroups"][groupIndex]["formElements"][
-          elementIndex
-        ].inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
+        formElement.inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
         this.setState({
           form: clonedForm
         });
       });
   };
+
   onSaveInlineConcept = (groupIndex, elementIndex) => {
     let clonedForm = cloneDeep(this.state.form);
-    let absoluteValidation, normalValidation;
+    let clonedFormElement =
+      clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex];
+    let absoluteValidation = false,
+      normalValidation = false;
 
     const inlineConceptObject = {
-      name:
-        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex].inlineConceptName,
+      name: clonedFormElement.inlineConceptName,
       uuid: UUID.v4(),
-      dataType:
-        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex]
-          .inlineConceptDataType,
-      lowAbsolute:
-        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-          "inlineNumericDataTypeAttributes"
-        ].lowAbsolute,
-      highAbsolute:
-        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-          "inlineNumericDataTypeAttributes"
-        ].highAbsolute,
-      lowNormal:
-        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-          "inlineNumericDataTypeAttributes"
-        ].lowNormal,
-      highNormal:
-        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-          "inlineNumericDataTypeAttributes"
-        ].highNormal,
+      dataType: clonedFormElement.inlineConceptDataType,
+      lowAbsolute: clonedFormElement["inlineNumericDataTypeAttributes"].lowAbsolute,
+      highAbsolute: clonedFormElement["inlineNumericDataTypeAttributes"].highAbsolute,
+      lowNormal: clonedFormElement["inlineNumericDataTypeAttributes"].lowNormal,
+      highNormal: clonedFormElement["inlineNumericDataTypeAttributes"].highNormal,
       unit:
-        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-          "inlineNumericDataTypeAttributes"
-        ].unit === ""
+        clonedFormElement["inlineNumericDataTypeAttributes"].unit === ""
           ? null
-          : clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-              "inlineNumericDataTypeAttributes"
-            ].unit,
-      answers:
-        clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex][
-          "inlineCodedAnswers"
-        ]
+          : clonedFormElement["inlineNumericDataTypeAttributes"].unit,
+      answers: clonedFormElement["inlineCodedAnswers"]
     };
 
-    if (
-      parseInt(inlineConceptObject.lowAbsolute) === null ||
-      parseInt(inlineConceptObject.highAbsolute) === null
-    ) {
-      absoluteValidation = false;
-    } else if (
-      parseInt(inlineConceptObject.lowAbsolute) > parseInt(inlineConceptObject.highAbsolute)
-    ) {
-      absoluteValidation = true;
-    } else {
-      absoluteValidation = false;
-    }
+    if (inlineConceptObject.dataType === "Numeric") {
+      if (
+        parseInt(inlineConceptObject.lowAbsolute) === null ||
+        parseInt(inlineConceptObject.highAbsolute) === null
+      ) {
+        absoluteValidation = false;
+      } else if (
+        parseInt(inlineConceptObject.lowAbsolute) > parseInt(inlineConceptObject.highAbsolute)
+      ) {
+        absoluteValidation = true;
+      } else {
+        absoluteValidation = false;
+      }
 
-    if (
-      parseInt(inlineConceptObject.lowNormal) === null ||
-      parseInt(inlineConceptObject.highNormal === null)
-    ) {
-      normalValidation = false;
-    } else if (parseInt(inlineConceptObject.lowNormal) > parseInt(inlineConceptObject.highNormal)) {
-      normalValidation = true;
-    } else {
-      normalValidation = false;
+      if (
+        parseInt(inlineConceptObject.lowNormal) === null ||
+        parseInt(inlineConceptObject.highNormal === null)
+      ) {
+        normalValidation = false;
+      } else if (
+        parseInt(inlineConceptObject.lowNormal) > parseInt(inlineConceptObject.highNormal)
+      ) {
+        normalValidation = true;
+      } else {
+        normalValidation = false;
+      }
     }
 
     if (
@@ -997,15 +960,9 @@ class FormDetails extends Component {
       normalValidation === false &&
       absoluteValidation === false
     ) {
-      clonedForm["formElementGroups"][groupIndex]["formElements"][
-        elementIndex
-      ].inlineConceptErrorMessage["name"] = "";
-      clonedForm["formElementGroups"][groupIndex]["formElements"][
-        elementIndex
-      ].inlineConceptErrorMessage["dataType"] = "";
-      clonedForm["formElementGroups"][groupIndex]["formElements"][
-        elementIndex
-      ].inlineConceptErrorMessage["inlineConceptError"] = "";
+      clonedFormElement.inlineConceptErrorMessage["name"] = "";
+      clonedFormElement.inlineConceptErrorMessage["dataType"] = "";
+      clonedFormElement.inlineConceptErrorMessage["inlineConceptError"] = "";
 
       if (inlineConceptObject.dataType === "Coded") {
         const length = inlineConceptObject.answers.length;
@@ -1029,12 +986,7 @@ class FormDetails extends Component {
 
                 if (counter === length) {
                   !flagForEmptyAnswer &&
-                    this.onSubmitInlineConcept(
-                      inlineConceptObject,
-                      clonedForm,
-                      groupIndex,
-                      elementIndex
-                    );
+                    this.onSubmitInlineConcept(inlineConceptObject, clonedForm, clonedFormElement);
                 }
               }
             })
@@ -1063,8 +1015,7 @@ class FormDetails extends Component {
                           this.onSubmitInlineConcept(
                             inlineConceptObject,
                             clonedForm,
-                            groupIndex,
-                            elementIndex
+                            clonedFormElement
                           );
                       }
                     }
@@ -1080,23 +1031,20 @@ class FormDetails extends Component {
           }
         });
       } else {
-        this.onSubmitInlineConcept(inlineConceptObject, clonedForm, groupIndex, elementIndex);
+        this.onSubmitInlineConcept(inlineConceptObject, clonedForm, clonedFormElement);
       }
     } else {
-      clonedForm["formElementGroups"][groupIndex]["formElements"][
-        elementIndex
-      ].inlineConceptErrorMessage["name"] =
+      clonedFormElement.inlineConceptErrorMessage["name"] =
         inlineConceptObject.name.trim() === "" ? "concept name is required" : "";
-      clonedForm["formElementGroups"][groupIndex]["formElements"][
-        elementIndex
-      ].inlineConceptErrorMessage["dataType"] =
+      clonedFormElement.inlineConceptErrorMessage["dataType"] =
         inlineConceptObject.dataType === "" ? "concept datatype is required" : "";
-      clonedForm["formElementGroups"][groupIndex]["formElements"][
-        elementIndex
-      ].inlineNumericDataTypeAttributes.error["normalValidation"] = normalValidation;
-      clonedForm["formElementGroups"][groupIndex]["formElements"][
-        elementIndex
-      ].inlineNumericDataTypeAttributes.error["absoluteValidation"] = absoluteValidation;
+      clonedFormElement.inlineNumericDataTypeAttributes.error[
+        "normalValidation"
+      ] = normalValidation;
+      clonedFormElement.inlineNumericDataTypeAttributes.error[
+        "absoluteValidation"
+      ] = absoluteValidation;
+
       this.setState({
         form: clonedForm
       });
