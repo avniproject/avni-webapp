@@ -82,7 +82,8 @@ const ProgramEncounter = ({
       await getProgramEnrolment(enrolmentUuid);
       //For Unplanned Encounters List : To get possible encounters from FormMapping
       // Using form type as "ProgramEncounter", program uuid, subject type uuid
-      await getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
+      if (programEnrolment)
+        await getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
 
       getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
     })();
@@ -91,9 +92,9 @@ const ProgramEncounter = ({
   console.log("Inside new page >> programEncounter ..printing states");
   console.log(props.x);
 
-  const validationResultForEncounterDate = validationResults.find(
-    vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME"
-  );
+  const validationResultForEncounterDate =
+    validationResults &&
+    validationResults.find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
   console.log("validationResultForEncounterDate", validationResultForEncounterDate);
   return (
     <Fragment>
@@ -121,10 +122,18 @@ const ProgramEncounter = ({
                       onChange={date => {
                         updateProgramEncounter("encounterDateTime", new Date(date));
                         programEncounter.encounterDateTime = date;
-                        validationResults.push(programEncounter.validate()[1]);
-                        //console.log(validationResults.push(programEncounter.validate()[1]));
+                        const validationResult = programEncounter.validate();
+                        const result = programEncounter
+                          .validate()
+                          .find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
+                        if (result) validationResults.push(result);
                         setValidationResults(validationResults);
-                        console.log("validationResults", validationResults);
+
+                        //programEncounter.validate()
+                        //validationResults.push(programEncounter.validate()[1]);
+                        console.log("after", validationResults);
+                        //setValidationResults(validationResults);
+                        //console.log("validationResults", validationResults);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",

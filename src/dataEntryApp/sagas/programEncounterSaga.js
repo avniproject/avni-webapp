@@ -17,7 +17,7 @@ import { mapForm } from "../../common/adapters";
 import _, { find, get, isNil, filter } from "lodash";
 import moment from "moment";
 import { ProgramEncounter, ProgramEnrolment, ObservationsHolder, Concept } from "avni-models";
-import { ModelGeneral as General } from "avni-models";
+import { ModelGeneral as General, EncounterType } from "avni-models";
 
 export default function*() {
   yield all(
@@ -85,10 +85,20 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
     pe => !isNil(pe.encounterType) && pe.encounterType.uuid === encounterTypeUuid
   );
 
+  console.log("planEnc", planEncounter);
+  // General.assignFields(super.clone(new EncounterType()),['operationalEncounterTypeName','displayName']);
+
   if (planEncounter) {
     let plannedVisit = new ProgramEncounter();
+    let encounterType = new EncounterType();
+    encounterType.id = planEncounter.encounterType.id;
+    encounterType.name = planEncounter.encounterType.name;
+    encounterType.operationalEncounterTypeName =
+      planEncounter.encounterType.operationalEncounterTypeName;
+    encounterType.uuid = planEncounter.encounterType.uuid;
+    console.log("new", encounterType);
     plannedVisit.uuid = planEncounter.uuid;
-    plannedVisit.encounterType = planEncounter.encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
+    plannedVisit.encounterType = encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
     plannedVisit.encounterDateTime = moment().toDate(); //new Date(); or planEncounter.encounterDateTime
     plannedVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
     plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
@@ -119,6 +129,12 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
 
   if (unplanEncounter) {
     let unplannedVisit = new ProgramEncounter();
+    let encounterType = new EncounterType();
+    encounterType.id = unplanEncounter.encounterType.id;
+    encounterType.name = unplanEncounter.encounterType.name;
+    encounterType.operationalEncounterTypeName =
+      unplanEncounter.encounterType.operationalEncounterTypeName;
+    encounterType.uuid = unplanEncounter.encounterType.uuid;
     unplannedVisit.uuid = General.randomUUID();
     unplannedVisit.encounterType = unplanEncounterType;
     unplannedVisit.name = unplannedVisit.encounterType.name;
