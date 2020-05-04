@@ -59,11 +59,12 @@ public class IndividualRelationController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @ResponseBody
     @Transactional
-    public void newIndividualRelation(@RequestBody IndividualRelationContract individualRelationContract) {
+    public ResponseEntity<IndividualRelationContract> newIndividualRelation(@RequestBody IndividualRelationContract individualRelationContract) {
         String name = individualRelationContract.getName();
         assertNoExistingRelation(name);
         IndividualRelation relation = createRelation(name);
         saveGenderMappings(individualRelationContract, relation);
+        return ResponseEntity.ok(toResponseObject(relation));
     }
 
     @PostMapping(value = "/web/relation/{id}")

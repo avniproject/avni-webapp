@@ -6,6 +6,7 @@ import org.openchs.domain.individualRelationship.IndividualRelation;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.openchs.web.request.IndividualRelationshipTypeContract;
 import org.openchs.web.request.webapp.IndividualRelationContract;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,19 +43,20 @@ public class IndividualRelationshipTypeController {
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @ResponseBody
     @Transactional
-    public void newRelationshipType(@RequestBody IndividualRelationshipTypeContract relationshipTypeContract) {
+    public ResponseEntity<IndividualRelationshipTypeContract> newRelationshipType(@RequestBody IndividualRelationshipTypeContract relationshipTypeContract) {
         Long aToBId = relationshipTypeContract.getIndividualAIsToBRelation().getId();
         Long bToAId = relationshipTypeContract.getIndividualBIsToARelation().getId();
         IndividualRelation aToB = individualRelationRepository.findOne(aToBId);
         IndividualRelation bToA = individualRelationRepository.findOne(bToAId);
-        IndividualRelationshipType existingRow = individualRelationshipTypeRepository
+        IndividualRelationshipType individualRelationshipType = individualRelationshipTypeRepository
                 .findByIndividualAIsToBAndIndividualBIsToA(aToB, bToA);
-        if (existingRow == null) {
-            createIndividualRelationshipType(aToB, bToA);
+        if (individualRelationshipType == null) {
+            individualRelationshipType = createIndividualRelationshipType(aToB, bToA);
         } else {
-            existingRow.setVoided(false);
-            individualRelationshipTypeRepository.save(existingRow);
+            individualRelationshipType.setVoided(false);
         }
+        individualRelationshipTypeRepository.save(individualRelationshipType);
+        return ResponseEntity.ok(createIndividualRelationshipTypeContract(individualRelationshipType));
     }
 
     @DeleteMapping(value = "/web/relationshipType/{id}")
@@ -69,12 +71,13 @@ public class IndividualRelationshipTypeController {
         }
     }
 
-    private void createIndividualRelationshipType(IndividualRelation aToB, IndividualRelation bToA) {
+    private IndividualRelationshipType createIndividualRelationshipType(IndividualRelation aToB, IndividualRelation bToA) {
         IndividualRelationshipType individualRelationshipType = new IndividualRelationshipType();
         individualRelationshipType.setName(String.format("%s-%s", aToB.getName(), bToA.getName()));
         individualRelationshipType.setIndividualAIsToB(aToB);
         individualRelationshipType.setIndividualBIsToA(bToA);
         individualRelationshipTypeRepository.save(individualRelationshipType);
+        return individualRelationshipType;
     }
 
     private IndividualRelationshipTypeContract createIndividualRelationshipTypeContract(IndividualRelationshipType relationshipType) {
