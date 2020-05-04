@@ -27,6 +27,7 @@ import {
   findProgramEncounterForm,
   findProgramEncounterForms
 } from "../domain/formMapping";
+import { SaveComponent } from "../../common/components/SaveComponent";
 
 const EncounterTypeEdit = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -208,9 +209,9 @@ const EncounterTypeEdit = props => {
           )}
           <p />
           <FormControl>
-            <InputLabel id="subjectType">Select subject type*</InputLabel>
+            <InputLabel id="subjectType">Select Subject Type*</InputLabel>
             <Select
-              label="Select subject type"
+              label="Select Subject Type"
               value={_.isEmpty(subjectT) ? "" : subjectT}
               onChange={event => setSubjectT(event.target.value)}
               style={{ width: "200px" }}
@@ -233,9 +234,9 @@ const EncounterTypeEdit = props => {
           )}
           <p />
           <FormControl>
-            <InputLabel id="program">Select program</InputLabel>
+            <InputLabel id="program">Select Program</InputLabel>
             <Select
-              label="Select program"
+              label="Select Program"
               value={_.isEmpty(programT) ? "" : programT}
               onChange={event => updateProgram(event.target.value)}
               style={{ width: "200px" }}
@@ -253,7 +254,7 @@ const EncounterTypeEdit = props => {
           </FormControl>
           <p />
           <SelectForm
-            label={"Select Encounter form"}
+            label={"Select Encounter Form"}
             value={_.get(encounterType, "programEncounterForm.formName")}
             onChange={selectedForm =>
               dispatch({
@@ -265,7 +266,7 @@ const EncounterTypeEdit = props => {
           />
           <p />
           <SelectForm
-            label={"Select Encounter cancellation form"}
+            label={"Select Encounter Cancellation Form"}
             value={_.get(encounterType, "programEncounterCancellationForm.formName")}
             onChange={selectedForm =>
               dispatch({
@@ -276,7 +277,7 @@ const EncounterTypeEdit = props => {
             formList={getCancellationForms()}
           />
           <p />
-          <FormLabel>Enrolment eligibility check rule</FormLabel>
+          <FormLabel>Enrolment Eligibility Check Rule</FormLabel>
           <Editor
             value={
               encounterType.encounterEligibilityCheckRule
@@ -300,14 +301,7 @@ const EncounterTypeEdit = props => {
         </div>
         <Grid container item sm={12}>
           <Grid item sm={1}>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => onSubmit()}
-              style={{ marginLeft: "14px" }}
-            >
-              <i className="material-icons">save</i>Save
-            </Button>
+            <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
           </Grid>
           <Grid item sm={11}>
             <Button style={{ float: "right", color: "red" }} onClick={() => onDelete()}>

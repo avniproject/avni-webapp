@@ -19,6 +19,7 @@ import FormSettings from "../formDesigner/components/FormSettings";
 import customFilters from "./CustomFilters";
 import { WorklistUpdationRule } from "./WorklistUpdationRule";
 import Footer from "../common/components/Footer";
+import { ChecklistDetails } from "../formDesigner/views/ChecklistDetails";
 
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
@@ -66,6 +67,7 @@ class OrgManagerAppDesigner extends Component {
             list={WithProps({ organisation }, customFilters)}
           />
           <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
+          <Resource name={"checklist"} options={{ label: "Checklist" }} list={ChecklistDetails} />
           <Resource
             name="worklistUpdationRule"
             options={{ label: "Worklist Updation Rule" }}

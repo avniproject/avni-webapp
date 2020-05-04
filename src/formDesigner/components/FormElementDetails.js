@@ -5,12 +5,16 @@ import {
   Checkbox,
   FormControlLabel,
   Select,
-  FormGroup
+  FormGroup,
+  Paper,
+  Button
 } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
+import InlineConcept from "./InlineConcept";
+
 import MenuItem from "@material-ui/core/MenuItem";
 import _, { isEqual, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
@@ -18,6 +22,7 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const FormControl = withStyles({
   root: {
@@ -58,8 +63,20 @@ const showDatePicker = (cssClasses, props) => {
   );
 };
 
+const BackButton = props => {
+  return (
+    <Button
+      size="small"
+      onClick={() => props.handleConceptFormLibrary(props.groupIndex, "", props.elementIndex, true)}
+    >
+      <ArrowBackIcon /> Back
+    </Button>
+  );
+};
+
 function FormElementDetails(props) {
   const classes = useStyles();
+  console.log(JSON.stringify(props));
   const { t } = useTranslation();
 
   const cssClasses = {
@@ -89,17 +106,6 @@ function FormElementDetails(props) {
     }
   }
 
-  // const onShowDialogueForConcept = () => {
-  //   return (
-  //     <Dialog open={show} aria-labelledby="form-dialog-title">
-  //       <DialogTitle id="form-dialog-title">Create Concept</DialogTitle>
-  //       <DialogContent dividers>
-  //       <CreateEditConcept isCreatePage={true} enableLeftMenuButton={false} />
-  //       </DialogContent>
-  //       <DialogActions><Button color="primary">Cancel</Button></DialogActions>
-  //     </Dialog>
-  //   );
-  // };
   function identifierSourceList() {
     var identifierSourceArr = [];
     _.forEach(props.identifierSources, (idSource, i) => {
@@ -130,134 +136,253 @@ function FormElementDetails(props) {
           />
         </FormControl>
       </Grid>
-      <Grid item sm={12}>
-        {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
-          <div style={{ color: "red" }}>Please enter concept </div>
-        )}
-
-        <FormControl fullWidth>
-          <AutoSuggestSingleSelection
-            visibility={!props.formElementData.newFlag}
-            showAnswer={props.formElementData.concept}
-            onChangeAnswerName={onChangeAnswerName}
-            finalReturn={true}
-            index={0}
-            label="Concept"
-          />
-        </FormControl>
-      </Grid>
-      {/* <Grid item sm={1} /> */}
-      {/* <Grid item sm={2}>
-        <Button
-          fullWidth
-          variant="contained"
-          color="primary"
-          style={{ marginTop: "5%", outline: "none" }}
-          onClick={onShowDialogueForConcept}
-        >
-          + Concept
-        </Button>
-      </Grid> */}
-      {/* {show && onShowDialogueForConcept()} */}
-      {props.formElementData.concept.dataType === "Coded" && (
-        <Grid item sm={6}>
-          {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
-            <div style={{ color: "red" }}>Please select type</div>
-          )}
-          <FormControl fullWidth>
-            <InputLabel>Type</InputLabel>
-            <Select
-              name="type"
-              value={props.formElementData.type}
-              onChange={event =>
-                props.handleGroupElementChange(
-                  props.groupIndex,
-                  "type",
-                  event.target.value,
-                  props.index
-                )
+      <Paper style={{ width: "100%", marginBottom: "15px" }}>
+        {props.formElementData.showConceptLibrary === "" && (
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
+            <Button
+              color="primary"
+              type="button"
+              onClick={event =>
+                props.handleConceptFormLibrary(props.groupIndex, "chooseFromLibrary", props.index)
               }
-              required
             >
-              <MenuItem value="SingleSelect">SingleSelect</MenuItem>
-              <MenuItem value="MultiSelect">MultiSelect</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
+              Select from library
+            </Button>
+            <br />
+            OR
+            <br />
+            <Button
+              color="primary"
+              type="button"
+              onClick={event =>
+                props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)
+              }
+            >
+              Create new
+            </Button>
+          </div>
+        )}
+        {props.formElementData.showConceptLibrary === "addNewConcept" && (
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
+            {props.formElementData.newFlag && (
+              <BackButton
+                handleConceptFormLibrary={props.handleConceptFormLibrary}
+                groupIndex={props.groupIndex}
+                elementIndex={props.index}
+              />
+            )}
+
+            <InlineConcept
+              onSaveInlineConcept={props.onSaveInlineConcept}
+              formElementData={props.formElementData}
+              index={props.index}
+              groupIndex={props.groupIndex}
+              handleGroupElementChange={props.handleGroupElementChange}
+              handleInlineNumericAttributes={props.handleInlineNumericAttributes}
+              handleInlineCodedConceptAnswers={props.handleInlineCodedConceptAnswers}
+              onToggleInlineConceptCodedAnswerAttribute={
+                props.onToggleInlineConceptCodedAnswerAttribute
+              }
+              onDeleteInlineConceptCodedAnswerDelete={props.onDeleteInlineConceptCodedAnswerDelete}
+              handleInlineCodedAnswerAddition={props.handleInlineCodedAnswerAddition}
+              onDragInlineCodedConceptAnswer={props.onDragInlineCodedConceptAnswer}
+            />
+          </div>
+        )}
+        {props.formElementData.showConceptLibrary === "chooseFromLibrary" && (
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
+            {" "}
+            {props.formElementData.newFlag && (
+              <BackButton
+                handleConceptFormLibrary={props.handleConceptFormLibrary}
+                groupIndex={props.groupIndex}
+                elementIndex={props.index}
+              />
+            )}
+            <Grid item sm={12}>
+              {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
+                <div style={{ color: "red" }}>Please enter concept </div>
+              )}
+
+              <FormControl fullWidth>
+                <AutoSuggestSingleSelection
+                  visibility={!props.formElementData.newFlag}
+                  showAnswer={props.formElementData.concept}
+                  onChangeAnswerName={onChangeAnswerName}
+                  finalReturn={true}
+                  index={0}
+                  label="Concept"
+                />
+              </FormControl>
+            </Grid>
+            {props.formElementData.concept.dataType !== "Coded" && <Grid item sm={6} />}
+            {props.formElementData.concept.dataType === "Numeric" && (
+              <Grid container item sm={12}>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <InputLabel>Low Absolute</InputLabel>
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.lowAbsolute
+                          ? props.formElementData.concept.lowAbsolute
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <InputLabel>High Absolute</InputLabel>
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.highAbsolute
+                          ? props.formElementData.concept.highAbsolute
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <InputLabel>Low normal</InputLabel>
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.lowNormal
+                          ? props.formElementData.concept.lowNormal
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <InputLabel>High normal</InputLabel>
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.highNormal
+                          ? props.formElementData.concept.highNormal
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <InputLabel>Unit</InputLabel>
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.unit
+                          ? props.formElementData.concept.unit
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            )}
+            {props.formElementData.concept.dataType === "Coded" && (
+              <>
+                <Grid container item sm={12}>
+                  <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
+                  {props.formElementData.concept.answers.map(function(d) {
+                    if (!d.excluded && !d.voided) {
+                      return (
+                        <Chip
+                          key={d.name}
+                          label={d.name}
+                          onDelete={event =>
+                            props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
+                          }
+                        />
+                      );
+                    }
+                    return "";
+                  })}
+                </Grid>
+              </>
+            )}
+          </div>
+        )}
+      </Paper>
+      {props.formElementData.concept.dataType === "Coded" && (
+        <>
+          <Grid item sm={6}>
+            {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
+              <div style={{ color: "red" }}>Please select type</div>
+            )}
+            <FormControl fullWidth>
+              <InputLabel>Type</InputLabel>
+              <Select
+                name="type"
+                value={props.formElementData.type}
+                onChange={event =>
+                  props.handleGroupElementChange(
+                    props.groupIndex,
+                    "type",
+                    event.target.value,
+                    props.index
+                  )
+                }
+                required
+              >
+                <MenuItem value="SingleSelect">SingleSelect</MenuItem>
+                <MenuItem value="MultiSelect">MultiSelect</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <br />
+          <Grid container item sm={12}>
+            <InputLabel style={{ paddingTop: 10 }}>Excluded Answers:</InputLabel>{" "}
+            {props.formElementData.concept.answers.map(function(d) {
+              if (d.excluded && !d.voided) {
+                return (
+                  <Chip
+                    key={d.name}
+                    label={d.name}
+                    onDelete={event =>
+                      props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
+                    }
+                  />
+                );
+              }
+              return "";
+            })}
+          </Grid>
+        </>
       )}
-      {props.formElementData.concept.dataType !== "Coded" && <Grid item sm={6} />}
-      {props.formElementData.concept.dataType === "Numeric" && (
-        <Grid container item sm={12}>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>Low Absolute</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.lowAbsolute
-                    ? props.formElementData.concept.lowAbsolute
-                    : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>High Absolute</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.highAbsolute
-                    ? props.formElementData.concept.highAbsolute
-                    : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>Low normal</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.lowNormal
-                    ? props.formElementData.concept.lowNormal
-                    : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>High normal</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.highNormal
-                    ? props.formElementData.concept.highNormal
-                    : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>Unit</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.unit ? props.formElementData.concept.unit : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-        </Grid>
-      )}
+
       {props.formElementData.concept.dataType === "Video" && (
         <Grid container item sm={12}>
           <Grid item sm={4}>
@@ -507,44 +632,6 @@ function FormElementDetails(props) {
 
       {props.formElementData.concept.dataType === "DateTime" && showDatePicker(cssClasses, props)}
 
-      {props.formElementData.concept.dataType === "Coded" && (
-        <>
-          <Grid container item sm={12}>
-            <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
-            {props.formElementData.concept.answers.map(function(d) {
-              if (!d.excluded && !d.voided) {
-                return (
-                  <Chip
-                    key={d.name}
-                    label={d.name}
-                    onDelete={event =>
-                      props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
-                    }
-                  />
-                );
-              }
-              return "";
-            })}
-          </Grid>
-          <Grid container item sm={12}>
-            <InputLabel style={{ paddingTop: 10 }}>Excluded Answers:</InputLabel>{" "}
-            {props.formElementData.concept.answers.map(function(d) {
-              if (d.excluded && !d.voided) {
-                return (
-                  <Chip
-                    key={d.name}
-                    label={d.name}
-                    onDelete={event =>
-                      props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
-                    }
-                  />
-                );
-              }
-              return "";
-            })}
-          </Grid>
-        </>
-      )}
       {["Numeric", "Text"].includes(props.formElementData.concept.dataType) && (
         <Grid item sm={12}>
           {props.formElementData.errorMessage && props.formElementData.errorMessage.validFormat && (
