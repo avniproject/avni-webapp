@@ -9,6 +9,7 @@ import org.openchs.domain.ConceptAnswer;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.ObservationContract;
 import org.openchs.web.request.rules.request.ObservationRequestEntity;
+import org.openchs.web.request.rules.response.DecisionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,16 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-public class ObservationConstruct {
+public class ObservationConstructionService {
 
     private final Logger logger;
     private final ConceptRepository conceptRepository;
 
     @Autowired
-    public ObservationConstruct(
+    public ObservationConstructionService(
             ConceptRepository conceptRepository,
             GenderRepository genderRepository,
             SubjectTypeRepository subjectTypeRepository,
@@ -57,5 +59,29 @@ public class ObservationConstruct {
             conceptContractList.add(conceptContract);
         });
         return conceptContractList;
+    }
+
+    private ConceptContract generateConceptContract(String name){
+        Concept concept = conceptRepository.findByName(name);
+        ConceptContract conceptContract = ConceptContract.create(concept);
+        return conceptContract;
+    }
+
+    public List<ObservationContract> responseObservation(List<DecisionResponse> decisionConceptValue){
+        return decisionConceptValue.stream().map( concept -> {
+            if(!concept.getValue().isEmpty()) {
+                ObservationContract observationContract = new ObservationContract();
+                observationContract.setConcept(generateConceptContract(concept.getName()));
+                List<String> values = concept.getValue();
+                List<ConceptContract> answerConceptList = values.stream().map(value -> {
+                    ConceptContract cc = generateConceptContract(value);
+                    cc.setAbnormal(cc.isAbnormal());
+                    return cc;
+                }).collect(Collectors.toList());
+                observationContract.setValue(answerConceptList != null && answerConceptList.size() == 1 ? answerConceptList.get(0) : answerConceptList);
+                return observationContract;
+            }
+            return null;
+        }).filter( observation -> observation != null).collect(Collectors.toList());
     }
 }

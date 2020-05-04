@@ -4,8 +4,12 @@ import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.RuleFailureLog;
+import org.openchs.web.request.ConceptContract;
+import org.openchs.web.request.ObservationContract;
 import org.openchs.web.request.rules.request.RequestEntityWrapper;
+import org.openchs.web.request.rules.response.DecisionResponse;
 import org.openchs.web.request.rules.response.Decisions;
+import org.openchs.web.request.rules.response.RuleResponseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,10 +38,10 @@ public class DecisionRuleValidation {
 
     public RuleFailureLog generateRuleFailureLog(RequestEntityWrapper requestEntityWrapper, String source, String entityType, String entityUuid){
         RuleFailureLog ruleFailureLog = new RuleFailureLog();
-        ruleFailureLog.setForm_id(requestEntityWrapper.getRule().getFormUuid());
-        ruleFailureLog.setRule_type(requestEntityWrapper.getRule().getRuleType());
-        ruleFailureLog.setEntity_id(entityUuid);
-        ruleFailureLog.setEntity_type(entityType);
+        ruleFailureLog.setFormId(requestEntityWrapper.getRule().getFormUuid());
+        ruleFailureLog.setRuleType(requestEntityWrapper.getRule().getRuleType());
+        ruleFailureLog.setEntityId(entityUuid);
+        ruleFailureLog.setEntityType(entityType);
         ruleFailureLog.setSource(source);
         return ruleFailureLog;
     }
@@ -68,12 +73,12 @@ public class DecisionRuleValidation {
             if(concept != null)
                 return true;
         } catch (Exception e) {
-            ruleFailureLog.setError_message(e.getMessage() != null ? e.getMessage() : "");
+            ruleFailureLog.setErrorMessage(e.getMessage() != null ? e.getMessage() : "");
             ruleFailureLog.setStacktrace(e.getStackTrace().toString());
+            ruleFailureLog.setUuid(UUID.randomUUID().toString());
             ruleFailureLogRepository.save(ruleFailureLog);
             return false;
         }
         return false;
     }
-
 }

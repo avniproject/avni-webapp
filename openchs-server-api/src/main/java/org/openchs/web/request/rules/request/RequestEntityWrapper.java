@@ -4,7 +4,16 @@ public class RequestEntityWrapper {
     private IndividualRequestEntity individualRequestEntity;
     private ProgramEncounterRequestEntity programEncounterRequestEntity;
     private ProgramEnrolmentRequestEntity programEnrolmentRequestEntity;
+    private EncounterRequestEntity encounterRequestEntity;
     private RuleRequestEntity rule;
+
+    public EncounterRequestEntity getEncounterRequestEntity() {
+        return encounterRequestEntity;
+    }
+
+    public void setEncounterRequestEntity(EncounterRequestEntity encounterRequestEntity) {
+        this.encounterRequestEntity = encounterRequestEntity;
+    }
 
     public ProgramEnrolmentRequestEntity getProgramEnrolmentRequestEntity() {
         return programEnrolmentRequestEntity;

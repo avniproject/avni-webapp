@@ -1,9 +1,22 @@
 package org.openchs.web.request.rules.response;
 
+import org.openchs.web.request.ObservationContract;
+
+import java.util.List;
+
 public class RuleResponseEntity{
     private String status;
     private DecisionResponseEntity data;
+    private List<ObservationContract> observation;
     private String message;
+
+    public List<ObservationContract> getObservation() {
+        return observation;
+    }
+
+    public void setObservation(List<ObservationContract> observation) {
+        this.observation = observation;
+    }
 
     public void setStatus(String status){
         this.status = status;

@@ -25,8 +25,6 @@ public class IndividualRequestEntity {
 
     private List<ObservationRequestEntity> observations;
 
-//    private RuleRequestEntity rule;
-
     public void setUuid(String uuid){
         this.uuid = uuid;
     }
@@ -91,12 +89,4 @@ public class IndividualRequestEntity {
     public boolean isVoided() {
         return voided;
     }
-
-//    public RuleRequestEntity getRule() {
-//        return rule;
-//    }
-//
-//    public void setRule(RuleRequestEntity rule) {
-//        this.rule = rule;
-//    }
 }

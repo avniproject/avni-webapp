@@ -9,12 +9,14 @@ import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.web.RestClient;
 import org.openchs.web.request.RuleRequest;
+import org.openchs.web.request.rules.RulesContractWrapper.EncounterContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.ProgramEncounterContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
-import org.openchs.web.request.rules.constructWrappers.IndividualConstruct;
-import org.openchs.web.request.rules.constructWrappers.ProgramEncounterConstruct;
-import org.openchs.web.request.rules.constructWrappers.ProgramEnrolmentConstruct;
+import org.openchs.web.request.rules.constructWrappers.IndividualConstructionService;
+import org.openchs.web.request.rules.constructWrappers.ObservationConstructionService;
+import org.openchs.web.request.rules.constructWrappers.ProgramEncounterConstructionService;
+import org.openchs.web.request.rules.constructWrappers.ProgramEnrolmentConstructionService;
 import org.openchs.web.request.rules.request.RequestEntityWrapper;
 import org.openchs.web.request.rules.response.RuleResponseEntity;
 import org.openchs.web.request.rules.validateRules.DecisionRuleValidation;
@@ -43,11 +45,11 @@ public class RuleService {
     private final Map<RuledEntityType, CHSRepository> ruledEntityRepositories;
     private final ProgramEnrolmentRepository programEnrolmentRepository;
     private final RestClient restClient;
-    private final IndividualConstruct individualConstruct;
+    private final IndividualConstructionService individualConstructionService;
     private final DecisionRuleValidation decisionRuleValidation;
-    private final ProgramEncounterConstruct programEncounterConstruct;
-    private final ProgramEnrolmentConstruct programEnrolmentConstruct;
-
+    private final ProgramEncounterConstructionService programEncounterConstructionService;
+    private final ProgramEnrolmentConstructionService programEnrolmentConstructionService;
+    private final ObservationConstructionService observationConstructionService;
 
     @Autowired
     public RuleService(RuleDependencyRepository ruleDependencyRepository,
@@ -57,10 +59,11 @@ public class RuleService {
                        EncounterTypeRepository encounterTypeRepository,
                        ProgramEnrolmentRepository programEnrolmentRepository,
                        RestClient restClient,
-                       IndividualConstruct individualConstruct,
+                       IndividualConstructionService individualConstructionService,
                        DecisionRuleValidation decisionRuleValidation,
-                       ProgramEncounterConstruct programEncounterConstruct,
-                       ProgramEnrolmentConstruct programEnrolmentConstruct
+                       ProgramEncounterConstructionService programEncounterConstructionService,
+                       ProgramEnrolmentConstructionService programEnrolmentConstructionService,
+                       ObservationConstructionService observationConstructionService
     ) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.ruleDependencyRepository = ruleDependencyRepository;
@@ -72,10 +75,11 @@ public class RuleService {
         }};
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.restClient = restClient;
-        this.individualConstruct = individualConstruct;
+        this.individualConstructionService = individualConstructionService;
         this.decisionRuleValidation = decisionRuleValidation;
-        this.programEncounterConstruct = programEncounterConstruct;
-        this.programEnrolmentConstruct = programEnrolmentConstruct;
+        this.programEncounterConstructionService = programEncounterConstructionService;
+        this.programEnrolmentConstructionService = programEnrolmentConstructionService;
+        this.observationConstructionService = observationConstructionService;
     }
 
     @Transactional
@@ -148,24 +152,44 @@ public class RuleService {
     }
 
     public RuleResponseEntity decisionRuleProgramEnrolmentWorkFlow(RequestEntityWrapper requestEntityWrapper){
-        ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstruct.constructProgramEnrolmentContract(requestEntityWrapper.getProgramEnrolmentRequestEntity());
+        ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = programEnrolmentConstructionService.constructProgramEnrolmentContract(requestEntityWrapper.getProgramEnrolmentRequestEntity());
         programEnrolmentContractWrapper.setRule(requestEntityWrapper.getRule());
         RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Program Enrolment",requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid());
-        return createHttpHeaderAndSendRequest("/api/program_enrolment_rule",programEnrolmentContractWrapper,ruleFailureLog);
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/program_enrolment_rule",programEnrolmentContractWrapper,ruleFailureLog);
+        ruleResponseEntity.getData().setEnrolmentDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEnrolmentDecisions(),ruleFailureLog));
+        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEnrolmentDecisions()));
+        return ruleResponseEntity;
+    }
+
+    public RuleResponseEntity decisionRuleEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper){
+        EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(requestEntityWrapper.getEncounterRequestEntity());
+        encounterContractWrapper.setRule(requestEntityWrapper.getRule());
+        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Encounter",requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid());
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounter_rule",encounterContractWrapper,ruleFailureLog);
+        ruleResponseEntity.getData().setEnrolmentDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEnrolmentDecisions(),ruleFailureLog));
+        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEnrolmentDecisions()));
+        return ruleResponseEntity;
     }
 
     public RuleResponseEntity decisionRuleProgramEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper){
-        ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstruct.constructProgramEncounterContract(requestEntityWrapper.getProgramEncounterRequestEntity());
+        ProgramEncounterContractWrapper programEncounterContractWrapper = programEncounterConstructionService.constructProgramEncounterContract(requestEntityWrapper.getProgramEncounterRequestEntity());
         programEncounterContractWrapper.setRule(requestEntityWrapper.getRule());
         RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Program Encounter",requestEntityWrapper.getProgramEncounterRequestEntity().getUuid());
-        return createHttpHeaderAndSendRequest("/api/program_encounter_rule",programEncounterContractWrapper,ruleFailureLog);
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/program_encounter_rule",programEncounterContractWrapper,ruleFailureLog);
+        ruleResponseEntity.getData().setEncounterDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(),ruleFailureLog));
+        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEncounterDecisions()));
+        return ruleResponseEntity;
     }
 
     public RuleResponseEntity decisionRuleIndividualWorkFlow(RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
-        IndividualContractWrapper individualContractWrapper = individualConstruct.constructIndividualContract(requestEntityWrapper.getIndividualRequestEntity());
+        IndividualContractWrapper individualContractWrapper = individualConstructionService.constructIndividualContract(requestEntityWrapper.getIndividualRequestEntity());
         individualContractWrapper.setRule(requestEntityWrapper.getRule());
         RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Individual",requestEntityWrapper.getIndividualRequestEntity().getUuid());
-        return createHttpHeaderAndSendRequest("/api/individual_rule",individualContractWrapper,ruleFailureLog);
+        RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/individual_rule",individualContractWrapper,ruleFailureLog);
+        ruleResponseEntity.getData().setRegistrationDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getRegistrationDecisions(),ruleFailureLog));
+        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getRegistrationDecisions()));
+
+        return ruleResponseEntity;
     }
 
     private RuleResponseEntity createHttpHeaderAndSendRequest(String url, Object contractObject,RuleFailureLog ruleFailureLog){
@@ -175,7 +199,6 @@ public class RuleService {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
             String decisionResponse = restClient.post(url,contractObject,httpHeaders);
             RuleResponseEntity ruleResponseEntity = mapper.readValue(decisionResponse, RuleResponseEntity.class);
-            ruleResponseEntity.getData().setRegistrationDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getRegistrationDecisions(),ruleFailureLog));
             return ruleResponseEntity;
         }
         catch (Exception e){
@@ -185,4 +208,6 @@ public class RuleService {
             return ruleResponseEntity;
         }
     }
+
+
 }

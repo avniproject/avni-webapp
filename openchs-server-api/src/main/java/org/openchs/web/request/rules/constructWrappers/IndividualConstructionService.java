@@ -1,6 +1,5 @@
 package org.openchs.web.request.rules.constructWrappers;
 
-import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.GenderRepository;
 import org.openchs.dao.LocationRepository;
 import org.openchs.dao.SubjectTypeRepository;
@@ -20,24 +19,24 @@ import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
 @Service
-public class IndividualConstruct {
+public class IndividualConstructionService {
     private final Logger logger;
     private final GenderRepository genderRepository;
     private final SubjectTypeRepository subjectTypeRepository;
     private final LocationRepository locationRepository;
-    private final ObservationConstruct observationConstruct;
+    private final ObservationConstructionService observationConstructionService;
 
     @Autowired
-    public IndividualConstruct(
+    public IndividualConstructionService(
                        GenderRepository genderRepository,
                        SubjectTypeRepository subjectTypeRepository,
                        LocationRepository locationRepository,
-                       ObservationConstruct observationConstruct) {
+                       ObservationConstructionService observationConstructionService) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.genderRepository = genderRepository;
         this.subjectTypeRepository = subjectTypeRepository;
         this.locationRepository = locationRepository;
-        this.observationConstruct = observationConstruct;
+        this.observationConstructionService = observationConstructionService;
     }
 
 
@@ -57,7 +56,7 @@ public class IndividualConstruct {
             individualContract.setLowestAddressLevel(constructAddressLevel(individualRequestEntity.getAddressLevelUUID()));
         }
         if(individualRequestEntity.getObservations() != null){
-            individualContract.setObservations(individualRequestEntity.getObservations().stream().map( x -> observationConstruct.constructObservation(x)).collect(Collectors.toList()));
+            individualContract.setObservations(individualRequestEntity.getObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
         return individualContract;
     }
@@ -86,9 +85,7 @@ public class IndividualConstruct {
 
     private GenderContract constructGenderContract(String genderUuid) {
         Gender gender = genderRepository.findByUuid(genderUuid);
-        GenderContract genderContract = new GenderContract();
-        genderContract.setName(gender.getName());
-        genderContract.setUuid(gender.getUuid());
+        GenderContract genderContract = new GenderContract(gender.getUuid(),gender.getName());
         return genderContract;
     }
 

@@ -76,6 +76,9 @@ public class RuleController {
                 case "programenrolment":
                     ruleResponseEntity = ruleService.decisionRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
                     break;
+                case "encounter":
+                    ruleResponseEntity = ruleService.decisionRuleEncounterWorkFlow(requestEntityWrapper);
+                    break;
             }
         }
         if(ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {

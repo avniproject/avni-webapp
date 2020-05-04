@@ -1,15 +1,11 @@
 package org.openchs.web.request.rules.constructWrappers;
 
 import org.openchs.dao.ConceptRepository;
-import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.*;
-import org.openchs.service.IndividualService;
 import org.openchs.web.request.*;
 import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.LowestAddressLevelContract;
-import org.openchs.web.request.rules.RulesContractWrapper.ProgramEncounterContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
 import org.openchs.web.request.rules.request.ProgramEnrolmentRequestEntity;
 import org.slf4j.Logger;
@@ -24,19 +20,19 @@ import java.util.stream.Collectors;
 import static java.util.Collections.singletonList;
 
 @Service
-public class ProgramEnrolmentConstruct {
+public class ProgramEnrolmentConstructionService {
     private final Logger logger;
-    private final ObservationConstruct observationConstruct;
+    private final ObservationConstructionService observationConstructionService;
     private final IndividualRepository individualRepository;
     private final ConceptRepository conceptRepository;
 
     @Autowired
-    public ProgramEnrolmentConstruct(
-            ObservationConstruct observationConstruct,
+    public ProgramEnrolmentConstructionService(
+            ObservationConstructionService observationConstructionService,
             IndividualRepository individualRepository,
             ConceptRepository conceptRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
-        this.observationConstruct = observationConstruct;
+        this.observationConstructionService = observationConstructionService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
     }
@@ -49,17 +45,18 @@ public class ProgramEnrolmentConstruct {
         programEnrolmentContractWrapper.setUuid(programEnrolmentRequestEntity.getUuid());
         programEnrolmentContractWrapper.setVoided(programEnrolmentRequestEntity.isVoided());
         if(programEnrolmentRequestEntity.getObservations() != null){
-            programEnrolmentContractWrapper.setObservations(programEnrolmentRequestEntity.getObservations().stream().map( x -> observationConstruct.constructObservation(x)).collect(Collectors.toList()));
+            programEnrolmentContractWrapper.setObservations(programEnrolmentRequestEntity.getObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
         if(programEnrolmentRequestEntity.getProgramExitObservations() != null){
-            programEnrolmentContractWrapper.setExitObservations(programEnrolmentRequestEntity.getProgramExitObservations().stream().map( x -> observationConstruct.constructObservation(x)).collect(Collectors.toList()));
+            programEnrolmentContractWrapper.setExitObservations(programEnrolmentRequestEntity.getProgramExitObservations().stream().map( x -> observationConstructionService.constructObservation(x)).collect(Collectors.toList()));
         }
-        programEnrolmentContractWrapper.setSubject(getSubjectInfo(programEnrolmentRequestEntity.getIndividualUUID()));
+        if(programEnrolmentRequestEntity.getIndividualUUID() != null) {
+            programEnrolmentContractWrapper.setSubject(getSubjectInfo(individualRepository.findByUuid(programEnrolmentRequestEntity.getIndividualUUID())));
+        }
         return programEnrolmentContractWrapper;
     }
 
-    public IndividualContractWrapper getSubjectInfo(String individualUuid) {
-        Individual individual = individualRepository.findByUuid(individualUuid);
+    public IndividualContractWrapper getSubjectInfo(Individual individual) {
         IndividualContractWrapper individualContractWrapper = new IndividualContractWrapper();
         if (individual == null)  {
             return null;
@@ -99,9 +96,7 @@ public class ProgramEnrolmentConstruct {
     }
 
     private GenderContract constructGenderContract(Gender gender) {
-        GenderContract genderContract = new GenderContract();
-        genderContract.setName(gender.getName());
-        genderContract.setUuid(gender.getUuid());
+        GenderContract genderContract = new GenderContract(gender.getUuid(),gender.getName());
         return genderContract;
     }
 
