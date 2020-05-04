@@ -52,7 +52,7 @@ const NewProgramVisit = ({ match, x, ...props }) => {
     const plannedVisit = new ProgramEncounter();
     plannedVisit.uuid = planEncounter.uuid;
     plannedVisit.encounterType = planEncounter.encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
-    plannedVisit.encounterDateTime = moment().toDate(); //new Date(); or planEncounter.encounterDateTime
+    plannedVisit.encounterDateTime = new Date(); // moment().toDate(); or planEncounter.encounterDateTime
     plannedVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
     plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
     plannedVisit.name = planEncounter.name;

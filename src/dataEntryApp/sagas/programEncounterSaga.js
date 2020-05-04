@@ -4,7 +4,9 @@ import {
   setProgramEnrolment,
   setUnplanProgramEncounters,
   setProgramEncounterForm,
-  setProgramEncounter
+  setProgramEncounter,
+  saveProgramEncounterComplete,
+  setValidationResults
 } from "../reducers/programEncounterReducer";
 import api from "../api";
 import {
@@ -69,6 +71,10 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
   const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
 
+  //Get program enrolment
+  const programEnrolmentDateTime = yield select(
+    state => state.dataEntry.programEncounterReducer.programEnrolment.enrolmentDateTime
+  );
   //Creating New programEncounter Object for Planned Encounter
   const plannedEncounters = yield select(
     state => state.dataEntry.programEncounterReducer.programEnrolment.programEncounters
@@ -89,6 +95,7 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
     plannedVisit.name = planEncounter.name;
     const programEnrolment = new ProgramEnrolment();
     programEnrolment.uuid = enrolmentUuid;
+    programEnrolment.enrolmentDateTime = new Date(programEnrolmentDateTime);
     plannedVisit.programEnrolment = programEnrolment;
     plannedVisit.observations = [];
     yield put.resolve(setProgramEncounter(plannedVisit));
@@ -118,6 +125,7 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
     unplannedVisit.encounterDateTime = new Date();
     const programEnrolment = new ProgramEnrolment();
     programEnrolment.uuid = enrolmentUuid;
+    programEnrolment.enrolmentDateTime = new Date(programEnrolmentDateTime);
     unplannedVisit.programEnrolment = programEnrolment;
     unplannedVisit.observations = [];
     console.log("unplannedVisit object from saga", unplannedVisit);
@@ -132,7 +140,9 @@ function* updateEncounterObsWatcher() {
 export function* updateEncounterObsWorker({ formElement, value }) {
   const state = yield select();
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
-  // const validationResults = yield select(state => state.dataEntry.registration.validationResults);
+  const validationResults = yield select(
+    state => state.dataEntry.programEncounterReducer.validationResults
+  );
   console.log("Before Program Enrolment Observations", programEncounter.observations);
   programEncounter.observations = updateObservations(
     programEncounter.observations,
@@ -143,11 +153,11 @@ export function* updateEncounterObsWorker({ formElement, value }) {
 
   //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
   yield put(setProgramEncounter(programEncounter));
-  // yield put(
-  //   setValidationResults(
-  //     validate(formElement, value, programEnrolment.observations, validationResults)
-  //   )
-  // );
+  yield put(
+    setValidationResults(
+      validate(formElement, value, programEncounter.observations, validationResults)
+    )
+  );
 }
 
 function updateObservations(observations, formElement, value) {
@@ -176,6 +186,29 @@ function updateObservations(observations, formElement, value) {
   return observationHolder.observations;
 }
 
+function validate(formElement, value, observations, validationResults) {
+  let isNullForMultiselect = false;
+  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
+    const observationHolder = new ObservationsHolder(observations);
+    const answers =
+      observationHolder.findObservation(formElement.concept) &&
+      observationHolder.findObservation(formElement.concept).getValue();
+
+    isNullForMultiselect = _.isNil(answers);
+  }
+
+  const validationResult = formElement.validate(isNullForMultiselect ? null : value);
+
+  _.remove(
+    validationResults,
+    existingValidationResult =>
+      existingValidationResult.formIdentifier === validationResult.formIdentifier
+  );
+
+  validationResults.push(validationResult);
+  return validationResults;
+}
+
 export function* saveProgramEncounterWorker() {
   const state = yield select();
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
@@ -186,7 +219,7 @@ export function* saveProgramEncounterWorker() {
   //sessionStorage.removeItem("programEnrolment");
 
   yield call(api.saveProgramEncouter, resource);
-  // yield put(saveProgramComplete());
+  yield put(saveProgramEncounterComplete(true));
 }
 
 export function* saveProgramEncounterWatcher() {

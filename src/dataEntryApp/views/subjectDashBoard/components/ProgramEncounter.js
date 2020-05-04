@@ -8,7 +8,10 @@ import {
   getProgramEncounterForm,
   getProgramEnrolment,
   getUnplanProgramEncounters,
-  setProgramEncounter
+  setProgramEncounter,
+  saveProgramEncounterComplete,
+  updateProgramEncounter,
+  setValidationResults
 } from "../../../reducers/programEncounterReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -18,6 +21,7 @@ import ProgramEncounterForm from "./ProgramEncounterForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
+// import { ProgramEncounter } from "avni-models";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -60,6 +64,10 @@ const ProgramEncounter = ({
   getUnplanProgramEncounters,
   programEnrolment,
   setProgramEncounter,
+  saveProgramEncounterComplete,
+  updateProgramEncounter,
+  validationResults,
+  setValidationResults,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -69,6 +77,7 @@ const ProgramEncounter = ({
   useEffect(() => {
     (async function fetchData() {
       setProgramEncounter();
+      saveProgramEncounterComplete(false);
       //For Planned Encounters List : To get list of ProgramEncounters from api
       await getProgramEnrolment(enrolmentUuid);
       //For Unplanned Encounters List : To get possible encounters from FormMapping
@@ -82,6 +91,10 @@ const ProgramEncounter = ({
   console.log("Inside new page >> programEncounter ..printing states");
   console.log(props.x);
 
+  const validationResultForEncounterDate = validationResults.find(
+    vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME"
+  );
+  console.log("validationResultForEncounterDate", validationResultForEncounterDate);
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -101,10 +114,17 @@ const ProgramEncounter = ({
                       id="date-picker-dialog"
                       format="MM/dd/yyyy"
                       name="visitDateTime"
-                      value={new Date()}
+                      value={new Date(programEncounter.encounterDateTime)}
+                      // error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
+                      // helperText={t(subjectRegErrors.REGISTRATION_DATE)}
                       // value={new Date(programEnrolment.enrolmentDateTime)}
                       onChange={date => {
-                        //updateProgramEnrolment("enrolmentDateTime", new Date(date));
+                        updateProgramEncounter("encounterDateTime", new Date(date));
+                        programEncounter.encounterDateTime = date;
+                        validationResults.push(programEncounter.validate()[1]);
+                        //console.log(validationResults.push(programEncounter.validate()[1]));
+                        setValidationResults(validationResults);
+                        console.log("validationResults", validationResults);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -130,14 +150,18 @@ const mapStateToProps = state => ({
   unplannedEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters,
   x: state,
   //subject: state.dataEntry.subjectProfile.subjectProfile,
-  programEncounter: state.dataEntry.programEncounterReducer.programEncounter
+  programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
+  validationResults: state.dataEntry.programEncounterReducer.validationResults
 });
 
 const mapDispatchToProps = {
   getProgramEncounterForm,
   getProgramEnrolment,
   getUnplanProgramEncounters,
-  setProgramEncounter
+  setProgramEncounter,
+  saveProgramEncounterComplete,
+  updateProgramEncounter,
+  setValidationResults
 };
 
 export default withRouter(
