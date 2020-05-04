@@ -10,8 +10,10 @@ import org.openchs.geo.Point;
 import org.openchs.projection.ProgramEnrolmentProjection;
 import org.openchs.service.ConceptService;
 import org.openchs.service.ObservationService;
+import org.openchs.service.ProgramEnrolmentService;
 import org.openchs.service.UserService;
 import org.openchs.util.S;
+import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.openchs.web.response.ProgramEnrolmentResponse;
@@ -48,9 +50,10 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     private final ProjectionFactory projectionFactory;
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
+    private final ProgramEnrolmentService programEnrolmentService;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ProjectionFactory projectionFactory, ConceptRepository conceptRepository, ConceptService conceptService) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ProjectionFactory projectionFactory, ConceptRepository conceptRepository, ConceptService conceptService,ProgramEnrolmentService programEnrolmentService) {
         this.programRepository = programRepository;
         this.individualRepository = individualRepository;
         this.programOutcomeRepository = programOutcomeRepository;
@@ -60,6 +63,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         this.projectionFactory = projectionFactory;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
+        this.programEnrolmentService = programEnrolmentService;
     }
 
     @RequestMapping(value = "/api/enrolments", method = RequestMethod.GET)
@@ -149,6 +153,17 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @ResponseBody
     public ProgramEnrolmentProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(ProgramEnrolmentProjection.class, programEnrolmentRepository.findByUuid(uuid));
+    }
+
+    @GetMapping("/web/programEnrolments/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<EnrolmentContract> getProgramEnrolmentByUuid(@PathVariable String uuid) {
+        EnrolmentContract enrolmentContract = programEnrolmentService.constructEnrolments(uuid);
+        if (enrolmentContract == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(enrolmentContract);
     }
 
     @Override
