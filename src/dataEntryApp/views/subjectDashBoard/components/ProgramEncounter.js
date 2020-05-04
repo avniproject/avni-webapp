@@ -97,6 +97,7 @@ const ProgramEncounter = ({
     validationResults &&
     validationResults.find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
   console.log("validationResultForEncounterDate", validationResultForEncounterDate);
+
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -118,16 +119,12 @@ const ProgramEncounter = ({
                       name="visitDateTime"
                       value={new Date(programEncounter.encounterDateTime)}
                       error={
-                        !_.isEmpty(validationResults) &&
-                        !validationResults.find(vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME")
-                          .success
+                        !_.isNil(validationResultForEncounterDate) &&
+                        !validationResultForEncounterDate.success
                       }
                       helperText={
-                        !_.isEmpty(validationResults) &&
-                        t(
-                          validationResults.find(vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME")
-                            .messageKey
-                        )
+                        !_.isNil(validationResultForEncounterDate) &&
+                        t(validationResultForEncounterDate.messageKey)
                       }
                       onChange={date => {
                         updateProgramEncounter("encounterDateTime", new Date(date));

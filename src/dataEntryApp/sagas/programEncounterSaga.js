@@ -96,7 +96,7 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
     encounterType.operationalEncounterTypeName =
       planEncounter.encounterType.operationalEncounterTypeName;
     encounterType.uuid = planEncounter.encounterType.uuid;
-    console.log("new", encounterType);
+
     plannedVisit.uuid = planEncounter.uuid;
     plannedVisit.encounterType = encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
     plannedVisit.encounterDateTime = moment().toDate(); //new Date(); or planEncounter.encounterDateTime
@@ -130,13 +130,14 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
   if (unplanEncounter) {
     let unplannedVisit = new ProgramEncounter();
     let encounterType = new EncounterType();
-    encounterType.id = unplanEncounter.encounterType.id;
-    encounterType.name = unplanEncounter.encounterType.name;
-    encounterType.operationalEncounterTypeName =
-      unplanEncounter.encounterType.operationalEncounterTypeName;
-    encounterType.uuid = unplanEncounter.encounterType.uuid;
+    encounterType.displayName = unplanEncounterType.displayName;
+    encounterType.name = unplanEncounterType.name;
+    encounterType.operationalEncounterTypeName = unplanEncounterType.operationalEncounterTypeName;
+    encounterType.uuid = unplanEncounterType.uuid;
+    encounterType.voided = unplanEncounterType.voided;
+
     unplannedVisit.uuid = General.randomUUID();
-    unplannedVisit.encounterType = unplanEncounterType;
+    unplannedVisit.encounterType = encounterType;
     unplannedVisit.name = unplannedVisit.encounterType.name;
     unplannedVisit.encounterDateTime = new Date();
     const programEnrolment = new ProgramEnrolment();
@@ -144,7 +145,6 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
     programEnrolment.enrolmentDateTime = new Date(programEnrolmentDateTime);
     unplannedVisit.programEnrolment = programEnrolment;
     unplannedVisit.observations = [];
-    console.log("unplannedVisit object from saga", unplannedVisit);
     yield put.resolve(setProgramEncounter(unplannedVisit));
   }
 }
