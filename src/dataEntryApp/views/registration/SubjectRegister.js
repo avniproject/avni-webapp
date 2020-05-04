@@ -109,7 +109,10 @@ const useStyles = makeStyles(theme => ({
     padding: 25
   },
   errmsg: {
-    color: "red"
+    color: "#f44336",
+    "font-family": "Roboto",
+    "font-weight": 400,
+    "font-size": "0.75rem"
   },
   nextBtn: {
     color: "white",
@@ -328,50 +331,8 @@ const DefaultPage = props => {
                       }}
                     />
                     <LineBreak num={1} />
-                    {/* <label className={classes.villagelabel}>{t("Village")}</label>
-                    <LocationAutosuggest
-                      selectedVillage={props.subject.lowestAddressLevel.name}
-                      errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
-                      onSelect={location => {
-                        props.updateSubject(
-                          "lowestAddressLevel",
-                          AddressLevel.create({
-                            uuid: location.uuid,
-                            title: location.title,
-                            level: location.level,
-                            typeString: location.typeString
-                          })
-                        );
-                        props.subject.lowestAddressLevel = AddressLevel.create({
-                          uuid: location.uuid,
-                          title: location.title,
-                          level: location.level,
-                          typeString: location.typeString
-                        });
-                        setValidationResultToError(props.subject.validateAddress());
-                      }}
-                      //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
-                      //   setValidationResultToError(props.subject.validateAddress());
-                      // }
-
-                      // }
-                      data={props}
-                    /> */}
-
-                    {/* <CodedFormElement
-                      groupName={t("Address")}
-                      items={sortBy(props.addressLevelTypes, "name")}
-                      isChecked={item =>
-                        (item.id && get(props, "subject.lowestAddressType.id") === item.id) ||
-                        (item.name && get(props, "subject.lowestAddressLevel.type") === item.name)
-                      }
-                      // isChecked={item =>
-                      //   (item.name && get(props, "subject.lowestAddressLevel.type") === item.name)
-                      // }
-                      onChange={selected => props.selectedAddressLevelType("lowestAddressType", selected)}
-                    /> */}
                     <RadioButtonsGroup
-                      label={"Address"}
+                      label={t("Address")}
                       items={props.addressLevelTypes.map(a => ({ id: a.id, name: a.name }))}
                       value={props.selectedAddressLevelType.id}
                       onChange={item => props.selectAddressLevelType(item)}
@@ -410,6 +371,11 @@ const DefaultPage = props => {
                             typeId={props.selectedAddressLevelType.id}
                           />
                         </div>
+                      )}
+                      {subjectRegErrors.LOWEST_ADDRESS_LEVEL && (
+                        <span className={classes.errmsg}>
+                          {t(subjectRegErrors.LOWEST_ADDRESS_LEVEL)}
+                        </span>
                       )}
                     </div>
                   </React.Fragment>

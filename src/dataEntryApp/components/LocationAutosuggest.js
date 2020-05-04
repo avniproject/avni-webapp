@@ -85,7 +85,6 @@ const LocationAutosuggest = ({
 
   const inputProps = {
     className: classes.rautosuggestinput,
-    // placeholder: `${t("Village")}` + " " + `${t("name")}`,
     placeholder: `${t(placeholder)}` + " " + `${t("name")}`,
     value,
     onChange
@@ -102,7 +101,7 @@ const LocationAutosuggest = ({
         inputProps={inputProps}
         onSuggestionSelected={onSuggestionSelected}
       />
-      {errorMsg && <span className={classes.errmsg}>{t(errorMsg)}</span>}
+      {/* {errorMsg && <span className={classes.errmsg}>{t(errorMsg)}</span>} */}
     </div>
   );
 };

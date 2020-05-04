@@ -16,13 +16,19 @@ export default function RadioButtonsGroup({ items, value, label, onChange }) {
     <FormControl component="fieldset">
       <FormLabel component="legend">{label}</FormLabel>
       <RadioGroup
+        row
         aria-label="addressTypes"
         name="addressTypes"
         value={value}
         onChange={handleChange}
       >
         {items.map((item, index) => (
-          <FormControlLabel key={index} value={item.id} control={<Radio />} label={item.name} />
+          <FormControlLabel
+            key={index}
+            value={item.id}
+            control={<Radio color="primary" />}
+            label={item.name}
+          />
         ))}
       </RadioGroup>
     </FormControl>
