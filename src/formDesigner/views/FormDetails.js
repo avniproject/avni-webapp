@@ -35,8 +35,8 @@ export const areValidFormatValuesValid = formElement => {
   return result;
 };
 
-function TabContainer(props) {
-  const typographyCSS = { padding: 8 * 3 };
+export function TabContainer({ skipStyles, ...props }) {
+  const typographyCSS = skipStyles ? {} : { padding: 8 * 3 };
   return (
     <Typography {...props} component="div" style={typographyCSS}>
       {props.children}
@@ -277,6 +277,15 @@ class FormDetails extends Component {
     );
   };
 
+  updateFormElementGroupRule = (index, value) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index]["rule"] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
   onUpdateDragDropOrder = (
     groupSourceIndex,
     sourceElementIndex,
@@ -378,7 +387,8 @@ class FormDetails extends Component {
           onToggleInlineConceptCodedAnswerAttribute: this.onToggleInlineConceptCodedAnswerAttribute,
           onDeleteInlineConceptCodedAnswerDelete: this.onDeleteInlineConceptCodedAnswerDelete,
           handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
-          onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer
+          onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer,
+          updateFormElementGroupRule: this.updateFormElementGroupRule
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
