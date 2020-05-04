@@ -146,7 +146,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 .withUUID(UUID.randomUUID().toString())
                 .build();
         formRepository.save(form);
-  
+
         return ResponseEntity.ok(form);
     }
 
@@ -266,6 +266,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             formElementGroupContract.setDisplay(formElementGroup.getDisplay());
             formElementGroupContract.setVoided(formElementGroup.isVoided());
             formElementGroupContract.setOrganisationId(formElementGroup.getOrganisationId());
+            formElementGroupContract.setRule(formElementGroup.getRule());
             formContract.addFormElementGroup(formElementGroupContract);
             formElementGroup.getFormElements().stream().sorted(Comparator.comparingDouble(FormElement::getDisplayOrder)).forEach(formElement -> {
                 FormElementContract formElementContract = new FormElementContract();

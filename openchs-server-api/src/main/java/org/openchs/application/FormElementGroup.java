@@ -31,6 +31,17 @@ public class FormElementGroup extends OrganisationAwareEntity {
     @JoinColumn(name = "form_id")
     private Form form;
 
+    @Column(name = "rule")
+    private String rule;
+
+    public String getRule() {
+        return rule;
+    }
+
+    public void setRule(String rule) {
+        this.rule = rule;
+    }
+
     public String getName() {
         return name;
     }

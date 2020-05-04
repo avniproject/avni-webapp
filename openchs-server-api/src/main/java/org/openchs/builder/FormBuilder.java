@@ -58,6 +58,7 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
                         .withUUID(formElementGroupContract.getUuid())
                         .withDisplay(formElementGroupContract.getDisplay())
                         .withDisplayOrder(formElementGroupContract.getDisplayOrder())
+                        .withRule(formElementGroupContract.getRule())
                         .withIsVoided(formElementGroupContract.isVoided())
                         .makeFormElements(formElementGroupContract.getFormElements())
                         .build();

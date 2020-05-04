@@ -15,6 +15,7 @@ public class FormElementGroupContract extends ReferenceDataContract {
     private String display;
     private List<FormElementContract> formElements;
     private Long organisationId;
+    private String rule;
 
     public FormElementGroupContract() {
     }
@@ -23,6 +24,14 @@ public class FormElementGroupContract extends ReferenceDataContract {
         super(uuid, userUUID, name);
         this.displayOrder = displayOrder;
         formElements = new ArrayList<>();
+    }
+
+    public String getRule() {
+        return rule;
+    }
+
+    public void setRule(String rule) {
+        this.rule = rule;
     }
 
     public Double getDisplayOrder() {
@@ -77,6 +86,7 @@ public class FormElementGroupContract extends ReferenceDataContract {
         fegContract.setDisplay(feg.getDisplay());
         fegContract.setDisplayOrder(feg.getDisplayOrder());
         fegContract.setVoided(feg.isVoided());
+        fegContract.setRule(feg.getRule());
         List<FormElementContract> feContracts = feg.getFormElements().stream()
                 .map(FormElementContract::fromFormElement)
                 .sorted(Comparator.comparingDouble(FormElementContract::getDisplayOrder))

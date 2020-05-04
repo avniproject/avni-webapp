@@ -43,6 +43,11 @@ public class FormElementGroupBuilder extends BaseBuilder<FormElementGroup, FormE
         return this;
     }
 
+    public FormElementGroupBuilder withRule(String rule) {
+        this.get().setRule(rule);
+        return this;
+    }
+
     private FormElement getExistingFormElement(String uuid) {
         return this.get().findFormElement(uuid);
     }

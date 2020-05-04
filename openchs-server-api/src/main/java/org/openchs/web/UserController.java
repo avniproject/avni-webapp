@@ -102,7 +102,7 @@ public class UserController {
             user.setUsername(userContract.getUsername());
             user = setUserAttributes(user, userContract);
 
-            cognitoService.createUser(user);
+            cognitoService.createUserIfNotExists(user);
             userService.save(user);
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             addToDefaultUserGroup(user);
@@ -123,6 +123,7 @@ public class UserController {
             userGroup.setGroup(groupRepository.findByNameAndOrganisationId("Everyone", user.getOrganisationId()));
             userGroup.setUser(user);
             userGroup.setUuid(UUID.randomUUID().toString());
+            userGroup.setOrganisationId(user.getOrganisationId());
             userGroupRepository.save(userGroup);
         }
     }
