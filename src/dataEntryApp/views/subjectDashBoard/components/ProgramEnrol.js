@@ -97,7 +97,7 @@ const ProgramEnrol = ({
               programEnrolment &&
               programEnrolment.enrolmentDateTime &&
               formType === "ProgramEnrolment" ? (
-                <ProgramEnrolmentForm>
+                <ProgramEnrolmentForm formType={formType}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}
@@ -119,7 +119,27 @@ const ProgramEnrol = ({
                   </MuiPickersUtilsProvider>
                 </ProgramEnrolmentForm>
               ) : enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
-                <ProgramEnrolmentForm />
+                <ProgramEnrolmentForm formType={formType}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      style={{ width: "30%" }}
+                      label="Exit Enrolment Date"
+                      margin="none"
+                      size="small"
+                      id="date-picker-dialog"
+                      format="MM/dd/yyyy"
+                      name="enrolmentDateTime"
+                      value={new Date(programEnrolment.enrolmentDateTime)}
+                      onChange={date => {
+                        updateProgramEnrolment("enrolmentDateTime", new Date(date));
+                      }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </ProgramEnrolmentForm>
               ) : (
                 <div>Loading</div>
               )}

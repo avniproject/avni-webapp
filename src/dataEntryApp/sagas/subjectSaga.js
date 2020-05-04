@@ -234,6 +234,8 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
     value
   );
 
+  //  console.log();
+
   //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
   yield put(setProgramEnrolment(programEnrolment));
   yield put(

@@ -1,4 +1,4 @@
-const prefix = "app/dataEntry/reducer/enrol/";
+const prefix = "app/dataEntry/reducer/exitEnrol/";
 
 export const types = {
   SET_ENROL_FORM: `${prefix}SET_ENROL_FORM`,
@@ -6,7 +6,6 @@ export const types = {
   UPDATE_SUBJECT: `${prefix}UPDATE_NEW_SUBJECT`,
   SAVE_SUBJECT: `${prefix}SAVE_SUBJECT`,
   SAVE_PROGRAM_ENROLMENT: `${prefix}SAVE_PROGRAM_ENROLMENT`,
-  UPDATE_OBS: `${prefix}UPDATE_OBS`,
   UPDATE_EXIT_OBS: `${prefix}UPDATE_EXIT_OBS`,
   SAVE_PROGRAM_COMPLETE: `${prefix}SAVE_PROGRAM_COMPLETE`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
@@ -36,12 +35,6 @@ export const onLoad = (subjectTypeName, programName, formType) => ({
 export const setEnrolForm = form => ({
   type: types.SET_ENROL_FORM,
   form
-});
-
-export const updateObs = (formElement, value) => ({
-  type: types.UPDATE_OBS,
-  formElement,
-  value
 });
 
 export const updateExitObs = (formElement, value) => ({
