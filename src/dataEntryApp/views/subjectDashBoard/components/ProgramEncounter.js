@@ -4,6 +4,7 @@ import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
+import _ from "lodash";
 import {
   getProgramEncounterForm,
   getProgramEnrolment,
@@ -116,24 +117,33 @@ const ProgramEncounter = ({
                       format="MM/dd/yyyy"
                       name="visitDateTime"
                       value={new Date(programEncounter.encounterDateTime)}
-                      // error={!_.isEmpty(subjectRegErrors.REGISTRATION_DATE)}
-                      // helperText={t(subjectRegErrors.REGISTRATION_DATE)}
-                      // value={new Date(programEnrolment.enrolmentDateTime)}
+                      error={
+                        !_.isEmpty(validationResults) &&
+                        !validationResults.find(vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME")
+                          .success
+                      }
+                      helperText={
+                        !_.isEmpty(validationResults) &&
+                        t(
+                          validationResults.find(vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME")
+                            .messageKey
+                        )
+                      }
                       onChange={date => {
                         updateProgramEncounter("encounterDateTime", new Date(date));
                         programEncounter.encounterDateTime = date;
-                        const validationResult = programEncounter.validate();
+                        _.remove(
+                          validationResults,
+                          vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME"
+                        );
                         const result = programEncounter
                           .validate()
                           .find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
-                        if (result) validationResults.push(result);
+                        result
+                          ? validationResults.push(result)
+                          : validationResults.push(...programEncounter.validate());
                         setValidationResults(validationResults);
-
-                        //programEncounter.validate()
-                        //validationResults.push(programEncounter.validate()[1]);
                         console.log("after", validationResults);
-                        //setValidationResults(validationResults);
-                        //console.log("validationResults", validationResults);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
