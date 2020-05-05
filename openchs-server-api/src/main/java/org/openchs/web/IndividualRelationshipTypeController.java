@@ -76,6 +76,7 @@ public class IndividualRelationshipTypeController {
         individualRelationshipType.setName(String.format("%s-%s", aToB.getName(), bToA.getName()));
         individualRelationshipType.setIndividualAIsToB(aToB);
         individualRelationshipType.setIndividualBIsToA(bToA);
+        individualRelationshipType.assignUUID();
         individualRelationshipTypeRepository.save(individualRelationshipType);
         return individualRelationshipType;
     }
