@@ -17,14 +17,16 @@ function RelationshipTypeCreate() {
   const [isIndividualSubjectTypeAvailable, setIsIndividualSubjectTypeAvailable] = useState(true);
 
   useEffect(() => {
+    let flag = false;
     http
       .get("/web/subjectType")
       .then(response => {
         response.data._embedded.subjectType.forEach(subjectType => {
           if (subjectType.name.toLowerCase() === "individual") {
-            setIsIndividualSubjectTypeAvailable(true);
+            flag = true;
           }
         });
+        setIsIndividualSubjectTypeAvailable(flag);
       })
       .catch(error => {});
 
@@ -36,7 +38,7 @@ function RelationshipTypeCreate() {
       .catch(error => {});
   }, []);
 
-  const onSubmitRelationship = () => {
+  const onSubmitRelationshipType = () => {
     if (!isEmpty(individualAIsToBRelation) && !isEmpty(individualBIsToARelation)) {
       http
         .post("/web/relationshipType", {
@@ -66,7 +68,7 @@ function RelationshipTypeCreate() {
         <Title title={"Create relationship type"} />
         {!isIndividualSubjectTypeAvailable && (
           <div style={{ color: "red", size: "10" }}>
-            Go to subject type and please create Individual named subject type{" "}
+            Please create an Individual subject type to enable this screen{" "}
           </div>
         )}
 
@@ -115,8 +117,8 @@ function RelationshipTypeCreate() {
         <br />
         <SaveComponent
           name="save"
-          onSubmit={() => onSubmitRelationship()}
-          disabledFlag={!setIsIndividualSubjectTypeAvailable}
+          onSubmit={() => onSubmitRelationshipType()}
+          disabledFlag={!isIndividualSubjectTypeAvailable}
           styleClass={{ marginTop: "10px" }}
         />
       </Box>
