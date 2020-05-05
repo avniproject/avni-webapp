@@ -100,7 +100,9 @@ public class IndividualRelationController {
                         relation.getId(),
                         relation.getName(),
                         relation.getUuid(),
-                        getGenders(relation));
+                        relation.isVoided(),
+                        getGenders(relation)
+                );
     }
 
     private void saveGenderMappings(IndividualRelationContract individualRelationContract, IndividualRelation relation) {

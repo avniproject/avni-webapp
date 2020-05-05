@@ -6,12 +6,15 @@ public class IndividualRelationContract {
     private Long id;
     private String name;
     private String uuid;
+    private boolean voided;
+
     private List<GenderContract> genders;
 
-    public IndividualRelationContract(Long id, String name, String uuid, List<GenderContract> genders) {
+    public IndividualRelationContract(Long id, String name, String uuid, boolean voided, List<GenderContract> genders) {
         this.id = id;
         this.name = name;
         this.uuid = uuid;
+        this.voided = voided;
         this.genders = genders;
     }
 
@@ -45,5 +48,13 @@ public class IndividualRelationContract {
 
     public void setGenders(List<GenderContract> genders) {
         this.genders = genders;
+    }
+
+    public boolean isVoided() {
+        return voided;
+    }
+
+    public void setVoided(boolean voided) {
+        this.voided = voided;
     }
 }
