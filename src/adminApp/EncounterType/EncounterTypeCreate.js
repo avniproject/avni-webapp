@@ -22,6 +22,7 @@ import {
   findProgramEncounterCancellationForms,
   findProgramEncounterForms
 } from "../domain/formMapping";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 
 const EncounterTypeCreate = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -136,126 +137,128 @@ const EncounterTypeCreate = props => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={"Create encounter type"} />
+        <DocumentationContainer>
+          <Title title={"Create encounter type"} />
 
-        <div className="container" style={{ float: "left" }}>
-          <form onSubmit={onSubmit}>
-            <TextField
-              id="name"
-              label="Name*"
-              autoComplete="off"
-              value={encounterType.name}
-              onChange={event => dispatch({ type: "name", payload: event.target.value })}
-            />
-            <div />
-            {nameValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty name is not allowed.
-              </FormLabel>
-            )}
-            {error !== "" && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                {error}
-              </FormLabel>
-            )}
-            <p />
-            <FormControl>
-              <InputLabel id="subjectType">Select Subject Type*</InputLabel>
-              <Select
-                label="Select subject type"
-                value={_.isEmpty(subjectT) ? "" : subjectT}
-                onChange={event => setSubjectT(event.target.value)}
-                style={{ width: "200px" }}
-                required
-              >
-                {subjectType.map(subject => {
-                  return (
-                    <MenuItem value={subject} key={subject.uuid}>
-                      {subject.name}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-            <div />
-            {subjectValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty subject type is not allowed.
-              </FormLabel>
-            )}
-            <p />
-            <FormControl>
-              <InputLabel id="program">Select Program</InputLabel>
-              <Select
-                label="Select Program"
-                value={_.isEmpty(programT) ? "" : programT}
-                onChange={event => updateProgram(event.target.value)}
-                style={{ width: "200px" }}
-                required
-              >
-                <MenuItem value={""}>Select Program</MenuItem>
-                {program.map(prog => {
-                  return (
-                    <MenuItem value={prog} key={prog.uuid}>
-                      {prog.name}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-            <div />
-            <p />
-            <SelectForm
-              label={"Select Encounter Form"}
-              value={_.get(encounterType, "programEncounterForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programEncounterForm",
-                  payload: selectedForm
-                })
-              }
-              formList={getEncounterForms()}
-            />
-            <p />
-            <SelectForm
-              label={"Select Encounter Cancellation Form"}
-              value={_.get(encounterType, "programEncounterCancellationForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programEncounterCancellationForm",
-                  payload: selectedForm
-                })
-              }
-              formList={getCancellationForms()}
-            />
-            <p />
-            <FormLabel>Encounter Eligibility Check Rule</FormLabel>
-            <Editor
-              value={
-                encounterType.encounterEligibilityCheckRule
-                  ? encounterType.encounterEligibilityCheckRule
-                  : ""
-              }
-              onValueChange={event =>
-                dispatch({ type: "encounterEligibilityCheckRule", payload: event })
-              }
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-            <p />
+          <div className="container">
+            <form onSubmit={onSubmit}>
+              <TextField
+                id="name"
+                label="Name*"
+                autoComplete="off"
+                value={encounterType.name}
+                onChange={event => dispatch({ type: "name", payload: event.target.value })}
+              />
+              <div />
+              {nameValidation && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  Empty name is not allowed.
+                </FormLabel>
+              )}
+              {error !== "" && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  {error}
+                </FormLabel>
+              )}
+              <p />
+              <FormControl>
+                <InputLabel id="subjectType">Select Subject Type*</InputLabel>
+                <Select
+                  label="Select subject type"
+                  value={_.isEmpty(subjectT) ? "" : subjectT}
+                  onChange={event => setSubjectT(event.target.value)}
+                  style={{ width: "200px" }}
+                  required
+                >
+                  {subjectType.map(subject => {
+                    return (
+                      <MenuItem value={subject} key={subject.uuid}>
+                        {subject.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+              <div />
+              {subjectValidation && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  Empty subject type is not allowed.
+                </FormLabel>
+              )}
+              <p />
+              <FormControl>
+                <InputLabel id="program">Select Program</InputLabel>
+                <Select
+                  label="Select Program"
+                  value={_.isEmpty(programT) ? "" : programT}
+                  onChange={event => updateProgram(event.target.value)}
+                  style={{ width: "200px" }}
+                  required
+                >
+                  <MenuItem value={""}>Select Program</MenuItem>
+                  {program.map(prog => {
+                    return (
+                      <MenuItem value={prog} key={prog.uuid}>
+                        {prog.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+              <div />
+              <p />
+              <SelectForm
+                label={"Select Encounter Form"}
+                value={_.get(encounterType, "programEncounterForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "programEncounterForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={getEncounterForms()}
+              />
+              <p />
+              <SelectForm
+                label={"Select Encounter Cancellation Form"}
+                value={_.get(encounterType, "programEncounterCancellationForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "programEncounterCancellationForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={getCancellationForms()}
+              />
+              <p />
+              <FormLabel>Encounter Eligibility Check Rule</FormLabel>
+              <Editor
+                value={
+                  encounterType.encounterEligibilityCheckRule
+                    ? encounterType.encounterEligibilityCheckRule
+                    : ""
+                }
+                onValueChange={event =>
+                  dispatch({ type: "encounterEligibilityCheckRule", payload: event })
+                }
+                highlight={code => highlight(code, languages.js)}
+                padding={10}
+                style={{
+                  fontFamily: '"Fira code", "Fira Mono", monospace',
+                  fontSize: 15,
+                  height: "auto",
+                  borderStyle: "solid",
+                  borderWidth: "1px"
+                }}
+              />
+              <p />
 
-            <Button color="primary" variant="contained" type="submit">
-              <i className="material-icons">save</i>Save
-            </Button>
-          </form>
-        </div>
+              <Button color="primary" variant="contained" type="submit">
+                <i className="material-icons">save</i>Save
+              </Button>
+            </form>
+          </div>
+        </DocumentationContainer>
       </Box>
       {alert && <Redirect to={"/appDesigner/encounterType/" + id + "/show"} />}
     </>

@@ -13,6 +13,7 @@ import AsyncSelect from "react-select/async";
 import { CustomFilter, Concept } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 
 export const CreateEditFilters = props => {
   const { t } = useTranslation();
@@ -286,7 +287,8 @@ export const CreateEditFilters = props => {
     <div>
       <Title title="Filter Config" />
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Box mr={80}>
+        <DocumentationContainer>
+          <Box mr={80}>
             <>
               <Grid container justify="flex-start">
                 <Grid item sm={12}>
@@ -388,7 +390,8 @@ export const CreateEditFilters = props => {
               </Box>
               <p />
             </>
-        </Box>
+          </Box>
+        </DocumentationContainer>
         {messageStatus.display && (
           <CustomizedSnackbar
             message={messageStatus.message}

@@ -11,6 +11,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { Title } from "react-admin";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 
 export const ChecklistDetails = () => {
   const [checklistDetails, setChecklistDetails] = React.useState();
@@ -61,39 +62,41 @@ export const ChecklistDetails = () => {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title={"Checklist"} />
-      <Box boxShadow={1} p={1.5}>
-        <div style={{ cursor: "pointer" }} onClick={() => setFoldCard(!foldCard)}>
-          {foldCard ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-          <FormLabel style={{ fontSize: "16px", color: "black" }}>Checklist</FormLabel>
-        </div>
-        {foldCard ? null : (
-          <JsonEditor
-            value={checklistDetails}
-            onChange={event => onChange(event)}
-            validationError={getValidationErrorByKey("JSON_ERROR")}
+      <DocumentationContainer>
+        <Title title={"Checklist"} />
+        <Box boxShadow={1} p={1.5}>
+          <div style={{ cursor: "pointer" }} onClick={() => setFoldCard(!foldCard)}>
+            {foldCard ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+            <FormLabel style={{ fontSize: "16px", color: "black" }}>Checklist</FormLabel>
+          </div>
+          {foldCard ? null : (
+            <JsonEditor
+              value={checklistDetails}
+              onChange={event => onChange(event)}
+              validationError={getValidationErrorByKey("JSON_ERROR")}
+            />
+          )}
+        </Box>
+        <Grid>
+          <ValidationError validationError={getValidationErrorByKey("SERVER_ERROR")} />
+        </Grid>
+        <Button
+          disabled={disableSave}
+          color="primary"
+          variant="contained"
+          onClick={() => onSave()}
+          style={{ marginTop: "14px" }}
+        >
+          <i className="material-icons">save</i>Save
+        </Button>
+        {success && (
+          <CustomizedSnackbar
+            message="Successfully saved the checklist"
+            getDefaultSnackbarStatus={setSuccess}
+            defaultSnackbarStatus={success}
           />
         )}
-      </Box>
-      <Grid>
-        <ValidationError validationError={getValidationErrorByKey("SERVER_ERROR")} />
-      </Grid>
-      <Button
-        disabled={disableSave}
-        color="primary"
-        variant="contained"
-        onClick={() => onSave()}
-        style={{ marginTop: "14px" }}
-      >
-        <i className="material-icons">save</i>Save
-      </Button>
-      {success && (
-        <CustomizedSnackbar
-          message="Successfully saved the checklist"
-          getDefaultSnackbarStatus={setSuccess}
-          defaultSnackbarStatus={success}
-        />
-      )}
+      </DocumentationContainer>
     </Box>
   );
 };

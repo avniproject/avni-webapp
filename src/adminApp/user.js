@@ -42,10 +42,13 @@ import {
   validateEmail,
   validatePhone
 } from "./UserHelper";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
   <Create {...props}>
-    <UserForm user={user} nameSuffix={organisation.usernameSuffix} />
+    <DocumentationContainer>
+      <UserForm user={user} nameSuffix={organisation.usernameSuffix} />
+    </DocumentationContainer>
   </Create>
 );
 

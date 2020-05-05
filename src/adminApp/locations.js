@@ -29,6 +29,7 @@ import { None } from "../common/components/utils";
 import { LocationSaveButton } from "./components/LocationSaveButton";
 import { store } from "../common/store";
 import { Title } from "./components/Title";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const LocationFilter = props => (
   <Filter {...props}>
@@ -221,7 +222,9 @@ export class LocationForm extends React.Component {
 
 export const LocationCreate = props => (
   <Create {...props} title="Add a new Location">
-    <LocationForm />
+    <DocumentationContainer>
+      <LocationForm />
+    </DocumentationContainer>
   </Create>
 );
 

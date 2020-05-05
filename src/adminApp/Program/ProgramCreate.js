@@ -19,6 +19,7 @@ import FormControl from "@material-ui/core/FormControl";
 import _ from "lodash";
 import SelectForm from "../SubjectType/SelectForm";
 import { findProgramEnrolmentForms, findProgramExitForms } from "../domain/formMapping";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 
 const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -95,140 +96,142 @@ const ProgramCreate = props => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={"Create program "} />
+        <DocumentationContainer>
+          <Title title={"Create program "} />
 
-        <div className="container" style={{ float: "left" }}>
-          <form onSubmit={onSubmit}>
-            <TextField
-              id="name"
-              label="Name"
-              autoComplete="off"
-              required
-              value={program.name}
-              onChange={event => dispatch({ type: "name", payload: event.target.value })}
-            />
-            <div />
-            {nameValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty name is not allowed.
-              </FormLabel>
-            )}
-            {error !== "" && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                {error}
-              </FormLabel>
-            )}
-            <p />
-            <FormControl>
-              <InputLabel id="subjectType">Select Subject Type *</InputLabel>
-              <Select
-                label="Select Subject Type *"
-                value={_.isEmpty(subjectT) ? "" : subjectT}
-                onChange={event => setSubjectT(event.target.value)}
-                style={{ width: "200px" }}
+          <div className="container" style={{ float: "left" }}>
+            <form onSubmit={onSubmit}>
+              <TextField
+                id="name"
+                label="Name"
+                autoComplete="off"
                 required
-              >
-                {subjectType.map(subject => {
-                  return (
-                    <MenuItem value={subject} key={subject.uuid}>
-                      {subject.name}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-            <div />
-            {subjectValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty subject type is not allowed.
-              </FormLabel>
-            )}
-            <p />
-            <FormLabel>Colour Picker</FormLabel>
-            <br />
+                value={program.name}
+                onChange={event => dispatch({ type: "name", payload: event.target.value })}
+              />
+              <div />
+              {nameValidation && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  Empty name is not allowed.
+                </FormLabel>
+              )}
+              {error !== "" && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  {error}
+                </FormLabel>
+              )}
+              <p />
+              <FormControl>
+                <InputLabel id="subjectType">Select Subject Type *</InputLabel>
+                <Select
+                  label="Select Subject Type *"
+                  value={_.isEmpty(subjectT) ? "" : subjectT}
+                  onChange={event => setSubjectT(event.target.value)}
+                  style={{ width: "200px" }}
+                  required
+                >
+                  {subjectType.map(subject => {
+                    return (
+                      <MenuItem value={subject} key={subject.uuid}>
+                        {subject.name}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+              <div />
+              {subjectValidation && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  Empty subject type is not allowed.
+                </FormLabel>
+              )}
+              <p />
+              <FormLabel>Colour Picker</FormLabel>
+              <br />
 
-            <ColorPicker
-              id="colour"
-              label="Colour"
-              style={colorPickerCSS}
-              color={program.colour}
-              onChange={color => dispatch({ type: "colour", payload: color.color })}
-            />
-            <br />
-            <TextField
-              id="programsubjectlabel"
-              label="Program Subject Label"
-              autoComplete="off"
-              value={program.programSubjectLabel}
-              onChange={event =>
-                dispatch({ type: "programSubjectLabel", payload: event.target.value })
-              }
-            />
-            <p />
-            <SelectForm
-              label={"Select Enrolment Form"}
-              value={_.get(program, "programEnrolmentForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programEnrolmentForm",
-                  payload: selectedForm
-                })
-              }
-              formList={findProgramEnrolmentForms(formList)}
-            />
-            <p />
-            <SelectForm
-              label={"Select Exit Form"}
-              value={_.get(program, "programExitForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programExitForm",
-                  payload: selectedForm
-                })
-              }
-              formList={findProgramExitForms(formList)}
-            />
-            <p />
-            <FormLabel>Enrolment Summary Rule</FormLabel>
-            <Editor
-              value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
-              onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-            <p />
-            <FormLabel>Enrolment Eligibility Check Rule</FormLabel>
-            <Editor
-              value={
-                program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""
-              }
-              onValueChange={event =>
-                dispatch({ type: "enrolmentEligibilityCheckRule", payload: event })
-              }
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-            <p />
+              <ColorPicker
+                id="colour"
+                label="Colour"
+                style={colorPickerCSS}
+                color={program.colour}
+                onChange={color => dispatch({ type: "colour", payload: color.color })}
+              />
+              <br />
+              <TextField
+                id="programsubjectlabel"
+                label="Program Subject Label"
+                autoComplete="off"
+                value={program.programSubjectLabel}
+                onChange={event =>
+                  dispatch({ type: "programSubjectLabel", payload: event.target.value })
+                }
+              />
+              <p />
+              <SelectForm
+                label={"Select Enrolment Form"}
+                value={_.get(program, "programEnrolmentForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "programEnrolmentForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={findProgramEnrolmentForms(formList)}
+              />
+              <p />
+              <SelectForm
+                label={"Select Exit Form"}
+                value={_.get(program, "programExitForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "programExitForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={findProgramExitForms(formList)}
+              />
+              <p />
+              <FormLabel>Enrolment Summary Rule</FormLabel>
+              <Editor
+                value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
+                onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
+                highlight={code => highlight(code, languages.js)}
+                padding={10}
+                style={{
+                  fontFamily: '"Fira code", "Fira Mono", monospace',
+                  fontSize: 15,
+                  height: "auto",
+                  borderStyle: "solid",
+                  borderWidth: "1px"
+                }}
+              />
+              <p />
+              <FormLabel>Enrolment Eligibility Check Rule</FormLabel>
+              <Editor
+                value={
+                  program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""
+                }
+                onValueChange={event =>
+                  dispatch({ type: "enrolmentEligibilityCheckRule", payload: event })
+                }
+                highlight={code => highlight(code, languages.js)}
+                padding={10}
+                style={{
+                  fontFamily: '"Fira code", "Fira Mono", monospace',
+                  fontSize: 15,
+                  height: "auto",
+                  borderStyle: "solid",
+                  borderWidth: "1px"
+                }}
+              />
+              <p />
 
-            <Button color="primary" variant="contained" type="submit">
-              <i className="material-icons">save</i>Save
-            </Button>
-          </form>
-        </div>
+              <Button color="primary" variant="contained" type="submit">
+                <i className="material-icons">save</i>Save
+              </Button>
+            </form>
+          </div>
+        </DocumentationContainer>
       </Box>
       {alert && <Redirect to={"/appDesigner/program/" + id + "/show"} />}
     </>

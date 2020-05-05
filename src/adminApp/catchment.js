@@ -23,6 +23,7 @@ import LocationUtils from "./LocationUtils";
 import _ from "lodash";
 import { Title } from "./components/Title";
 import Chip from "@material-ui/core/Chip";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const CatchmentFilter = props => (
   <Filter {...props}>
@@ -36,7 +37,9 @@ const TitleChip = props => {
 
 export const CatchmentCreate = props => (
   <Create {...props}>
-    <CatchmentForm />
+    <DocumentationContainer>
+      <CatchmentForm />
+    </DocumentationContainer>
   </Create>
 );
 

@@ -18,6 +18,7 @@ import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
 import { filter, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -503,96 +504,98 @@ class CreateEditConcept extends Component {
 
     return (
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={appBarTitle} />
-        <Grid container justify="flex-start">
-          <Grid item sm={12}>
-            <TextField
-              id="name"
-              label="Concept name"
-              value={this.state.name}
-              onChange={this.handleChange("name")}
-              style={classes.textField}
-              margin="normal"
-              autoComplete="off"
-            />
-            {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
-            {!this.state.error.isEmptyName &&
-              (this.state.error.nameError && (
-                <FormHelperText error>Same name concept already exist.</FormHelperText>
-              ))}
-          </Grid>
+        <DocumentationContainer>
+          <Title title={appBarTitle} />
+          <Grid container justify="flex-start">
+            <Grid item sm={12}>
+              <TextField
+                id="name"
+                label="Concept name"
+                value={this.state.name}
+                onChange={this.handleChange("name")}
+                style={classes.textField}
+                margin="normal"
+                autoComplete="off"
+              />
+              {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
+              {!this.state.error.isEmptyName &&
+                (this.state.error.nameError && (
+                  <FormHelperText error>Same name concept already exist.</FormHelperText>
+                ))}
+            </Grid>
 
-          <Grid item sm={3}>
-            {this.props.isCreatePage && (
-              <FormControl>
-                <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
-                <Select
+            <Grid item sm={3}>
+              {this.props.isCreatePage && (
+                <FormControl>
+                  <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
+                  <Select
+                    id="dataType"
+                    label="DataType"
+                    value={this.state.dataType}
+                    onChange={this.handleChange("dataType")}
+                    style={classes.select}
+                  >
+                    {this.state.dataTypes.map(datatype => {
+                      return (
+                        <MenuItem value={datatype} key={datatype}>
+                          {datatype}
+                        </MenuItem>
+                      );
+                    })}
+                  </Select>
+                  {this.state.error.dataTypeSelectionAlert && (
+                    <FormHelperText error>*Required</FormHelperText>
+                  )}
+                </FormControl>
+              )}
+              {!this.props.isCreatePage && (
+                <TextField
                   id="dataType"
                   label="DataType"
                   value={this.state.dataType}
-                  onChange={this.handleChange("dataType")}
                   style={classes.select}
-                >
-                  {this.state.dataTypes.map(datatype => {
-                    return (
-                      <MenuItem value={datatype} key={datatype}>
-                        {datatype}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-                {this.state.error.dataTypeSelectionAlert && (
-                  <FormHelperText error>*Required</FormHelperText>
-                )}
-              </FormControl>
-            )}
-            {!this.props.isCreatePage && (
-              <TextField
-                id="dataType"
-                label="DataType"
-                value={this.state.dataType}
-                style={classes.select}
-                disabled={true}
-              />
-            )}
+                  disabled={true}
+                />
+              )}
+            </Grid>
+            <Grid item sm={8} />
+            {dataType}
           </Grid>
-          <Grid item sm={8} />
-          {dataType}
-        </Grid>
-        <KeyValues
-          keyValues={this.state.keyValues}
-          onKeyValueChange={this.onKeyValueChange}
-          onAddNewKeyValue={this.onAddNewKeyValue}
-          onDeleteKeyValue={this.onDeleteKeyValue}
-          error={this.state.error.keyValueError}
-        />
-        <Grid>
-          <SaveComponent name="Save" onSubmit={this.handleSubmit} styleClass={classes.button} />
-        </Grid>
-
-        {!this.props.isCreatePage && (
-          <div style={{ marginTop: "50px" }}>
-            <InputLabel style={classes.inputLabel}>Created by </InputLabel>
-            {this.state.createdBy}
-
-            <InputLabel style={classes.inputLabel}>Last modified by </InputLabel>
-            {this.state.lastModifiedBy}
-
-            <InputLabel style={classes.inputLabel}>Creation datetime </InputLabel>
-            {this.state.creationDateTime}
-
-            <InputLabel style={classes.inputLabel}>Last modified datetime </InputLabel>
-            {this.state.lastModifiedDateTime}
-          </div>
-        )}
-
-        {this.state.conceptCreationAlert && (
-          <CustomizedSnackbar
-            message={conceptCreationMessage}
-            getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
-            defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+          <KeyValues
+            keyValues={this.state.keyValues}
+            onKeyValueChange={this.onKeyValueChange}
+            onAddNewKeyValue={this.onAddNewKeyValue}
+            onDeleteKeyValue={this.onDeleteKeyValue}
+            error={this.state.error.keyValueError}
           />
-        )}
+          <Grid>
+            <SaveComponent name="Save" onSubmit={this.handleSubmit} styleClass={classes.button} />
+          </Grid>
+
+          {!this.props.isCreatePage && (
+            <div style={{ marginTop: "50px" }}>
+              <InputLabel style={classes.inputLabel}>Created by </InputLabel>
+              {this.state.createdBy}
+
+              <InputLabel style={classes.inputLabel}>Last modified by </InputLabel>
+              {this.state.lastModifiedBy}
+
+              <InputLabel style={classes.inputLabel}>Creation datetime </InputLabel>
+              {this.state.creationDateTime}
+
+              <InputLabel style={classes.inputLabel}>Last modified datetime </InputLabel>
+              {this.state.lastModifiedDateTime}
+            </div>
+          )}
+
+          {this.state.conceptCreationAlert && (
+            <CustomizedSnackbar
+              message={conceptCreationMessage}
+              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+            />
+          )}
+        </DocumentationContainer>
       </Box>
     );
   }

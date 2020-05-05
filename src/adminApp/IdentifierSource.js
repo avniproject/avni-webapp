@@ -20,6 +20,7 @@ import { FormLabel } from "@material-ui/core";
 import { change } from "redux-form";
 import { CatchmentSelectInput } from "./components/CatchmentSelectInput";
 import Typography from "@material-ui/core/Typography";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const sourceType = {
   userBasedIdentifierGenerator: {
@@ -143,45 +144,47 @@ export const IdentifierSourceEdit = props => {
 export const IdentifierSourceCreate = props => {
   return (
     <Create title="Add a new Identifier Source" {...props}>
-      <SimpleForm redirect="show">
-        <TextInput source="name" required />
-        <SelectInput source="type" choices={Object.values(sourceType)} required />
-        <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) =>
-            !formData.orgAdmin && (
-              <Fragment>
-                <ReferenceInput
-                  source="catchmentId"
-                  reference="catchment"
-                  label="Which catchment?"
-                  onChange={(e, newVal) => {
-                    dispatch(
-                      change(
-                        REDUX_FORM_NAME,
-                        "operatingIndividualScope",
-                        isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
-                      )
-                    );
-                  }}
-                  {...rest}
-                >
-                  <CatchmentSelectInput source="name" resettable />
-                </ReferenceInput>
-              </Fragment>
-            )
-          }
-        </FormDataConsumer>
-        <TextInput source="batchGenerationSize" required />
-        <TextInput source="minimumBalance" required />
-        <TextInput source="minLength" required />
-        <TextInput source="maxLength" required />
-        <Fragment>
-          <Typography variant="title" component="h3">
-            Options
-          </Typography>
-          <TextInput source="options.prefix" label="Prefix" />
-        </Fragment>
-      </SimpleForm>
+      <DocumentationContainer>
+        <SimpleForm redirect="show">
+          <TextInput source="name" required />
+          <SelectInput source="type" choices={Object.values(sourceType)} required />
+          <FormDataConsumer>
+            {({ formData, dispatch, ...rest }) =>
+              !formData.orgAdmin && (
+                <Fragment>
+                  <ReferenceInput
+                    source="catchmentId"
+                    reference="catchment"
+                    label="Which catchment?"
+                    onChange={(e, newVal) => {
+                      dispatch(
+                        change(
+                          REDUX_FORM_NAME,
+                          "operatingIndividualScope",
+                          isFinite(newVal) ? operatingScopes.CATCHMENT : operatingScopes.NONE
+                        )
+                      );
+                    }}
+                    {...rest}
+                  >
+                    <CatchmentSelectInput source="name" resettable />
+                  </ReferenceInput>
+                </Fragment>
+              )
+            }
+          </FormDataConsumer>
+          <TextInput source="batchGenerationSize" required />
+          <TextInput source="minimumBalance" required />
+          <TextInput source="minLength" required />
+          <TextInput source="maxLength" required />
+          <Fragment>
+            <Typography variant="title" component="h3">
+              Options
+            </Typography>
+            <TextInput source="options.prefix" label="Prefix" />
+          </Fragment>
+        </SimpleForm>
+      </DocumentationContainer>
     </Create>
   );
 };

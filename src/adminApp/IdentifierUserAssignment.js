@@ -16,6 +16,7 @@ import {
   required
 } from "react-admin";
 import { change } from "redux-form";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const Title = ({ record }) => {
   return (
@@ -113,50 +114,52 @@ export const IdentifierUserAssignmentEdit = props => {
 export const IdentifierUserAssignmentCreate = props => {
   return (
     <Create title="Add a new identifier user assignment" {...props}>
-      <SimpleForm redirect="show">
-        <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) =>
-            !formData.orgAdmin && (
-              <Fragment>
-                <ReferenceInput
-                  source="userId"
-                  reference="user"
-                  label="Which user?"
-                  validate={[required()]}
-                  onChange={(e, newVal) => {
-                    dispatch(change(newVal));
-                  }}
-                  {...rest}
-                >
-                  <UserSelectInput source="name" />
-                </ReferenceInput>
-              </Fragment>
-            )
-          }
-        </FormDataConsumer>
-        <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) =>
-            !formData.orgAdmin && (
-              <Fragment>
-                <ReferenceInput
-                  source="identifierSourceId"
-                  reference="identifierSource"
-                  label="Which IdentifierSource?"
-                  validate={[required()]}
-                  onChange={(e, newVal) => {
-                    dispatch(change(newVal));
-                  }}
-                  {...rest}
-                >
-                  <SelectInput source="name" />
-                </ReferenceInput>
-              </Fragment>
-            )
-          }
-        </FormDataConsumer>
-        <TextInput source="identifierStart" required />
-        <TextInput source="identifierEnd" required />
-      </SimpleForm>
+      <DocumentationContainer>
+        <SimpleForm redirect="show">
+          <FormDataConsumer>
+            {({ formData, dispatch, ...rest }) =>
+              !formData.orgAdmin && (
+                <Fragment>
+                  <ReferenceInput
+                    source="userId"
+                    reference="user"
+                    label="Which user?"
+                    validate={[required()]}
+                    onChange={(e, newVal) => {
+                      dispatch(change(newVal));
+                    }}
+                    {...rest}
+                  >
+                    <UserSelectInput source="name" />
+                  </ReferenceInput>
+                </Fragment>
+              )
+            }
+          </FormDataConsumer>
+          <FormDataConsumer>
+            {({ formData, dispatch, ...rest }) =>
+              !formData.orgAdmin && (
+                <Fragment>
+                  <ReferenceInput
+                    source="identifierSourceId"
+                    reference="identifierSource"
+                    label="Which IdentifierSource?"
+                    validate={[required()]}
+                    onChange={(e, newVal) => {
+                      dispatch(change(newVal));
+                    }}
+                    {...rest}
+                  >
+                    <SelectInput source="name" />
+                  </ReferenceInput>
+                </Fragment>
+              )
+            }
+          </FormDataConsumer>
+          <TextInput source="identifierStart" required />
+          <TextInput source="identifierEnd" required />
+        </SimpleForm>
+      </DocumentationContainer>
     </Create>
   );
 };

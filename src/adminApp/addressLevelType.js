@@ -22,6 +22,7 @@ import {
 import { None } from "../common/components/utils";
 import { isNil } from "lodash";
 import { Title } from "./components/Title";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 export const LocationTypeList = props => (
   <List
@@ -105,7 +106,9 @@ const LocationTypeForm = ({ edit, ...props }) => {
 
 export const LocationTypeCreate = props => (
   <Create {...props} title="Add new Location Type">
-    <LocationTypeForm />
+    <DocumentationContainer>
+      <LocationTypeForm />
+    </DocumentationContainer>
   </Create>
 );
 
