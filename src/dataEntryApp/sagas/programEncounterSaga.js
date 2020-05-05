@@ -85,9 +85,6 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
     pe => !isNil(pe.encounterType) && pe.encounterType.uuid === encounterTypeUuid
   );
 
-  console.log("planEnc", planEncounter);
-  // General.assignFields(super.clone(new EncounterType()),['operationalEncounterTypeName','displayName']);
-
   if (planEncounter) {
     let plannedVisit = new ProgramEncounter();
     let encounterType = new EncounterType();
