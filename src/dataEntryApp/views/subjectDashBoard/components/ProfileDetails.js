@@ -19,6 +19,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
+import { disableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -189,26 +190,34 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           </Table>
         </Grid>
         <Grid item xs={6} align="right">
-          <div>
-            <Modal
-              content={content}
-              buttonsSet={[
-                {
-                  buttonType: "openButton",
-                  label: t("enrolInProgram"),
-                  classes: classes.enrollButtonStyle
-                },
-                {
-                  buttonType: "saveButton",
-                  label: t("Enrol"),
-                  classes: classes.btnCustom,
-                  redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`
-                },
-                { buttonType: "cancelButton", label: t("Cancel"), classes: classes.cancelBtnCustom }
-              ]}
-              title={t("Enrol in program")}
-            />
-          </div>
+          {!disableReadOnly ? (
+            <div>
+              <Modal
+                content={content}
+                buttonsSet={[
+                  {
+                    buttonType: "openButton",
+                    label: t("enrolInProgram"),
+                    classes: classes.enrollButtonStyle
+                  },
+                  {
+                    buttonType: "saveButton",
+                    label: t("Enrol"),
+                    classes: classes.btnCustom,
+                    redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`
+                  },
+                  {
+                    buttonType: "cancelButton",
+                    label: t("Cancel"),
+                    classes: classes.cancelBtnCustom
+                  }
+                ]}
+                title={t("Enrol in program")}
+              />
+            </div>
+          ) : (
+            ""
+          )}
         </Grid>
       </Grid>
     </div>

@@ -59,3 +59,4 @@ export const localeChoices = [
 export const withoutDataEntry = false;
 
 export const disableSession = false;
+export const disableReadOnly = false;
