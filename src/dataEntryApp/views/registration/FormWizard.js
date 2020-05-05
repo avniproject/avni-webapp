@@ -195,6 +195,7 @@ const FormWizard = ({
   onSave,
   subject,
   validationResults,
+  staticValidationResults,
   setValidationResults,
   registrationFlow,
   children
@@ -236,10 +237,15 @@ const FormWizard = ({
     const filteredFormElement = filter(feg.formElements, fe => fe.voided === false);
     const formElementGroup = new FormElementGroup();
     const formElementGroupValidations = formElementGroup.validate(obsHolder, filteredFormElement);
+    const staticValidationResultsError =
+      staticValidationResults &&
+      new ValidationResults(staticValidationResults).hasValidationError();
     setValidationResults(formElementGroupValidations);
-
     if (!isEmpty(formElementGroupValidations)) {
-      if (new ValidationResults(formElementGroupValidations).hasValidationError()) {
+      if (
+        new ValidationResults(formElementGroupValidations).hasValidationError() ||
+        staticValidationResultsError
+      ) {
         event.preventDefault();
       }
     }

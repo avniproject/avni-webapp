@@ -14,7 +14,7 @@ subject.subjectType = SubjectType.create("Individual");
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.programEncounterReducer.programEncounterForm,
-  subject: state.dataEntry.subjectProgram.subjectProgram,
+  subject: state.dataEntry.subjectProfile.subjectProfile,
   observations: state.dataEntry.programEncounterReducer.programEncounter.observations,
   obsHolder: new ObservationsHolder(
     state.dataEntry.programEncounterReducer.programEncounter.observations
@@ -22,7 +22,8 @@ const mapFormStateToProps = state => ({
   title: `New Encounter`,
   saved: state.dataEntry.programEncounterReducer.saved,
   onSaveGoto: "/app/",
-  //onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
+  // onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
+  staticValidationResults: state.dataEntry.programEncounterReducer.enconterDateValidation,
   validationResults: state.dataEntry.programEncounterReducer.validationResults
 });
 

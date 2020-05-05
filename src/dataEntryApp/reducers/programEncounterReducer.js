@@ -19,7 +19,8 @@ export const types = {
   //To update program encounter field
   UPDATE_PROGRAM_ENCOUNTER: `${prefix}UPDATE_PROGRAM_ENCOUNTER`,
   //for form validations
-  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`
+  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
+  SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`
 };
 
 export const getUnplanProgramEncounters = (subjectTypeName, programUuid) => ({
@@ -85,9 +86,15 @@ export const setValidationResults = validationResults => ({
   validationResults
 });
 
+export const setEncounterDateValidation = enconterDateValidation => ({
+  type: types.SET_ENCOUNTER_DATE_VALIDATION,
+  enconterDateValidation
+});
+
 const initialState = {
   saved: false,
-  validationResults: []
+  validationResults: [],
+  enconterDateValidation: []
 };
 export default function(state = initialState, action) {
   switch (action.type) {
@@ -134,6 +141,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         validationResults: action.validationResults
+      };
+    }
+    case types.SET_ENCOUNTER_DATE_VALIDATION: {
+      return {
+        ...state,
+        enconterDateValidation: action.enconterDateValidation
       };
     }
     default:

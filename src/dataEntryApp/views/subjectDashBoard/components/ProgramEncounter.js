@@ -12,7 +12,7 @@ import {
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
-  setValidationResults
+  setEncounterDateValidation
 } from "../../../reducers/programEncounterReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -67,8 +67,8 @@ const ProgramEncounter = ({
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
-  validationResults,
-  setValidationResults,
+  setEncounterDateValidation,
+  enconterDateValidation,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -83,8 +83,7 @@ const ProgramEncounter = ({
       await getProgramEnrolment(enrolmentUuid);
       //For Unplanned Encounters List : To get possible encounters from FormMapping
       // Using form type as "ProgramEncounter", program uuid, subject type uuid
-      if (programEnrolment)
-        await getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
+      if (programEnrolment) getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
 
       getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
     })();
@@ -94,10 +93,8 @@ const ProgramEncounter = ({
   console.log(props.x);
 
   const validationResultForEncounterDate =
-    validationResults &&
-    validationResults.find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
-  console.log("validationResultForEncounterDate", validationResultForEncounterDate);
-
+    enconterDateValidation &&
+    enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -130,17 +127,17 @@ const ProgramEncounter = ({
                         updateProgramEncounter("encounterDateTime", new Date(date));
                         programEncounter.encounterDateTime = date;
                         _.remove(
-                          validationResults,
+                          enconterDateValidation,
                           vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME"
                         );
                         const result = programEncounter
                           .validate()
                           .find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
                         result
-                          ? validationResults.push(result)
-                          : validationResults.push(...programEncounter.validate());
-                        setValidationResults(validationResults);
-                        console.log("after", validationResults);
+                          ? enconterDateValidation.push(result)
+                          : enconterDateValidation.push(...programEncounter.validate());
+                        setEncounterDateValidation(enconterDateValidation);
+                        console.log("after", enconterDateValidation);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -164,10 +161,10 @@ const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   programEnrolment: state.dataEntry.programEncounterReducer.programEnrolment,
   unplannedEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters,
-  x: state,
-  //subject: state.dataEntry.subjectProfile.subjectProfile,
+  subject: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  validationResults: state.dataEntry.programEncounterReducer.validationResults
+  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation,
+  x: state
 });
 
 const mapDispatchToProps = {
@@ -177,7 +174,7 @@ const mapDispatchToProps = {
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
-  setValidationResults
+  setEncounterDateValidation
 };
 
 export default withRouter(

@@ -9,7 +9,7 @@ import {
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import moment from "moment";
-import _ from "lodash";
+import { isEmpty, isNil } from "lodash";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@material-ui/core";
@@ -48,43 +48,53 @@ const NewProgramVisit = ({ match, x, ...props }) => {
   console.log("all state", x);
 
   //Creating New programEncounter Object for Planned Encounter
-  props.plannedEncounters.map(planEncounter => {
-    const plannedVisit = new ProgramEncounter();
-    plannedVisit.uuid = planEncounter.uuid;
-    plannedVisit.encounterType = planEncounter.encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
-    plannedVisit.encounterDateTime = new Date(); // moment().toDate(); or planEncounter.encounterDateTime
-    plannedVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
-    plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
-    plannedVisit.name = planEncounter.name;
-    const programEnrolment = new ProgramEnrolment();
-    programEnrolment.uuid = enrolmentUuid;
-    plannedVisit.programEnrolment = programEnrolment;
-    plannedVisit.observations = [];
-    plannedEncounterList.push(plannedVisit);
-  });
+
+  console.log(
+    "Filtered planned encunters ",
+    props.plannedEncounters
+      .filter(pe => !isNil(pe.encounterDateTime))
+      .filter(pe => !isNil(pe.encounterDateTime))
+  );
+  props.plannedEncounters
+    .filter(pe => isNil(pe.encounterDateTime))
+    .map(planEncounter => {
+      console.log("Planned encounters date time", planEncounter.encounterDateTime);
+      const plannedVisit = new ProgramEncounter();
+      //plannedVisit.uuid = planEncounter.uuid;
+      plannedVisit.encounterType = planEncounter.encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
+      plannedVisit.encounterDateTime = planEncounter.encounterDateTime; // moment().toDate(); or planEncounter.encounterDateTime
+      plannedVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
+      //plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
+      plannedVisit.name = planEncounter.name;
+      //const programEnrolment = new ProgramEnrolment();
+      //programEnrolment.uuid = enrolmentUuid;
+      //plannedVisit.programEnrolment = programEnrolment;
+      //plannedVisit.observations = [];
+      plannedEncounterList.push(plannedVisit);
+    });
 
   //Creating New programEncounter Object for Unplanned Encounter
   props.unplannedEncounters.map(unplanEncounter => {
     const unplannedVisit = new ProgramEncounter();
-    unplannedVisit.uuid = General.randomUUID();
+    //unplannedVisit.uuid = General.randomUUID();
     unplannedVisit.encounterType = props.operationalModules.encounterTypes.find(
       eT => eT.uuid === unplanEncounter.encounterTypeUUID
     );
     unplannedVisit.name =
       unplannedVisit.encounterType && unplannedVisit.encounterType.operationalEncounterTypeName;
-    unplannedVisit.encounterDateTime = new Date();
-    const programEnrolment = new ProgramEnrolment();
-    programEnrolment.uuid = enrolmentUuid;
-    unplannedVisit.programEnrolment = programEnrolment;
-    unplannedVisit.observations = [];
+    // unplannedVisit.encounterDateTime = new Date();
+    //const programEnrolment = new ProgramEnrolment();
+    //programEnrolment.uuid = enrolmentUuid;
+    //unplannedVisit.programEnrolment = programEnrolment;
+    //unplannedVisit.observations = [];
     unplannedEncounterList.push(unplannedVisit);
   });
 
   const sections = [];
-  if (!_.isEmpty(plannedEncounterList)) {
+  if (!isEmpty(plannedEncounterList)) {
     sections.push({ title: t("plannedVisits"), data: plannedEncounterList });
   }
-  if (!_.isEmpty(unplannedEncounterList)) {
+  if (!isEmpty(unplannedEncounterList)) {
     sections.push({ title: t("unplannedVisits"), data: unplannedEncounterList });
   }
   console.log("Logging sections", sections);
