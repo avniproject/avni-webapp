@@ -7,12 +7,16 @@ import org.openchs.domain.Program.ProgramProjection;
 import org.openchs.domain.ProgramEncounter.ProgramEncounterProjectionMinimal;
 import org.openchs.domain.ProgramEnrolment;
 import org.openchs.geo.Point;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
 import java.util.Set;
 
 @Projection(name = "ProgramEnrolmentProjection", types = {ProgramEnrolment.class})
 public interface ProgramEnrolmentProjection extends BaseProjection {
+
+    @Value("#{target.individual.uuid}")
+    String getSubjectUuid();
 
     ProgramProjection getProgram();
 
