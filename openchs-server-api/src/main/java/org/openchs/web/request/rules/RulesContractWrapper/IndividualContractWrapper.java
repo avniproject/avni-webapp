@@ -33,24 +33,24 @@ public class IndividualContractWrapper {
 
     private RuleRequestEntity rule;
 
-    private List<ProgramEnrolmentContractWrapper> enrolment;
+    private List<ProgramEnrolmentContractWrapper> enrolments;
 
-    private List<EncounterContractWrapper> encounter;
+    private List<EncounterContractWrapper> encounters;
 
-    public List<ProgramEnrolmentContractWrapper> getEnrolment() {
-        return enrolment;
+    public List<ProgramEnrolmentContractWrapper> getEnrolments() {
+        return enrolments;
     }
 
-    public void setEnrolment(List<ProgramEnrolmentContractWrapper> enrolment) {
-        this.enrolment = enrolment;
+    public void setEnrolments(List<ProgramEnrolmentContractWrapper> enrolments) {
+        this.enrolments = enrolments;
     }
 
-    public List<EncounterContractWrapper> getEncounter() {
-        return encounter;
+    public List<EncounterContractWrapper> getEncounters() {
+        return encounters;
     }
 
-    public void setEncounter(List<EncounterContractWrapper> encounter) {
-        this.encounter = encounter;
+    public void setEncounters(List<EncounterContractWrapper> encounters) {
+        this.encounters = encounters;
     }
 
     public String getUuid() {

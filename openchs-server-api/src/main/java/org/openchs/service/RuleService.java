@@ -164,10 +164,10 @@ public class RuleService {
     public RuleResponseEntity decisionRuleEncounterWorkFlow(RequestEntityWrapper requestEntityWrapper){
         EncounterContractWrapper encounterContractWrapper = programEncounterConstructionService.constructEncounterContract(requestEntityWrapper.getEncounterRequestEntity());
         encounterContractWrapper.setRule(requestEntityWrapper.getRule());
-        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Encounter",requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid());
+        RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Encounter",requestEntityWrapper.getEncounterRequestEntity().getUuid());
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/encounter_rule",encounterContractWrapper,ruleFailureLog);
-        ruleResponseEntity.getData().setEnrolmentDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEnrolmentDecisions(),ruleFailureLog));
-        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEnrolmentDecisions()));
+        ruleResponseEntity.getData().setEncounterDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(),ruleFailureLog));
+        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEncounterDecisions()));
         return ruleResponseEntity;
     }
 

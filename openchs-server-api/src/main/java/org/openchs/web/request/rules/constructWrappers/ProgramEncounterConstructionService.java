@@ -3,15 +3,14 @@ package org.openchs.web.request.rules.constructWrappers;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
-import org.openchs.domain.EncounterType;
-import org.openchs.domain.Individual;
-import org.openchs.domain.ProgramEncounter;
-import org.openchs.domain.ProgramEnrolment;
+import org.openchs.domain.*;
 import org.openchs.web.request.EncounterTypeContract;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.RulesContractWrapper.EncounterContractWrapper;
+import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
 import org.openchs.web.request.rules.RulesContractWrapper.ProgramEncounterContractWrapper;
+import org.openchs.web.request.rules.RulesContractWrapper.ProgramEnrolmentContractWrapper;
 import org.openchs.web.request.rules.request.EncounterRequestEntity;
 import org.openchs.web.request.rules.request.ProgramEncounterRequestEntity;
 import org.slf4j.Logger;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -120,7 +120,34 @@ public class ProgramEncounterConstructionService {
         if(encounterRequestEntity.getIndividualUUID() != null) {
             Individual individual = individualRepository.findByUuid(encounterRequestEntity.getIndividualUUID());
             encounterContractWrapper.setSubject(programEnrolmentConstructionService.getSubjectInfo(individual));
+            IndividualContractWrapper individualContractWrapper = encounterContractWrapper.getSubject();
+            individualContractWrapper.setEnrolments(mapEnrolments(individual.getProgramEnrolments()));
+            individualContractWrapper.setEncounters(mapEncounters(individual.getEncounters()));
         }
         return encounterContractWrapper;
+    }
+
+    public List<ProgramEnrolmentContractWrapper> mapEnrolments(Set<ProgramEnrolment> programEnrolments){
+       return programEnrolments.stream().map(programEnrolment -> {
+            ProgramEnrolmentContractWrapper programEnrolmentContractWrapper = new ProgramEnrolmentContractWrapper();
+            programEnrolmentContractWrapper.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
+            programEnrolmentContractWrapper.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
+            programEnrolmentContractWrapper.setUuid(programEnrolment.getUuid());
+            programEnrolmentContractWrapper.setVoided(programEnrolment.isVoided());
+            return programEnrolmentContractWrapper;
+        }).collect(Collectors.toList());
+    }
+
+    public List<EncounterContractWrapper> mapEncounters(Set<Encounter> encounters){
+        return encounters.stream().map(encounter -> {
+            EncounterContractWrapper encounterContractWrapper = new EncounterContractWrapper();
+            encounterContractWrapper.setUuid(encounter.getUuid());
+            encounterContractWrapper.setName(encounter.getName());
+            encounterContractWrapper.setEncounterDateTime(encounter.getEncounterDateTime());
+            encounterContractWrapper.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
+            encounterContractWrapper.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
+            encounterContractWrapper.setVoided(encounter.isVoided());
+            return encounterContractWrapper;
+        }).collect(Collectors.toList());
     }
 }
