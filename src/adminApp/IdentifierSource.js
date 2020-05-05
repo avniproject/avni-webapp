@@ -88,6 +88,7 @@ export const IdentifierSourceDetail = props => {
         <ReferenceField source="catchmentId" reference="catchment">
           <TextField source="name" />
         </ReferenceField>
+        <TextField source="options.prefix" label="Prefix" />
       </SimpleShowLayout>
     </Show>
   );
