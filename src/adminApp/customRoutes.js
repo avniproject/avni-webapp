@@ -17,7 +17,7 @@ import UserGroupDetails from "../userGroups/UserGroupDetails";
 import RelationshipCreate from "../formDesigner/components/Relationships/RelationshipCreate";
 import RelationshipShow from "../formDesigner/components/Relationships/RelationshipShow";
 import RelationshipEdit from "../formDesigner/components/Relationships/RelationshipEdit";
-
+import RelationshipTypeCreate from "../formDesigner/components/RelationshipTypes/RelationshipTypeCreate";
 const CreateConcept = () => <CreateEditConcept isCreatePage={true} />;
 
 export default [
@@ -38,5 +38,6 @@ export default [
   <Route exact path="/userGroupDetails/:id" component={UserGroupDetails} />,
   <Route exact path="/relationship/create" component={RelationshipCreate} />,
   <Route exact path="/relationship/:id/show" component={RelationshipShow} />,
-  <Route exact path="/relationship/:id" component={RelationshipEdit} />
+  <Route exact path="/relationship/:id" component={RelationshipEdit} />,
+  <Route exact path="/relationshiptype/create" component={RelationshipTypeCreate} />
 ];

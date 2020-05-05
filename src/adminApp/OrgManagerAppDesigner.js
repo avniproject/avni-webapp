@@ -21,7 +21,7 @@ import { WorklistUpdationRule } from "./WorklistUpdationRule";
 import Footer from "../common/components/Footer";
 import Relationships from "../formDesigner/components/Relationships/Relationships";
 import { ChecklistDetails } from "../formDesigner/views/ChecklistDetails";
-
+import RelationshipTypeList from "../formDesigner/components/RelationshipTypes/RelationshipTypeList";
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
     store: PropTypes.object
@@ -75,6 +75,11 @@ class OrgManagerAppDesigner extends Component {
             list={WorklistUpdationRule}
           />
           <Resource name="relationship" options={{ label: "Relationships" }} list={Relationships} />
+          <Resource
+            name="relationshiptype"
+            options={{ label: "Relationship types" }}
+            list={RelationshipTypeList}
+          />
         </Admin>
         <Footer />
       </React.Fragment>
