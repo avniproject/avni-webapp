@@ -907,7 +907,12 @@ class FormDetails extends Component {
         }
       })
       .catch(error => {
-        formElement.inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
+        if (error.response.status === 500) {
+          formElement.inlineConceptErrorMessage["inlineConceptError"] = "Concept already exist";
+        } else {
+          formElement.inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
+        }
+
         this.setState({
           form: clonedForm
         });
@@ -978,6 +983,9 @@ class FormDetails extends Component {
         const length = inlineConceptObject.answers.length;
         let counter = 0;
         let flagForEmptyAnswer = false;
+        if (length === 0) {
+          this.onSubmitInlineConcept(inlineConceptObject, clonedForm, clonedFormElement);
+        }
 
         inlineConceptObject.answers.forEach(answer => {
           if (answer.name.trim() === "") {
