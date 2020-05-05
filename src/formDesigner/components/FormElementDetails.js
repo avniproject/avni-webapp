@@ -22,7 +22,6 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
-import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const FormControl = withStyles({
   root: {
@@ -63,20 +62,21 @@ const showDatePicker = (cssClasses, props) => {
   );
 };
 
-const BackButton = props => {
+export const BackButton = props => {
   return (
     <Button
       size="small"
+      variant="outlined"
+      style={props.style}
       onClick={() => props.handleConceptFormLibrary(props.groupIndex, "", props.elementIndex, true)}
     >
-      <ArrowBackIcon /> Back
+      Cancel
     </Button>
   );
 };
 
 function FormElementDetails(props) {
   const classes = useStyles();
-  console.log(JSON.stringify(props));
   const { t } = useTranslation();
 
   const cssClasses = {
@@ -137,6 +137,12 @@ function FormElementDetails(props) {
         </FormControl>
       </Grid>
       <Paper style={{ width: "100%", marginBottom: "15px" }}>
+        <div
+          position="static"
+          style={{ backgroundColor: "#2a96f3", color: "white", height: "30px" }}
+        >
+          <span style={{ marginLeft: "10px", marginTop: "15px", fontSize: "small" }}>CONCEPT</span>
+        </div>
         {props.formElementData.showConceptLibrary === "" && (
           <div
             style={{
@@ -178,14 +184,6 @@ function FormElementDetails(props) {
               marginBottom: "15px"
             }}
           >
-            {props.formElementData.newFlag && (
-              <BackButton
-                handleConceptFormLibrary={props.handleConceptFormLibrary}
-                groupIndex={props.groupIndex}
-                elementIndex={props.index}
-              />
-            )}
-
             <InlineConcept
               onSaveInlineConcept={props.onSaveInlineConcept}
               formElementData={props.formElementData}
@@ -200,6 +198,7 @@ function FormElementDetails(props) {
               onDeleteInlineConceptCodedAnswerDelete={props.onDeleteInlineConceptCodedAnswerDelete}
               handleInlineCodedAnswerAddition={props.handleInlineCodedAnswerAddition}
               onDragInlineCodedConceptAnswer={props.onDragInlineCodedConceptAnswer}
+              handleConceptFormLibrary={props.handleConceptFormLibrary}
             />
           </div>
         )}
@@ -213,13 +212,6 @@ function FormElementDetails(props) {
             }}
           >
             {" "}
-            {props.formElementData.newFlag && (
-              <BackButton
-                handleConceptFormLibrary={props.handleConceptFormLibrary}
-                groupIndex={props.groupIndex}
-                elementIndex={props.index}
-              />
-            )}
             <Grid item sm={12}>
               {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
                 <div style={{ color: "red" }}>Please enter concept </div>
@@ -331,6 +323,14 @@ function FormElementDetails(props) {
                   })}
                 </Grid>
               </>
+            )}
+            {props.formElementData.newFlag && (
+              <BackButton
+                handleConceptFormLibrary={props.handleConceptFormLibrary}
+                groupIndex={props.groupIndex}
+                elementIndex={props.index}
+                style={{}}
+              />
             )}
           </div>
         )}

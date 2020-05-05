@@ -1,6 +1,6 @@
 import React from "react";
 import _, { isEqual } from "lodash";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
@@ -9,15 +9,18 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import Grid from "@material-ui/core/Grid";
 import { FormControl, Input } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
-import { Droppable, Draggable } from "react-beautiful-dnd";
+import { Draggable, Droppable } from "react-beautiful-dnd";
 
 import FormElementWithAddButton from "./FormElementWithAddButton";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import { TabContainer } from "../views/FormDetails";
+import { FormElementGroupRule } from "./FormElementGroupRule";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -55,6 +58,14 @@ const useStyles = makeStyles(theme => ({
     flexBasis: "70%",
     fontSize: theme.typography.pxToRem(15)
     //color: theme.palette.text.secondary,
+  },
+  tabs: {
+    minHeight: "26px",
+    height: "26px"
+  },
+  tab: {
+    minHeight: "26px",
+    height: "26px"
   }
 }));
 const ExpansionPanel = withStyles({
@@ -97,6 +108,7 @@ const ExpansionPanelSummary = withStyles({
 function FormElementGroup(props) {
   const classes = useStyles();
   const [hover, setHover] = React.useState(false);
+  const [tabIndex, setTabIndex] = React.useState(0);
   const panel = "panel" + props.index.toString();
   let questionCount = 0;
   const eventCall = (index, key, value) => {
@@ -202,72 +214,99 @@ function FormElementGroup(props) {
           onMouseEnter={hoverDisplayAddGroup}
           onMouseLeave={hoverHideAddGroup}
         >
-          <ExpansionPanel
-            {...provided.dragHandleProps}
-            TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
-            expanded={props.groupData.expanded}
-            className={props.groupData.error ? classes.rootError : classes.root}
-            onChange={event =>
-              props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
-            }
-          >
-            <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
-              <div className={classes.iconlay}>
-                {props.groupData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </div>
+          <Grid item>
+            <Tabs
+              style={{ background: "#2196f3", color: "white" }}
+              classes={{ root: classes.tabs }}
+              value={tabIndex}
+              onChange={(event, value) => setTabIndex(value)}
+            >
+              <Tab label="Details" classes={{ root: classes.tab }} />
+              <Tab label="Rules" classes={{ root: classes.tab }} />
+            </Tabs>
+            <TabContainer hidden={tabIndex !== 0} skipStyles={true}>
+              <ExpansionPanel
+                {...provided.dragHandleProps}
+                TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
+                expanded={props.groupData.expanded}
+                className={props.groupData.error ? classes.rootError : classes.root}
+                onChange={event =>
+                  props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
+                }
+              >
+                <ExpansionPanelSummary
+                  aria-controls={panel + "bh-content"}
+                  id={panel + "bh-header"}
+                >
+                  <div className={classes.iconlay}>
+                    {props.groupData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  </div>
 
-              <Grid container item sm={12}>
-                <Grid item sm={8}>
-                  <Typography component={"div"} className={classes.heading}>
-                    {props.groupData.error && (
-                      <div style={{ color: "red" }}>Please enter group name.</div>
+                  <Grid container item sm={12}>
+                    <Grid item sm={8}>
+                      <Typography component={"div"} className={classes.heading}>
+                        {props.groupData.error && (
+                          <div style={{ color: "red" }}>Please enter group name.</div>
+                        )}
+                        <FormControl fullWidth>
+                          <Input
+                            type="text"
+                            placeholder="Group name"
+                            disableUnderline={true}
+                            onClick={stopPropagation}
+                            name={"name" + panel}
+                            value={props.groupData.name}
+                            onChange={event => eventCall(props.index, "name", event.target.value)}
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                      </Typography>
+                    </Grid>
+
+                    <Grid item sm={3}>
+                      <Typography component={"div"} className={classes.questionCount}>
+                        No. of questions : {questionCount}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <IconButton
+                    className={classes.deleteicon}
+                    aria-label="delete"
+                    onClick={handleDelete}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <Typography component={"span"} className={classes.root}>
+                    <Droppable droppableId={"Group" + props.index} type="task">
+                      {provided => (
+                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                          {renderFormElements()}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+
+                    {questionCount === 0 && (
+                      <FormControl fullWidth>
+                        <Button variant="contained" color="secondary" onClick={separateAddElement}>
+                          Add Question
+                        </Button>
+                      </FormControl>
                     )}
-                    <FormControl fullWidth>
-                      <Input
-                        type="text"
-                        placeholder="Group name"
-                        disableUnderline={true}
-                        onClick={stopPropagation}
-                        name={"name" + panel}
-                        value={props.groupData.name}
-                        onChange={event => eventCall(props.index, "name", event.target.value)}
-                        autoComplete="off"
-                      />
-                    </FormControl>
                   </Typography>
-                </Grid>
-
-                <Grid item sm={3}>
-                  <Typography component={"div"} className={classes.questionCount}>
-                    No. of questions : {questionCount}
-                  </Typography>
-                </Grid>
-              </Grid>
-              <IconButton className={classes.deleteicon} aria-label="delete" onClick={handleDelete}>
-                <DeleteIcon />
-              </IconButton>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <Typography component={"span"} className={classes.root}>
-                <Droppable droppableId={"Group" + props.index} type="task">
-                  {provided => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                      {renderFormElements()}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-
-                {questionCount === 0 && (
-                  <FormControl fullWidth>
-                    <Button variant="contained" color="secondary" onClick={separateAddElement}>
-                      Add Question
-                    </Button>
-                  </FormControl>
-                )}
-              </Typography>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            </TabContainer>
+            <div hidden={tabIndex !== 1}>
+              <FormElementGroupRule
+                rule={props.groupData.rule}
+                onChange={props.updateFormElementGroupRule}
+                index={props.index}
+              />
+            </div>
+          </Grid>
           {hover && (
             <Fab
               color="primary"
