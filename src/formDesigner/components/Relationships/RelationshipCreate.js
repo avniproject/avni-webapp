@@ -18,14 +18,16 @@ function RelationshipCreate() {
   const [id, setId] = useState("");
 
   useEffect(() => {
+    let flag = false;
     http
       .get("/web/subjectType")
       .then(response => {
         response.data._embedded.subjectType.forEach(subjectType => {
           if (subjectType.name.toLowerCase() === "individual") {
-            setIsIndividualSubjectTypeAvailable(true);
+            flag = true;
           }
         });
+        setIsIndividualSubjectTypeAvailable(flag);
       })
       .catch(error => {});
 
@@ -81,7 +83,7 @@ function RelationshipCreate() {
         <Title title={"Create relationship"} />
         {!isIndividualSubjectTypeAvailable && (
           <div style={{ color: "red", size: "10" }}>
-            Go to subject type and please create Individual named subject type{" "}
+            Please create an Individual subject type to enable this screen{" "}
           </div>
         )}
         {error === "existName" && (
@@ -120,7 +122,7 @@ function RelationshipCreate() {
           <SaveComponent
             name="save"
             onSubmit={() => onSubmitRelationship()}
-            disabledFlag={!setIsIndividualSubjectTypeAvailable}
+            disabledFlag={!isIndividualSubjectTypeAvailable}
           />
         </div>
         {id !== "" && <Redirect to={"/appDesigner/relationship/" + id + "/show"} />}
