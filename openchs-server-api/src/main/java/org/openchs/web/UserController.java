@@ -102,8 +102,8 @@ public class UserController {
             user.setUsername(userContract.getUsername());
             user = setUserAttributes(user, userContract);
 
-            cognitoService.createUserIfNotExists(user);
             userService.save(user);
+            cognitoService.createUser(user);
             accountAdminService.createAccountAdmins(user, userContract.getAccountIds());
             addToDefaultUserGroup(user);
             logger.info(String.format("Saved new user '%s', UUID '%s'", userContract.getUsername(), user.getUuid()));
