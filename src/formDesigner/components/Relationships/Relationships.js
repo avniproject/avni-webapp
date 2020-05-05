@@ -1,9 +1,11 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import { get, isEmpty, isEqual } from "lodash";
+import { isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
+import { cloneDeep } from "lodash";
+
 import { Title } from "react-admin";
 import { CreateComponent } from "../../../common/components/CreateComponent";
 
@@ -11,9 +13,10 @@ const Relationships = ({ history }) => {
   const columns = [
     {
       title: "Name",
-      render: rowData => (
-        <a href={`#/appDesigner/relationship/${rowData.id}/show`}>{rowData.name}</a>
-      )
+      render: rowData =>
+        !rowData.voided && (
+          <a href={`#/appDesigner/relationship/${rowData.id}/show`}>{rowData.name}</a>
+        )
     },
     {
       title: "Genders",
@@ -25,29 +28,20 @@ const Relationships = ({ history }) => {
   ];
 
   const [redirect, setRedirect] = useState(false);
+  const [result, setResult] = useState([]);
 
   const tableRef = React.createRef();
   const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
-  const fetchData = query =>
-    new Promise(resolve => {
-      let apiUrl = "/web/relation/";
-      // apiUrl += "size=" + query.pageSize;
-      // apiUrl += "&page=" + query.page;
-      // if (!isEmpty(query.orderBy.field))
-      //   apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
-      http
-        .get(apiUrl)
-        .then(response => response.data)
-        .then(result => {
-          console.log(JSON.stringify(result));
-          resolve({
-            data: result ? result : []
-            // page: result.page.number,
-            // totalCount: result.page.totalElements
-          });
-        });
-    });
+  useEffect(() => {
+    http
+      .get("/web/relation")
+      .then(response => {
+        const result = response.data.filter(l => l.voided === false);
+        setResult(result);
+      })
+      .catch(error => {});
+  }, []);
 
   const addNewConcept = () => {
     setRedirect(true);
@@ -61,20 +55,25 @@ const Relationships = ({ history }) => {
 
   const voidRelationship = rowData => ({
     icon: "delete_outline",
-    tooltip: "Void relationship"
-    // onClick: (event, rowData) => {
-    //   const voidedMessage = "Do you really want to void the relationship" + rowData.name + " ?";
-    //   if (window.confirm(voidedMessage)) {
-    //     http
-    //       .delete("/web/encounterType/" + rowData.id)
-    //       .then(response => {
-    //         if (response.status === 200) {
-    //           refreshTable(tableRef);
-    //         }
-    //       })
-    //       .catch(error => {});
-    //   }
-    // }
+    tooltip: "Void relationship",
+    onClick: (event, rowData) => {
+      const voidedMessage = rowData.voided
+        ? "Do you really want to unvoid the relationship " + rowData.name + " ?"
+        : "Do you really want to void the relationship " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        http
+          .delete("/web/relation/" + rowData.id)
+          .then(response => {
+            if (response.status === 200) {
+              const index = result.indexOf(rowData);
+              const clonedResult = cloneDeep(result);
+              clonedResult.splice(index, 1);
+              setResult(clonedResult);
+            }
+          })
+          .catch(error => {});
+      }
+    }
   });
 
   return (
@@ -95,7 +94,7 @@ const Relationships = ({ history }) => {
               }}
               tableRef={tableRef}
               columns={columns}
-              data={fetchData}
+              data={result}
               options={{
                 addRowPosition: "first",
                 sorting: true,

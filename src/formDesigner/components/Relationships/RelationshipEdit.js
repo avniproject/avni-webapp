@@ -82,6 +82,7 @@ function RelationshipEdit(props) {
         })
         .then(response => {
           if (response.status === 200) {
+            setRedirectShow(true);
           }
         })
         .catch(error => {
@@ -95,7 +96,7 @@ function RelationshipEdit(props) {
   const onDeleteRelationship = () => {
     if (window.confirm("Do you really want to delete relationship?")) {
       http
-        .delete("/web/relationship/" + props.match.params.id)
+        .delete("/web/relation/" + props.match.params.id)
         .then(response => {
           if (response.status === 200) {
             setRedirectAfterDelete(true);

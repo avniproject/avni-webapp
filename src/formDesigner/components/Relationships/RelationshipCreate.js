@@ -7,7 +7,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { cloneDeep } from "lodash";
-import { default as UUID } from "uuid";
+import { Redirect } from "react-router-dom";
 
 function RelationshipCreate() {
   const [relationshipName, setRelationshipName] = useState("");
@@ -15,6 +15,7 @@ function RelationshipCreate() {
   const [relationshipGenders, setRelationshipGenders] = useState([]);
   const [isIndividualSubjectTypeAvailable, setIsIndividualSubjectTypeAvailable] = useState(true);
   const [genders, setGenders] = useState([]);
+  const [id, setId] = useState("");
 
   useEffect(() => {
     http
@@ -59,11 +60,11 @@ function RelationshipCreate() {
       http
         .post("/web/relation", {
           name: relationshipName,
-          uuid: UUID.v4(),
           genders: genderToBesubmit
         })
         .then(response => {
           if (response.status === 200) {
+            setId(response.data.id);
           }
         })
         .catch(error => {
@@ -122,6 +123,7 @@ function RelationshipCreate() {
             disabledFlag={!setIsIndividualSubjectTypeAvailable}
           />
         </div>
+        {id !== "" && <Redirect to={"/appDesigner/relationship/" + id + "/show"} />}
       </Box>
     </>
   );
