@@ -12,11 +12,11 @@ import { CreateComponent } from "../../../common/components/CreateComponent";
 const RelationshipTypeList = ({ history }) => {
   const columns = [
     {
-      title: "Individual A is to B relation",
+      title: "Relation",
       render: rowData => <span>{rowData.individualAIsToBRelation.name}</span>
     },
     {
-      title: "Individual B is to A relation",
+      title: "Reverse relation",
       render: rowData => <span>{rowData.individualBIsToARelation.name}</span>
     }
   ];

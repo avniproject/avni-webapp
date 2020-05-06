@@ -8,11 +8,17 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import _, { isEmpty } from "lodash";
 import { SaveComponent } from "../../../common/components/SaveComponent";
+import { Redirect } from "react-router-dom";
 
 function RelationshipTypeCreate() {
   const [individualAIsToBRelation, setIndividualAIsToBRelation] = useState({});
   const [individualBIsToARelation, setIndividualBIsToARelation] = useState({});
+  const [error, setError] = useState({
+    individualAIsToBRelationError: "",
+    individualBIsToARelationError: ""
+  });
   const [relations, setRelations] = useState([]);
+  const [redirect, setRedirect] = useState(false);
 
   const [isIndividualSubjectTypeAvailable, setIsIndividualSubjectTypeAvailable] = useState(true);
 
@@ -51,14 +57,24 @@ function RelationshipTypeCreate() {
         })
         .then(response => {
           if (response.status === 200) {
+            setError({
+              individualAIsToBRelationError: "",
+              individualBIsToARelationError: ""
+            });
+            setRedirect(true);
           }
         })
-        .catch(error => {
-          // setError("existName");
-        });
+        .catch(error => {});
     } else {
-      console.log(individualAIsToBRelation);
-      console.log(individualBIsToARelation);
+      let relationError = {};
+
+      relationError["individualAIsToBRelationError"] = !isEmpty(individualAIsToBRelation)
+        ? ""
+        : "Please select relation";
+      relationError["individualBIsToARelationError"] = !isEmpty(individualBIsToARelation)
+        ? ""
+        : "Please select reverse relation";
+      setError(relationError);
     }
   };
 
@@ -72,12 +88,13 @@ function RelationshipTypeCreate() {
           </div>
         )}
 
+        {error.individualAIsToBRelationError !== "" && (
+          <div style={{ color: "red", size: "6" }}>{error.individualAIsToBRelationError}</div>
+        )}
         <FormControl>
-          <InputLabel id="individualAIsToBRelation">
-            Select individual A is to B relation*
-          </InputLabel>
+          <InputLabel id="individualAIsToBRelation">Select relation*</InputLabel>
           <Select
-            label="Select individual A is to B relation"
+            label="Select relation"
             value={_.isEmpty(individualAIsToBRelation) ? "" : individualAIsToBRelation}
             onChange={event => setIndividualAIsToBRelation(event.target.value)}
             style={{ width: "300px" }}
@@ -94,12 +111,13 @@ function RelationshipTypeCreate() {
         </FormControl>
         <br />
         <br />
+        {error.individualBIsToARelationError !== "" && (
+          <div style={{ color: "red", size: "6" }}>{error.individualBIsToARelationError}</div>
+        )}
         <FormControl>
-          <InputLabel id="individualBIsToARelation">
-            Select individual B is to A relation*
-          </InputLabel>
+          <InputLabel id="individualBIsToARelation">Select reverse relation*</InputLabel>
           <Select
-            label="Select individual B is to A relation"
+            label="Select reverse relation"
             value={_.isEmpty(individualBIsToARelation) ? "" : individualBIsToARelation}
             onChange={event => setIndividualBIsToARelation(event.target.value)}
             style={{ width: "300px" }}
@@ -121,6 +139,7 @@ function RelationshipTypeCreate() {
           disabledFlag={!isIndividualSubjectTypeAvailable}
           styleClass={{ marginTop: "10px" }}
         />
+        {redirect && <Redirect to={"/appDesigner/relationshipType/"} />}
       </Box>
     </>
   );
