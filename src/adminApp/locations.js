@@ -109,7 +109,7 @@ const LocationCreateEditToolbar = ({ edit, ...props }) => {
       ) : (
         <LocationSaveButton submitOnEnter={false} redirect="show" />
       )}
-      {edit && <DeleteButton redirect="list" />}
+      {edit && <DeleteButton undoable="false" redirect="list" style={{ marginLeft: "auto" }} />}
     </Toolbar>
   );
 };
@@ -151,7 +151,9 @@ export class LocationForm extends React.Component {
         {...restProps}
         redirect="show"
       >
-        <TextInput label="Name of new location" source="title" validate={isRequired} />
+        <div>
+          <TextInput label="Name of new location" source="title" validate={isRequired} fullWidth />
+        </div>
         {edit ? (
           <TextField label="Type" source="typeString" />
         ) : (

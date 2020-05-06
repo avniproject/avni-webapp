@@ -83,7 +83,13 @@ export const LocationTypeDetail = props => (
 const CreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
     <SaveButton />
-    {edit && <DeleteButton undoable={false} disabled={!props.record.voidable} />}
+    {edit && (
+      <DeleteButton
+        undoable={false}
+        disabled={!props.record.voidable}
+        style={{ marginLeft: "auto" }}
+      />
+    )}
   </Toolbar>
 );
 
