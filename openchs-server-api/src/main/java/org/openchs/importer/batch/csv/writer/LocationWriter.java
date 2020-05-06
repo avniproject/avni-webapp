@@ -32,7 +32,7 @@ public class LocationWriter implements ItemWriter<Row> {
     private void write(Row row) throws BuilderException {
         AddressLevel parent = null;
         for (String header : row.getHeaders()) {
-            AddressLevel location = locationRepository.findByParentAndTitleIgnoreCaseAndVoidedIsFalse(parent, row.get(header));
+            AddressLevel location = locationRepository.findByParentAndTitleIgnoreCaseAndIsVoidedFalse(parent, row.get(header));
             if (location == null) {
                 LocationContract locationContract = new LocationContract();
                 locationContract.setupUuidIfNeeded();
