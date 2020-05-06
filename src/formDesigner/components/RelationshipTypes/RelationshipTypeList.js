@@ -44,8 +44,7 @@ const RelationshipTypeList = ({ history }) => {
     icon: "delete_outline",
     tooltip: "Void relationship",
     onClick: (event, rowData) => {
-      const voidedMessage =
-        "Do you really want to void the relationship type " + rowData.name + " ?";
+      const voidedMessage = "Do you really want to void the relationship type ?";
       if (window.confirm(voidedMessage)) {
         http
           .delete("/web/relationshipType/" + rowData.id)
@@ -65,7 +64,7 @@ const RelationshipTypeList = ({ history }) => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Relationship types" />
+        <Title title="Relationship Types" />
 
         <div className="container">
           <div>

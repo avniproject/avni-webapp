@@ -39,7 +39,8 @@ function RelationshipTypeCreate() {
     http
       .get("/web/relation")
       .then(response => {
-        setRelations(response.data);
+        const filterVoidedRelations = response.data.filter(relation => !relation.voided);
+        setRelations(filterVoidedRelations);
       })
       .catch(error => {});
   }, []);
@@ -81,7 +82,7 @@ function RelationshipTypeCreate() {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={"Create relationship type"} />
+        <Title title={"Create Relationship Type"} />
         {!isIndividualSubjectTypeAvailable && (
           <div style={{ color: "red", size: "10" }}>
             Please create an Individual subject type to enable this screen{" "}
@@ -92,9 +93,9 @@ function RelationshipTypeCreate() {
           <div style={{ color: "red", size: "6" }}>{error.individualAIsToBRelationError}</div>
         )}
         <FormControl>
-          <InputLabel id="individualAIsToBRelation">Select relation*</InputLabel>
+          <InputLabel id="individualAIsToBRelation">Select relationship*</InputLabel>
           <Select
-            label="Select relation"
+            label="Select relationship"
             value={_.isEmpty(individualAIsToBRelation) ? "" : individualAIsToBRelation}
             onChange={event => setIndividualAIsToBRelation(event.target.value)}
             style={{ width: "300px" }}
@@ -115,9 +116,9 @@ function RelationshipTypeCreate() {
           <div style={{ color: "red", size: "6" }}>{error.individualBIsToARelationError}</div>
         )}
         <FormControl>
-          <InputLabel id="individualBIsToARelation">Select reverse relation*</InputLabel>
+          <InputLabel id="individualBIsToARelation">Select reverse relationship*</InputLabel>
           <Select
-            label="Select reverse relation"
+            label="Select reverse relationship"
             value={_.isEmpty(individualBIsToARelation) ? "" : individualBIsToARelation}
             onChange={event => setIndividualBIsToARelation(event.target.value)}
             style={{ width: "300px" }}

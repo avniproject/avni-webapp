@@ -77,7 +77,7 @@ class OrgManagerAppDesigner extends Component {
           <Resource name="relationship" options={{ label: "Relationships" }} list={Relationships} />
           <Resource
             name="relationshiptype"
-            options={{ label: "Relationship types" }}
+            options={{ label: "Relationship Types" }}
             list={RelationshipTypeList}
           />
         </Admin>
