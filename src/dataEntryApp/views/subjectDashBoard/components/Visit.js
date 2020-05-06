@@ -8,6 +8,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,11 +73,13 @@ const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
       <Paper className={classes.paper}>
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>
-            <ListItemText
-              className={classes.ListItemText}
-              title={t(name)}
-              primary={truncate(t(name))}
-            />
+            <Link to={`/app/viewVisit?name=${name}`}>
+              <ListItemText
+                className={classes.ListItemText}
+                title={t(name)}
+                primary={truncate(t(name))}
+              />
+            </Link>
           </ListItem>
           <ListItem className={classes.listItem}>
             <ListItemText

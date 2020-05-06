@@ -23,6 +23,7 @@ import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
+import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -183,57 +184,65 @@ const PrimarySearchAppBar = ({
           <Typography className={classes.title} variant="h6" noWrap>
             <img src={logo} alt="logo" />
           </Typography>
-          <form noValidate autoComplete="off">
-            <Input
-              className={classes.inputSearch}
-              placeholder={t("search")}
-              id="standard-adornment-search"
-              endAdornment={
-                <InputAdornment position="end">
+          {!enableReadOnly ? (
+            <form noValidate autoComplete="off">
+              <Input
+                className={classes.inputSearch}
+                placeholder={t("search")}
+                id="standard-adornment-search"
+                endAdornment={
+                  <InputAdornment position="end">
+                    <ExpandMoreIcon />
+                  </InputAdornment>
+                }
+                aria-describedby="standard-weight-helper-text"
+                inputProps={{
+                  "aria-label": "search"
+                }}
+              />
+            </form>
+          ) : (
+            ""
+          )}
+          {!enableReadOnly ? (
+            <ClickAwayListener onClickAway={newHandleclose}>
+              <div>
+                <Button
+                  className={classes.headerMenu}
+                  ref={anchorRef}
+                  aria-controls={open ? "menu-list-grow" : undefined}
+                  aria-haspopup="true"
+                  onClick={handleToggle}
+                  style={{ color: "#0e6eff" }}
+                >
+                  {t("new")}
                   <ExpandMoreIcon />
-                </InputAdornment>
-              }
-              aria-describedby="standard-weight-helper-text"
-              inputProps={{
-                "aria-label": "search"
-              }}
-            />
-          </form>
-          <ClickAwayListener onClickAway={newHandleclose}>
-            <div>
-              <Button
-                className={classes.headerMenu}
-                ref={anchorRef}
-                aria-controls={open ? "menu-list-grow" : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-                style={{ color: "#0e6eff" }}
-              >
-                {t("new")}
-                <ExpandMoreIcon />
-              </Button>
-              <Popper
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                transition
-                disablePortal
-              >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    style={{
-                      transformOrigin: placement === "bottom" ? "center top" : "center bottom"
-                    }}
-                  >
-                    <Paper>
-                      <NewMenu />
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-            </div>
-          </ClickAwayListener>
+                </Button>
+                <Popper
+                  open={open}
+                  anchorEl={anchorRef.current}
+                  role={undefined}
+                  transition
+                  disablePortal
+                >
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{
+                        transformOrigin: placement === "bottom" ? "center top" : "center bottom"
+                      }}
+                    >
+                      <Paper>
+                        <NewMenu />
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
+              </div>
+            </ClickAwayListener>
+          ) : (
+            ""
+          )}
 
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>

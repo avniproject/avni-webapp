@@ -19,7 +19,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
-import { disableReadOnly } from "common/constants";
+import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -154,7 +154,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
       <Typography component={"span"} className={classes.mainHeading}>
         {`${profileDetails.firstName} ${profileDetails.lastName}`} {t("Dashboard")}
       </Typography>
-      <Grid justify="center" alignItems="center" container spacing={2}>
+      <Grid alignItems="center" container spacing={2}>
         <Grid item>
           <Avatar
             src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
@@ -190,7 +190,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           </Table>
         </Grid>
         <Grid item xs={6} align="right">
-          {!disableReadOnly ? (
+          {!enableReadOnly ? (
             <div>
               <Modal
                 content={content}

@@ -13,6 +13,7 @@ import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
+import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -196,6 +197,9 @@ const ProgramView = ({ programData }) => {
                 : ""}
             </Grid>
           </ExpansionPanelDetails>
+          <Button color="primary">
+            <InternalLink to={`/app/completeVisit`}>{t("viewAllCompletedVisit")}</InternalLink>
+          </Button>
         </ExpansionPanel>
       </Paper>
     </div>
