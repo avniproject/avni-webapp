@@ -21,10 +21,11 @@ const mapFormStateToProps = state => ({
   ),
   title: `New Encounter`,
   saved: state.dataEntry.programEncounterReducer.saved,
-  onSaveGoto: "/app/",
-  // onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
+  //onSaveGoto: "/app/",
+  onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   staticValidationResults: state.dataEntry.programEncounterReducer.enconterDateValidation,
-  validationResults: state.dataEntry.programEncounterReducer.validationResults
+  validationResults: state.dataEntry.programEncounterReducer.validationResults,
+  message: `${state.dataEntry.programEncounterReducer.programEncounter.name} Encounter Saved`
 });
 
 const mapFormDispatchToProps = {

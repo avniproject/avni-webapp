@@ -69,6 +69,7 @@ const ProgramEncounter = ({
   updateProgramEncounter,
   setEncounterDateValidation,
   enconterDateValidation,
+  getSubjectProfile,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -76,14 +77,19 @@ const ProgramEncounter = ({
   const enrolmentUuid = match.queryParams.enrolUuid;
   const encounterTypeUuid = match.queryParams.uuid;
   useEffect(() => {
+    setProgramEncounter();
+    saveProgramEncounterComplete(false);
     (async function fetchData() {
-      setProgramEncounter();
-      saveProgramEncounterComplete(false);
       //For Planned Encounters List : To get list of ProgramEncounters from api
       await getProgramEnrolment(enrolmentUuid);
+      await getSubjectProfile(programEnrolment.subjectUuid);
+      console.log("programEnrolment from async", programEnrolment);
       //For Unplanned Encounters List : To get possible encounters from FormMapping
       // Using form type as "ProgramEncounter", program uuid, subject type uuid
-      if (programEnrolment) getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
+      //   if (programEnrolment) {
+      //     await getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
+      //     await getSubjectProfile(programEnrolment.subjectUuid);
+      // }
 
       getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
     })();
@@ -103,7 +109,7 @@ const ProgramEncounter = ({
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
               {/* {enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? ( */}
-              {programEncounterForm && programEncounter ? (
+              {programEncounterForm && programEncounter && programEnrolment ? (
                 <ProgramEncounterForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
@@ -124,8 +130,9 @@ const ProgramEncounter = ({
                         t(validationResultForEncounterDate.messageKey)
                       }
                       onChange={date => {
-                        updateProgramEncounter("encounterDateTime", new Date(date));
-                        programEncounter.encounterDateTime = date;
+                        const visitDate = _.isNil(date) ? undefined : new Date(date);
+                        updateProgramEncounter("encounterDateTime", new Date(visitDate));
+                        programEncounter.encounterDateTime = visitDate;
                         _.remove(
                           enconterDateValidation,
                           vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME"
@@ -161,7 +168,7 @@ const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   programEnrolment: state.dataEntry.programEncounterReducer.programEnrolment,
   unplannedEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters,
-  subject: state.dataEntry.subjectProfile.subjectProfile,
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
   enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation,
   x: state
@@ -174,7 +181,8 @@ const mapDispatchToProps = {
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
-  setEncounterDateValidation
+  setEncounterDateValidation,
+  getSubjectProfile
 };
 
 export default withRouter(

@@ -14,6 +14,7 @@ import BrowserStore from "../../api/browserStore";
 import { FormElementGroup, ValidationResults } from "avni-models";
 import { RelativeLink, InternalLink } from "common/components/utils";
 import { useHistory, useLocation } from "react-router-dom";
+import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -193,6 +194,7 @@ const FormWizard = ({
   saved,
   onSaveGoto,
   onSave,
+  message,
   subject,
   validationResults,
   staticValidationResults,
@@ -203,19 +205,21 @@ const FormWizard = ({
   if (!form) return <div />;
   const [redirect, setRedirect] = React.useState(false);
 
-  const onOkHandler = pressedOk => {
-    BrowserStore.clear("subject");
-    setRedirect(true);
-  };
+  // const onOkHandler = pressedOk => {
+  //   BrowserStore.clear("subject");
+  //   setRedirect(true);
+  // };
 
   const classes = useStyle();
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-
-  if (saved && redirect) {
-    return <Redirect to={onSaveGoto} />;
+  if (saved) {
+    BrowserStore.clear("subject");
+    setTimeout(() => {
+      setRedirect(true);
+    }, 1500);
   }
 
   const from = match.queryParams.from;
@@ -339,15 +343,18 @@ const FormWizard = ({
                 )}
               </Box>
             </Box>
-
+            {redirect && <Redirect to={onSaveGoto} />}
             {saved && (
-              <CustomizedDialog
-                showSuccessIcon="true"
-                message={t("Your details have been successfully registered.")}
-                showOkbtn="true"
-                openDialogContainer={true}
-                onOk={onOkHandler}
+              <CustomizedSnackbar
+                message={t(message || "Your details have been successfully registered.")}
               />
+              // <CustomizedDialog
+              //   showSuccessIcon="true"
+              //   message={t("Your details have been successfully registered.")}
+              //   showOkbtn="true"
+              //   openDialogContainer={true}
+              //   onOk={onOkHandler}
+              // />
             )}
           </Paper>
         </div>
