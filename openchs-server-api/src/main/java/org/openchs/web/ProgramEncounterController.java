@@ -8,10 +8,12 @@ import org.openchs.domain.ProgramEncounter;
 import org.openchs.geo.Point;
 import org.openchs.service.ConceptService;
 import org.openchs.service.ObservationService;
+import org.openchs.service.ProgramEncounterService;
 import org.openchs.service.UserService;
 import org.openchs.util.S;
 import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
+import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.response.ProgramEncounterResponse;
 import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
@@ -46,9 +48,10 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
     private UserService userService;
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
+    private final ProgramEncounterService programEncounterService;
 
     @Autowired
-    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ConceptRepository conceptRepository, ConceptService conceptService) {
+    public ProgramEncounterController(EncounterTypeRepository encounterTypeRepository, ProgramEncounterRepository programEncounterRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ConceptRepository conceptRepository, ConceptService conceptService,ProgramEncounterService programEncounterService) {
         this.encounterTypeRepository = encounterTypeRepository;
         this.programEncounterRepository = programEncounterRepository;
         this.programEnrolmentRepository = programEnrolmentRepository;
@@ -56,6 +59,7 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         this.userService = userService;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
+        this.programEncounterService = programEncounterService;
     }
 
     @RequestMapping(value = "/api/programEncounters", method = RequestMethod.GET)
@@ -86,6 +90,16 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         if (programEncounter == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(ProgramEncounterResponse.fromProgramEncounter(programEncounter, conceptRepository, conceptService), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/web/programEncounter/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<ProgramEncountersContract> getProgramEncounterByUuid(@PathVariable("uuid") String uuid) {
+        ProgramEncountersContract programEncountersContract = programEncounterService.getProgramEncounterByUuid(uuid);
+        if (programEncountersContract == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(programEncountersContract);
     }
 
     private void checkForSchedulingCompleteConstraintViolation(ProgramEncounterRequest request) {

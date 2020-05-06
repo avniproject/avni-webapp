@@ -2,14 +2,22 @@ package org.openchs.dao;
 
 import org.joda.time.DateTime;
 import org.openchs.domain.ProgramEncounter;
+import org.openchs.domain.ProgramEnrolment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
+import java.sql.Date;
 import java.util.Calendar;
+import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "programEncounter", path = "programEncounter", exported = false)
@@ -65,4 +73,30 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
             Pageable pageable);
 
     ProgramEncounter findByLegacyId(String legacyId);
+
+    default Specification<ProgramEncounter> withProgramEncounterId(Long id) {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+        {
+            return id == null ? null : cb.equal(root.get("programEnrolment").get("id"), id);
+        };
+    }
+
+    default Specification<ProgramEncounter> withProgramEncounterEarliestVisitDateTime(DateTime earliestVisitDateTime) {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                earliestVisitDateTime == null ? null : cb.equal(root.get("earliestVisitDateTime").as(Date.class), earliestVisitDateTime.toDate());
+    }
+
+    default Specification<ProgramEncounter> withProgramEncounterDateTime(DateTime encounterDateTime) {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                encounterDateTime == null ? null : cb.equal(root.get("encounterDateTime").as(Date.class), encounterDateTime.toDate());
+    }
+
+    default Specification<ProgramEncounter> withNotNullEncounterDateTime() {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("encounterDateTime"));
+    }
+
+    default Specification<ProgramEncounter> withProgramEncounterTypeIdIn(List<Long> encounterTypeId) {
+        return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+             encounterTypeId.isEmpty() ? null : root.get("encounterType").get("id").in(encounterTypeId);
+    }
 }
