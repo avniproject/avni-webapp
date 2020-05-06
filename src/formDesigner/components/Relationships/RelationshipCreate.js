@@ -80,7 +80,7 @@ function RelationshipCreate() {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={"Create relationship"} />
+        <Title title={"Create Relationship"} />
         {!isIndividualSubjectTypeAvailable && (
           <div style={{ color: "red", size: "10" }}>
             Please create an Individual subject type to enable this screen{" "}

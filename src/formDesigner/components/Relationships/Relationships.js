@@ -20,10 +20,10 @@ const Relationships = ({ history }) => {
     },
     {
       title: "Genders",
-      render: rowData =>
-        rowData.genders.map(gender => {
-          return gender.name + ", ";
-        })
+      render: rowData => {
+        const genders = rowData.genders.map(gender => gender.name);
+        return genders.join();
+      }
     }
   ];
 
