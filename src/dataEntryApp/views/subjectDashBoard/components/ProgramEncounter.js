@@ -70,6 +70,7 @@ const ProgramEncounter = ({
   setEncounterDateValidation,
   enconterDateValidation,
   getSubjectProfile,
+  subjectProfile,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -82,13 +83,12 @@ const ProgramEncounter = ({
     (async function fetchData() {
       //For Planned Encounters List : To get list of ProgramEncounters from api
       await getProgramEnrolment(enrolmentUuid);
-      await getSubjectProfile(programEnrolment.subjectUuid);
+      //getSubjectProfile(programEnrolment.subjectUuid);
       console.log("programEnrolment from async", programEnrolment);
       //For Unplanned Encounters List : To get possible encounters from FormMapping
       // Using form type as "ProgramEncounter", program uuid, subject type uuid
       //   if (programEnrolment) {
-      //     await getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
-      //     await getSubjectProfile(programEnrolment.subjectUuid);
+      //      getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
       // }
 
       getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
@@ -109,7 +109,7 @@ const ProgramEncounter = ({
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
               {/* {enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? ( */}
-              {programEncounterForm && programEncounter && programEnrolment ? (
+              {programEncounterForm && programEncounter && subjectProfile ? (
                 <ProgramEncounterForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker

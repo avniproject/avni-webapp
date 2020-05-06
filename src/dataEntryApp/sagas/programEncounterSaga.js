@@ -6,7 +6,9 @@ import {
   setProgramEncounterForm,
   setProgramEncounter,
   saveProgramEncounterComplete,
-  setValidationResults
+  setValidationResults,
+  getUnplanProgramEncounters,
+  getProgramEnrolment
 } from "../reducers/programEncounterReducer";
 import api from "../api";
 import {
@@ -18,6 +20,7 @@ import _, { find, get, isNil, filter } from "lodash";
 import moment from "moment";
 import { ProgramEncounter, ProgramEnrolment, ObservationsHolder, Concept } from "avni-models";
 import { ModelGeneral as General, EncounterType } from "avni-models";
+import { types as profiletype, getSubjectProfile } from "../reducers/subjectDashboardReducer";
 
 export default function*() {
   yield all(
@@ -70,7 +73,14 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
   );
   const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
+  //yield put(getProgramEnrolment(enrolmentUuid));
+  const programEnrolment = yield select(
+    state => state.dataEntry.programEncounterReducer.programEnrolment
+  );
 
+  yield put(getSubjectProfile(programEnrolment.subjectUuid));
+
+  yield put(getUnplanProgramEncounters("Individual", programEnrolment.program.uuid));
   //Get program enrolment
   const programEnrolmentDateTime = yield select(
     state => state.dataEntry.programEncounterReducer.programEnrolment.enrolmentDateTime
