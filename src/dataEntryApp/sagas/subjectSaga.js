@@ -13,7 +13,8 @@ import {
   setRegistrationForm,
   types as subjectTypes,
   saveComplete,
-  setValidationResults
+  setValidationResults,
+  selectAddressLevelType
 } from "../reducers/registrationReducer";
 import SubjectService from "../services/SubjectService";
 import { setSubjects, types as searchTypes } from "../reducers/searchReducer";
@@ -41,6 +42,7 @@ import {
 import _ from "lodash";
 import BrowserStore from "../api/browserStore";
 import { disableSession } from "../../common/constants";
+import { mapProfile } from "common/subjectModelMapper";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -155,7 +157,15 @@ function* loadEditRegistrationPageWatcher() {
   yield takeLatest(subjectTypes.ON_LOAD_EDIT, loadEditRegistrationPageWorker);
 }
 
-export function* loadEditRegistrationPageWorker({ subject }) {
+export function* loadEditRegistrationPageWorker({ subjectUuid }) {
+  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
+  const subject = mapProfile(subjectProfileJson);
+  const selectedAddressLevelType = {
+    name: subjectProfileJson.addressLevelTypeName,
+    id: subjectProfileJson.addressLevelTypeId
+  };
+  yield put(selectAddressLevelType(selectedAddressLevelType));
+
   yield put.resolve(getOperationalModules());
   yield put.resolve(getRegistrationForm(subject.subjectType.name));
   yield put.resolve(getGenders());
