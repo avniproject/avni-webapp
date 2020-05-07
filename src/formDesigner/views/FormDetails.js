@@ -303,18 +303,29 @@ class FormDetails extends Component {
               form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex]
             );
             sourceElement.uuid = UUID.v4();
-            form.formElementGroups[groupDestinationIndex].formElements.forEach((element, index) => {
-              if (!element.voided) {
-                counter += 1;
-                if (counter === destinationElementIndex) {
-                  form.formElementGroups[groupDestinationIndex].formElements.splice(
-                    index + 1,
-                    0,
-                    sourceElement
-                  );
+            if (destinationElementIndex !== 0) {
+              form.formElementGroups[groupDestinationIndex].formElements.forEach(
+                (element, index) => {
+                  if (!element.voided) {
+                    counter += 1;
+
+                    if (counter === destinationElementIndex) {
+                      form.formElementGroups[groupDestinationIndex].formElements.splice(
+                        index + 1,
+                        0,
+                        sourceElement
+                      );
+                    }
+                  }
                 }
-              }
-            });
+              );
+            } else {
+              form.formElementGroups[groupDestinationIndex].formElements.splice(
+                destinationElementIndex,
+                0,
+                sourceElement
+              );
+            }
 
             form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex].voided = true;
           } else {
