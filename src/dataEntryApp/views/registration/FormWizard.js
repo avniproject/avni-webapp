@@ -215,6 +215,7 @@ const FormWizard = ({
   const history = useHistory();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
+
   if (saved) {
     BrowserStore.clear("subject");
     setTimeout(() => {
@@ -244,6 +245,7 @@ const FormWizard = ({
     const staticValidationResultsError =
       staticValidationResults &&
       new ValidationResults(staticValidationResults).hasValidationError();
+
     setValidationResults(formElementGroupValidations);
     if (!isEmpty(formElementGroupValidations)) {
       if (

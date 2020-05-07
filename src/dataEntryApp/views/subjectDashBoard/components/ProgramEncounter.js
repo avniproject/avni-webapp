@@ -1,14 +1,11 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import _ from "lodash";
+import { Grid, Paper } from "@material-ui/core";
+import { remove, isNil } from "lodash";
 import {
   getProgramEncounterForm,
   getProgramEncounterTypes,
-  getUnplanProgramEncounters,
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
@@ -17,12 +14,10 @@ import {
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
-// import { ProgramEncounter } from "avni-models";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,25 +28,9 @@ const useStyles = makeStyles(theme => ({
   mainHeading: {
     fontSize: "20px"
   },
-  btnCustom: {
-    //float:'left',
-    backgroundColor: "#fc9153",
-    height: "30px",
-    marginRight: "20px"
-  },
   container: {
     display: "inline",
     flexWrap: "wrap",
-    fontSize: "13px"
-  },
-  textField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: 200,
-    display: "inline",
-    fontSize: "13px"
-  },
-  input: {
     fontSize: "13px"
   }
 }));
@@ -62,14 +41,12 @@ const ProgramEncounter = ({
   getProgramEncounterTypes,
   programEncounterForm,
   programEncounter,
-  getUnplanProgramEncounters,
   programEnrolment,
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
   setEncounterDateValidation,
   enconterDateValidation,
-  getSubjectProfile,
   subjectProfile,
   ...props
 }) => {
@@ -83,14 +60,6 @@ const ProgramEncounter = ({
     (async function fetchData() {
       //For Planned Encounters List : To get list of ProgramEncounters from api
       await getProgramEncounterTypes(enrolmentUuid);
-      //getSubjectProfile(programEnrolment.subjectUuid);
-      console.log("programEnrolment from async", programEnrolment);
-      //For Unplanned Encounters List : To get possible encounters from FormMapping
-      // Using form type as "ProgramEncounter", program uuid, subject type uuid
-      //   if (programEnrolment) {
-      //      getUnplanProgramEncounters("Individual", programEnrolment.program.uuid);
-      // }
-
       getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
     })();
   }, []);
@@ -108,7 +77,6 @@ const ProgramEncounter = ({
         <div className={classes.tableView}>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
-              {/* {enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? ( */}
               {programEncounterForm && programEncounter && subjectProfile ? (
                 <ProgramEncounterForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -122,18 +90,18 @@ const ProgramEncounter = ({
                       name="visitDateTime"
                       value={new Date(programEncounter.encounterDateTime)}
                       error={
-                        !_.isNil(validationResultForEncounterDate) &&
+                        !isNil(validationResultForEncounterDate) &&
                         !validationResultForEncounterDate.success
                       }
                       helperText={
-                        !_.isNil(validationResultForEncounterDate) &&
+                        !isNil(validationResultForEncounterDate) &&
                         t(validationResultForEncounterDate.messageKey)
                       }
                       onChange={date => {
-                        const visitDate = _.isNil(date) ? undefined : new Date(date);
-                        updateProgramEncounter("encounterDateTime", new Date(visitDate));
+                        const visitDate = isNil(date) ? undefined : new Date(date);
+                        updateProgramEncounter("encounterDateTime", visitDate);
                         programEncounter.encounterDateTime = visitDate;
-                        _.remove(
+                        remove(
                           enconterDateValidation,
                           vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME"
                         );
@@ -144,7 +112,6 @@ const ProgramEncounter = ({
                           ? enconterDateValidation.push(result)
                           : enconterDateValidation.push(...programEncounter.validate());
                         setEncounterDateValidation(enconterDateValidation);
-                        console.log("after", enconterDateValidation);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -177,12 +144,10 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   getProgramEncounterForm,
   getProgramEncounterTypes,
-  getUnplanProgramEncounters,
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
-  setEncounterDateValidation,
-  getSubjectProfile
+  setEncounterDateValidation
 };
 
 export default withRouter(
