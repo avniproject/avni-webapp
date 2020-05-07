@@ -234,7 +234,11 @@ function* updateEnrolmentObsWatcher() {
   yield takeEvery(enrolmentTypes.UPDATE_OBS, updateEnrolmentObsWorker);
 }
 
-export function* updateEnrolmentObsWorker({ formElement, value }) {
+function* updateExitEnrolmentObsWatcher() {
+  yield takeEvery(enrolmentTypes.UPDATE_EXIT_OBS, updateExitEnrolmentObsWorker);
+}
+
+export function* updateExitEnrolmentObsWorker({ formElement, value }) {
   const state = yield select();
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
@@ -265,6 +269,29 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
   );
 }
 
+export function* updateEnrolmentObsWorker({ formElement, value }) {
+  const state = yield select();
+  const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
+  const validationResults = yield select(state => state.dataEntry.registration.validationResults);
+
+  console.log(programEnrolment);
+
+  programEnrolment.observations = updateObservations(
+    programEnrolment.observations,
+    formElement,
+    value
+  );
+
+  console.log(programEnrolment);
+
+  yield put(setProgramEnrolment(programEnrolment));
+  yield put(
+    setValidationResults(
+      validate(formElement, value, programEnrolment.programExitObservations, validationResults)
+    )
+  );
+}
+
 export default function* subjectSaga() {
   yield all(
     [
@@ -276,7 +303,8 @@ export default function* subjectSaga() {
       saveProgramEnrolmentWatcher,
       updateObsWatcher,
       updateEnrolmentObsWatcher,
-      loadEditRegistrationPageWatcher
+      loadEditRegistrationPageWatcher,
+      updateExitEnrolmentObsWatcher
     ].map(fork)
   );
 }
