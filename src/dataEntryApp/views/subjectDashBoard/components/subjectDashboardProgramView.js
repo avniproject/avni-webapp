@@ -82,7 +82,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({ programData, subjectUuid }) => {
+const ProgramView = ({ programData, subjectUuid, tabType }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [expandedPanel, setExpanded] = React.useState("");
@@ -125,13 +125,24 @@ const ProgramView = ({ programData, subjectUuid }) => {
               <List>
                 <Observations observations={programData ? programData.observations : ""} />
               </List>
-              <Link
-                to={`/app/enrol?uuid=${subjectUuid}&programName=${
-                  programData.program.operationalProgramName
-                }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
-              >
-                <Button color="primary">{t("Exit")}</Button>
-              </Link>
+              {tabType === "ActiveProgram" ? (
+                <Link
+                  to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                    programData.program.operationalProgramName
+                  }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
+                >
+                  <Button color="primary">{t("Exit")}</Button>
+                </Link>
+              ) : (
+                <Link
+                  to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                    programData.program.operationalProgramName
+                  }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
+                >
+                  <Button color="primary">{t("Edit Exit")}</Button>
+                </Link>
+              )}
+
               <Button color="primary">{t("edit")}</Button>
             </Grid>
           </ExpansionPanelDetails>

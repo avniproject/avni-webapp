@@ -84,9 +84,17 @@ const SubjectDashboardProgramTab = ({ program }) => {
           </Grid>
         </div>
         {selectedTab !== false ? (
-          <ProgramDetails tabPanelValue={selectedTab} programData={program} />
+          <ProgramDetails
+            tabType={program.enrolments[0].programExitDateTime ? "ExitedProgram" : "ActiveProgram"}
+            tabPanelValue={selectedTab}
+            programData={program}
+          />
         ) : (
-          <ProgramDetails tabPanelValue={selectedTabExited} programData={program} />
+          <ProgramDetails
+            tabType={program.enrolments[0].programExitDateTime ? "ExitedProgram" : "ActiveProgram"}
+            tabPanelValue={selectedTabExited}
+            programData={program}
+          />
         )}
       </Paper>
     </Fragment>

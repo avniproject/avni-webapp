@@ -18,14 +18,19 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-const programDetails = ({ tabPanelValue, programData }) => {
+const programDetails = ({ tabPanelValue, programData, tabType }) => {
   return (
     <div>
       {programData && programData.enrolments
         ? programData.enrolments.map((element, index) => (
             <Fragment key={index}>
               <TabPanel value={tabPanelValue} index={index}>
-                <ProgramView subjectUuid={programData.uuid} programData={element} key={index} />
+                <ProgramView
+                  subjectUuid={programData.uuid}
+                  tabType={tabType}
+                  programData={element}
+                  key={index}
+                />
               </TabPanel>
             </Fragment>
           ))
