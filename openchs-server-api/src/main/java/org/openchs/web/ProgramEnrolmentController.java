@@ -2,10 +2,7 @@ package org.openchs.web;
 
 import org.joda.time.DateTime;
 import org.openchs.dao.*;
-import org.openchs.domain.Individual;
-import org.openchs.domain.Program;
-import org.openchs.domain.ProgramEnrolment;
-import org.openchs.domain.ProgramOutcome;
+import org.openchs.domain.*;
 import org.openchs.geo.Point;
 import org.openchs.projection.ProgramEnrolmentProjection;
 import org.openchs.service.ConceptService;
@@ -15,6 +12,7 @@ import org.openchs.service.UserService;
 import org.openchs.util.S;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.PointRequest;
+import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.ProgramEnrolmentRequest;
 import org.openchs.web.response.ProgramEnrolmentResponse;
 import org.openchs.web.response.ResponsePage;
@@ -35,8 +33,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 @RestController
 public class ProgramEnrolmentController extends AbstractController<ProgramEnrolment> implements RestControllerResourceProcessor<ProgramEnrolment>, OperatingIndividualScopeAwareController<ProgramEnrolment>, OperatingIndividualScopeAwareFilterController<ProgramEnrolment> {
@@ -164,6 +166,18 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(enrolmentContract);
+    }
+
+    @GetMapping("/web/programEnrolment/{id}/completed")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public Page<ProgramEncountersContract> getAllCompletedEncounters(
+            @PathVariable Long id,
+            @RequestParam(value = "encounterDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime encounterDateTime,
+            @RequestParam(value = "earliestVisitDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime earliestVisitDateTime,
+            @RequestParam(value = "encounterTypeIds",required = false) String encounterTypeIds,
+            Pageable pageable) {
+        return programEnrolmentService.getAllCompletedEncounters(id,encounterTypeIds,encounterDateTime,earliestVisitDateTime,pageable);
     }
 
     @Override
