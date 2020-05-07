@@ -1,12 +1,9 @@
 import React, { useEffect } from "react";
-import PropTypes from "prop-types";
 import {
   Table,
-  TableSortLabel,
   TablePagination,
   TableBody,
   TableCell,
-  TableHead,
   TableRow,
   FormControl,
   InputLabel,
@@ -21,12 +18,7 @@ import { first } from "lodash";
 import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
-import {
-  EnhancedTableHead,
-  stableSort,
-  descendingComparator,
-  getComparator
-} from "../../components/TableHeaderSorting";
+import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
 import { useTranslation } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
@@ -63,89 +55,6 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-// const headCells = [
-//   { id: 'fullName', numeric: false, disablePadding: true, label: 'Name' },
-//   { id: 'gender', numeric: false, disablePadding: true, label: 'Gender' },
-//   { id: 'dateOfBirth', numeric: true, disablePadding: false, label: 'Date of Birth' },
-//   { id: 'addressLevel', numeric: false, disablePadding: true, label: 'Location' },
-//   { id: 'activePrograms', numeric: false, disablePadding: true, label: 'Active Programs' },
-// ];
-// const headCells = headername;
-
-// function descendingComparator(a, b, orderBy) {
-//   if (b[orderBy] < a[orderBy]) {
-//     return -1;
-//   }
-//   if (b[orderBy] > a[orderBy]) {
-//     return 1;
-//   }
-//   return 0;
-// }
-
-// function getComparator(order, orderBy) {
-//   return order === 'desc'
-//     ? (a, b) => descendingComparator(a, b, orderBy)
-//     : (a, b) => -descendingComparator(a, b, orderBy);
-// }
-
-// function stableSort(array, comparator) {
-//   const stabilizedThis = array.map((el, index) => [el, index]);
-//   stabilizedThis.sort((a, b) => {
-//     const order = comparator(a[0], b[0]);
-//     if (order !== 0) return order;
-//     return a[1] - b[1];
-//   });
-//   return stabilizedThis.map((el) => el[0]);
-// }
-
-// function EnhancedTableHead(props) {
-
-//   const {headername, classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
-//   const createSortHandler = (property) => (event) => {
-//     onRequestSort(event, property);
-//   };
-//   const headCells = headername;
-
-//   return (
-//     <TableHead>
-//       <TableRow>
-//         {headCells.map((headCell) => (
-//           <TableCell
-//             key={headCell.id}
-//             align={headCell.numeric ? 'center' : 'center'}
-//             padding={headCell.disablePadding ? 'none' : 'default'}
-//             sortDirection={orderBy === headCell.id ? order : false}
-//           >
-//             <TableSortLabel
-//               active={orderBy === headCell.id}
-//               direction={orderBy === headCell.id ? order : 'asc'}
-//               onClick={createSortHandler(headCell.id)}
-//             >
-//               {headCell.label}
-//               {orderBy === headCell.id ? (
-//                 <span className={classes.visuallyHidden}>
-//                   {/* {order === 'desc' ? 'sorted descending' : 'sorted ascending'} */}
-//                 </span>
-//               ) : null}
-//             </TableSortLabel>
-//           </TableCell>
-//         ))}
-//       </TableRow>
-//     </TableHead>
-//   );
-// }
-
-// EnhancedTableHead.propTypes = {
-//   headername: PropTypes.object.isRequired,
-//   classes: PropTypes.object.isRequired,
-//   numSelected: PropTypes.number.isRequired,
-//   onRequestSort: PropTypes.func.isRequired,
-//   onSelectAllClick: PropTypes.func.isRequired,
-//   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-//   orderBy: PropTypes.string.isRequired,
-//   rowCount: PropTypes.number.isRequired,
-// };
-
 const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -155,14 +64,9 @@ const SubjectsTable = ({ type, subjects }) => {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  let tableHeaderName = [];
   let subjectsListObj = [];
-  //  var arr1 = [{ name: 'fred', id:23 }, { name: 'bill' }, { name: 'ted' }, { name: 'james' }],
-  //   arr2 = [{ name: 'toString' }, { name: 'spil' }, { name: 'fred' }, { name: 'bill' }, { name: 'paul' }, { name: 'stone' }],
-  //   hash = Object.create(null);
 
-  // arr1.forEach(function (a) {
-  //     hash[a.name] = true;
-  // });
   subjects.forEach(function(a) {
     let sub = {
       fullName: a.fullName,
@@ -173,20 +77,7 @@ const SubjectsTable = ({ type, subjects }) => {
     };
     subjectsListObj.push(sub);
   });
-  // let genderName = row.gender ? t(row.gender.name) : "";
-  // let addressLevel = row.addressLevel ? row.addressLevel.titleLineage : "";
 
-  // console.log("arr1----------",arrObj);
-  // console.log("subjects----------",subjects);
-  //  subjects.map((n) => {"name":n.fullName,
-  //   "dateOfBirth":n.dateOfBirth,
-  //   "activePrograms":n.activePrograms,
-  //   "addressLevel":n.addressLevel ? n.addressLevel.titleLineage : "",
-  //   "gender" : n.gender ? t(n.gender.name) : ""
-  // })];
-
-  // console.log("arrObj---------------->",arrObj)
-  let tableHeaderName = [];
   if (type.name === "Individual") {
     tableHeaderName = [
       { id: "fullName", numeric: false, disablePadding: true, label: "Name" },
@@ -245,10 +136,6 @@ const SubjectsTable = ({ type, subjects }) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  // const handleChangeDense = (event) => {
-  //   setDense(event.target.checked);
-  // };
 
   const isSelected = name => selected.indexOf(name) !== -1;
 
