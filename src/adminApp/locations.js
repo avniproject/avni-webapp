@@ -109,7 +109,7 @@ const LocationCreateEditToolbar = ({ edit, ...props }) => {
       ) : (
         <LocationSaveButton submitOnEnter={false} redirect="show" />
       )}
-      {edit && <DeleteButton undoable="false" redirect="list" style={{ marginLeft: "auto" }} />}
+      {edit && <DeleteButton undoable={false} redirect="list" style={{ marginLeft: "auto" }} />}
     </Toolbar>
   );
 };
