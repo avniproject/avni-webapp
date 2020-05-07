@@ -69,6 +69,7 @@ const SubjectsTable = ({ type, subjects }) => {
 
   subjects.forEach(function(a) {
     let sub = {
+      uuid: a.uuid,
       fullName: a.fullName,
       gender: a.gender ? t(a.gender.name) : "",
       dateOfBirth: a.dateOfBirth,
@@ -178,15 +179,15 @@ const SubjectsTable = ({ type, subjects }) => {
                   key={row.name}
                   selected={isItemSelected}
                 >
-                  <TableCell component="th" scope="row" padding="none" align="center" width="20%">
+                  <TableCell component="th" scope="row" padding="none" align="left" width="20%">
                     <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
                   </TableCell>
-                  {type.name === "Individual" && <TableCell align="center">{row.gender}</TableCell>}
+                  {type.name === "Individual" && <TableCell align="left">{row.gender}</TableCell>}
                   {type.name === "Individual" && (
-                    <TableCell align="center">{row.dateOfBirth}</TableCell>
+                    <TableCell align="left">{row.dateOfBirth}</TableCell>
                   )}
-                  <TableCell align="center">{row.addressLevel}</TableCell>
-                  <TableCell align="center" width="25%">
+                  <TableCell align="left">{row.addressLevel}</TableCell>
+                  <TableCell align="left" width="25%">
                     {" "}
                     {row.activePrograms.map((p, key) => (
                       <Button
