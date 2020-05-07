@@ -5,9 +5,9 @@ export const types = {
   SET_VIEWVISIT: `${prefix}SET_VIEWVISIT`
 };
 
-export const getViewVisit = subjectUuid => ({
+export const getViewVisit = viewVisitUuid => ({
   type: types.GET_VIEWVISIT,
-  subjectUuid
+  viewVisitUuid
 });
 
 export const setViewVisit = viewVisit => ({
@@ -20,7 +20,7 @@ export default function(state = {}, action) {
     case types.SET_VIEWVISIT: {
       return {
         ...state,
-        viewVisit: action.viewVisit
+        viewVisits: action.viewVisit
       };
     }
     default:

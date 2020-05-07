@@ -35,5 +35,10 @@ export default {
   },
   fetchEnrolments: uuid => {
     return httpClient.fetchJson(`/api/enrolments/`).then(response => response.json);
-  }
+  },
+
+  fetchViewVisit: viewVisitUuid =>
+    httpClient.fetchJson(`/web/programEncounter/${viewVisitUuid}`).then(response => {
+      return response.json;
+    })
 };

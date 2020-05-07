@@ -66,7 +66,7 @@ const truncate = input => {
   else return input;
 };
 
-const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
+const Visit = ({ uuid, name, key, index, visitDate, earliestVisitDate, overdueDate }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   return (
@@ -74,19 +74,34 @@ const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
       <Paper className={classes.paper}>
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>
-            <Link to={`/app/viewVisit?name=${name}`}>
+            {visitDate !== null ? (
+              <Link to={`/app/viewVisit?uuid=${uuid}`}>
+                <ListItemText
+                  className={classes.ListItemText}
+                  title={t(name)}
+                  primary={truncate(t(name))}
+                />
+              </Link>
+            ) : (
               <ListItemText
                 className={classes.ListItemText}
                 title={t(name)}
                 primary={truncate(t(name))}
               />
-            </Link>
+            )}
           </ListItem>
           <ListItem className={classes.listItem}>
-            <ListItemText
-              className={classes.listItemTextDate}
-              primary={moment(new Date(visitDate)).format("DD-MM-YYYY")}
-            />
+            {visitDate !== null ? (
+              <ListItemText
+                className={classes.listItemTextDate}
+                primary={moment(new Date(visitDate)).format("DD-MM-YYYY")}
+              />
+            ) : (
+              <ListItemText
+                className={classes.listItemTextDate}
+                primary={moment(new Date(earliestVisitDate)).format("DD-MM-YYYY")}
+              />
+            )}
           </ListItem>
           {overdueDate && new Date() > new Date(overdueDate) ? (
             <ListItem className={classes.listItem}>
@@ -98,7 +113,7 @@ const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
             ""
           )}
 
-          {earliestVisitDate ? (
+          {/* {earliestVisitDate ? (
             <ListItem className={classes.listItem}>
               <label style={{ fontSize: "14px" }}>
                 {`Scheduled on : ${moment(new Date(earliestVisitDate)).format("DD-MM-YYYY")}`}{" "}
@@ -106,7 +121,7 @@ const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
             </ListItem>
           ) : (
             ""
-          )}
+          )} */}
         </List>
         {!enableReadOnly ? (
           <div className={classes.visitButton}>
