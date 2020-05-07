@@ -14,6 +14,7 @@ import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
+import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -21,8 +22,21 @@ const useStyles = makeStyles(theme => ({
   },
   growthButtonStyle: {
     marginBottom: theme.spacing(2),
+    height: "28px",
+    boxShadow: "none",
     marginRight: "10px",
+    marginLeft: "120px"
+  },
+  vaccinationButtonStyle: {
+    marginBottom: theme.spacing(2),
+    boxShadow: "none",
     height: "28px"
+  },
+  newProgVisitButtonStyle: {
+    marginBottom: theme.spacing(2),
+    boxShadow: "none",
+    height: "28px",
+    marginLeft: "10px"
   },
   root: {
     flexGrow: 1,
@@ -101,8 +115,11 @@ const ProgramView = ({ programData }) => {
         </Grid>
         <Grid item xs={6}>
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
-          <SubjectButton btnLabel={t("vaccinations")} />
-          <SubjectButton btnLabel={t("newProgramVisit")} />
+          <SubjectButton btnLabel={t("vaccinations")} btnClass={classes.vaccinationButtonStyle} />
+          <SubjectButton
+            btnLabel={t("newProgramVisit")}
+            btnClass={classes.newProgVisitButtonStyle}
+          />
         </Grid>
       </Grid>
       <Paper className={classes.root}>
@@ -125,8 +142,8 @@ const ProgramView = ({ programData }) => {
               <List>
                 <Observations observations={programData ? programData.observations : ""} />
               </List>
-              <Button color="primary">{t("void")}</Button>
-              <Button color="primary">{t("edit")}</Button>
+              {!enableReadOnly ? <Button color="primary">{t("void")}</Button> : ""}
+              {!enableReadOnly ? <Button color="primary">{t("edit")}</Button> : ""}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>

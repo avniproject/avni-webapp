@@ -7,6 +7,8 @@ import { withRouter } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
+import { enableReadOnly } from "common/constants";
+
 const useStyle = makeStyles(theme => ({
   createButton: {
     margin: theme.spacing(1)
@@ -25,14 +27,18 @@ const RegistrationMenu = ({ types }) => {
 
   return (
     <div>
-      <Button
-        size="medium"
-        className={classes.createButton}
-        color={"primary"}
-        onClick={handleClick()}
-      >
-        <AddIcon /> {t('create')}
-      </Button>
+      {!enableReadOnly ? (
+        <Button
+          size="medium"
+          className={classes.createButton}
+          color={"primary"}
+          onClick={handleClick()}
+        >
+          <AddIcon /> {t("create")}
+        </Button>
+      ) : (
+        ""
+      )}
       <Menu
         id="create-menu"
         anchorEl={anchorEl}

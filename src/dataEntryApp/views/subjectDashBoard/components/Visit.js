@@ -9,6 +9,7 @@ import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -122,10 +123,14 @@ const Visit = ({ uuid, name, key, index, visitDate, earliestVisitDate, overdueDa
             ""
           )} */}
         </List>
-        <div className={classes.visitButton}>
-          <Button color="primary">{t("dovisit")}</Button>
-          <Button color="primary">{t("cancelVisit")}</Button>
-        </div>
+        {!enableReadOnly ? (
+          <div className={classes.visitButton}>
+            <Button color="primary">{t("dovisit")}</Button>
+            <Button color="primary">{t("cancelVisit")}</Button>
+          </div>
+        ) : (
+          ""
+        )}
       </Paper>
     </Grid>
   );
