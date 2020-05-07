@@ -29,11 +29,25 @@ const Relationships = ({ history }) => {
 
   const [redirect, setRedirect] = useState(false);
   const [result, setResult] = useState([]);
+  const [isIndividualSubjectTypeAvailable, setIsIndividualSubjectTypeAvailable] = useState("");
 
   const tableRef = React.createRef();
   const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   useEffect(() => {
+    let flag = "false";
+    http
+      .get("/web/subjectType")
+      .then(response => {
+        response.data._embedded.subjectType.forEach(subjectType => {
+          if (subjectType.name.toLowerCase() === "individual") {
+            flag = "true";
+          }
+        });
+        setIsIndividualSubjectTypeAvailable(flag);
+      })
+      .catch(error => {});
+
     http
       .get("/web/relation")
       .then(response => {
@@ -82,31 +96,39 @@ const Relationships = ({ history }) => {
         <Title title="Relationships" />
 
         <div className="container">
-          <div>
-            <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <CreateComponent onSubmit={addNewConcept} name="New Relationship" />
+          {isIndividualSubjectTypeAvailable === "false" && (
+            <div style={{ color: "red", size: "10" }}>
+              Please click <a href={`#/appDesigner/subjectType/create`}>here</a> and create an
+              Individual subject type to enable this screen.
             </div>
+          )}
+          {isIndividualSubjectTypeAvailable === "true" && (
+            <div>
+              <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
+                <CreateComponent onSubmit={addNewConcept} name="New Relationship" />
+              </div>
 
-            <MaterialTable
-              title=""
-              components={{
-                Container: props => <Fragment>{props.children}</Fragment>
-              }}
-              tableRef={tableRef}
-              columns={columns}
-              data={result}
-              options={{
-                addRowPosition: "first",
-                sorting: true,
-                debounceInterval: 500,
-                search: false,
-                rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
-                })
-              }}
-              actions={[editRelationship, voidRelationship]}
-            />
-          </div>
+              <MaterialTable
+                title=""
+                components={{
+                  Container: props => <Fragment>{props.children}</Fragment>
+                }}
+                tableRef={tableRef}
+                columns={columns}
+                data={result}
+                options={{
+                  addRowPosition: "first",
+                  sorting: true,
+                  debounceInterval: 500,
+                  search: false,
+                  rowStyle: rowData => ({
+                    backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  })
+                }}
+                actions={[editRelationship, voidRelationship]}
+              />
+            </div>
+          )}
         </div>
       </Box>
       {redirect && <Redirect to={"/appDesigner/relationship/create"} />}
