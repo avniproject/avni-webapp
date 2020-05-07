@@ -15,6 +15,7 @@ import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
+import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -95,13 +96,17 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
               <List>
                 <Observations observations={profile ? profile.observations : ""} />
               </List>
-              <Button color="primary">{t("void")}</Button>
+              {!enableReadOnly ? <Button color="primary">{t("void")}</Button> : ""}
               {/* <Button color="primary">{t("edit")}</Button> */}
-              <Button color="primary">
-                <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
-                  {t("edit")}{" "}
-                </InternalLink>
-              </Button>
+              {!enableReadOnly ? (
+                <Button color="primary">
+                  <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
+                    {t("edit")}{" "}
+                  </InternalLink>
+                </Button>
+              ) : (
+                ""
+              )}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -122,7 +127,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <GridCommonList gridListDetails={profile.relationships} path={path} />
           </ExpansionPanelDetails>
-          <Button color="primary"> {t("addARelative")}</Button>
+          {!enableReadOnly ? <Button color="primary"> {t("addARelative")}</Button> : ""}
         </ExpansionPanel>
       </Paper>
     </Fragment>

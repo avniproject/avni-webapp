@@ -9,6 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
 import { Link, withRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -74,10 +75,14 @@ const GridCommonList = ({ gridListDetails }) => {
                           `${t("year")}`}
                       </Typography>
                     </CardContent>
-                    <CardActions>
-                      <Button color="primary">{t("remove")}</Button>
-                      <Button color="primary">{t("edit")}</Button>
-                    </CardActions>
+                    {!enableReadOnly ? (
+                      <CardActions>
+                        <Button color="primary">{t("remove")}</Button>
+                        <Button color="primary">{t("edit")}</Button>
+                      </CardActions>
+                    ) : (
+                      ""
+                    )}
                   </Card>
                 </Grid>
               );

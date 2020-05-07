@@ -51,6 +51,9 @@ const useStyle = makeStyles(theme => ({
   searchFormItem: {
     margin: theme.spacing(1)
   },
+  searchBtnShadow: {
+    boxShadow: "none"
+  },
   createButtonHolder: {
     flex: 1
   },
@@ -369,7 +372,11 @@ const SubjectSearch = props => {
             />
           </FormControl>
           <FormControl className={classes.searchFormItem}>
-            <PrimaryButton type={"submit"} onClick={handleSubmit}>
+            <PrimaryButton
+              type={"submit"}
+              onClick={handleSubmit}
+              className={classes.searchBtnShadow}
+            >
               {t("search")}
             </PrimaryButton>
           </FormControl>

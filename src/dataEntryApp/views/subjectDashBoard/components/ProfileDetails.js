@@ -29,11 +29,19 @@ const useStyles = makeStyles(theme => ({
   enrollButtonStyle: {
     backgroundColor: "#fc9153",
     height: "38px",
-    zIndex: 1
+    zIndex: 1,
+    marginLeft: theme.spacing(64),
+    marginTop: "1px",
+    boxShadow: "none"
   },
   bigAvatar: {
     width: 42,
-    height: 42
+    height: 42,
+    marginTop: "20px",
+    marginBottom: "8px"
+  },
+  table: {
+    marginTop: "10px"
   },
   tableView: {
     flexGrow: 1,
@@ -162,7 +170,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           />
         </Grid>
         <Grid item xs={5}>
-          <Table aria-label="caption table">
+          <Table aria-label="caption table" className={classes.table}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
                 <TableCell className={classes.tableCell}>{t("name")}</TableCell>
@@ -189,7 +197,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             </TableBody>
           </Table>
         </Grid>
-        <Grid item xs={6} align="right">
+        <Grid align="right">
           {!enableReadOnly ? (
             <div>
               <Modal
