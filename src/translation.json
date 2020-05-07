@@ -885,7 +885,12 @@
       "feedback": "Provide Feedback",
       "backupConfirmationMessage": "Are you sure you want to backup your data. Please make sure all your data is synced.",
       "backupNoticeTitle": "Backup Data",
-      "backup": "Backup Now"
+      "backup": "Backup Now",
+      "ViewVisit": "View Visit",
+      "Scheduledon": "Scheduled on",
+      "Completed": "Completed",
+      "viewAllCompletedVisit": "View All Completed Visit",
+      "back": "Back"
     }
   },
   "mr_IN": {
@@ -3748,7 +3753,12 @@
       "Other": "इतर",
       "ageTooHigh": "120 वर्षाच्या वर असणारी व्यक्ती",
       "numericValueValidation": "Is not a valid number",
-      "timeValueValidation": "There is no value specified for time"
+      "timeValueValidation": "There is no value specified for time",
+      "ViewVisit": "भेट द्य",
+      "Scheduledon": "अनुसूचित केलेले",
+      "Completed": "पूर्ण",
+      "viewAllCompletedVisit": "सर्व पूर्ण भेट पहा",
+      "back": "परत"
     }
   }
 }

@@ -150,10 +150,12 @@ const ProgramView = ({ programData }) => {
                 ? programData.encounters.map((row, index) =>
                     !row.encounterDateTime ? (
                       <Visit
+                        uuid={row.uuid}
                         name={row.name}
                         key={index}
                         index={index}
-                        visitDate={row.earliestVisitDateTime}
+                        visitDate={row.encounterDateTime}
+                        earliestVisitDate={row.earliestVisitDateTime}
                         overdueDate={row.maxVisitDateTime}
                       />
                     ) : (
@@ -184,6 +186,7 @@ const ProgramView = ({ programData }) => {
                 ? programData.encounters.map((row, index) =>
                     row.encounterDateTime && row.encounterType ? (
                       <Visit
+                        uuid={row.uuid}
                         name={row.encounterType.name}
                         key={index}
                         index={index}

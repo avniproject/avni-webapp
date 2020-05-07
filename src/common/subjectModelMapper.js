@@ -196,3 +196,20 @@ export const mapGeneral = subjectGeneral => {
     });
   }
 };
+
+//ViewVisit
+
+export const mapViewVisit = viewVisitDetails => {
+  if (viewVisitDetails) {
+    const programEnconter = General.assignFields(
+      viewVisitDetails,
+      new ProgramEncounter(),
+      ["uuid", "name"],
+      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime"]
+    );
+    programEnconter.encounterType = mapEncounterType(viewVisitDetails.encounterType);
+
+    programEnconter.observations = mapObservation(viewVisitDetails["observations"]);
+    return programEnconter;
+  }
+};

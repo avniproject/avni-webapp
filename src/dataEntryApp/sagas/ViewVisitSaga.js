@@ -1,5 +1,6 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import { types, setViewVisit } from "../reducers/viewVisitReducer";
+import { mapViewVisit } from "../../common/subjectModelMapper";
 
 import api from "../api";
 
@@ -11,7 +12,7 @@ export function* viewVisitFetchWatcher() {
   yield takeLatest(types.GET_VIEWVISIT, viewVisitFetchWorker);
 }
 
-export function* viewVisitFetchWorker({ subjectUuid }) {
-  const viewVisit = yield call(api.fetchPrograms, subjectUuid);
-  yield put(setViewVisit(viewVisit));
+export function* viewVisitFetchWorker({ viewVisitUuid }) {
+  const viewVisit = yield call(api.fetchViewVisit, viewVisitUuid);
+  yield put(setViewVisit(mapViewVisit(viewVisit)));
 }
