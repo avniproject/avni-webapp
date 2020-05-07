@@ -113,7 +113,7 @@ const ProgramView = ({ programData }) => {
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
           <SubjectButton btnLabel={t("vaccinations")} btnClass={classes.vaccinationButtonStyle} />
           <SubjectButton
