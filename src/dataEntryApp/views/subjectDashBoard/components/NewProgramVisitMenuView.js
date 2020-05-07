@@ -1,15 +1,18 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 import { useTranslation } from "react-i18next";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
-import _ from "lodash";
-import { Table, TableBody, TableHead, TableCell, TableRow, Typography } from "@material-ui/core";
+import { isEqual, isNil } from "lodash";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableCell,
+  TableRow,
+  Typography,
+  Paper
+} from "@material-ui/core";
 import { LineBreak, InternalLink } from "../../../../common/components/utils";
 import { ModelGeneral as General } from "avni-models";
-import NewProgramVisitMenuItem from "./NewProgramVisitMenuItem";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -18,33 +21,30 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   },
   tableHeader: {
-    // fontSize: "12px",
-    // // fontFamily: "Roboto Reg",
-    // fontWeight: 500,
     color: "black"
+  },
+  tableCell: {
+    color: "#555555"
   }
 }));
 
 const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
   const { t } = useTranslation();
-
   const classes = useStyles();
 
   return (
     <Fragment>
-      {/* <Paper className={classes.root}> */}
       {sections
         ? sections.map(section => (
             <div>
               <Paper className={classes.root}>
                 <Typography gutterBottom>{section.title}</Typography>
-
                 <Paper>
                   <Table className={classes.table} size="small" aria-label="a dense table">
                     <TableHead>
                       <TableRow>
                         <TableCell className={classes.tableHeader}>{t("Name")}</TableCell>
-                        {_.isEqual(section.title, t("plannedVisits")) ? (
+                        {isEqual(section.title, t("plannedVisits")) ? (
                           <TableCell className={classes.tableHeader}>{t("Date")}</TableCell>
                         ) : (
                           <TableCell />
@@ -53,12 +53,12 @@ const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
                     </TableHead>
                     <TableBody>
                       {section.data
-                        .filter(e => !_.isNil(e.encounterType))
+                        .filter(e => !isNil(e.encounterType))
                         .map(encounter => (
                           <TableRow>
                             {encounter.encounterType ? (
                               <TableCell
-                                style={{ color: "#555555" }}
+                                className={classes.tableCell}
                                 component="th"
                                 scope="row"
                                 width="50%"
@@ -75,9 +75,7 @@ const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
                             ) : (
                               ""
                             )}
-
                             <TableCell align="left" width="50%">
-                              {/* {plannedEncounter.earliestVisitDateTime} */}
                               {encounter.earliestVisitDateTime &&
                                 General.toDisplayDate(encounter.earliestVisitDateTime)}
                             </TableCell>
@@ -91,25 +89,8 @@ const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
             </div>
           ))
         : ""}
-      {/* </Paper> */}
     </Fragment>
   );
 };
 
-const mapStateToProps = state => ({
-  formMappings: state.dataEntry.metadata.operationalModules.formMappings
-});
-
-const mapDispatchToProps = {
-  // getProgramEnrolment,
-  // getUnplanProgramEncounters
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(NewProgramVisitMenuView)
-  )
-);
+export default NewProgramVisitMenuView;

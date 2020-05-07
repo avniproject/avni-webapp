@@ -35,7 +35,7 @@ const NewProgramVisit = ({ match, x, ...props }) => {
     props.getProgramEncounterTypes(enrolmentUuid);
   }, []);
 
-  console.log("all state", x);
+  // console.log("all state", x);
 
   //Creating New programEncounter Object for Plan Encounter
   props.planEncounters

@@ -1,12 +1,12 @@
 import { connect } from "react-redux";
-import FormWizard from "dataEntryApp/views/registration/FormWizard";
+import { withRouter } from "react-router-dom";
 import { ObservationsHolder } from "avni-models";
+import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
   updateObs,
   saveProgramEncounter,
   setValidationResults
 } from "dataEntryApp/reducers/programEncounterReducer";
-import { withRouter } from "react-router-dom";
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.programEncounterReducer.programEncounterForm,
@@ -15,7 +15,6 @@ const mapFormStateToProps = state => ({
   obsHolder: new ObservationsHolder(
     state.dataEntry.programEncounterReducer.programEncounter.observations
   ),
-  title: `New Encounter`,
   saved: state.dataEntry.programEncounterReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   staticValidationResults: state.dataEntry.programEncounterReducer.enconterDateValidation,

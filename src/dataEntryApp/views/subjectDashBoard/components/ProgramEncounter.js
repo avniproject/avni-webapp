@@ -1,8 +1,14 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { Grid, Paper } from "@material-ui/core";
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import { remove, isNil } from "lodash";
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+import { withParams } from "common/components/utils";
+import DateFnsUtils from "@date-io/date-fns";
+import { useTranslation } from "react-i18next";
+import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   getProgramEncounterForm,
   getProgramEncounterTypes,
@@ -11,13 +17,7 @@ import {
   updateProgramEncounter,
   setEncounterDateValidation
 } from "../../../reducers/programEncounterReducer";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
 import ProgramEncounterForm from "./ProgramEncounterForm";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,37 +35,23 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramEncounter = ({
-  match,
-  getProgramEncounterForm,
-  getProgramEncounterTypes,
-  programEncounterForm,
-  programEncounter,
-  programEnrolment,
-  setProgramEncounter,
-  saveProgramEncounterComplete,
-  updateProgramEncounter,
-  setEncounterDateValidation,
-  enconterDateValidation,
-  subjectProfile,
-  ...props
-}) => {
+const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const enrolmentUuid = match.queryParams.enrolUuid;
   const encounterTypeUuid = match.queryParams.uuid;
+
   useEffect(() => {
-    setProgramEncounter();
-    saveProgramEncounterComplete(false);
+    props.setProgramEncounter();
+    props.saveProgramEncounterComplete(false);
     (async function fetchData() {
-      //For Planned Encounters List : To get list of ProgramEncounters from api
-      await getProgramEncounterTypes(enrolmentUuid);
-      getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
+      await props.getProgramEncounterTypes(enrolmentUuid);
+      props.getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
     })();
   }, []);
 
-  console.log("Inside new page >> programEncounter ..printing states");
-  console.log(props.x);
+  // console.log("Inside new page >> programEncounter ..printing states");
+  // console.log(props.x);
 
   const validationResultForEncounterDate =
     enconterDateValidation &&
@@ -77,7 +63,7 @@ const ProgramEncounter = ({
         <div className={classes.tableView}>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
-              {programEncounterForm && programEncounter && subjectProfile ? (
+              {props.programEncounterForm && programEncounter && props.subjectProfile ? (
                 <ProgramEncounterForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
@@ -99,7 +85,7 @@ const ProgramEncounter = ({
                       }
                       onChange={date => {
                         const visitDate = isNil(date) ? undefined : new Date(date);
-                        updateProgramEncounter("encounterDateTime", visitDate);
+                        props.updateProgramEncounter("encounterDateTime", visitDate);
                         programEncounter.encounterDateTime = visitDate;
                         remove(
                           enconterDateValidation,
@@ -111,7 +97,7 @@ const ProgramEncounter = ({
                         result
                           ? enconterDateValidation.push(result)
                           : enconterDateValidation.push(...programEncounter.validate());
-                        setEncounterDateValidation(enconterDateValidation);
+                        props.setEncounterDateValidation(enconterDateValidation);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -133,8 +119,6 @@ const ProgramEncounter = ({
 
 const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
-  programEnrolment: state.dataEntry.programEncounterReducer.programEnrolment,
-  unplannedEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
   enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation,

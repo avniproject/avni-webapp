@@ -1,24 +1,17 @@
 const prefix = "app/dataEntry/reducer/programEncounter/";
 
 export const types = {
-  //to get planned program encounters using enrolment uuid
   GET_PROGRAM_ENROLMENT: `${prefix}GET_PROGRAM_ENROLMENT`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
-  //to get unpanned program encounter using pprorogram uuid
   GET_UNPLAN_PROGRAM_ENCOUNTERS: `${prefix}GET_UNPLAN_PROGRAM_ENCOUNTERS`,
   SET_UNPLAN_PROGRAM_ENCOUNTERS: `${prefix}SET_UNPLAN_PROGRAM_ENCOUNTERS`,
-
   GET_PROGRAM_ENCOUNTER_FORM: `${prefix}GET_PROGRAM_ENCOUNTER_FORM`,
   SET_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_PROGRAM_ENCOUNTER_FORM`,
-  // GET_PROGRAM_ENCOUNTER: `${prefix}GET_PROGRAM_ENCOUNTER`,
   SET_PROGRAM_ENCOUNTER: `${prefix}SET_PROGRAM_ENCOUNTER`,
   SAVE_PROGRAM_ENCOUNTER: `${prefix}SAVE_PROGRAM_ENCOUNTER`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
-  //To set Save
   SAVE_PROGRAM_ENCOUNTER_COMPLETE: `${prefix}SAVE_PROGRAM_ENCOUNTER_COMPLETE`,
-  //To update program encounter field
   UPDATE_PROGRAM_ENCOUNTER: `${prefix}UPDATE_PROGRAM_ENCOUNTER`,
-  //for form validations
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`
 };
@@ -108,7 +101,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         unplanProgramEncounters: action.unplanProgramEncounters
-        //programEncounters: action.programEncounters
       };
     }
     case types.SET_PROGRAM_ENCOUNTER_FORM: {
