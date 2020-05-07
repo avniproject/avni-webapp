@@ -11,10 +11,12 @@ subject.subjectType = SubjectType.create("Individual");
 const mapFormStateToProps = state => ({
   form: state.dataEntry.enrolmentReducer.enrolForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,
-  observations: state.dataEntry.enrolmentReducer.programEnrolment.observations,
-  obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),
-  //observations: state.dataEntry.enrolmentReducer.programEnrolment.programExitObservations,
-  //obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.programExitObservations),
+  //observations: state.dataEntry.enrolmentReducer.programEnrolment.observations,
+  //obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),
+  observations: state.dataEntry.enrolmentReducer.programEnrolment.programExitObservations,
+  obsHolder: new ObservationsHolder(
+    state.dataEntry.enrolmentReducer.programEnrolment.programExitObservations
+  ),
   title: `New Enrolment`,
   saved: state.dataEntry.enrolmentReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
@@ -27,11 +29,11 @@ const mapFormDispatchToProps = {
   setValidationResults
 };
 
-const ProgramEnrolmentForm = withRouter(
+const ProgramExitEnrolmentForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
   )(FormWizard)
 );
 
-export default ProgramEnrolmentForm;
+export default ProgramExitEnrolmentForm;

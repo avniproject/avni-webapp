@@ -41,6 +41,7 @@ import {
 import _ from "lodash";
 import BrowserStore from "../api/browserStore";
 import { disableSession } from "../../common/constants";
+import { mapProgramEnrolment } from "../../common/subjectModelMapper";
 
 export function* dataEntrySearchWatcher() {
   yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
@@ -56,24 +57,34 @@ export function* enrolmentOnLoadWatcher() {
   yield takeLatest(enrolmentTypes.ON_LOAD, setupNewEnrolmentWorker);
 }
 
-function* setupNewEnrolmentWorker({ subjectTypeName, programName, formType }) {
+function* setupNewEnrolmentWorker({
+  subjectTypeName,
+  programName,
+  formType,
+  programEnrolmentUuid
+}) {
   const formMapping = yield select(
     selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
   );
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));
 
-  // if(!sessionStorage.getItem("programEnrolment")) {
   const program = yield select(selectProgram(programName));
-
   const state = yield select();
   const subject = state.dataEntry.subjectProfile.subjectProfile;
   subject.subjectType = SubjectType.create("Individual");
 
-  let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
-  yield put.resolve(setProgramEnrolment(programEnrolment));
-
-  //}
+  if (formType == "ProgramEnrolment") {
+    let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
+    yield put.resolve(setProgramEnrolment(programEnrolment));
+  } else {
+    let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+    programEnrolment = mapProgramEnrolment(programEnrolment);
+    programEnrolment.programExitObservations = [];
+    programEnrolment.programExitDateTime = new Date();
+    programEnrolment.individual = subject;
+    yield put.resolve(setProgramEnrolment(programEnrolment));
+  }
 }
 
 function* dataEntrySearchWorker() {
@@ -227,20 +238,29 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
   const state = yield select();
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
-  console.log("Program Enrolment Observations", programEnrolment.observations);
-  programEnrolment.observations = updateObservations(
-    programEnrolment.observations,
+
+  console.log(programEnrolment);
+
+  // if(programEnrolment.observations.length === 0) {
+  //   programEnrolment.observations = updateObservations(
+  //     programEnrolment.observations,
+  //     formElement,
+  //     value
+  //   );
+  //  } else {
+  programEnrolment.programExitObservations = updateObservations(
+    programEnrolment.programExitObservations,
     formElement,
     value
   );
+  //  }
 
-  //  console.log();
+  console.log(programEnrolment);
 
-  //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
   yield put(setProgramEnrolment(programEnrolment));
   yield put(
     setValidationResults(
-      validate(formElement, value, programEnrolment.observations, validationResults)
+      validate(formElement, value, programEnrolment.programExitObservations, validationResults)
     )
   );
 }

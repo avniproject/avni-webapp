@@ -14,6 +14,7 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
+import ProgramExitEnrolmentForm from "./ProgramExitEnrolmentForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
@@ -71,16 +72,21 @@ const ProgramEnrol = ({
   const formType = match.queryParams.formType;
 
   useEffect(() => {
-    //onLoad("Individual", match.queryParams.programName);
-    //getSubjectProfile(match.queryParams.uuid);
+    onLoad(
+      "Individual",
+      match.queryParams.programName,
+      formType,
+      match.queryParams.programEnrolmentUuid
+    );
+    getSubjectProfile(match.queryParams.uuid);
 
-    (async function fetchData() {
-      await onLoad("Individual", match.queryParams.programName, formType);
-      getSubjectProfile(match.queryParams.uuid);
+    // (async function fetchData() {
+    //   await onLoad("Individual", match.queryParams.programName, formType, match.queryParams.programEnrolmentUuid);
+    //   getSubjectProfile(match.queryParams.uuid);
 
-      // let programEnrolment = BrowserStore.fetchProgramEnrolment();
-      // setProgramEnrolment(programEnrolment);
-    })();
+    //   // let programEnrolment = BrowserStore.fetchProgramEnrolment();
+    //   // setProgramEnrolment(programEnrolment);
+    // })();
   }, []);
 
   return (
@@ -119,7 +125,7 @@ const ProgramEnrol = ({
                   </MuiPickersUtilsProvider>
                 </ProgramEnrolmentForm>
               ) : enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
-                <ProgramEnrolmentForm formType={formType}>
+                <ProgramExitEnrolmentForm formType={formType}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}
@@ -139,7 +145,7 @@ const ProgramEnrol = ({
                       }}
                     />
                   </MuiPickersUtilsProvider>
-                </ProgramEnrolmentForm>
+                </ProgramExitEnrolmentForm>
               ) : (
                 <div>Loading</div>
               )}

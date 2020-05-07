@@ -128,7 +128,7 @@ const ProgramView = ({ programData, subjectUuid }) => {
               <Link
                 to={`/app/enrol?uuid=${subjectUuid}&programName=${
                   programData.program.operationalProgramName
-                }&formType=ProgramExit`}
+                }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
               >
                 <Button color="primary">{t("Exit")}</Button>
               </Link>

@@ -11,10 +11,10 @@ export default {
       body: JSON.stringify(subject)
     }),
 
-  saveProgram: subject =>
+  saveProgram: programEnrolment =>
     httpClient.fetchJson("/programEnrolments", {
       method: "POST",
-      body: JSON.stringify(subject)
+      body: JSON.stringify(programEnrolment)
     }),
 
   fetchSubjectProfile: uuid =>
@@ -35,5 +35,8 @@ export default {
   },
   fetchEnrolments: uuid => {
     return httpClient.fetchJson(`/api/enrolments/`).then(response => response.json);
+  },
+  fetchProgramEnrolments: uuid => {
+    return httpClient.fetchJson(`/web/programEnrolments/${uuid}`).then(response => response.json);
   }
 };

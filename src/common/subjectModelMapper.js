@@ -91,6 +91,21 @@ export const mapProfile = subjectProfile => {
   }
 };
 
+export const mapProgramEnrolment = json => {
+  const programEnrolment = new ProgramEnrolment();
+  programEnrolment.uuid = json.uuid;
+  if (json.enrolmentDateTime) programEnrolment.enrolmentDateTime = new Date(json.enrolmentDateTime);
+  if (json.programExitDateTime)
+    programEnrolment.programExitDateTime = new Date(json.programExitDateTime);
+  programEnrolment.programExitObservations = mapObservation(json.programExitObservations);
+  programEnrolment.observations = mapObservation(json.observations);
+  const program = new Program();
+  program.uuid = json.programUuid;
+  programEnrolment.program = program;
+  programEnrolment.voided = false;
+  return programEnrolment;
+};
+
 export const mapRelationships = relationshipList => {
   if (relationshipList) {
     return relationshipList.map(relationship => {
@@ -149,7 +164,7 @@ export const mapEnrolment = enrolmentList => {
       let programEnrolment = General.assignFields(
         enrolments,
         new ProgramEnrolment(),
-        [],
+        ["uuid"],
         ["programExitDateTime", "enrolmentDateTime"]
       );
       programEnrolment.observations = mapObservation(enrolments["observations"]);
