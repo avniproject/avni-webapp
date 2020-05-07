@@ -93,9 +93,9 @@ function RelationshipTypeCreate() {
           <div style={{ color: "red", size: "6" }}>{error.individualAIsToBRelationError}</div>
         )}
         <FormControl>
-          <InputLabel id="individualAIsToBRelation">Select relationship*</InputLabel>
+          <InputLabel id="individualAIsToBRelation">Select Relationship*</InputLabel>
           <Select
-            label="Select relationship"
+            label="Select Relationship"
             value={_.isEmpty(individualAIsToBRelation) ? "" : individualAIsToBRelation}
             onChange={event => setIndividualAIsToBRelation(event.target.value)}
             style={{ width: "300px" }}
@@ -116,9 +116,9 @@ function RelationshipTypeCreate() {
           <div style={{ color: "red", size: "6" }}>{error.individualBIsToARelationError}</div>
         )}
         <FormControl>
-          <InputLabel id="individualBIsToARelation">Select reverse relationship*</InputLabel>
+          <InputLabel id="individualBIsToARelation">Select Reverse Relationship*</InputLabel>
           <Select
-            label="Select reverse relationship"
+            label="Select Reverse Relationship"
             value={_.isEmpty(individualBIsToARelation) ? "" : individualBIsToARelation}
             onChange={event => setIndividualBIsToARelation(event.target.value)}
             style={{ width: "300px" }}
