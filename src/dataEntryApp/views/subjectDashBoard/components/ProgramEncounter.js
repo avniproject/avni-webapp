@@ -7,7 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import _ from "lodash";
 import {
   getProgramEncounterForm,
-  getProgramEnrolment,
+  getProgramEncounterTypes,
   getUnplanProgramEncounters,
   setProgramEncounter,
   saveProgramEncounterComplete,
@@ -59,7 +59,7 @@ const useStyles = makeStyles(theme => ({
 const ProgramEncounter = ({
   match,
   getProgramEncounterForm,
-  getProgramEnrolment,
+  getProgramEncounterTypes,
   programEncounterForm,
   programEncounter,
   getUnplanProgramEncounters,
@@ -82,7 +82,7 @@ const ProgramEncounter = ({
     saveProgramEncounterComplete(false);
     (async function fetchData() {
       //For Planned Encounters List : To get list of ProgramEncounters from api
-      await getProgramEnrolment(enrolmentUuid);
+      await getProgramEncounterTypes(enrolmentUuid);
       //getSubjectProfile(programEnrolment.subjectUuid);
       console.log("programEnrolment from async", programEnrolment);
       //For Unplanned Encounters List : To get possible encounters from FormMapping
@@ -176,7 +176,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   getProgramEncounterForm,
-  getProgramEnrolment,
+  getProgramEncounterTypes,
   getUnplanProgramEncounters,
   setProgramEncounter,
   saveProgramEncounterComplete,

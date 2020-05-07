@@ -8,7 +8,7 @@ import {
   saveProgramEncounterComplete,
   setValidationResults,
   getUnplanProgramEncounters,
-  getProgramEnrolment
+  getProgramEncounterTypes
 } from "../reducers/programEncounterReducer";
 import api from "../api";
 import {
@@ -55,6 +55,7 @@ export function* programEnrolmentFetchWorker({ enrolmentUuid }) {
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
   console.log("programVisists", programEnrolment);
   yield put(setProgramEnrolment(programEnrolment));
+  yield put(getUnplanProgramEncounters("Individual", programEnrolment.program.uuid));
 }
 
 // For ProgramEncounter
@@ -80,7 +81,7 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
 
   yield put(getSubjectProfile(programEnrolment.subjectUuid));
 
-  yield put(getUnplanProgramEncounters("Individual", programEnrolment.program.uuid));
+  //yield put(getUnplanProgramEncounters("Individual", programEnrolment.program.uuid));
   //Get program enrolment
   const programEnrolmentDateTime = yield select(
     state => state.dataEntry.programEncounterReducer.programEnrolment.enrolmentDateTime

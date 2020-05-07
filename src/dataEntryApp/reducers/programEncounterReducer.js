@@ -34,7 +34,7 @@ export const setUnplanProgramEncounters = unplanProgramEncounters => ({
   unplanProgramEncounters
 });
 
-export const getProgramEnrolment = enrolmentUuid => ({
+export const getProgramEncounterTypes = enrolmentUuid => ({
   type: types.GET_PROGRAM_ENROLMENT,
   enrolmentUuid
 });

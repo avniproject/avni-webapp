@@ -90,8 +90,7 @@ const ProgramView = ({ programData }) => {
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-  console.log("program data");
-  console.log(programData);
+
   return (
     <div>
       <Grid container spacing={3}>
@@ -103,16 +102,8 @@ const ProgramView = ({ programData }) => {
         <Grid item xs={6}>
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
           <SubjectButton btnLabel={t("vaccinations")} />
-          {/* <SubjectButton btnLabel={t("newProgramVisit")} /> */}
           <InternalLink
-            to={{
-              pathname: "/app/subject/newProgramVisit",
-              search: `?uuid=${programData.uuid}&programUuid=${programData.program.uuid}`
-              // state: {
-              //   enrolmentUuid: `${programData.uuid}`,
-              //   programUuid: `${programData.program.uuid}`
-              // }
-            }}
+            to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
             noUnderline
           >
             <SubjectButton btnLabel={t("newProgramVisit")} />

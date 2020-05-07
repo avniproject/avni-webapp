@@ -1,20 +1,15 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import {
-  getProgramEnrolment,
-  getUnplanProgramEncounters
-} from "../../../reducers/programEncounterReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import moment from "moment";
 import { isEmpty, isNil } from "lodash";
 import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
-import { Typography } from "@material-ui/core";
+import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
-import { ModelGeneral as General, ProgramEncounter, ProgramEnrolment } from "avni-models";
+import { getProgramEncounterTypes } from "../../../reducers/programEncounterReducer";
+import { ProgramEncounter } from "avni-models";
 import NewProgramVisitMenuView from "./NewProgramVisitMenuView";
 
 const useStyles = makeStyles(theme => ({
@@ -30,74 +25,48 @@ const useStyles = makeStyles(theme => ({
 
 const NewProgramVisit = ({ match, x, ...props }) => {
   const { t } = useTranslation();
-
   const classes = useStyles();
+  const planEncounterList = [];
+  const unplanEncounterList = [];
+  const enrolmentUuid = match.queryParams.enrolUuid;
 
-  const plannedEncounterList = [];
-  const unplannedEncounterList = [];
-  const enrolmentUuid = match.queryParams.uuid;
-  const programUuid = match.queryParams.programUuid;
   useEffect(() => {
-    //For Planned Encounters List : To get list of ProgramEncounters from api
-    props.getProgramEnrolment(enrolmentUuid);
-    //For Unplanned Encounters List : To get possible encounters from FormMapping
-    // Using form type as "ProgramEncounter", program uuid, subject type uuid
-    props.getUnplanProgramEncounters("Individual", programUuid);
+    //Get Plan & Unplan Encounters
+    props.getProgramEncounterTypes(enrolmentUuid);
   }, []);
 
   console.log("all state", x);
 
-  //Creating New programEncounter Object for Planned Encounter
-
-  console.log(
-    "Filtered planned encunters ",
-    props.plannedEncounters
-      .filter(pe => !isNil(pe.encounterDateTime))
-      .filter(pe => !isNil(pe.encounterDateTime))
-  );
-  props.plannedEncounters
+  //Creating New programEncounter Object for Plan Encounter
+  props.planEncounters
     .filter(pe => isNil(pe.encounterDateTime))
     .map(planEncounter => {
-      console.log("Planned encounters date time", planEncounter.encounterDateTime);
-      const plannedVisit = new ProgramEncounter();
-      //plannedVisit.uuid = planEncounter.uuid;
-      plannedVisit.encounterType = planEncounter.encounterType; //select(state => state.operationalModules.encounterTypes.find(eT => eT.uuid = encounterTypeUuid));
-      plannedVisit.encounterDateTime = planEncounter.encounterDateTime; // moment().toDate(); or planEncounter.encounterDateTime
-      plannedVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
-      //plannedVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
-      plannedVisit.name = planEncounter.name;
-      //const programEnrolment = new ProgramEnrolment();
-      //programEnrolment.uuid = enrolmentUuid;
-      //plannedVisit.programEnrolment = programEnrolment;
-      //plannedVisit.observations = [];
-      plannedEncounterList.push(plannedVisit);
+      const planVisit = new ProgramEncounter();
+      planVisit.encounterType = planEncounter.encounterType;
+      planVisit.encounterDateTime = planEncounter.encounterDateTime;
+      planVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
+      planVisit.name = planEncounter.name;
+      planEncounterList.push(planVisit);
     });
 
-  //Creating New programEncounter Object for Unplanned Encounter
-  props.unplannedEncounters.map(unplanEncounter => {
-    const unplannedVisit = new ProgramEncounter();
-    //unplannedVisit.uuid = General.randomUUID();
-    unplannedVisit.encounterType = props.operationalModules.encounterTypes.find(
+  //Creating New programEncounter Object for Unplan Encounter
+  props.unplanEncounters.map(unplanEncounter => {
+    const unplanVisit = new ProgramEncounter();
+    unplanVisit.encounterType = props.operationalModules.encounterTypes.find(
       eT => eT.uuid === unplanEncounter.encounterTypeUUID
     );
-    unplannedVisit.name =
-      unplannedVisit.encounterType && unplannedVisit.encounterType.operationalEncounterTypeName;
-    // unplannedVisit.encounterDateTime = new Date();
-    //const programEnrolment = new ProgramEnrolment();
-    //programEnrolment.uuid = enrolmentUuid;
-    //unplannedVisit.programEnrolment = programEnrolment;
-    //unplannedVisit.observations = [];
-    unplannedEncounterList.push(unplannedVisit);
+    unplanVisit.name =
+      unplanVisit.encounterType && unplanVisit.encounterType.operationalEncounterTypeName;
+    unplanEncounterList.push(unplanVisit);
   });
 
   const sections = [];
-  if (!isEmpty(plannedEncounterList)) {
-    sections.push({ title: t("plannedVisits"), data: plannedEncounterList });
+  if (!isEmpty(planEncounterList)) {
+    sections.push({ title: t("plannedVisits"), data: planEncounterList });
   }
-  if (!isEmpty(unplannedEncounterList)) {
-    sections.push({ title: t("unplannedVisits"), data: unplannedEncounterList });
+  if (!isEmpty(unplanEncounterList)) {
+    sections.push({ title: t("unplannedVisits"), data: unplanEncounterList });
   }
-  console.log("Logging sections", sections);
 
   return (
     <Fragment>
@@ -107,7 +76,6 @@ const NewProgramVisit = ({ match, x, ...props }) => {
           New program visit
         </Typography>
         <LineBreak num={1} />
-
         <NewProgramVisitMenuView sections={sections} enrolmentUuid={enrolmentUuid} />
       </Paper>
     </Fragment>
@@ -115,10 +83,10 @@ const NewProgramVisit = ({ match, x, ...props }) => {
 };
 
 const mapStateToProps = state => ({
-  plannedEncounters: state.dataEntry.programEncounterReducer.programEnrolment
+  planEncounters: state.dataEntry.programEncounterReducer.programEnrolment
     ? state.dataEntry.programEncounterReducer.programEnrolment.programEncounters
     : [],
-  unplannedEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters
+  unplanEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters
     ? state.dataEntry.programEncounterReducer.unplanProgramEncounters
     : [],
   operationalModules: state.dataEntry.metadata.operationalModules,
@@ -126,8 +94,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  getProgramEnrolment,
-  getUnplanProgramEncounters
+  getProgramEncounterTypes
 };
 
 export default withRouter(
