@@ -287,107 +287,101 @@ export const CreateEditFilters = props => {
       <Title title="Filter Config" />
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Box mr={80}>
-            <>
-              <Grid container justify="flex-start">
-                <Grid item sm={12}>
-                  <div style={{ fontSize: 20, color: "rgba(0, 0, 0)" }}>{title}</div>
-                </Grid>
-                <Box mb={5} />
-                <Grid item sm={12}>
-                  <FormControl fullWidth>
-                    <InputLabel>Filter Name</InputLabel>
-                    <Input
-                      disableUnderline={false}
-                      value={filterName}
-                      onChange={event => setFilterName(event.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Box m={0.5} />
-                {renderSelect(
-                  "Subject Type",
-                  "Select Subject Type",
-                  selectedSubject,
-                  subjectTypeOptions,
-                  sub => setSubject(sub)
-                )}
-                <Box m={0.5} />
-                {renderSelect("Type", "Filter Type", selectedType, typeOptions, type =>
-                  onTypeChange(type)
-                )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" && (
-                  <Grid item sm={12}>
-                    <div>
-                      <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>
-                        Select Concept
-                      </div>
-                      <AsyncSelect
-                        cacheOptions
-                        defaultOptions={suggestions}
-                        value={selectedConcept}
-                        placeholder={"Type to search"}
-                        onChange={value => setConcept(value)}
-                        loadOptions={loadConcept}
-                      />
-                    </div>
-                  </Grid>
-                )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" &&
-                  renderSelect("Search Scope", "Scope", selectedScope, scopeOptions, scope =>
-                    onScopeChange(scope)
-                  )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" &&
-                  selectedScope.value === CustomFilter.scope.ProgramEnrolment &&
-                  renderMultiSelect(
-                    "Program",
-                    "Select Program",
-                    selectedProgram,
-                    programOptions,
-                    program => setProgram(program)
-                  )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" &&
-                  selectedScope.value === CustomFilter.scope.ProgramEncounter &&
-                  renderSelect(
-                    "Program",
-                    "Select Program",
-                    selectedProgram,
-                    programOptions,
-                    program => setProgram([program])
-                  )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" &&
-                  (selectedScope.value === CustomFilter.scope.ProgramEncounter ||
-                    selectedScope.value === CustomFilter.scope.Encounter) &&
-                  renderMultiSelect(
-                    "Encounter Type",
-                    "Select Encounter Type",
-                    selectedEncounter,
-                    encounterTypeOptions,
-                    enc => setEncounter(enc)
-                  )}
-                <Box m={0.5} />
-                {widgetRequired() &&
-                  renderSelect(
-                    "Widget Type",
-                    "Select Widget Type",
-                    selectedWidget,
-                    widgetOptions,
-                    w => setWidget(w)
-                  )}
+          <>
+            <Grid container justify="flex-start">
+              <Grid item sm={12}>
+                <div style={{ fontSize: 20, color: "rgba(0, 0, 0)" }}>{title}</div>
               </Grid>
-              <Box m={0.5}>
-                <SaveComponent
-                  name={t("save")}
-                  onSubmit={saveFilter}
-                  disabledFlag={saveDisabled()}
-                />
-              </Box>
-              <p />
-            </>
+              <Box mb={5} />
+              <Grid item sm={12}>
+                <FormControl fullWidth>
+                  <InputLabel>Filter Name</InputLabel>
+                  <Input
+                    disableUnderline={false}
+                    value={filterName}
+                    onChange={event => setFilterName(event.target.value)}
+                  />
+                </FormControl>
+              </Grid>
+              <Box m={0.5} />
+              {renderSelect(
+                "Subject Type",
+                "Select Subject Type",
+                selectedSubject,
+                subjectTypeOptions,
+                sub => setSubject(sub)
+              )}
+              <Box m={0.5} />
+              {renderSelect("Type", "Filter Type", selectedType, typeOptions, type =>
+                onTypeChange(type)
+              )}
+              <Box m={0.5} />
+              {selectedType.value === "Concept" && (
+                <Grid item sm={12}>
+                  <div>
+                    <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>Select Concept</div>
+                    <AsyncSelect
+                      cacheOptions
+                      defaultOptions={suggestions}
+                      value={selectedConcept}
+                      placeholder={"Type to search"}
+                      onChange={value => setConcept(value)}
+                      loadOptions={loadConcept}
+                    />
+                  </div>
+                </Grid>
+              )}
+              <Box m={0.5} />
+              {selectedType.value === "Concept" &&
+                renderSelect("Search Scope", "Scope", selectedScope, scopeOptions, scope =>
+                  onScopeChange(scope)
+                )}
+              <Box m={0.5} />
+              {selectedType.value === "Concept" &&
+                selectedScope.value === CustomFilter.scope.ProgramEnrolment &&
+                renderMultiSelect(
+                  "Program",
+                  "Select Program",
+                  selectedProgram,
+                  programOptions,
+                  program => setProgram(program)
+                )}
+              <Box m={0.5} />
+              {selectedType.value === "Concept" &&
+                selectedScope.value === CustomFilter.scope.ProgramEncounter &&
+                renderSelect(
+                  "Program",
+                  "Select Program",
+                  selectedProgram,
+                  programOptions,
+                  program => setProgram([program])
+                )}
+              <Box m={0.5} />
+              {selectedType.value === "Concept" &&
+                (selectedScope.value === CustomFilter.scope.ProgramEncounter ||
+                  selectedScope.value === CustomFilter.scope.Encounter) &&
+                renderMultiSelect(
+                  "Encounter Type",
+                  "Select Encounter Type",
+                  selectedEncounter,
+                  encounterTypeOptions,
+                  enc => setEncounter(enc)
+                )}
+              <Box m={0.5} />
+              {widgetRequired() &&
+                renderSelect(
+                  "Widget Type",
+                  "Select Widget Type",
+                  selectedWidget,
+                  widgetOptions,
+                  w => setWidget(w)
+                )}
+            </Grid>
+            <Box m={0.5}>
+              <SaveComponent name={t("save")} onSubmit={saveFilter} disabledFlag={saveDisabled()} />
+            </Box>
+            <p />
+          </>
         </Box>
         {messageStatus.display && (
           <CustomizedSnackbar
