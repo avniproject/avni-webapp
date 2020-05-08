@@ -44,7 +44,8 @@ const useStyle = makeStyles(theme => ({
     margin: theme.spacing(1)
   },
   searchBtnShadow: {
-    boxShadow: "none"
+    boxShadow: "none",
+    backgroundColor: "#0e6eff"
   },
   createButtonHolder: {
     flex: 1

@@ -19,7 +19,7 @@ const AntTab = withStyles(theme => ({
     "&$selected": {
       backgroundColor: "#dae8fe",
       borderRight: "2px solid #1890ff",
-      height: "36px"
+      height: "35px"
     },
     color: "#2196f3",
     fontSize: "14px",
@@ -41,7 +41,8 @@ const useStyles = makeStyles(theme => ({
   },
   activeProgramLabel: {
     fontSize: "12px",
-    color: "#555555"
+    color: "#555555",
+    fontWeight: "500"
   },
   exitedProgramBar: {
     maxWidth: "372px",
@@ -49,7 +50,8 @@ const useStyles = makeStyles(theme => ({
   },
   exitedProgramLabel: {
     fontSize: "12px",
-    color: "#555555"
+    color: "#555555",
+    fontWeight: "500"
   }
 }));
 

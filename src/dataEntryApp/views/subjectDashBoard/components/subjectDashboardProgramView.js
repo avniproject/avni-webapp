@@ -18,29 +18,34 @@ import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
-    fontSize: "18px"
+    fontSize: "18px",
+    fontWeight: "500"
   },
   growthButtonStyle: {
     marginBottom: theme.spacing(2),
     height: "28px",
     boxShadow: "none",
     marginRight: "10px",
-    marginLeft: "120px"
+    marginLeft: "120px",
+    backgroundColor: "#0e6eff"
   },
   vaccinationButtonStyle: {
     marginBottom: theme.spacing(2),
     boxShadow: "none",
-    height: "28px"
+    height: "28px",
+    backgroundColor: "#0e6eff"
   },
   newProgVisitButtonStyle: {
     marginBottom: theme.spacing(2),
     boxShadow: "none",
     height: "28px",
-    marginLeft: "10px"
+    marginLeft: "10px",
+    backgroundColor: "#0e6eff"
   },
   root: {
     flexGrow: 1,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    boxShadow: "0px 1px 3px 1px rgba(0,0,0,0.2)"
   },
   expansionPanel: {
     marginBottom: "11px"
@@ -61,7 +66,8 @@ const useStyles = makeStyles(theme => ({
   expansionHeading: {
     fontSize: theme.typography.pxToRem(16),
     flexBasis: "33.33%",
-    flexShrink: 0
+    flexShrink: 0,
+    fontWeight: "500"
   },
   listItem: {
     paddingBottom: "0px",
@@ -93,6 +99,10 @@ const useStyles = makeStyles(theme => ({
   visitButton: {
     marginLeft: "8px",
     fontSize: "14px"
+  },
+  gridBottomBorder: {
+    borderBottom: "1px solid rgba(0,0,0,0.12)",
+    paddingBottom: "10px"
   }
 }));
 
@@ -198,7 +208,7 @@ const ProgramView = ({ programData }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} className={classes.gridBottomBorder}>
               {programData && programData.encounters
                 ? programData.encounters.map((row, index) =>
                     row.encounterDateTime && row.encounterType ? (

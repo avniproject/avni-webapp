@@ -21,7 +21,8 @@ const useStyles = makeStyles(theme => ({
   expansionHeading: {
     fontSize: theme.typography.pxToRem(16),
     flexBasis: "33.33%",
-    flexShrink: 0
+    flexShrink: 0,
+    fontWeight: "500"
   },
   expansionSecondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
@@ -81,15 +82,13 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             aria-controls="registrationPanelbh-content"
             id="registrationPanelbh-header"
           >
-            <div>
-              <h5>
-                {t("registration")} {t("details")}
-              </h5>
+            <Typography component={"span"} className={classes.expansionHeading}>
+              {t("registration")} {t("details")}
               <p>
                 {t("registrationDate")}:{" "}
                 {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
               </p>
-            </div>
+            </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid item xs={12}>
