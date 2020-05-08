@@ -8,7 +8,6 @@ import moment from "moment/moment";
 import Form from "../../components/Form";
 import Summary from "./Summary";
 import { Box, Typography, Paper, Chip, Button } from "@material-ui/core";
-import CustomizedDialog from "../../components/Dialog";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 import { FormElementGroup, ValidationResults } from "avni-models";
@@ -204,12 +203,6 @@ const FormWizard = ({
 }) => {
   if (!form) return <div />;
   const [redirect, setRedirect] = React.useState(false);
-
-  // const onOkHandler = pressedOk => {
-  //   BrowserStore.clear("subject");
-  //   setRedirect(true);
-  // };
-
   const classes = useStyle();
   const { t } = useTranslation();
   const history = useHistory();
@@ -350,13 +343,6 @@ const FormWizard = ({
               <CustomizedSnackbar
                 message={t(message || "Your details have been successfully registered.")}
               />
-              // <CustomizedDialog
-              //   showSuccessIcon="true"
-              //   message={t("Your details have been successfully registered.")}
-              //   showOkbtn="true"
-              //   openDialogContainer={true}
-              //   onOk={onOkHandler}
-              // />
             )}
           </Paper>
         </div>
