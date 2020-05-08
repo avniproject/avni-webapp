@@ -24,7 +24,6 @@ const AntTab = withStyles(theme => ({
     color: "#2196f3",
     fontSize: "14px",
     minHeight: "35px",
-    fontFamily: "Roboto Reg",
     borderRight: "2px solid #1890ff",
     textTransform: "none"
   },
@@ -42,7 +41,6 @@ const useStyles = makeStyles(theme => ({
   },
   activeProgramLabel: {
     fontSize: "12px",
-    fontFamily: "Roboto Reg",
     color: "#555555"
   },
   exitedProgramBar: {
@@ -51,7 +49,6 @@ const useStyles = makeStyles(theme => ({
   },
   exitedProgramLabel: {
     fontSize: "12px",
-    fontFamily: "Roboto Reg",
     color: "#555555"
   }
 }));

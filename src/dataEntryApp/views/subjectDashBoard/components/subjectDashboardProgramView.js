@@ -108,12 +108,12 @@ const ProgramView = ({ programData }) => {
   return (
     <div>
       <Grid container spacing={3}>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <label className={classes.programLabel}>
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
         </Grid>
-        <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
+        <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
           <SubjectButton btnLabel={t("vaccinations")} btnClass={classes.vaccinationButtonStyle} />
           <SubjectButton
