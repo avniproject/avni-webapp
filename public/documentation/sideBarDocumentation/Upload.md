@@ -1,8 +1,5 @@
-Reference and Transactional data can be uploaded from this screen.
+You can upload users, subjects, enrolments and encounters in bulk in this screen. Metadata zip files that have been downloaded from another organisation can also be uploaded in this screen.
 
-1. Locations : _To upload location hierarchy of the organisation._
-2. Users & Catchments : _To upload users and catchments of the organisation._
-3. Metadata Zip : _To upload other metadata like concepts, forms, subject type, programs etc. All the metadata of an organisation can be downloaded from [bundle](#/appdesigner/bundle) screen._
-4. Other options : Depending on the type of forms(registration, enrolment, encounter) configured in the organisation other options will show up.
+All files except the metadata zip are supposed to be in a [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) format. If you use Microsoft Excel, it has an option to save your spreadsheet in CSV format.
 
-Sample file for each upload can be downloaded from **Download Sample** option.
+Use the **Download Sample** option to download a sample file. More details about the sample file are available [here](https://dash.readme.io/project/avni/v2.0/docs/upload-data)

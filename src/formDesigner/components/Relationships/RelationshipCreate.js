@@ -8,6 +8,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { cloneDeep } from "lodash";
 import { Redirect } from "react-router-dom";
+import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 
 function RelationshipCreate() {
   const [relationshipName, setRelationshipName] = useState("");
@@ -81,51 +82,53 @@ function RelationshipCreate() {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={"Create Relationship"} />
-        {!isIndividualSubjectTypeAvailable && (
-          <div style={{ color: "red", size: "10" }}>
-            Please create an Individual subject type to enable this screen{" "}
-          </div>
-        )}
-        {error === "existName" && (
-          <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>
-        )}
-        {error === "emptyName" && (
-          <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>
-        )}
+        <DocumentationContainer filename={"Relationship.md"}>
+          {!isIndividualSubjectTypeAvailable && (
+            <div style={{ color: "red", size: "10" }}>
+              Please create an Individual subject type to enable this screen{" "}
+            </div>
+          )}
+          {error === "existName" && (
+            <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>
+          )}
+          {error === "emptyName" && (
+            <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>
+          )}
 
-        <TextField
-          id="name"
-          label="Name*"
-          autoComplete="off"
-          value={relationshipName}
-          onChange={event => setRelationshipName(event.target.value)}
-        />
-        <div style={{ marginTop: "1%" }}>
-          Genders
-          <br />
-          {genders.map(gender => {
-            return (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={relationshipGenders.includes(gender.name) ? true : false}
-                    name={gender.name}
-                  />
-                }
-                label={gender.name}
-                key={gender.uuid}
-                onClick={() => checkGender(gender.name)}
-              />
-            );
-          })}
-          <br />
-          <SaveComponent
-            name="save"
-            onSubmit={() => onSubmitRelationship()}
-            disabledFlag={!isIndividualSubjectTypeAvailable}
+          <TextField
+            id="name"
+            label="Name*"
+            autoComplete="off"
+            value={relationshipName}
+            onChange={event => setRelationshipName(event.target.value)}
           />
-        </div>
-        {id !== "" && <Redirect to={"/appDesigner/relationship/" + id + "/show"} />}
+          <div style={{ marginTop: "1%" }}>
+            Genders
+            <br />
+            {genders.map(gender => {
+              return (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={relationshipGenders.includes(gender.name) ? true : false}
+                      name={gender.name}
+                    />
+                  }
+                  label={gender.name}
+                  key={gender.uuid}
+                  onClick={() => checkGender(gender.name)}
+                />
+              );
+            })}
+            <br />
+            <SaveComponent
+              name="save"
+              onSubmit={() => onSubmitRelationship()}
+              disabledFlag={!isIndividualSubjectTypeAvailable}
+            />
+          </div>
+          {id !== "" && <Redirect to={"/appDesigner/relationship/" + id + "/show"} />}
+        </DocumentationContainer>
       </Box>
     </>
   );

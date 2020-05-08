@@ -13,6 +13,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import { Redirect } from "react-router-dom";
+import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 
 function RelationshipEdit(props) {
   const [relationshipName, setRelationshipName] = useState("");
@@ -110,66 +111,71 @@ function RelationshipEdit(props) {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={"Edit Relationship"} />
-        <Grid container item={12} style={{ justifyContent: "flex-end" }}>
-          <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
-            <VisibilityIcon /> Show
-          </Button>
-        </Grid>
-
-        {!isIndividualSubjectTypeAvailable && (
-          <div style={{ color: "red", size: "10" }}>
-            Go to subject type and please create Individual named subject type{" "}
-          </div>
-        )}
-        {error === "existName" && (
-          <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>
-        )}
-        {error === "emptyName" && (
-          <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>
-        )}
-
-        <TextField
-          id="name"
-          label="Name*"
-          autoComplete="off"
-          value={relationshipName}
-          onChange={event => setRelationshipName(event.target.value)}
-        />
-        <div style={{ marginTop: "1%" }}>
-          Genders
-          <br />
-          {genders.map(gender => {
-            return (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={relationshipGenders.includes(gender.name) ? true : false}
-                    name={gender.name}
-                  />
-                }
-                label={gender.name}
-                key={gender.uuid}
-                onClick={() => checkGender(gender.name)}
-              />
-            );
-          })}
-          <br />
-        </div>
-
-        <Grid container item sm={12}>
-          <Grid item sm={1}>
-            <SaveComponent
-              name="save"
-              onSubmit={() => onSubmitRelationship()}
-              disabledFlag={!setIsIndividualSubjectTypeAvailable}
-            />{" "}
-          </Grid>
-          <Grid item sm={11}>
-            <Button style={{ float: "right", color: "red" }} onClick={() => onDeleteRelationship()}>
-              <DeleteIcon /> Delete
+        <DocumentationContainer filename={"Relationship.md"}>
+          <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+            <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
+              <VisibilityIcon /> Show
             </Button>
           </Grid>
-        </Grid>
+
+          {!isIndividualSubjectTypeAvailable && (
+            <div style={{ color: "red", size: "10" }}>
+              Go to subject type and please create Individual named subject type{" "}
+            </div>
+          )}
+          {error === "existName" && (
+            <div style={{ color: "red", size: "6" }}>Same relationship is already present</div>
+          )}
+          {error === "emptyName" && (
+            <div style={{ color: "red", size: "6" }}>Empty name is not allowed</div>
+          )}
+
+          <TextField
+            id="name"
+            label="Name*"
+            autoComplete="off"
+            value={relationshipName}
+            onChange={event => setRelationshipName(event.target.value)}
+          />
+          <div style={{ marginTop: "1%" }}>
+            Genders
+            <br />
+            {genders.map(gender => {
+              return (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={relationshipGenders.includes(gender.name) ? true : false}
+                      name={gender.name}
+                    />
+                  }
+                  label={gender.name}
+                  key={gender.uuid}
+                  onClick={() => checkGender(gender.name)}
+                />
+              );
+            })}
+            <br />
+          </div>
+
+          <Grid container item sm={12}>
+            <Grid item sm={1}>
+              <SaveComponent
+                name="save"
+                onSubmit={() => onSubmitRelationship()}
+                disabledFlag={!setIsIndividualSubjectTypeAvailable}
+              />{" "}
+            </Grid>
+            <Grid item sm={11}>
+              <Button
+                style={{ float: "right", color: "red" }}
+                onClick={() => onDeleteRelationship()}
+              >
+                <DeleteIcon /> Delete
+              </Button>
+            </Grid>
+          </Grid>
+        </DocumentationContainer>
       </Box>
       {redirectShow && <Redirect to={`/appDesigner/relationship/${props.match.params.id}/show`} />}
       {redirectAfterDelete && <Redirect to="/appDesigner/relationship" />}

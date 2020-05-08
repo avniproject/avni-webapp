@@ -1,0 +1,1 @@
+Relationship Types define the different kind of relationships, and their reverse relationships. For example, the reverse relationship of a relationship "Son" could be "Mother" or "Father" (or "Guardian", or "Parent" depending on how you model relationships).

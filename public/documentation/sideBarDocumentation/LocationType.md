@@ -2,7 +2,7 @@ Your service area is a hierarchy of different locations (eg: district, taluka, v
 
 All Subjects are associated with Locations. The field app requires you to provide this location to the lowest level available in the system.
 
-#### Uploading Locations
+**Uploading Locations**
 
 You can also upload locations using the Upload screen. This option will automatically create Location Types.
 

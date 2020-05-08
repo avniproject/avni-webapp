@@ -1,1 +1,1 @@
-Configuration from an organisation can be exported and imported into another organisation. This helps migrating the implementation of a program from one organisation to another. For uploading this bundle go to [upload](#/admin/upload) screen.
+Configuration from an organisation can be exported and imported into another organisation. This helps migrating the implementation of a program from one organisation to another.

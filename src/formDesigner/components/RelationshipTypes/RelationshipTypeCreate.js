@@ -9,6 +9,7 @@ import FormControl from "@material-ui/core/FormControl";
 import _, { isEmpty } from "lodash";
 import { SaveComponent } from "../../../common/components/SaveComponent";
 import { Redirect } from "react-router-dom";
+import { DocumentationContainer } from "../../../common/components/DocumentationContainer";
 
 function RelationshipTypeCreate() {
   const [individualAIsToBRelation, setIndividualAIsToBRelation] = useState({});
@@ -83,64 +84,66 @@ function RelationshipTypeCreate() {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <Title title={"Create Relationship Type"} />
-        {!isIndividualSubjectTypeAvailable && (
-          <div style={{ color: "red", size: "10" }}>
-            Please create an Individual subject type to enable this screen{" "}
-          </div>
-        )}
+        <DocumentationContainer filename={"RelationshipType.md"}>
+          {!isIndividualSubjectTypeAvailable && (
+            <div style={{ color: "red", size: "10" }}>
+              Please create an Individual subject type to enable this screen{" "}
+            </div>
+          )}
 
-        {error.individualAIsToBRelationError !== "" && (
-          <div style={{ color: "red", size: "6" }}>{error.individualAIsToBRelationError}</div>
-        )}
-        <FormControl>
-          <InputLabel id="individualAIsToBRelation">Select Relationship*</InputLabel>
-          <Select
-            label="Select Relationship"
-            value={_.isEmpty(individualAIsToBRelation) ? "" : individualAIsToBRelation}
-            onChange={event => setIndividualAIsToBRelation(event.target.value)}
-            style={{ width: "300px" }}
-            required
-          >
-            {relations.map(relation => {
-              return (
-                <MenuItem value={relation} key={relation.uuid}>
-                  {relation.name}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-        <br />
-        <br />
-        {error.individualBIsToARelationError !== "" && (
-          <div style={{ color: "red", size: "6" }}>{error.individualBIsToARelationError}</div>
-        )}
-        <FormControl>
-          <InputLabel id="individualBIsToARelation">Select Reverse Relationship*</InputLabel>
-          <Select
-            label="Select Reverse Relationship"
-            value={_.isEmpty(individualBIsToARelation) ? "" : individualBIsToARelation}
-            onChange={event => setIndividualBIsToARelation(event.target.value)}
-            style={{ width: "300px" }}
-            required
-          >
-            {relations.map(relation => {
-              return (
-                <MenuItem value={relation} key={relation.uuid}>
-                  {relation.name}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-        <br />
-        <SaveComponent
-          name="save"
-          onSubmit={() => onSubmitRelationshipType()}
-          disabledFlag={!isIndividualSubjectTypeAvailable}
-          styleClass={{ marginTop: "10px" }}
-        />
-        {redirect && <Redirect to={"/appDesigner/relationshipType/"} />}
+          {error.individualAIsToBRelationError !== "" && (
+            <div style={{ color: "red", size: "6" }}>{error.individualAIsToBRelationError}</div>
+          )}
+          <FormControl>
+            <InputLabel id="individualAIsToBRelation">Select Relationship*</InputLabel>
+            <Select
+              label="Select Relationship"
+              value={_.isEmpty(individualAIsToBRelation) ? "" : individualAIsToBRelation}
+              onChange={event => setIndividualAIsToBRelation(event.target.value)}
+              style={{ width: "300px" }}
+              required
+            >
+              {relations.map(relation => {
+                return (
+                  <MenuItem value={relation} key={relation.uuid}>
+                    {relation.name}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <br />
+          <br />
+          {error.individualBIsToARelationError !== "" && (
+            <div style={{ color: "red", size: "6" }}>{error.individualBIsToARelationError}</div>
+          )}
+          <FormControl>
+            <InputLabel id="individualBIsToARelation">Select Reverse Relationship*</InputLabel>
+            <Select
+              label="Select Reverse Relationship"
+              value={_.isEmpty(individualBIsToARelation) ? "" : individualBIsToARelation}
+              onChange={event => setIndividualBIsToARelation(event.target.value)}
+              style={{ width: "300px" }}
+              required
+            >
+              {relations.map(relation => {
+                return (
+                  <MenuItem value={relation} key={relation.uuid}>
+                    {relation.name}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <br />
+          <SaveComponent
+            name="save"
+            onSubmit={() => onSubmitRelationshipType()}
+            disabledFlag={!isIndividualSubjectTypeAvailable}
+            styleClass={{ marginTop: "10px" }}
+          />
+          {redirect && <Redirect to={"/appDesigner/relationshipType/"} />}
+        </DocumentationContainer>
       </Box>
     </>
   );
