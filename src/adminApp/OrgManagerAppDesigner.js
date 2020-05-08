@@ -60,12 +60,12 @@ class OrgManagerAppDesigner extends Component {
           <Resource
             name="myDashboardFilters"
             options={{ label: "My Dashboard Filters" }}
-            list={WithProps({ organisation }, customFilters)}
+            list={WithProps({ organisation, filename: "MyDashboardFilter.md" }, customFilters)}
           />
           <Resource
             name="searchFilters"
             options={{ label: "Search Filters" }}
-            list={WithProps({ organisation }, customFilters)}
+            list={WithProps({ organisation, filename: "SearchFilter.md" }, customFilters)}
           />
           <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
           <Resource name={"checklist"} options={{ label: "Checklist" }} list={ChecklistDetails} />

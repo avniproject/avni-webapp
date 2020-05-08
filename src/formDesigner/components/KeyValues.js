@@ -8,6 +8,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import { ToolTip } from "../../common/components/ToolTip";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -83,9 +84,19 @@ export default function KeyValues({
         </Grid>
       ))}
       {error && <FormHelperText error>Key-Value can't be blank</FormHelperText>}
-      <Button type="button" className={useStyles.button} color="primary" onClick={onAddNewKeyValue}>
-        Add New Key-Value
-      </Button>
+      <Grid container>
+        <Button
+          type="button"
+          className={useStyles.button}
+          color="primary"
+          onClick={onAddNewKeyValue}
+        >
+          Add New Key-Value
+        </Button>
+        <Grid item xs={4}>
+          <ToolTip toolTipKey={"APP_DESIGNER_CONCEPT_KEY_VALUE"} />
+        </Grid>
+      </Grid>
     </Box>
   );
 }

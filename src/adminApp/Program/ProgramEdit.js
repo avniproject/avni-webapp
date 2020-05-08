@@ -33,6 +33,10 @@ import {
 } from "../domain/formMapping";
 import SelectForm from "../SubjectType/SelectForm";
 import { SaveComponent } from "../../common/components/SaveComponent";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import { AvniSelect } from "../../common/components/AvniSelect";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -148,12 +152,13 @@ const ProgramEdit = props => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          <TextField
+          <AvniTextField
             id="name"
             label="Name"
             autoComplete="off"
             value={program.name}
             onChange={event => dispatch({ type: "name", payload: event.target.value })}
+            toolTipKey={"APP_DESIGNER_PROGRAM_NAME"}
           />
           <div />
           {nameValidation && (
@@ -168,23 +173,19 @@ const ProgramEdit = props => {
           )}
           <p />
           <p />
-          <FormControl>
-            <InputLabel id="subjectType">Select Subject Type</InputLabel>
-            <Select
-              label="Select subject type"
-              value={subjectT}
-              onChange={event => setSubjectT(event.target.value)}
-              style={{ width: "200px" }}
-            >
-              {subjectType.map(subject => {
-                return (
-                  <MenuItem value={subject} key={subject.name}>
-                    {subject.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
+          <AvniSelect
+            label="Select Subject Type *"
+            value={_.isEmpty(subjectT) ? "" : subjectT}
+            onChange={event => setSubjectT(event.target.value)}
+            style={{ width: "200px" }}
+            required
+            options={subjectType.map(option => (
+              <MenuItem value={option} key={option.uuid}>
+                {option.name}
+              </MenuItem>
+            ))}
+            toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_TYPE"}
+          />
           <div />
           {subjectValidation && (
             <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
@@ -192,8 +193,7 @@ const ProgramEdit = props => {
             </FormLabel>
           )}
           <p />
-          <FormLabel>Colour Picker</FormLabel>
-          <br />
+          <AvniFormLabel label={"Colour Picker"} toolTipKey={"APP_DESIGNER_PROGRAM_COLOR"} />
           <ColorPicker
             id="colour"
             label="Colour"
@@ -202,7 +202,7 @@ const ProgramEdit = props => {
             onChange={color => dispatch({ type: "colour", payload: color.color })}
           />
           <br />
-          <TextField
+          <AvniTextField
             id="programsubjectlabel"
             label="Program Subject Label"
             autoComplete="off"
@@ -210,37 +210,39 @@ const ProgramEdit = props => {
             onChange={event =>
               dispatch({ type: "programSubjectLabel", payload: event.target.value })
             }
+            toolTipKey={"APP_DESIGNER_PROGRAM_SUBJECT_LABEL"}
           />
           <p />
-          <FormControl>
-            <SelectForm
-              label={"Select Enrolment Form"}
-              value={_.get(program, "programEnrolmentForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programEnrolmentForm",
-                  payload: selectedForm
-                })
-              }
-              formList={findProgramEnrolmentForms(formList)}
-            />
-          </FormControl>
+          <AvniSelectForm
+            label={"Select Enrolment Form"}
+            value={_.get(program, "programEnrolmentForm.formName")}
+            onChange={selectedForm =>
+              dispatch({
+                type: "programEnrolmentForm",
+                payload: selectedForm
+              })
+            }
+            formList={findProgramEnrolmentForms(formList)}
+            toolTipKey={"APP_DESIGNER_PROGRAM_ENROLMENT_FORM"}
+          />
           <p />
-          <FormControl>
-            <SelectForm
-              label={"Select Exit Form"}
-              value={_.get(program, "programExitForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programExitForm",
-                  payload: selectedForm
-                })
-              }
-              formList={findProgramExitForms(formList)}
-            />
-          </FormControl>
+          <AvniSelectForm
+            label={"Select Exit Form"}
+            value={_.get(program, "programExitForm.formName")}
+            onChange={selectedForm =>
+              dispatch({
+                type: "programExitForm",
+                payload: selectedForm
+              })
+            }
+            formList={findProgramExitForms(formList)}
+            toolTipKey={"APP_DESIGNER_PROGRAM_EXIT_FORM"}
+          />
           <p />
-          <FormLabel>Enrolment Summary Rule</FormLabel>
+          <AvniFormLabel
+            label={"Enrolment Summary Rule"}
+            toolTipKey={"APP_DESIGNER_PROGRAM_SUMMARY_RULE"}
+          />
           <Editor
             value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
             onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
@@ -255,7 +257,10 @@ const ProgramEdit = props => {
             }}
           />
           <p />
-          <FormLabel>Enrolment Eligibility Check Rule</FormLabel>
+          <AvniFormLabel
+            label={"Enrolment Eligibility Check Rule"}
+            toolTipKey={"APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE"}
+          />
           <Editor
             value={
               program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""

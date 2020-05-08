@@ -22,6 +22,9 @@ import {
 import { None } from "../common/components/utils";
 import { isNil } from "lodash";
 import { Title } from "./components/Title";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { AvniTextInput } from "./components/AvniTextInput";
+import { Paper } from "@material-ui/core";
 
 export const LocationTypeList = props => (
   <List
@@ -96,8 +99,18 @@ const CreateEditToolbar = ({ edit, ...props }) => (
 const LocationTypeForm = ({ edit, ...props }) => {
   return (
     <SimpleForm toolbar={<CreateEditToolbar edit={edit} />} {...props} redirect="show">
-      <TextInput source="name" label="Name" validate={required()} />
-      <TextInput source="level" label="Level" validate={[required(), number()]} />
+      <AvniTextInput
+        source="name"
+        label="Name"
+        validate={required()}
+        toolTipKey={"ADMIN_LOCATION_TYPE_NAME"}
+      />
+      <AvniTextInput
+        source="level"
+        label="Level"
+        validate={[required(), number()]}
+        toolTipKey={"ADMIN_LOCATION_TYPE_LEVEL"}
+      />
       {edit ? (
         <ParentReferenceField label="Parent Type" />
       ) : (
@@ -110,9 +123,13 @@ const LocationTypeForm = ({ edit, ...props }) => {
 };
 
 export const LocationTypeCreate = props => (
-  <Create {...props} title="Add new Location Type">
-    <LocationTypeForm />
-  </Create>
+  <Paper>
+    <DocumentationContainer filename={"LocationType.md"}>
+      <Create {...props} title="Add new Location Type">
+        <LocationTypeForm />
+      </Create>
+    </DocumentationContainer>
+  </Paper>
 );
 
 export const LocationTypeEdit = props => (
