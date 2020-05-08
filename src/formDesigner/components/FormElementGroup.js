@@ -21,6 +21,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import { TabContainer } from "../views/FormDetails";
 import { FormElementGroupRule } from "./FormElementGroupRule";
+import { ToolTip } from "../../common/components/ToolTip";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -242,7 +243,7 @@ function FormElementGroup(props) {
                     {props.groupData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </div>
 
-                  <Grid container item sm={12}>
+                  <Grid container sm={12}>
                     <Grid item sm={8}>
                       <Typography component={"div"} className={classes.heading}>
                         {props.groupData.error && (
@@ -263,19 +264,24 @@ function FormElementGroup(props) {
                       </Typography>
                     </Grid>
 
-                    <Grid item sm={3}>
+                    <Grid item sm={2}>
                       <Typography component={"div"} className={classes.questionCount}>
                         No. of questions : {questionCount}
                       </Typography>
                     </Grid>
                   </Grid>
-                  <IconButton
-                    className={classes.deleteicon}
-                    aria-label="delete"
-                    onClick={handleDelete}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  <Grid item sm={1}>
+                    <IconButton
+                      className={classes.deleteicon}
+                      aria-label="delete"
+                      onClick={handleDelete}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Grid>
+                  <Grid item sm={1}>
+                    <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"} onHover />
+                  </Grid>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
                   <Typography component={"span"} className={classes.root}>

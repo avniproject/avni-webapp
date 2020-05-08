@@ -214,7 +214,7 @@ const Export = ({
     >
       {operationalModules && (
         <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
-          <DocumentationContainer>
+          <DocumentationContainer filename={"Report.md"}>
             <Grid>
               <ReportOptions />
               {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}

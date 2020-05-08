@@ -30,6 +30,7 @@ import Mandatory from "@material-ui/icons/CheckCircleOutline";
 import NonMandatory from "@material-ui/icons/HighlightOff";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
+import { ToolTip } from "../../common/components/ToolTip";
 
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
@@ -201,8 +202,8 @@ function FormElement(props) {
             )}
           </Typography>
         </div>
-        <Grid container item sm={12}>
-          <Grid item sm={10} style={{ paddingTop: "10px" }}>
+        <Grid container sm={12} alignItems={"center"}>
+          <Grid item sm={9} style={{ paddingTop: "10px" }}>
             <Typography component={"span"} className={classes.heading}>
               <span className={classes.expandIcon}>
                 {props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -213,8 +214,7 @@ function FormElement(props) {
             </Typography>
           </Grid>
 
-          <Grid item sm={2} className={classes.requiredIcon}>
-            {/* <div className={classes.requiredIcon}> */}
+          <Grid item sm={1}>
             {props.formElementData.mandatory ? (
               <Tooltip title="Required">
                 <Mandatory className={classes.iconMandatory} />
@@ -224,12 +224,14 @@ function FormElement(props) {
                 <NonMandatory className={classes.iconNonMandatory} />
               </Tooltip>
             )}
-            {/* </span>
-              <span className={classes.deleteicon}> */}
+          </Grid>
+          <Grid item sm={1}>
             <IconButton aria-label="delete" onClick={handleDelete}>
               <DeleteIcon />
             </IconButton>
-            {/* </div> */}
+          </Grid>
+          <Grid item sm={1}>
+            <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} onHover />
           </Grid>
         </Grid>
       </ExpansionPanelSummary>

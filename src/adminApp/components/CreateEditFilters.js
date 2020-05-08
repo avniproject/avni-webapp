@@ -3,8 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl, Input, InputLabel } from "@material-ui/core";
 import Select from "react-select";
 import _, { deburr } from "lodash";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import http from "common/utils/httpClient";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
@@ -14,6 +12,8 @@ import { CustomFilter, Concept } from "avni-models";
 import { useTranslation } from "react-i18next";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { AvniTextField } from "../../common/components/AvniTextField";
 
 export const CreateEditFilters = props => {
   const { t } = useTranslation();
@@ -192,31 +192,27 @@ export const CreateEditFilters = props => {
     };
   };
 
-  const renderSelect = (name, placeholder, value, options, onChange) => {
+  const renderSelect = (name, placeholder, value, options, onChange, toolTipKey) => {
     return (
-      <Grid item sm={12}>
-        <div>
-          <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>{name}</div>
-          <Select placeholder={placeholder} value={value} options={options} onChange={onChange} />
-        </div>
-      </Grid>
+      <div style={{ width: 400 }}>
+        <AvniFormLabel label={name} toolTipKey={toolTipKey} />
+        <Select placeholder={placeholder} value={value} options={options} onChange={onChange} />
+      </div>
     );
   };
 
-  const renderMultiSelect = (name, placeholder, value, options, onChange) => {
+  const renderMultiSelect = (name, placeholder, value, options, onChange, toolTipKey) => {
     return (
-      <Grid item sm={12}>
-        <div>
-          <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>{name}</div>
-          <Select
-            isMulti
-            placeholder={placeholder}
-            value={value}
-            options={options}
-            onChange={onChange}
-          />
-        </div>
-      </Grid>
+      <div style={{ width: 400 }}>
+        <AvniFormLabel label={name} toolTipKey={toolTipKey} />
+        <Select
+          isMulti
+          placeholder={placeholder}
+          value={value}
+          options={options}
+          onChange={onChange}
+        />
+      </div>
     );
   };
 
@@ -286,110 +282,118 @@ export const CreateEditFilters = props => {
   return (
     <div>
       <Title title="Filter Config" />
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <DocumentationContainer>
-          <Box mr={80}>
-            <>
-              <Grid container justify="flex-start">
-                <Grid item sm={12}>
-                  <div style={{ fontSize: 20, color: "rgba(0, 0, 0)" }}>{title}</div>
-                </Grid>
-                <Box mb={5} />
-                <Grid item sm={12}>
-                  <FormControl fullWidth>
-                    <InputLabel>Filter Name</InputLabel>
-                    <Input
-                      disableUnderline={false}
-                      value={filterName}
-                      onChange={event => setFilterName(event.target.value)}
-                    />
-                  </FormControl>
-                </Grid>
-                <Box m={0.5} />
-                {renderSelect(
-                  "Subject Type",
-                  "Select Subject Type",
-                  selectedSubject,
-                  subjectTypeOptions,
-                  sub => setSubject(sub)
-                )}
-                <Box m={0.5} />
-                {renderSelect("Type", "Filter Type", selectedType, typeOptions, type =>
-                  onTypeChange(type)
-                )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" && (
-                  <Grid item sm={12}>
-                    <div>
-                      <div style={{ fontSize: 12, color: "rgba(0, 0, 0, 0.54)" }}>
-                        Select Concept
-                      </div>
-                      <AsyncSelect
-                        cacheOptions
-                        defaultOptions={suggestions}
-                        value={selectedConcept}
-                        placeholder={"Type to search"}
-                        onChange={value => setConcept(value)}
-                        loadOptions={loadConcept}
-                      />
-                    </div>
-                  </Grid>
-                )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" &&
-                  renderSelect("Search Scope", "Scope", selectedScope, scopeOptions, scope =>
-                    onScopeChange(scope)
-                  )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" &&
-                  selectedScope.value === CustomFilter.scope.ProgramEnrolment &&
-                  renderMultiSelect(
-                    "Program",
-                    "Select Program",
-                    selectedProgram,
-                    programOptions,
-                    program => setProgram(program)
-                  )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" &&
-                  selectedScope.value === CustomFilter.scope.ProgramEncounter &&
-                  renderSelect(
-                    "Program",
-                    "Select Program",
-                    selectedProgram,
-                    programOptions,
-                    program => setProgram([program])
-                  )}
-                <Box m={0.5} />
-                {selectedType.value === "Concept" &&
-                  (selectedScope.value === CustomFilter.scope.ProgramEncounter ||
-                    selectedScope.value === CustomFilter.scope.Encounter) &&
-                  renderMultiSelect(
-                    "Encounter Type",
-                    "Select Encounter Type",
-                    selectedEncounter,
-                    encounterTypeOptions,
-                    enc => setEncounter(enc)
-                  )}
-                <Box m={0.5} />
-                {widgetRequired() &&
-                  renderSelect(
-                    "Widget Type",
-                    "Select Widget Type",
-                    selectedWidget,
-                    widgetOptions,
-                    w => setWidget(w)
-                  )}
-              </Grid>
-              <Box m={0.5}>
-                <SaveComponent
-                  name={t("save")}
-                  onSubmit={saveFilter}
-                  disabledFlag={saveDisabled()}
+      <Box boxShadow={2} p={1} bgcolor="background.paper">
+        <DocumentationContainer filename={props.history.location.state.filename}>
+          <Box>
+            <div className="container" style={{ float: "left" }}>
+              <div style={{ fontSize: 20, color: "rgba(0, 0, 0)" }}>{title}</div>
+              <Box mb={2} />
+              <FormControl fullWidth>
+                <AvniTextField
+                  id="Filter Name"
+                  label="Filter Name *"
+                  autoComplete="off"
+                  value={filterName}
+                  onChange={event => setFilterName(event.target.value)}
+                  style={{ width: 400 }}
+                  toolTipKey={"APP_DESIGNER_FILTER_NAME"}
                 />
-              </Box>
-              <p />
-            </>
+              </FormControl>
+              <Box m={1} />
+              {renderSelect(
+                "Subject Type",
+                "Select Subject Type",
+                selectedSubject,
+                subjectTypeOptions,
+                sub => setSubject(sub),
+                "APP_DESIGNER_FILTER_SUBJECT_TYPE"
+              )}
+              <Box m={1} />
+              {renderSelect(
+                "Type",
+                "Filter Type",
+                selectedType,
+                typeOptions,
+                type => onTypeChange(type),
+                "APP_DESIGNER_FILTER_TYPE"
+              )}
+              <Box m={1} />
+              {selectedType.value === "Concept" && (
+                <div style={{ width: 400 }}>
+                  <AvniFormLabel
+                    label={"Select Concept"}
+                    toolTipKey={"APP_DESIGNER_FILTER_CONCEPT_SEARCH"}
+                  />
+                  <AsyncSelect
+                    cacheOptions
+                    defaultOptions={suggestions}
+                    value={selectedConcept}
+                    placeholder={"Type to search"}
+                    onChange={value => setConcept(value)}
+                    loadOptions={loadConcept}
+                  />
+                </div>
+              )}
+              <Box m={1} />
+              {selectedType.value === "Concept" &&
+                renderSelect(
+                  "Search Scope",
+                  "Scope",
+                  selectedScope,
+                  scopeOptions,
+                  scope => onScopeChange(scope),
+                  "APP_DESIGNER_FILTER_SEARCH_SCOPE"
+                )}
+              <Box m={1} />
+              {selectedType.value === "Concept" &&
+                selectedScope.value === CustomFilter.scope.ProgramEnrolment &&
+                renderMultiSelect(
+                  "Program",
+                  "Select Program",
+                  selectedProgram,
+                  programOptions,
+                  program => setProgram(program),
+                  "APP_DESIGNER_FILTER_PROGRAM"
+                )}
+              <Box m={1} />
+              {selectedType.value === "Concept" &&
+                selectedScope.value === CustomFilter.scope.ProgramEncounter &&
+                renderSelect(
+                  "Program",
+                  "Select Program",
+                  selectedProgram,
+                  programOptions,
+                  program => setProgram([program]),
+                  "APP_DESIGNER_FILTER_PROGRAM"
+                )}
+              <Box m={1} />
+              {selectedType.value === "Concept" &&
+                (selectedScope.value === CustomFilter.scope.ProgramEncounter ||
+                  selectedScope.value === CustomFilter.scope.Encounter) &&
+                renderMultiSelect(
+                  "Encounter Type",
+                  "Select Encounter Type",
+                  selectedEncounter,
+                  encounterTypeOptions,
+                  enc => setEncounter(enc),
+                  "APP_DESIGNER_FILTER_ENCOUNTER_TYPE"
+                )}
+              <Box m={1} />
+              {widgetRequired() &&
+                renderSelect(
+                  "Widget Type",
+                  "Select Widget Type",
+                  selectedWidget,
+                  widgetOptions,
+                  w => setWidget(w),
+                  "APP_DESIGNER_FILTER_WIDGET_TYPE"
+                )}
+              <Box m={1} />
+            </div>
+            <Box m={1}>
+              <SaveComponent name={t("save")} onSubmit={saveFilter} disabledFlag={saveDisabled()} />
+            </Box>
+            <p />
           </Box>
         </DocumentationContainer>
         {messageStatus.display && (

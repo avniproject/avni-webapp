@@ -23,8 +23,10 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import { AvniFormControl } from "../../common/components/AvniFormControl";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
-const FormControl = withStyles({
+export const FormControl = withStyles({
   root: {
     paddingBottom: 10
   }
@@ -39,7 +41,11 @@ const useStyles = makeStyles(theme => ({
 const showDatePicker = (cssClasses, props) => {
   return (
     <Grid container item sm={12}>
-      <InputLabel style={cssClasses.label}>Date Picker Mode</InputLabel>
+      <AvniFormLabel
+        style={cssClasses.label}
+        label={"Date Picker Mode"}
+        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DATE_PICKER_MODE"}
+      />
 
       <RadioGroup
         aria-label="Date Picker Mode"
@@ -115,27 +121,25 @@ function FormElementDetails(props) {
   }
 
   return (
-    <Grid container item sm={12}>
-      <Grid item sm={12}>
-        {props.formElementData.errorMessage && props.formElementData.errorMessage.name && (
-          <div style={{ color: "red" }}>Please enter name</div>
-        )}
-        <FormControl fullWidth>
-          <InputLabel htmlFor="elementNameDetails">{t("Question")}</InputLabel>
-          <Input
-            id="elementNameDetails"
-            value={props.formElementData.name}
-            onChange={event =>
-              props.handleGroupElementChange(
-                props.groupIndex,
-                "name",
-                event.target.value,
-                props.index
-              )
-            }
-          />
-        </FormControl>
-      </Grid>
+    <Grid container sm={12}>
+      {props.formElementData.errorMessage && props.formElementData.errorMessage.name && (
+        <div style={{ color: "red" }}>Please enter name</div>
+      )}
+      <FormControl fullWidth>
+        <AvniFormLabel label={t("Question")} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} />
+        <Input
+          id="elementNameDetails"
+          value={props.formElementData.name}
+          onChange={event =>
+            props.handleGroupElementChange(
+              props.groupIndex,
+              "name",
+              event.target.value,
+              props.index
+            )
+          }
+        />
+      </FormControl>
       <Paper style={{ width: "100%", marginBottom: "15px" }}>
         {props.formElementData.showConceptLibrary === "" && (
           <div
@@ -241,7 +245,10 @@ function FormElementDetails(props) {
               <Grid container item sm={12}>
                 <Grid item sm={2}>
                   <FormControl>
-                    <InputLabel>Low Absolute</InputLabel>
+                    <AvniFormLabel
+                      label={"Low Absolute"}
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_ABSOLUTE"}
+                    />
                     <Input
                       disableUnderline={true}
                       value={
@@ -255,7 +262,10 @@ function FormElementDetails(props) {
                 </Grid>
                 <Grid item sm={2}>
                   <FormControl>
-                    <InputLabel>High Absolute</InputLabel>
+                    <AvniFormLabel
+                      label={"High Absolute"}
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_ABSOLUTE"}
+                    />
                     <Input
                       disableUnderline={true}
                       value={
@@ -269,7 +279,10 @@ function FormElementDetails(props) {
                 </Grid>
                 <Grid item sm={2}>
                   <FormControl>
-                    <InputLabel>Low normal</InputLabel>
+                    <AvniFormLabel
+                      label={"Low normal"}
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_NORMAL"}
+                    />
                     <Input
                       disableUnderline={true}
                       value={
@@ -283,7 +296,10 @@ function FormElementDetails(props) {
                 </Grid>
                 <Grid item sm={2}>
                   <FormControl>
-                    <InputLabel>High normal</InputLabel>
+                    <AvniFormLabel
+                      label={"High normal"}
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_NORMAL"}
+                    />
                     <Input
                       disableUnderline={true}
                       value={
@@ -297,7 +313,7 @@ function FormElementDetails(props) {
                 </Grid>
                 <Grid item sm={2}>
                   <FormControl>
-                    <InputLabel>Unit</InputLabel>
+                    <AvniFormLabel label={"Unit"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIT"} />
                     <Input
                       disableUnderline={true}
                       value={
@@ -342,7 +358,7 @@ function FormElementDetails(props) {
               <div style={{ color: "red" }}>Please select type</div>
             )}
             <FormControl fullWidth>
-              <InputLabel>Type</InputLabel>
+              <AvniFormLabel label={"Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_CODED_TYPE"} />
               <Select
                 name="type"
                 value={props.formElementData.type}
@@ -411,7 +427,10 @@ function FormElementDetails(props) {
           <Grid item sm={1} />
           <Grid item sm={3}>
             <FormControl className={classes.formControl}>
-              <InputLabel>Video Quality</InputLabel>
+              <AvniFormLabel
+                label={"Video Quality"}
+                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VIDEO_QUALITY"}
+              />
               <Select
                 name="videoQuality"
                 classes={cssClasses.dropDown}
@@ -486,7 +505,10 @@ function FormElementDetails(props) {
           <Grid item sm={1} />
           <Grid item sm={3}>
             <FormControl className={classes.formControl}>
-              <InputLabel>Image Quality</InputLabel>
+              <AvniFormLabel
+                label={"Image Quality"}
+                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY"}
+              />
               <Select
                 name="imageQuality"
                 value={
@@ -515,7 +537,11 @@ function FormElementDetails(props) {
 
       {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
         <Grid container item sm={12}>
-          <InputLabel style={cssClasses.label}>Duration Options</InputLabel>
+          <AvniFormLabel
+            style={cssClasses.label}
+            label={"Duration Options"}
+            toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS"}
+          />
 
           <FormControl component="fieldset">
             <FormGroup row>
@@ -641,7 +667,10 @@ function FormElementDetails(props) {
             </div>
           )}
           <FormControl fullWidth>
-            <InputLabel htmlFor="validFormatRegex">Validation Regex</InputLabel>
+            <AvniFormLabel
+              label={"Validation Regex"}
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX"}
+            />
             <Input
               id="validFormatRegex"
               value={get(props.formElementData, "validFormat.regex", "")}
@@ -656,7 +685,10 @@ function FormElementDetails(props) {
             />
           </FormControl>
           <FormControl fullWidth>
-            <InputLabel htmlFor="validFormatRegex">Validation Description Key</InputLabel>
+            <AvniFormLabel
+              label={"Validation Description Key"}
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY"}
+            />
             <Input
               id="validFormatDescriptionKey"
               value={get(props.formElementData, "validFormat.descriptionKey", "")}
@@ -674,55 +706,62 @@ function FormElementDetails(props) {
       )}
       <Grid container item sm={12}>
         <Grid item sm={6}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="mandatoryDetails"
-                checked={props.formElementData.mandatory}
-                value={props.formElementData.mandatory ? "yes" : "no"}
-                onChange={event =>
-                  props.handleGroupElementChange(
-                    props.groupIndex,
-                    "mandatory",
-                    event.target.value === "yes" ? false : true,
-                    props.index
-                  )
-                }
-              />
-            }
-            label="Mandatory"
-          />
-        </Grid>
-        {["Numeric", "Text", "Date", "DateTime"].includes(
-          props.formElementData.concept.dataType
-        ) && (
-          <Grid item sm={6}>
+          <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}>
             <FormControlLabel
               control={
                 <Checkbox
-                  id="editable"
-                  checked={
-                    typeof props.formElementData.keyValues.editable === "undefined" ? false : true
-                  }
+                  id="mandatoryDetails"
+                  checked={props.formElementData.mandatory}
+                  value={props.formElementData.mandatory ? "yes" : "no"}
                   onChange={event =>
-                    props.handleGroupElementKeyValueChange(
+                    props.handleGroupElementChange(
                       props.groupIndex,
-                      "editable",
-                      typeof props.formElementData.keyValues.editable,
+                      "mandatory",
+                      event.target.value === "yes" ? false : true,
                       props.index
                     )
                   }
                 />
               }
-              label="Read Only"
+              label="Mandatory"
             />
-          </Grid>
-        )}
+          </AvniFormControl>
+        </Grid>
+        <Grid item sm={6}>
+          {["Numeric", "Text", "Date", "DateTime"].includes(
+            props.formElementData.concept.dataType
+          ) && (
+            <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    id="editable"
+                    checked={
+                      typeof props.formElementData.keyValues.editable === "undefined" ? false : true
+                    }
+                    onChange={event =>
+                      props.handleGroupElementKeyValueChange(
+                        props.groupIndex,
+                        "editable",
+                        typeof props.formElementData.keyValues.editable,
+                        props.index
+                      )
+                    }
+                  />
+                }
+                label="Read Only"
+              />
+            </AvniFormControl>
+          )}
+        </Grid>
       </Grid>
       {props.formElementData.concept.dataType === "Id" && (
         <Grid item sm={6}>
           <FormControl fullWidth>
-            <InputLabel>Identifier Source</InputLabel>
+            <AvniFormLabel
+              label={"Identifier Source"}
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE"}
+            />
             <Select
               name="identifierSource"
               value={props.formElementData.keyValues.IdSourceUUID}

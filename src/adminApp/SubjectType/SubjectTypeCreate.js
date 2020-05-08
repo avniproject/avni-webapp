@@ -1,4 +1,3 @@
-import TextField from "@material-ui/core/TextField";
 import { Redirect } from "react-router-dom";
 import React, { useReducer, useState } from "react";
 import http from "common/utils/httpClient";
@@ -8,15 +7,16 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
-import Switch from "@material-ui/core/Switch";
 import { Grid } from "@material-ui/core";
 import GroupRoles from "./GroupRoles";
 import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
 import _ from "lodash";
 import { findRegistrationForms } from "../domain/formMapping";
-import SelectForm from "./SelectForm";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
+import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 
 const SubjectTypeCreate = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -73,43 +73,36 @@ const SubjectTypeCreate = props => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <DocumentationContainer>
+        <DocumentationContainer filename={"SubjectType.md"}>
           <Title title={"Create subject type "} />
 
           <div className="container" style={{ float: "left" }}>
             <form onSubmit={onSubmit}>
-              <TextField
+              <AvniTextField
                 id="name"
                 label="Name"
                 autoComplete="off"
                 value={subjectType.name}
                 onChange={event => dispatch({ type: "name", payload: event.target.value })}
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
               />
               <p />
-              <Grid component="label" container alignItems="center" spacing={2}>
-                <Grid>Household</Grid>
-                <Grid>
-                  <Switch
-                    checked={subjectType.household}
-                    onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
-                    name="household"
-                  />
-                </Grid>
-              </Grid>
+              <AvniSwitch
+                checked={subjectType.household}
+                onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
+                name="Household"
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_HOUSEHOLD"}
+              />
               <p />
-              <Grid component="label" container alignItems="center" spacing={2}>
-                <Grid>Group</Grid>
-                <Grid>
-                  <Switch
-                    disabled={subjectType.household}
-                    checked={subjectType.group}
-                    onChange={event => handleGroupChange(event, subjectType, dispatch)}
-                    name="group"
-                  />
-                </Grid>
-              </Grid>
+              <AvniSwitch
+                disabled={subjectType.household}
+                checked={subjectType.group}
+                onChange={event => handleGroupChange(event, subjectType, dispatch)}
+                name="Group"
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_GROUP"}
+              />
               <p />
-              <SelectForm
+              <AvniSelectForm
                 label={"Registration Form"}
                 value={_.get(subjectType, "registrationForm.formName")}
                 onChange={selectedForm =>
@@ -119,6 +112,7 @@ const SubjectTypeCreate = props => {
                   })
                 }
                 formList={findRegistrationForms(formList)}
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM"}
               />
               <p />
               {!subjectType.household && subjectType.group && (

@@ -1,11 +1,42 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
-import documentation from "../../documentation/documentation";
+import { makeStyles } from "@material-ui/core";
 
-export const Documentation = () => {
+const useStyle = makeStyles(theme => ({
+  root: {
+    opacity: 0.5
+  }
+}));
+
+export const Documentation = ({ fileName }) => {
+  const classes = useStyle();
+  const [markdown, setMarkdown] = React.useState("");
+
+  React.useEffect(() => {
+    fetch(`/documentation/sideBarDocumentation/${fileName}`)
+      .then(res => res.text())
+      .then(setMarkdown);
+  }, []);
+
+  //Custom link renderer to open relative URLs in same tab and absolute URLs in new tab
+  const LinkRenderer = props => {
+    return props.href.startsWith("http") ? (
+      <a href={props.href} target="_blank">
+        {props.children}
+      </a>
+    ) : (
+      <a href={props.href}>{props.children}</a>
+    );
+  };
+
   return (
-    <div style={{ backgroundColor: "#f6f6f6", borderRadius: 6, padding: 16, margin: 7 }}>
-      <ReactMarkdown source={documentation.content} escapeHtml={false} />
+    <div style={{ backgroundColor: "#f6f6f6", borderRadius: 10, padding: 16, margin: 7 }}>
+      <ReactMarkdown
+        source={markdown}
+        escapeHtml={false}
+        className={classes.root}
+        renderers={{ link: LinkRenderer }}
+      />
     </div>
   );
 };

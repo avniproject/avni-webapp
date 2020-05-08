@@ -24,6 +24,9 @@ import _ from "lodash";
 import { Title } from "./components/Title";
 import Chip from "@material-ui/core/Chip";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { AvniTextInput } from "./components/AvniTextInput";
+import { ToolTipContainer } from "../common/components/ToolTipContainer";
+import { Paper } from "@material-ui/core";
 
 const CatchmentFilter = props => (
   <Filter {...props}>
@@ -36,11 +39,13 @@ const TitleChip = props => {
 };
 
 export const CatchmentCreate = props => (
-  <Create {...props}>
-    <DocumentationContainer>
-      <CatchmentForm />
+  <Paper>
+    <DocumentationContainer filename={"Catchment.md"}>
+      <Create {...props}>
+        <CatchmentForm />
+      </Create>
     </DocumentationContainer>
-  </Create>
+  </Paper>
 );
 
 export const CatchmentEdit = props => (
@@ -123,18 +128,22 @@ const CatchmentForm = ({ edit, ...props }) => {
       <Typography variant="title" component="h3">
         Catchment
       </Typography>
-      <TextInput source="name" label="Name" />
-      <TextInput source="type" label="Type" />
+      <AvniTextInput source="name" label="Name" toolTipKey={"ADMIN_CATCHMENT_NAME"} />
+      <AvniTextInput source="type" label="Type" toolTipKey={"ADMIN_CATCHMENT_TYPE"} />
 
-      <ReferenceArrayInput
-        reference="locations"
-        source="locationIds"
-        perPage={1000}
-        label="Locations"
-        filterToQuery={searchText => ({ title: searchText })}
-      >
-        <LocationAutocomplete optionText={optionRenderer} />
-      </ReferenceArrayInput>
+      <ToolTipContainer toolTipKey={"ADMIN_CATCHMENT_LOCATIONS"}>
+        <div style={{ maxWidth: 400 }}>
+          <ReferenceArrayInput
+            reference="locations"
+            source="locationIds"
+            perPage={1000}
+            label="Locations"
+            filterToQuery={searchText => ({ title: searchText })}
+          >
+            <LocationAutocomplete optionText={optionRenderer} />
+          </ReferenceArrayInput>
+        </div>
+      </ToolTipContainer>
 
       <LineBreak num={1} />
     </SimpleForm>

@@ -86,7 +86,7 @@ export const WorklistUpdationRule = () => {
     <Box>
       <Title title="Worklist Updation Rule" />
       <Paper>
-        <DocumentationContainer>
+        <DocumentationContainer filename={"WorklistUpdationRule.md"}>
           <ExpansionPanel expanded={true}>
             <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
               <Grid container item sm={12}>

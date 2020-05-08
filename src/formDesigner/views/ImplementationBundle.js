@@ -67,7 +67,7 @@ function ImplementationBundle({ organisation }) {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <DocumentationContainer>
+      <DocumentationContainer filename={"Bundle.md"}>
         <Title title="Bundle" />
         {showUploadFeature && (
           <>

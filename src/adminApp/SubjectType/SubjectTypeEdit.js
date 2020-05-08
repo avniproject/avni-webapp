@@ -20,6 +20,9 @@ import { findRegistrationForm, findRegistrationForms } from "../domain/formMappi
 import _ from "lodash";
 import SelectForm from "./SelectForm";
 import { SaveComponent } from "../../common/components/SaveComponent";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
+import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -129,38 +132,30 @@ const SubjectTypeEdit = props => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          <TextField
+          <AvniTextField
             id="name"
             label="Name"
             autoComplete="off"
             value={subjectType.name}
             onChange={event => dispatch({ type: "name", payload: event.target.value })}
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
           />
           <p />
-          <Grid component="label" container alignItems="center" spacing={2}>
-            <Grid>Household</Grid>
-            <Grid>
-              <Switch
-                color={"primary"}
-                checked={subjectType.household}
-                onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
-                name="household"
-              />
-            </Grid>
-          </Grid>
-          <Grid component="label" container alignItems="center" spacing={2}>
-            <Grid>Group</Grid>
-            <Grid>
-              <Switch
-                disabled={subjectType.household}
-                checked={subjectType.group}
-                onChange={event => handleGroupChange(event, subjectType, dispatch)}
-                name="group"
-              />
-            </Grid>
-          </Grid>
+          <AvniSwitch
+            checked={subjectType.household}
+            onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
+            name="Household"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_HOUSEHOLD"}
+          />
+          <AvniSwitch
+            disabled={subjectType.household}
+            checked={subjectType.group}
+            onChange={event => handleGroupChange(event, subjectType, dispatch)}
+            name="Group"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_GROUP"}
+          />
           <p />
-          <SelectForm
+          <AvniSelectForm
             label={"Registration Form"}
             value={_.get(subjectType, "registrationForm.formName")}
             onChange={selectedForm =>
@@ -170,6 +165,7 @@ const SubjectTypeEdit = props => {
               })
             }
             formList={findRegistrationForms(formList)}
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM"}
           />
           <p />
           {subjectType.group && (

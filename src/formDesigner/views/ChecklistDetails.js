@@ -62,7 +62,7 @@ export const ChecklistDetails = () => {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <DocumentationContainer>
+      <DocumentationContainer filename={"Checklist.md"}>
         <Title title={"Checklist"} />
         <Box boxShadow={1} p={1.5}>
           <div style={{ cursor: "pointer" }} onClick={() => setFoldCard(!foldCard)}>

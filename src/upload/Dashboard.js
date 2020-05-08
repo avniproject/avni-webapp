@@ -71,7 +71,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
       <Title title={"Upload"} />
       <Grid item xs={12} style={{ minWidth: 1200, maxWidth: 1400 }}>
         <Paper className={classes.uploadDownloadSection}>
-          <DocumentationContainer>
+          <DocumentationContainer filename={"Upload.md"}>
             <Grid container>
               <Grid item xs={12} sm={6}>
                 <Grid container item>

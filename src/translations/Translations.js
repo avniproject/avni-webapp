@@ -80,7 +80,7 @@ export const Translations = ({
 
   return (
     <ScreenWithAppBar appbarTitle={`Translations`}>
-      <DocumentationContainer>
+      <DocumentationContainer filename={"Translation.md"}>
         <div id={"margin"}>
           <Box border={1} borderColor={"#ddd"} p={2}>
             <TranslationDashboard

@@ -28,6 +28,10 @@ import {
   findProgramEncounterForms
 } from "../domain/formMapping";
 import { SaveComponent } from "../../common/components/SaveComponent";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import { AvniSelect } from "../../common/components/AvniSelect";
+import { AvniSelectForm } from "../../common/components/AvniSelectForm";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 const EncounterTypeEdit = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -189,12 +193,13 @@ const EncounterTypeEdit = props => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          <TextField
+          <AvniTextField
             id="name"
             label="Name"
             autoComplete="off"
             value={encounterType.name}
             onChange={event => dispatch({ type: "name", payload: event.target.value })}
+            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_NAME"}
           />
           <div />
           {nameValidation && (
@@ -208,24 +213,19 @@ const EncounterTypeEdit = props => {
             </FormLabel>
           )}
           <p />
-          <FormControl>
-            <InputLabel id="subjectType">Select Subject Type*</InputLabel>
-            <Select
-              label="Select Subject Type"
-              value={_.isEmpty(subjectT) ? "" : subjectT}
-              onChange={event => setSubjectT(event.target.value)}
-              style={{ width: "200px" }}
-              required
-            >
-              {subjectType.map(subject => {
-                return (
-                  <MenuItem value={subject} key={subject.uuid}>
-                    {subject.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
+          <AvniSelect
+            label="Select subject type *"
+            value={_.isEmpty(subjectT) ? "" : subjectT}
+            onChange={event => setSubjectT(event.target.value)}
+            style={{ width: "200px" }}
+            required
+            options={subjectType.map(option => (
+              <MenuItem value={option} key={option.uuid}>
+                {option.name}
+              </MenuItem>
+            ))}
+            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_SUBJECT"}
+          />
           <div />
           {subjectValidation && (
             <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
@@ -233,27 +233,21 @@ const EncounterTypeEdit = props => {
             </FormLabel>
           )}
           <p />
-          <FormControl>
-            <InputLabel id="program">Select Program</InputLabel>
-            <Select
-              label="Select Program"
-              value={_.isEmpty(programT) ? "" : programT}
-              onChange={event => updateProgram(event.target.value)}
-              style={{ width: "200px" }}
-              required
-            >
-              <MenuItem value={""}>Select Program</MenuItem>
-              {program.map(prog => {
-                return (
-                  <MenuItem value={prog} key={prog.uuid}>
-                    {prog.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
+          <AvniSelect
+            label="Select Program"
+            value={_.isEmpty(programT) ? "" : programT}
+            onChange={event => updateProgram(event.target.value)}
+            style={{ width: "200px" }}
+            required
+            options={program.map(option => (
+              <MenuItem value={option} key={option.uuid}>
+                {option.name}
+              </MenuItem>
+            ))}
+            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}
+          />
           <p />
-          <SelectForm
+          <AvniSelectForm
             label={"Select Encounter Form"}
             value={_.get(encounterType, "programEncounterForm.formName")}
             onChange={selectedForm =>
@@ -263,9 +257,10 @@ const EncounterTypeEdit = props => {
               })
             }
             formList={getEncounterForms()}
+            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_FORM"}
           />
           <p />
-          <SelectForm
+          <AvniSelectForm
             label={"Select Encounter Cancellation Form"}
             value={_.get(encounterType, "programEncounterCancellationForm.formName")}
             onChange={selectedForm =>
@@ -275,9 +270,13 @@ const EncounterTypeEdit = props => {
               })
             }
             formList={getCancellationForms()}
+            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_CANCELLATION_FORM"}
           />
           <p />
-          <FormLabel>Enrolment Eligibility Check Rule</FormLabel>
+          <AvniFormLabel
+            label={"Encounter Eligibility Check Rule"}
+            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ELIGIBILITY_RULE"}
+          />
           <Editor
             value={
               encounterType.encounterEligibilityCheckRule
