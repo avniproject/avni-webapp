@@ -7,6 +7,7 @@ import { CodedConceptUI } from "./CodedConcept";
 import MenuItem from "@material-ui/core/MenuItem";
 import { inlineConceptDataType } from "../common/constants";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { BackButton } from "./FormElementDetails";
 
 function InlineConcept(props) {
   return (
@@ -132,18 +133,27 @@ function InlineConcept(props) {
           >
             Add new answer
           </Button>
+          <br />
         </>
       )}
 
       <Button
-        fullWidth
         variant="contained"
         color="primary"
         margin="normal"
         onClick={event => props.onSaveInlineConcept(props.groupIndex, props.index)}
       >
-        Save concept
+        Save
       </Button>
+
+      {props.formElementData.newFlag && (
+        <BackButton
+          handleConceptFormLibrary={props.handleConceptFormLibrary}
+          groupIndex={props.groupIndex}
+          elementIndex={props.index}
+          style={{ marginLeft: "10px" }}
+        />
+      )}
     </>
   );
 }

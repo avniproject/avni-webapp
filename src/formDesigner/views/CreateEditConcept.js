@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import MenuItem from "@material-ui/core/MenuItem";
-import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import http from "common/utils/httpClient";
 import { default as UUID } from "uuid";
 import NumericConcept from "../components/NumericConcept";
 import CodedConcept from "../components/CodedConcept";
-import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
@@ -18,6 +16,9 @@ import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
 import { filter, trim } from "lodash";
 import { SaveComponent } from "../../common/components/SaveComponent";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import { ToolTipContainer } from "../../common/components/ToolTipContainer";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -502,97 +503,99 @@ class CreateEditConcept extends Component {
     }
 
     return (
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={appBarTitle} />
-        <Grid container justify="flex-start">
-          <Grid item sm={12}>
-            <TextField
-              id="name"
-              label="Concept name"
-              value={this.state.name}
-              onChange={this.handleChange("name")}
-              style={classes.textField}
-              margin="normal"
-              autoComplete="off"
-            />
-            {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
-            {!this.state.error.isEmptyName &&
-              (this.state.error.nameError && (
-                <FormHelperText error>Same name concept already exist.</FormHelperText>
-              ))}
-          </Grid>
+      <Box boxShadow={2} p={2} bgcolor="background.paper">
+        <DocumentationContainer filename={"Concept.md"}>
+          <Title title={appBarTitle} />
+          <div className="container" style={{ float: "left" }}>
+            <div>
+              <AvniTextField
+                id="name"
+                label="Concept name"
+                value={this.state.name}
+                onChange={this.handleChange("name")}
+                style={classes.textField}
+                margin="normal"
+                autoComplete="off"
+                toolTipKey={"APP_DESIGNER_CONCEPT_NAME"}
+              />
+              {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
+              {!this.state.error.isEmptyName &&
+                (this.state.error.nameError && (
+                  <FormHelperText error>Same name concept already exist.</FormHelperText>
+                ))}
+            </div>
 
-          <Grid item sm={3}>
-            {this.props.isCreatePage && (
-              <FormControl>
-                <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
-                <Select
+            <div>
+              {this.props.isCreatePage && (
+                <ToolTipContainer toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}>
+                  <FormControl>
+                    <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
+                    <Select
+                      id="dataType"
+                      label="DataType"
+                      value={this.state.dataType}
+                      onChange={this.handleChange("dataType")}
+                      style={classes.select}
+                    >
+                      {this.state.dataTypes.map(datatype => {
+                        return (
+                          <MenuItem value={datatype} key={datatype}>
+                            {datatype}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                    {this.state.error.dataTypeSelectionAlert && (
+                      <FormHelperText error>*Required</FormHelperText>
+                    )}
+                  </FormControl>
+                </ToolTipContainer>
+              )}
+              {!this.props.isCreatePage && (
+                <AvniTextField
                   id="dataType"
                   label="DataType"
                   value={this.state.dataType}
-                  onChange={this.handleChange("dataType")}
                   style={classes.select}
-                >
-                  {this.state.dataTypes.map(datatype => {
-                    return (
-                      <MenuItem value={datatype} key={datatype}>
-                        {datatype}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-                {this.state.error.dataTypeSelectionAlert && (
-                  <FormHelperText error>*Required</FormHelperText>
-                )}
-              </FormControl>
-            )}
+                  disabled={true}
+                  toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
+                />
+              )}
+            </div>
+            {dataType}
+            <KeyValues
+              keyValues={this.state.keyValues}
+              onKeyValueChange={this.onKeyValueChange}
+              onAddNewKeyValue={this.onAddNewKeyValue}
+              onDeleteKeyValue={this.onDeleteKeyValue}
+              error={this.state.error.keyValueError}
+            />
+            <SaveComponent name="Save" onSubmit={this.handleSubmit} styleClass={classes.button} />
             {!this.props.isCreatePage && (
-              <TextField
-                id="dataType"
-                label="DataType"
-                value={this.state.dataType}
-                style={classes.select}
-                disabled={true}
-              />
+              <div style={{ marginTop: "50px" }}>
+                <InputLabel style={classes.inputLabel}>Created by </InputLabel>
+                {this.state.createdBy}
+
+                <InputLabel style={classes.inputLabel}>Last modified by </InputLabel>
+                {this.state.lastModifiedBy}
+
+                <InputLabel style={classes.inputLabel}>Creation datetime </InputLabel>
+                {this.state.creationDateTime}
+
+                <InputLabel style={classes.inputLabel}>Last modified datetime </InputLabel>
+                {this.state.lastModifiedDateTime}
+              </div>
             )}
-          </Grid>
-          <Grid item sm={8} />
-          {dataType}
-        </Grid>
-        <KeyValues
-          keyValues={this.state.keyValues}
-          onKeyValueChange={this.onKeyValueChange}
-          onAddNewKeyValue={this.onAddNewKeyValue}
-          onDeleteKeyValue={this.onDeleteKeyValue}
-          error={this.state.error.keyValueError}
-        />
-        <Grid>
-          <SaveComponent name="Save" onSubmit={this.handleSubmit} styleClass={classes.button} />
-        </Grid>
-
-        {!this.props.isCreatePage && (
-          <div style={{ marginTop: "50px" }}>
-            <InputLabel style={classes.inputLabel}>Created by </InputLabel>
-            {this.state.createdBy}
-
-            <InputLabel style={classes.inputLabel}>Last modified by </InputLabel>
-            {this.state.lastModifiedBy}
-
-            <InputLabel style={classes.inputLabel}>Creation datetime </InputLabel>
-            {this.state.creationDateTime}
-
-            <InputLabel style={classes.inputLabel}>Last modified datetime </InputLabel>
-            {this.state.lastModifiedDateTime}
           </div>
-        )}
 
-        {this.state.conceptCreationAlert && (
-          <CustomizedSnackbar
-            message={conceptCreationMessage}
-            getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
-            defaultSnackbarStatus={this.state.defaultSnackbarStatus}
-          />
-        )}
+          {this.state.conceptCreationAlert && (
+            <CustomizedSnackbar
+              message={conceptCreationMessage}
+              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+            />
+          )}
+        </DocumentationContainer>
       </Box>
     );
   }

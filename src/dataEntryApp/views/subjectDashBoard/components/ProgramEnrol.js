@@ -7,7 +7,8 @@ import Grid from "@material-ui/core/Grid";
 import {
   onLoad,
   updateProgramEnrolment,
-  setProgramEnrolment
+  setProgramEnrolment,
+  setInitialState
 } from "../../../reducers/programEnrolReducer";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
@@ -57,7 +58,8 @@ const ProgramEnrol = ({
   enrolForm,
   getSubjectProfile,
   programEnrolment,
-  updateProgramEnrolment
+  updateProgramEnrolment,
+  setInitialState
   //setProgramEnrolment
 }) => {
   const [value, setValue] = React.useState("Yes");
@@ -74,6 +76,7 @@ const ProgramEnrol = ({
     //getSubjectProfile(match.queryParams.uuid);
 
     (async function fetchData() {
+      await setInitialState();
       await onLoad("Individual", match.queryParams.programName);
       getSubjectProfile(match.queryParams.uuid);
 
@@ -135,7 +138,8 @@ const mapDispatchToProps = {
   onLoad,
   getSubjectProfile,
   updateProgramEnrolment,
-  setProgramEnrolment
+  setProgramEnrolment,
+  setInitialState
 };
 
 export default withRouter(

@@ -38,6 +38,8 @@ export default class {
       const addressLevel = new AddressLevel();
       addressLevel.uuid = localSavedSubject.lowestAddressLevel.uuid;
       addressLevel.name = localSavedSubject.lowestAddressLevel.name;
+      subject.typeString = localSavedSubject.lowestAddressLevel.typeString;
+      subject.level = localSavedSubject.lowestAddressLevel.level;
       subject.lowestAddressLevel = addressLevel;
 
       //addOrUpdateObservation

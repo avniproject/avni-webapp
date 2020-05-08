@@ -15,6 +15,7 @@ import DropDown from "../common/components/DropDown";
 import { getStatuses, getUploadTypes } from "./reducers";
 import UploadTypes from "./UploadTypes";
 import { Title } from "react-admin";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -68,66 +69,68 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
   return (
     <Grid container spacing={2} className={classes.root}>
       <Title title={"Upload"} />
-      <Grid item style={{ minWidth: 1200, maxWidth: 1400 }}>
+      <Grid item xs={12} style={{ minWidth: 1200, maxWidth: 1400 }}>
         <Paper className={classes.uploadDownloadSection}>
-          <Grid container>
-            <Grid item xs={12} sm={6}>
-              <Grid container item>
-                Upload
-              </Grid>
-              <Grid container item spacing={2}>
-                <Grid container item xs={12} sm={3}>
-                  <DropDown
-                    name="Type"
-                    value={uploadType}
-                    onChange={setUploadType}
-                    options={uploadOptions()}
-                  />
+          <DocumentationContainer filename={"Upload.md"}>
+            <Grid container>
+              <Grid item xs={12} sm={6}>
+                <Grid container item>
+                  Upload
                 </Grid>
-                <Grid
-                  container
-                  item
-                  direction="column"
-                  justify="center"
-                  alignItems="flex-start"
-                  xs={12}
-                  sm={9}
-                  spacing={2}
-                >
-                  <Grid item>
-                    <FileUpload
-                      canSelect={!isEmpty(uploadType)}
-                      canUpload={!isNil(file)}
-                      onSelect={selectFile}
-                      onUpload={uploadFile}
+                <Grid container item spacing={2}>
+                  <Grid container item xs={12} sm={3}>
+                    <DropDown
+                      name="Type"
+                      value={uploadType}
+                      onChange={setUploadType}
+                      options={uploadOptions()}
                     />
                   </Grid>
-                  <Grid item>Selected File: {get(file, "name", "")}</Grid>
+                  <Grid
+                    container
+                    item
+                    direction="column"
+                    justify="center"
+                    alignItems="flex-start"
+                    xs={12}
+                    sm={9}
+                    spacing={2}
+                  >
+                    <Grid item>
+                      <FileUpload
+                        canSelect={!isEmpty(uploadType)}
+                        canUpload={!isNil(file)}
+                        onSelect={selectFile}
+                        onUpload={uploadFile}
+                      />
+                    </Grid>
+                    <Grid item>Selected File: {get(file, "name", "")}</Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Grid container item>
+                  Download Sample
+                </Grid>
+                <Grid item container direction="row" justify="flex-start" alignItems="center">
+                  <DropDown
+                    name="Type"
+                    value={entityForDownload}
+                    onChange={setEntityForDownload}
+                    options={downloadOptions()}
+                  />
+                  <Button
+                    color="primary"
+                    onClick={downloadSampleFile}
+                    disabled={isEmpty(entityForDownload)}
+                  >
+                    <CloudDownload disabled={isEmpty(entityForDownload)} />
+                    {" Download"}
+                  </Button>
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Grid container item>
-                Download Sample
-              </Grid>
-              <Grid item container direction="row" justify="flex-start" alignItems="center">
-                <DropDown
-                  name="Type"
-                  value={entityForDownload}
-                  onChange={setEntityForDownload}
-                  options={downloadOptions()}
-                />
-                <Button
-                  color="primary"
-                  onClick={downloadSampleFile}
-                  disabled={isEmpty(entityForDownload)}
-                >
-                  <CloudDownload disabled={isEmpty(entityForDownload)} />
-                  {" Download"}
-                </Button>
-              </Grid>
-            </Grid>
-          </Grid>
+          </DocumentationContainer>
         </Paper>
       </Grid>
       <Grid item>

@@ -130,6 +130,9 @@ const Header = ({ subject, children }) => {
   const lowestAddressLevel = subject.lowestAddressLevel
     ? subject.lowestAddressLevel.name || "-"
     : "";
+  const lowestAddressLevelType = subject.lowestAddressLevel
+    ? subject.lowestAddressLevel.type || "-"
+    : "";
   const dateOfBirth = moment().diff(subject.dateOfBirth, "years") + "yrs" || "-";
   return (
     <div className={classes.details}>
@@ -146,7 +149,7 @@ const Header = ({ subject, children }) => {
         <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
           {gender}
         </Typography>{" "}
-        | {t("Village")}:{" "}
+        | {t(lowestAddressLevelType)}:{" "}
         <Typography className={classes.detailsstyle} variant="caption" gutterBottom>
           {lowestAddressLevel}
         </Typography>

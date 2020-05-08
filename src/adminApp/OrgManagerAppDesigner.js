@@ -19,8 +19,9 @@ import FormSettings from "../formDesigner/components/FormSettings";
 import customFilters from "./CustomFilters";
 import { WorklistUpdationRule } from "./WorklistUpdationRule";
 import Footer from "../common/components/Footer";
+import Relationships from "../formDesigner/components/Relationships/Relationships";
 import { ChecklistDetails } from "../formDesigner/views/ChecklistDetails";
-
+import RelationshipTypeList from "../formDesigner/components/RelationshipTypes/RelationshipTypeList";
 class OrgManagerAppDesigner extends Component {
   static childContextTypes = {
     store: PropTypes.object
@@ -59,12 +60,12 @@ class OrgManagerAppDesigner extends Component {
           <Resource
             name="myDashboardFilters"
             options={{ label: "My Dashboard Filters" }}
-            list={WithProps({ organisation }, customFilters)}
+            list={WithProps({ organisation, filename: "MyDashboardFilter.md" }, customFilters)}
           />
           <Resource
             name="searchFilters"
             options={{ label: "Search Filters" }}
-            list={WithProps({ organisation }, customFilters)}
+            list={WithProps({ organisation, filename: "SearchFilter.md" }, customFilters)}
           />
           <Resource name="bundle" options={{ label: "Bundle" }} list={ImplementationBundle} />
           <Resource name={"checklist"} options={{ label: "Checklist" }} list={ChecklistDetails} />
@@ -72,6 +73,12 @@ class OrgManagerAppDesigner extends Component {
             name="worklistUpdationRule"
             options={{ label: "Worklist Updation Rule" }}
             list={WorklistUpdationRule}
+          />
+          <Resource name="relationship" options={{ label: "Relationships" }} list={Relationships} />
+          <Resource
+            name="relationshiptype"
+            options={{ label: "Relationship Types" }}
+            list={RelationshipTypeList}
           />
         </Admin>
         <Footer />

@@ -29,6 +29,10 @@ import { None } from "../common/components/utils";
 import { LocationSaveButton } from "./components/LocationSaveButton";
 import { store } from "../common/store";
 import { Title } from "./components/Title";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { AvniTextInput } from "./components/AvniTextInput";
+import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
+import { Paper } from "@material-ui/core";
 
 const LocationFilter = props => (
   <Filter {...props}>
@@ -109,7 +113,7 @@ const LocationCreateEditToolbar = ({ edit, ...props }) => {
       ) : (
         <LocationSaveButton submitOnEnter={false} redirect="show" />
       )}
-      {edit && <DeleteButton redirect="list" />}
+      {edit && <DeleteButton undoable={false} redirect="list" style={{ marginLeft: "auto" }} />}
     </Toolbar>
   );
 };
@@ -151,11 +155,19 @@ export class LocationForm extends React.Component {
         {...restProps}
         redirect="show"
       >
-        <TextInput label="Name of new location" source="title" validate={isRequired} />
+        <div>
+          <AvniTextInput
+            label="Name of new location"
+            source="title"
+            validate={isRequired}
+            fullWidth
+            toolTipKey={"ADMIN_LOCATION_NAME"}
+          />
+        </div>
         {edit ? (
-          <TextField label="Type" source="typeString" />
+          <AvniTextInput label="Type" source="typeString" toolTipKey={"ADMIN_LOCATION_TYPE"} />
         ) : (
-          <FormDataConsumer>
+          <AvniFormDataConsumer toolTipKey={"ADMIN_LOCATION_TYPE"}>
             {({ formData, dispatch, ...rest }) => (
               <ReferenceInput
                 label="Type"
@@ -171,7 +183,7 @@ export class LocationForm extends React.Component {
                 <LocationTypeSelectInput optionText="name" resettable />
               </ReferenceInput>
             )}
-          </FormDataConsumer>
+          </AvniFormDataConsumer>
         )}
         {!edit && (
           <FormDataConsumer>
@@ -220,9 +232,13 @@ export class LocationForm extends React.Component {
 }
 
 export const LocationCreate = props => (
-  <Create {...props} title="Add a new Location">
-    <LocationForm />
-  </Create>
+  <Paper>
+    <DocumentationContainer filename={"Location.md"}>
+      <Create {...props} title="Add a new Location">
+        <LocationForm />
+      </Create>
+    </DocumentationContainer>
+  </Paper>
 );
 
 export const LocationEdit = props => (

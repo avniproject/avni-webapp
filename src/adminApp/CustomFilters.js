@@ -19,7 +19,13 @@ const useStyles = makeStyles({
   }
 });
 
-const customFilters = ({ operationalModules, getOperationalModules, history, organisation }) => {
+const customFilters = ({
+  operationalModules,
+  getOperationalModules,
+  history,
+  organisation,
+  filename
+}) => {
   const typeOfFilter = history.location.pathname.endsWith("myDashboardFilters")
     ? "myDashboardFilters"
     : "searchFilters";
@@ -109,7 +115,8 @@ const customFilters = ({ operationalModules, getOperationalModules, history, org
           omitTableData,
           operationalModules,
           title,
-          worklistUpdationRule
+          worklistUpdationRule,
+          filename
         }
       });
     }
@@ -166,7 +173,8 @@ const customFilters = ({ operationalModules, getOperationalModules, history, org
                 omitTableData,
                 operationalModules,
                 title: `Add ${_.startCase(filterType)}`,
-                worklistUpdationRule
+                worklistUpdationRule,
+                filename
               }
             });
           }}

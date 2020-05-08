@@ -10,6 +10,7 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 
 function ImplementationBundle({ organisation }) {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -66,46 +67,48 @@ function ImplementationBundle({ organisation }) {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title="Bundle" />
-      {showUploadFeature && (
-        <>
-          <p>Upload Implementation Bundle</p>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center"
-            }}
-          >
-            <input type="file" onChange={onFileSelected} />
-
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={loading}
-              onClick={onUploadHandler}
+      <DocumentationContainer filename={"Bundle.md"}>
+        <Title title="Bundle" />
+        {showUploadFeature && (
+          <>
+            <p>Upload Implementation Bundle</p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center"
+              }}
             >
-              Upload
-            </Button>
-            {loading && <CircularProgress size={24} />}
-          </div>
-          <LineBreak num={2} />
-        </>
-      )}
-      <p>Download Implementation Bundle</p>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={includeLocations}
-            onChange={event => setIncludeLocations(event.target.checked)}
-            name="location"
-          />
-        }
-        label="Include Locations"
-      />
-      <p />
-      <Button variant="contained" color="primary" onClick={onDownloadHandler}>
-        Download
-      </Button>
+              <input type="file" onChange={onFileSelected} />
+
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                onClick={onUploadHandler}
+              >
+                Upload
+              </Button>
+              {loading && <CircularProgress size={24} />}
+            </div>
+            <LineBreak num={2} />
+          </>
+        )}
+        <p>Download Implementation Bundle</p>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={includeLocations}
+              onChange={event => setIncludeLocations(event.target.checked)}
+              name="location"
+            />
+          }
+          label="Include Locations"
+        />
+        <p />
+        <Button variant="contained" color="primary" onClick={onDownloadHandler}>
+          Download
+        </Button>
+      </DocumentationContainer>
     </Box>
   );
 }

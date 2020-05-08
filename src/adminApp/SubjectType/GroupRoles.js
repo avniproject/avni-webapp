@@ -111,7 +111,9 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
               id="minimum-number-of-members"
               label="Minimum members"
               variant="outlined"
-              value={groupRole.minimumNumberOfMembers || ""}
+              value={
+                groupRole.minimumNumberOfMembers === "" ? "" : groupRole.minimumNumberOfMembers
+              }
               InputProps={{ classes: { input: classes.boxHeight } }}
               onChange={event =>
                 onGroupRoleChange(
@@ -128,7 +130,9 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
               id="maximum-number-of-members"
               label="Maximum members"
               variant="outlined"
-              value={groupRole.maximumNumberOfMembers || ""}
+              value={
+                groupRole.maximumNumberOfMembers === "" ? "" : groupRole.maximumNumberOfMembers
+              }
               InputProps={{ classes: { input: classes.boxHeight } }}
               onChange={event =>
                 onGroupRoleChange(

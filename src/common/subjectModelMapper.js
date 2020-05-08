@@ -40,6 +40,7 @@ export const mapIndividual = individualDetails => {
   const addressLevel = new AddressLevel();
   addressLevel.uuid = individualDetails.addressLevelUUID;
   addressLevel.name = individualDetails.addressLevel;
+  addressLevel.type = individualDetails.addressLevelTypeName;
   individual.lowestAddressLevel = addressLevel;
 
   return individual;
