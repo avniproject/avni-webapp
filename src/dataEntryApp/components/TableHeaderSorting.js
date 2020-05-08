@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { TableSortLabel, TableCell, TableHead, TableRow } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -29,6 +30,7 @@ export const stableSort = (array, comparator) => {
 };
 
 export const EnhancedTableHead = props => {
+  const { t } = useTranslation();
   const {
     headername,
     classes,
@@ -50,16 +52,17 @@ export const EnhancedTableHead = props => {
         {headCells.map(headCell => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "center" : "center"}
+            align={headCell.align}
             padding={headCell.disablePadding ? "none" : "default"}
             sortDirection={orderBy === headCell.id ? order : false}
+            style={{ padding: "14px 40px 14px 0px" }}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {t(headCell.label)}
               {orderBy === headCell.id ? (
                 <span className={classes.visuallyHidden}>
                   {/* {order === 'desc' ? 'sorted descending' : 'sorted ascending'} */}
