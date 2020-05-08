@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewProgramVisit = ({ match, x, ...props }) => {
+const NewProgramVisit = ({ match, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const planEncounterList = [];
@@ -34,8 +34,6 @@ const NewProgramVisit = ({ match, x, ...props }) => {
     //Get Plan & Unplan Encounters
     props.onLoad(enrolmentUuid);
   }, []);
-
-  // console.log("all state", x);
 
   //Creating New programEncounter Object for Plan Encounter
   props.planEncounters
@@ -89,8 +87,7 @@ const mapStateToProps = state => ({
   unplanEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters
     ? state.dataEntry.programEncounterReducer.unplanProgramEncounters
     : [],
-  operationalModules: state.dataEntry.metadata.operationalModules,
-  x: state
+  operationalModules: state.dataEntry.metadata.operationalModules
 });
 
 const mapDispatchToProps = {

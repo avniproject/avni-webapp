@@ -80,7 +80,7 @@ export default function CustomizedSnackbar(props) {
           horizontal: "center"
         }}
         open={props.defaultSnackbarStatus}
-        autoHideDuration={1000}
+        autoHideDuration={2000}
         // onClose={handleClose}
       >
         <MySnackbarContentWrapper variant="success" message={props.message} />

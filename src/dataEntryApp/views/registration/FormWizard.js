@@ -216,7 +216,7 @@ const FormWizard = ({
     BrowserStore.clear("subject");
     setTimeout(() => {
       setRedirect(true);
-    }, 1500);
+    }, 2500);
   }
 
   const from = match.queryParams.from;

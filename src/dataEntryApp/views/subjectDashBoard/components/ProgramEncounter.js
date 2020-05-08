@@ -38,6 +38,7 @@ const useStyles = makeStyles(theme => ({
 const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
   const enrolmentUuid = match.queryParams.enrolUuid;
   const encounterTypeUuid = match.queryParams.uuid;
 
@@ -50,12 +51,9 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
     })();
   }, []);
 
-  // console.log("Inside new page >> programEncounter ..printing states");
-  // console.log(props.x);
-
   const validationResultForEncounterDate =
     enconterDateValidation &&
-    enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
+    enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === ENCOUNTER_DATE_TIME);
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -74,6 +72,8 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                       id="date-picker-dialog"
                       format="MM/dd/yyyy"
                       name="visitDateTime"
+                      autoComplete="off"
+                      required
                       value={new Date(programEncounter.encounterDateTime)}
                       error={
                         !isNil(validationResultForEncounterDate) &&
@@ -89,11 +89,11 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                         programEncounter.encounterDateTime = visitDate;
                         remove(
                           enconterDateValidation,
-                          vr => vr.formIdentifier === "ENCOUNTER_DATE_TIME"
+                          vr => vr.formIdentifier === ENCOUNTER_DATE_TIME
                         );
                         const result = programEncounter
                           .validate()
-                          .find(vr => !vr.success && vr.formIdentifier === "ENCOUNTER_DATE_TIME");
+                          .find(vr => !vr.success && vr.formIdentifier === ENCOUNTER_DATE_TIME);
                         result
                           ? enconterDateValidation.push(result)
                           : enconterDateValidation.push(...programEncounter.validate());
@@ -121,8 +121,7 @@ const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation,
-  x: state
+  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
 });
 
 const mapDispatchToProps = {

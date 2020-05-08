@@ -8,8 +8,7 @@ import {
   setProgramEncounterForm,
   setProgramEncounter,
   saveProgramEncounterComplete,
-  setValidationResults,
-  onLoad
+  setValidationResults
 } from "../reducers/programEncounterReducer";
 import api from "../api";
 import {
