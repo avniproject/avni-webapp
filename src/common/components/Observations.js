@@ -49,15 +49,19 @@ const Observations = ({ observations }) => {
                       </TableCell>
                       <TableCell align="left" width="50%">
                         <div>
-                          {" "}
-                          {element.abnormal === true ? (
-                            <span className={classes.abnormalColor}>
-                              {" "}
-                              <ErrorIcon /> {Observation.valueAsString(element, conceptService, i)}
-                            </span>
+                          {element.concept.datatype === "Coded" ? (
+                            element.abnormal === true ? (
+                              <span className={classes.abnormalColor}>
+                                {" "}
+                                <ErrorIcon />{" "}
+                                {t(Observation.valueAsString(element, conceptService, i))}
+                              </span>
+                            ) : (
+                              t(Observation.valueAsString(element, conceptService, i))
+                            )
                           ) : (
                             Observation.valueAsString(element, conceptService, i)
-                          )}{" "}
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
