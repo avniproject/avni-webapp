@@ -16,12 +16,17 @@ export const selectProgramEncounterFormMapping = (subjectType, programUuid) => s
         fm.formType === "ProgramEncounter")
   );
 
-export const selectProgramEncounterFormMappingForSubjectType = (
-  subjectTypeName,
-  programUuid
-) => state => {
+export const selectFormMappingForSubjectType = (subjectTypeName, programUuid) => state => {
   return selectProgramEncounterFormMapping(
     selectProgramEncounterSubjectType(subjectTypeName)(state),
     programUuid
   )(state);
 };
+
+export const selectFormMappingByEncounterTypeUuid = encounterTypeUuid => state =>
+  find(
+    get(state, "dataEntry.metadata.operationalModules.formMappings"),
+    fm =>
+      !isNil(encounterTypeUuid) &&
+      (fm.encounterTypeUUID === encounterTypeUuid && fm.formType === "ProgramEncounter")
+  );
