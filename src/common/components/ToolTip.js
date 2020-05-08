@@ -1,29 +1,28 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
 import HelpIcon from "@material-ui/icons/Help";
-import IconButton from "@material-ui/core/IconButton";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ReactMarkdown from "react-markdown";
 import Paper from "@material-ui/core/Paper";
+import _ from "lodash";
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    position: "relative"
-  },
-  content: {
-    position: "absolute",
-    top: 30,
-    right: 0,
-    left: -120,
-    zIndex: 1,
-    padding: theme.spacing(1),
-    backgroundColor: "#f7f7f7",
-    maxWidth: "300px"
-  }
-}));
-
-export const ToolTip = ({ toolTipKey, onHover }) => {
-  const classes = useStyles();
+export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
+  const styles = {
+    root: {
+      position: "relative"
+    },
+    content: {
+      position: "absolute",
+      top: displayPosition === "top" ? -48 : displayPosition === "bottom" ? 30 : -10,
+      right: _.includes(["top", "bottom"], displayPosition) ? 0 : -120,
+      left: _.includes(["top", "bottom"], displayPosition) ? -120 : 20,
+      zIndex: 1,
+      paddingTop: "10px",
+      paddingLeft: "10px",
+      paddingRight: "10px",
+      backgroundColor: "#f7f7f7",
+      maxWidth: _.includes(["top", "bottom"], displayPosition) ? "300px" : "200px"
+    }
+  };
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
 
@@ -42,21 +41,19 @@ export const ToolTip = ({ toolTipKey, onHover }) => {
   };
 
   const displayMarkup = () => (
-    <Paper className={classes.content}>
+    <Paper style={styles.content}>
       <ReactMarkdown source={message} escapeHtml={false} />
     </Paper>
   );
 
   const renderOnHover = () => {
     return (
-      <div className={classes.root}>
-        <IconButton
+      <div style={styles.root}>
+        <HelpIcon
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
-          style={{ width: 0, height: 0 }}
-        >
-          <HelpIcon style={{ fontSize: "18px", color: "#6b6969" }} />
-        </IconButton>
+          style={{ fontSize: "18px", color: "#6b6969", cursor: "pointer" }}
+        />
         {open ? displayMarkup() : null}
       </div>
     );
@@ -65,10 +62,11 @@ export const ToolTip = ({ toolTipKey, onHover }) => {
   const renderOnClick = () => {
     return (
       <ClickAwayListener onClickAway={handleClickAway}>
-        <div className={classes.root}>
-          <IconButton onClick={handleClick} style={{ width: 0, height: 0 }}>
-            <HelpIcon style={{ fontSize: "18px", color: "#a19d9d" }} />
-          </IconButton>
+        <div style={styles.root}>
+          <HelpIcon
+            onClick={handleClick}
+            style={{ fontSize: "18px", color: "#a19d9d", cursor: "pointer" }}
+          />
           {open ? displayMarkup() : null}
         </div>
       </ClickAwayListener>

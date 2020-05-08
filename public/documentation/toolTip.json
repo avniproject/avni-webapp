@@ -39,6 +39,7 @@
   "ADMIN_LOCATION_TYPE": "Location type",
   "ADMIN_LOCATION_TYPE_NAME": "Location type name",
   "ADMIN_LOCATION_TYPE_LEVEL": "Location type level",
+  "ADMIN_LOCATION_TYPE_PARENT": "Parent location type",
   "ADMIN_ID_SOURCE_NAME": "Identifier source name",
   "ADMIN_ID_SOURCE_TYPE": "Identifier source type",
   "ADMIN_ID_SOURCE_BATCH_SIZE": "Identifier source batch size",
