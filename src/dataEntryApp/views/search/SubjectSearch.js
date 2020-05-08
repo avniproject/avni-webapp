@@ -52,6 +52,9 @@ const useStyle = makeStyles(theme => ({
   searchBox: {
     padding: "1.5rem",
     margin: "2rem 1rem"
+  },
+  cellpadding: {
+    padding: "14px 40px 14px 0px"
   }
 }));
 
@@ -81,17 +84,47 @@ const SubjectsTable = ({ type, subjects }) => {
 
   if (type.name === "Individual") {
     tableHeaderName = [
-      { id: "fullName", numeric: false, disablePadding: true, label: "Name" },
-      { id: "gender", numeric: false, disablePadding: true, label: "Gender" },
-      { id: "dateOfBirth", numeric: true, disablePadding: false, label: "Date of Birth" },
-      { id: "addressLevel", numeric: false, disablePadding: true, label: "Location" },
-      { id: "activePrograms", numeric: false, disablePadding: true, label: "Active Programs" }
+      { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+      { id: "gender", numeric: false, disablePadding: true, label: "Gender", align: "left" },
+      {
+        id: "dateOfBirth",
+        numeric: true,
+        disablePadding: false,
+        label: "Date of Birth",
+        align: "left"
+      },
+      {
+        id: "addressLevel",
+        numeric: false,
+        disablePadding: true,
+        label: "Location",
+        align: "left"
+      },
+      {
+        id: "activePrograms",
+        numeric: false,
+        disablePadding: true,
+        label: "Active Programs",
+        align: "left"
+      }
     ];
   } else {
     tableHeaderName = [
-      { id: "fullName", numeric: false, disablePadding: true, label: "Name" },
-      { id: "addressLevel", numeric: false, disablePadding: true, label: "Location" },
-      { id: "activePrograms", numeric: false, disablePadding: true, label: "Active Programs" }
+      { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+      {
+        id: "addressLevel",
+        numeric: false,
+        disablePadding: true,
+        label: "Location",
+        align: "left"
+      },
+      {
+        id: "activePrograms",
+        numeric: false,
+        disablePadding: true,
+        label: "Active Programs",
+        align: "left"
+      }
     ];
   }
 
@@ -110,25 +143,25 @@ const SubjectsTable = ({ type, subjects }) => {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
+  // const handleClick = (event, name) => {
+  //   const selectedIndex = selected.indexOf(name);
+  //   let newSelected = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
+  //   if (selectedIndex === -1) {
+  //     newSelected = newSelected.concat(selected, name);
+  //   } else if (selectedIndex === 0) {
+  //     newSelected = newSelected.concat(selected.slice(1));
+  //   } else if (selectedIndex === selected.length - 1) {
+  //     newSelected = newSelected.concat(selected.slice(0, -1));
+  //   } else if (selectedIndex > 0) {
+  //     newSelected = newSelected.concat(
+  //       selected.slice(0, selectedIndex),
+  //       selected.slice(selectedIndex + 1)
+  //     );
+  //   }
 
-    setSelected(newSelected);
-  };
+  //   setSelected(newSelected);
+  // };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -165,29 +198,34 @@ const SubjectsTable = ({ type, subjects }) => {
           {stableSort(subjectsListObj, getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row, index) => {
-              const isItemSelected = isSelected(row.name);
-              let genderName = row.gender ? t(row.gender.name) : "";
-              let addressLevel = row.addressLevel ? row.addressLevel.titleLineage : "";
-              // const labelId = `enhanced-table-checkbox-${index}`;
+              // const isItemSelected = isSelected(row.name);
               return (
                 <TableRow
-                  hover
-                  onClick={event => handleClick(event, row.name)}
-                  role="checkbox"
-                  aria-checked={isItemSelected}
-                  tabIndex={-1}
-                  key={row.name}
-                  selected={isItemSelected}
+                // hover
+                // onClick={event => handleClick(event, row.name)}
+                // role="checkbox"
+                // aria-checked={isItemSelected}
+                // tabIndex={-1}
+                // key={row.name}
+                // selected={isItemSelected}
                 >
-                  <TableCell component="th" scope="row" padding="none" align="left" width="20%">
+                  <TableCell component="th" scope="row" padding="none" width="20%">
                     <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
                   </TableCell>
-                  {type.name === "Individual" && <TableCell align="left">{row.gender}</TableCell>}
                   {type.name === "Individual" && (
-                    <TableCell align="left">{row.dateOfBirth}</TableCell>
+                    <TableCell align="left" className={classes.cellpadding}>
+                      {row.gender}
+                    </TableCell>
                   )}
-                  <TableCell align="left">{row.addressLevel}</TableCell>
-                  <TableCell align="left" width="25%">
+                  {type.name === "Individual" && (
+                    <TableCell align="left" className={classes.cellpadding}>
+                      {row.dateOfBirth}
+                    </TableCell>
+                  )}
+                  <TableCell align="left" className={classes.cellpadding}>
+                    {row.addressLevel}
+                  </TableCell>
+                  <TableCell align="left" width="25%" className={classes.cellpadding}>
                     {" "}
                     {row.activePrograms.map((p, key) => (
                       <Button
