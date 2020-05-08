@@ -22,6 +22,6 @@ public interface AddressLevelTypeRepository extends ReferenceDataRepository<Addr
     @Query("select a.name from AddressLevelType a where a.isVoided = false")
     List<String> getAllNames();
 
-    @Query("select st from AddressLevelType st where id not in (select distinct parent from AddressLevelType d where d.parent is not null)")
+    @Query(value = "select * from address_level_type where id not in (select distinct parent_id from address_level_type where parent_id is not null) and is_voided = false", nativeQuery = true)
     List<AddressLevelType> getAllLowestAddressLevelTypes();
 }
