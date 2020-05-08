@@ -1,9 +1,9 @@
 const prefix = "app/dataEntry/reducer/programEncounter/";
 
 export const types = {
-  GET_PROGRAM_ENROLMENT: `${prefix}GET_PROGRAM_ENROLMENT`,
+  ON_LOAD: `${prefix}ON_LOAD`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
-  GET_UNPLAN_PROGRAM_ENCOUNTERS: `${prefix}GET_UNPLAN_PROGRAM_ENCOUNTERS`,
+  //GET_UNPLAN_PROGRAM_ENCOUNTERS: `${prefix}GET_UNPLAN_PROGRAM_ENCOUNTERS`,
   SET_UNPLAN_PROGRAM_ENCOUNTERS: `${prefix}SET_UNPLAN_PROGRAM_ENCOUNTERS`,
   GET_PROGRAM_ENCOUNTER_FORM: `${prefix}GET_PROGRAM_ENCOUNTER_FORM`,
   SET_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_PROGRAM_ENCOUNTER_FORM`,
@@ -16,19 +16,19 @@ export const types = {
   SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`
 };
 
-export const getUnplanProgramEncounters = (subjectTypeName, programUuid) => ({
-  type: types.GET_UNPLAN_PROGRAM_ENCOUNTERS,
-  subjectTypeName,
-  programUuid
-});
+// export const getUnplanProgramEncounters = (subjectTypeName, programUuid) => ({
+//   type: types.GET_UNPLAN_PROGRAM_ENCOUNTERS,
+//   subjectTypeName,
+//   programUuid
+// });
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
   type: types.SET_UNPLAN_PROGRAM_ENCOUNTERS,
   unplanProgramEncounters
 });
 
-export const getProgramEncounterTypes = enrolmentUuid => ({
-  type: types.GET_PROGRAM_ENROLMENT,
+export const onLoad = enrolmentUuid => ({
+  type: types.ON_LOAD,
   enrolmentUuid
 });
 

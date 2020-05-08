@@ -8,7 +8,7 @@ import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
-import { getProgramEncounterTypes } from "../../../reducers/programEncounterReducer";
+import { onLoad } from "../../../reducers/programEncounterReducer";
 import { ProgramEncounter } from "avni-models";
 import NewProgramVisitMenuView from "./NewProgramVisitMenuView";
 
@@ -32,7 +32,7 @@ const NewProgramVisit = ({ match, x, ...props }) => {
 
   useEffect(() => {
     //Get Plan & Unplan Encounters
-    props.getProgramEncounterTypes(enrolmentUuid);
+    props.onLoad(enrolmentUuid);
   }, []);
 
   // console.log("all state", x);
@@ -94,7 +94,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  getProgramEncounterTypes
+  onLoad
 };
 
 export default withRouter(

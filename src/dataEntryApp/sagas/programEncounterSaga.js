@@ -9,8 +9,8 @@ import {
   setProgramEncounter,
   saveProgramEncounterComplete,
   setValidationResults,
-  getUnplanProgramEncounters,
-  getProgramEncounterTypes
+  // getUnplanProgramEncounters,
+  onLoad
 } from "../reducers/programEncounterReducer";
 import api from "../api";
 import { selectProgramEncounterFormMappingForSubjectType } from "./programEncounterSelector";
@@ -22,8 +22,8 @@ import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
 export default function*() {
   yield all(
     [
-      programEnrolmentFetchWatcher,
-      programEncounterFetchWatcher,
+      programEncouterOnLoadWatcher,
+      // programEncounterFetchWatcher,
       programEncounterFetchFormWatcher,
       updateEncounterObsWatcher,
       saveProgramEncounterWatcher
@@ -31,25 +31,29 @@ export default function*() {
   );
 }
 
-export function* programEncounterFetchWatcher() {
-  yield takeLatest(types.GET_UNPLAN_PROGRAM_ENCOUNTERS, ProgramEncounterFetchWorker);
+// export function* programEncounterFetchWatcher() {
+//   yield takeLatest(types.GET_UNPLAN_PROGRAM_ENCOUNTERS, ProgramEncounterFetchWorker);
+// }
+
+// export function* ProgramEncounterFetchWorker({ subjectTypeName, programUuid }) {
+//   const programEncounterFormMapping = yield select(
+//     selectProgramEncounterFormMappingForSubjectType(subjectTypeName, programUuid)
+//   );
+//   yield put(setUnplanProgramEncounters(programEncounterFormMapping));
+// }
+
+export function* programEncouterOnLoadWatcher() {
+  yield takeLatest(types.ON_LOAD, programEncouterOnLoadWorker);
 }
 
-export function* ProgramEncounterFetchWorker({ subjectTypeName, programUuid }) {
-  const programEncounterFormMapping = yield select(
-    selectProgramEncounterFormMappingForSubjectType(subjectTypeName, programUuid)
-  );
-  yield put(setUnplanProgramEncounters(programEncounterFormMapping));
-}
-
-export function* programEnrolmentFetchWatcher() {
-  yield takeLatest(types.GET_PROGRAM_ENROLMENT, programEnrolmentFetchWorker);
-}
-
-export function* programEnrolmentFetchWorker({ enrolmentUuid }) {
+export function* programEncouterOnLoadWorker({ enrolmentUuid }) {
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
+  const programEncounterFormMapping = yield select(
+    selectProgramEncounterFormMappingForSubjectType("Individual", programEnrolment.program.uuid)
+  );
   yield put(setProgramEnrolment(programEnrolment));
-  yield put(getUnplanProgramEncounters("Individual", programEnrolment.program.uuid));
+  yield put(setUnplanProgramEncounters(programEncounterFormMapping));
+  //yield put(getUnplanProgramEncounters("Individual", programEnrolment.program.uuid));
 }
 
 export function* programEncounterFetchFormWatcher() {

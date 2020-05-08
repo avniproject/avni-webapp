@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   getProgramEncounterForm,
-  getProgramEncounterTypes,
+  onLoad,
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
@@ -45,7 +45,7 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
     props.setProgramEncounter();
     props.saveProgramEncounterComplete(false);
     (async function fetchData() {
-      await props.getProgramEncounterTypes(enrolmentUuid);
+      await props.onLoad(enrolmentUuid);
       props.getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
     })();
   }, []);
@@ -127,7 +127,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   getProgramEncounterForm,
-  getProgramEncounterTypes,
+  onLoad,
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
