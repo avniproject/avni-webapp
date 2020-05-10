@@ -24,10 +24,11 @@ import { enableReadOnly } from "common/constants";
 const useStyles = makeStyles(theme => ({
   tableCell: {
     borderBottom: "none",
-    padding: "0px 0px 0px 16px"
+    padding: "0px 0px 0px 11px",
+    fontWeight: "500"
   },
   enrollButtonStyle: {
-    backgroundColor: "#fc9153",
+    backgroundColor: "#f27510",
     height: "38px",
     zIndex: 1,
     marginLeft: theme.spacing(64),
@@ -49,7 +50,8 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center"
   },
   mainHeading: {
-    fontSize: "20px"
+    fontSize: "20px",
+    fontWeight: "500"
   },
   tableHeader: {
     color: "#555555",
@@ -173,10 +175,10 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           <Table aria-label="caption table" className={classes.table}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
-                <TableCell className={classes.tableCell}>{t("name")}</TableCell>
-                <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
-                <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
-                <TableCell className={classes.tableCell}>{t("Village")}</TableCell>
+                <TableCell className={classes.tableCell}>{t("name")}:</TableCell>
+                <TableCell className={classes.tableCell}>{t("gender")}:</TableCell>
+                <TableCell className={classes.tableCell}>{t("Age")}:</TableCell>
+                <TableCell className={classes.tableCell}>{t("Village")}:</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -188,6 +190,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                 <TableCell className={classes.tableCell}>
                   {new Date().getFullYear() -
                     new Date(profileDetails.dateOfBirth).getFullYear() +
+                    " " +
                     `${t("year")}`}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
