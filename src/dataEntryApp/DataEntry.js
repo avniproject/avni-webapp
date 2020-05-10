@@ -10,6 +10,7 @@ import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
 import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
 import ProgramEnrol from "./views/subjectDashBoard/components/ProgramEnrol";
 import ViewVisit from "./views/subjectDashBoard/components/ViewVisit";
+import CompleteVisit from "./views/subjectDashBoard/components/CompleteVisit";
 import AppBar from "dataEntryApp/components/AppBar";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
@@ -54,6 +55,7 @@ const DataEntry = ({
             <Route exact path={`${path}/subject`} component={SubjectDashboard} />
             <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
             <Route exact path={`${path}/viewVisit`} component={ViewVisit} />
+            <Route exact path={`${path}/completeVisit`} component={CompleteVisit} />
           </Grid>
         </Grid>
       </div>
