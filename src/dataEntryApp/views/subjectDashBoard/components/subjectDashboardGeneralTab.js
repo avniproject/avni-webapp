@@ -17,11 +17,15 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2)
   },
   expansionPanel: {
-    marginBottom: "11px"
+    marginBottom: "11px",
+    borderRadius: "5px",
+    boxShadow:
+      "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   root: {
     flexGrow: 1,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)"
   },
   paper: {
     padding: theme.spacing(2),
@@ -35,7 +39,8 @@ const useStyles = makeStyles(theme => ({
   expansionHeading: {
     fontSize: theme.typography.pxToRem(15),
     flexBasis: "33.33%",
-    flexShrink: 0
+    flexShrink: 0,
+    fontWeight: "500"
   },
   listItem: {
     paddingBottom: "0px",
