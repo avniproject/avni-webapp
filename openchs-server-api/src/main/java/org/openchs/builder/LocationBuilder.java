@@ -40,6 +40,7 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
                 get().setParentLocationMapping(fetchOrCreateLocationMapping(get(), parentLocation));
                 get().setParent(locationRepository.findByUuid(parentLocation.getUuid()));
             } else if (parentLocation.getId() != null) {
+                get().setParentLocationMapping(fetchOrCreateLocationMapping(get(), parentLocation));
                 get().setParent(locationRepository.findOne(parentLocation.getId()));
             }
         }
@@ -47,17 +48,16 @@ public class LocationBuilder extends BaseBuilder<AddressLevel, LocationBuilder> 
     }
 
     private ParentLocationMapping fetchOrCreateLocationMapping(AddressLevel existing, ReferenceDataContract parentLocationContract) {
-        if (StringUtils.isEmpty(parentLocationContract.getUuid())) {
-            throw new ValidationException("UUID missing for answer");
-        }
         ParentLocationMapping locationMapping = existing.getParentLocationMapping();
         if (locationMapping == null) {
             locationMapping = new ParentLocationMapping();
             locationMapping.assignUUID();
         }
-        AddressLevel parentLocation = locationRepository.findByUuid(parentLocationContract.getUuid());
+        AddressLevel parentLocation = parentLocationContract.getUuid() != null 
+            ? locationRepository.findByUuid(parentLocationContract.getUuid()) 
+            : locationRepository.findOne(parentLocationContract.getId());
         if (parentLocation == null) {
-            String message = String.format("Location not found for UUID:%s", parentLocationContract.getUuid());
+            String message = String.format("Parent Location not found for UUID:%s Id: %d", parentLocationContract.getUuid(), parentLocationContract.getId());
             throw new ValidationException(message);
         }
         locationMapping.setParentLocation(parentLocation);
