@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CompletedVisit = ({ match, getViewVisit, viewVisit }) => {
+const ViewVisit = ({ match, getViewVisit, viewVisit }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
@@ -119,6 +119,6 @@ export default withRouter(
     connect(
       mapStateToProps,
       mapDispatchToProps
-    )(CompletedVisit)
+    )(ViewVisit)
   )
 );

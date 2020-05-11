@@ -134,6 +134,7 @@ const CommonModal = ({ content, buttonsSet, title }) => {
   const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
   const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
   const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
+  const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
 
   return (
     <React.Fragment>
@@ -167,6 +168,17 @@ const CommonModal = ({ content, buttonsSet, title }) => {
                 btnLabel={saveButton.label}
                 btnClass={saveButton.classes}
                 btnClick={handleClose}
+              />
+            </Link>
+          ) : (
+            ""
+          )}
+          {applyButton ? (
+            <Link to={applyButton.redirectTo}>
+              <SubjectButton
+                btnLabel={applyButton.label}
+                btnClass={applyButton.classes}
+                btnClick={applyButton.click}
               />
             </Link>
           ) : (

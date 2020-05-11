@@ -9,6 +9,7 @@ import { conceptReducer } from "../../common/store/conceptReducer";
 import programs from "./programReducer";
 import enrolmentReducer from "./programEnrolReducer";
 import viewVisitReducer from "./viewVisitReducer";
+import completedVisitReducer from "./completedVisitReducer";
 export default combineReducers({
   search,
   registration,
@@ -19,5 +20,6 @@ export default combineReducers({
   conceptReducer,
   programs,
   enrolmentReducer,
-  viewVisitReducer
+  viewVisitReducer,
+  completedVisitReducer
 });

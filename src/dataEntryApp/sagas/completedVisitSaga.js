@@ -14,5 +14,8 @@ export function* completedVisitFetchWatcher() {
 
 export function* completedVisitFetchWorker({ completedVisitUuid }) {
   const completedVisit = yield call(api.fetchcompletedVisit, completedVisitUuid);
-  yield put(setCompletedVisit(mapCompletedVisit(completedVisit)));
+  // console.log("################ completed"+completedVisit);
+  //  const unique = [...new Set(viewVisit.content.map(item => item.encounterType.name))];
+  //  console.log("##########"+ JSON.stringify(unique));
+  yield put(setCompletedVisit(completedVisit));
 }
