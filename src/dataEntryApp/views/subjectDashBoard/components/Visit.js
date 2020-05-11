@@ -72,7 +72,8 @@ const Visit = ({
   index,
   earliestVisitDate,
   encounterDateTime,
-  uuid
+  uuid,
+  enrolUuid
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -114,7 +115,9 @@ const Visit = ({
           )}
         </List>
         {encounterDateTime ? (
-          <InternalLink to={`/app/editProgramEncounter?uuid=${uuid}`}>
+          <InternalLink
+            to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
+          >
             <Button color="primary" className={classes.visitButton}>
               {t("edit visit")}
             </Button>

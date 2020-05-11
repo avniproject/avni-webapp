@@ -19,6 +19,7 @@ import { mapForm } from "../../common/adapters";
 import { ProgramEncounter, ProgramEnrolment, ObservationsHolder, Concept } from "avni-models";
 import { ModelGeneral as General, EncounterType } from "avni-models";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
+import { mapProgramEncounter } from "common/subjectModelMapper";
 
 export default function*() {
   yield all(
@@ -26,7 +27,8 @@ export default function*() {
       programEncouterOnLoadWatcher,
       programEncounterFetchFormWatcher,
       updateEncounterObsWatcher,
-      saveProgramEncounterWatcher
+      saveProgramEncounterWatcher,
+      loadEditProgramEncounterWatcher
     ].map(fork)
   );
 }
@@ -195,11 +197,64 @@ function validate(formElement, value, observations, validationResults) {
 export function* saveProgramEncounterWorker() {
   const state = yield select();
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
+  console.log("saveProgramEncounter from Saga", programEncounter);
   let resource = programEncounter.toResource;
+  console.log("resource", resource);
   yield call(api.saveProgramEncouter, resource);
   yield put(saveProgramEncounterComplete(true));
 }
 
 export function* saveProgramEncounterWatcher() {
   yield takeLatest(types.SAVE_PROGRAM_ENCOUNTER, saveProgramEncounterWorker);
+}
+
+function* loadEditProgramEncounterWatcher() {
+  yield takeLatest(types.ON_LOAD_EDIT_PROGRAM_ENCOUNTER, loadEditProgramEncounterWorker);
+}
+
+export function* loadEditProgramEncounterWorker({ programEncounterUuid, enrolUuid }) {
+  const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
+  console.log(programEncounterJson);
+  const programEncounter = mapProgramEncounter(programEncounterJson);
+  //For try :  programEnrolment
+  const programEnrolmentNew = new ProgramEnrolment();
+  const formMapping = yield select(
+    selectFormMappingByEncounterTypeUuid(programEncounter.encounterType.uuid)
+  );
+  const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  const programEnrolment = yield call(api.fetchProgramEnrolment, enrolUuid);
+
+  programEnrolmentNew.uuid = enrolUuid;
+  programEnrolmentNew.enrolmentDateTime = new Date(programEnrolment.enrolmentDateTime);
+  console.log("programEnrolment", programEnrolmentNew);
+
+  programEncounter.programEnrolment = programEnrolmentNew;
+  console.log("programEncounter", programEncounter);
+
+  yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
+  yield put.resolve(setProgramEncounter(programEncounter));
+  yield put(getSubjectProfile(programEnrolment.subjectUuid));
+  // const selectedAddressLevelType = {
+  //   name: subjectProfileJson.addressLevelTypeName,
+  //   id: subjectProfileJson.addressLevelTypeId
+  // };
+  // yield put(selectAddressLevelType(selectedAddressLevelType));
+
+  // yield put.resolve(getOperationalModules());
+  // yield put.resolve(getRegistrationForm(subject.subjectType.name));
+  // yield put.resolve(getGenders());
+
+  // if (disableSession) {
+  //   yield put.resolve(setSubject(subject));
+  //   yield put.resolve(setLoaded());
+  // } else {
+  //   let subjectFromSession = BrowserStore.fetchSubject();
+  //   if (subjectFromSession) {
+  //     yield put.resolve(setSubject(subjectFromSession));
+  //     yield put.resolve(setLoaded());
+  //   } else {
+  //     yield put.resolve(setSubject(subject));
+  //     yield put.resolve(setLoaded());
+  //   }
+  // }
 }

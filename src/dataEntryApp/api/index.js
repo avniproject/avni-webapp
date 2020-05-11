@@ -23,6 +23,11 @@ export default {
       body: JSON.stringify(programEncounter)
     }),
 
+  fetchProgramEncounter: uuid =>
+    httpClient.fetchJson(`/web/programEncounter/${uuid}`).then(response => {
+      return response.json;
+    }),
+
   fetchSubjectProfile: uuid =>
     httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
       return response.json;

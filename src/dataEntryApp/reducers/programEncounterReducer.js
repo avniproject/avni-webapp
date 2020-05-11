@@ -12,7 +12,8 @@ export const types = {
   SAVE_PROGRAM_ENCOUNTER_COMPLETE: `${prefix}SAVE_PROGRAM_ENCOUNTER_COMPLETE`,
   UPDATE_PROGRAM_ENCOUNTER: `${prefix}UPDATE_PROGRAM_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
-  SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`
+  SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
+  ON_LOAD_EDIT_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_PROGRAM_ENCOUNTER`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -75,6 +76,12 @@ export const setValidationResults = validationResults => ({
 export const setEncounterDateValidation = enconterDateValidation => ({
   type: types.SET_ENCOUNTER_DATE_VALIDATION,
   enconterDateValidation
+});
+
+export const onLoadEditProgramEncounter = (programEncounterUuid, enrolUuid) => ({
+  type: types.ON_LOAD_EDIT_PROGRAM_ENCOUNTER,
+  programEncounterUuid,
+  enrolUuid
 });
 
 const initialState = {

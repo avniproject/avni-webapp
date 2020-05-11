@@ -175,6 +175,22 @@ export const mapProgramEncounters = programEncountersList => {
     });
 };
 
+export const mapProgramEncounter = programEncounter => {
+  if (programEncounter) {
+    //let individual = mapIndividual(subjectProfile);
+    const programEncounterObj = General.assignFields(
+      programEncounter,
+      new ProgramEncounter(),
+      ["uuid", "name"],
+      ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime"]
+    );
+    programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
+    programEncounterObj.observations = mapObservation(programEncounter["observations"]);
+    console.log("programEncounter Obj from Mpper", programEncounterObj);
+    return programEncounterObj;
+  }
+};
+
 export const mapOperationalProgram = enrolment => {
   const operationalProgram = General.assignFields(enrolment, new Program(), [
     "operationalProgramName"
@@ -184,7 +200,7 @@ export const mapOperationalProgram = enrolment => {
 };
 
 export const mapEncounterType = encounterType => {
-  return General.assignFields(encounterType, new EncounterType(), ["name"]);
+  return General.assignFields(encounterType, new EncounterType(), ["name", "uuid"]);
 };
 
 // general tab subject Dashbord

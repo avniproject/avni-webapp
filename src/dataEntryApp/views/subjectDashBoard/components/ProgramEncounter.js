@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { remove, isNil } from "lodash";
+import { remove, isNil, isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -15,7 +15,8 @@ import {
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
-  setEncounterDateValidation
+  setEncounterDateValidation,
+  onLoadEditProgramEncounter
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 
@@ -39,15 +40,22 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
   const { t } = useTranslation();
   const classes = useStyles();
   const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
-  const enrolmentUuid = match.queryParams.enrolUuid;
-  const encounterTypeUuid = match.queryParams.uuid;
+  const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
 
   useEffect(() => {
     props.setProgramEncounter();
     props.saveProgramEncounterComplete(false);
     (async function fetchData() {
-      await props.onLoad(enrolmentUuid);
-      props.getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
+      if (editProgramEncounter) {
+        const encounterUuid = match.queryParams.uuid;
+        const enrolUuid = match.queryParams.enrolUuid;
+        await props.onLoadEditProgramEncounter(encounterUuid, enrolUuid);
+      } else {
+        const enrolmentUuid = match.queryParams.enrolUuid;
+        const encounterTypeUuid = match.queryParams.uuid;
+        await props.onLoad(enrolmentUuid);
+        props.getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
+      }
     })();
   }, []);
 
@@ -130,7 +138,8 @@ const mapDispatchToProps = {
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
-  setEncounterDateValidation
+  setEncounterDateValidation,
+  onLoadEditProgramEncounter
 };
 
 export default withRouter(
