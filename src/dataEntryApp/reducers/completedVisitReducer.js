@@ -5,12 +5,12 @@ export const types = {
   SET_COMPLETEDVISIT: `${prefix}SET_COMPLETEDVISIT`
 };
 
-export const getViewVisit = completedVisitUuid => ({
+export const getCompletedVisit = completedVisitUuid => ({
   type: types.GET_COMPLETEDVISIT,
   completedVisitUuid
 });
 
-export const setViewVisit = completedVisit => ({
+export const setCompletedVisit = completedVisit => ({
   type: types.SET_COMPLETEDVISIT,
   completedVisit
 });

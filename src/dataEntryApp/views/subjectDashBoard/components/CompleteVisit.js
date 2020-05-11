@@ -34,6 +34,7 @@ import {
 } from "../../../components/TableHeaderSorting";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
+import FilterResult from "../components/FilterResult";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -525,6 +526,8 @@ const CompleteVisit = props => {
     sessionStorage.clear("subject");
   }, []);
 
+  const visitTypes = ["Birth", "Naturals", "death"];
+
   return (
     <div>
       <Fragment>
@@ -532,35 +535,23 @@ const CompleteVisit = props => {
         {/* {paperInfo} */}
 
         <Paper className={classes.searchBox}>
-          <div className={classes.searchCreateToolbar}>
-            <Grid container spacing={3}>
-              <Grid item xs={6} alignItems="left">
-                <div align="left">
-                  {/* <h1>Completed visits </h1> */}
-                  <Typography variant="h6" gutterBottom>
-                    Completed visits
-                  </Typography>
-                  {/* <h5>20 Results found</h5> */}
-                  <Typography variant="subtitle1" gutterBottom>
-                    20 Results found
-                  </Typography>
-                </div>
-              </Grid>
-              <Grid item xs={6} alignItems="right">
-                <div align="right">
-                  <PrimaryButton
-                    type={"submit"}
-                    onClick={handleSubmit}
-                    className={classes.searchButtonStyle}
-                  >
-                    {t("filter result")}
-                  </PrimaryButton>
-                </div>
-              </Grid>
+          <Grid container spacing={3}>
+            <Grid item xs={6} alignItems="left">
+              <div align="left">
+                {/* <h1>Completed visits </h1> */}
+                <Typography variant="h6" gutterBottom>
+                  Completed visits
+                </Typography>
+                {/* <h5>20 Results found</h5> */}
+                <Typography variant="subtitle1" gutterBottom>
+                  20 Results found
+                </Typography>
+              </div>
             </Grid>
-
-            <RegistrationMenu className={classes.createButtonHolder} />
-          </div>
+            <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
+              <FilterResult visitTypes={visitTypes} />
+            </Grid>
+          </Grid>
           <SubjectsTable subjects={props.subjects} type={props.subjectType} />
         </Paper>
       </Fragment>
