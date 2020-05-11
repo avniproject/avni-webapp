@@ -230,8 +230,12 @@ function FormElement(props) {
               <DeleteIcon />
             </IconButton>
           </Grid>
-          <Grid item sm={1} style={{ paddingBottom: "10px" }}>
-            <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} onHover />
+          <Grid item sm={1}>
+            <ToolTip
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"}
+              onHover
+              displayPosition={"bottom"}
+            />
           </Grid>
         </Grid>
       </ExpansionPanelSummary>

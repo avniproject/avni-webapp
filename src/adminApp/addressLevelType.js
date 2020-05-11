@@ -25,6 +25,7 @@ import { Title } from "./components/Title";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { Paper } from "@material-ui/core";
+import { AvniReferenceInput } from "./components/AvniReferenceInput";
 
 export const LocationTypeList = props => (
   <List
@@ -49,19 +50,20 @@ export const LocationTypeList = props => (
   </List>
 );
 
-const ParentReferenceField = props => {
+const ParentReferenceField = ({ Field, ...props }) => {
   return isNil(props.record.parentId) ? (
     <None />
   ) : (
-    <ReferenceField
+    <Field
       {...props}
       source="parentId"
       linkType="show"
       reference="addressLevelType"
       allowEmpty
+      toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
     >
-      <FunctionField render={record => record.name} />
-    </ReferenceField>
+      <FunctionField render={record => record.name} {...props} />
+    </Field>
   );
 };
 
@@ -74,7 +76,7 @@ export const LocationTypeDetail = props => (
     <SimpleShowLayout>
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
-      <ParentReferenceField label="Parent Type" />
+      <ParentReferenceField label="Parent Type" Field={ReferenceField} />
       <TextField label="Created by" source="createdBy" />
       <TextField label="Last modified by" source="lastModifiedBy" />
       <TextField label="Created On(datetime)" source="createdDateTime" />
@@ -112,11 +114,16 @@ const LocationTypeForm = ({ edit, ...props }) => {
         toolTipKey={"ADMIN_LOCATION_TYPE_LEVEL"}
       />
       {edit ? (
-        <ParentReferenceField label="Parent Type" />
+        <ParentReferenceField label="Parent Type" Field={AvniReferenceInput} {...props} />
       ) : (
-        <ReferenceInput source="parentId" reference="addressLevelType" label="Parent">
+        <AvniReferenceInput
+          source="parentId"
+          reference="addressLevelType"
+          label="Parent"
+          toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
+        >
           <SelectInput optionText="name" resettable />
-        </ReferenceInput>
+        </AvniReferenceInput>
       )}
     </SimpleForm>
   );

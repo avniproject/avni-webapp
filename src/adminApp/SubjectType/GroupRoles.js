@@ -22,7 +22,6 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     height: "35px",
-    width: "10%",
     marginTop: 20
   },
   boxHeight: {

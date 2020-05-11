@@ -88,7 +88,12 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
           </div>
         </Modal>
         <Grid container justify="flex-start">
-          <Button variant="contained" color="primary" onClick={() => setOpenModal(true)}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setOpenModal(true)}
+            style={{ marginLeft: 20 }}
+          >
             {"Create Group"}
           </Button>
         </Grid>
