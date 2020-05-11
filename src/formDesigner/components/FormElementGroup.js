@@ -279,8 +279,12 @@ function FormElementGroup(props) {
                       <DeleteIcon />
                     </IconButton>
                   </Grid>
-                  <Grid item sm={1} style={{ paddingBottom: "2px" }}>
-                    <ToolTip toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"} onHover />
+                  <Grid item sm={1}>
+                    <ToolTip
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
+                      onHover
+                      displayPosition={"bottom"}
+                    />
                   </Grid>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>

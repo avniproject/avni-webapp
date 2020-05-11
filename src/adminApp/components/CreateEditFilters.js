@@ -195,7 +195,7 @@ export const CreateEditFilters = props => {
   const renderSelect = (name, placeholder, value, options, onChange, toolTipKey) => {
     return (
       <div style={{ width: 400 }}>
-        <AvniFormLabel label={name} toolTipKey={toolTipKey} />
+        <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
         <Select placeholder={placeholder} value={value} options={options} onChange={onChange} />
       </div>
     );
@@ -204,7 +204,7 @@ export const CreateEditFilters = props => {
   const renderMultiSelect = (name, placeholder, value, options, onChange, toolTipKey) => {
     return (
       <div style={{ width: 400 }}>
-        <AvniFormLabel label={name} toolTipKey={toolTipKey} />
+        <AvniFormLabel label={name} toolTipKey={toolTipKey} position={"top"} />
         <Select
           isMulti
           placeholder={placeholder}
@@ -323,6 +323,7 @@ export const CreateEditFilters = props => {
                   <AvniFormLabel
                     label={"Select Concept"}
                     toolTipKey={"APP_DESIGNER_FILTER_CONCEPT_SEARCH"}
+                    position={"top"}
                   />
                   <AsyncSelect
                     cacheOptions

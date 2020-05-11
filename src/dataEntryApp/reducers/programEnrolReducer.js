@@ -10,7 +10,8 @@ export const types = {
   SAVE_PROGRAM_COMPLETE: `${prefix}SAVE_PROGRAM_COMPLETE`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
   UPDATE_PROGRAM_ENROLMENT: `${prefix}UPDATE_PROGRAM_ENROLMENT`,
-  SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`
+  SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`,
+  SET_ENROL_DATE_VALIDATION: `${prefix}SET_ENROL_DATE_VALIDATION`
 };
 
 export const setProgramEnrolment = programEnrolment => ({
@@ -57,8 +58,14 @@ export const setInitialState = () => ({
   type: types.SET_INITIAL_STATE
 });
 
+export const setEnrolDateValidation = enrolDateValidation => ({
+  type: types.SET_ENROL_DATE_VALIDATION,
+  enrolDateValidation
+});
+
 const initialState = {
-  saved: false
+  saved: false,
+  enrolDateValidation: []
 };
 
 // reducer
@@ -98,7 +105,12 @@ export default function(state = initialState, action) {
         programEnrolment
       };
     }
-
+    case types.SET_ENROL_DATE_VALIDATION: {
+      return {
+        ...state,
+        enrolDateValidation: action.enrolDateValidation
+      };
+    }
     default:
       return state;
   }

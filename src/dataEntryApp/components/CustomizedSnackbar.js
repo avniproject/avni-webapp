@@ -15,7 +15,8 @@ const variantIcon = {
 
 const useStyles1 = makeStyles(theme => ({
   success: {
-    backgroundColor: green[600]
+    backgroundColor: green[600],
+    minWidth: 220
   },
   icon: {
     fontSize: 20
