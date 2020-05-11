@@ -22,7 +22,8 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.pxToRem(16),
     flexBasis: "33.33%",
     flexShrink: 0,
-    fontWeight: "500"
+    fontWeight: "500",
+    margin: "0"
   },
   expansionSecondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
@@ -37,7 +38,8 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.pxToRem(13),
     flexBasis: "33.33%",
     flexShrink: 0,
-    fontWeight: "150"
+    fontWeight: "200",
+    margin: "0"
   },
   listItemView: {
     border: "1px solid lightGrey"
