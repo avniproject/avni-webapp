@@ -194,6 +194,8 @@ const ProgramView = ({ programData }) => {
                         index={index}
                         visitDate={row.encounterDateTime}
                         earliestVisitDate={row.earliestVisitDateTime}
+                        encounterDateTime={row.encounterDateTime}
+                        uuid={row.uuid}
                       />
                     ) : (
                       ""

@@ -8,6 +8,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
+import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -64,7 +65,15 @@ const truncate = input => {
   else return input;
 };
 
-const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
+const Visit = ({
+  name,
+  visitDate,
+  overdueDate,
+  index,
+  earliestVisitDate,
+  encounterDateTime,
+  uuid
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
   return (
@@ -104,10 +113,18 @@ const Visit = ({ name, visitDate, overdueDate, index, earliestVisitDate }) => {
             ""
           )}
         </List>
-        <div className={classes.visitButton}>
-          <Button color="primary">{t("dovisit")}</Button>
-          <Button color="primary">{t("cancelVisit")}</Button>
-        </div>
+        {encounterDateTime ? (
+          <InternalLink to={`/app/editProgramEncounter?uuid=${uuid}`}>
+            <Button color="primary" className={classes.visitButton}>
+              {t("edit visit")}
+            </Button>
+          </InternalLink>
+        ) : (
+          <div className={classes.visitButton}>
+            <Button color="primary">{t("dovisit")}</Button>
+            <Button color="primary">{t("cancelVisit")}</Button>
+          </div>
+        )}
       </Paper>
     </Grid>
   );
