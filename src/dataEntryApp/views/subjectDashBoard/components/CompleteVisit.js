@@ -28,7 +28,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
 import { first } from "lodash";
 import { setSubjectSearchParams, searchSubjects } from "../../../reducers/searchReducer";
-import { getCompletedVisit } from "../../../reducers/completedVisitReducer";
+import { getCompletedVisit, getVisitTypes } from "../../../reducers/completedVisitReducer";
 import RegistrationMenu from "../../search/RegistrationMenu";
 import PrimaryButton from "../../../components/PrimaryButton";
 import {
@@ -251,7 +251,7 @@ const SubjectsTable = ({ completedVisit }) => {
   );
 };
 
-const CompleteVisit = ({ match, getCompletedVisit, completedVisit }) => {
+const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit }) => {
   console.log("props-------", match);
   console.log("getCompletedVisit-------", getCompletedVisit);
   console.log("completedVisit-------", completedVisit);
@@ -262,14 +262,13 @@ const CompleteVisit = ({ match, getCompletedVisit, completedVisit }) => {
   //   event.preventDefault();
   //   props.search();
   // };
-  const enrolementid = match.params.id;
-  const enrolementuuid = match.params.uuid;
+
   useEffect(() => {
-    getCompletedVisit(enrolementid);
-    // props.getCompletedVisit("1006");
+    getCompletedVisit(match.params.id);
+    getVisitTypes(match.params.uuid);
   }, []);
 
-  const visitTypes = ["Birth", "Naturals", "death"];
+  const visitTypes1 = ["Birth", "Naturals", "death"];
 
   return (
     <div>
@@ -292,7 +291,7 @@ const CompleteVisit = ({ match, getCompletedVisit, completedVisit }) => {
               </div>
             </Grid>
             <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult visitTypes={visitTypes} />
+              <FilterResult visitTypes={visitTypes1} />
             </Grid>
           </Grid>
           <SubjectsTable subjects={completedVisit} />
@@ -304,7 +303,8 @@ const CompleteVisit = ({ match, getCompletedVisit, completedVisit }) => {
 
 const mapStateToProps = state => {
   return {
-    completedVisit: state.dataEntry.completedVisitReducer.completedVisits
+    completedVisit: state.dataEntry.completedVisitReducer.completedVisits,
+    visitTypes: state.dataEntry.completedVisitReducer.visitTypes
   };
 };
 
@@ -313,7 +313,8 @@ const mapStateToProps = state => {
 //   setSearchParams: setSubjectSearchParams
 // };
 const mapDispatchToProps = {
-  getCompletedVisit
+  getCompletedVisit,
+  getVisitTypes
 };
 
 export default withRouter(

@@ -108,7 +108,6 @@ const PrimarySearchAppBar = ({
   defaultLanguage,
   user
 }) => {
-  console.log(user, "user*****************");
   const classes = useStyles();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -266,7 +265,7 @@ const PrimarySearchAppBar = ({
               <p className={classes.userName}>
                 <Link>{user.username}</Link>
               </p>
-              <p className={classes.userDesignation}>{user.roles[0]}</p>
+              {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
             </Typography>
           </div>
           <div className={classes.sectionDesktop}>
