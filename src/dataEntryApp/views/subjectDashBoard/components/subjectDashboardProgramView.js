@@ -14,6 +14,19 @@ import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import CustomizedDialog from "../../../components/Dialog";
+
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+
+import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
+
+import { withRouter, useHistory } from "react-router-dom";
+import { connect } from "react-redux";
+import { withParams } from "common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -82,13 +95,37 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({ programData, subjectUuid, tabType }) => {
+const ProgramView = ({ programData, subjectUuid, tabType, undoExitEnrolment }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [expandedPanel, setExpanded] = React.useState("");
+  const [undoExit, setUndoExit] = React.useState(false);
+  const history = useHistory();
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+
+  const undoExitHandler = () => {
+    setUndoExit(true);
+  };
+
+  const handleUndoExit = (programEnrolmentUuid, Link) => {
+    undoExitEnrolment(programEnrolmentUuid);
+    handleClose();
+
+    //history.push(Link);
+    // window.location.reload();
   };
 
   return (
@@ -126,24 +163,94 @@ const ProgramView = ({ programData, subjectUuid, tabType }) => {
                 <Observations observations={programData ? programData.observations : ""} />
               </List>
               {tabType === "ActiveProgram" ? (
-                <Link
-                  to={`/app/enrol?uuid=${subjectUuid}&programName=${
-                    programData.program.operationalProgramName
-                  }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
-                >
-                  <Button color="primary">{t("Exit")}</Button>
-                </Link>
-              ) : (
-                <Link
-                  to={`/app/enrol?uuid=${subjectUuid}&programName=${
-                    programData.program.operationalProgramName
-                  }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
-                >
-                  <Button color="primary">{t("Edit Exit")}</Button>
-                </Link>
-              )}
+                <>
+                  <Link
+                    to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                      programData.program.operationalProgramName
+                    }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
+                  >
+                    <Button color="primary">{t("Exit")}</Button>
+                  </Link>
 
-              <Button color="primary">{t("edit")}</Button>
+                  <Button color="primary" onClick={handleClickOpen}>
+                    {t("Undo Exit")}
+                  </Button>
+
+                  <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">{"Undo Exit"}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Do you want to undo exit and restore to enrolled state shows up
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleClose} color="primary">
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleUndoExit.bind(
+                          this,
+                          programData.uuid,
+                          `/app/subject?uuid=${subjectUuid}&undo=true`
+                        )}
+                        color="primary"
+                        autoFocus
+                      >
+                        Undo Exit
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                      programData.program.operationalProgramName
+                    }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
+                  >
+                    <Button color="primary">{t("Edit Exit")}</Button>
+                  </Link>
+
+                  <Button color="primary" onClick={handleClickOpen}>
+                    {t("Undo Exit")}
+                  </Button>
+
+                  <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">{"Undo Exit"}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Do you want to undo exit and restore to enrolled state shows up
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleClose} color="primary">
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleUndoExit.bind(
+                          this,
+                          programData.uuid,
+                          `/app/subject?uuid=${subjectUuid}&undo=true`
+                        )}
+                        color="primary"
+                        autoFocus
+                      >
+                        Undo Exit
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                </>
+              )}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -220,4 +327,23 @@ const ProgramView = ({ programData, subjectUuid, tabType }) => {
   );
 };
 
-export default ProgramView;
+//export default ProgramView;
+
+const mapStateToProps = state => ({
+  enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
+  programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment
+});
+
+const mapDispatchToProps = {
+  undoExitEnrolment
+};
+
+export default withRouter(
+  withParams(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(ProgramView)
+  )
+);

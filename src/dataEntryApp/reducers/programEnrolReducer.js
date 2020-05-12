@@ -3,6 +3,7 @@ const prefix = "app/dataEntry/reducer/enrol/";
 export const types = {
   SET_ENROL_FORM: `${prefix}SET_ENROL_FORM`,
   ON_LOAD: `${prefix}ON_LOAD`,
+  UNDO_EXIT_ENROLMENT: `${prefix}UNDO_EXIT_ENROLMENT`,
   UPDATE_SUBJECT: `${prefix}UPDATE_NEW_SUBJECT`,
   SAVE_SUBJECT: `${prefix}SAVE_SUBJECT`,
   SAVE_PROGRAM_ENROLMENT: `${prefix}SAVE_PROGRAM_ENROLMENT`,
@@ -31,6 +32,11 @@ export const onLoad = (subjectTypeName, programName, formType, programEnrolmentU
   subjectTypeName,
   programName,
   formType,
+  programEnrolmentUuid
+});
+
+export const undoExitEnrolment = programEnrolmentUuid => ({
+  type: types.UNDO_EXIT_ENROLMENT,
   programEnrolmentUuid
 });
 

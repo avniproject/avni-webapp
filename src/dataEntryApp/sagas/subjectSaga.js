@@ -68,7 +68,6 @@ function* setupNewEnrolmentWorker({
   );
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));
-
   const program = yield select(selectProgram(programName));
   const state = yield select();
   const subject = state.dataEntry.subjectProfile.subjectProfile;
@@ -120,6 +119,26 @@ export function* saveProgramEnrolmentWorker() {
 
 export function* saveProgramEnrolmentWatcher() {
   yield takeLatest(enrolmentTypes.SAVE_PROGRAM_ENROLMENT, saveProgramEnrolmentWorker);
+}
+
+export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
+  let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+  programEnrolment = mapProgramEnrolment(programEnrolment);
+  programEnrolment.programExitDateTime = undefined;
+  programEnrolment.programExitObservations = [];
+
+  const state = yield select();
+  const subject = state.dataEntry.subjectProfile.subjectProfile;
+  subject.subjectType = SubjectType.create("Individual");
+
+  programEnrolment.individual = subject;
+  let resource = programEnrolment.toResource;
+  yield call(api.saveProgram, resource);
+  yield put(saveProgramComplete());
+}
+
+export function* undoExitProgramEnrolmentWatcher() {
+  yield takeLatest(enrolmentTypes.UNDO_EXIT_ENROLMENT, undoExitProgramEnrolmentWorker);
 }
 
 function* loadRegistrationPageWatcher() {
@@ -304,7 +323,8 @@ export default function* subjectSaga() {
       updateObsWatcher,
       updateEnrolmentObsWatcher,
       loadEditRegistrationPageWatcher,
-      updateExitEnrolmentObsWatcher
+      updateExitEnrolmentObsWatcher,
+      undoExitProgramEnrolmentWatcher
     ].map(fork)
   );
 }
