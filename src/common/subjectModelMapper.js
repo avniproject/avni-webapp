@@ -149,12 +149,13 @@ export const mapEnrolment = enrolmentList => {
       let programEnrolment = General.assignFields(
         enrolments,
         new ProgramEnrolment(),
-        [],
+        ["uuid"],
         ["programExitDateTime", "enrolmentDateTime"]
       );
       programEnrolment.observations = mapObservation(enrolments["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolments["programEncounters"]);
       programEnrolment.program = mapOperationalProgramName(enrolments);
+      programEnrolment.id = enrolments.id;
       return programEnrolment;
     });
 };

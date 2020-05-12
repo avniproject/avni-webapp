@@ -25,6 +25,7 @@ import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { setSubjectSearchParams, searchSubjects } from "../../../reducers/searchReducer";
+import { getCompletedVisit } from "../../../reducers/completedVisitReducer";
 import RegistrationMenu from "../../search/RegistrationMenu";
 import PrimaryButton from "../../../components/PrimaryButton";
 import {
@@ -81,117 +82,41 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-function createData(name, calories, fat, carbs, protein, price) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      { date: "2020-01-05", customerId: "11091700", amount: 3 },
-      { date: "2020-01-02", customerId: "Anonymous", amount: 1 }
-    ]
-  };
-}
-
-function Row(props) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
-  const classes = useStyle();
-
-  return (
-    <React.Fragment>
-      <TableRow className={classes.root}>
-        <TableCell>
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row.name}
-        </TableCell>
-        <TableCell align="right">{row.calories}</TableCell>
-        <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        {/* <TableCell align="right">{row.protein}</TableCell> */}
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.history.map(historyRow => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
-                      <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
-  );
-}
-
-Row.propTypes = {
-  row: PropTypes.shape({
-    calories: PropTypes.number.isRequired,
-    carbs: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
-    history: PropTypes.arrayOf(
-      PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        customerId: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired
-      })
-    ).isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired
-    // protein: PropTypes.number.isRequired,
-  }).isRequired
-};
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0, 3.99),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3, 4.99),
-  createData("Eclair", 262, 16.0, 24, 6.0, 3.79),
-  createData("Cupcake", 305, 3.7, 67, 4.3, 2.5),
-  createData("Gingerbread", 356, 16.0, 49, 3.9, 1.5)
-];
-
 const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
+  const [open, setOpen] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  let tableHeaderName = [];
+  let tableHeaderName = [
+    { id: "", numeric: false, disablePadding: true, label: "", align: "" },
+    { id: "name", numeric: false, disablePadding: true, label: "Visit Name", align: "left" },
+    {
+      id: "earliestVisitDateTime",
+      numeric: true,
+      disablePadding: false,
+      label: "Visit Completed Date",
+      align: "left"
+    },
+    {
+      id: "encounterDateTime",
+      numeric: true,
+      disablePadding: false,
+      label: "Visit Scheduled Datell",
+      align: "left"
+    },
+    {
+      id: "activePrograms",
+      numeric: false,
+      disablePadding: true,
+      label: "action",
+      align: "left"
+    }
+  ];
   let subjectsListObj = {
     content: [
       {
@@ -201,7 +126,145 @@ const SubjectsTable = ({ type, subjects }) => {
           name: "Nutritional status and Morbidity",
           uuid: "0126df9e-0167-4d44-9a2a-ae41cfc58d3d"
         },
-        encounterDateTime: "2020-02-06T10:35:15.000Z",
+        encounterDateTime: "2010-12-06T10:35:15.000Z",
+        observations: [
+          {
+            concept: {
+              name: "Whether having cough and cold",
+              uuid: "e6bd3ca9-caed-462a-bf7a-1614269ebeaa",
+              dataType: "Coded"
+            },
+            value: {
+              name: "No",
+              uuid: "e7b50c78-3d90-484d-a224-9887887780dc",
+              dataType: "NA"
+            }
+          },
+          {
+            concept: {
+              name: "Weight",
+              uuid: "75b1656e-2777-4753-9612-ce03a766a5e1",
+              dataType: "Numeric"
+            },
+            value: 6
+          },
+          {
+            concept: {
+              name: "Baby has got diarrohea",
+              uuid: "d7ae84be-0642-4e46-9d91-699574082abb",
+              dataType: "Coded"
+            },
+            value: {
+              name: "No",
+              uuid: "e7b50c78-3d90-484d-a224-9887887780dc",
+              dataType: "NA"
+            }
+          },
+          {
+            concept: {
+              name:
+                "Is current weight of the child equal to or less than the previous months weight?",
+              uuid: "158d59f3-5933-46ea-9601-7008047ea079",
+              dataType: "Coded"
+            },
+            value: {
+              name: "Yes",
+              uuid: "04bb1773-c353-44a1-a68c-9b448e07ff70",
+              dataType: "NA"
+            }
+          },
+          {
+            concept: {
+              name: "Child has fever",
+              uuid: "d5bb90bd-f597-4978-8657-15af7c04621b",
+              dataType: "Coded"
+            },
+            value: {
+              name: "No",
+              uuid: "e7b50c78-3d90-484d-a224-9887887780dc",
+              dataType: "NA"
+            }
+          }
+        ],
+        cancelObservations: []
+      },
+      {
+        uuid: "12be7fec-9ff3-4b8a-9029-5576a3643146",
+        earliestVisitDateTime: "2020-02-06T05:00:00.000Z",
+        encounterType: {
+          name: "Nutritional status",
+          uuid: "0126df9e-0167-4d44-9a2a-ae41cfc58d3d"
+        },
+        encounterDateTime: "2010-12-06T10:35:15.000Z",
+        observations: [
+          {
+            concept: {
+              name: "Whether having cough and cold",
+              uuid: "e6bd3ca9-caed-462a-bf7a-1614269ebeaa",
+              dataType: "Coded"
+            },
+            value: {
+              name: "No",
+              uuid: "e7b50c78-3d90-484d-a224-9887887780dc",
+              dataType: "NA"
+            }
+          },
+          {
+            concept: {
+              name: "Weight",
+              uuid: "75b1656e-2777-4753-9612-ce03a766a5e1",
+              dataType: "Numeric"
+            },
+            value: 6
+          },
+          {
+            concept: {
+              name: "Baby has got diarrohea",
+              uuid: "d7ae84be-0642-4e46-9d91-699574082abb",
+              dataType: "Coded"
+            },
+            value: {
+              name: "No",
+              uuid: "e7b50c78-3d90-484d-a224-9887887780dc",
+              dataType: "NA"
+            }
+          },
+          {
+            concept: {
+              name:
+                "Is current weight of the child equal to or less than the previous months weight?",
+              uuid: "158d59f3-5933-46ea-9601-7008047ea079",
+              dataType: "Coded"
+            },
+            value: {
+              name: "Yes",
+              uuid: "04bb1773-c353-44a1-a68c-9b448e07ff70",
+              dataType: "NA"
+            }
+          },
+          {
+            concept: {
+              name: "Child has fever",
+              uuid: "d5bb90bd-f597-4978-8657-15af7c04621b",
+              dataType: "Coded"
+            },
+            value: {
+              name: "No",
+              uuid: "e7b50c78-3d90-484d-a224-9887887780dc",
+              dataType: "NA"
+            }
+          }
+        ],
+        cancelObservations: []
+      },
+      {
+        uuid: "12be7fec-9ff3-4b8a-9029-5576a3643146",
+        earliestVisitDateTime: "2020-02-06T05:00:00.000Z",
+        encounterType: {
+          name: "NSM",
+          uuid: "0126df9e-0167-4d44-9a2a-ae41cfc58d3d"
+        },
+        encounterDateTime: "2010-12-06T10:35:15.000Z",
         observations: [
           {
             concept: {
@@ -364,57 +427,6 @@ const SubjectsTable = ({ type, subjects }) => {
     number: 0
   };
 
-  // subjects.forEach(function (a) {
-  //     let sub = {
-  //         uuid: a.uuid,
-  //         fullName: a.fullName,
-  //         gender: a.gender ? t(a.gender.name) : "",
-  //         dateOfBirth: a.dateOfBirth,
-  //         addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
-  //         activePrograms: a.activePrograms
-  //     };
-  //     subjectsListObj.push(sub);
-  // });
-
-  // if (type.name === "Individual") {
-  //     tableHeaderName = [
-  //         { id: "fullName", numeric: false, disablePadding: true, label: "visit name", align: "left" },
-  //         { id: "gender", numeric: false, disablePadding: true, label: "Visit compleated date", align: "left" },
-  //         {
-  //             id: "dateOfBirth",
-  //             numeric: true,
-  //             disablePadding: false,
-  //             label: "visit scheduled date",
-  //             align: "left"
-  //         },
-  //         {
-  //             id: "activePrograms",
-  //             numeric: false,
-  //             disablePadding: true,
-  //             label: "action",
-  //             align: "left"
-  //         }
-  //     ];
-  // } else {
-  //     tableHeaderName = [
-  //         { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
-  //         {
-  //             id: "addressLevel",
-  //             numeric: false,
-  //             disablePadding: true,
-  //             label: "Location",
-  //             align: "left"
-  //         },
-  //         {
-  //             id: "activePrograms",
-  //             numeric: false,
-  //             disablePadding: true,
-  //             label: "Active Programs",
-  //             align: "left"
-  //         }
-  //     ];
-  // }
-
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -430,25 +442,6 @@ const SubjectsTable = ({ type, subjects }) => {
     setSelected([]);
   };
 
-  // const handleClick = (event, name) => {
-  //   const selectedIndex = selected.indexOf(name);
-  //   let newSelected = [];
-
-  //   if (selectedIndex === -1) {
-  //     newSelected = newSelected.concat(selected, name);
-  //   } else if (selectedIndex === 0) {
-  //     newSelected = newSelected.concat(selected.slice(1));
-  //   } else if (selectedIndex === selected.length - 1) {
-  //     newSelected = newSelected.concat(selected.slice(0, -1));
-  //   } else if (selectedIndex > 0) {
-  //     newSelected = newSelected.concat(
-  //       selected.slice(0, selectedIndex),
-  //       selected.slice(selectedIndex + 1)
-  //     );
-  //   }
-
-  //   setSelected(newSelected);
-  // };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -460,7 +453,7 @@ const SubjectsTable = ({ type, subjects }) => {
 
   const isSelected = name => selected.indexOf(name) !== -1;
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, subjects.length - page * rowsPerPage);
+  //   const emptyRows = rowsPerPage - Math.min(rowsPerPage, subjects.length - page * rowsPerPage);
 
   return (
     <div>
@@ -479,21 +472,69 @@ const SubjectsTable = ({ type, subjects }) => {
           orderBy={orderBy}
           onSelectAllClick={handleSelectAllClick}
           onRequestSort={handleRequestSort}
-          rowCount={subjects.length}
+          rowCount={subjectsListObj.content.length}
         /> */}
         <TableHead>
           <TableRow>
             <TableCell />
             <TableCell>Visit Name</TableCell>
-            <TableCell align="right">Visit Completed Date</TableCell>
-            <TableCell align="right">Visit Scheduled Date</TableCell>
-            <TableCell align="right">Action</TableCell>
-            {/* <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
+            <TableCell align="left">Visit Completed Date</TableCell>
+            <TableCell align="left">Visit Scheduled Date</TableCell>
+            <TableCell align="left">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
-            <Row key={row.name} row={row} />
+          {subjectsListObj.content.map(row => (
+            // <Row key={row.uuid} row={row} />
+            <React.Fragment>
+              <TableRow className={classes.root}>
+                <TableCell>
+                  <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+                    {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                  </IconButton>
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  {row.encounterType.name}
+                </TableCell>
+                <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
+                <TableCell align="left">{row.encounterDateTime}</TableCell>
+                <TableCell align="left">{row.carbs}</TableCell>
+                {/* <TableCell align="right">{row.protein}</TableCell> */}
+              </TableRow>
+              <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                  <Collapse in={open} timeout="auto" unmountOnExit>
+                    <Box margin={1}>
+                      <Typography variant="h6" gutterBottom component="div">
+                        History
+                      </Typography>
+                      <Table size="small" aria-label="purchases">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Value</TableCell>
+                            {/* <TableCell align="right">Amount</TableCell>
+                        <TableCell align="right">Total price ($)</TableCell> */}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {row.observations.map(historyRow => (
+                            <TableRow key={historyRow.date}>
+                              <TableCell component="th" scope="row">
+                                {historyRow.concept.name}
+                              </TableCell>
+                              <TableCell align="left">{historyRow.value.name}</TableCell>
+                              {/* <TableCell align="left">{historyRow.value.uuid}</TableCell>
+                          <TableCell align="left">{historyRow.value.name}</TableCell> */}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </Box>
+                  </Collapse>
+                </TableCell>
+              </TableRow>
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>
@@ -501,7 +542,7 @@ const SubjectsTable = ({ type, subjects }) => {
       <TablePagination
         rowsPerPageOptions={[10, 20, 50]}
         component="div"
-        count={rows.length}
+        count={subjectsListObj.content.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
@@ -516,14 +557,14 @@ const CompleteVisit = props => {
   const classes = useStyle();
   const { t } = useTranslation();
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    props.search();
-  };
+  // const handleSubmit = event => {
+  //   event.preventDefault();
+  //   props.search();
+  // };
 
   useEffect(() => {
-    props.search();
-    sessionStorage.clear("subject");
+    // props.getCompletedVisit(props.match.queryParams.id);
+    props.getCompletedVisit("1006");
   }, []);
 
   const visitTypes = ["Birth", "Naturals", "death"];
@@ -561,16 +602,16 @@ const CompleteVisit = props => {
 
 const mapStateToProps = state => {
   return {
-    user: state.app.user,
-    subjects: state.dataEntry.search.subjects,
-    searchParams: state.dataEntry.search.subjectSearchParams,
-    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes)
+    completedVisit: state.dataEntry.completedVisitReducer.completedVisits
   };
 };
 
+// const mapDispatchToProps = {
+//   search: searchSubjects,
+//   setSearchParams: setSubjectSearchParams
+// };
 const mapDispatchToProps = {
-  search: searchSubjects,
-  setSearchParams: setSubjectSearchParams
+  getCompletedVisit
 };
 
 export default withRouter(
