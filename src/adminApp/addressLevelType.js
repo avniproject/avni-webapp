@@ -132,7 +132,7 @@ const LocationTypeForm = ({ edit, ...props }) => {
 export const LocationTypeCreate = props => (
   <Paper>
     <DocumentationContainer filename={"LocationType.md"}>
-      <Create {...props} title="Add new Location Type">
+      <Create {...props} title="Add New Location Type">
         <LocationTypeForm />
       </Create>
     </DocumentationContainer>
@@ -140,7 +140,7 @@ export const LocationTypeCreate = props => (
 );
 
 export const LocationTypeEdit = props => (
-  <Edit {...props} title="Modify Location Type" undoable={false}>
+  <Edit {...props} title="Edit Location Type" undoable={false}>
     <LocationTypeForm edit />
   </Edit>
 );

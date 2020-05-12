@@ -148,7 +148,7 @@ const IdentifierSourceForm = props => (
 
 export const IdentifierSourceEdit = props => {
   return (
-    <Edit undoable={false} title="Edit identifier source" {...props}>
+    <Edit undoable={false} title="Edit Identifier Source" {...props}>
       <IdentifierSourceForm />
     </Edit>
   );
@@ -158,7 +158,7 @@ export const IdentifierSourceCreate = props => {
   return (
     <Paper>
       <DocumentationContainer filename={"IdentifierSource.md"}>
-        <Create title="Add a new Identifier Source" {...props}>
+        <Create title="Add New Identifier Source" {...props}>
           <IdentifierSourceForm />
         </Create>
       </DocumentationContainer>

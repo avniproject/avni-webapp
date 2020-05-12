@@ -154,7 +154,7 @@ const EncounterTypeList = ({ history }) => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Encounter types" />
+        <Title title="Encounter Types" />
 
         <div className="container">
           <div>

@@ -23,14 +23,14 @@ const Title = ({ record }) => {
   return (
     record && (
       <span>
-        Identifier user assignment: <b>{record.name}</b>
+        Identifier User Assignment: <b>{record.name}</b>
       </span>
     )
   );
 };
 
 export const IdentifierUserAssignmentList = props => (
-  <List {...props} bulkActions={false} title={"Identifier user assignment"}>
+  <List {...props} bulkActions={false} title={"Identifier User Assignment"}>
     <Datagrid rowClick="show">
       <TextField source="identifierSource.name" label="Source name" />
       <TextField source="identifierStart" />
@@ -114,7 +114,7 @@ const IdentifierUserAssignmentForm = props => (
 
 export const IdentifierUserAssignmentEdit = props => {
   return (
-    <Edit undoable={false} title="Edit identifier user assignment" {...props}>
+    <Edit undoable={false} title="Edit Identifier User Assignment" {...props}>
       <IdentifierUserAssignmentForm />
     </Edit>
   );
@@ -124,7 +124,7 @@ export const IdentifierUserAssignmentCreate = props => {
   return (
     <Paper>
       <DocumentationContainer filename={"IdentifierUserAssignment.md"}>
-        <Create title="Add a new identifier user assignment" {...props}>
+        <Create title="Add New Identifier User Assignment" {...props}>
           <IdentifierUserAssignmentForm />
         </Create>
       </DocumentationContainer>

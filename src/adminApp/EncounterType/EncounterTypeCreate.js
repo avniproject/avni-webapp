@@ -137,7 +137,7 @@ const EncounterTypeCreate = props => {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <DocumentationContainer filename={"EncounterType.md"}>
-          <Title title={"Create encounter type"} />
+          <Title title={"Create Encounter Type"} />
 
           <div className="container">
             <form onSubmit={onSubmit}>

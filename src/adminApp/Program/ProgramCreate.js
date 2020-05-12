@@ -96,7 +96,7 @@ const ProgramCreate = props => {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <DocumentationContainer filename={"Program.md"}>
-          <Title title={"Create program "} />
+          <Title title={"Create Program "} />
 
           <div className="container" style={{ float: "left" }}>
             <form onSubmit={onSubmit}>

@@ -145,7 +145,7 @@ const ProgramEdit = props => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={"Edit program "} />
+        <Title title={"Edit Program "} />
         <Grid container item sm={12} style={{ justifyContent: "flex-end" }}>
           <Button color="primary" type="button" onClick={() => setRedirectShow(true)}>
             <VisibilityIcon /> Show

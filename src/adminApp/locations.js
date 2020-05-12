@@ -88,7 +88,8 @@ ParentLocationReferenceField.defaultProps = {
 
 export const LocationDetail = props => {
   return (
-    <Show title={<Title title={"Location"} />} {...props}>
+    // <Show {...props} title={<Title title={"Location" } />}>
+    <Show {...props} title={<Title title={"Location"} />}>
       <SimpleShowLayout>
         <TextField source="title" label="Name" />
         <TextField source="typeString" label="Type" />
@@ -234,7 +235,7 @@ export class LocationForm extends React.Component {
 export const LocationCreate = props => (
   <Paper>
     <DocumentationContainer filename={"Location.md"}>
-      <Create {...props} title="Add a new Location">
+      <Create {...props} title="Add New Location">
         <LocationForm />
       </Create>
     </DocumentationContainer>

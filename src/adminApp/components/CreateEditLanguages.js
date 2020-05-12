@@ -51,7 +51,7 @@ export const CreateEditLanguages = props => {
 
   return (
     <div>
-      <Title title="Edit language" />
+      <Title title="Edit Language" />
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <DocumentationContainer filename={"Language.md"}>
           <Box m={2}>
