@@ -130,7 +130,7 @@ const Visit = ({
             >
               <Button color="primary">{t("do visit")}</Button>
             </InternalLink>
-            <Button color="primary">{t("cancelVisit")}</Button>
+            <Button color="primary">{t("cancel Visit")}</Button>
           </div>
         )}
       </Paper>
