@@ -17,13 +17,14 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewMenu from "../views/dashboardNew/NewMenu";
 import Input from "@material-ui/core/Input";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { enableReadOnly } from "common/constants";
+import { getUserInfo } from "rootApp/ducks";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -38,6 +39,20 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up("sm")]: {
       display: "block"
     }
+  },
+  userName: {
+    fontSize: "15px",
+    marginBottom: "0px",
+    fontWeight: "600px"
+  },
+  userDesignation: {
+    fontSize: "12px",
+    marginRight: "6px",
+    marginBottom: "0px",
+    color: "grey"
+  },
+  users: {
+    marginRight: "3px"
   },
   sectionDesktop: {
     display: "none",
@@ -91,8 +106,9 @@ const PrimarySearchAppBar = ({
   getUserInfo,
   orgConfig,
   defaultLanguage,
-  userInfo
+  user
 }) => {
+  console.log(user, "user*****************");
   const classes = useStyles();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -245,6 +261,14 @@ const PrimarySearchAppBar = ({
           )}
 
           <div className={classes.grow} />
+          <div className={classes.users}>
+            <Typography component={"div"} color="inherit">
+              <p className={classes.userName}>
+                <Link>{user.username}</Link>
+              </p>
+              <p className={classes.userDesignation}>{user.roles[0]}</p>
+            </Typography>
+          </div>
           <div className={classes.sectionDesktop}>
             <IconButton
               edge="end"
@@ -274,11 +298,15 @@ const PrimarySearchAppBar = ({
   );
 };
 
+const mapStateToProps = state => ({
+  user: state.app.user
+});
+
 export default withRouter(
   withParams(
     connect(
-      null,
-      null
+      mapStateToProps,
+      { getUserInfo }
     )(PrimarySearchAppBar)
   )
 );

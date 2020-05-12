@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.pxToRem(13),
     flexBasis: "33.33%",
     flexShrink: 0,
-    fontWeight: "200",
+    fontWeight: "400",
     margin: "0"
   },
   listItemView: {
