@@ -219,7 +219,7 @@ class FormDetails extends Component {
       this.setState(
         produce(draft => {
           let form = draft.form;
-          if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true") {
+          if (form.formElementGroups[index].formElements[elementIndex].newFlag === true) {
             form.formElementGroups[index].formElements.splice(elementIndex, 1);
           } else {
             form.formElementGroups[index].formElements[elementIndex].voided = true;
