@@ -19,7 +19,7 @@ import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
-    fontSize: theme.typography.pxToRem(16),
+    fontSize: "1rem",
     flexBasis: "33.33%",
     flexShrink: 0,
     fontWeight: "500",

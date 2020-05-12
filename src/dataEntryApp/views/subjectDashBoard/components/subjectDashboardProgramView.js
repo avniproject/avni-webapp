@@ -121,7 +121,7 @@ const ProgramView = ({ programData }) => {
   return (
     <div>
       <Grid container spacing={3}>
-        <Grid item xs={4}>
+        <Grid item xs={4} container direction="row" justify="flex-start" alignItems="flex-start">
           <label className={classes.programLabel}>
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
@@ -175,7 +175,13 @@ const ProgramView = ({ programData }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <Grid container spacing={2}>
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="flex-start"
+              spacing={2}
+            >
               {programData && programData.encounters
                 ? programData.encounters.map((row, index) =>
                     !row.encounterDateTime ? (
@@ -211,10 +217,17 @@ const ProgramView = ({ programData }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <Grid container spacing={2} className={classes.gridBottomBorder}>
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="flex-start"
+              spacing={2}
+              className={classes.gridBottomBorder}
+            >
               {programData && programData.encounters
                 ? programData.encounters.map((row, index) =>
-                    row.encounterDateTime && row.encounterType ? (
+                    row.encounterDateTime && row.encounterType && index <= 4 ? (
                       <Visit
                         uuid={row.uuid}
                         name={row.encounterType.name}

@@ -207,7 +207,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             </TableBody>
           </Table>
         </Grid>
-        <Grid justify="flex-end" alignItems="flex-start" direction="row">
+        <Grid container justify="flex-end" alignItems="flex-start" direction="row">
           {!enableReadOnly ? (
             <div>
               <Modal
