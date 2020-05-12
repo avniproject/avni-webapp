@@ -128,7 +128,7 @@ const Visit = ({
             <InternalLink
               to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
             >
-              <Button color="primary">{t("dovisit")}</Button>
+              <Button color="primary">{t("do visit")}</Button>
             </InternalLink>
             <Button color="primary">{t("cancelVisit")}</Button>
           </div>
