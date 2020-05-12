@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect } from "react";
-import PropTypes from "prop-types";
 import {
   Table,
   TablePagination,
@@ -23,14 +22,8 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-// import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
-
 import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
-import { first } from "lodash";
-import { setSubjectSearchParams, searchSubjects } from "../../../reducers/searchReducer";
 import { getCompletedVisit, getVisitTypes } from "../../../reducers/completedVisitReducer";
-import RegistrationMenu from "../../search/RegistrationMenu";
-import PrimaryButton from "../../../components/PrimaryButton";
 import {
   EnhancedTableHead,
   stableSort,
@@ -85,9 +78,8 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({ completedVisit }) => {
+const SubjectsTable = ({ allVisits }) => {
   const classes = useStyle();
-  // console.log("subjects----------------->", subjects)
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -121,13 +113,12 @@ const SubjectsTable = ({ completedVisit }) => {
       align: "left"
     }
   ];
-  let subjectsListObj = completedVisit;
 
-  const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
+  // const handleRequestSort = (event, property) => {
+  //   const isAsc = orderBy === property && order === "asc";
+  //   setOrder(isAsc ? "desc" : "asc");
+  //   setOrderBy(property);
+  // };
 
   // const handleSelectAllClick = event => {
   //   if (event.target.checked) {
@@ -151,7 +142,7 @@ const SubjectsTable = ({ completedVisit }) => {
 
   //   const emptyRows = rowsPerPage - Math.min(rowsPerPage, subjects.length - page * rowsPerPage);
 
-  return completedVisit ? (
+  return allVisits ? (
     <div>
       {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
       <Table
@@ -180,9 +171,8 @@ const SubjectsTable = ({ completedVisit }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {subjectsListObj &&
-            subjectsListObj.content.map(row => (
-              // <Row key={row.uuid} row={row} />
+          {allVisits &&
+            allVisits.content.map(row => (
               <React.Fragment>
                 <TableRow className={classes.root}>
                   <TableCell>
@@ -191,12 +181,14 @@ const SubjectsTable = ({ completedVisit }) => {
                     </IconButton>
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    {row.encounterType.name}
+                    {row.name}
                   </TableCell>
                   <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
                   <TableCell align="left">{row.encounterDateTime}</TableCell>
-                  <TableCell align="left">{row.carbs}</TableCell>
-                  {/* <TableCell align="right">{row.protein}</TableCell> */}
+                  <TableCell align="left">
+                    {" "}
+                    <Link to="">{t("edit")}</Link> | <Link to="">{t("visit")}</Link>
+                  </TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -239,7 +231,7 @@ const SubjectsTable = ({ completedVisit }) => {
       <TablePagination
         rowsPerPageOptions={[10, 20, 50]}
         component="div"
-        count={subjectsListObj.content.length}
+        count={allVisits.content.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
@@ -253,19 +245,14 @@ const SubjectsTable = ({ completedVisit }) => {
 
 const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit }) => {
   console.log("props-------", match);
-  console.log("getCompletedVisit-------", getCompletedVisit);
+  // console.log("getCompletedVisit-------", getCompletedVisit);
   console.log("completedVisit-------", completedVisit);
   const classes = useStyle();
   const { t } = useTranslation();
 
-  // const handleSubmit = event => {
-  //   event.preventDefault();
-  //   props.search();
-  // };
-
   useEffect(() => {
-    getCompletedVisit(match.params.id);
-    getVisitTypes(match.params.uuid);
+    getCompletedVisit(match.queryParams.id);
+    getVisitTypes(match.queryParams.uuid);
   }, []);
 
   const visitTypes1 = ["Birth", "Naturals", "death"];
@@ -286,7 +273,7 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
                 </Typography>
                 {/* <h5>20 Results found</h5> */}
                 <Typography variant="subtitle1" gutterBottom>
-                  20 Results found
+                  {completedVisit ? completedVisit.content.length : ""} Results found
                 </Typography>
               </div>
             </Grid>
@@ -294,7 +281,7 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
               <FilterResult visitTypes={visitTypes1} />
             </Grid>
           </Grid>
-          <SubjectsTable subjects={completedVisit} />
+          <SubjectsTable allVisits={completedVisit} />
         </Paper>
       </Fragment>
     </div>
@@ -308,20 +295,12 @@ const mapStateToProps = state => {
   };
 };
 
-// const mapDispatchToProps = {
-//   search: searchSubjects,
-//   setSearchParams: setSubjectSearchParams
-// };
 const mapDispatchToProps = {
   getCompletedVisit,
   getVisitTypes
 };
 
 export default withRouter(
-  // connect(
-  //   mapStateToProps,
-  //   mapDispatchToProps
-  // )(CompleteVisit)
   withParams(
     connect(
       mapStateToProps,
