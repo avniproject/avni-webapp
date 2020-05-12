@@ -41,8 +41,8 @@ export default {
     httpClient.fetchJson(`/web/programEncounter/${viewVisitUuid}`).then(response => {
       return response.json;
     }),
-  fetchcompletedVisit: viewVisitUuid =>
-    httpClient.fetchJson(`/web/programEnrolment/${viewVisitUuid}/completed`).then(response => {
+  fetchcompletedVisit: completedVisitUuid =>
+    httpClient.fetchJson(`/web/programEnrolment/${completedVisitUuid}/completed`).then(response => {
       return response.json;
     })
 };

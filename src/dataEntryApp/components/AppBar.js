@@ -24,6 +24,7 @@ import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { enableReadOnly } from "common/constants";
+import { getUserInfo } from "rootApp/ducks";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -105,8 +106,9 @@ const PrimarySearchAppBar = ({
   getUserInfo,
   orgConfig,
   defaultLanguage,
-  userInfo
+  user
 }) => {
+  console.log(user, "user*****************");
   const classes = useStyles();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -262,9 +264,9 @@ const PrimarySearchAppBar = ({
           <div className={classes.users}>
             <Typography component={"div"} color="inherit">
               <p className={classes.userName}>
-                <Link>ihmp-dev</Link>
+                <Link>{user.username}</Link>
               </p>
-              <p className={classes.userDesignation}>Operator</p>
+              <p className={classes.userDesignation}>{user.roles[0]}</p>
             </Typography>
           </div>
           <div className={classes.sectionDesktop}>
@@ -296,11 +298,15 @@ const PrimarySearchAppBar = ({
   );
 };
 
+const mapStateToProps = state => ({
+  user: state.app.user
+});
+
 export default withRouter(
   withParams(
     connect(
-      null,
-      null
+      mapStateToProps,
+      { getUserInfo }
     )(PrimarySearchAppBar)
   )
 );
