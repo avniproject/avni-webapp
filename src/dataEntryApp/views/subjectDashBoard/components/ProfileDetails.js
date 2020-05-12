@@ -202,7 +202,9 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                   buttonType: "saveButton",
                   label: t("Enrol"),
                   classes: classes.btnCustom,
-                  redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`
+                  redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`,
+                  requiredField: selectedProgram,
+                  requiredFieldMsg: "Please select program to enrol."
                 },
                 { buttonType: "cancelButton", label: t("Cancel"), classes: classes.cancelBtnCustom }
               ]}

@@ -12,6 +12,7 @@ import SubjectButton from "./Button";
 import Fab from "@material-ui/core/Fab";
 //import Link from "@material-ui/core/Link";
 import { Link } from "react-router-dom";
+import CustomizedDialog from "../../../components/Dialog";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -76,6 +77,12 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#F8F9F9",
     float: "left",
     display: "inline"
+  },
+  root: {
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2)
+    }
   }
 }));
 
@@ -121,6 +128,7 @@ const DialogActions = withStyles(theme => ({
 const CommonModal = ({ content, buttonsSet, title }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [validMsg, setValidationMsg] = React.useState(false);
 
   //const { t } = useTranslation();
 
@@ -129,6 +137,10 @@ const CommonModal = ({ content, buttonsSet, title }) => {
   };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleValidationMsg = validMessage => {
+    setValidationMsg(validMessage);
   };
 
   const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
@@ -161,7 +173,7 @@ const CommonModal = ({ content, buttonsSet, title }) => {
         </DialogTitle>
         {content}
         <DialogActions className={classes.borderBottom}>
-          {saveButton ? (
+          {saveButton && saveButton.requiredField ? (
             <Link to={saveButton.redirectTo}>
               <SubjectButton
                 btnLabel={saveButton.label}
@@ -169,6 +181,12 @@ const CommonModal = ({ content, buttonsSet, title }) => {
                 btnClick={handleClose}
               />
             </Link>
+          ) : saveButton ? (
+            <SubjectButton
+              btnLabel={saveButton.label}
+              btnClass={saveButton.classes}
+              btnClick={handleValidationMsg.bind(this, saveButton.requiredFieldMsg)}
+            />
           ) : (
             ""
           )}
@@ -183,6 +201,19 @@ const CommonModal = ({ content, buttonsSet, title }) => {
           )}
         </DialogActions>
       </Dialog>
+      {validMsg ? (
+        <CustomizedDialog
+          showSuccessIcon="true"
+          message={validMsg}
+          showOkbtn={validMsg}
+          openDialogContainer={validMsg}
+          onOk={() => {
+            setValidationMsg(false);
+          }}
+        />
+      ) : (
+        ""
+      )}
     </React.Fragment>
   );
 };
