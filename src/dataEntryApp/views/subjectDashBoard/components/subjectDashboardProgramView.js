@@ -16,6 +16,8 @@ import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
 import { enableReadOnly } from "common/constants";
+// import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
+import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -246,11 +248,28 @@ const ProgramView = ({ programData }) => {
           </ExpansionPanelDetails>
           <Button color="primary">
             <InternalLink
-              to={`/app/completeVisit?id=${programData.id}`}
-              data={{ id: programData.id, uuid: programData.uuid }}
+              to={`/app/completeVisit/${programData.id}/${programData.uuid}`}
+              params={{ id: programData.id, uuid: programData.uuid }}
             >
               {t("viewAllCompletedVisit")}
             </InternalLink>
+
+            {/* <Link
+              to={{
+                pathname: `/app/completeVisit?id=${programData.id}`,
+                query:{id:programData.id, uuid:programData.uuid}
+              }}>{t("viewAllCompletedVisit")}</Link> */}
+
+            {/* <RelativeLink
+                  to={`/app/completeVisit?id=${programData.id}`}
+                  params={{
+                    id: programData.id,
+                    uuid: programData.uuid
+                  }}
+                  // noUnderline
+                >
+                  {t("viewAllCompletedVisit")}
+                </RelativeLink> */}
           </Button>
         </ExpansionPanel>
       </Paper>
