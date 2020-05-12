@@ -23,14 +23,8 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-// import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
-
 import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
-import { first } from "lodash";
-import { setSubjectSearchParams, searchSubjects } from "../../../reducers/searchReducer";
 import { getCompletedVisit } from "../../../reducers/completedVisitReducer";
-import RegistrationMenu from "../../search/RegistrationMenu";
-import PrimaryButton from "../../../components/PrimaryButton";
 import {
   EnhancedTableHead,
   stableSort,
@@ -87,7 +81,6 @@ const useStyle = makeStyles(theme => ({
 
 const SubjectsTable = ({ completedVisit }) => {
   const classes = useStyle();
-  // console.log("subjects----------------->", subjects)
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -258,15 +251,10 @@ const CompleteVisit = ({ match, getCompletedVisit, completedVisit }) => {
   const classes = useStyle();
   const { t } = useTranslation();
 
-  // const handleSubmit = event => {
-  //   event.preventDefault();
-  //   props.search();
-  // };
-  const enrolementid = match.params.id;
-  const enrolementuuid = match.params.uuid;
+  const enrolementid = match.queryParams.id;
+  const enrolementuuid = match.queryParams.uuid;
   useEffect(() => {
     getCompletedVisit(enrolementid);
-    // props.getCompletedVisit("1006");
   }, []);
 
   const visitTypes = ["Birth", "Naturals", "death"];
@@ -308,19 +296,11 @@ const mapStateToProps = state => {
   };
 };
 
-// const mapDispatchToProps = {
-//   search: searchSubjects,
-//   setSearchParams: setSubjectSearchParams
-// };
 const mapDispatchToProps = {
   getCompletedVisit
 };
 
 export default withRouter(
-  // connect(
-  //   mapStateToProps,
-  //   mapDispatchToProps
-  // )(CompleteVisit)
   withParams(
     connect(
       mapStateToProps,

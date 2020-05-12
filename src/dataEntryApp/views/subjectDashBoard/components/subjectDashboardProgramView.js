@@ -247,29 +247,9 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
           <Button color="primary">
-            <InternalLink
-              to={`/app/completeVisit/${programData.id}/${programData.uuid}`}
-              params={{ id: programData.id, uuid: programData.uuid }}
-            >
+            <Link to={`/app/completeVisit?id=${programData.id}&uuid=${programData.uuid}`}>
               {t("viewAllCompletedVisit")}
-            </InternalLink>
-
-            {/* <Link
-              to={{
-                pathname: `/app/completeVisit?id=${programData.id}`,
-                query:{id:programData.id, uuid:programData.uuid}
-              }}>{t("viewAllCompletedVisit")}</Link> */}
-
-            {/* <RelativeLink
-                  to={`/app/completeVisit?id=${programData.id}`}
-                  params={{
-                    id: programData.id,
-                    uuid: programData.uuid
-                  }}
-                  // noUnderline
-                >
-                  {t("viewAllCompletedVisit")}
-                </RelativeLink> */}
+            </Link>
           </Button>
         </ExpansionPanel>
       </Paper>
