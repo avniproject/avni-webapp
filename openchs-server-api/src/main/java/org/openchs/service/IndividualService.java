@@ -138,8 +138,8 @@ public class IndividualService {
     public Set <ProgramEncountersContract> constructProgramEncounters(Set<ProgramEncounter> programEncounters) {
         return programEncounters.stream().map(programEncounter -> {
             ProgramEncountersContract programEncountersContract = new ProgramEncountersContract();
-            EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
-            encounterTypeContract.setName(programEncounter.getEncounterType().getName());
+            EncounterTypeContract encounterTypeContract =
+                    EncounterTypeContract.fromEncounterType(programEncounter.getEncounterType());
             programEncountersContract.setUuid(programEncounter.getUuid());
             programEncountersContract.setId(programEncounter.getId());
             programEncountersContract.setName(programEncounter.getName());
