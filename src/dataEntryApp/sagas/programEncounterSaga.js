@@ -197,9 +197,7 @@ function validate(formElement, value, observations, validationResults) {
 export function* saveProgramEncounterWorker() {
   const state = yield select();
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
-  console.log("saveProgramEncounter from Saga", programEncounter);
   let resource = programEncounter.toResource;
-  console.log("resource", resource);
   yield call(api.saveProgramEncouter, resource);
   yield put(saveProgramEncounterComplete(true));
 }

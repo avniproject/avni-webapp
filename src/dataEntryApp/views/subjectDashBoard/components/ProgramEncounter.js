@@ -79,6 +79,7 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                       size="small"
                       id="date-picker-dialog"
                       format="MM/dd/yyyy"
+                      placeholder="mm/dd/yyyy"
                       name="visitDateTime"
                       autoComplete="off"
                       required

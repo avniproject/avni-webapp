@@ -161,6 +161,7 @@ export const mapEnrolment = enrolmentList => {
     });
 };
 
+//To get list Program Encounters
 export const mapProgramEncounters = programEncountersList => {
   if (programEncountersList)
     return programEncountersList.map(programEncounters => {
@@ -175,9 +176,9 @@ export const mapProgramEncounters = programEncountersList => {
     });
 };
 
+//To get Program Encounter with observations
 export const mapProgramEncounter = programEncounter => {
   if (programEncounter) {
-    //let individual = mapIndividual(subjectProfile);
     const programEncounterObj = General.assignFields(
       programEncounter,
       new ProgramEncounter(),
@@ -186,7 +187,6 @@ export const mapProgramEncounter = programEncounter => {
     );
     programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
     programEncounterObj.observations = mapObservation(programEncounter["observations"]);
-    console.log("programEncounter Obj from Mpper", programEncounterObj);
     return programEncounterObj;
   }
 };

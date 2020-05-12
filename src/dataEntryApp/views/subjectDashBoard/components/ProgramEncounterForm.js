@@ -19,7 +19,9 @@ const mapFormStateToProps = state => ({
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   staticValidationResults: state.dataEntry.programEncounterReducer.enconterDateValidation,
   validationResults: state.dataEntry.programEncounterReducer.validationResults,
-  message: `${state.dataEntry.programEncounterReducer.programEncounter.name} Encounter Saved`
+  message: state.dataEntry.programEncounterReducer.programEncounter.name
+    ? `${state.dataEntry.programEncounterReducer.programEncounter.name} Encounter Saved`
+    : `Encounter Saved`
 });
 
 const mapFormDispatchToProps = {
