@@ -15,7 +15,8 @@ const useStyles = makeStyles(theme => ({
     paddingTop: "0px"
   },
   table: {
-    border: "1px solid rgba(224, 224, 224, 1)"
+    borderRadius: "3px",
+    boxShadow: "0px 0px 1px"
   },
   abnormalColor: {
     color: "#ff4f33"
@@ -32,13 +33,13 @@ const Observations = ({ observations }) => {
   // debugger
   return (
     <div>
-      {observations
-        ? observations.map((element, index) => {
-            return (
-              <Fragment key={index}>
-                <Table className={classes.table} size="small" aria-label="a dense table">
-                  <TableBody>
-                    <TableRow>
+      <Fragment>
+        <Table className={classes.table} size="small" aria-label="a dense table">
+          <TableBody>
+            {observations
+              ? observations.map((element, index) => {
+                  return (
+                    <TableRow key={index}>
                       <TableCell
                         style={{ color: "#555555" }}
                         component="th"
@@ -65,12 +66,12 @@ const Observations = ({ observations }) => {
                         </div>
                       </TableCell>
                     </TableRow>
-                  </TableBody>
-                </Table>
-              </Fragment>
-            );
-          })
-        : ""}
+                  );
+                })
+              : ""}
+          </TableBody>
+        </Table>
+      </Fragment>
     </div>
   );
 };

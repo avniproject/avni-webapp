@@ -33,8 +33,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#f27510",
     height: "38px",
     zIndex: 1,
-    // marginLeft: theme.spacing(64),
-    marginLeft: "512px",
+    marginLeft: theme.spacing(64),
+    // marginLeft:"512px",
     marginTop: "1px",
     boxShadow: "none"
   },
@@ -207,7 +207,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             </TableBody>
           </Table>
         </Grid>
-        <Grid justify="flex-end" alignItems="flex-start" direction="row">
+        <Grid container justify="flex-end" alignItems="flex-start" direction="row">
           {!enableReadOnly ? (
             <div>
               <Modal
