@@ -478,7 +478,7 @@ class CreateEditConcept extends Component {
       ? "Concept created successfully."
       : "Concept updated successfully.";
 
-    const appBarTitle = this.props.isCreatePage ? "Create a Concept" : "Edit a Concept";
+    const appBarTitle = this.props.isCreatePage ? "Create Concept" : "Edit Concept";
 
     if (this.state.dataType === "Numeric") {
       dataType = (

@@ -156,7 +156,7 @@ const ProgramList = ({ history }) => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Program" />
+        <Title title="Programs" />
 
         <div className="container">
           <div>

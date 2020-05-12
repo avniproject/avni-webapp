@@ -89,14 +89,9 @@ export const WorklistUpdationRule = () => {
         <DocumentationContainer filename={"WorklistUpdationRule.md"}>
           <ExpansionPanel expanded={true}>
             <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
-              <Grid container item sm={12}>
-                <Grid item sm={2}>
-                  <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>
-                    Worklist updation rule
-                  </span>
-                </Grid>
-                <Grid item sm={10} />
-              </Grid>
+              <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>
+                Worklist Updation Rule
+              </span>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Editor

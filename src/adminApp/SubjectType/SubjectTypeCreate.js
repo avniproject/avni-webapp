@@ -74,7 +74,7 @@ const SubjectTypeCreate = props => {
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
         <DocumentationContainer filename={"SubjectType.md"}>
-          <Title title={"Create subject type "} />
+          <Title title={"Create Subject Type "} />
 
           <div className="container" style={{ float: "left" }}>
             <form onSubmit={onSubmit}>

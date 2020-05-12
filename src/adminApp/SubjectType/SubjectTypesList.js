@@ -98,7 +98,7 @@ const SubjectTypesList = ({ history }) => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Subject Type" />
+        <Title title="Subject Types" />
 
         <div className="container">
           <div>
