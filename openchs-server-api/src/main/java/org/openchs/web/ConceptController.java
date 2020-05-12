@@ -9,6 +9,7 @@ import org.openchs.projection.ConceptProjection;
 import org.openchs.service.ConceptService;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.ConceptContract;
+import org.openchs.web.request.application.ConceptUsageContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,8 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,6 +80,20 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         } else {
             return wrap(conceptRepository.findByNameIgnoreCaseContaining(name, pageRequest));
         }
+    }
+
+    @GetMapping(value = "/web/concept/usage/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    @ResponseBody
+    public ConceptUsageContract getConceptUsage(@PathVariable String uuid) {
+        ConceptUsageContract conceptUsageContract = new ConceptUsageContract();
+        Concept concept = conceptRepository.findByUuid(uuid);
+        if (ConceptDataType.NA.toString().equals(concept.getDataType())) {
+            conceptService.addDependentConcepts(conceptUsageContract, concept);
+        } else {
+            conceptService.addDependentFormDetails(conceptUsageContract, concept);
+        }
+        return conceptUsageContract;
     }
 
     @GetMapping(value = "/codedConcepts")

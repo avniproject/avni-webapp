@@ -1,12 +1,17 @@
 package org.openchs.service;
 
+import org.openchs.application.FormElement;
 import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationRepository;
+import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.O;
 import org.openchs.web.request.ConceptContract;
+import org.openchs.web.request.ReferenceDataContract;
+import org.openchs.web.request.application.ConceptUsageContract;
+import org.openchs.web.request.application.FormUsageContract;
 import org.openchs.web.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +21,6 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,10 +33,12 @@ public class ConceptService {
     private ConceptAnswerRepository conceptAnswerRepository;
     private OrganisationRepository organisationRepository;
     private UserService userService;
+    private FormElementRepository formElementRepository;
 
     @Autowired
-    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService) {
+    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService, FormElementRepository formElementRepository) {
         this.userService = userService;
+        this.formElementRepository = formElementRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.conceptAnswerRepository = conceptAnswerRepository;
@@ -214,5 +220,23 @@ public class ConceptService {
         } else {
             return value;
         }
+    }
+
+    public void addDependentConcepts(ConceptUsageContract conceptUsageContract, Concept answerConcept) {
+        List<ConceptAnswer> conceptAnswers = conceptAnswerRepository.findByAnswerConcept(answerConcept);
+        conceptAnswers.forEach(ca -> {
+            ReferenceDataContract conceptContract = new ReferenceDataContract();
+            Concept concept = ca.getConcept();
+            conceptContract.setName(concept.getName());
+            conceptContract.setId(concept.getId());
+            conceptContract.setUuid(concept.getUuid());
+            conceptUsageContract.addConcepts(conceptContract);
+            addDependentFormDetails(conceptUsageContract, concept);
+        });
+    }
+
+    public void addDependentFormDetails(ConceptUsageContract conceptUsageContract, Concept concept) {
+        List<FormElement> formElements = formElementRepository.findAllByConceptUuidAndIsVoidedFalse(concept.getUuid());
+        formElements.forEach(formElement -> conceptUsageContract.addForms(FormUsageContract.fromEntity(formElement)));
     }
 }

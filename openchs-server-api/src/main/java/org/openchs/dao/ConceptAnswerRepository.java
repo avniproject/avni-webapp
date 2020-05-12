@@ -26,4 +26,6 @@ public interface ConceptAnswerRepository extends ReferenceDataRepository<Concept
 
     @Query("select c.name from ConceptAnswer ca join ca.concept c where c.isVoided = false and ca.isVoided = false")
     List<String> getAllNames();
+
+    List<ConceptAnswer> findByAnswerConcept(Concept answerConcept);
 }

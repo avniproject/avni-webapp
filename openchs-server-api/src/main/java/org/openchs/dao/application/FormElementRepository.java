@@ -17,4 +17,6 @@ public interface FormElementRepository extends ReferenceDataRepository<FormEleme
 
     @Query("select f.name from FormElement f where f.isVoided = false")
     List<String> getAllNames();
+
+    List<FormElement> findAllByConceptUuidAndIsVoidedFalse(String conceptUUID);
 }
