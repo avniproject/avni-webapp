@@ -17,7 +17,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewMenu from "../views/dashboardNew/NewMenu";
 import Input from "@material-ui/core/Input";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
@@ -38,6 +38,20 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up("sm")]: {
       display: "block"
     }
+  },
+  userName: {
+    fontSize: "15px",
+    marginBottom: "0px",
+    fontWeight: "600px"
+  },
+  userDesignation: {
+    fontSize: "12px",
+    marginRight: "6px",
+    marginBottom: "0px",
+    color: "grey"
+  },
+  users: {
+    marginRight: "3px"
   },
   sectionDesktop: {
     display: "none",
@@ -245,6 +259,14 @@ const PrimarySearchAppBar = ({
           )}
 
           <div className={classes.grow} />
+          <div className={classes.users}>
+            <Typography component={"div"} color="inherit">
+              <p className={classes.userName}>
+                <Link>ihmp-dev</Link>
+              </p>
+              <p className={classes.userDesignation}>Operator</p>
+            </Typography>
+          </div>
           <div className={classes.sectionDesktop}>
             <IconButton
               edge="end"
