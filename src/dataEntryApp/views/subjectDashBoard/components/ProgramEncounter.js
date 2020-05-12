@@ -41,20 +41,20 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
   const classes = useStyles();
   const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
+  const enrolUuid = match.queryParams.enrolUuid;
+  const uuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.setProgramEncounter();
     props.saveProgramEncounterComplete(false);
     (async function fetchData() {
       if (editProgramEncounter) {
-        const encounterUuid = match.queryParams.uuid;
-        const enrolUuid = match.queryParams.enrolUuid;
-        await props.onLoadEditProgramEncounter(encounterUuid, enrolUuid);
+        //uuid - programEncounterUuid
+        await props.onLoadEditProgramEncounter(uuid, enrolUuid);
       } else {
-        const enrolmentUuid = match.queryParams.enrolUuid;
-        const encounterTypeUuid = match.queryParams.uuid;
-        await props.onLoad(enrolmentUuid);
-        props.getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
+        //uuid - encounterTypeUuid
+        await props.onLoad(enrolUuid);
+        props.getProgramEncounterForm(uuid, enrolUuid);
       }
     })();
   }, []);

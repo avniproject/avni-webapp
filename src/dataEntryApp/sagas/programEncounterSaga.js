@@ -214,47 +214,18 @@ function* loadEditProgramEncounterWatcher() {
 
 export function* loadEditProgramEncounterWorker({ programEncounterUuid, enrolUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
-  console.log(programEncounterJson);
+  const programEnrolmentJson = yield call(api.fetchProgramEnrolment, enrolUuid);
   const programEncounter = mapProgramEncounter(programEncounterJson);
-  //For try :  programEnrolment
-  const programEnrolmentNew = new ProgramEnrolment();
   const formMapping = yield select(
     selectFormMappingByEncounterTypeUuid(programEncounter.encounterType.uuid)
   );
   const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
-  const programEnrolment = yield call(api.fetchProgramEnrolment, enrolUuid);
-
-  programEnrolmentNew.uuid = enrolUuid;
-  programEnrolmentNew.enrolmentDateTime = new Date(programEnrolment.enrolmentDateTime);
-  console.log("programEnrolment", programEnrolmentNew);
-
-  programEncounter.programEnrolment = programEnrolmentNew;
-  console.log("programEncounter", programEncounter);
+  const programEnrolment = new ProgramEnrolment();
+  programEnrolment.uuid = enrolUuid;
+  programEnrolment.enrolmentDateTime = new Date(programEnrolmentJson.enrolmentDateTime);
+  programEncounter.programEnrolment = programEnrolment;
 
   yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
   yield put.resolve(setProgramEncounter(programEncounter));
-  yield put(getSubjectProfile(programEnrolment.subjectUuid));
-  // const selectedAddressLevelType = {
-  //   name: subjectProfileJson.addressLevelTypeName,
-  //   id: subjectProfileJson.addressLevelTypeId
-  // };
-  // yield put(selectAddressLevelType(selectedAddressLevelType));
-
-  // yield put.resolve(getOperationalModules());
-  // yield put.resolve(getRegistrationForm(subject.subjectType.name));
-  // yield put.resolve(getGenders());
-
-  // if (disableSession) {
-  //   yield put.resolve(setSubject(subject));
-  //   yield put.resolve(setLoaded());
-  // } else {
-  //   let subjectFromSession = BrowserStore.fetchSubject();
-  //   if (subjectFromSession) {
-  //     yield put.resolve(setSubject(subjectFromSession));
-  //     yield put.resolve(setLoaded());
-  //   } else {
-  //     yield put.resolve(setSubject(subject));
-  //     yield put.resolve(setLoaded());
-  //   }
-  // }
+  yield put(getSubjectProfile(programEnrolmentJson.subjectUuid));
 }
