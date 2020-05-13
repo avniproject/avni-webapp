@@ -50,6 +50,7 @@ public class ProgramService {
         program.setColour(programRequest.getColour());
         program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
         program.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
+        program.setActive(programRequest.getActive());
         programRepository.save(program);
     }
 

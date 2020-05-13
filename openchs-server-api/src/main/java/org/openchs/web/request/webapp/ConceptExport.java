@@ -21,6 +21,7 @@ public class ConceptExport {
     private Double lowNormal;
     private Double highNormal;
     private String unit;
+    private Boolean active;
     private boolean voided;
     private List<AnswerExport> answers;
 
@@ -125,6 +126,7 @@ public class ConceptExport {
         export.setHighNormal(concept.getHighNormal());
         export.setUnit(concept.getUnit());
         export.setVoided(concept.isVoided());
+        export.setActive(concept.getActive());
         export.setKeyValues(concept.getKeyValues());
         List<ConceptAnswer> conceptAnswersSortedByOrder = concept.getConceptAnswers()
                 .stream()
@@ -152,5 +154,13 @@ public class ConceptExport {
 
     public void setAnswers(List<AnswerExport> answers) {
         this.answers = answers;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

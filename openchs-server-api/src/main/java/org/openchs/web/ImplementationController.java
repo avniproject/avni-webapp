@@ -106,7 +106,7 @@ public class ImplementationController implements RestControllerResourceProcessor
             addConceptsJson(orgId, zos);
             addFormsJson(orgId, zos);
             addFormMappingsJson(orgId, zos);
-            addOragnisationConfigJson(orgId, zos);
+            addOrganisationConfigJson(orgId, zos);
         }
 
         byte[] baosByteArray = baos.toByteArray();
@@ -120,7 +120,7 @@ public class ImplementationController implements RestControllerResourceProcessor
     }
 
 
-    private void addOragnisationConfigJson(Long orgId, ZipOutputStream zos) throws IOException {
+    private void addOrganisationConfigJson(Long orgId, ZipOutputStream zos) throws IOException {
         OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(orgId);
         if(organisationConfig != null) {
             addFileToZip(zos, "organisationConfig.json", OrganisationConfigRequest.fromOrganisationConfig(organisationConfig));
