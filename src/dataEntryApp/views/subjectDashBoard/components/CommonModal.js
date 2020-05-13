@@ -125,27 +125,25 @@ const DialogActions = withStyles(theme => ({
   }
 }))(MuiDialogActions);
 
-const CommonModal = ({ content, buttonsSet, title }) => {
+const CommonModal = ({ content, buttonsSet, title, handleError }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [validMsg, setValidationMsg] = React.useState(false);
 
   //const { t } = useTranslation();
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleValidationMsg = validMessage => {
-    setValidationMsg(validMessage);
-  };
-
   const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
   const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
   const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
+
+  const handleClickOpen = () => {
+    setOpen(true);
+    handleError(false);
+  };
+  const handleClose = () => {
+    setOpen(false);
+    handleError(false);
+  };
 
   return (
     <React.Fragment>
@@ -185,7 +183,7 @@ const CommonModal = ({ content, buttonsSet, title }) => {
             <SubjectButton
               btnLabel={saveButton.label}
               btnClass={saveButton.classes}
-              btnClick={handleValidationMsg.bind(this, saveButton.requiredFieldMsg)}
+              btnClick={handleError.bind(this, true)}
             />
           ) : (
             ""
