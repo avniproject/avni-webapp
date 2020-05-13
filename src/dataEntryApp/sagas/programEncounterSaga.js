@@ -8,12 +8,14 @@ import {
   setProgramEncounterForm,
   setProgramEncounter,
   saveProgramEncounterComplete,
-  setValidationResults
+  setValidationResults,
+  setCancelProgramEncounterForm
 } from "../reducers/programEncounterReducer";
 import api from "../api";
 import {
   selectFormMappingForSubjectType,
-  selectFormMappingByEncounterTypeUuid
+  selectFormMappingByEncounterTypeUuid,
+  selectCancelFormMappingByEncounterTypeUuid
 } from "./programEncounterSelector";
 import { mapForm } from "../../common/adapters";
 import { ProgramEncounter, ProgramEnrolment, ObservationsHolder, Concept } from "avni-models";
@@ -28,7 +30,8 @@ export default function*() {
       programEncounterFetchFormWatcher,
       updateEncounterObsWatcher,
       saveProgramEncounterWatcher,
-      loadEditProgramEncounterWatcher
+      loadEditProgramEncounterWatcher,
+      cancelProgramEncounterFetchFormWatcher
     ].map(fork)
   );
 }
@@ -226,4 +229,15 @@ export function* loadEditProgramEncounterWorker({ programEncounterUuid, enrolUui
   yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
   yield put.resolve(setProgramEncounter(programEncounter));
   yield put(getSubjectProfile(programEnrolmentJson.subjectUuid));
+}
+
+export function* cancelProgramEncounterFetchFormWatcher() {
+  yield takeLatest(types.GET_CANCEL_PROGRAM_ENCOUNTER_FORM, cancelProgramEncounterFetchFormWorker);
+}
+
+export function* cancelProgramEncounterFetchFormWorker({ encounterTypeUuid, enrolmentUuid }) {
+  const formMapping = yield select(selectCancelFormMappingByEncounterTypeUuid(encounterTypeUuid));
+  const cancelProgramEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  yield put(setCancelProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
+  const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
 }

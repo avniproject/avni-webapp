@@ -130,7 +130,11 @@ const Visit = ({
             >
               <Button color="primary">{t("do visit")}</Button>
             </InternalLink>
-            <Button color="primary">{t("cancel Visit")}</Button>
+            <InternalLink
+              to={`/app/subject/cancelProgramEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
+            >
+              <Button color="primary">{t("cancel Visit")}</Button>
+            </InternalLink>
           </div>
         )}
       </Paper>

@@ -30,3 +30,11 @@ export const selectFormMappingByEncounterTypeUuid = encounterTypeUuid => state =
       !isNil(encounterTypeUuid) &&
       (fm.encounterTypeUUID === encounterTypeUuid && fm.formType === "ProgramEncounter")
   );
+
+export const selectCancelFormMappingByEncounterTypeUuid = encounterTypeUuid => state =>
+  find(
+    get(state, "dataEntry.metadata.operationalModules.formMappings"),
+    fm =>
+      !isNil(encounterTypeUuid) &&
+      (fm.encounterTypeUUID === encounterTypeUuid && fm.formType === "ProgramEncounterCancellation")
+  );
