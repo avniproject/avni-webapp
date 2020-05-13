@@ -7,6 +7,8 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilterFactory;
 import org.apache.lucene.analysis.ngram.EdgeNGramFilterFactory;
 import org.apache.lucene.analysis.standard.StandardTokenizerFactory;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Parameter;
 import org.hibernate.search.annotations.*;
@@ -44,6 +46,7 @@ import java.util.stream.Stream;
                 })
 })
 @BatchSize(size = 100)
+@DynamicInsert
 public class Concept extends OrganisationAwareEntity {
     @Field
     @Analyzer(definition = "edgeNgram")
@@ -57,6 +60,8 @@ public class Concept extends OrganisationAwareEntity {
     @Column
     @Type(type = "keyValues")
     private KeyValues keyValues;
+
+    private Boolean active;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "concept")
     private Set<ConceptAnswer> conceptAnswers = new HashSet<>();
@@ -253,5 +258,13 @@ public class Concept extends OrganisationAwareEntity {
 
     public Stream<ConceptAnswer> getSortedAnswers() {
         return this.getConceptAnswers().stream().sorted(Comparator.comparing(ConceptAnswer::getOrder));
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = Optional.ofNullable(active).orElse(true);
     }
 }

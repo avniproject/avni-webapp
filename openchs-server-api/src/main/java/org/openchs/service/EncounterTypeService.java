@@ -35,6 +35,7 @@ public class EncounterTypeService {
         encounterType.setName(encounterTypeRequest.getName());
         encounterType.setEncounterEligibilityCheckRule(encounterTypeRequest.getEncounterEligibilityCheckRule());
         encounterType.setVoided(encounterTypeRequest.isVoided());
+        encounterType.setActive(encounterTypeRequest.getActive());
         encounterTypeRepository.save(encounterType);
     }
 

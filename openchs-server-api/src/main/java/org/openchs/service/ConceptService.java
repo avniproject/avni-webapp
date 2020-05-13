@@ -129,6 +129,7 @@ public class ConceptService {
         String impliedDataType = getImpliedDataType(conceptRequest, concept);
         concept.setDataType(impliedDataType);
         concept.setVoided(conceptRequest.isVoided());
+        concept.setActive(conceptRequest.getActive());
         concept.setKeyValues(conceptRequest.getKeyValues());
         updateOrganisationIfNeeded(concept, conceptRequest);
         switch (ConceptDataType.valueOf(impliedDataType)) {

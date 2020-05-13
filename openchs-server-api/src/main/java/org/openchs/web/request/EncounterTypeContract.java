@@ -7,6 +7,7 @@ import org.openchs.domain.EncounterType;
 public class EncounterTypeContract extends ReferenceDataContract {
 
     private String encounterEligibilityCheckRule;
+    private Boolean active;
 
     public static EncounterTypeContract fromEncounterType(EncounterType encounterType) {
         EncounterTypeContract contract = new EncounterTypeContract();
@@ -14,6 +15,7 @@ public class EncounterTypeContract extends ReferenceDataContract {
         contract.setUuid(encounterType.getUuid());
         contract.setEncounterEligibilityCheckRule(encounterType.getEncounterEligibilityCheckRule());
         contract.setVoided(encounterType.isVoided());
+        contract.setActive(encounterType.getActive());
         return contract;
     }
 
@@ -23,5 +25,13 @@ public class EncounterTypeContract extends ReferenceDataContract {
 
     public void setEncounterEligibilityCheckRule(String encounterEligibilityCheckRule) {
         this.encounterEligibilityCheckRule = encounterEligibilityCheckRule;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

@@ -35,6 +35,7 @@ public class SubjectTypeService {
         subjectType.setName(subjectTypeRequest.getName());
         subjectType.setGroup(subjectTypeRequest.isGroup());
         subjectType.setHousehold(subjectTypeRequest.isHousehold());
+        subjectType.setActive(subjectTypeRequest.getActive());
         subjectTypeRepository.save(subjectType);
     }
 
@@ -43,6 +44,7 @@ public class SubjectTypeService {
         subjectType.setUuid(programRequest.getUuid());
         subjectType.setVoided(programRequest.isVoided());
         subjectType.setGroup(programRequest.isGroup());
+        subjectType.setActive(programRequest.getActive());
         return subjectType;
     }
 

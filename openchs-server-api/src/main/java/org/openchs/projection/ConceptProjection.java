@@ -34,6 +34,8 @@ public interface ConceptProjection extends BaseProjection {
 
     Boolean getVoided();
 
+    Boolean getActive();
+
     String getLastModifiedBy();
 
     String getCreatedBy();

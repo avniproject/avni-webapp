@@ -135,6 +135,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
         program.setColour(request.getColour());
         program.setEnrolmentSummaryRule(request.getEnrolmentSummaryRule());
         program.setEnrolmentEligibilityCheckRule(request.getEnrolmentEligibilityCheckRule());
+        program.setActive(request.getActive());
 
         programRepository.save(program);
 

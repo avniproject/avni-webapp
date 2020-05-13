@@ -2,22 +2,21 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.openchs.application.projections.BaseProjection;
 import org.openchs.web.request.webapp.GroupRoleContract;
 import org.springframework.data.rest.core.config.Projection;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "subject_type")
 @JsonIgnoreProperties({"operationalSubjectTypes"})
+@DynamicInsert
 public class SubjectType extends OrganisationAwareEntity {
     @NotNull
     @Column
@@ -34,6 +33,8 @@ public class SubjectType extends OrganisationAwareEntity {
 
     @Column
     private boolean isHousehold;
+
+    private Boolean active;
 
     public Set<GroupRole> getGroupRoles() {
         return groupRoles;
@@ -94,6 +95,14 @@ public class SubjectType extends OrganisationAwareEntity {
         return isGroup() ? groupRoles.stream()
                 .filter(gr -> !gr.getMemberSubjectType().isVoided())
                 .map(gr -> gr.getMemberSubjectType().getUuid()).collect(Collectors.toList()) : Collections.emptyList();
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = Optional.ofNullable(active).orElse(true);
     }
 
     @Projection(name = "SubjectTypeProjection", types = {SubjectType.class})

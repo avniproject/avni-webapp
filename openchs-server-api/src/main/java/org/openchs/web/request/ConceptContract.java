@@ -21,6 +21,7 @@ public class ConceptContract extends ReferenceDataContract {
     private String unit;
     private String organisationUUID;
     private boolean abnormal;
+    private Boolean active;
     private boolean unique = false;
     private Double order;
     private KeyValues keyValues;
@@ -31,6 +32,7 @@ public class ConceptContract extends ReferenceDataContract {
         conceptContract.setName(concept.getName());
         conceptContract.setDataType(concept.getDataType());
         conceptContract.setVoided(concept.isVoided());
+        conceptContract.setActive(concept.getActive());
         conceptContract.setKeyValues(concept.getKeyValues());
         return conceptContract;
     }
@@ -139,5 +141,13 @@ public class ConceptContract extends ReferenceDataContract {
     @Override
     public String toString() {
         return String.format("UUID: %s, Name: %s, DataType: %s", this.getUuid(), this.getName(), this.getDataType());
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

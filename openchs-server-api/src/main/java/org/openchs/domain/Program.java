@@ -2,6 +2,8 @@ package org.openchs.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.openchs.application.projections.BaseProjection;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -9,11 +11,13 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
 @Table(name = "program")
 @JsonIgnoreProperties({"operationalPrograms"})
+@DynamicInsert
 public class Program extends OrganisationAwareEntity {
     @NotNull
     @Column
@@ -29,6 +33,8 @@ public class Program extends OrganisationAwareEntity {
 
     @Column(name = "enrolment_eligibility_check_rule")
     private String enrolmentEligibilityCheckRule;
+
+    private Boolean active;
 
     public String getName() {
         return name;
@@ -87,6 +93,14 @@ public class Program extends OrganisationAwareEntity {
 
     public void setEnrolmentEligibilityCheckRule(String enrolmentEligibilityCheckRule) {
         this.enrolmentEligibilityCheckRule = enrolmentEligibilityCheckRule;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = Optional.ofNullable(active).orElse(true);
     }
 
 

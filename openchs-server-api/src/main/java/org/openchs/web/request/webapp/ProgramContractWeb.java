@@ -17,6 +17,7 @@ public class ProgramContractWeb {
     private Long organisationId;
     private Long programOrganisationId;
     private boolean voided;
+    private Boolean active;
     private String enrolmentSummaryRule;
     private String enrolmentEligibilityCheckRule;
     private String createdBy;
@@ -86,6 +87,7 @@ public class ProgramContractWeb {
         contract.setProgramSubjectLabel(operationalProgram.getProgramSubjectLabel());
         contract.setOrganisationId(operationalProgram.getOrganisationId());
         contract.setVoided(operationalProgram.isVoided());
+        contract.setActive(operationalProgram.getProgram().getActive());
         contract.setProgramOrganisationId(operationalProgram.getProgram().getOrganisationId());
         contract.setEnrolmentSummaryRule(operationalProgram.getEnrolmentSummaryRule());
         contract.setEnrolmentEligibilityCheckRule(operationalProgram.getEnrolmentEligibilityCheckRule());
@@ -184,5 +186,13 @@ public class ProgramContractWeb {
 
     public void setSubjectTypeUuid(String subjectTypeUuid) {
         this.subjectTypeUuid = subjectTypeUuid;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

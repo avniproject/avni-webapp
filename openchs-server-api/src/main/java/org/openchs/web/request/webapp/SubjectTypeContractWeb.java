@@ -18,6 +18,7 @@ public class SubjectTypeContractWeb {
     private boolean voided;
     private boolean group;
     private boolean household;
+    private Boolean active;
     private String createdBy;
     private String lastModifiedBy;
     private DateTime createdDateTime;
@@ -41,6 +42,7 @@ public class SubjectTypeContractWeb {
         contract.setGroup(operationalSubjectType.isGroup());
         contract.setHousehold(operationalSubjectType.isHousehold());
         contract.setGroupRoles(operationalSubjectType.getSubjectType().getGroupRolesContract());
+        contract.setActive(operationalSubjectType.getSubjectType().getActive());
         return contract;
     }
 
@@ -154,5 +156,13 @@ public class SubjectTypeContractWeb {
 
     public void setRegistrationFormUuid(String registrationFormUuid) {
         this.registrationFormUuid = registrationFormUuid;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

@@ -15,6 +15,7 @@ public class EncounterTypeContractWeb {
     private Long organisationId;
     private Long encounterTypeOrganisationId;
     private boolean voided;
+    private Boolean active;
     private String encounterEligibilityCheckRule;
     private String createdBy;
     private String lastModifiedBy;
@@ -66,6 +67,7 @@ public class EncounterTypeContractWeb {
         contract.setUUID(operationalEncounterType.getEncounterType().getUuid());
         contract.setEncounterTypeOrganisationId(operationalEncounterType.getEncounterType().getOrganisationId());
         contract.setVoided(operationalEncounterType.isVoided());
+        contract.setActive(operationalEncounterType.getEncounterType().getActive());
         contract.setEncounterEligibilityCheckRule(operationalEncounterType.getEncounterEligibilityCheckRule());
         contract.setCreatedBy(operationalEncounterType.getAudit().getCreatedBy().getUsername());
         contract.setLastModifiedBy(operationalEncounterType.getAudit().getLastModifiedBy().getUsername());
@@ -160,5 +162,13 @@ public class EncounterTypeContractWeb {
 
     public void setProgramUuid(String programUuid) {
         this.programUuid = programUuid;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

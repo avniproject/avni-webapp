@@ -15,6 +15,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
     @JsonProperty(value = "household")
     private boolean isHousehold;
 
+    private Boolean active;
+
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
         contract.setName(subjectType.getName());
@@ -22,6 +24,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setVoided(subjectType.isVoided());
         contract.setIsGroup(subjectType.isGroup());
         contract.setHousehold(subjectType.isHousehold());
+        contract.setActive(subjectType.getActive());
         return contract;
     }
 
@@ -39,5 +42,13 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setIsGroup(boolean group) {
         isGroup = group;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }
