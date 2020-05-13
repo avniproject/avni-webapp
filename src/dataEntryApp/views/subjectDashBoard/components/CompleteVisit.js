@@ -105,8 +105,8 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {t(row.name)}
         </TableCell>
-        <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
         <TableCell align="left">{row.encounterDateTime}</TableCell>
+        <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
         {!enableReadOnly ? (
           <TableCell align="left">
             {" "}
@@ -153,10 +153,10 @@ const SubjectsTable = ({ allVisits }) => {
   if (allVisits) {
     allVisits.content.forEach(function(a) {
       let sub = {
-        name: a.name ? a.name : "-",
+        name: a.encounterType.name ? a.encounterType.name : "-",
         earliestVisitDateTime: a.earliestVisitDateTime
           ? moment(new Date(a.earliestVisitDateTime)).format("DD-MM-YYYY")
-          : "-",
+          : moment(new Date(a.encounterDateTime)).format("DD-MM-YYYY"),
         encounterDateTime: a.encounterDateTime
           ? moment(new Date(a.encounterDateTime)).format("DD-MM-YYYY")
           : "-",
