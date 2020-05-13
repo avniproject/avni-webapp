@@ -5,10 +5,7 @@ import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.geo.Point;
 import org.openchs.projection.ProgramEnrolmentProjection;
-import org.openchs.service.ConceptService;
-import org.openchs.service.ObservationService;
-import org.openchs.service.ProgramEnrolmentService;
-import org.openchs.service.UserService;
+import org.openchs.service.*;
 import org.openchs.util.S;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.PointRequest;
@@ -53,9 +50,10 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
     private final ProgramEnrolmentService programEnrolmentService;
+    private final ProgramEncounterService programEncounterService;
 
     @Autowired
-    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ProjectionFactory projectionFactory, ConceptRepository conceptRepository, ConceptService conceptService,ProgramEnrolmentService programEnrolmentService) {
+    public ProgramEnrolmentController(ProgramRepository programRepository, IndividualRepository individualRepository, ProgramOutcomeRepository programOutcomeRepository, ProgramEnrolmentRepository programEnrolmentRepository, ObservationService observationService, UserService userService, ProjectionFactory projectionFactory, ConceptRepository conceptRepository, ConceptService conceptService,ProgramEnrolmentService programEnrolmentService, ProgramEncounterService programEncounterService) {
         this.programRepository = programRepository;
         this.individualRepository = individualRepository;
         this.programOutcomeRepository = programOutcomeRepository;
@@ -66,6 +64,7 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
         this.programEnrolmentService = programEnrolmentService;
+        this.programEncounterService = programEncounterService;
     }
 
     @RequestMapping(value = "/api/enrolments", method = RequestMethod.GET)
@@ -101,39 +100,13 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @Transactional
     public void save(@RequestBody ProgramEnrolmentRequest request) {
-        logger.info(String.format("Saving programEnrolment with uuid %s", request.getUuid()));
-        Program program;
-        if (request.getProgramUUID() == null) {
-            program = programRepository.findByName(request.getProgram());
-        } else {
-            program = programRepository.findByUuid(request.getProgramUUID());
+        if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
+            programEncounterService.saveVisitSchedules(request.getUuid(),request.getVisitSchedules());
         }
-        ProgramOutcome programOutcome = programOutcomeRepository.findByUuid(request.getProgramOutcomeUUID());
-
-        ProgramEnrolment programEnrolment = newOrExistingEntity(programEnrolmentRepository, request, new ProgramEnrolment());
-        programEnrolment.setProgram(program);
-        programEnrolment.setProgramOutcome(programOutcome);
-        programEnrolment.setEnrolmentDateTime(request.getEnrolmentDateTime());
-        programEnrolment.setProgramExitDateTime(request.getProgramExitDateTime());
-        PointRequest enrolmentLocation = request.getEnrolmentLocation();
-        if (enrolmentLocation != null)
-            programEnrolment.setEnrolmentLocation(new Point(enrolmentLocation.getX(), enrolmentLocation.getY()));
-        PointRequest exitLocation = request.getExitLocation();
-        if (exitLocation != null)
-            programEnrolment.setExitLocation(new Point(exitLocation.getX(), exitLocation.getY()));
-        programEnrolment.setObservations(observationService.createObservations(request.getObservations()));
-        programEnrolment.setProgramExitObservations(observationService.createObservations(request.getProgramExitObservations()));
-
-        if (programEnrolment.isNew()) {
-            Individual individual = individualRepository.findByUuid(request.getIndividualUUID());
-            programEnrolment.setIndividual(individual);
-            individual.addEnrolment(programEnrolment);
-            individualRepository.save(individual);
-        } else {
-            programEnrolmentRepository.save(programEnrolment);
-        }
-        logger.info(String.format("Saved programEnrolment with uuid %s", request.getUuid()));
+        programEnrolmentService.programEnrolmentSave(request);
     }
+
+
 
     @GetMapping(value = {"/programEnrolment", /* Deprecated -> */ "/programEnrolment/search/lastModified", "/programEnrolment/search/byIndividualsOfCatchmentAndLastModified"})
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
