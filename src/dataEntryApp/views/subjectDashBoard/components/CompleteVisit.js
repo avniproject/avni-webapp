@@ -32,6 +32,7 @@ import {
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
+import { enableReadOnly } from "common/constants";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -167,7 +168,7 @@ const SubjectsTable = ({ allVisits }) => {
             <TableCell>Visit Name</TableCell>
             <TableCell align="left">Visit Completed Date</TableCell>
             <TableCell align="left">Visit Scheduled Date</TableCell>
-            <TableCell align="left">Action</TableCell>
+            {!enableReadOnly ? <TableCell align="left">Action</TableCell> : ""}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -181,14 +182,18 @@ const SubjectsTable = ({ allVisits }) => {
                     </IconButton>
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    {row.name}
+                    {row.encounterType.name}
                   </TableCell>
                   <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
                   <TableCell align="left">{row.encounterDateTime}</TableCell>
-                  <TableCell align="left">
-                    {" "}
-                    <Link to="">{t("edit")}</Link> | <Link to="">{t("visit")}</Link>
-                  </TableCell>
+                  {!enableReadOnly ? (
+                    <TableCell align="left">
+                      {" "}
+                      <Link to="">{t("edit")}</Link> | <Link to="">{t("visit")}</Link>
+                    </TableCell>
+                  ) : (
+                    ""
+                  )}
                 </TableRow>
                 <TableRow>
                   <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -202,8 +207,6 @@ const SubjectsTable = ({ allVisits }) => {
                             <TableRow>
                               <TableCell>Name</TableCell>
                               <TableCell>Value</TableCell>
-                              {/* <TableCell align="right">Amount</TableCell>
-                        <TableCell align="right">Total price ($)</TableCell> */}
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -213,8 +216,6 @@ const SubjectsTable = ({ allVisits }) => {
                                   {historyRow.concept.name}
                                 </TableCell>
                                 <TableCell align="left">{historyRow.value.name}</TableCell>
-                                {/* <TableCell align="left">{historyRow.value.uuid}</TableCell>
-                          <TableCell align="left">{historyRow.value.name}</TableCell> */}
                               </TableRow>
                             ))}
                           </TableBody>
@@ -243,10 +244,7 @@ const SubjectsTable = ({ allVisits }) => {
   );
 };
 
-const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit }) => {
-  console.log("props-------", match);
-  // console.log("getCompletedVisit-------", getCompletedVisit);
-  console.log("completedVisit-------", completedVisit);
+const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit, visitTypes }) => {
   const classes = useStyle();
   const { t } = useTranslation();
 
@@ -255,9 +253,7 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
     getVisitTypes(match.queryParams.uuid);
   }, []);
 
-  const visitTypes1 = ["Birth", "Naturals", "death"];
-
-  return (
+  return completedVisit && visitTypes ? (
     <div>
       <Fragment>
         <Breadcrumbs path={match.path} />
@@ -278,13 +274,15 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
               </div>
             </Grid>
             <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult visitTypes={visitTypes1} />
+              <FilterResult visitTypes={visitTypes} />
             </Grid>
           </Grid>
           <SubjectsTable allVisits={completedVisit} />
         </Paper>
       </Fragment>
     </div>
+  ) : (
+    ""
   );
 };
 
