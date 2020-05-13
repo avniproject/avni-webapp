@@ -9,6 +9,7 @@ export const types = {
   SET_PROGRAM_ENCOUNTER: `${prefix}SET_PROGRAM_ENCOUNTER`,
   SAVE_PROGRAM_ENCOUNTER: `${prefix}SAVE_PROGRAM_ENCOUNTER`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
+  UPDATE_CANCEL_OBS: `${prefix}UPDATE_CANCEL_OBS`,
   SAVE_PROGRAM_ENCOUNTER_COMPLETE: `${prefix}SAVE_PROGRAM_ENCOUNTER_COMPLETE`,
   UPDATE_PROGRAM_ENCOUNTER: `${prefix}UPDATE_PROGRAM_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
@@ -51,6 +52,12 @@ export const setProgramEncounter = programEncounter => ({
 
 export const updateObs = (formElement, value) => ({
   type: types.UPDATE_OBS,
+  formElement,
+  value
+});
+
+export const updateCancelObs = (formElement, value) => ({
+  type: types.UPDATE_CANCEL_OBS,
   formElement,
   value
 });

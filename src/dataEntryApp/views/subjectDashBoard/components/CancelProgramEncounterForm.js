@@ -3,7 +3,7 @@ import { withRouter } from "react-router-dom";
 import { ObservationsHolder } from "avni-models";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
-  updateObs,
+  updateCancelObs,
   saveProgramEncounter,
   setValidationResults
 } from "dataEntryApp/reducers/programEncounterReducer";
@@ -11,8 +11,10 @@ import {
 const mapFormStateToProps = state => ({
   form: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,
-  observations: [],
-  obsHolder: new ObservationsHolder([])
+  observations: state.dataEntry.programEncounterReducer.programEncounter.cancelObservations,
+  obsHolder: new ObservationsHolder(
+    state.dataEntry.programEncounterReducer.programEncounter.cancelObservations
+  )
   //   observations: state.dataEntry.programEncounterReducer.programEncounter.observations,
   //   obsHolder: new ObservationsHolder(
   //     state.dataEntry.programEncounterReducer.programEncounter.observations
@@ -27,7 +29,7 @@ const mapFormStateToProps = state => ({
 });
 
 const mapFormDispatchToProps = {
-  updateObs,
+  updateObs: updateCancelObs,
   onSave: saveProgramEncounter,
   setValidationResults
 };

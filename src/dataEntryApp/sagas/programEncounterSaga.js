@@ -31,7 +31,8 @@ export default function*() {
       updateEncounterObsWatcher,
       saveProgramEncounterWatcher,
       loadEditProgramEncounterWatcher,
-      cancelProgramEncounterFetchFormWatcher
+      cancelProgramEncounterFetchFormWatcher,
+      updateEncounterCancelObsWatcher
     ].map(fork)
   );
 }
@@ -149,6 +150,28 @@ export function* updateEncounterObsWorker({ formElement, value }) {
   );
 }
 
+function* updateEncounterCancelObsWatcher() {
+  yield takeEvery(types.UPDATE_CANCEL_OBS, updateEncounterCancelObsWorker);
+}
+
+export function* updateEncounterCancelObsWorker({ formElement, value }) {
+  const state = yield select();
+  const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
+  const validationResults = state.dataEntry.programEncounterReducer.validationResults;
+  programEncounter.cancelObservations = updateObservations(
+    programEncounter.cancelObservations,
+    formElement,
+    value
+  );
+
+  yield put(setProgramEncounter(programEncounter));
+  // yield put(
+  //   setValidationResults(
+  //     validate(formElement, value, programEncounter.observations, validationResults)
+  //   )
+  // );
+}
+
 function updateObservations(observations, formElement, value) {
   const observationHolder = new ObservationsHolder(observations);
   if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
@@ -236,8 +259,18 @@ export function* cancelProgramEncounterFetchFormWatcher() {
 }
 
 export function* cancelProgramEncounterFetchFormWorker({ encounterTypeUuid, enrolmentUuid }) {
-  const formMapping = yield select(selectCancelFormMappingByEncounterTypeUuid(encounterTypeUuid));
+  const programEncounterUuid = encounterTypeUuid;
+  const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
+  console.log("From Saga ProgEncounter Get", programEncounterJson);
+  const formMapping = yield select(
+    selectCancelFormMappingByEncounterTypeUuid(programEncounterJson.encounterType.uuid)
+  );
   const cancelProgramEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setCancelProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
+  const programEncounter = mapProgramEncounter(programEncounterJson);
+  programEncounter.cancelDateTime = new Date();
+  programEncounter.cancelObservations = [];
+  console.log("programEncounter obj", programEncounter);
+  yield put.resolve(setProgramEncounter(programEncounter));
 }

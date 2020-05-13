@@ -162,6 +162,7 @@ const ProgramView = ({ programData }) => {
                         overdueDate={row.maxVisitDateTime}
                         enrolUuid={programData.uuid}
                         encounterTypeUuid={row.encounterType.uuid}
+                        uuid={row.uuid}
                       />
                     ) : (
                       ""

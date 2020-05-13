@@ -44,7 +44,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
   //   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
   const enrolUuid = match.queryParams.enrolUuid;
   const uuid = match.queryParams.uuid;
-
+  console.log("All props..cancelPE", props.x);
   useEffect(() => {
     // props.setProgramEncounter();
     // props.saveProgramEncounterComplete(false);
@@ -73,7 +73,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
               <div>loaded</div>
               {/* {props.cancelProgramEncounterForm && programEncounter && props.subjectProfile ? ( */}
 
-              {props.cancelProgramEncounterForm ? (
+              {props.cancelProgramEncounterForm && programEncounter ? (
                 <CancelProgramEncounterForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
@@ -132,7 +132,9 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
 };
 
 const mapStateToProps = state => ({
-  cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm
+  cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm,
+  x: state,
+  programEncounter: state.dataEntry.programEncounterReducer.programEncounter
   //   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   //   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
   //   enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation

@@ -74,7 +74,8 @@ const Visit = ({
   encounterDateTime,
   uuid,
   enrolUuid,
-  encounterTypeUuid
+  encounterTypeUuid,
+  progra
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -131,7 +132,7 @@ const Visit = ({
               <Button color="primary">{t("do visit")}</Button>
             </InternalLink>
             <InternalLink
-              to={`/app/subject/cancelProgramEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
+              to={`/app/subject/cancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
             >
               <Button color="primary">{t("cancel Visit")}</Button>
             </InternalLink>
