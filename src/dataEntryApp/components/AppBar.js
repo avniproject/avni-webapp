@@ -43,7 +43,8 @@ const useStyles = makeStyles(theme => ({
   userName: {
     fontSize: "15px",
     marginBottom: "0px",
-    fontWeight: "600px"
+    fontWeight: "600px",
+    color: "rgb(14 ,110, 255)"
   },
   userDesignation: {
     fontSize: "12px",
@@ -262,9 +263,7 @@ const PrimarySearchAppBar = ({
           <div className={classes.grow} />
           <div className={classes.users}>
             <Typography component={"div"} color="inherit">
-              <p className={classes.userName}>
-                <Link>{user.username}</Link>
-              </p>
+              <p className={classes.userName}>{user.username}</p>
               {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
             </Typography>
           </div>

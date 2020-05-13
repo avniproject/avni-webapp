@@ -40,7 +40,21 @@ const useStyle = makeStyles(theme => ({
     overflowX: "auto"
   },
   table: {
-    minWidth: 1000
+    minWidth: 1000,
+    boxShadow: "0px 0px 3px 0px rgba(0,0,0,0.3)",
+    borderRadius: "3px"
+  },
+  completedVsits: {
+    fontWeight: "550",
+    fontSize: "21px"
+  },
+  resultFound: {
+    fontWeight: "500"
+  },
+  tableheader: {
+    color: "rgba(0, 0, 0, 4.54)",
+    fontSize: "0.75rem",
+    fontWeight: "530"
   },
   searchCreateToolbar: {
     display: "flex"
@@ -71,7 +85,7 @@ const useStyle = makeStyles(theme => ({
   },
   searchBox: {
     padding: "1.5rem",
-    margin: "2rem 1rem"
+    margin: "0rem 1rem"
   },
   cellpadding: {
     padding: "14px 40px 14px 0px"
@@ -164,10 +178,16 @@ const SubjectsTable = ({ allVisits }) => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Visit Name</TableCell>
-            <TableCell align="left">Visit Completed Date</TableCell>
-            <TableCell align="left">Visit Scheduled Date</TableCell>
-            <TableCell align="left">Action</TableCell>
+            <TableCell className={classes.tableheader}>Visit Name</TableCell>
+            <TableCell align="left" className={classes.tableheader}>
+              Visit Completed Date
+            </TableCell>
+            <TableCell align="left" className={classes.tableheader}>
+              Visit Scheduled Date
+            </TableCell>
+            <TableCell align="left" className={classes.tableheader}>
+              Action
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -268,11 +288,11 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
             <Grid item xs={6} alignItems="left">
               <div align="left">
                 {/* <h1>Completed visits </h1> */}
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom className={classes.completedVsits}>
                   Completed visits
                 </Typography>
                 {/* <h5>20 Results found</h5> */}
-                <Typography variant="subtitle1" gutterBottom>
+                <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
                   {completedVisit ? completedVisit.content.length : ""} Results found
                 </Typography>
               </div>

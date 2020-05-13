@@ -17,11 +17,12 @@ import { getCompletedVisit } from "../../../reducers/completedVisitReducer";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
-    height: "38px",
+    height: "28px",
     zIndex: 1,
     // marginLeft: theme.spacing(64),
     marginTop: "1px",
-    boxShadow: "none"
+    boxShadow: "none",
+    backgroundColor: "#0e6eff"
   },
   btnCustom: {
     float: "left",

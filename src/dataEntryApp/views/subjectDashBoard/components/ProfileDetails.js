@@ -24,7 +24,7 @@ import { enableReadOnly } from "common/constants";
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
     borderBottom: "none",
-    padding: "0px 0px 0px 11px",
+    padding: "0px 21px 0px 11px",
     fontWeight: "500",
     color: "#1010101",
     fontSize: "14px"
@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#f27510",
     height: "38px",
     zIndex: 1,
-    marginLeft: theme.spacing(64),
+    marginLeft: theme.spacing(77),
     // marginLeft:"512px",
     marginTop: "1px",
     boxShadow: "none"
@@ -169,14 +169,14 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
       <Typography component={"span"} className={classes.mainHeading}>
         {`${profileDetails.firstName} ${profileDetails.lastName}`} {t("Dashboard")}
       </Typography>
-      <Grid alignItems="center" container spacing={2}>
+      <Grid alignItems="center" container spacing={1}>
         <Grid item>
           <Avatar
             src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
             className={classes.bigAvatar}
           />
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={4}>
           <Table aria-label="caption table" className={classes.table}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
@@ -207,7 +207,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             </TableBody>
           </Table>
         </Grid>
-        <Grid container justify="flex-end" alignItems="flex-start" direction="row">
+        <Grid item>
           {!enableReadOnly ? (
             <div>
               <Modal
