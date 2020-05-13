@@ -56,6 +56,8 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
   const { t } = useTranslation();
   const classes = useStyles();
 
+  const visitTypesList = [...new Set(visitTypes.programEncounters.map(item => item.encounterType))];
+
   //   if(completedVisitList){
   //     const visitList = [...new Set(completedVisitList.content.map(item => item.encounterType.name))];
   //     console.log("##########"+ JSON.stringify(visitList));
@@ -72,7 +74,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
 
   const applyClick = () => {
     console.log("apply visit" + selectedDate, state);
-    getCompletedVisit();
+    // getCompletedVisit();
   };
   const [state, setState] = React.useState("");
 
@@ -127,17 +129,17 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
 
         <FormLabel component="legend">Visit Type</FormLabel>
         <FormGroup row>
-          {visitTypes.map(visitType => (
+          {visitTypesList.map(visitType => (
             <FormControlLabel
               control={
                 <Checkbox
                   // checked={}
                   onChange={handleChange}
-                  name={visitType}
+                  name={visitType.id}
                   color="primary"
                 />
               }
-              label={visitType}
+              label={visitType.name}
             />
           ))}
         </FormGroup>

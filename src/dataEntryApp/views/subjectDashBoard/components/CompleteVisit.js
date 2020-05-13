@@ -5,11 +5,8 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  FormControl,
-  InputLabel,
-  Input,
-  Button,
-  Paper
+  Paper,
+  List
 } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
@@ -22,16 +19,15 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
+import { withParams } from "../../../../common/components/utils";
 import { getCompletedVisit, getVisitTypes } from "../../../reducers/completedVisitReducer";
-import {
-  EnhancedTableHead,
-  stableSort,
-  getComparator
-} from "../../../components/TableHeaderSorting";
+import { mapObservation } from "../../../../common/subjectModelMapper";
+import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
+import { enableReadOnly } from "common/constants";
+import moment from "moment/moment";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -92,6 +88,56 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
+function Row(props) {
+  const { t } = useTranslation();
+  const { row } = props;
+  const [open, setOpen] = React.useState(false);
+  const classes = useStyle();
+
+  return (
+    <React.Fragment>
+      <TableRow className={classes.root}>
+        <TableCell>
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {t(row.name)}
+        </TableCell>
+        <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
+        <TableCell align="left">{row.encounterDateTime}</TableCell>
+        {!enableReadOnly ? (
+          <TableCell align="left">
+            {" "}
+            <Link to="">{t("edit")}</Link> | <Link to="">{t("visit")}</Link>
+          </TableCell>
+        ) : (
+          ""
+        )}
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box margin={1}>
+              <Typography variant="h6" gutterBottom component="div">
+                {t("summary")}
+              </Typography>
+              <Table size="small" aria-label="purchases">
+                <TableBody>
+                  <List>
+                    <Observations observations={row.observations ? row.observations : ""} />
+                  </List>
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
+  );
+}
+
 const SubjectsTable = ({ allVisits }) => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -102,46 +148,23 @@ const SubjectsTable = ({ allVisits }) => {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  let tableHeaderName = [
-    { id: "", numeric: false, disablePadding: true, label: "", align: "" },
-    { id: "name", numeric: false, disablePadding: true, label: "Visit Name", align: "left" },
-    {
-      id: "earliestVisitDateTime",
-      numeric: true,
-      disablePadding: false,
-      label: "Visit Completed Date",
-      align: "left"
-    },
-    {
-      id: "encounterDateTime",
-      numeric: true,
-      disablePadding: false,
-      label: "Visit Scheduled Datell",
-      align: "left"
-    },
-    {
-      id: "activePrograms",
-      numeric: false,
-      disablePadding: true,
-      label: "action",
-      align: "left"
-    }
-  ];
+  let allVisitsListObj = [];
 
-  // const handleRequestSort = (event, property) => {
-  //   const isAsc = orderBy === property && order === "asc";
-  //   setOrder(isAsc ? "desc" : "asc");
-  //   setOrderBy(property);
-  // };
-
-  // const handleSelectAllClick = event => {
-  //   if (event.target.checked) {
-  //     const newSelecteds = subjects.map(n => n.name);
-  //     setSelected(newSelecteds);
-  //     return;
-  //   }
-  //   setSelected([]);
-  // };
+  if (allVisits) {
+    allVisits.content.forEach(function(a) {
+      let sub = {
+        name: a.name ? a.name : "-",
+        earliestVisitDateTime: a.earliestVisitDateTime
+          ? moment(new Date(a.earliestVisitDateTime)).format("DD-MM-YYYY")
+          : "-",
+        encounterDateTime: a.encounterDateTime
+          ? moment(new Date(a.encounterDateTime)).format("DD-MM-YYYY")
+          : "-",
+        observations: mapObservation(a.observations)
+      };
+      allVisitsListObj.push(sub);
+    });
+  }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -152,29 +175,14 @@ const SubjectsTable = ({ allVisits }) => {
     setPage(0);
   };
 
-  const isSelected = name => selected.indexOf(name) !== -1;
-
-  //   const emptyRows = rowsPerPage - Math.min(rowsPerPage, subjects.length - page * rowsPerPage);
-
-  return allVisits ? (
+  return allVisitsListObj ? (
     <div>
-      {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
       <Table
         className={classes.table}
         aria-labelledby="tableTitle"
         size={dense ? "small" : "medium"}
         aria-label="enhanced table"
       >
-        {/* <EnhancedTableHead
-          headername={tableHeaderName}
-          classes={classes}
-          numSelected={selected.length}
-          order={order}
-          orderBy={orderBy}
-          onSelectAllClick={handleSelectAllClick}
-          onRequestSort={handleRequestSort}
-          rowCount={subjectsListObj.content.length}
-        /> */}
         <TableHead>
           <TableRow>
             <TableCell />
@@ -185,73 +193,23 @@ const SubjectsTable = ({ allVisits }) => {
             <TableCell align="left" className={classes.tableheader}>
               Visit Scheduled Date
             </TableCell>
-            <TableCell align="left" className={classes.tableheader}>
-              Action
-            </TableCell>
+            {!enableReadOnly ? (
+              <TableCell align="left" className={classes.tableheader}>
+                Action
+              </TableCell>
+            ) : (
+              ""
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
-          {allVisits &&
-            allVisits.content.map(row => (
-              <React.Fragment>
-                <TableRow className={classes.root}>
-                  <TableCell>
-                    <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-                      {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                  </TableCell>
-                  <TableCell component="th" scope="row">
-                    {row.name}
-                  </TableCell>
-                  <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
-                  <TableCell align="left">{row.encounterDateTime}</TableCell>
-                  <TableCell align="left">
-                    {" "}
-                    <Link to="">{t("edit")}</Link> | <Link to="">{t("visit")}</Link>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                      <Box margin={1}>
-                        <Typography variant="h6" gutterBottom component="div">
-                          History
-                        </Typography>
-                        <Table size="small" aria-label="purchases">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>Name</TableCell>
-                              <TableCell>Value</TableCell>
-                              {/* <TableCell align="right">Amount</TableCell>
-                        <TableCell align="right">Total price ($)</TableCell> */}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {row.observations.map(historyRow => (
-                              <TableRow key={historyRow.date}>
-                                <TableCell component="th" scope="row">
-                                  {historyRow.concept.name}
-                                </TableCell>
-                                <TableCell align="left">{historyRow.value.name}</TableCell>
-                                {/* <TableCell align="left">{historyRow.value.uuid}</TableCell>
-                          <TableCell align="left">{historyRow.value.name}</TableCell> */}
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </Box>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
+          {allVisitsListObj && allVisitsListObj.map(row => <Row key={row.name} row={row} />)}
         </TableBody>
       </Table>
-
       <TablePagination
         rowsPerPageOptions={[10, 20, 50]}
         component="div"
-        count={allVisits.content.length}
+        count={allVisitsListObj.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
@@ -263,10 +221,7 @@ const SubjectsTable = ({ allVisits }) => {
   );
 };
 
-const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit }) => {
-  console.log("props-------", match);
-  // console.log("getCompletedVisit-------", getCompletedVisit);
-  console.log("completedVisit-------", completedVisit);
+const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit, visitTypes }) => {
   const classes = useStyle();
   const { t } = useTranslation();
 
@@ -275,9 +230,7 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
     getVisitTypes(match.queryParams.uuid);
   }, []);
 
-  const visitTypes1 = ["Birth", "Naturals", "death"];
-
-  return (
+  return completedVisit && visitTypes ? (
     <div>
       <Fragment>
         <Breadcrumbs path={match.path} />
@@ -298,13 +251,15 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
               </div>
             </Grid>
             <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult visitTypes={visitTypes1} />
+              <FilterResult visitTypes={visitTypes} />
             </Grid>
           </Grid>
           <SubjectsTable allVisits={completedVisit} />
         </Paper>
       </Fragment>
     </div>
+  ) : (
+    ""
   );
 };
 
