@@ -6,6 +6,7 @@ import org.openchs.dao.*;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.web.request.GroupPrivilegeContractWeb;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,13 +23,14 @@ public class GroupPrivilegeService {
     private EncounterTypeRepository encounterTypeRepository;
     private ChecklistDetailRepository checklistDetailRepository;
     private FormMappingRepository formMappingRepository;
+    private GroupPrivilegeRepository groupPrivilegeRepository;
     private List<String> groupSubjectPrivileges = new ArrayList<String>() {{
         add("Add member");
         add("Edit member");
         add("Remove member");
     }};
 
-    public GroupPrivilegeService(GroupRepository groupRepository, PrivilegeRepository privilegeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, ChecklistDetailRepository checklistDetailRepository, FormMappingRepository formMappingRepository) {
+    public GroupPrivilegeService(GroupRepository groupRepository, PrivilegeRepository privilegeRepository, SubjectTypeRepository subjectTypeRepository, ProgramRepository programRepository, EncounterTypeRepository encounterTypeRepository, ChecklistDetailRepository checklistDetailRepository, FormMappingRepository formMappingRepository, GroupPrivilegeRepository groupPrivilegeRepository) {
         this.groupRepository = groupRepository;
         this.privilegeRepository = privilegeRepository;
         this.subjectTypeRepository = subjectTypeRepository;
@@ -36,6 +38,7 @@ public class GroupPrivilegeService {
         this.encounterTypeRepository = encounterTypeRepository;
         this.checklistDetailRepository = checklistDetailRepository;
         this.formMappingRepository = formMappingRepository;
+        this.groupPrivilegeRepository = groupPrivilegeRepository;
     }
 
     private boolean isGroupSubjectTypePrivilege(SubjectType subjectType, String privilegeName) {
@@ -148,4 +151,23 @@ public class GroupPrivilegeService {
 
         return allPrivileges;
     }
+
+
+    public void uploadPrivileges(GroupPrivilegeContractWeb request) {
+        GroupPrivilege groupPrivilege = groupPrivilegeRepository.findByUuid(request.getUuid());
+        if (groupPrivilege == null) {
+            groupPrivilege = new GroupPrivilege();
+        }
+        groupPrivilege.setUuid(request.getUuid());
+        groupPrivilege.setPrivilege(privilegeRepository.findByUuid(request.getPrivilegeUUID()));
+        groupPrivilege.setGroup(groupRepository.findByUuid(request.getGroupUUID()));
+        groupPrivilege.setSubjectType(subjectTypeRepository.findByUuid(request.getSubjectTypeUUID()));
+        groupPrivilege.setProgram(programRepository.findByUuid(request.getProgramUUID()));
+        groupPrivilege.setEncounterType(encounterTypeRepository.findByUuid(request.getEncounterTypeUUID()));
+        groupPrivilege.setProgramEncounterType(encounterTypeRepository.findByUuid(request.getProgramEncounterTypeUUID()));
+        groupPrivilege.setChecklistDetail(checklistDetailRepository.findByUuid(request.getChecklistDetailUUID()));
+        groupPrivilege.setAllow(request.isAllow());
+        groupPrivilegeRepository.save(groupPrivilege);
+    }
+
 }

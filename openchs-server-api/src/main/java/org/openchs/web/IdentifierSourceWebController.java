@@ -1,21 +1,14 @@
 package org.openchs.web;
 
-import org.joda.time.DateTime;
 import org.openchs.dao.CatchmentRepository;
-import org.openchs.dao.FacilityRepository;
 import org.openchs.dao.IdentifierSourceRepository;
 import org.openchs.domain.IdentifierSource;
-import org.openchs.domain.JsonObject;
-import org.openchs.domain.User;
-import org.openchs.service.UserService;
+import org.openchs.service.IdentifierSourceService;
 import org.openchs.util.ReactAdminUtil;
-import org.openchs.web.request.IdentifierSourceContract;
 import org.openchs.web.request.webapp.IdentifierSourceContractWeb;
-import org.openchs.web.request.webapp.IdentifierUserAssignmentContractWeb;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
@@ -24,28 +17,24 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @RestController
 public class IdentifierSourceWebController extends AbstractController<IdentifierSource> implements RestControllerResourceProcessor<IdentifierSourceContractWeb> {
-    private IdentifierSourceRepository identifierSourceRepository;
-
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
-    private UserService userService;
+    private IdentifierSourceRepository identifierSourceRepository;
     private CatchmentRepository catchmentRepository;
-    private FacilityRepository facilityRepository;
+    private IdentifierSourceService identifierSourceService;
 
     @Autowired
-    public IdentifierSourceWebController(IdentifierSourceRepository identifierSourceRepository, UserService userService, CatchmentRepository catchmentRepository, FacilityRepository facilityRepository) {
+    public IdentifierSourceWebController(IdentifierSourceRepository identifierSourceRepository, CatchmentRepository catchmentRepository, IdentifierSourceService identifierSourceService) {
         this.identifierSourceRepository = identifierSourceRepository;
-        this.userService = userService;
         this.catchmentRepository = catchmentRepository;
-        this.facilityRepository = facilityRepository;
+        this.identifierSourceService = identifierSourceService;
     }
 
     @GetMapping(value = "/web/identifierSource/search/findAllById")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
-    public PagedResources<Resource<IdentifierSourceContractWeb>> findAllById(Long ids,Pageable pageable) {
+    public PagedResources<Resource<IdentifierSourceContractWeb>> findAllById(Long ids, Pageable pageable) {
         Long[] id = {ids};
         return wrap(identifierSourceRepository.findByIdIn(id, pageable).map(IdentifierSourceContractWeb::fromIdentifierSource));
     }
@@ -73,18 +62,7 @@ public class IdentifierSourceWebController extends AbstractController<Identifier
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
     @Transactional
     ResponseEntity saveProgramForWeb(@RequestBody IdentifierSourceContractWeb request) {
-        IdentifierSource identifierSource = new IdentifierSource();
-        identifierSource.assignUUID();
-        identifierSource.setBatchGenerationSize(request.getBatchGenerationSize());
-        identifierSource.setCatchment(request.getCatchmentId() == null ? null : catchmentRepository.findOne(request.getCatchmentId()));
-        identifierSource.setMinimumBalance(request.getMinimumBalance());
-        identifierSource.setName(request.getName());
-        identifierSource.setOptions(request.getOptions() == null ? new JsonObject() : request.getOptions());
-        identifierSource.setType(request.getType());
-        identifierSource.setVoided(request.isVoided());
-        identifierSource.setMinLength(request.getMinLength());
-        identifierSource.setMaxLength(request.getMaxLength());
-        identifierSourceRepository.save(identifierSource);
+        IdentifierSource identifierSource = identifierSourceService.saveIdSource(request);
         return ResponseEntity.ok(IdentifierSourceContractWeb.fromIdentifierSource(identifierSource));
     }
 
@@ -98,17 +76,8 @@ public class IdentifierSourceWebController extends AbstractController<Identifier
             return ResponseEntity.badRequest()
                     .body(ReactAdminUtil.generateJsonError(String.format("Identifier source with id '%d' not found", id)));
 
-        identifierSource.setBatchGenerationSize(request.getBatchGenerationSize());
-        identifierSource.setCatchment(request.getCatchmentId() == null ? null : catchmentRepository.findOne(request.getCatchmentId()));
-        identifierSource.setMinimumBalance(request.getMinimumBalance());
-        identifierSource.setName(request.getName());
-        identifierSource.setOptions(request.getOptions() == null ? new JsonObject() : request.getOptions());//request.getOptions());
-        identifierSource.setType(request.getType());
-        identifierSource.setVoided(request.isVoided());
-        identifierSource.setMinLength(request.getMinLength());
-        identifierSource.setMaxLength(request.getMaxLength());
-        identifierSourceRepository.save(identifierSource);
-        return ResponseEntity.ok(IdentifierSourceContractWeb.fromIdentifierSource(identifierSource));
+        IdentifierSource savedEntity = identifierSourceService.updateIdSource(identifierSource, request);
+        return ResponseEntity.ok(IdentifierSourceContractWeb.fromIdentifierSource(savedEntity));
     }
 
     @DeleteMapping(value = "/web/identifierSource/{id}")

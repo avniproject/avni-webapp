@@ -19,6 +19,15 @@ public class IdentifierSourceContractWeb {
     private Long organisationId;
     private Long id;
     private String UUID;
+    private String catchmentUUID;
+
+    public String getCatchmentUUID() {
+        return catchmentUUID;
+    }
+
+    public void setCatchmentUUID(String catchmentUUID) {
+        this.catchmentUUID = catchmentUUID;
+    }
 
     public String getUUID() { return this.UUID; }
 

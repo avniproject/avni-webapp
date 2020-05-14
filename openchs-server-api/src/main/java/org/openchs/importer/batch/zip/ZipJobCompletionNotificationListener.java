@@ -1,6 +1,7 @@
 package org.openchs.importer.batch.zip;
 
 
+import org.openchs.framework.security.AuthService;
 import org.openchs.service.BulkUploadS3Service;
 import org.openchs.service.S3Service;
 import org.slf4j.Logger;
@@ -24,12 +25,18 @@ public class ZipJobCompletionNotificationListener extends JobExecutionListenerSu
 
     @Value("#{jobParameters['uuid']}")
     private String uuid;
+    @Value("#{jobParameters['userId']}")
+    private Long userId;
+    @Value("#{jobParameters['organisationUUID']}")
+    private String organisationUUID;
 
     private BulkUploadS3Service bulkUploadS3Service;
+    private AuthService authService;
 
     @Autowired
-    public ZipJobCompletionNotificationListener(BulkUploadS3Service bulkUploadS3Service) {
+    public ZipJobCompletionNotificationListener(BulkUploadS3Service bulkUploadS3Service, AuthService authService) {
         this.bulkUploadS3Service = bulkUploadS3Service;
+        this.authService = authService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -51,5 +58,6 @@ public class ZipJobCompletionNotificationListener extends JobExecutionListenerSu
     @Override
     public void beforeJob(JobExecution jobExecution) {
         logger.info("starting BulkUpload with uuid {}", jobExecution.getJobParameters().getString("uuid"));
+        authService.authenticateByUserId(userId, organisationUUID);
     }
 }

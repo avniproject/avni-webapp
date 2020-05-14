@@ -10,12 +10,17 @@ import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.ChecklistDetailService;
+import org.openchs.service.IndividualRelationService;
+import org.openchs.service.IndividualRelationshipTypeService;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.*;
+import org.openchs.web.request.application.ChecklistDetailRequest;
 import org.openchs.web.request.application.FormContract;
 import org.openchs.web.request.webapp.CatchmentExport;
 import org.openchs.web.request.webapp.CatchmentsExport;
 import org.openchs.web.request.webapp.ConceptExport;
+import org.openchs.web.request.webapp.IdentifierSourceContractWeb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -37,7 +44,6 @@ import java.util.zip.ZipOutputStream;
 
 @RestController
 public class ImplementationController implements RestControllerResourceProcessor<Concept> {
-    private ConceptRepository conceptRepository;
     private final FormRepository formRepository;
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final LocationRepository locationRepository;
@@ -50,6 +56,14 @@ public class ImplementationController implements RestControllerResourceProcessor
     private final OperationalProgramRepository operationalProgramRepository;
     private final FormMappingRepository formMappingRepository;
     private final OrganisationConfigRepository organisationConfigRepository;
+    private final IdentifierSourceRepository identifierSourceRepository;
+    private final ConceptRepository conceptRepository;
+    private final IndividualRelationService individualRelationService;
+    private final IndividualRelationshipTypeService individualRelationshipTypeService;
+    private final ChecklistDetailService checklistDetailService;
+    private final GroupRepository groupRepository;
+    private final GroupRoleRepository groupRoleRepository;
+    private GroupPrivilegeRepository groupPrivilegeRepository;
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -65,7 +79,14 @@ public class ImplementationController implements RestControllerResourceProcessor
                                     ProgramRepository programRepository,
                                     OperationalProgramRepository operationalProgramRepository,
                                     FormMappingRepository formMappingRepository,
-                                    OrganisationConfigRepository organisationConfigRepository) {
+                                    OrganisationConfigRepository organisationConfigRepository,
+                                    IdentifierSourceRepository identifierSourceRepository,
+                                    IndividualRelationService individualRelationService,
+                                    IndividualRelationshipTypeService individualRelationshipTypeService,
+                                    ChecklistDetailService checklistDetailService,
+                                    GroupRepository groupRepository,
+                                    GroupRoleRepository groupRoleRepository,
+                                    GroupPrivilegeRepository groupPrivilegeRepository) {
         this.conceptRepository = conceptRepository;
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
@@ -79,6 +100,13 @@ public class ImplementationController implements RestControllerResourceProcessor
         this.operationalProgramRepository = operationalProgramRepository;
         this.formMappingRepository = formMappingRepository;
         this.organisationConfigRepository = organisationConfigRepository;
+        this.identifierSourceRepository = identifierSourceRepository;
+        this.individualRelationService = individualRelationService;
+        this.individualRelationshipTypeService = individualRelationshipTypeService;
+        this.checklistDetailService = checklistDetailService;
+        this.groupRepository = groupRepository;
+        this.groupRoleRepository = groupRoleRepository;
+        this.groupPrivilegeRepository = groupPrivilegeRepository;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
@@ -95,8 +123,8 @@ public class ImplementationController implements RestControllerResourceProcessor
             if (includeLocations) {
                 addAddressLevelTypesJson(orgId, zos);
                 addAddressLevelsJson(orgId, zos);
+                addCatchmentsJson(organisation, zos);
             }
-            //addCatchmentsJson(organisation, zos);
             addSubjectTypesJson(orgId, zos);
             addOperationalSubjectTypesJson(organisation, zos);
             addEncounterTypesJson(organisation, zos);
@@ -107,6 +135,14 @@ public class ImplementationController implements RestControllerResourceProcessor
             addFormsJson(orgId, zos);
             addFormMappingsJson(orgId, zos);
             addOrganisationConfigJson(orgId, zos);
+            //Id source is mapped to a catchment so if includeLocations is false we don't add those sources to json
+            addIdentifierSourceJson(zos, includeLocations);
+            addRelationJson(zos);
+            addRelationShipTypeJson(zos);
+            addChecklistDetailJson(zos);
+            addGroupsJson(zos);
+            addGroupRoleJson(zos);
+            addGroupPrivilegeJson(zos);
         }
 
         byte[] baosByteArray = baos.toByteArray();
@@ -122,8 +158,72 @@ public class ImplementationController implements RestControllerResourceProcessor
 
     private void addOrganisationConfigJson(Long orgId, ZipOutputStream zos) throws IOException {
         OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(orgId);
-        if(organisationConfig != null) {
+        if (organisationConfig != null) {
             addFileToZip(zos, "organisationConfig.json", OrganisationConfigRequest.fromOrganisationConfig(organisationConfig));
+        }
+    }
+
+    private void addRelationJson(ZipOutputStream zos) throws IOException {
+        List<IndividualRelationContract> individualRelationContractList = individualRelationService.getAll();
+        if (!individualRelationContractList.isEmpty()) {
+            addFileToZip(zos, "individualRelation.json", individualRelationContractList);
+        }
+    }
+
+    private void addRelationShipTypeJson(ZipOutputStream zos) throws IOException {
+        List<IndividualRelationshipTypeContract> allRelationshipTypes = individualRelationshipTypeService.getAllRelationshipTypes();
+        if (!allRelationshipTypes.isEmpty()) {
+            addFileToZip(zos, "relationshipType.json", allRelationshipTypes);
+        }
+    }
+
+    private void addIdentifierSourceJson(ZipOutputStream zos, boolean includeLocations) throws IOException {
+        List<IdentifierSource> identifierSources = identifierSourceRepository.findAll();
+        List<IdentifierSourceContractWeb> identifierSourceContractWeb = identifierSources.stream().map(IdentifierSourceContractWeb::fromIdentifierSource)
+                .peek(id -> {
+                    if (id.getCatchmentId() == null) {
+                        id.setCatchmentUUID(null);
+                    } else {
+                        id.setCatchmentUUID(catchmentRepository.findOne(id.getCatchmentId()).getUuid());
+                    }
+                })
+                .filter(idSource -> includeLocations || idSource.getCatchmentId() == null)
+                .collect(Collectors.toList());
+        if (!identifierSourceContractWeb.isEmpty()) {
+            addFileToZip(zos, "identifierSource.json", identifierSourceContractWeb);
+        }
+    }
+
+    private void addChecklistDetailJson(ZipOutputStream zos) throws IOException {
+        List<ChecklistDetailRequest> allChecklistDetail = checklistDetailService.getAllChecklistDetail();
+        if (!allChecklistDetail.isEmpty()) {
+            addFileToZip(zos, "checklist.json", allChecklistDetail);
+        }
+    }
+
+    private void addGroupsJson(ZipOutputStream zos) throws IOException {
+        List<GroupContract> groups = groupRepository.findAllByIsVoidedFalse().stream()
+                .filter(group -> !group.getName().equals("Everyone"))
+                .map(GroupContract::fromEntity).collect(Collectors.toList());
+        if (!groups.isEmpty()) {
+            addFileToZip(zos, "groups.json", groups);
+        }
+    }
+
+    private void addGroupPrivilegeJson(ZipOutputStream zos) throws IOException {
+        List<GroupPrivilegeContractWeb> groupPrivileges = groupPrivilegeRepository.findAllByIsVoidedFalse().stream()
+                .filter(groupPrivilege -> !groupPrivilege.getGroup().getName().equals("Everyone"))
+                .map(GroupPrivilegeContractWeb::fromEntity).collect(Collectors.toList());
+        if (!groupPrivileges.isEmpty()) {
+            addFileToZip(zos, "groupPrivilege.json", groupPrivileges);
+        }
+    }
+
+    private void addGroupRoleJson(ZipOutputStream zos) throws IOException {
+        List<GroupRoleContract> groupRoles = groupRoleRepository.findAllByIsVoidedFalse().stream()
+                .map(GroupRoleContract::fromEntity).collect(Collectors.toList());
+        if (!groupRoles.isEmpty()) {
+            addFileToZip(zos, "groupRole.json", groupRoles);
         }
     }
 

@@ -1,5 +1,7 @@
 package org.openchs.web.request;
 
+import org.openchs.domain.GroupRole;
+
 public class GroupRoleContract extends CHSRequest {
 
     private String groupSubjectTypeUUID;
@@ -8,6 +10,17 @@ public class GroupRoleContract extends CHSRequest {
     private boolean isPrimary;
     private Long maximumNumberOfMembers;
     private Long minimumNumberOfMembers;
+
+    public static GroupRoleContract fromEntity(GroupRole groupRole) {
+        GroupRoleContract groupRoleContract = new GroupRoleContract();
+        groupRoleContract.setGroupSubjectTypeUUID(groupRole.getGroupSubjectTypeUUID());
+        groupRoleContract.setMemberSubjectTypeUUID(groupRole.getMemberSubjectTypeUUID());
+        groupRoleContract.setRole(groupRole.getRole());
+        groupRoleContract.setPrimary(groupRole.isPrimary());
+        groupRoleContract.setMaximumNumberOfMembers(groupRole.getMaximumNumberOfMembers());
+        groupRoleContract.setMinimumNumberOfMembers(groupRole.getMinimumNumberOfMembers());
+        return groupRoleContract;
+    }
 
     public String getGroupSubjectTypeUUID() {
         return groupSubjectTypeUUID;

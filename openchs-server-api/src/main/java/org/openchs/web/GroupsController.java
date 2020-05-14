@@ -1,10 +1,11 @@
 package org.openchs.web;
 
 import org.openchs.dao.GroupRepository;
-import org.openchs.dao.UserRepository;
 import org.openchs.domain.Group;
 import org.openchs.domain.Organisation;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.service.GroupsService;
+import org.openchs.web.request.GroupContract;
 import org.openchs.web.request.webapp.ProgramContractWeb;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,17 +13,16 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 public class GroupsController implements RestControllerResourceProcessor<ProgramContractWeb> {
 
     private GroupRepository groupRepository;
-    private UserRepository userRepository;
+    private GroupsService groupsService;
 
-    public GroupsController(GroupRepository groupRepository, UserRepository userRepository) {
+    public GroupsController(GroupRepository groupRepository, GroupsService groupsService) {
         this.groupRepository = groupRepository;
-        this.userRepository = userRepository;
+        this.groupsService = groupsService;
     }
 
     @GetMapping(value = "/web/groups")
@@ -35,18 +35,16 @@ public class GroupsController implements RestControllerResourceProcessor<Program
     @PostMapping(value = "web/groups")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @Transactional
-    public ResponseEntity saveProgramForWeb(@RequestBody Group group) {
+    public ResponseEntity saveProgramForWeb(@RequestBody GroupContract group) {
         Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         if (group.getName() == null || group.getName().trim().equals("")) {
-            return ResponseEntity.badRequest().body(String.format("Group name cannot be blank."));
+            return ResponseEntity.badRequest().body("Group name cannot be blank.");
         }
         if (groupRepository.findByNameAndOrganisationId(group.getName(), organisation.getId()) != null) {
             return ResponseEntity.badRequest().body(String.format("Group with name %s already exists.", group.getName()));
         }
-        group.setHasAllPrivileges(false);
-        group.setOrganisationId(organisation.getId());
-        group.setUuid(UUID.randomUUID().toString());
-        return ResponseEntity.ok(groupRepository.save(group));
+        Group savedGroup = groupsService.saveGroup(group, organisation.getId());
+        return ResponseEntity.ok(savedGroup);
     }
 
     @PutMapping(value = "web/group")

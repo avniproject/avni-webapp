@@ -10,6 +10,8 @@ public class IndividualRelationContract {
 
     private List<GenderContract> genders;
 
+    public IndividualRelationContract() {}
+
     public IndividualRelationContract(Long id, String name, String uuid, boolean voided, List<GenderContract> genders) {
         this.id = id;
         this.name = name;

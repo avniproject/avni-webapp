@@ -1,12 +1,8 @@
 package org.openchs.web;
 
-import org.openchs.dao.GenderRepository;
-import org.openchs.dao.individualRelationship.IndividualRelationGenderMappingRepository;
 import org.openchs.dao.individualRelationship.IndividualRelationRepository;
 import org.openchs.domain.individualRelationship.IndividualRelation;
-import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
-import org.openchs.util.ApiException;
-import org.openchs.web.request.GenderContract;
+import org.openchs.service.IndividualRelationService;
 import org.openchs.web.request.IndividualRelationContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,35 +10,27 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 public class IndividualRelationController {
 
     private IndividualRelationRepository individualRelationRepository;
-    private IndividualRelationGenderMappingRepository genderMappingRepository;
-    private GenderRepository genderRepository;
+    private IndividualRelationService individualRelationService;
 
     @Autowired
     public IndividualRelationController(IndividualRelationRepository individualRelationRepository,
-                                        IndividualRelationGenderMappingRepository genderMappingRepository, GenderRepository genderRepository) {
+                                        IndividualRelationService individualRelationService) {
         this.individualRelationRepository = individualRelationRepository;
-        this.genderMappingRepository = genderMappingRepository;
-        this.genderRepository = genderRepository;
+        this.individualRelationService = individualRelationService;
     }
 
     @GetMapping(value = "/web/relation")
     @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
     @ResponseBody
     public List<IndividualRelationContract> getAllIndividualRelations() {
-        List<IndividualRelation> individualRelations = individualRelationRepository.findAll();
-        return individualRelations
-                .stream()
-                .map(this::toResponseObject)
-                .collect(Collectors.toList());
+        return individualRelationService.getAll();
     }
 
     @GetMapping(value = "/web/relation/{id}")
@@ -51,7 +39,7 @@ public class IndividualRelationController {
     public ResponseEntity<IndividualRelationContract> getIndividualRelation(@PathVariable Long id) {
         Optional<IndividualRelation> relation = individualRelationRepository.findById(id);
         return relation.map(individualRelation ->
-                ResponseEntity.ok(toResponseObject(individualRelation)))
+                ResponseEntity.ok(individualRelationService.toResponseObject(individualRelation)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -60,11 +48,8 @@ public class IndividualRelationController {
     @ResponseBody
     @Transactional
     public ResponseEntity<IndividualRelationContract> newIndividualRelation(@RequestBody IndividualRelationContract individualRelationContract) {
-        String name = individualRelationContract.getName();
-        assertNoExistingRelation(name);
-        IndividualRelation relation = createRelation(name);
-        saveGenderMappings(individualRelationContract, relation);
-        return ResponseEntity.ok(toResponseObject(relation));
+        IndividualRelation relation = individualRelationService.saveRelation(individualRelationContract);
+        return ResponseEntity.ok(individualRelationService.toResponseObject(relation));
     }
 
     @PostMapping(value = "/web/relation/{id}")
@@ -78,7 +63,7 @@ public class IndividualRelationController {
         }
         IndividualRelation individualRelation = relation.get();
         individualRelation.setName(individualRelationContract.getName());
-        saveGenderMappings(individualRelationContract, individualRelation);
+        individualRelationService.saveGenderMappings(individualRelationContract, individualRelation);
         return ResponseEntity.ok().build();
     }
 
@@ -93,72 +78,5 @@ public class IndividualRelationController {
             individualRelation.setVoided(true);
             individualRelationRepository.save(individualRelation);
         }
-    }
-
-    private IndividualRelationContract toResponseObject(IndividualRelation relation) {
-        return new IndividualRelationContract(
-                        relation.getId(),
-                        relation.getName(),
-                        relation.getUuid(),
-                        relation.isVoided(),
-                        getGenders(relation)
-                );
-    }
-
-    private void saveGenderMappings(IndividualRelationContract individualRelationContract, IndividualRelation relation) {
-        List<IndividualRelationGenderMapping> existingMappings = genderMappingRepository.findAllByRelation(relation);
-        List<IndividualRelationGenderMapping> newMappings = new ArrayList<>();
-        List<GenderContract> genders = individualRelationContract.getGenders();
-
-        existingMappings.forEach(existingMapping -> {
-            boolean shouldKeepMapping = genders.stream().anyMatch(genderContract -> genderContract.getName().equals(existingMapping.getGender().getName()));
-            existingMapping.setVoided(!shouldKeepMapping);
-        });
-
-        genders.forEach(genderContract -> {
-            List<IndividualRelationGenderMapping> matchingMappings = existingMappings.stream().filter(
-                    genderMapping -> genderMapping.getGender().getName().equals(genderContract.getName()))
-                    .collect(Collectors.toList());
-            if (matchingMappings.size() > 0) {
-                IndividualRelationGenderMapping matchingMapping = matchingMappings.get(0);
-                matchingMapping.setVoided(false);
-            } else {
-                IndividualRelationGenderMapping mapping = new IndividualRelationGenderMapping(
-                        relation,
-                        genderRepository.findByName(genderContract.getName())
-                );
-                mapping.assignUUID();
-                newMappings.add(mapping);
-            }
-        });
-
-        existingMappings.forEach(genderMapping -> genderMappingRepository.save(genderMapping));
-        newMappings.forEach(genderMapping -> genderMappingRepository.save(genderMapping));
-    }
-
-    private IndividualRelation createRelation(String name) {
-        IndividualRelation individualRelation = new IndividualRelation();
-        individualRelation.setName(name);
-        individualRelation.assignUUID();
-        individualRelationRepository.save(individualRelation);
-        return individualRelation;
-    }
-
-    private void assertNoExistingRelation(String name) {
-        IndividualRelation existingRelation = individualRelationRepository.findByName(name);
-        if (existingRelation != null) {
-            throw new ApiException(String.format("Relation %s already exists", name));
-        }
-    }
-
-    private List<GenderContract> getGenders(IndividualRelation relation) {
-        return genderMappingRepository
-                .findAllByRelation(relation)
-                .stream()
-                .filter(genderMapping -> !genderMapping.isVoided())
-                .map(genderMapping -> new GenderContract(
-                        genderMapping.getGender().getUuid(),
-                        genderMapping.getGender().getName()))
-                .collect(Collectors.toList());
     }
 }

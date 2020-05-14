@@ -3,17 +3,21 @@ package org.openchs.importer.batch.zip;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.builder.BuilderException;
 import org.openchs.builder.FormBuilderException;
+import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.Organisation;
+import org.openchs.domain.SubjectType;
 import org.openchs.framework.security.AuthService;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.batch.model.JsonFile;
 import org.openchs.service.*;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.*;
+import org.openchs.web.request.application.ChecklistDetailRequest;
 import org.openchs.web.request.application.FormContract;
+import org.openchs.web.request.webapp.IdentifierSourceContractWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +32,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-@StepScope
+@JobScope
 public class ZipFileWriter implements ItemWriter<JsonFile> {
 
     private final AuthService authService;
@@ -43,6 +47,15 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
     private CatchmentService catchmentService;
     private SubjectTypeService subjectTypeService;
     private ProgramService programService;
+    private IndividualRelationService individualRelationService;
+    private IndividualRelationshipTypeService individualRelationshipTypeService;
+    private ChecklistDetailService checklistDetailService;
+    private IdentifierSourceService identifierSourceService;
+    private GroupsService groupsService;
+    private GroupRoleService groupRoleService;
+    private SubjectTypeRepository subjectTypeRepository;
+    private GroupPrivilegeService groupPrivilegeService;
+
     @Value("#{jobParameters['userId']}")
     private Long userId;
     @Value("#{jobParameters['organisationUUID']}")
@@ -62,6 +75,13 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
         add("concepts.json");
         add("forms");
         add("formMappings.json");
+        add("individualRelation.json");
+        add("relationshipType.json");
+        add("identifierSource.json");
+        add("checklist.json");
+        add("groups.json");
+        add("groupRole.json");
+        add("groupPrivilege.json");
     }};
 
 
@@ -70,7 +90,11 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                          LocationService locationService, CatchmentService catchmentService,
                          SubjectTypeService subjectTypeService, ProgramService programService,
                          EncounterTypeService encounterTypeService, FormMappingService formMappingService,
-                         OrganisationConfigService organisationConfigService) {
+                         OrganisationConfigService organisationConfigService, IndividualRelationService individualRelationService,
+                         IndividualRelationshipTypeService individualRelationshipTypeService, ChecklistDetailService checklistDetailService,
+                         IdentifierSourceService identifierSourceService, GroupsService groupsService,
+                         GroupRoleService groupRoleService, SubjectTypeRepository subjectTypeRepository,
+                         GroupPrivilegeService groupPrivilegeService) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
@@ -81,6 +105,14 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
         this.encounterTypeService = encounterTypeService;
         this.formMappingService = formMappingService;
         this.organisationConfigService = organisationConfigService;
+        this.individualRelationService = individualRelationService;
+        this.individualRelationshipTypeService = individualRelationshipTypeService;
+        this.checklistDetailService = checklistDetailService;
+        this.identifierSourceService = identifierSourceService;
+        this.groupsService = groupsService;
+        this.groupRoleService = groupRoleService;
+        this.subjectTypeRepository = subjectTypeRepository;
+        this.groupPrivilegeService = groupPrivilegeService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -178,6 +210,50 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                 FormMappingContract[] formMappingContracts = convertString(fileData, FormMappingContract[].class);
                 for (FormMappingContract formMappingContract : formMappingContracts) {
                     formMappingService.createOrUpdateFormMapping(formMappingContract);
+                }
+                break;
+            case "individualRelation.json":
+                IndividualRelationContract[] individualRelationContracts = convertString(fileData, IndividualRelationContract[].class);
+                for (IndividualRelationContract individualRelationContract : individualRelationContracts) {
+                    individualRelationService.uploadRelation(individualRelationContract);
+                }
+                break;
+            case "relationshipType.json":
+                IndividualRelationshipTypeContract[] individualRelationshipTypeContracts = convertString(fileData, IndividualRelationshipTypeContract[].class);
+                for (IndividualRelationshipTypeContract individualRelationshipTypeContract : individualRelationshipTypeContracts) {
+                    individualRelationshipTypeService.saveRelationshipType(individualRelationshipTypeContract);
+                }
+                break;
+            case "identifierSource.json":
+                IdentifierSourceContractWeb[] identifierSourceContractWebs = convertString(fileData, IdentifierSourceContractWeb[].class);
+                for (IdentifierSourceContractWeb identifierSourceContractWeb : identifierSourceContractWebs) {
+                    identifierSourceService.saveIdSource(identifierSourceContractWeb);
+                }
+                break;
+            case "checklist.json":
+                ChecklistDetailRequest[] checklistDetailRequests = convertString(fileData, ChecklistDetailRequest[].class);
+                for (ChecklistDetailRequest checklistDetailRequest : checklistDetailRequests) {
+                    checklistDetailService.saveChecklist(checklistDetailRequest);
+                }
+                break;
+            case "groups.json":
+                GroupContract[] groupContracts = convertString(fileData, GroupContract[].class);
+                for (GroupContract groupContract : groupContracts) {
+                    groupsService.saveGroup(groupContract, organisation.getId());
+                }
+                break;
+            case "groupRole.json":
+                GroupRoleContract[] groupRoleContracts = convertString(fileData, GroupRoleContract[].class);
+                for (GroupRoleContract groupRoleContract : groupRoleContracts) {
+                    SubjectType groupSubjectType = subjectTypeRepository.findByUuid(groupRoleContract.getGroupSubjectTypeUUID());
+                    SubjectType memberSubjectType = subjectTypeRepository.findByUuid(groupRoleContract.getMemberSubjectTypeUUID());
+                    groupRoleService.saveGroupRole(groupRoleContract, groupSubjectType, memberSubjectType);
+                }
+                break;
+            case "groupPrivilege.json":
+                GroupPrivilegeContractWeb[] groupPrivilegeContracts = convertString(fileData, GroupPrivilegeContractWeb[].class);
+                for (GroupPrivilegeContractWeb groupPrivilegeContract : groupPrivilegeContracts) {
+                    groupPrivilegeService.uploadPrivileges(groupPrivilegeContract);
                 }
                 break;
         }
