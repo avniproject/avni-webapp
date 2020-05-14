@@ -165,11 +165,11 @@ export function* updateEncounterCancelObsWorker({ formElement, value }) {
   );
 
   yield put(setProgramEncounter(programEncounter));
-  // yield put(
-  //   setValidationResults(
-  //     validate(formElement, value, programEncounter.observations, validationResults)
-  //   )
-  // );
+  yield put(
+    setValidationResults(
+      validate(formElement, value, programEncounter.cancelObservations, validationResults)
+    )
+  );
 }
 
 function updateObservations(observations, formElement, value) {
@@ -258,19 +258,18 @@ export function* cancelProgramEncounterFetchFormWatcher() {
   yield takeLatest(types.GET_CANCEL_PROGRAM_ENCOUNTER_FORM, cancelProgramEncounterFetchFormWorker);
 }
 
-export function* cancelProgramEncounterFetchFormWorker({ encounterTypeUuid, enrolmentUuid }) {
-  const programEncounterUuid = encounterTypeUuid;
+export function* cancelProgramEncounterFetchFormWorker({ programEncounterUuid, enrolmentUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
-  console.log("From Saga ProgEncounter Get", programEncounterJson);
+  const programEnrolmentJson = yield call(api.fetchProgramEnrolment, enrolmentUuid);
   const formMapping = yield select(
     selectCancelFormMappingByEncounterTypeUuid(programEncounterJson.encounterType.uuid)
   );
   const cancelProgramEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
-  yield put(setCancelProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
-  const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
   const programEncounter = mapProgramEncounter(programEncounterJson);
   programEncounter.cancelDateTime = new Date();
   programEncounter.cancelObservations = [];
-  console.log("programEncounter obj", programEncounter);
+
+  yield put(setCancelProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
   yield put.resolve(setProgramEncounter(programEncounter));
+  yield put(getSubjectProfile(programEnrolmentJson.subjectUuid));
 }

@@ -10,11 +10,10 @@ import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
-  getCancelProgramEncounterForm
-  // onLoad,
-  // setProgramEncounter,
-  // saveProgramEncounterComplete,
-  // updateProgramEncounter,
+  getCancelProgramEncounterForm,
+  setProgramEncounter,
+  saveProgramEncounterComplete,
+  updateProgramEncounter
   // setEncounterDateValidation,
   // onLoadEditProgramEncounter
 } from "../../../reducers/programEncounterReducer";
@@ -46,14 +45,15 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
   const uuid = match.queryParams.uuid;
   console.log("All props..cancelPE", props.x);
   useEffect(() => {
-    // props.setProgramEncounter();
-    // props.saveProgramEncounterComplete(false);
+    props.setProgramEncounter();
+    props.saveProgramEncounterComplete(false);
+    props.getCancelProgramEncounterForm(uuid, enrolUuid);
     (async function fetchData() {
       // if (editProgramEncounter) {
       //uuid - encounterTypeUuid
-      await props.getCancelProgramEncounterForm(uuid, enrolUuid);
       // } else {
-      //uuid - encounterTypeUuid
+      //uuid - encounterUuid
+      //await props.getCancelProgramEncounterForm(uuid, enrolUuid);
       //await props.onLoad(enrolUuid);
       // props.getProgramEncounterForm(uuid, enrolUuid);
       //  }
@@ -70,10 +70,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
         <div className={classes.tableView}>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
-              <div>loaded</div>
-              {/* {props.cancelProgramEncounterForm && programEncounter && props.subjectProfile ? ( */}
-
-              {props.cancelProgramEncounterForm && programEncounter ? (
+              {props.cancelProgramEncounterForm && programEncounter && props.subjectProfile ? (
                 <CancelProgramEncounterForm>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
@@ -87,8 +84,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
                       name="visitDateTime"
                       autoComplete="off"
                       required
-                      value={new Date()}
-                      // value={new Date(programEncounter.encounterDateTime)}
+                      value={new Date(programEncounter.cancelDateTime)}
                       // error={
                       //   !isNil(validationResultForEncounterDate) &&
                       //   !validationResultForEncounterDate.success
@@ -98,8 +94,8 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
                       //   t(validationResultForEncounterDate.messageKey)
                       // }
                       onChange={date => {
-                        //   const visitDate = isNil(date) ? undefined : new Date(date);
-                        //   props.updateProgramEncounter("encounterDateTime", visitDate);
+                        const cancelDate = isNil(date) ? undefined : new Date(date);
+                        props.updateProgramEncounter("cancelDateTime", cancelDate);
                         //   programEncounter.encounterDateTime = visitDate;
                         //   remove(
                         //     enconterDateValidation,
@@ -134,18 +130,15 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
 const mapStateToProps = state => ({
   cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm,
   x: state,
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter
-  //   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  //   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
   //   enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
 });
 
 const mapDispatchToProps = {
-  //   getProgramEncounterForm,
-  //   onLoad,
-  //   setProgramEncounter,
-  //   saveProgramEncounterComplete,
-  //   updateProgramEncounter,
+  setProgramEncounter,
+  saveProgramEncounterComplete,
+  updateProgramEncounter,
   //   setEncounterDateValidation,
   //   onLoadEditProgramEncounter
   getCancelProgramEncounterForm

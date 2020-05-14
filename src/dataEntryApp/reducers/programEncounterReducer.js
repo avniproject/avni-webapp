@@ -93,9 +93,9 @@ export const onLoadEditProgramEncounter = (programEncounterUuid, enrolUuid) => (
   enrolUuid
 });
 
-export const getCancelProgramEncounterForm = (encounterTypeUuid, enrolmentUuid) => ({
+export const getCancelProgramEncounterForm = (programEncounterUuid, enrolmentUuid) => ({
   type: types.GET_CANCEL_PROGRAM_ENCOUNTER_FORM,
-  encounterTypeUuid,
+  programEncounterUuid,
   enrolmentUuid
 });
 
