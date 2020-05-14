@@ -146,8 +146,9 @@ public class ImportService {
         } else {
             response = addToResponse(response, Arrays.asList(new GroupMemberHeaders().getAllHeaders()));
         }
-        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(subjectType.getUuid(), null, null, FormType.IndividualProfile);
-        return addToResponse(response, formMapping);
+//        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(subjectType.getUuid(), null, null, FormType.IndividualProfile);
+//        return addToResponse(response, formMapping);
+        return response;
     }
 
     private EncounterType getEncounterType(String encounterTypeName) {

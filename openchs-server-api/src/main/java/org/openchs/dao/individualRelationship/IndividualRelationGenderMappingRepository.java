@@ -2,6 +2,7 @@ package org.openchs.dao.individualRelationship;
 
 import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.ReferenceDataRepository;
+import org.openchs.domain.Gender;
 import org.openchs.domain.individualRelationship.IndividualRelation;
 import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -21,4 +22,6 @@ public interface IndividualRelationGenderMappingRepository extends ReferenceData
     }
 
     List<IndividualRelationGenderMapping> findAllByRelation(IndividualRelation relation);
+
+    List<IndividualRelationGenderMapping> findAllByGender(Gender gender);
 }

@@ -1,6 +1,7 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.GroupRole;
 import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
 import org.springframework.data.domain.Page;
@@ -48,4 +49,6 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
     }
 
     GroupSubject findByGroupSubjectAndMemberSubject(Individual groupSubject, Individual memberSubject);
+
+    GroupSubject findByGroupSubjectAndGroupRole(Individual groupSubject, GroupRole headOfHousehold);
 }
