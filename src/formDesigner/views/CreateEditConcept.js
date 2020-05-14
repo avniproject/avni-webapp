@@ -24,6 +24,7 @@ import Button from "@material-ui/core/Button";
 import { Redirect } from "react-router-dom";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -59,7 +60,8 @@ class CreateEditConcept extends Component {
       defaultSnackbarStatus: true,
       keyValues: [],
       redirectShow: false,
-      redirectOnDelete: false
+      redirectOnDelete: false,
+      active: false
     };
   }
 
@@ -98,6 +100,7 @@ class CreateEditConcept extends Component {
             name: response.data.name,
             uuid: response.data.uuid,
             dataType: response.data.dataType,
+            active: response.data.active,
             lowAbsolute: response.data.lowAbsolute,
             highAbsolute: response.data.highAbsolute,
             lowNormal: response.data.lowNormal,
@@ -212,7 +215,8 @@ class CreateEditConcept extends Component {
               uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
               dataType: this.state.dataType,
               keyValues: this.state.keyValues,
-              answers: this.state.answers
+              answers: this.state.answers,
+              active: this.props.isCreatePage ? true : this.state.active
             }
           ])
           .then(response => {
@@ -409,7 +413,8 @@ class CreateEditConcept extends Component {
               highAbsolute: this.state.highAbsolute,
               lowNormal: this.state.lowNormal,
               highNormal: this.state.highNormal,
-              unit: this.state.unit === "" ? null : this.state.unit
+              unit: this.state.unit === "" ? null : this.state.unit,
+              active: this.props.isCreatePage ? true : this.state.active
             }
           ])
           .then(response => {
@@ -468,6 +473,12 @@ class CreateEditConcept extends Component {
     const keyValues = this.state.keyValues;
     keyValues.splice(index, 1);
     this.setState({ ...this.state, keyValues });
+  };
+
+  handleActive = event => {
+    this.setState({
+      active: event.target.checked
+    });
   };
 
   onDeleteConcept = () => {
@@ -605,6 +616,19 @@ class CreateEditConcept extends Component {
                 />
               )}
             </div>
+            {!this.props.isCreatePage && (
+              <>
+                <p />
+                <AvniSwitch
+                  checked={this.state.active ? true : false}
+                  onChange={event => this.handleActive(event)}
+                  name="Active"
+                  toolTipKey={"APP_DESIGNER_CONCEPT_ACTIVE"}
+                />
+                <p />
+              </>
+            )}
+
             {dataType}
             <KeyValues
               keyValues={this.state.keyValues}

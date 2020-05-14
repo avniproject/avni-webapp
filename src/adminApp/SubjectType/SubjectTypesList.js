@@ -5,10 +5,10 @@ import { get, isEmpty, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 import { CreateComponent } from "../../common/components/CreateComponent";
+import { cloneDeep } from "lodash";
 
 const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -95,6 +95,44 @@ const SubjectTypesList = ({ history }) => {
     }
   });
 
+  const activateSubjectType = rowData => ({
+    icon: rowData.active ? "visibility_off" : "visibility",
+    tooltip: rowData.active ? "Deactivate subject type" : "Activate subject type",
+    onClick: (event, rowData) => {
+      const clonedRowData = cloneDeep(rowData);
+      clonedRowData.active = !rowData.active;
+
+      http
+        .get("/web/operationalModules")
+        .then(response => {
+          const availableMapping = response.data.formMappings.filter(
+            l => l.subjectTypeUUID === rowData.uuid
+          );
+          const registrationFormUuid = availableMapping.filter(
+            l => l.formType === "IndividualProfile"
+          );
+          clonedRowData["registrationFormUuid"] = !isEmpty(registrationFormUuid)
+            ? registrationFormUuid[0].formUUID
+            : null;
+          if (isEmpty(availableMapping) || isEmpty(registrationFormUuid)) {
+            alert("There might be a registration form is missing for this subject type.");
+          } else {
+            http
+              .put("/web/subjectType/" + rowData.id, clonedRowData)
+              .then(response => {
+                if (response.status === 200) {
+                  refreshTable(tableRef);
+                }
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          }
+        })
+        .catch(error => {});
+    }
+  });
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -120,10 +158,10 @@ const SubjectTypesList = ({ history }) => {
                 debounceInterval: 500,
                 search: false,
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
-              actions={[editSubjectType, voidSubjectType]}
+              actions={[editSubjectType, voidSubjectType, activateSubjectType]}
             />
           </div>
         </div>

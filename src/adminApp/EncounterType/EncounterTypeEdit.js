@@ -32,6 +32,7 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
 
 const EncounterTypeEdit = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -115,6 +116,7 @@ const EncounterTypeEdit = props => {
         encounterEligibilityCheckRule: encounterType.encounterEligibilityCheckRule,
         id: props.match.params.id,
         subjectTypeUuid: subjectT.uuid,
+        active: encounterType.active,
         programEncounterFormUuid: _.get(encounterType, "programEncounterForm.formUUID"),
         programEncounterCancelFormUuid: _.get(
           encounterType,
@@ -271,6 +273,13 @@ const EncounterTypeEdit = props => {
             }
             formList={getCancellationForms()}
             toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_CANCELLATION_FORM"}
+          />
+          <p />
+          <AvniSwitch
+            checked={encounterType.active ? true : false}
+            onChange={event => dispatch({ type: "active", payload: event.target.checked })}
+            name="Active"
+            toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ACTIVE"}
           />
           <p />
           <AvniFormLabel

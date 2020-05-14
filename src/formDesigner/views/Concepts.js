@@ -6,6 +6,7 @@ import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
+import { cloneDeep } from "lodash";
 
 const Concepts = ({ history }) => {
   const columns = [
@@ -52,7 +53,6 @@ const Concepts = ({ history }) => {
         ? "Unvoid Concept"
         : "Void Concept",
     onClick: (event, rowData) => {
-      console.log(rowData);
       const voidedMessage = rowData.voided
         ? "Do you want to unvoid the concept " + rowData.name + " ?"
         : "Do you want to void the concept " + rowData.name + " ?";
@@ -72,6 +72,25 @@ const Concepts = ({ history }) => {
       }
     },
     disabled: rowData.organisationId === 1
+  });
+
+  const activateConcept = rowData => ({
+    icon: rowData.active ? "visibility_off" : "visibility",
+    tooltip: rowData.active ? "Deactivate concept" : "Activate concept",
+    onClick: (event, rowData) => {
+      const clonedRowData = cloneDeep(rowData);
+      clonedRowData.active = !rowData.active;
+      http
+        .post("/concepts", [clonedRowData])
+        .then(response => {
+          if (response.status === 200) {
+            refreshTable(tableRef);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   });
 
   const editConcept = rowData => ({
@@ -116,7 +135,7 @@ const Concepts = ({ history }) => {
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
-              actions={[editConcept, voidConcept]}
+              actions={[editConcept, voidConcept, activateConcept]}
             />
           </div>
         </div>
