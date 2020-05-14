@@ -8,12 +8,12 @@ import moment from "moment/moment";
 import Form from "../../components/Form";
 import Summary from "./Summary";
 import { Box, Typography, Paper, Chip, Button } from "@material-ui/core";
-import CustomizedDialog from "../../components/Dialog";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 import { FormElementGroup, ValidationResults } from "avni-models";
 import { RelativeLink, InternalLink } from "common/components/utils";
 import { useHistory, useLocation } from "react-router-dom";
+import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -196,28 +196,27 @@ const FormWizard = ({
   saved,
   onSaveGoto,
   onSave,
+  message,
   subject,
   validationResults,
+  staticValidationResults,
   setValidationResults,
   registrationFlow,
   children
 }) => {
   if (!form) return <div />;
   const [redirect, setRedirect] = React.useState(false);
-
-  const onOkHandler = pressedOk => {
-    BrowserStore.clear("subject");
-    setRedirect(true);
-  };
-
   const classes = useStyle();
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
 
-  if (saved && redirect) {
-    return <Redirect to={onSaveGoto} />;
+  if (saved) {
+    BrowserStore.clear("subject");
+    setTimeout(() => {
+      setRedirect(true);
+    }, 2500);
   }
 
   const from = match.queryParams.from;
@@ -239,10 +238,16 @@ const FormWizard = ({
     const filteredFormElement = filter(feg.formElements, fe => fe.voided === false);
     const formElementGroup = new FormElementGroup();
     const formElementGroupValidations = formElementGroup.validate(obsHolder, filteredFormElement);
-    setValidationResults(formElementGroupValidations);
+    const staticValidationResultsError =
+      staticValidationResults &&
+      new ValidationResults(staticValidationResults).hasValidationError();
 
+    setValidationResults(formElementGroupValidations);
     if (!isEmpty(formElementGroupValidations)) {
-      if (new ValidationResults(formElementGroupValidations).hasValidationError()) {
+      if (
+        new ValidationResults(formElementGroupValidations).hasValidationError() ||
+        staticValidationResultsError
+      ) {
         event.preventDefault();
       }
     }
@@ -336,14 +341,10 @@ const FormWizard = ({
                 )}
               </Box>
             </Box>
-
+            {redirect && <Redirect to={onSaveGoto} />}
             {saved && (
-              <CustomizedDialog
-                showSuccessIcon="true"
-                message={t("Your details have been successfully registered.")}
-                showOkbtn="true"
-                openDialogContainer={true}
-                onOk={onOkHandler}
+              <CustomizedSnackbar
+                message={t(message || "Your details have been successfully registered.")}
               />
             )}
           </Paper>

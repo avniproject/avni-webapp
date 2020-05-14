@@ -13,6 +13,7 @@ import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
+import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -101,7 +102,12 @@ const ProgramView = ({ programData }) => {
         <Grid item xs={6}>
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
           <SubjectButton btnLabel={t("vaccinations")} />
-          <SubjectButton btnLabel={t("newProgramVisit")} />
+          <InternalLink
+            to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
+            noUnderline
+          >
+            <SubjectButton btnLabel={t("newProgramVisit")} />
+          </InternalLink>
         </Grid>
       </Grid>
       <Paper className={classes.root}>
