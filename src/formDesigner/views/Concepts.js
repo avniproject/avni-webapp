@@ -9,7 +9,11 @@ import { CreateComponent } from "../../common/components/CreateComponent";
 
 const Concepts = ({ history }) => {
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc" },
+    {
+      title: "Name",
+      defaultSort: "asc",
+      render: rowData => <a href={`#/appDesigner/concept/${rowData.uuid}/show`}>{rowData.name}</a>
+    },
     { title: "DataType", field: "dataType" },
     { title: "OrganisationId", field: "organisationId", type: "numeric" }
   ];
@@ -109,7 +113,7 @@ const Concepts = ({ history }) => {
                 searchFieldAlignment: "left",
                 searchFieldStyle: { width: "100%", marginLeft: "-8%" },
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
               actions={[editConcept, voidConcept]}
