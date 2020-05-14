@@ -72,11 +72,11 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     @GetMapping(value = "/web/concepts")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @ResponseBody
-    public PagedResources<Resource<Concept>> getAll(@RequestParam(value = "name", required = false) String name, Pageable pageable) {
+    public PagedResources<Resource<Concept>> getAll(@RequestParam(value = "name", required = false) String name,  Pageable pageable) {
         Sort sortWithId = pageable.getSort().and(new Sort("id"));
         PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sortWithId);
         if (name == null) {
-            return wrap(conceptRepository.findAll(pageRequest));
+            return wrap(conceptRepository.getAllNonVoidedConcepts(pageRequest));
         } else {
             return wrap(conceptRepository.findByNameIgnoreCaseContaining(name, pageRequest));
         }

@@ -2,6 +2,7 @@ package org.openchs.dao;
 
 import org.openchs.domain.Concept;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -13,11 +14,12 @@ import java.util.List;
 @RepositoryRestResource(collectionResourceRel = "concept", path = "concept")
 public interface ConceptRepository extends ReferenceDataRepository<Concept>, FindByLastModifiedDateTime<Concept> {
     Page<Concept> findByNameIgnoreCaseContaining(String name, Pageable pageable);
-    List<Concept> findAllByOrganisationIdAndDataTypeNotIn(Long organisationId, String[] notIn);
-    List<Concept> findAllByOrganisationIdAndDataType(Long organisationId, String dataType);
     List<Concept> findAllByDataType(String dataType);
     List<Concept> findByNameIgnoreCaseContains(String name);
     List<Concept> findByDataTypeAndNameIgnoreCaseContains(String dataType, String name);
+
+    @Query("select c from Concept c where c.isVoided = false")
+    Page<Concept> getAllNonVoidedConcepts(Pageable pageable);
 
     @Query("select c.name from Concept c where c.isVoided = false")
     List<String> getAllNames();
