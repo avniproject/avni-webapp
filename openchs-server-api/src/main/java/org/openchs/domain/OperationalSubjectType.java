@@ -44,6 +44,10 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
         return subjectType.getName();
     }
 
+    public boolean getActive() {
+        return subjectType.getActive();
+    }
+
     public boolean isGroup() {
         return subjectType.isGroup();
     }
