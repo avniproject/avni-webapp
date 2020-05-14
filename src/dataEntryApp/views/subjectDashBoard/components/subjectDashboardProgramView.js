@@ -115,8 +115,13 @@ const useStyles = makeStyles(theme => ({
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [expandedPanel, setExpanded] = React.useState("");
 
+  const [expandedPanel, setExpanded] = React.useState("");
+  const enrolldata = {
+    enrollmentId: programData.id,
+    enrollmentUuid: programData.uuid
+  };
+  sessionStorage.setItem("enrollment", JSON.stringify(enrolldata));
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -247,9 +252,7 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
           <Button color="primary">
-            <Link to={`/app/completeVisit?id=${programData.id}&uuid=${programData.uuid}`}>
-              {t("viewAllCompletedVisit")}
-            </Link>
+            <Link to={`/app/completeVisit?id=${programData.id}`}>{t("viewAllCompletedVisit")}</Link>
           </Button>
         </ExpansionPanel>
       </Paper>
