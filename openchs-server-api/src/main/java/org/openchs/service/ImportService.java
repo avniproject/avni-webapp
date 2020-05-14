@@ -69,6 +69,13 @@ public class ImportService {
             uploadTypes.put(String.format("ProgramEncounter---%s---%s", encounterType, subjectTypeName), String.format("%s", formName));
         });
 
+        Stream<FormMapping> encounterForms = formMappings.stream().filter(formMapping -> formMapping.getForm().getFormType() == FormType.Encounter);
+        encounterForms.forEach(formMapping -> {
+            String encounterType = formMapping.getEncounterType().getName();
+            String formName = formMapping.getFormName();
+            uploadTypes.put(String.format("Encounter---%s", encounterType), String.format("%s", formName));
+        });
+
         return uploadTypes;
     }
 
