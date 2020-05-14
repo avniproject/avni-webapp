@@ -31,7 +31,6 @@ public class AuthService {
     private UserRepository userRepository;
     private OrganisationRepository organisationRepository;
     private AccountAdminRepository accountAdminRepository;
-    private String organisationUUID;
 
     @Autowired
     public AuthService(CognitoAuthService cognitoAuthService, UserRepository userRepository, OrganisationRepository organisationRepository, AccountAdminRepository accountAdminRepository) {
@@ -41,26 +40,26 @@ public class AuthService {
         this.accountAdminRepository = accountAdminRepository;
     }
 
-    public UserContext authenticateByUserName(String username) {
+    public UserContext authenticateByUserName(String username, String organisationUUID) {
         becomeSuperUser();
-        return changeUser(userRepository.findByUsername(username));
+        return changeUser(userRepository.findByUsername(username), organisationUUID);
     }
 
-    public UserContext authenticateByToken(String authToken) {
+    public UserContext authenticateByToken(String authToken, String organisationUUID) {
         becomeSuperUser();
-        return changeUser(cognitoAuthService.getUserFromToken(authToken));
+        return changeUser(cognitoAuthService.getUserFromToken(authToken), organisationUUID);
     }
 
-    public UserContext authenticateByUserId(Long userId) {
+    public UserContext authenticateByUserId(Long userId, String organisationUUID) {
         becomeSuperUser();
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
-            return changeUser(user.get());
+            return changeUser(user.get(), organisationUUID);
         }
         throw new RuntimeException(String.format("Not found: User{id='%s'}", userId));
     }
 
-    private Authentication attemptAuthentication(User user) {
+    private Authentication attemptAuthentication(User user, String organisationUUID) {
         UserContext userContext = new UserContext();
         UserContextHolder.create(userContext);
         if (user == null) {
@@ -87,8 +86,8 @@ public class AuthService {
         return createTempAuth(authorities);
     }
 
-    private UserContext changeUser(User user) {
-        SecurityContextHolder.getContext().setAuthentication(attemptAuthentication(user));
+    private UserContext changeUser(User user, String organisationUUID) {
+        SecurityContextHolder.getContext().setAuthentication(attemptAuthentication(user, organisationUUID));
         return UserContextHolder.getUserContext();
     }
 
@@ -100,14 +99,6 @@ public class AuthService {
     private Authentication createTempAuth(List<SimpleGrantedAuthority> authorities) {
         String token = UUID.randomUUID().toString();
         return new AnonymousAuthenticationToken(token, token, authorities);
-    }
-
-    public String getOrganisationUUID() {
-        return organisationUUID;
-    }
-
-    public void setOrganisationUUID(String organisationUUID) {
-        this.organisationUUID = organisationUUID;
     }
 
 }

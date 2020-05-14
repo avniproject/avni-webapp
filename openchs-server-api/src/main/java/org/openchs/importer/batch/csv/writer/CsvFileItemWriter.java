@@ -23,6 +23,8 @@ public class CsvFileItemWriter implements ItemWriter<Row> {
 
     @Value("#{jobParameters['userId']}")
     private Long userId;
+    @Value("#{jobParameters['organisationUUID']}")
+    private String organisationUUID;
     @Value("#{jobParameters['type']}")
     private String type;
 
@@ -55,7 +57,7 @@ public class CsvFileItemWriter implements ItemWriter<Row> {
 
     @Override
     public void write(List<? extends Row> rows) throws Exception {
-        authService.authenticateByUserId(userId);
+        authService.authenticateByUserId(userId, organisationUUID);
         getWriter().write(rows);
     }
 

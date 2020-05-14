@@ -13,12 +13,15 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.file.FlatFileParseException;
+import org.springframework.batch.item.file.transform.FlatFileFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @Configuration
@@ -40,9 +43,7 @@ public class ZipJobBatchConfiguration {
 
     @Bean
     @StepScope
-    public ItemReader<JsonFile> zipItemReader(@Value("#{jobParameters['s3Key']}") String s3Key,
-                                              @Value("#{jobParameters['userId']}") Long userId) throws IOException {
-        authService.authenticateByUserId(userId);
+    public ItemReader<JsonFile> zipItemReader(@Value("#{jobParameters['s3Key']}") String s3Key) throws IOException {
         return new ZipItemReader(s3Service.getObjectContent(s3Key));
     }
 
@@ -63,6 +64,10 @@ public class ZipJobBatchConfiguration {
                 .reader(zipItemReader)
                 .writer(zipFileWriter)
                 .faultTolerant()
+                .skip(Exception.class)
+                .noSkip(FileNotFoundException.class)
+                .noSkip(FlatFileParseException.class)
+                .noSkip(FlatFileFormatException.class)
                 .skipPolicy((error, count) -> true)
                 .listener(zipErrorFileWriterListener)
                 .build();

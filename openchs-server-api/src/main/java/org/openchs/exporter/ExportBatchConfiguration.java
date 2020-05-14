@@ -99,9 +99,10 @@ public class ExportBatchConfiguration {
     @Bean
     @StepScope
     public RepositoryItemReader<Object> reader(@Value("#{jobParameters['userId']}") Long userId,
+                                               @Value("#{jobParameters['organisationUUID']}") String organisationUUID,
                                                @Value("#{jobParameters['programUUID']}") String programUUID,
                                                @Value("#{jobParameters['subjectTypeUUID']}") String subjectTypeUUID) {
-        authService.authenticateByUserId(userId);
+        authService.authenticateByUserId(userId, organisationUUID);
         final Map<String, Sort.Direction> sorts = new HashMap<>();
         sorts.put("id", Sort.Direction.ASC);
         if (programUUID != null) {

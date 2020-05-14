@@ -39,12 +39,11 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
             String method = request.getMethod();
             String requestURI = request.getRequestURI();
             String queryString = request.getQueryString();
-            authService.setOrganisationUUID(organisationUUID);
 
             logger.info(String.format("Processing %s %s?%s Header: %s", method, requestURI, queryString, username));
             UserContext userContext = isDev
-                    ? authService.authenticateByUserName(StringUtils.isEmpty(username) ? defaultUserName : username)
-                    : authService.authenticateByToken(authToken);
+                    ? authService.authenticateByUserName(StringUtils.isEmpty(username) ? defaultUserName : username, organisationUUID)
+                    : authService.authenticateByToken(authToken, organisationUUID);
 
             logger.info(String.format("Processing %s %s?%s User: %s, Organisation: %s", method, requestURI, queryString, userContext.getUserName(), userContext.getOrganisationName()));
             chain.doFilter(request, response);

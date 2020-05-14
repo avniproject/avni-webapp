@@ -45,6 +45,9 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
     private ProgramService programService;
     @Value("#{jobParameters['userId']}")
     private Long userId;
+    @Value("#{jobParameters['organisationUUID']}")
+    private String organisationUUID;
+
     private List<String> fileSequence = new ArrayList<String>() {{
         add("organisationConfig.json");
         add("addressLevelTypes.json");
@@ -84,7 +87,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
 
     @PostConstruct
     public void authenticateUser() {
-        authService.authenticateByUserId(userId);
+        authService.authenticateByUserId(userId, organisationUUID);
     }
 
     @Override

@@ -73,6 +73,7 @@ public class ExportController {
         JobParameters jobParameters =
                 new JobParametersBuilder()
                         .addString("uuid", jobUUID)
+                        .addString("organisationUUID", organisation.getUuid())
                         .addLong("userId", user.getId(), false)
                         .addLong("organisationId", organisation.getId())
                         .addString("fileName", jobUUID.concat(ExportS3Service.FILE_NAME_EXTENSION))

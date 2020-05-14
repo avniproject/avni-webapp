@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.openchs.dao.JobStatus;
+import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.importer.batch.JobService;
@@ -85,9 +86,10 @@ public class ImportController {
                                   @RequestParam String type) {
         String uuid = UUID.randomUUID().toString();
         User user = UserContextHolder.getUserContext().getUser();
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         try {
             ObjectInfo storedFileInfo = type.equals("metadataZip") ? bulkUploadS3Service.uploadZip(file, uuid) : bulkUploadS3Service.uploadFile(file, uuid);
-            jobService.create(uuid, type, file.getOriginalFilename(), storedFileInfo, user.getId());
+            jobService.create(uuid, type, file.getOriginalFilename(), storedFileInfo, user.getId(), organisation.getUuid());
         } catch (JobParametersInvalidException | JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException | JobRestartException e) {
             logger.error(format("Bulkupload initiation failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();
