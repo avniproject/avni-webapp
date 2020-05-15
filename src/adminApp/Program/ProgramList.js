@@ -14,8 +14,6 @@ import {
   findProgramExitForm
 } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
-import { cloneDeep } from "lodash";
-import { isEmpty } from "lodash";
 
 const ProgramList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -155,55 +153,6 @@ const ProgramList = ({ history }) => {
     }
   });
 
-  const activateProgram = rowData => ({
-    icon: rowData.active ? "visibility_off" : "visibility",
-    tooltip: rowData.active ? "Deactivate program" : "Activate program",
-    onClick: (event, rowData) => {
-      const clonedRowData = cloneDeep(rowData);
-      clonedRowData.active = !rowData.active;
-      http
-        .get("/web/operationalModules")
-        .then(response => {
-          const availableEntity = response.data.formMappings.filter(
-            l => l.programUUID === rowData.uuid
-          );
-          clonedRowData["subjectTypeUuid"] = !isEmpty(availableEntity)
-            ? availableEntity[0].subjectTypeUUID
-            : null;
-          const programEnrolmentFormUuid = availableEntity.filter(
-            l => l.formType === "ProgramEnrolment"
-          );
-          clonedRowData["programEnrolmentFormUuid"] = !isEmpty(programEnrolmentFormUuid)
-            ? programEnrolmentFormUuid[0].formUUID
-            : null;
-          const programExitFormUuid = availableEntity.filter(l => l.formType === "ProgramExit");
-          clonedRowData["programExitFormUuid"] = !isEmpty(programExitFormUuid)
-            ? programExitFormUuid[0].formUUID
-            : null;
-
-          if (
-            isEmpty(availableEntity) ||
-            isEmpty(programEnrolmentFormUuid) ||
-            isEmpty(programExitFormUuid)
-          ) {
-            alert("There might be a enrolment form or exit form is missing for the program");
-          } else {
-            http
-              .put("/web/program/" + rowData.id, clonedRowData)
-              .then(response => {
-                if (response.status === 200) {
-                  refreshTable(tableRef);
-                }
-              })
-              .catch(error => {
-                console.log(error);
-              });
-          }
-        })
-        .catch(error => {});
-    }
-  });
-
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -232,7 +181,7 @@ const ProgramList = ({ history }) => {
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
-              actions={[editProgram, voidProgram, activateProgram]}
+              actions={[editProgram, voidProgram]}
             />
           </div>
         </div>

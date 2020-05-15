@@ -11,8 +11,6 @@ import {
   findProgramEncounterForm
 } from "../domain/formMapping";
 import { CreateComponent } from "../../common/components/CreateComponent";
-import { cloneDeep } from "lodash";
-import { isEmpty } from "lodash";
 
 const EncounterTypeList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
@@ -152,82 +150,6 @@ const EncounterTypeList = ({ history }) => {
     }
   });
 
-  const activateEncounterType = rowData => ({
-    icon: rowData.active ? "visibility_off" : "visibility",
-    tooltip: rowData.active ? "Deactivate encounter type" : "Activate encounter type",
-    onClick: (event, rowData) => {
-      const clonedRowData = cloneDeep(rowData);
-      clonedRowData.active = !rowData.active;
-      http
-        .get("/web/operationalModules")
-        .then(response => {
-          const availableEntity = response.data.formMappings.filter(
-            l => l.encounterTypeUUID === rowData.uuid
-          );
-          clonedRowData["subjectTypeUuid"] = !isEmpty(availableEntity)
-            ? availableEntity[0].subjectTypeUUID
-            : null;
-          clonedRowData["programUuid"] = !isEmpty(availableEntity)
-            ? availableEntity[0].programUUID
-            : null;
-          let programEncounterFormUuid, programEncounterCancelFormUuid;
-          if (clonedRowData.programUuid === undefined) {
-            programEncounterFormUuid = availableEntity.filter(l => l.formType === "Encounter");
-            clonedRowData["programEncounterFormUuid"] = !isEmpty(programEncounterFormUuid)
-              ? programEncounterFormUuid[0].formUUID
-              : null;
-
-            programEncounterCancelFormUuid = availableEntity.filter(
-              l => l.formType === "IndividualEncounterCancellation"
-            );
-
-            clonedRowData["programEncounterCancelFormUuid"] = !isEmpty(
-              programEncounterCancelFormUuid
-            )
-              ? programEncounterCancelFormUuid[0].formUUID
-              : null;
-          } else {
-            programEncounterFormUuid = availableEntity.filter(
-              l => l.formType === "ProgramEncounter"
-            );
-            clonedRowData["programEncounterFormUuid"] = !isEmpty(programEncounterFormUuid)
-              ? programEncounterFormUuid[0].formUUID
-              : null;
-
-            programEncounterCancelFormUuid = availableEntity.filter(
-              l => l.formType === "ProgramEncounterCancellation"
-            );
-
-            clonedRowData["programEncounterCancelFormUuid"] = !isEmpty(
-              programEncounterCancelFormUuid
-            )
-              ? programEncounterCancelFormUuid[0].formUUID
-              : null;
-          }
-
-          if (
-            isEmpty(availableEntity) ||
-            isEmpty(programEncounterFormUuid) ||
-            isEmpty(programEncounterCancelFormUuid)
-          ) {
-            alert("There might be encounter form or cancellation form is missing.");
-          } else {
-            http
-              .put("/web/encounterType/" + rowData.id, clonedRowData)
-              .then(response => {
-                if (response.status === 200) {
-                  refreshTable(tableRef);
-                }
-              })
-              .catch(error => {
-                console.log(error);
-              });
-          }
-        })
-        .catch(error => {});
-    }
-  });
-
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
@@ -256,7 +178,7 @@ const EncounterTypeList = ({ history }) => {
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
-              actions={[editEncounterType, voidEncounterType, activateEncounterType]}
+              actions={[editEncounterType, voidEncounterType]}
             />
           </div>
         </div>
