@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -85,8 +84,9 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
     }
 
     private GroupSubject getOrCreateGroupSubject(Row row, List<String> errorMsgs) {
-        boolean isHouseholdUpload = Arrays.asList(row.getHeaders()).contains(householdMemberHeaders.groupId);
-        String groupIdIdentifier = isHouseholdUpload ? householdMemberHeaders.groupId : groupMemberHeaders.groupId;
+//        boolean isHouseholdUpload = Arrays.asList(row.getHeaders()).contains(householdMemberHeaders.groupId);
+//        String groupIdIdentifier = isHouseholdUpload ? householdMemberHeaders.groupId : groupMemberHeaders.groupId;
+        String groupIdIdentifier = row.getHeaders()[0];  //hack assumes group id/household id is the first element. Added to handle dynamic group id header values.
         String groupId = row.get(groupIdIdentifier);
         String memberId = row.get(groupMemberHeaders.memberId);
 
