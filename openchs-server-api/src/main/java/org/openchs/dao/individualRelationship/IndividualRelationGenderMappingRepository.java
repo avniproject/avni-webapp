@@ -23,5 +23,7 @@ public interface IndividualRelationGenderMappingRepository extends ReferenceData
 
     List<IndividualRelationGenderMapping> findAllByRelation(IndividualRelation relation);
 
+    IndividualRelationGenderMapping findByRelationAndIsVoidedFalse(IndividualRelation relation);
+
     List<IndividualRelationGenderMapping> findAllByGender(Gender gender);
 }

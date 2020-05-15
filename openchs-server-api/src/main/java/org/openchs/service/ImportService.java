@@ -151,7 +151,9 @@ public class ImportService {
         if (subjectType.isHousehold()) {
             response = addToResponse(response, Arrays.asList(new HouseholdMemberHeaders().getAllHeaders()));
         } else {
-            response = addToResponse(response, Arrays.asList(new GroupMemberHeaders().getAllHeaders()));
+            GroupMemberHeaders groupMemberHeaders = new GroupMemberHeaders();
+            groupMemberHeaders.groupId = uploadSpec[1] + " Id";
+            response = addToResponse(response, Arrays.asList(groupMemberHeaders.getAllHeaders()));
         }
         return response;
     }

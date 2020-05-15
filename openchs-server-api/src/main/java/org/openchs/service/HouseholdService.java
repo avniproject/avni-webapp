@@ -7,6 +7,7 @@ import org.openchs.dao.individualRelationship.IndividualRelationshipTypeReposito
 import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
 import org.openchs.domain.individualRelationship.IndividualRelation;
+import org.openchs.domain.individualRelationship.IndividualRelationGenderMapping;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,17 @@ public class HouseholdService {
 
     public IndividualRelationship determineRelationshipWithHeadOfHousehold(GroupSubject groupSubject, IndividualRelation individualRelation, List<String> errorMsgs) {
         GroupSubject headOfHouseholdGroupSubject = groupSubjectRepository.findByGroupSubjectAndGroupRoleAndIsVoidedFalse(groupSubject.getGroupSubject(), groupRoleRepository.findByRole("Head of household"));
+        IndividualRelationGenderMapping individualRelationGenderMapping = individualRelationGenderMappingRepository.findByRelationAndIsVoidedFalse(individualRelation);
+
+        if (individualRelationGenderMapping == null) {
+            errorMsgs.add(String.format("Gender mapping for relation '%s' is not defined", individualRelation.getName()));
+            return null;
+        }
+        Individual memberSubject = groupSubject.getMemberSubject();
+        if (!(individualRelationGenderMapping.getGender().getName().equals(memberSubject.getGender().getName()))) {
+            errorMsgs.add(String.format("Member cannot be added as '%s' since they were registered as '%s'", individualRelation.getName(), memberSubject.getGender().getName()));
+            return null;
+        }
         if (headOfHouseholdGroupSubject == null) {
             errorMsgs.add(String.format("Head of household not yet defined for Household id '%s'", groupSubject.getGroupSubject().getLegacyId()));
             return null;
@@ -41,7 +53,7 @@ public class HouseholdService {
         Individual headOfHousehold = headOfHouseholdGroupSubject.getMemberSubject();
         IndividualRelationship individualRelationship = new IndividualRelationship();
         individualRelationship.setIndividuala(headOfHousehold);
-        individualRelationship.setIndividualB(groupSubject.getMemberSubject());
+        individualRelationship.setIndividualB(memberSubject);
 
         List<IndividualRelationshipType> possibleRelationshipTypesList = individualRelationshipTypeRepository.findAllByIndividualBIsToA(individualRelation);
         if (possibleRelationshipTypesList == null || possibleRelationshipTypesList.isEmpty()) {
@@ -51,7 +63,7 @@ public class HouseholdService {
         if (possibleRelationshipTypesList.size() > 1) {
             List<String> possibleHeadRelationNames = individualRelationGenderMappingRepository.findAllByGender(headOfHousehold.getGender())
                     .stream()
-                    .map(individualRelationGenderMapping -> individualRelationGenderMapping.getRelation().getName())
+                    .map(possibleGenderMappings -> possibleGenderMappings.getRelation().getName())
                     .collect(Collectors.toList());
 
             List<IndividualRelationshipType> filteredRelationshipTypes = new ArrayList<>();
