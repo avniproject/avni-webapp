@@ -339,7 +339,11 @@ function FormElementDetails(props) {
                       return (
                         <Chip
                           key={d.name}
-                          label={d.name}
+                          label={
+                            <a href={`#/appDesigner/concept/${d.uuid}/show`}>
+                              <span style={{ color: "black" }}>{d.name}</span>
+                            </a>
+                          }
                           onDelete={event =>
                             props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
                           }
@@ -397,7 +401,11 @@ function FormElementDetails(props) {
                 return (
                   <Chip
                     key={d.name}
-                    label={d.name}
+                    label={
+                      <a href={`#/appDesigner/concept/${d.uuid}/show`}>
+                        <span style={{ color: "black" }}>{d.name}</span>
+                      </a>
+                    }
                     onDelete={event =>
                       props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
                     }
