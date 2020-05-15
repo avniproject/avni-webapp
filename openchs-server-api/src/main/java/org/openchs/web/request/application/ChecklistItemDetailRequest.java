@@ -30,6 +30,7 @@ public class ChecklistItemDetailRequest extends CHSRequest {
         request.setMinDaysFromStartDate(checklistItemDetail.getMinDaysFromStartDate());
         request.setMinDaysFromDependent(checklistItemDetail.getMinDaysFromDependent());
         request.setExpiresAfter(checklistItemDetail.getExpiresAfter());
+        request.setVoided(checklistItemDetail.isVoided());
         return request;
     }
 
