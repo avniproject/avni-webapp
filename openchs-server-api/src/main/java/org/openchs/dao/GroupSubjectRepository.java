@@ -50,5 +50,5 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
 
     GroupSubject findByGroupSubjectAndMemberSubject(Individual groupSubject, Individual memberSubject);
 
-    GroupSubject findByGroupSubjectAndGroupRole(Individual groupSubject, GroupRole headOfHousehold);
+    GroupSubject findByGroupSubjectAndGroupRoleAndIsVoidedFalse(Individual groupSubject, GroupRole headOfHousehold);
 }
