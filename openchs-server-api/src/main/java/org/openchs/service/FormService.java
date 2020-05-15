@@ -32,6 +32,9 @@ public class FormService {
                 .withValidationRule(formRequest.getValidationRule())
                 .withChecklistRule(formRequest.getChecklistsRule())
                 .build();
+        //Form audit values might not change for changes in form element groups or form elements.
+        //This updateAudit forces audit updates
+        form.updateAudit();
         formRepository.save(form);
     }
 

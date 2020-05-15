@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.joda.time.DateTime;
+import org.openchs.framework.security.UserContextHolder;
 
 import javax.persistence.*;
 
@@ -32,6 +33,19 @@ public class CHSEntity extends CHSBaseEntity {
 
     public void updateLastModifiedDateTime() {
         this.getAudit().setLastModifiedDateTime(new DateTime());
+    }
+
+    /**
+     * Update audit values for an entity. If an entity has changed, the
+     * infrastructure automatically updates audit values. However, this does not
+     * apply when children updates. This method does a force update of audit.
+     *
+     * This needs to be used only when absolutely necessary.
+     */
+    public void updateAudit() {
+        Audit audit = this.getAudit();
+        audit.setLastModifiedBy(UserContextHolder.getUser());
+        audit.setLastModifiedDateTime(DateTime.now());
     }
 
     public int getVersion() {
