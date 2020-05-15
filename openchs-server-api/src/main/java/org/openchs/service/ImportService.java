@@ -73,6 +73,12 @@ public class ImportService {
             uploadTypes.put(String.format("Encounter---%s", encounterType), String.format("%s", formName));
         });
 
+        Stream<SubjectType.SubjectTypeProjection> groupSubjectTypes = subjectTypeRepository.findAllOperational().stream().filter(subjectType -> subjectType.isGroup());
+        groupSubjectTypes.forEach(groupSubjectType -> {
+            String groupSubjectTypeName = groupSubjectType.getName();
+            uploadTypes.put(String.format("GroupMembers---%s", groupSubjectTypeName), String.format("%s members", groupSubjectTypeName));
+        });
+
         return uploadTypes;
     }
 
@@ -147,8 +153,6 @@ public class ImportService {
         } else {
             response = addToResponse(response, Arrays.asList(new GroupMemberHeaders().getAllHeaders()));
         }
-//        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(subjectType.getUuid(), null, null, FormType.IndividualProfile);
-//        return addToResponse(response, formMapping);
         return response;
     }
 
