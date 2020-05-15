@@ -1,7 +1,9 @@
 package org.openchs.dao;
 
 import org.joda.time.DateTime;
+import org.openchs.domain.GroupRole;
 import org.openchs.domain.GroupSubject;
+import org.openchs.domain.Individual;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -45,4 +47,8 @@ public interface GroupSubjectRepository extends TransactionalDataRepository<Grou
     default Page<GroupSubject> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
         return findByGroupSubjectFacilityIdAndGroupRoleGroupSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
     }
+
+    GroupSubject findByGroupSubjectAndMemberSubject(Individual groupSubject, Individual memberSubject);
+
+    GroupSubject findByGroupSubjectAndGroupRoleAndIsVoidedFalse(Individual groupSubject, GroupRole headOfHousehold);
 }

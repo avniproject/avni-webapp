@@ -16,7 +16,7 @@ public class LocationCreator {
             String location = row.get(header);
             if (location != null) {
                 String[] points = location.split(",");
-                return new Point(Double.parseDouble(points[0]), Double.parseDouble(points[1]));
+                return new Point(Double.parseDouble(points[0].trim()), Double.parseDouble(points[1].trim()));
             }
         } catch (Exception ex) {
             logger.error(String.format("Error processing row %s", row), ex);

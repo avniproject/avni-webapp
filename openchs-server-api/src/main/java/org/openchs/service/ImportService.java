@@ -10,11 +10,8 @@ import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Program;
 import org.openchs.domain.SubjectType;
-import org.openchs.importer.batch.csv.writer.header.EncounterHeaders;
-import org.openchs.importer.batch.csv.writer.header.ProgramEncounterHeaders;
-import org.openchs.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
-import org.openchs.importer.batch.csv.writer.header.SubjectHeaders;
 import org.openchs.importer.batch.csv.writer.ProgramEnrolmentWriter;
+import org.openchs.importer.batch.csv.writer.header.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +83,8 @@ public class ImportService {
      * ProgramEnrolment---<Program>---<SubjectType>
      * ProgramEncounter---<EncounterType>---<SubjectType>
      * Encounter--<EncounterType>
+     * GroupMembers---<GroupSubjectTypeName>
+     *
      * @param uploadType
      * @return
      */
@@ -107,6 +106,10 @@ public class ImportService {
 
         if (uploadSpec[0].equals("Encounter")) {
             return getEncounterSampleFile(uploadSpec, response);
+        }
+
+        if (uploadSpec[0].equals("GroupMembers")) {
+            return getGroupMembersSampleFile(uploadSpec, response);
         }
 
         throw new UnsupportedOperationException(String.format("Sample file format for %s not supported", uploadType));
@@ -135,6 +138,18 @@ public class ImportService {
         response = addToResponse(response, Arrays.asList(new ProgramEncounterHeaders().getAllHeaders()));
         FormMapping formMapping = formMappingRepository.getRequiredFormMapping(getSubjectType(uploadSpec[2]).getUuid(), null, getEncounterType(uploadSpec[1]).getUuid(), FormType.ProgramEncounter);
         return addToResponse(response, formMapping);
+    }
+
+    private String getGroupMembersSampleFile(String[] uploadSpec, String response) {
+        SubjectType subjectType = getSubjectType(uploadSpec[1]);
+        if (subjectType.isHousehold()) {
+            response = addToResponse(response, Arrays.asList(new HouseholdMemberHeaders().getAllHeaders()));
+        } else {
+            response = addToResponse(response, Arrays.asList(new GroupMemberHeaders().getAllHeaders()));
+        }
+//        FormMapping formMapping = formMappingRepository.getRequiredFormMapping(subjectType.getUuid(), null, null, FormType.IndividualProfile);
+//        return addToResponse(response, formMapping);
+        return response;
     }
 
     private EncounterType getEncounterType(String encounterTypeName) {

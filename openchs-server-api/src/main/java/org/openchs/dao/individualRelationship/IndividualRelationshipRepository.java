@@ -5,11 +5,14 @@ import org.openchs.dao.FindByLastModifiedDateTime;
 import org.openchs.dao.OperatingIndividualScopeAwareRepository;
 import org.openchs.dao.OperatingIndividualScopeAwareRepositoryWithTypeFilter;
 import org.openchs.dao.TransactionalDataRepository;
+import org.openchs.domain.Individual;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "individualRelationship", path = "individualRelationship", exported = false)
@@ -45,4 +48,6 @@ public interface IndividualRelationshipRepository extends TransactionalDataRepos
     default Page<IndividualRelationship> findByFacilityIndividualOperatingScopeAndFilterByType(long facilityId, DateTime lastModifiedDateTime, DateTime now, String filter, Pageable pageable) {
         return findByIndividualaFacilityIdAndIndividualaSubjectTypeUuidAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(facilityId, filter, lastModifiedDateTime, now, pageable);
     }
+
+    List<IndividualRelationship> findByIndividualaAndIndividualBAndIsVoidedFalse(Individual individualA, Individual individualB);
 }
