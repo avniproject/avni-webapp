@@ -7,7 +7,8 @@ import {
   Select,
   FormGroup,
   Paper,
-  Button
+  Button,
+  FormLabel
 } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
@@ -222,14 +223,24 @@ function FormElementDetails(props) {
               )}
 
               <FormControl fullWidth>
-                <AutoSuggestSingleSelection
-                  visibility={!props.formElementData.newFlag}
-                  showAnswer={props.formElementData.concept}
-                  onChangeAnswerName={onChangeAnswerName}
-                  finalReturn={true}
-                  index={0}
-                  label="Concept"
-                />
+                {props.formElementData.newFlag && (
+                  <AutoSuggestSingleSelection
+                    visibility={!props.formElementData.newFlag}
+                    showAnswer={props.formElementData.concept}
+                    onChangeAnswerName={onChangeAnswerName}
+                    finalReturn={true}
+                    index={0}
+                    label="Concept"
+                  />
+                )}
+                {!props.formElementData.newFlag && (
+                  <>
+                    <FormLabel style={{ fontSize: "13px" }}>Concept*</FormLabel>
+                    <a href={`#/appDesigner/concept/${props.formElementData.concept.uuid}/show`}>
+                      {props.formElementData.concept.name}
+                    </a>
+                  </>
+                )}
               </FormControl>
             </Grid>
             {props.formElementData.concept.dataType !== "Coded" && <Grid item sm={6} />}
@@ -328,7 +339,11 @@ function FormElementDetails(props) {
                       return (
                         <Chip
                           key={d.name}
-                          label={d.name}
+                          label={
+                            <a href={`#/appDesigner/concept/${d.uuid}/show`}>
+                              <span style={{ color: "black" }}>{d.name}</span>
+                            </a>
+                          }
                           onDelete={event =>
                             props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
                           }
@@ -386,7 +401,11 @@ function FormElementDetails(props) {
                 return (
                   <Chip
                     key={d.name}
-                    label={d.name}
+                    label={
+                      <a href={`#/appDesigner/concept/${d.uuid}/show`}>
+                        <span style={{ color: "black" }}>{d.name}</span>
+                      </a>
+                    }
                     onDelete={event =>
                       props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
                     }

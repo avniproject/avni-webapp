@@ -15,13 +15,16 @@ describe("httpClient", () => {
 
   it("set headers", () => {
     const params = {};
+    httpClient.setOrganisationUUID("bf4fdf86-85e9-4b1f-a873-36d097a60e64");
     httpClient.setHeaders(params);
     assert.deepEqual(
       params.headers,
       new Headers({
         accept: "application/json",
         "content-type": "application/json",
-        "user-name": "abcd"
+        "user-name": "abcd",
+        "auth-token": idToken,
+        "ORGANISATION-UUID": "bf4fdf86-85e9-4b1f-a873-36d097a60e64"
       })
     );
   });

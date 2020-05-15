@@ -6,7 +6,6 @@ import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import { CreateComponent } from "../../common/components/CreateComponent";
-import { cloneDeep } from "lodash";
 
 const Concepts = ({ history }) => {
   const columns = [
@@ -74,25 +73,6 @@ const Concepts = ({ history }) => {
     disabled: rowData.organisationId === 1
   });
 
-  const activateConcept = rowData => ({
-    icon: rowData.active ? "visibility_off" : "visibility",
-    tooltip: rowData.active ? "Deactivate concept" : "Activate concept",
-    onClick: (event, rowData) => {
-      const clonedRowData = cloneDeep(rowData);
-      clonedRowData.active = !rowData.active;
-      http
-        .post("/concepts", [clonedRowData])
-        .then(response => {
-          if (response.status === 200) {
-            refreshTable(tableRef);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-  });
-
   const editConcept = rowData => ({
     icon: "edit",
     tooltip: rowData.organisationId === 1 ? "Can not edit core concepts" : "Edit Concept",
@@ -135,7 +115,7 @@ const Concepts = ({ history }) => {
                   backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
-              actions={[editConcept, voidConcept, activateConcept]}
+              actions={[editConcept, voidConcept]}
             />
           </div>
         </div>

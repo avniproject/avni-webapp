@@ -70,7 +70,6 @@ function ConceptDetails(props) {
             <br />
             <span style={{ fontSize: "15px" }}>{data.dataType}</span>
           </div>
-          <p />
           <ActiveStatusInShow status={data.active} />
 
           {data.dataType === "Numeric" && (
@@ -187,48 +186,53 @@ function ConceptDetails(props) {
           </div>
 
           <p />
-          {data.dataType !== "NA" && (
-            <>
-              <FormLabel style={{ fontSize: "13px" }}>Used in forms</FormLabel>
-              <br />
-              <ul>
-                {usage.forms &&
-                  usage.forms.map((form, index) => {
-                    return (
-                      <>
-                        <li key={index}>
-                          <a href={`#/appDesigner/forms/${form.formUUID}`}>{form.formName}</a>
-                          <p />
-                        </li>
-                      </>
-                    );
-                  })}
-              </ul>
 
-              {isEmpty(usage.forms) && (
-                <span style={{ fontSize: "13px" }}>Not used in the form.</span>
-              )}
-            </>
-          )}
-          <p />
-          <FormLabel style={{ fontSize: "13px" }}>Answer to</FormLabel>
-          <br />
-          <ul>
-            {usage.concepts &&
-              usage.concepts.map(concept => {
-                return (
-                  <>
-                    <li key={concept.uuid}>
-                      <a href={`#/appDesigner/concept/${concept.uuid}/edit`}>{concept.name}</a>
-                      <p />
-                    </li>
-                  </>
-                );
-              })}
-          </ul>
-          {isEmpty(usage.concepts) && (
-            <span style={{ fontSize: "13px" }}>Not used in any answer.</span>
-          )}
+          <>
+            {data.dataType !== "NA" && (
+              <>
+                <FormLabel style={{ fontSize: "13px" }}>Used in forms</FormLabel>
+                <br />
+                {isEmpty(usage.forms) && (
+                  <span style={{ fontSize: "15px" }}>Not used in the form.</span>
+                )}
+
+                {usage.forms && (
+                  <ul>
+                    {" "}
+                    {usage.forms.map((form, index) => {
+                      return (
+                        <>
+                          <li key={index}>
+                            <a href={`#/appDesigner/forms/${form.formUUID}`}>{form.formName}</a>
+                            <p />
+                          </li>
+                        </>
+                      );
+                    })}
+                  </ul>
+                )}
+              </>
+            )}
+
+            <FormLabel style={{ fontSize: "13px" }}>Answer to</FormLabel>
+            <br />
+            {isEmpty(usage.concepts) && (
+              <span style={{ fontSize: "15px" }}>Not used in any answer.</span>
+            )}
+            {usage.concepts && (
+              <ul>
+                {usage.concepts.map(concept => {
+                  return (
+                    <>
+                      <li key={concept.uuid}>
+                        <a href={`#/appDesigner/concept/${concept.uuid}/edit`}>{concept.name}</a>
+                      </li>
+                    </>
+                  );
+                })}{" "}
+              </ul>
+            )}
+          </>
 
           <p />
           <div>
