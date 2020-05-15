@@ -68,9 +68,10 @@ public class ImportService {
 
         Stream<FormMapping> encounterForms = formMappings.stream().filter(formMapping -> formMapping.getForm().getFormType() == FormType.Encounter);
         encounterForms.forEach(formMapping -> {
+            String subjectTypeName = formMapping.getSubjectType().getName();
             String encounterType = formMapping.getEncounterType().getName();
             String formName = formMapping.getFormName();
-            uploadTypes.put(String.format("Encounter---%s", encounterType), String.format("%s", formName));
+            uploadTypes.put(String.format("Encounter---%s---%s", encounterType, subjectTypeName), String.format("%s", formName));
         });
 
         Stream<SubjectType.SubjectTypeProjection> groupSubjectTypes = subjectTypeRepository.findAllOperational().stream().filter(subjectType -> subjectType.isGroup());
@@ -88,7 +89,7 @@ public class ImportService {
      * Subject---<SubjectType>
      * ProgramEnrolment---<Program>---<SubjectType>
      * ProgramEncounter---<EncounterType>---<SubjectType>
-     * Encounter--<EncounterType>
+     * Encounter--<EncounterType>---<SubjectType>
      * GroupMembers---<GroupSubjectTypeName>
      *
      * @param uploadType
