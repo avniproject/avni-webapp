@@ -4,7 +4,7 @@ import { authContext as _authContext } from "../../rootApp/authContext";
 import { stringify } from "query-string";
 import axios from "axios";
 import files from "./files";
-import { devEnvUserName, isDevEnv } from "../constants";
+import { devEnvUserName, isDevEnv, cognitoInDev } from "../constants";
 import Auth from "@aws-amplify/auth";
 
 class HttpClient {
@@ -99,7 +99,7 @@ class HttpClient {
   }
 
   async setTokenAndOrgUuidHeaders(options) {
-    if (!isDevEnv) {
+    if (!isDevEnv || cognitoInDev) {
       const currentSession = await Auth.currentSession();
       if (options) {
         options.headers.set("AUTH-TOKEN", currentSession.idToken.jwtToken);
