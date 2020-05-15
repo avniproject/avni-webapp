@@ -268,6 +268,10 @@ export function* cancelProgramEncounterFetchFormWorker({ programEncounterUuid, e
   const programEncounter = mapProgramEncounter(programEncounterJson);
   programEncounter.cancelDateTime = new Date();
   programEncounter.cancelObservations = [];
+  const programEnrolment = new ProgramEnrolment();
+  programEnrolment.uuid = enrolmentUuid;
+  programEnrolment.enrolmentDateTime = new Date(programEnrolmentJson.enrolmentDateTime);
+  programEncounter.programEnrolment = programEnrolment;
 
   yield put(setCancelProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
   yield put.resolve(setProgramEncounter(programEncounter));

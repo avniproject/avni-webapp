@@ -17,11 +17,11 @@ const mapFormStateToProps = state => ({
   ),
   saved: state.dataEntry.programEncounterReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-  //   staticValidationResults: state.dataEntry.programEncounterReducer.enconterDateValidation,
-  validationResults: state.dataEntry.programEncounterReducer.validationResults
-  //   message: state.dataEntry.programEncounterReducer.programEncounter.name
-  //     ? `${state.dataEntry.programEncounterReducer.programEncounter.name} Encounter Saved`
-  //     : `Encounter Saved`
+  staticValidationResults: state.dataEntry.programEncounterReducer.enconterDateValidation,
+  validationResults: state.dataEntry.programEncounterReducer.validationResults,
+  message: state.dataEntry.programEncounterReducer.programEncounter.name
+    ? `${state.dataEntry.programEncounterReducer.programEncounter.name} Encounter Canceled`
+    : `Encounter Canceled`
 });
 
 const mapFormDispatchToProps = {

@@ -2,19 +2,21 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { remove, isNil, isEqual } from "lodash";
+import { remove, isNil, isEmpty } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
+import { ModelGeneral as General, ValidationResult } from "avni-models";
+import moment from "moment";
 import {
   getCancelProgramEncounterForm,
   setProgramEncounter,
   saveProgramEncounterComplete,
-  updateProgramEncounter
-  // setEncounterDateValidation,
+  updateProgramEncounter,
+  setEncounterDateValidation
   // onLoadEditProgramEncounter
 } from "../../../reducers/programEncounterReducer";
 import CancelProgramEncounterForm from "./CancelProgramEncounterForm";
@@ -38,12 +40,11 @@ const useStyles = makeStyles(theme => ({
 const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  console.log("match", match, props);
-  //   const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
   //   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
   const enrolUuid = match.queryParams.enrolUuid;
   const uuid = match.queryParams.uuid;
-  console.log("All props..cancelPE", props.x);
+  const CANCEL_DATE_TIME = "CANCEL_DATE_TIME";
+  // console.log("All props..cancelPE", props.x);
   useEffect(() => {
     props.setProgramEncounter();
     props.saveProgramEncounterComplete(false);
@@ -60,9 +61,25 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
     })();
   }, []);
 
-  //   const validationResultForEncounterDate =
-  //     enconterDateValidation &&
-  //     enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === ENCOUNTER_DATE_TIME);
+  const validateCancelDate = cancelDateTime => {
+    const failure = new ValidationResult(false, CANCEL_DATE_TIME);
+    if (isNil(cancelDateTime)) failure.messageKey = "emptyValidationMessage";
+    else if (
+      General.dateAIsBeforeB(cancelDateTime, programEncounter.programEnrolment.enrolmentDateTime) ||
+      General.dateAIsAfterB(cancelDateTime, programEncounter.programEnrolment.programExitDateTime)
+    )
+      failure.messageKey = "cancelDateNotInBetweenEnrolmentAndExitDate";
+    else if (General.dateIsAfterToday(cancelDateTime)) failure.messageKey = "cancelDateInFuture";
+    else if (!moment(cancelDateTime).isValid()) {
+      failure.messageKey = "invalidDateFormat";
+    } else {
+      return new ValidationResult(true, CANCEL_DATE_TIME, null);
+    }
+    return failure;
+  };
+  const validationResultForCancelDate =
+    enconterDateValidation &&
+    enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === CANCEL_DATE_TIME);
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -85,29 +102,23 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
                       autoComplete="off"
                       required
                       value={new Date(programEncounter.cancelDateTime)}
-                      // error={
-                      //   !isNil(validationResultForEncounterDate) &&
-                      //   !validationResultForEncounterDate.success
-                      // }
-                      // helperText={
-                      //   !isNil(validationResultForEncounterDate) &&
-                      //   t(validationResultForEncounterDate.messageKey)
-                      // }
+                      error={
+                        !isNil(validationResultForCancelDate) &&
+                        !validationResultForCancelDate.success
+                      }
+                      helperText={
+                        !isNil(validationResultForCancelDate) &&
+                        t(validationResultForCancelDate.messageKey)
+                      }
                       onChange={date => {
                         const cancelDate = isNil(date) ? undefined : new Date(date);
                         props.updateProgramEncounter("cancelDateTime", cancelDate);
-                        //   programEncounter.encounterDateTime = visitDate;
-                        //   remove(
-                        //     enconterDateValidation,
-                        //     vr => vr.formIdentifier === ENCOUNTER_DATE_TIME
-                        //   );
-                        //   const result = programEncounter
-                        //     .validate()
-                        //     .find(vr => !vr.success && vr.formIdentifier === ENCOUNTER_DATE_TIME);
-                        //   result
-                        //     ? enconterDateValidation.push(result)
-                        //     : enconterDateValidation.push(...programEncounter.validate());
-                        //   props.setEncounterDateValidation(enconterDateValidation);
+                        remove(
+                          enconterDateValidation,
+                          vr => vr.formIdentifier === CANCEL_DATE_TIME
+                        );
+                        enconterDateValidation.push(validateCancelDate(cancelDate));
+                        props.setEncounterDateValidation(enconterDateValidation);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -131,15 +142,15 @@ const mapStateToProps = state => ({
   cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm,
   x: state,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  programEncounter: state.dataEntry.programEncounterReducer.programEncounter
-  //   enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
+  programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
+  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
 });
 
 const mapDispatchToProps = {
   setProgramEncounter,
   saveProgramEncounterComplete,
   updateProgramEncounter,
-  //   setEncounterDateValidation,
+  setEncounterDateValidation,
   //   onLoadEditProgramEncounter
   getCancelProgramEncounterForm
 };
