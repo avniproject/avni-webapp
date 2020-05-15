@@ -13,6 +13,9 @@ import {
   findProgramEnrolmentForm,
   findProgramExitForm
 } from "../domain/formMapping";
+import { CreateComponent } from "../../common/components/CreateComponent";
+import { cloneDeep } from "lodash";
+import { isEmpty } from "lodash";
 
 const ProgramList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -42,7 +45,7 @@ const ProgramList = ({ history }) => {
       render: rowData => <a href={`#/appDesigner/program/${rowData.id}/show`}>{rowData.name}</a>
     },
     {
-      title: "Subject type",
+      title: "Subject Type",
       sorting: false,
       render: rowData => (
         <ShowSubjectType
@@ -55,7 +58,7 @@ const ProgramList = ({ history }) => {
       )
     },
     {
-      title: "Enrolment form name",
+      title: "Enrolment Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -70,7 +73,7 @@ const ProgramList = ({ history }) => {
       )
     },
     {
-      title: "Exit form name",
+      title: "Exit Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -102,6 +105,7 @@ const ProgramList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
 
   const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   const fetchData = query =>
     new Promise(resolve => {
@@ -126,18 +130,89 @@ const ProgramList = ({ history }) => {
     setRedirect(true);
   };
 
+  const editProgram = rowData => ({
+    icon: "edit",
+    tooltip: "Edit program",
+    onClick: event => history.push(`/appDesigner/program/${rowData.id}`),
+    disabled: rowData.voided
+  });
+
+  const voidProgram = rowData => ({
+    icon: "delete_outline",
+    tooltip: "Void program",
+    onClick: (event, rowData) => {
+      const voidedMessage = "Do you really want to void the program " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        http
+          .delete("/web/program/" + rowData.id)
+          .then(response => {
+            if (response.status === 200) {
+              refreshTable(tableRef);
+            }
+          })
+          .catch(error => {});
+      }
+    }
+  });
+
+  const activateProgram = rowData => ({
+    icon: rowData.active ? "visibility_off" : "visibility",
+    tooltip: rowData.active ? "Deactivate program" : "Activate program",
+    onClick: (event, rowData) => {
+      const clonedRowData = cloneDeep(rowData);
+      clonedRowData.active = !rowData.active;
+      http
+        .get("/web/operationalModules")
+        .then(response => {
+          const availableEntity = response.data.formMappings.filter(
+            l => l.programUUID === rowData.uuid
+          );
+          clonedRowData["subjectTypeUuid"] = !isEmpty(availableEntity)
+            ? availableEntity[0].subjectTypeUUID
+            : null;
+          const programEnrolmentFormUuid = availableEntity.filter(
+            l => l.formType === "ProgramEnrolment"
+          );
+          clonedRowData["programEnrolmentFormUuid"] = !isEmpty(programEnrolmentFormUuid)
+            ? programEnrolmentFormUuid[0].formUUID
+            : null;
+          const programExitFormUuid = availableEntity.filter(l => l.formType === "ProgramExit");
+          clonedRowData["programExitFormUuid"] = !isEmpty(programExitFormUuid)
+            ? programExitFormUuid[0].formUUID
+            : null;
+
+          if (
+            isEmpty(availableEntity) ||
+            isEmpty(programEnrolmentFormUuid) ||
+            isEmpty(programExitFormUuid)
+          ) {
+            alert("There might be a enrolment form or exit form is missing for the program");
+          } else {
+            http
+              .put("/web/program/" + rowData.id, clonedRowData)
+              .then(response => {
+                if (response.status === 200) {
+                  refreshTable(tableRef);
+                }
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          }
+        })
+        .catch(error => {});
+    }
+  });
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Program" />
+        <Title title="Programs" />
 
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <Button color="primary" onClick={addNewConcept}>
-                {" "}
-                + CREATE{" "}
-              </Button>
+              <CreateComponent onSubmit={addNewConcept} name="New Program" />
             </div>
 
             <MaterialTable
@@ -154,9 +229,10 @@ const ProgramList = ({ history }) => {
                 debounceInterval: 500,
                 search: false,
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
+              actions={[editProgram, voidProgram, activateProgram]}
             />
           </div>
         </div>

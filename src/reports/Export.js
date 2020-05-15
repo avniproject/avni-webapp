@@ -20,6 +20,7 @@ import ReportTypes from "./ReportTypes";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "../dataEntryApp/components/Radio";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -213,23 +214,25 @@ const Export = ({
     >
       {operationalModules && (
         <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
-          <Grid>
-            <ReportOptions />
-            {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}
-            {reportType.name === ReportTypes.getName("All") && renderAllTypes()}
-          </Grid>
-          <Grid container direction="row" justify="flex-start">
-            <Button
-              variant="contained"
-              color="primary"
-              aria-haspopup="false"
-              onClick={onStartExportHandler}
-              disabled={!enableReportGeneration()}
-              className={classes.item}
-            >
-              Generate Export
-            </Button>
-          </Grid>
+          <DocumentationContainer filename={"Report.md"}>
+            <Grid>
+              <ReportOptions />
+              {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}
+              {reportType.name === ReportTypes.getName("All") && renderAllTypes()}
+            </Grid>
+            <Grid container direction="row" justify="flex-start">
+              <Button
+                variant="contained"
+                color="primary"
+                aria-haspopup="false"
+                onClick={onStartExportHandler}
+                disabled={!enableReportGeneration()}
+                className={classes.item}
+              >
+                Generate Export
+              </Button>
+            </Grid>
+          </DocumentationContainer>
         </Box>
       )}
       <Grid item>
