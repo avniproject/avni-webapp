@@ -76,7 +76,7 @@ public class ImportController {
     }
 
     @RequestMapping(value = "/web/importTypes", method = RequestMethod.GET)
-    public ResponseEntity getImportTypes(){
+    public ResponseEntity getImportTypes() {
         return ResponseEntity.ok(importService.getImportTypes());
     }
 
@@ -97,6 +97,13 @@ public class ImportController {
         } catch (IOException e) {
             logger.error(format("Bulkupload initiation failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to process file. %s", e.getMessage()));
+        } catch (Exception e) {
+            logger.error(format("Bulkupload initiation failed. file:'%s', user:'%s'", file.getOriginalFilename(), user.getUsername()));
+            e.printStackTrace();
+            if (!type.equals("metadataZip")) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("%s does not appear to be a valid .csv file.", file.getOriginalFilename()));
+            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(format("Unable to process file. %s", e.getMessage()));
         }
         return ResponseEntity.ok(true);
