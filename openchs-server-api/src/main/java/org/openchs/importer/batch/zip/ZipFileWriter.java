@@ -239,7 +239,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
             case "groups.json":
                 GroupContract[] groupContracts = convertString(fileData, GroupContract[].class);
                 for (GroupContract groupContract : groupContracts) {
-                    groupsService.saveGroup(groupContract, organisation.getId());
+                    groupsService.saveGroup(groupContract);
                 }
                 break;
             case "groupRole.json":

@@ -27,7 +27,6 @@ public class GroupRoleService {
     public GroupRole saveGroupRole(GroupRoleContract groupRoleRequest, SubjectType groupSubjectType, SubjectType memberSubjectType) {
         logger.info(String.format("Creating Group Role: %s", groupRoleRequest.getRole()));
         GroupRole groupRole = new GroupRole();
-        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
         groupRole.setGroupSubjectType(groupSubjectType);
         groupRole.setMemberSubjectType(memberSubjectType);
         groupRole.setRole(groupRoleRequest.getRole());
@@ -35,7 +34,6 @@ public class GroupRoleService {
         groupRole.setMaximumNumberOfMembers(groupRoleRequest.getMaximumNumberOfMembers());
         groupRole.setMinimumNumberOfMembers(groupRoleRequest.getMinimumNumberOfMembers());
         groupRole.setUuid(groupRoleRequest.getUuid() == null ? UUID.randomUUID().toString() : groupRoleRequest.getUuid());
-        groupRole.setOrganisationId(organisation.getId());
         return groupRoleRepository.save(groupRole);
     }
 }

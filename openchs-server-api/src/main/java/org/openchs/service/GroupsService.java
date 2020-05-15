@@ -18,7 +18,7 @@ public class GroupsService {
         this.groupRepository = groupRepository;
     }
 
-    public Group saveGroup(GroupContract groupContract, Long organisationId) {
+    public Group saveGroup(GroupContract groupContract) {
         Group group = groupRepository.findByUuid(groupContract.getUuid());
         if (group == null) {
             group = new Group();
@@ -26,7 +26,6 @@ public class GroupsService {
         group.setUuid(groupContract.getUuid() == null ? UUID.randomUUID().toString() : groupContract.getUuid());
         group.setName(groupContract.getName());
         group.setHasAllPrivileges(groupContract.isHasAllPrivileges());
-        group.setOrganisationId(organisationId);
         return groupRepository.save(group);
     }
 }

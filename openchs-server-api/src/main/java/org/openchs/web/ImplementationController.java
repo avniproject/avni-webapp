@@ -202,7 +202,7 @@ public class ImplementationController implements RestControllerResourceProcessor
     }
 
     private void addGroupsJson(ZipOutputStream zos) throws IOException {
-        List<GroupContract> groups = groupRepository.findAllByIsVoidedFalse().stream()
+        List<GroupContract> groups = groupRepository.findAll().stream()
                 .filter(group -> !group.getName().equals("Everyone"))
                 .map(GroupContract::fromEntity).collect(Collectors.toList());
         if (!groups.isEmpty()) {
@@ -211,7 +211,7 @@ public class ImplementationController implements RestControllerResourceProcessor
     }
 
     private void addGroupPrivilegeJson(ZipOutputStream zos) throws IOException {
-        List<GroupPrivilegeContractWeb> groupPrivileges = groupPrivilegeRepository.findAllByIsVoidedFalse().stream()
+        List<GroupPrivilegeContractWeb> groupPrivileges = groupPrivilegeRepository.findAll().stream()
                 .filter(groupPrivilege -> !groupPrivilege.getGroup().getName().equals("Everyone"))
                 .map(GroupPrivilegeContractWeb::fromEntity).collect(Collectors.toList());
         if (!groupPrivileges.isEmpty()) {
@@ -220,7 +220,7 @@ public class ImplementationController implements RestControllerResourceProcessor
     }
 
     private void addGroupRoleJson(ZipOutputStream zos) throws IOException {
-        List<GroupRoleContract> groupRoles = groupRoleRepository.findAllByIsVoidedFalse().stream()
+        List<GroupRoleContract> groupRoles = groupRoleRepository.findAll().stream()
                 .map(GroupRoleContract::fromEntity).collect(Collectors.toList());
         if (!groupRoles.isEmpty()) {
             addFileToZip(zos, "groupRole.json", groupRoles);

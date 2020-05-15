@@ -43,7 +43,7 @@ public class GroupsController implements RestControllerResourceProcessor<Program
         if (groupRepository.findByNameAndOrganisationId(group.getName(), organisation.getId()) != null) {
             return ResponseEntity.badRequest().body(String.format("Group with name %s already exists.", group.getName()));
         }
-        Group savedGroup = groupsService.saveGroup(group, organisation.getId());
+        Group savedGroup = groupsService.saveGroup(group);
         return ResponseEntity.ok(savedGroup);
     }
 
