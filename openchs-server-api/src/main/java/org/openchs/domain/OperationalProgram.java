@@ -71,4 +71,8 @@ public class OperationalProgram extends OrganisationAwareEntity {
         return getProgram().getActive();
     }
 
+    public boolean getProgramVoided(){
+        return getProgram().isVoided();
+    }
+
 }
