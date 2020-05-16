@@ -13,7 +13,8 @@ export const types = {
   UPDATE_PROGRAM_ENCOUNTER: `${prefix}UPDATE_PROGRAM_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
-  ON_LOAD_EDIT_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_PROGRAM_ENCOUNTER`
+  ON_LOAD_EDIT_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_PROGRAM_ENCOUNTER`,
+  SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -57,9 +58,8 @@ export const saveProgramEncounter = () => ({
   type: types.SAVE_PROGRAM_ENCOUNTER
 });
 
-export const saveProgramEncounterComplete = saved => ({
-  type: types.SAVE_PROGRAM_ENCOUNTER_COMPLETE,
-  saved
+export const saveProgramEncounterComplete = () => ({
+  type: types.SAVE_PROGRAM_ENCOUNTER_COMPLETE
 });
 
 export const updateProgramEncounter = (field, value) => ({
@@ -82,6 +82,10 @@ export const onLoadEditProgramEncounter = (programEncounterUuid, enrolUuid) => (
   type: types.ON_LOAD_EDIT_PROGRAM_ENCOUNTER,
   programEncounterUuid,
   enrolUuid
+});
+
+export const setInitialState = () => ({
+  type: types.SET_INITIAL_STATE
 });
 
 const initialState = {
@@ -118,7 +122,7 @@ export default function(state = initialState, action) {
     case types.SAVE_PROGRAM_ENCOUNTER_COMPLETE: {
       return {
         ...state,
-        saved: action.saved
+        saved: true
       };
     }
     case types.UPDATE_PROGRAM_ENCOUNTER: {
@@ -139,6 +143,14 @@ export default function(state = initialState, action) {
       return {
         ...state,
         enconterDateValidation: action.enconterDateValidation
+      };
+    }
+    case types.SET_INITIAL_STATE: {
+      return {
+        ...state,
+        saved: initialState.saved,
+        validationResults: initialState.validationResults,
+        enconterDateValidation: initialState.enconterDateValidation
       };
     }
     default:

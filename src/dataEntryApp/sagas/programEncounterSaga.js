@@ -199,7 +199,7 @@ export function* saveProgramEncounterWorker() {
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
   let resource = programEncounter.toResource;
   yield call(api.saveProgramEncouter, resource);
-  yield put(saveProgramEncounterComplete(true));
+  yield put(saveProgramEncounterComplete());
 }
 
 export function* saveProgramEncounterWatcher() {
