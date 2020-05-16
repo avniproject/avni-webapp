@@ -16,7 +16,8 @@ export const types = {
   SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
   ON_LOAD_EDIT_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_PROGRAM_ENCOUNTER`,
   GET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}GET_CANCEL_PROGRAM_ENCOUNTER_FORM`,
-  SET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_CANCEL_PROGRAM_ENCOUNTER_FORM`
+  SET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_CANCEL_PROGRAM_ENCOUNTER_FORM`,
+  SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -104,6 +105,10 @@ export const setCancelProgramEncounterForm = cancelProgramEncounterForm => ({
   cancelProgramEncounterForm
 });
 
+export const setInitialState = () => ({
+  type: types.SET_INITIAL_STATE
+});
+
 const initialState = {
   saved: false,
   validationResults: [],
@@ -165,6 +170,14 @@ export default function(state = initialState, action) {
       return {
         ...state,
         cancelProgramEncounterForm: action.cancelProgramEncounterForm
+      };
+    }
+    case types.SET_INITIAL_STATE: {
+      return {
+        ...state,
+        saved: initialState.saved,
+        validationResults: initialState.validationResults,
+        enconterDateValidation: initialState.enconterDateValidation
       };
     }
     default:
