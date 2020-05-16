@@ -5,7 +5,6 @@ import _, { get } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import {
   findProgramEncounterCancellationForm,
@@ -176,7 +175,7 @@ const EncounterTypeList = ({ history }) => {
                 debounceInterval: 500,
                 search: false,
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
               actions={[editEncounterType, voidEncounterType]}

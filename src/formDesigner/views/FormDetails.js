@@ -111,7 +111,10 @@ class FormDetails extends Component {
         identifierSources: transformIdentifierSources(responseData)
       });
     });
+    return this.getForm();
+  }
 
+  getForm() {
     return http
       .get(`/forms/export?formUUID=${this.props.match.params.formUUID}`)
       .then(response => response.data)
@@ -175,6 +178,7 @@ class FormDetails extends Component {
         console.log(error);
       });
   }
+
   countGroupElements(form) {
     let groupFlag = true;
     _.forEach(form.formElementGroups, (groupElement, index) => {
@@ -836,6 +840,7 @@ class FormDetails extends Component {
           });
         }
       })
+      .then(() => this.getForm())
       .catch(error => {
         this.setState({
           saveCall: false,

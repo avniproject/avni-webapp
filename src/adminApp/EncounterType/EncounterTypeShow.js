@@ -16,6 +16,7 @@ import {
   findProgramEncounterCancellationForm,
   findProgramEncounterForm
 } from "../domain/formMapping";
+import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
 
 const EncounterTypeShow = props => {
   const [encounterType, setEncounterType] = useState({});
@@ -83,6 +84,7 @@ const EncounterTypeShow = props => {
             />
           </div>
           <p />
+          <ActiveStatusInShow status={encounterType.active} />
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Encounter Form</FormLabel>
             <br />
@@ -119,6 +121,7 @@ const EncounterTypeShow = props => {
             <span style={{ fontSize: "15px" }}>{encounterType.organisationId}</span>
           </div>
           <p />
+
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Encounter Eligibility Check Rule</FormLabel>
             <br />

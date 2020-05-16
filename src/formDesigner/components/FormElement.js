@@ -108,14 +108,14 @@ const ExpansionPanelSummary = withStyles({
   root: {
     paddingRight: 0,
     paddingLeft: "10px",
-    backgroundColor: "#fff",
+    backgroundColor: "#dbdbdb",
     border: "2px solid #bdc6cf",
     minHeight: 56,
     "&$expanded": {
       minHeight: 56
     },
     "&$focused": {
-      backgroundColor: "#fff"
+      backgroundColor: "#dbdbdb"
     }
   },
   focused: {},

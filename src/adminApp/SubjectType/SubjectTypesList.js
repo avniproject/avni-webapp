@@ -5,7 +5,6 @@ import { get, isEmpty, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 import { CreateComponent } from "../../common/components/CreateComponent";
@@ -120,7 +119,7 @@ const SubjectTypesList = ({ history }) => {
                 debounceInterval: 500,
                 search: false,
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
               actions={[editSubjectType, voidSubjectType]}

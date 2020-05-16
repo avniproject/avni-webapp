@@ -51,7 +51,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
         style={{ float: "right", margin: "10px" }}
       >
         <RefreshIcon />
-        REFRESH STATUS TABLE{" "}
+        REFRESH STATUS{" "}
       </Button>
       <Table aria-label="simple table">
         <TableHead>

@@ -13,6 +13,7 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get } from "lodash";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
+import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
 
 const ProgramShow = props => {
   const [program, setProgram] = useState({});
@@ -82,6 +83,8 @@ const ProgramShow = props => {
             </div>
           </div>
           <p />
+          <ActiveStatusInShow status={program.active} />
+
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Program Subject Label</FormLabel>
             <br />

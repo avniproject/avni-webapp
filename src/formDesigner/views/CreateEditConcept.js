@@ -19,6 +19,12 @@ import { SaveComponent } from "../../common/components/SaveComponent";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { ToolTipContainer } from "../../common/components/ToolTipContainer";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import { Redirect } from "react-router-dom";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -52,7 +58,10 @@ class CreateEditConcept extends Component {
       conceptCreationAlert: false,
       error: {},
       defaultSnackbarStatus: true,
-      keyValues: []
+      keyValues: [],
+      redirectShow: false,
+      redirectOnDelete: false,
+      active: false
     };
   }
 
@@ -91,6 +100,7 @@ class CreateEditConcept extends Component {
             name: response.data.name,
             uuid: response.data.uuid,
             dataType: response.data.dataType,
+            active: response.data.active,
             lowAbsolute: response.data.lowAbsolute,
             highAbsolute: response.data.highAbsolute,
             lowNormal: response.data.lowNormal,
@@ -112,6 +122,12 @@ class CreateEditConcept extends Component {
 
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
     this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
+  };
+
+  setRedirectShow = () => {
+    this.setState({
+      redirectShow: true
+    });
   };
 
   onDeleteAnswer = index => {
@@ -191,14 +207,16 @@ class CreateEditConcept extends Component {
         answers: answers
       },
       () => {
+        const Uuid = UUID.v4();
         http
           .post("/concepts", [
             {
               name: this.state.name,
-              uuid: this.props.isCreatePage ? UUID.v4() : this.state.uuid,
+              uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
               dataType: this.state.dataType,
               keyValues: this.state.keyValues,
-              answers: this.state.answers
+              answers: this.state.answers,
+              active: this.props.isCreatePage ? true : this.state.active
             }
           ])
           .then(response => {
@@ -206,7 +224,7 @@ class CreateEditConcept extends Component {
               this.setState({
                 conceptCreationAlert: true,
                 name: this.props.isCreatePage ? "" : this.state.name,
-                uuid: this.props.isCreatePage ? "" : this.state.uuid,
+                uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
                 dataType: this.props.isCreatePage ? "" : this.state.dataType,
                 keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
                 lowAbsolute: null,
@@ -215,7 +233,8 @@ class CreateEditConcept extends Component {
                 highNormal: null,
                 unit: null,
                 answers: this.props.isCreatePage ? [] : this.state.answers,
-                defaultSnackbarStatus: true
+                defaultSnackbarStatus: true,
+                redirectShow: true
               });
             }
           })
@@ -382,18 +401,20 @@ class CreateEditConcept extends Component {
       }
     } else {
       if (!this.state.error.absoluteValidation || !this.state.error.normalValidation) {
+        const Uuid = UUID.v4();
         http
           .post("/concepts", [
             {
               name: this.state.name,
-              uuid: this.props.isCreatePage ? UUID.v4() : this.state.uuid,
+              uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
               dataType: this.state.dataType,
               keyValues: this.state.keyValues,
               lowAbsolute: this.state.lowAbsolute,
               highAbsolute: this.state.highAbsolute,
               lowNormal: this.state.lowNormal,
               highNormal: this.state.highNormal,
-              unit: this.state.unit === "" ? null : this.state.unit
+              unit: this.state.unit === "" ? null : this.state.unit,
+              active: this.props.isCreatePage ? true : this.state.active
             }
           ])
           .then(response => {
@@ -402,14 +423,15 @@ class CreateEditConcept extends Component {
                 conceptCreationAlert: true,
                 defaultSnackbarStatus: true,
                 name: this.props.isCreatePage ? "" : this.state.name,
-                uuid: this.props.isCreatePage ? "" : this.state.uuid,
+                uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
                 dataType: this.props.isCreatePage ? "" : this.state.dataType,
                 keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
                 lowAbsolute: this.props.isCreatePage ? "" : this.state.lowAbsolute,
                 highAbsolute: this.props.isCreatePage ? "" : this.state.highAbsolute,
                 lowNormal: this.props.isCreatePage ? "" : this.state.lowNormal,
                 highNormal: this.props.isCreatePage ? "" : this.state.highNormal,
-                unit: this.props.isCreatePage ? "" : this.state.unit
+                unit: this.props.isCreatePage ? "" : this.state.unit,
+                redirectShow: true
               });
             }
           })
@@ -451,6 +473,31 @@ class CreateEditConcept extends Component {
     const keyValues = this.state.keyValues;
     keyValues.splice(index, 1);
     this.setState({ ...this.state, keyValues });
+  };
+
+  handleActive = event => {
+    this.setState({
+      active: event.target.checked
+    });
+  };
+
+  onDeleteConcept = () => {
+    if (window.confirm("Do you really want to void the concept?")) {
+      http
+        .post("/concepts", [
+          {
+            uuid: this.state.uuid,
+            voided: true
+          }
+        ])
+        .then(response => {
+          if (response.status === 200) {
+            this.setState({
+              redirectOnDelete: true
+            });
+          }
+        });
+    }
   };
 
   render() {
@@ -506,6 +553,13 @@ class CreateEditConcept extends Component {
       <Box boxShadow={2} p={2} bgcolor="background.paper">
         <DocumentationContainer filename={"Concept.md"}>
           <Title title={appBarTitle} />
+          {!this.props.isCreatePage && (
+            <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+              <Button color="primary" type="button" onClick={() => this.setRedirectShow()}>
+                <VisibilityIcon /> Show
+              </Button>
+            </Grid>
+          )}
           <div className="container" style={{ float: "left" }}>
             <div>
               <AvniTextField
@@ -562,6 +616,19 @@ class CreateEditConcept extends Component {
                 />
               )}
             </div>
+            {!this.props.isCreatePage && (
+              <>
+                <p />
+                <AvniSwitch
+                  checked={this.state.active ? true : false}
+                  onChange={event => this.handleActive(event)}
+                  name="Active"
+                  toolTipKey={"APP_DESIGNER_CONCEPT_ACTIVE"}
+                />
+                <p />
+              </>
+            )}
+
             {dataType}
             <KeyValues
               keyValues={this.state.keyValues}
@@ -570,23 +637,27 @@ class CreateEditConcept extends Component {
               onDeleteKeyValue={this.onDeleteKeyValue}
               error={this.state.error.keyValueError}
             />
-            <SaveComponent name="Save" onSubmit={this.handleSubmit} styleClass={classes.button} />
-            {!this.props.isCreatePage && (
-              <div style={{ marginTop: "50px" }}>
-                <InputLabel style={classes.inputLabel}>Created by </InputLabel>
-                {this.state.createdBy}
-
-                <InputLabel style={classes.inputLabel}>Last modified by </InputLabel>
-                {this.state.lastModifiedBy}
-
-                <InputLabel style={classes.inputLabel}>Creation datetime </InputLabel>
-                {this.state.creationDateTime}
-
-                <InputLabel style={classes.inputLabel}>Last modified datetime </InputLabel>
-                {this.state.lastModifiedDateTime}
-              </div>
-            )}
           </div>
+
+          <Grid container item sm={12}>
+            <Grid item sm={2}>
+              <SaveComponent
+                name="save"
+                onSubmit={this.handleSubmit}
+                styleClass={{ marginLeft: "12px", marginTop: "10px" }}
+              />{" "}
+            </Grid>
+            <Grid item sm={10}>
+              {!this.props.isCreatePage && (
+                <Button
+                  style={{ float: "right", color: "red", marginTop: "10px" }}
+                  onClick={() => this.onDeleteConcept()}
+                >
+                  <DeleteIcon /> Delete
+                </Button>
+              )}
+            </Grid>
+          </Grid>
 
           {this.state.conceptCreationAlert && (
             <CustomizedSnackbar
@@ -596,6 +667,10 @@ class CreateEditConcept extends Component {
             />
           )}
         </DocumentationContainer>
+        {this.state.redirectShow && (
+          <Redirect to={`/appDesigner/concept/${this.state.uuid}/show`} />
+        )}
+        {this.state.redirectOnDelete && <Redirect to={`/appDesigner/concepts`} />}
       </Box>
     );
   }

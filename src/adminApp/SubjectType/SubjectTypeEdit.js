@@ -71,6 +71,7 @@ const SubjectTypeEdit = props => {
           name: subjectType.name,
           id: props.match.params.id,
           organisationId: subjectTypeData.organisationId,
+          active: subjectType.active,
           subjectTypeOrganisationId: subjectTypeData.subjectTypeOrganisationId,
           voided: subjectTypeData.voided,
           group: subjectType.group,
@@ -153,6 +154,13 @@ const SubjectTypeEdit = props => {
             onChange={event => handleGroupChange(event, subjectType, dispatch)}
             name="Group"
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_GROUP"}
+          />
+          <p />
+          <AvniSwitch
+            checked={subjectType.active ? true : false}
+            onChange={event => dispatch({ type: "active", payload: event.target.checked })}
+            name="Active"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ACTIVE"}
           />
           <p />
           <AvniSelectForm
