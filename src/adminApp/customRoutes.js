@@ -4,6 +4,7 @@ import { CreateEditLanguages } from "./components/CreateEditLanguages";
 import { CreateEditFilters } from "./components/CreateEditFilters";
 import FormDetails from "../formDesigner/views/FormDetails";
 import CreateEditConcept from "../formDesigner/views/CreateEditConcept";
+import ConceptDetails from "../formDesigner/components/ConceptDetails";
 import SubjectTypeShow from "./SubjectType/SubjectTypeShow";
 import SubjectTypeCreate from "./SubjectType/SubjectTypeCreate";
 import SubjectTypeEdit from "./SubjectType/SubjectTypeEdit";
@@ -25,6 +26,7 @@ export default [
   <Route exact path="/filters" component={CreateEditFilters} />,
   <Route exact path="/forms/:formUUID" component={FormDetails} />,
   <Route exact path="/concept/create" component={CreateConcept} />,
+  <Route exact path="/concept/:uuid/show" component={ConceptDetails} />,
   <Route exact path="/concept/:uuid/edit" component={CreateEditConcept} />,
   <Route exact path="/subjectType/:id/show" component={SubjectTypeShow} />,
   <Route exact path="/subjectType/create" component={SubjectTypeCreate} />,

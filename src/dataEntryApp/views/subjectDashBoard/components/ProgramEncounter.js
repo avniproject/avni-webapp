@@ -13,10 +13,10 @@ import {
   getProgramEncounterForm,
   onLoad,
   setProgramEncounter,
-  saveProgramEncounterComplete,
   updateProgramEncounter,
   setEncounterDateValidation,
-  onLoadEditProgramEncounter
+  onLoadEditProgramEncounter,
+  setInitialState
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 
@@ -45,8 +45,8 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
+    props.setInitialState();
     props.setProgramEncounter();
-    props.saveProgramEncounterComplete(false);
     (async function fetchData() {
       if (editProgramEncounter) {
         //uuid - programEncounterUuid
@@ -137,10 +137,10 @@ const mapDispatchToProps = {
   getProgramEncounterForm,
   onLoad,
   setProgramEncounter,
-  saveProgramEncounterComplete,
   updateProgramEncounter,
   setEncounterDateValidation,
-  onLoadEditProgramEncounter
+  onLoadEditProgramEncounter,
+  setInitialState
 };
 
 export default withRouter(

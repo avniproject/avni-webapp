@@ -163,6 +163,7 @@ const ProgramView = ({ programData }) => {
                         enrolUuid={programData.uuid}
                         encounterTypeUuid={row.encounterType.uuid}
                         uuid={row.uuid}
+                        cancelDateTime={row.cancelDateTime}
                       />
                     ) : (
                       ""

@@ -5,7 +5,7 @@ import { ToolTipContainer } from "./ToolTipContainer";
 
 export const AvniSwitch = ({ toolTipKey, ...props }) => {
   return (
-    <ToolTipContainer toolTipKey={toolTipKey} styles={{ paddingTop: 10 }}>
+    <ToolTipContainer toolTipKey={toolTipKey} styles={{ paddingTop: 10, marginLeft: "10px" }}>
       <Grid component="label" container alignItems="center" spacing={2}>
         <Grid>{props.name}</Grid>
         <Grid>

@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { remove, isNil, isEmpty } from "lodash";
+import { remove, isNil, isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -17,8 +17,8 @@ import {
   saveProgramEncounterComplete,
   updateProgramEncounter,
   setEncounterDateValidation,
-  setInitialState
-  // onLoadEditProgramEncounter
+  setInitialState,
+  onLoadEditCancelProgramEncounter
 } from "../../../reducers/programEncounterReducer";
 import CancelProgramEncounterForm from "./CancelProgramEncounterForm";
 
@@ -42,25 +42,18 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
   const { t } = useTranslation();
   const classes = useStyles();
   const CANCEL_DATE_TIME = "CANCEL_DATE_TIME";
-  //   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
+  const editCancelProgramEncounter = isEqual(match.path, "/app/subject/editCancelProgramEncounter");
   const enrolUuid = match.queryParams.enrolUuid;
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.setProgramEncounter();
     props.setInitialState();
-    //props.saveProgramEncounterComplete(false);
-    props.getCancelProgramEncounterForm(uuid, enrolUuid);
-    (async function fetchData() {
-      // if (editProgramEncounter) {
-      //uuid - encounterTypeUuid
-      // } else {
-      //uuid - encounterUuid
-      //await props.getCancelProgramEncounterForm(uuid, enrolUuid);
-      //await props.onLoad(enrolUuid);
-      // props.getProgramEncounterForm(uuid, enrolUuid);
-      //  }
-    })();
+    if (editCancelProgramEncounter) {
+      props.onLoadEditCancelProgramEncounter(uuid, enrolUuid);
+    } else {
+      props.getCancelProgramEncounterForm(uuid, enrolUuid);
+    }
   }, []);
 
   const validateCancelDate = cancelDateTime => {
@@ -150,7 +143,7 @@ const mapDispatchToProps = {
   saveProgramEncounterComplete,
   updateProgramEncounter,
   setEncounterDateValidation,
-  //   onLoadEditProgramEncounter
+  onLoadEditCancelProgramEncounter,
   getCancelProgramEncounterForm,
   setInitialState
 };

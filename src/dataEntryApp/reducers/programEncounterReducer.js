@@ -15,6 +15,7 @@ export const types = {
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
   ON_LOAD_EDIT_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_PROGRAM_ENCOUNTER`,
+  ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER`,
   GET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}GET_CANCEL_PROGRAM_ENCOUNTER_FORM`,
   SET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_CANCEL_PROGRAM_ENCOUNTER_FORM`,
   SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`
@@ -67,9 +68,8 @@ export const saveProgramEncounter = () => ({
   type: types.SAVE_PROGRAM_ENCOUNTER
 });
 
-export const saveProgramEncounterComplete = saved => ({
-  type: types.SAVE_PROGRAM_ENCOUNTER_COMPLETE,
-  saved
+export const saveProgramEncounterComplete = () => ({
+  type: types.SAVE_PROGRAM_ENCOUNTER_COMPLETE
 });
 
 export const updateProgramEncounter = (field, value) => ({
@@ -90,6 +90,12 @@ export const setEncounterDateValidation = enconterDateValidation => ({
 
 export const onLoadEditProgramEncounter = (programEncounterUuid, enrolUuid) => ({
   type: types.ON_LOAD_EDIT_PROGRAM_ENCOUNTER,
+  programEncounterUuid,
+  enrolUuid
+});
+
+export const onLoadEditCancelProgramEncounter = (programEncounterUuid, enrolUuid) => ({
+  type: types.ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER,
   programEncounterUuid,
   enrolUuid
 });
@@ -143,7 +149,7 @@ export default function(state = initialState, action) {
     case types.SAVE_PROGRAM_ENCOUNTER_COMPLETE: {
       return {
         ...state,
-        saved: action.saved
+        saved: true
       };
     }
     case types.UPDATE_PROGRAM_ENCOUNTER: {

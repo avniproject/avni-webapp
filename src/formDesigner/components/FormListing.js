@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import MaterialTable, { MTableToolbar } from "material-table";
+import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import { withRouter } from "react-router-dom";
@@ -10,14 +10,12 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+
 import NewFormModal from "../components/NewFormModal";
 
 const FormListing = ({ history }) => {
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
   const [uuid, setUUID] = useState(0);
-  const [includeVoided, setIncludeVoided] = useState(false);
 
   const onCloseEvent = () => {
     setCloneFormIndicator(false);
@@ -53,7 +51,6 @@ const FormListing = ({ history }) => {
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
-      apiUrl += "&includeVoided=" + includeVoided;
       if (!_.isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
@@ -129,34 +126,12 @@ const FormListing = ({ history }) => {
     disabled: rowData.organisationId === 1
   });
 
-  const handleChangeFitlerVoided = name => event => {
-    setIncludeVoided(event.target.checked);
-    tableRef.current.onQueryChange();
-  };
-
   return (
     <>
       <MaterialTable
         title=""
         components={{
-          Container: props => <Fragment>{props.children}</Fragment>,
-          Toolbar: props => (
-            <>
-              <MTableToolbar {...props} />
-              <div style={{ marginLeft: "15px" }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={includeVoided}
-                      onChange={handleChangeFitlerVoided("voided")}
-                      value="voided"
-                    />
-                  }
-                  label="Include voided forms"
-                />
-              </div>
-            </>
-          )
+          Container: props => <Fragment>{props.children}</Fragment>
         }}
         tableRef={tableRef}
         columns={columns}

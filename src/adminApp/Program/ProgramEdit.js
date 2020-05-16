@@ -37,6 +37,7 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -113,6 +114,7 @@ const ProgramEdit = props => {
         enrolmentSummaryRule: program.enrolmentSummaryRule,
         enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
         id: props.match.params.id,
+        active: program.active,
         organisationId: programData.organisationId,
         programOrganisationId: programData.programOrganisationId,
         subjectTypeUuid: subjectT.uuid,
@@ -237,6 +239,13 @@ const ProgramEdit = props => {
             }
             formList={findProgramExitForms(formList)}
             toolTipKey={"APP_DESIGNER_PROGRAM_EXIT_FORM"}
+          />
+          <p />
+          <AvniSwitch
+            checked={program.active ? true : false}
+            onChange={event => dispatch({ type: "active", payload: event.target.checked })}
+            name="Active"
+            toolTipKey={"APP_DESIGNER_PROGRAM_ACTIVE"}
           />
           <p />
           <AvniFormLabel

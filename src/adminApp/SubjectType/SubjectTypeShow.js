@@ -15,6 +15,7 @@ import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 import RemoveIcon from "@material-ui/icons/Remove";
 import CheckIcon from "@material-ui/icons/Check";
+import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
@@ -63,6 +64,7 @@ const SubjectTypeShow = props => {
               {subjectType.group ? <CheckIcon /> : <RemoveIcon />}
             </div>
             <p />
+            <ActiveStatusInShow status={subjectType.active} />
             <div>
               <FormLabel style={{ fontSize: "13px" }}>Registration Form</FormLabel>
               <br />

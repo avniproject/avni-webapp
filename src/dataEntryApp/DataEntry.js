@@ -62,6 +62,10 @@ const DataEntry = ({
               path={`${path}/subject/cancelProgramEncounter`}
               component={CancelProgramEncounter}
             />
+            <Route
+              path={`${path}/subject/editCancelProgramEncounter`}
+              component={CancelProgramEncounter}
+            />
           </Grid>
         </Grid>
       </div>

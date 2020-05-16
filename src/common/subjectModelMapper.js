@@ -169,7 +169,7 @@ export const mapProgramEncounters = programEncountersList => {
         programEncounters,
         new ProgramEncounter(),
         ["uuid", "name"],
-        ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime"]
+        ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
       );
       programEnconter.encounterType = mapEncounterType(programEncounters["encounterType"]);
       return programEnconter;
@@ -183,10 +183,11 @@ export const mapProgramEncounter = programEncounter => {
       programEncounter,
       new ProgramEncounter(),
       ["uuid", "name"],
-      ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime"]
+      ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
     );
     programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
     programEncounterObj.observations = mapObservation(programEncounter["observations"]);
+    programEncounterObj.cancelObservations = mapObservation(programEncounter["cancelObservations"]);
     return programEncounterObj;
   }
 };

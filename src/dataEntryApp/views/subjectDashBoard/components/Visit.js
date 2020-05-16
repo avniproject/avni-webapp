@@ -36,6 +36,12 @@ const useStyles = makeStyles(theme => ({
     fontSize: "12px",
     padding: "2px 5px"
   },
+  cancelLabel: {
+    color: "#555555",
+    backgroundColor: "#DCDCDC",
+    fontSize: "12px",
+    padding: "2px 5px"
+  },
   listItem: {
     paddingBottom: "0px",
     paddingTop: "0px"
@@ -75,10 +81,11 @@ const Visit = ({
   uuid,
   enrolUuid,
   encounterTypeUuid,
-  progra
+  cancelDateTime
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  console.log("cancelDateTime ", cancelDateTime);
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
       <Paper className={classes.paper}>
@@ -115,10 +122,28 @@ const Visit = ({
           ) : (
             ""
           )}
+
+          {cancelDateTime ? (
+            <ListItem className={classes.listItem}>
+              <ListItemText>
+                <label className={classes.cancelLabel}>{t("Cancelled")}</label>
+              </ListItemText>
+            </ListItem>
+          ) : (
+            ""
+          )}
         </List>
         {encounterDateTime ? (
           <InternalLink
             to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
+          >
+            <Button color="primary" className={classes.visitButton}>
+              {t("edit visit")}
+            </Button>
+          </InternalLink>
+        ) : cancelDateTime ? (
+          <InternalLink
+            to={`/app/subject/editCancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
           >
             <Button color="primary" className={classes.visitButton}>
               {t("edit visit")}

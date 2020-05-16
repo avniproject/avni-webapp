@@ -32,7 +32,8 @@ export default function*() {
       saveProgramEncounterWatcher,
       loadEditProgramEncounterWatcher,
       cancelProgramEncounterFetchFormWatcher,
-      updateEncounterCancelObsWatcher
+      updateEncounterCancelObsWatcher,
+      loadEditCancelProgramEncounterWatcher
     ].map(fork)
   );
 }
@@ -225,7 +226,7 @@ export function* saveProgramEncounterWorker() {
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
   let resource = programEncounter.toResource;
   yield call(api.saveProgramEncouter, resource);
-  yield put(saveProgramEncounterComplete(true));
+  yield put(saveProgramEncounterComplete());
 }
 
 export function* saveProgramEncounterWatcher() {
@@ -270,6 +271,31 @@ export function* cancelProgramEncounterFetchFormWorker({ programEncounterUuid, e
   programEncounter.cancelObservations = [];
   const programEnrolment = new ProgramEnrolment();
   programEnrolment.uuid = enrolmentUuid;
+  programEnrolment.enrolmentDateTime = new Date(programEnrolmentJson.enrolmentDateTime);
+  programEncounter.programEnrolment = programEnrolment;
+
+  yield put(setCancelProgramEncounterForm(mapForm(cancelProgramEncounterForm)));
+  yield put.resolve(setProgramEncounter(programEncounter));
+  yield put(getSubjectProfile(programEnrolmentJson.subjectUuid));
+}
+
+function* loadEditCancelProgramEncounterWatcher() {
+  yield takeLatest(
+    types.ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER,
+    loadEditCancelProgramEncounterWorker
+  );
+}
+
+export function* loadEditCancelProgramEncounterWorker({ programEncounterUuid, enrolUuid }) {
+  const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
+  const programEnrolmentJson = yield call(api.fetchProgramEnrolment, enrolUuid);
+  const programEncounter = mapProgramEncounter(programEncounterJson);
+  const formMapping = yield select(
+    selectCancelFormMappingByEncounterTypeUuid(programEncounterJson.encounterType.uuid)
+  );
+  const cancelProgramEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  const programEnrolment = new ProgramEnrolment();
+  programEnrolment.uuid = enrolUuid;
   programEnrolment.enrolmentDateTime = new Date(programEnrolmentJson.enrolmentDateTime);
   programEncounter.programEnrolment = programEnrolment;
 
