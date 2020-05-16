@@ -67,7 +67,6 @@ const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
                                   to={`/app/subject/programEncounter?uuid=${
                                     encounter.encounterType.uuid
                                   }&enrolUuid=${enrolmentUuid}`}
-                                  encounter={encounter}
                                 >
                                   {encounter.name}
                                 </InternalLink>
