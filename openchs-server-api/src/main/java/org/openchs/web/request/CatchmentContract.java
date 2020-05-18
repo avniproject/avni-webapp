@@ -16,9 +16,6 @@ public class CatchmentContract extends ReferenceDataContract {
 
     private List<Long> locationIds;
 
-    @NotNull
-    private String type;
-
     private String createdBy;
     private String lastModifiedBy;
     private DateTime createdDateTime;
@@ -34,19 +31,10 @@ public class CatchmentContract extends ReferenceDataContract {
         this.locations = locations;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public static CatchmentContract fromEntity(Catchment catchment) {
         CatchmentContract catchmentContract = new CatchmentContract();
         catchmentContract.setId(catchment.getId());
         catchmentContract.setUuid(catchment.getUuid());
-        catchmentContract.setType(catchment.getType());
         catchmentContract.setName(catchment.getName());
         catchmentContract.setVoided(catchment.isVoided());
         catchmentContract.setLocationIds(catchment.getAddressLevels().stream().map(addressLevel -> addressLevel.getId()).collect(Collectors.toList()));

@@ -50,7 +50,6 @@ public class CatchmentExport {
         CatchmentExport catchmentExport = new CatchmentExport();
         catchmentExport.setUuid(catchment.getUuid());
         catchmentExport.setName(catchment.getName());
-        catchmentExport.setType(catchment.getType());
         catchmentExport.setVoided(catchment.isVoided());
         catchmentExport.setLocations(catchment.getAddressLevels()
                 .stream()

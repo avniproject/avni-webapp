@@ -46,7 +46,6 @@ public class CatchmentService {
         }
         catchment.assignUUIDIfRequired();
         catchment.setName(catchmentName);
-        catchment.setType(location.getTypeString());
         catchment.addAddressLevel(location);
         catchment.setOrganisationId(organisation.getId());
 
@@ -68,7 +67,6 @@ public class CatchmentService {
                 catchment = createCatchment(catchmentRequest);
             }
             catchment.setName(catchmentRequest.getName());
-            catchment.setType(catchmentRequest.getType());
 
             addAddressLevels(catchmentRequest, catchment);
             removeObsoleteAddressLevelsFromCatchment(catchment, catchmentRequest);

@@ -90,7 +90,6 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
         Catchment catchment = new Catchment();
         catchment.assignUUID();
         catchment.setName(catchmentContract.getName());
-        catchment.setType(catchmentContract.getType());
         for (Long locationId : catchmentContract.getLocationIds()) {
             AddressLevel addressLevel = locationRepository.findOne(locationId);
             if(addressLevel == null)
@@ -107,7 +106,6 @@ public class CatchmentController implements RestControllerResourceProcessor<Catc
     public ResponseEntity<?> updateCatchment(@PathVariable("id") Long id, @RequestBody CatchmentContract catchmentContract) throws Exception {
         Catchment catchment = catchmentRepository.findOne(id);
         catchment.setName(catchmentContract.getName());
-        catchment.setType(catchmentContract.getType());
         catchment.clearAddressLevels();
         for (Long locationId : catchmentContract.getLocationIds()) {
             AddressLevel addressLevel = locationRepository.findOne(locationId);

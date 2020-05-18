@@ -13,10 +13,6 @@ public class Catchment extends OrganisationAwareEntity {
     @NotNull
     private String name;
 
-    @Column(name = "type")
-    @NotNull
-    private String type;
-
     @ManyToMany(mappedBy = "catchments", fetch = FetchType.LAZY)
     private Set<AddressLevel> addressLevels = new HashSet<>();
 
@@ -40,14 +36,6 @@ public class Catchment extends OrganisationAwareEntity {
 
     public AddressLevel findAddressLevel(String addressLevelUUID) {
         return getAddressLevels().stream().filter(x -> x.getUuid().equals(addressLevelUUID)).findAny().orElse(null);
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public void clearAddressLevels() {
