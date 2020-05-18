@@ -51,7 +51,7 @@ CREATE VIEW address_level_type_view AS
   SELECT al.id,
     al.title,
     al.uuid,
-    al.level,
+    alt.level,
     al.version,
     al.organisation_id,
     al.audit_id,
