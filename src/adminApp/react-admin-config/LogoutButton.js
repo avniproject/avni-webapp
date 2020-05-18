@@ -33,10 +33,8 @@ const mapStateToProps = state => ({
   username: state.app.user.username
 });
 const mapDispatchToProps = dispatch => ({
-  logout: () => {
-    localStorage.setItem("ORGANISATION_UUID", null);
-    userLogout() && Auth.signOut().then(() => (document.location.href = "/"));
-  }
+  logout: () =>
+    userLogout() && Auth.signOut().then(() => (document.location.href = "/"))
 });
 
 export default connect(
