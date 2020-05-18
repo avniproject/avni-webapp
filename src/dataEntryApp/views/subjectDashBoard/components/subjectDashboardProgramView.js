@@ -126,6 +126,37 @@ const ProgramView = ({ programData }) => {
     setExpanded(isExpanded ? panel : false);
   };
 
+  let plannedVisits = [];
+  let completedVisits = [];
+
+  if (programData && programData.encounters) {
+    programData.encounters.forEach(function(row, index) {
+      if (!row.encounterDateTime) {
+        let sub = {
+          uuid: row.uuid,
+          name: row.name,
+          key: index,
+          index: index,
+          visitDate: row.encounterDateTime,
+          earliestVisitDate: row.earliestVisitDateTime,
+          overdueDate: row.maxVisitDateTime
+        };
+        plannedVisits.push(sub);
+      } else if (row.encounterDateTime && row.encounterType && index <= 3) {
+        let sub = {
+          uuid: row.uuid,
+          name: row.name,
+          key: index,
+          index: index,
+          visitDate: row.encounterDateTime,
+          earliestVisitDate: row.earliestVisitDateTime,
+          overdueDate: row.maxVisitDateTime
+        };
+        completedVisits.push(sub);
+      }
+    });
+  }
+
   return (
     <div>
       <Grid container spacing={3}>
@@ -198,23 +229,28 @@ const ProgramView = ({ programData }) => {
               alignItems="flex-start"
               spacing={2}
             >
-              {programData && programData.encounters
-                ? programData.encounters.map((row, index) =>
-                    !row.encounterDateTime ? (
-                      <Visit
-                        uuid={row.uuid}
-                        name={row.name}
-                        key={index}
-                        index={index}
-                        visitDate={row.encounterDateTime}
-                        earliestVisitDate={row.earliestVisitDateTime}
-                        overdueDate={row.maxVisitDateTime}
-                      />
-                    ) : (
-                      ""
-                    )
+              {programData && programData.encounters && plannedVisits.length != 0 ? (
+                programData.encounters.map((row, index) =>
+                  !row.encounterDateTime ? (
+                    <Visit
+                      uuid={row.uuid}
+                      name={row.name}
+                      key={index}
+                      index={index}
+                      visitDate={row.encounterDateTime}
+                      earliestVisitDate={row.earliestVisitDateTime}
+                      overdueDate={row.maxVisitDateTime}
+                    />
+                  ) : (
+                    ""
                   )
-                : ""}
+                )
+              ) : (
+                <Typography variant="caption" gutterBottom>
+                  {" "}
+                  no{t("no")} {t("plannedVisits")}{" "}
+                </Typography>
+              )}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -241,22 +277,27 @@ const ProgramView = ({ programData }) => {
               spacing={2}
               className={classes.gridBottomBorder}
             >
-              {programData && programData.encounters
-                ? programData.encounters.map((row, index) =>
-                    row.encounterDateTime && row.encounterType && index <= 3 ? (
-                      <Visit
-                        uuid={row.uuid}
-                        name={row.encounterType.name}
-                        key={index}
-                        index={index}
-                        visitDate={row.encounterDateTime}
-                        earliestVisitDate={row.earliestVisitDateTime}
-                      />
-                    ) : (
-                      ""
-                    )
+              {programData && programData.encounters && completedVisits.length != 0 ? (
+                programData.encounters.map((row, index) =>
+                  row.encounterDateTime && row.encounterType && index <= 3 ? (
+                    <Visit
+                      uuid={row.uuid}
+                      name={row.encounterType.name}
+                      key={index}
+                      index={index}
+                      visitDate={row.encounterDateTime}
+                      earliestVisitDate={row.earliestVisitDateTime}
+                    />
+                  ) : (
+                    ""
                   )
-                : ""}
+                )
+              ) : (
+                <Typography variant="caption" gutterBottom>
+                  {" "}
+                  no{t("no")} {t("completedVisits")}{" "}
+                </Typography>
+              )}
             </Grid>
           </ExpansionPanelDetails>
           <Button color="primary">

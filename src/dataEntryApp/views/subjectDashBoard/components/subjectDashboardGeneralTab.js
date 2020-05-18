@@ -57,6 +57,32 @@ const SubjectDashboardGeneralTab = ({ general }) => {
   };
   const { t } = useTranslation();
   const classes = useStyles();
+  let plannedVisits = [];
+  let completedVisits = [];
+
+  if (general) {
+    general.forEach(function(row, index) {
+      if (!row.encounterDateTime) {
+        let sub = {
+          key: index,
+          name: row.encounterType.name,
+          index: index,
+          visitDate: row.earliestVisitDateTime,
+          overdueDate: row.maxVisitDateTime
+        };
+        plannedVisits.push(sub);
+      } else if (row.encounterDateTime) {
+        let sub = {
+          key: index,
+          name: row.encounterType.name,
+          index: index,
+          visitDate: row.encounterDateTime,
+          earliestVisitDate: row.earliestVisitDateTime
+        };
+        completedVisits.push(sub);
+      }
+    });
+  }
 
   return (
     <Fragment>
@@ -80,21 +106,27 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general
-                ? general.map((row, index) =>
-                    !row.encounterDateTime ? (
-                      <Visit
-                        key={index}
-                        name={row.encounterType.name}
-                        index={index}
-                        visitDate={row.earliestVisitDateTime}
-                        overdueDate={row.maxVisitDateTime}
-                      />
-                    ) : (
-                      ""
-                    )
+              {general && plannedVisits.length != 0 ? (
+                general.map((row, index) =>
+                  !row.encounterDateTime ? (
+                    <Visit
+                      key={index}
+                      name={row.encounterType.name}
+                      index={index}
+                      visitDate={row.earliestVisitDateTime}
+                      overdueDate={row.maxVisitDateTime}
+                    />
+                  ) : (
+                    ""
                   )
-                : ""}
+                )
+              ) : (
+                <Typography variant="caption" gutterBottom>
+                  {" "}
+                  no{t("no")} {t("plannedVisits")}{" "}
+                </Typography>
+              )}
+              }
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -114,21 +146,26 @@ const SubjectDashboardGeneralTab = ({ general }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general
-                ? general.map((row, index) =>
-                    row.encounterDateTime ? (
-                      <Visit
-                        key={index}
-                        name={t(row.encounterType.name)}
-                        index={index}
-                        visitDate={row.encounterDateTime}
-                        earliestVisitDate={row.earliestVisitDateTime}
-                      />
-                    ) : (
-                      ""
-                    )
+              {general && completedVisits.length != 0 ? (
+                general.map((row, index) =>
+                  row.encounterDateTime ? (
+                    <Visit
+                      key={index}
+                      name={t(row.encounterType.name)}
+                      index={index}
+                      visitDate={row.encounterDateTime}
+                      earliestVisitDate={row.earliestVisitDateTime}
+                    />
+                  ) : (
+                    ""
                   )
-                : ""}
+                )
+              ) : (
+                <Typography variant="caption" gutterBottom>
+                  {" "}
+                  no{t("no")} {t("completedVisits")}{" "}
+                </Typography>
+              )}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
