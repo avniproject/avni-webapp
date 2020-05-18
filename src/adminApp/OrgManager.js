@@ -29,7 +29,6 @@ import {
 } from "./IdentifierUserAssignment";
 import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
-import Link from "@material-ui/core/Link";
 
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
@@ -186,7 +185,7 @@ class OrgManager extends Component {
         <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
         <Resource
           name="identifierSource"
-          options={{ label: "Identifier source" }}
+          options={{ label: "Identifier Source" }}
           list={IdentifierSourceList}
           show={IdentifierSourceDetail}
           create={IdentifierSourceCreate}
@@ -194,7 +193,7 @@ class OrgManager extends Component {
         />
         <Resource
           name="identifierUserAssignment"
-          options={{ label: "Identifier user assignment" }}
+          options={{ label: "Identifier User Assignment" }}
           list={IdentifierUserAssignmentList}
           show={IdentifierUserAssignmentDetail}
           create={IdentifierUserAssignmentCreate}

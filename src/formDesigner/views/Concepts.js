@@ -5,11 +5,15 @@ import _ from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
+import { CreateComponent } from "../../common/components/CreateComponent";
 
 const Concepts = ({ history }) => {
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc" },
+    {
+      title: "Name",
+      defaultSort: "asc",
+      render: rowData => <a href={`#/appDesigner/concept/${rowData.uuid}/show`}>{rowData.name}</a>
+    },
     { title: "DataType", field: "dataType" },
     { title: "OrganisationId", field: "organisationId", type: "numeric" }
   ];
@@ -48,7 +52,6 @@ const Concepts = ({ history }) => {
         ? "Unvoid Concept"
         : "Void Concept",
     onClick: (event, rowData) => {
-      console.log(rowData);
       const voidedMessage = rowData.voided
         ? "Do you want to unvoid the concept " + rowData.name + " ?"
         : "Do you want to void the concept " + rowData.name + " ?";
@@ -89,10 +92,7 @@ const Concepts = ({ history }) => {
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <Button variant="outlined" color="secondary" onClick={addNewConcept}>
-                {" "}
-                New Concept{" "}
-              </Button>
+              <CreateComponent onSubmit={addNewConcept} name="New Concept" />
             </div>
 
             <MaterialTable
@@ -112,7 +112,7 @@ const Concepts = ({ history }) => {
                 searchFieldAlignment: "left",
                 searchFieldStyle: { width: "100%", marginLeft: "-8%" },
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
               actions={[editConcept, voidConcept]}

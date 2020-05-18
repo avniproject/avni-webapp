@@ -40,6 +40,7 @@ export const mapIndividual = individualDetails => {
   const addressLevel = new AddressLevel();
   addressLevel.uuid = individualDetails.addressLevelUUID;
   addressLevel.name = individualDetails.addressLevel;
+  addressLevel.type = individualDetails.addressLevelTypeName;
   individual.lowestAddressLevel = addressLevel;
 
   return individual;
@@ -145,17 +146,18 @@ export const mapProgram = subjectProgram => {
 };
 export const mapEnrolment = enrolmentList => {
   if (enrolmentList)
-    return enrolmentList.map(enrolments => {
+    return enrolmentList.map(enrolment => {
       let programEnrolment = General.assignFields(
-        enrolments,
+        enrolment,
         new ProgramEnrolment(),
         ["uuid"],
         ["programExitDateTime", "enrolmentDateTime"]
       );
-      programEnrolment.observations = mapObservation(enrolments["observations"]);
-      programEnrolment.encounters = mapProgramEncounters(enrolments["programEncounters"]);
-      programEnrolment.program = mapOperationalProgramName(enrolments);
-      programEnrolment.id = enrolments.id;
+      programEnrolment.observations = mapObservation(enrolment["observations"]);
+      programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
+      programEnrolment.program = mapOperationalProgram(enrolment);
+      programEnrolment.uuid = enrolment.uuid;
+      programEnrolment.id = enrolment.id;
       return programEnrolment;
     });
 };
@@ -174,8 +176,12 @@ export const mapProgramEncounters = programEncountersList => {
     });
 };
 
-export const mapOperationalProgramName = operationalProgramName => {
-  return General.assignFields(operationalProgramName, new Program(), ["operationalProgramName"]);
+export const mapOperationalProgram = enrolment => {
+  const operationalProgram = General.assignFields(enrolment, new Program(), [
+    "operationalProgramName"
+  ]);
+  operationalProgram.uuid = enrolment.programUuid;
+  return operationalProgram;
 };
 
 export const mapEncounterType = encounterType => {

@@ -54,7 +54,11 @@ const ViewVisit = ({ match, getViewVisit, viewVisit }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
+  let localSavedEnrollment;
 
+  if (sessionStorage.getItem("enrollment")) {
+    localSavedEnrollment = JSON.parse(sessionStorage.getItem("enrollment"));
+  }
   console.log("###########", viewVisit);
 
   useEffect(() => {
@@ -94,7 +98,9 @@ const ViewVisit = ({ match, getViewVisit, viewVisit }) => {
           <Observations observations={viewVisit ? viewVisit.observations : ""} />
         </Paper>
         <Button color="primary">
-          <InternalLink to={`/app/completeVisit`}>{t("viewAllCompletedVisit")}</InternalLink>
+          <InternalLink to={`/app/completeVisit?id=${localSavedEnrollment.enrollmentId}`}>
+            {t("viewAllCompletedVisit")}
+          </InternalLink>
         </Button>
         <Button color="primary" onClick={() => history.goBack()}>
           {t("back")}
@@ -107,7 +113,8 @@ const ViewVisit = ({ match, getViewVisit, viewVisit }) => {
 };
 
 const mapStateToProps = state => ({
-  viewVisit: state.dataEntry.viewVisitReducer.viewVisits
+  viewVisit: state.dataEntry.viewVisitReducer.viewVisits,
+  enrolldata: state.dataEntry.conceptReducer.enrolldata
 });
 
 const mapDispatchToProps = {

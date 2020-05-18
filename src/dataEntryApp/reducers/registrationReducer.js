@@ -14,8 +14,14 @@ export const types = {
   SAVE_COMPLETE: `${prefix}SAVE_COMPLETE`,
   SAVE_COMPLETE_FALSE: `${prefix}SAVE_COMPLETE_FALSE`,
   GET_VALIDATION_RESULTS: `${prefix}GET_VALIDATION_RESULTS`,
-  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`
+  SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
+  SELECT_ADDRESS_LEVEL_TYPE: `${prefix}SELECT_ADDRESS_LEVEL_TYPE`
 };
+
+export const selectAddressLevelType = addressLevelType => ({
+  type: types.SELECT_ADDRESS_LEVEL_TYPE,
+  addressLevelType
+});
 
 export const saveSubject = () => ({
   type: types.SAVE_SUBJECT
@@ -51,9 +57,9 @@ export const onLoad = subjectTypeName => ({
   subjectTypeName
 });
 
-export const onLoadEdit = subject => ({
+export const onLoadEdit = subjectUuid => ({
   type: types.ON_LOAD_EDIT,
-  subject
+  subjectUuid
 });
 
 export const setLoaded = () => ({
@@ -85,7 +91,8 @@ export const getValidationResults = () => ({
 
 const initialState = {
   saved: false,
-  validationResults: []
+  validationResults: [],
+  selectedAddressLevelType: { id: -1, name: "" }
 };
 
 // reducer
@@ -116,6 +123,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         subject
+      };
+    }
+    case types.SELECT_ADDRESS_LEVEL_TYPE: {
+      return {
+        ...state,
+        selectedAddressLevelType: action.addressLevelType
       };
     }
     case types.SAVE_COMPLETE: {

@@ -12,6 +12,7 @@ import Modal from "@material-ui/core/Modal";
 import FormControl from "@material-ui/core/FormControl";
 import api from "./api";
 import { Title } from "react-admin";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -51,56 +52,63 @@ const UserGroups = ({ getGroups, groups, ...props }) => {
 
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
-      <Title title={"User Groups"} />
-      <Modal
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-      >
-        <div className={classes.paper} style={{ top: "30%", left: "40%" }}>
-          <h4 id="group-title">Create a new Group</h4>
-          <Grid container item>
-            <FormControl>
-              <InputLabel error={groupNameError}>Group name</InputLabel>
-              <Input
-                error={groupNameError}
-                value={groupName}
-                onChange={event => {
-                  setGroupName(event.target.value);
-                  setGroupNameError(false);
-                }}
-              />
-            </FormControl>
-          </Grid>
-          <Box mt={3}>
-            <Button
-              mt={10}
-              variant="contained"
-              color="primary"
-              onClick={() => groupCreationHandler()}
-            >
-              {"Create New Group"}
-            </Button>
-          </Box>
-        </div>
-      </Modal>
-      <Grid container justify="flex-end">
-        <Button variant="contained" color="primary" onClick={() => setOpenModal(true)}>
-          {"Create Group"}
-        </Button>
-      </Grid>
+      <DocumentationContainer filename={"UserGroup.md"}>
+        <Title title={"User Groups"} />
+        <Modal
+          aria-labelledby="simple-modal-title"
+          aria-describedby="simple-modal-description"
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+        >
+          <div className={classes.paper} style={{ top: "30%", left: "40%" }}>
+            <h4 id="group-title">Create a new Group</h4>
+            <Grid container item>
+              <FormControl>
+                <InputLabel error={groupNameError}>Group name</InputLabel>
+                <Input
+                  error={groupNameError}
+                  value={groupName}
+                  onChange={event => {
+                    setGroupName(event.target.value);
+                    setGroupNameError(false);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Box mt={3}>
+              <Button
+                mt={10}
+                variant="contained"
+                color="primary"
+                onClick={() => groupCreationHandler()}
+              >
+                {"Create New Group"}
+              </Button>
+            </Box>
+          </div>
+        </Modal>
+        <Grid container justify="flex-start">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setOpenModal(true)}
+            style={{ marginLeft: 20 }}
+          >
+            {"Create Group"}
+          </Button>
+        </Grid>
 
-      <Grid container>
-        {map(groups, (group, index) => (
-          <GroupCard
-            key={index}
-            groupName={group.name}
-            hasAllPrivileges={group.hasAllPrivileges}
-            href={`userGroupDetails/${group.id}`}
-          />
-        ))}
-      </Grid>
+        <Grid container>
+          {map(groups, (group, index) => (
+            <GroupCard
+              key={index}
+              groupName={group.name}
+              hasAllPrivileges={group.hasAllPrivileges}
+              href={`userGroupDetails/${group.id}`}
+            />
+          ))}
+        </Grid>
+      </DocumentationContainer>
     </Box>
   );
 };

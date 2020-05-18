@@ -4,6 +4,7 @@ import { all, fork } from "redux-saga/effects";
 import subjectDashboardSaga from "./subjectDashboardSaga";
 import generalSubjectDashboardSaga from "./generalSubjectDashboardSaga";
 import programSubjectDashboardSaga from "./programSubjectDashboardSaga";
+import programEncounterSaga from "./programEncounterSaga";
 import { saveUserInfoWatcher } from "rootApp/saga";
 import programSaga from "./programSaga";
 import viewVisitSaga from "./ViewVisitSaga";
@@ -21,8 +22,8 @@ export default function* rootSaga() {
       saveUserInfoWatcher,
       programSaga,
       viewVisitSaga,
-      completedVisitSaga
-
+      completedVisitSaga,
+      programEncounterSaga
       // translationApiSaga
     ].map(fork)
   );

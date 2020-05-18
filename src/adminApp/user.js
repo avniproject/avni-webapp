@@ -42,11 +42,20 @@ import {
   validateEmail,
   validatePhone
 } from "./UserHelper";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { ToolTipContainer } from "../common/components/ToolTipContainer";
+import { AvniTextInput } from "./components/AvniTextInput";
+import { AvniBooleanInput } from "./components/AvniBooleanInput";
+import { Paper } from "@material-ui/core";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
-  <Create {...props}>
-    <UserForm user={user} nameSuffix={organisation.usernameSuffix} />
-  </Create>
+  <Paper>
+    <DocumentationContainer filename={"User.md"}>
+      <Create {...props}>
+        <UserForm user={user} nameSuffix={organisation.usernameSuffix} />
+      </Create>
+    </DocumentationContainer>
+  </Paper>
 );
 
 export const UserEdit = ({ user, ...props }) => (
@@ -189,6 +198,12 @@ export const UserDetail = ({ user, ...props }) => (
           !isNil(user.settings) ? (user.settings.disableAutoRefresh ? "True" : "False") : ""
         }
       />
+      <FunctionField
+        label="Register + Enrol"
+        render={user =>
+          !isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : ""
+        }
+      />
       <TextField label="Identifier prefix" source="settings.idPrefix" />
       <TextField label="Created by" source="createdBy" />
       <TextField label="Last modified by" source="lastModifiedBy" />
@@ -232,7 +247,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         <FormDataConsumer>
           {({ formData, dispatch, ...rest }) => (
             <Fragment>
-              <TextInput
+              <AvniTextInput
                 source="ignored"
                 validate={isRequired}
                 label={"Login ID (username)"}
@@ -241,26 +256,39 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
                   dispatch(change(REDUX_FORM_NAME, "username", newVal + "@" + nameSuffix))
                 }
                 {...rest}
-              />
-              <span>@{nameSuffix}</span>
+                toolTipKey={"ADMIN_USER_USER_NAME"}
+              >
+                <span>@{nameSuffix}</span>
+              </AvniTextInput>
             </Fragment>
           )}
         </FormDataConsumer>
       )}
       {!edit && <PasswordTextField />}
-      <TextInput source="name" label="Name of the Person" validate={isRequired} />
-      <TextInput source="email" label="Email Address" validate={validateEmail} />
-      <TextInput
+      <AvniTextInput
+        source="name"
+        label="Name of the Person"
+        validate={isRequired}
+        toolTipKey={"ADMIN_USER_NAME"}
+      />
+      <AvniTextInput
+        source="email"
+        label="Email Address"
+        validate={validateEmail}
+        toolTipKey={"ADMIN_USER_EMAIL"}
+      />
+      <AvniTextInput
         source="phoneNumber"
         label="10 digit mobile number"
         validate={validatePhone}
         format={mobileNumberFormatter}
         parse={mobileNumberParser}
+        toolTipKey={"ADMIN_USER_PHONE_NUMBER"}
       />
       <FormDataConsumer>
         {({ formData, dispatch, ...rest }) =>
           isAdminAndLoggedIn(props.record, user) ? null : (
-            <BooleanInput
+            <AvniBooleanInput
               source="orgAdmin"
               style={{ marginTop: "3em", marginBottom: "2em" }}
               label="Make this user an administrator (user will be able to make organisation wide changes)"
@@ -273,6 +301,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
                 }
               }}
               {...rest}
+              toolTipKey={"ADMIN_USER_ORG_ADMIN"}
             />
           )
         }
@@ -281,9 +310,11 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
       <FormDataConsumer>
         {({ formData, dispatch, ...rest }) => (
           <Fragment>
-            <Typography variant="title" component="h3">
-              Catchment
-            </Typography>
+            <ToolTipContainer toolTipKey={"ADMIN_USER_CATCHMENT"} alignItems={"center"}>
+              <Typography variant="title" component="h3">
+                Catchment
+              </Typography>
+            </ToolTipContainer>
             <ReferenceInput
               source="catchmentId"
               reference="catchment"
@@ -313,9 +344,11 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         style={{ display: "none" }}
       />
       <Fragment>
-        <Typography variant="title" component="h3">
-          Settings
-        </Typography>
+        <ToolTipContainer toolTipKey={"ADMIN_USER_SETTINGS"} alignItems={"center"}>
+          <Typography variant="title" component="h3">
+            Settings
+          </Typography>
+        </ToolTipContainer>
         <SelectInput source="settings.locale" label="Preferred Language" choices={languages} />
         <BooleanInput source="settings.trackLocation" label="Track location" />
         <BooleanInput source="settings.hideExit" label="Hide exit" />
@@ -324,6 +357,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         <BooleanInput source="settings.hideUnplanned" label="Hide unplanned" />
         <BooleanInput source="settings.showBeneficiaryMode" label="Beneficiary mode" />
         <BooleanInput source="settings.disableAutoRefresh" label="Disable dashboard auto refresh" />
+        <BooleanInput source="settings.registerEnrol" label="Register + Enrol" />
         <TextInput source="settings.idPrefix" label="Identifier prefix" />
         <br />
         <RadioButtonGroupInput

@@ -11,9 +11,10 @@ import {
   updateSubject,
   setSubject,
   saveCompleteFalse,
-  setValidationResults
+  setValidationResults,
+  selectAddressLevelType,
+  onLoadEdit
 } from "../../reducers/registrationReducer";
-import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import moment from "moment/moment";
@@ -30,7 +31,7 @@ import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 import { disableSession } from "common/constants";
-import qs from "query-string";
+import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -108,7 +109,10 @@ const useStyles = makeStyles(theme => ({
     padding: 25
   },
   errmsg: {
-    color: "red"
+    color: "#f44336",
+    "font-family": "Roboto",
+    "font-weight": 400,
+    "font-size": "0.75rem"
   },
   nextBtn: {
     color: "white",
@@ -327,35 +331,53 @@ const DefaultPage = props => {
                       }}
                     />
                     <LineBreak num={1} />
-                    <label className={classes.villagelabel}>{t("Village")}</label>
-                    <LocationAutosuggest
-                      selectedVillage={props.subject.lowestAddressLevel.name}
-                      errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
-                      onSelect={location => {
-                        props.updateSubject(
-                          "lowestAddressLevel",
-                          AddressLevel.create({
-                            uuid: location.uuid,
-                            title: location.title,
-                            level: location.level,
-                            typeString: location.typeString
-                          })
-                        );
-                        props.subject.lowestAddressLevel = AddressLevel.create({
-                          uuid: location.uuid,
-                          title: location.title,
-                          level: location.level,
-                          typeString: location.typeString
-                        });
-                        setValidationResultToError(props.subject.validateAddress());
-                      }}
-                      //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
-                      //   setValidationResultToError(props.subject.validateAddress());
-                      // }
-
-                      // }
-                      data={props}
+                    <RadioButtonsGroup
+                      label={t("Address")}
+                      items={props.addressLevelTypes.map(a => ({ id: a.id, name: a.name }))}
+                      value={props.selectedAddressLevelType.id}
+                      onChange={item => props.selectAddressLevelType(item)}
                     />
+                    <div>
+                      {props.selectedAddressLevelType.id === -1 ? null : (
+                        <div>
+                          <LocationAutosuggest
+                            selectedLocation={props.subject.lowestAddressLevel.name}
+                            errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
+                            onSelect={location => {
+                              props.updateSubject(
+                                "lowestAddressLevel",
+                                AddressLevel.create({
+                                  uuid: location.uuid,
+                                  title: location.title,
+                                  level: location.level,
+                                  typeString: location.typeString
+                                })
+                              );
+                              props.subject.lowestAddressLevel = AddressLevel.create({
+                                uuid: location.uuid,
+                                title: location.title,
+                                level: location.level,
+                                typeString: location.typeString
+                              });
+                              setValidationResultToError(props.subject.validateAddress());
+                            }}
+                            //   onSelect={location => {props.updateSubject("lowestAddressLevel", location)
+                            //   setValidationResultToError(props.subject.validateAddress());
+                            // }
+
+                            // }
+                            data={props}
+                            placeholder={props.selectedAddressLevelType.name}
+                            typeId={props.selectedAddressLevelType.id}
+                          />
+                        </div>
+                      )}
+                      {subjectRegErrors.LOWEST_ADDRESS_LEVEL && (
+                        <span className={classes.errmsg}>
+                          {t(subjectRegErrors.LOWEST_ADDRESS_LEVEL)}
+                        </span>
+                      )}
+                    </div>
                   </React.Fragment>
                 )}
 
@@ -422,10 +444,12 @@ const DefaultPage = props => {
 const mapStateToProps = state => ({
   user: state.app.user,
   genders: state.dataEntry.metadata.genders,
+  addressLevelTypes: state.dataEntry.metadata.operationalModules.addressLevelTypes,
   form: state.dataEntry.registration.registrationForm,
   subject: state.dataEntry.registration.subject,
   loaded: state.dataEntry.registration.loaded,
-  saved: state.dataEntry.registration.saved
+  saved: state.dataEntry.registration.saved,
+  selectedAddressLevelType: state.dataEntry.registration.selectedAddressLevelType
 });
 
 const mapDispatchToProps = {
@@ -435,8 +459,9 @@ const mapDispatchToProps = {
   saveSubject,
   onLoad,
   setSubject,
-  getSubjectProfile,
-  saveCompleteFalse
+  saveCompleteFalse,
+  setValidationResults,
+  selectAddressLevelType
 };
 
 const ConnectedDefaultPage = withRouter(
@@ -485,7 +510,7 @@ const SubjectRegister = props => {
     (async function fetchData() {
       if (edit) {
         const subjectUuid = props.match.queryParams.uuid;
-        await props.getSubjectProfile(subjectUuid);
+        await props.onLoadEdit(subjectUuid);
       } else {
         await props.onLoad(props.match.queryParams.type);
       }
@@ -512,8 +537,8 @@ const SubjectRegister = props => {
 const mapRegisterDispatchToProps = {
   onLoad,
   setSubject,
-  getSubjectProfile,
-  saveCompleteFalse
+  saveCompleteFalse,
+  onLoadEdit
 };
 
 export default withRouter(

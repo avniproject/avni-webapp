@@ -10,6 +10,8 @@ import programs from "./programReducer";
 import enrolmentReducer from "./programEnrolReducer";
 import viewVisitReducer from "./viewVisitReducer";
 import completedVisitReducer from "./completedVisitReducer";
+import programEncounterReducer from "./programEncounterReducer";
+
 export default combineReducers({
   search,
   registration,
@@ -21,5 +23,6 @@ export default combineReducers({
   programs,
   enrolmentReducer,
   viewVisitReducer,
-  completedVisitReducer
+  completedVisitReducer,
+  programEncounterReducer
 });

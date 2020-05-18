@@ -115,8 +115,13 @@ const useStyles = makeStyles(theme => ({
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [expandedPanel, setExpanded] = React.useState("");
 
+  const [expandedPanel, setExpanded] = React.useState("");
+  const enrolldata = {
+    enrollmentId: programData.id,
+    enrollmentUuid: programData.uuid
+  };
+  sessionStorage.setItem("enrollment", JSON.stringify(enrolldata));
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -131,12 +136,19 @@ const ProgramView = ({ programData }) => {
         </Grid>
 
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
-          <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
-          <SubjectButton btnLabel={t("vaccinations")} btnClass={classes.vaccinationButtonStyle} />
-          <SubjectButton
-            btnLabel={t("newProgramVisit")}
-            btnClass={classes.newProgVisitButtonStyle}
-          />
+          {/* <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
+          <SubjectButton btnLabel={t("vaccinations")} /> */}
+
+          {!enableReadOnly ? (
+            <InternalLink
+              to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
+              noUnderline
+            >
+              <SubjectButton btnLabel={t("newProgramVisit")} />
+            </InternalLink>
+          ) : (
+            ""
+          )}
         </Grid>
       </Grid>
       <Paper className={classes.root}>
@@ -248,9 +260,7 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
           <Button color="primary">
-            <Link to={`/app/completeVisit?id=${programData.id}&uuid=${programData.uuid}`}>
-              {t("viewAllCompletedVisit")}
-            </Link>
+            <Link to={`/app/completeVisit?id=${programData.id}`}>{t("viewAllCompletedVisit")}</Link>
           </Button>
         </ExpansionPanel>
       </Paper>

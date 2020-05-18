@@ -180,10 +180,10 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           <Table aria-label="caption table" className={classes.table}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
-                <TableCell className={classes.tableCell}>{t("name")}:</TableCell>
-                <TableCell className={classes.tableCell}>{t("gender")}:</TableCell>
-                <TableCell className={classes.tableCell}>{t("Age")}:</TableCell>
-                <TableCell className={classes.tableCell}>{t("Village")}:</TableCell>
+                <TableCell className={classes.tableCell}>{t("name")}</TableCell>
+                <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
+                <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
+                <TableCell className={classes.tableCell}>{t("Village")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
