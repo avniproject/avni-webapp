@@ -105,11 +105,11 @@ function Row(props) {
   return (
     <React.Fragment>
       <TableRow className={classes.root}>
-        <TableCell>
+        {/* <TableCell>
           <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
+        </TableCell> */}
         <TableCell component="th" scope="row">
           {t(row.name)}
         </TableCell>
@@ -123,6 +123,11 @@ function Row(props) {
         ) : (
           ""
         )}
+        <TableCell>
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -194,20 +199,21 @@ const SubjectsTable = ({ allVisits }) => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell className={classes.tableheader}>Visit Name</TableCell>
+            <TableCell className={classes.tableheader}>{t("visitName")}</TableCell>
             <TableCell align="left" className={classes.tableheader}>
-              Visit Completed Date
+              {t("visitcompleteddate")}
             </TableCell>
             <TableCell align="left" className={classes.tableheader}>
-              Visit Scheduled Date
+              {t("visitscheduledate")}
             </TableCell>
             {!enableReadOnly ? (
               <TableCell align="left" className={classes.tableheader}>
-                Action
+                {t("actions")}
               </TableCell>
             ) : (
               ""
             )}
+            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -253,13 +259,16 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
 
         <Breadcrumbs aria-label="breadcrumb" className={classes.Breadcrumbs}>
           <Link color="inherit" onClick={() => history.push("/app")}>
-            app
+            App
           </Link>
-          <Link color="inherit" onClick={() => history.push("/app/subject")}>
-            subject
+          <Link
+            color="inherit"
+            onClick={() => history.push("/app/subject?uuid=ed34cad1-50da-4356-9bab-1bae77780087")}
+          >
+            Subject Dashboard
           </Link>
           <Typography color="textPrimary" className={classes.Typography}>
-            completeVisit
+            CompleteVisit
           </Typography>
         </Breadcrumbs>
 
@@ -269,11 +278,11 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
               <div align="left">
                 {/* <h1>Completed visits </h1> */}
                 <Typography variant="h6" gutterBottom className={classes.completedVsits}>
-                  Completed visits
+                  {t("completedVisits")}
                 </Typography>
                 {/* <h5>20 Results found</h5> */}
                 <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
-                  {completedVisit ? completedVisit.content.length : ""} Results found
+                  {completedVisit ? completedVisit.content.length : ""} {t("resultfound")}
                 </Typography>
               </div>
             </Grid>

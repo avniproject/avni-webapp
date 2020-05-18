@@ -82,7 +82,7 @@ const useStyles = makeStyles(theme => ({
 const styles = theme => ({
   root: {
     margin: 0,
-    backgroundColor: "black",
+    backgroundColor: "#555555",
     padding: "6px 16px",
     color: "white"
   },

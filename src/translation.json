@@ -12,6 +12,7 @@
       "Program": "કાર્યક્રમ",
       "Household number": "ઘરનો નંબર",
       "Education": "શિક્ષણ",
+      "apply": "લાગુ કરો",
       "Ration Card": "રેશન કાર્ડ",
       "Aadhaar ID": "આધાર આઈડી",
       "Death": "મૃત્યુ",
@@ -158,6 +159,7 @@
       "anotherRegistration": "અન્ય {{subject}} માં નોંધણી કરો",
       "obsKeyword": "અન્ય ડેટા",
       "syncNow": "હવે સમન્વયિત કરો",
+      "visitType": "મુલાકાત પ્રકાર",
       "isNotDueOn": "{{checklistItemName}} પર હજુ સુધી કારણે નથી {{dueDate}}",
       "generalHistory": "સામાન્ય ઇતિહાસ",
       "isAfterMaxDate": "{{checklistItemName}} મંજૂર મહત્તમ તારીખ {{maxDate}} પછી છે",
@@ -165,6 +167,12 @@
       "sister": "બહેન",
       "displayed": "પ્રદર્શિત",
       "individualDashboard": "ડેશબોર્ડ",
+      "filterResult": "પરિણામો મળ્યાં",
+      "resultfound": "પરિણામ મળ્યું",
+      "visitcompleteddate": "પૂર્ણ તારીખની મુલાકાત લો",
+      "visitscheduledate": "નિયત તારીખની મુલાકાત લો",
+      "visit": "મુલાકાત આપે છે",
+      "actions": "ક્રિયાઓ",
       "thisIndividualHasBeenVoided": "આ વ્યક્તિ રદ કરવામા આવેલ છે",
       "edit": "ફેરફાર કરો",
       "syncError": "સમન્વયન નિષ્ફળ થયું",
@@ -407,7 +415,10 @@
       "noEnrolments": "આ પ્રોગ્રામમાં કોઈ પ્રવેશ નથી",
       "followupTypes": "અનુવર્તી પ્રકારો",
       "voidIndividualConfirmationMessage": "આ વ્યક્તિ રદ થશે",
-      "syncComplete": "સમન્વયન પૂર્ણ થયું"
+      "syncComplete": "સમન્વયન પૂર્ણ થયું",
+      "invalidDateTimeFormat": "તે માન્ય તારીખ અને સમય નથી",
+      "invalidTimeFormat": "તે માન્ય તારીખ નથી",
+      "invalidDateFormat": "તે માન્ય સમય નથી"
     }
   },
   "en": {
@@ -792,6 +803,8 @@
       "ANC discussion item 2": "• Family issues\n• Medication/Supplementation",
       "Required4Digits": "Required 4 digits",
       "entityName": "Entity Name",
+      "apply": "Apply",
+      "visitType": "Visit type",
       "details": "Details",
       "Counselling checklist for Sickle Cell Anemia(Disease)": "Checklist - Information to be given about Sickle Cell Anemia(Disease)\n 1. Drink plenty of water.\n 2. Do not work heavily in sunlight.\n 3. Consult a doctor whenever you fall sick.\n 4. Always keep painkiller tablet with you and use it whenever there is a pain.",
       "Sync": "Sync",
@@ -819,6 +832,11 @@
       "submit": "Submit",
       "noEncounters": "No previous visits",
       "Yes": "Yes",
+      "resultfound": "Results found",
+      "filterResult": "FILTER RESULT",
+      "visitcompleteddate": "Visit Completed Date",
+      "visitscheduledate": "Visit Scheduled Date",
+      "visit": "Visit",
       "scheduled": "Scheduled",
       "Breast Feeding": "Breast Feeding",
       "overdueCases": "OVERDUE",
@@ -1025,7 +1043,10 @@
       "Scheduledon": "Scheduled on",
       "Completed": "Completed",
       "viewAllCompletedVisit": "View All Completed Visit",
-      "back": "Back"
+      "back": "Back",
+      "invalidDateTimeFormat": "Is not a valid date time",
+      "invalidTimeFormat": "Is not a valid time",
+      "invalidDateFormat": "Is not a valid date"
     }
   },
   "mr_IN": {
@@ -2119,6 +2140,7 @@
       "How is the Caesarean incision area": "सिझर झालेले ठिकाण कसे आहे ?",
       "GDGS 2019": "गाळमुक्त धरण गाळयुक्त शिवार योजना २०१९",
       "chooseVisit": "भेटीचा प्रकार निवडा",
+      "visitType": "भेटीचा प्रकार",
       "Ujwala Dakhane": "उज्वला ढाकणे",
       "Padali": "पाडळी",
       "Beneficiary details": "शेतकऱ्यांची माहिती",
@@ -3132,6 +3154,12 @@
       "Weight of the previous baby less than 2.5kg or more than 4.5kg": "आधल्या बाळाचे  वजन २.५ किलो पेक्षा कमी किंवा ४.५ किलो पेक्षा जास्त",
       "Khalwegaon": "खळगेगांव",
       "Dhulwad": "धुळवड",
+      "resultfound": "परिणाम सापडले",
+      "filterResult": "फिल्टर परिणाम",
+      "visitcompleteddate": "पूर्ण तारखेला भेट द्या",
+      "visitscheduledate": "ठरलेल्या तारखेला भेट द्या",
+      "visit": "भेट द्या",
+      "actions": "क्रिया",
       "Date of last delivery outcome": "शेवटच्या बाळंतपणाच्या निकालाची तारीख",
       "IHMP NNC Low Weight Counselling": "MCH कार्ड नंबर ११, १२ व १३ चा वापर करून मातेस – स्वच्छतेबाबत, नवजात बाळाला कसे उबदार ठेवावे, नाळेच्या बाबत, दर २ तासाने शिशुस द्यावयाच्या स्तनपाना बाबत, व तसेच बाळाच्या वजनाबाबत होणा-या सल्ला द्या व समूपदेशन करा",
       "Number of living children - Male": "जिवंत मुलांची संख्या - पुरुष",
@@ -3160,6 +3188,7 @@
       "Flat Nipples": "चपटे निप्पल्स",
       "syncError": "अयशस्वी समक्रमण",
       "Sasune": "ससुणे",
+      "apply": "अर्ज करा",
       "Neonatal death within first 28 days": "नवजात बाळाचा पहिल्या 28 दिवसांत मृत्यू ",
       "Name of ASHA": "आशाचे नाव",
       "enrolmentAttributes": "इंरोलमेंट च्या विळी आवश्यक बाबी",
@@ -3892,7 +3921,10 @@
       "Scheduledon": "अनुसूचित केलेले",
       "Completed": "पूर्ण",
       "viewAllCompletedVisit": "सर्व पूर्ण भेट पहा",
-      "back": "परत"
+      "back": "परत",
+      "invalidDateTimeFormat": "ती वैध तारीख आणि वेळ नाही",
+      "invalidTimeFormat": "ती वैध तारीख नाही",
+      "invalidDateFormat": "ती वैध वेळ नाही"
     }
   },
   "hi_IN": {
@@ -4124,6 +4156,12 @@
       "schedulingFor": "निर्धारित तारिख",
       "overdueBy": "अतिदेय तारीख",
       "percentageDone": "प्रतिशत काम",
+      "actions": "कार्य",
+      "visit": "भेट दे",
+      "visitscheduledate": "निर्धारित तिथि पर जाएं",
+      "visitcompleteddate": "पूर्ण तिथि पर जाएं",
+      "filterResult": "फ़िल्टर परिणाम",
+      "resultfound": "परिणाम मिले",
       "syncComplete": "सिंक पूरा हुआ",
       "internetConnectionError": "कोई इंटरनेट कनेक्शन नहीं है, कृपया इंटरनेट से कनेक्ट करें।",
       "syncServerError": "कुछ त्रुटि हुई है। कृपया कुछ देर बाद प्रयास करें।",
@@ -4162,6 +4200,7 @@
       "asOnDate": "As on date",
       "filter": "FILTER",
       "undoExit": "अनडू एग्जिट",
+      "apply": "लागू करें",
       "undoExitProgramTitle": "प्रोग्राम एग्जिट अनडू करे",
       "undoExitProgramConfirmationMessage": "क्या आप प्रोग्राम को दोबारा ज्वाइन करना चाहते है?",
       "unVoid": "अनवोयड",
@@ -4263,6 +4302,7 @@
       "ANC ASHA": "सहायक नर्स दाइयों आशा",
       "ANC VHND": "सहायक नर्स मिडवाइव्स वीएचएनडी",
       "PNC 2": "पीएनसी 2",
+      "visitType": "भेटका प्रकार",
       "Delivery": "वितरण",
       "Registration at child birth": "बच्चे के जन्म पर पंजीकरण",
       "Birth Weight": "जन्म के समय वजन",
@@ -4314,7 +4354,10 @@
       "married": "विवाहित",
       "Census": "जनगणना",
       "Death": "मौत",
-      "Relatives": "रिश्तेदारों"
+      "Relatives": "रिश्तेदारों",
+      "invalidDateTimeFormat": "यह एक मान्य दिनांक और समय नहीं है",
+      "invalidTimeFormat": "यह मान्य तिथि नहीं है",
+      "invalidDateFormat": "यह मान्य समय नहीं है"
     }
   }
 }
