@@ -75,7 +75,7 @@ const Visit = ({ uuid, name, key, index, visitDate, earliestVisitDate, overdueDa
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>
             {visitDate !== null ? (
-              <Link to={`/app/viewVisit?uuid=${uuid}`}>
+              <Link to={`/app/subject/viewVisit?uuid=${uuid}`}>
                 <ListItemText
                   className={classes.ListItemText}
                   title={t(name)}

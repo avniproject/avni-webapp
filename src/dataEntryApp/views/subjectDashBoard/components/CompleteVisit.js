@@ -8,7 +8,7 @@ import {
   Paper,
   List
 } from "@material-ui/core";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+//import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
@@ -25,7 +25,7 @@ import { getCompletedVisit, getVisitTypes } from "../../../reducers/completedVis
 import { mapObservation } from "../../../../common/subjectModelMapper";
 import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
-// import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
+import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
 import { enableReadOnly } from "common/constants";
 import moment from "moment/moment";
@@ -87,10 +87,10 @@ const useStyle = makeStyles(theme => ({
   cellpadding: {
     padding: "14px 40px 14px 0px"
   },
-  Breadcrumbs: {
-    margin: "12px 24px",
-    fontSize: "12px"
-  },
+  // Breadcrumbs: {
+  //   margin: "12px 24px",
+  //   fontSize: "12px"
+  // },
   Typography: {
     fontSize: "12px"
   }
@@ -253,10 +253,10 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
   return completedVisit && visitTypes ? (
     <div>
       <Fragment>
-        {/* <Breadcrumbs path={match.path} /> */}
+        <Breadcrumbs path={match.path} />
         {/* {paperInfo} */}
 
-        <Breadcrumbs aria-label="breadcrumb" className={classes.Breadcrumbs}>
+        {/* <Breadcrumbs aria-label="breadcrumb" className={classes.Breadcrumbs}>
           <Link color="inherit" onClick={() => history.push("/app")}>
             App
           </Link>
@@ -269,7 +269,7 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
           <Typography color="textPrimary" className={classes.Typography}>
             CompleteVisit
           </Typography>
-        </Breadcrumbs>
+        </Breadcrumbs> */}
 
         <Paper className={classes.searchBox}>
           <Grid container spacing={3}>
