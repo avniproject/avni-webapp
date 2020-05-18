@@ -8,7 +8,7 @@ import {
   Paper,
   List
 } from "@material-ui/core";
-// import Breadcrumbs from "@material-ui/core/Breadcrumbs";
+//import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
@@ -198,7 +198,6 @@ const SubjectsTable = ({ allVisits }) => {
       >
         <TableHead>
           <TableRow>
-            <TableCell />
             <TableCell className={classes.tableheader}>{t("visitName")}</TableCell>
             <TableCell align="left" className={classes.tableheader}>
               {t("visitcompleteddate")}

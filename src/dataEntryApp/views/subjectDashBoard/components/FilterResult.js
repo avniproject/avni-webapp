@@ -75,24 +75,21 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
   const completedDateChange = completedDate => {
     setSelectedCompletedDate(completedDate);
   };
+
+  // checkbox
   let selectedVisit = [];
   const visitTypeChange = event => {
     if (event.target.checked) {
-      sessionStorage.removeItem("visitType");
-
-      // setVisitType([...selectedVisitType, event.target.name]);
-      // setChecked({ ...checked, [event.target.name]: event.target.checked });
       selectedVisit.push(event.target.name);
-    } else if (!event.target.checked) {
-      selectedVisit = localSavedVisitType;
+      //sessionStorage.removeItem("visitType");
+    } else {
+      selectedVisit = localSavedVisitType ? localSavedVisitType : selectedVisitType;
       const index = selectedVisit.indexOf(event.target.name);
       if (index > -1) {
         selectedVisit.splice(index, 1);
       }
-      // sessionStorage.removeItem("visitType");
-      // selectedVisit.push(event.target.name)
       setVisitType(selectedVisit);
-      // checks = true;
+      //sessionStorage.removeItem("visitType");
     }
   };
 
@@ -124,6 +121,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
     }
 
+    // checkbox
     if (selectedVisit.length > 0) {
       setVisitType(selectedVisit);
       sessionStorage.setItem("visitType", JSON.stringify(selectedVisit));
@@ -135,29 +133,20 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
     getCompletedVisit(completedVisitUrl);
   };
 
-  const checkbox = visitTypesList.map(visitType => (
+  let checkbox = visitTypesList.map(visitType => (
     <FormControlLabel
       control={
-        selectedVisitType.length > 0 ? (
-          <Checkbox
-            checked={
-              selectedVisitType &&
-              selectedVisitType.find(element => element == visitType.id) != undefined
-                ? true
-                : false
-            }
-            onChange={visitTypeChange}
-            name={visitType.id}
-            color="primary"
-          />
-        ) : (
-          <Checkbox
-            // checked={localSavedVisitType && localSavedVisitType.find(element => element == visitType.id) != undefined ? true : false}
-            onChange={visitTypeChange}
-            name={visitType.id}
-            color="primary"
-          />
-        )
+        <Checkbox
+          // checked={
+          //   selectedVisitType &&
+          //   selectedVisitType.find(element => element == visitType.id) != undefined
+          //     ? true
+          //     : false
+          // }
+          onChange={visitTypeChange}
+          name={visitType.id}
+          color="primary"
+        />
       }
       label={visitType.name}
     />
