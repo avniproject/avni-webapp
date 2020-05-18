@@ -14,6 +14,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
 import { getCompletedVisit } from "../../../reducers/completedVisitReducer";
+import moment from "moment/moment";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -60,29 +61,107 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
 
   const visitTypesList = [...new Set(visitTypes.programEncounters.map(item => item.encounterType))];
 
-  //   if(completedVisitList){
-  //     const visitList = [...new Set(completedVisitList.content.map(item => item.encounterType.name))];
-  //     console.log("##########"+ JSON.stringify(visitList));
+  const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
+  const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
+  const [selectedVisitType, setVisitType] = React.useState("");
+  const [checked, setChecked] = React.useState(false);
 
-  //  }
-  // useEffect(() => {
-  //   getCompletedVisit("10");
-  // }, []);
+  let localSavedVisitType;
+  let checks = false;
+  const scheduleDateChange = scheduledDate => {
+    setSelectedScheduleDate(scheduledDate);
+  };
 
-  const [selectedDate, setSelectedDate] = React.useState(new Date("2014-08-18T21:11:54"));
-  const handleDateChange = date => {
-    setSelectedDate(date);
+  const completedDateChange = completedDate => {
+    setSelectedCompletedDate(completedDate);
+  };
+  let selectedVisit = [];
+  const visitTypeChange = event => {
+    if (event.target.checked) {
+      sessionStorage.removeItem("visitType");
+
+      // setVisitType([...selectedVisitType, event.target.name]);
+      // setChecked({ ...checked, [event.target.name]: event.target.checked });
+      selectedVisit.push(event.target.name);
+    } else if (!event.target.checked) {
+      selectedVisit = localSavedVisitType;
+      const index = selectedVisit.indexOf(event.target.name);
+      if (index > -1) {
+        selectedVisit.splice(index, 1);
+      }
+      // sessionStorage.removeItem("visitType");
+      // selectedVisit.push(event.target.name)
+      setVisitType(selectedVisit);
+      // checks = true;
+    }
+  };
+
+  const filterClick = () => {
+    if (sessionStorage.getItem("visitType")) {
+      localSavedVisitType = JSON.parse(sessionStorage.getItem("visitType"));
+    }
+    if (localSavedVisitType > 0) {
+      setVisitType(localSavedVisitType);
+    }
   };
 
   const applyClick = () => {
-    console.log("apply visit" + selectedDate, state);
-    // getCompletedVisit();
-  };
-  const [state, setState] = React.useState("");
+    console.log("apply visit" + selectedCompletedDate, selectedScheduleDate, selectedVisitType);
+    let otherUrl;
 
-  const handleChange = event => {
-    setState({ ...state, [event.target.name]: event.target.checked });
+    if (selectedScheduleDate !== null) {
+      otherUrl =
+        "earliestVisitDateTime=" +
+        moment(selectedScheduleDate)
+          .utc()
+          .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+    }
+    if (selectedCompletedDate !== null) {
+      otherUrl =
+        "encounterDateTime=" +
+        moment(selectedCompletedDate)
+          .utc()
+          .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+    }
+
+    if (selectedVisit.length > 0) {
+      setVisitType(selectedVisit);
+      sessionStorage.setItem("visitType", JSON.stringify(selectedVisit));
+      otherUrl = "encounterTypeIds=" + selectedVisit.join();
+    }
+    const searchParams = new URLSearchParams(otherUrl);
+    const otherPathString = searchParams.toString();
+    const completedVisitUrl = `/web/programEnrolment/${visitTypes.id}/completed?${otherPathString}`;
+    getCompletedVisit(completedVisitUrl);
   };
+
+  const checkbox = visitTypesList.map(visitType => (
+    <FormControlLabel
+      control={
+        selectedVisitType.length > 0 ? (
+          <Checkbox
+            checked={
+              selectedVisitType &&
+              selectedVisitType.find(element => element == visitType.id) != undefined
+                ? true
+                : false
+            }
+            onChange={visitTypeChange}
+            name={visitType.id}
+            color="primary"
+          />
+        ) : (
+          <Checkbox
+            // checked={localSavedVisitType && localSavedVisitType.find(element => element == visitType.id) != undefined ? true : false}
+            onChange={visitTypeChange}
+            name={visitType.id}
+            color="primary"
+          />
+        )
+      }
+      label={visitType.name}
+    />
+  ));
   const content = (
     <DialogContent>
       <form className={classes.form} noValidate>
@@ -97,11 +176,10 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
             >
               <Grid item xs={6}>
                 <KeyboardDatePicker
-                  autoOk
                   margin="normal"
                   id="date-picker-dialog"
                   label={t("visitscheduledate")}
-                  format="MM/dd/yyyy"
+                  format="dd/MM/yyyy"
                   value={selectedDate}
                   onChange={handleDateChange}
                   KeyboardButtonProps={{
@@ -112,11 +190,10 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
               </Grid>
               <Grid item xs={6}>
                 <KeyboardDatePicker
-                  autoOk
                   margin="normal"
                   id="date-picker-dialog"
                   label={t("visitcompleteddate")}
-                  format="MM/dd/yyyy"
+                  format="dd/MM/yyyy"
                   value={selectedDate}
                   onChange={handleDateChange}
                   KeyboardButtonProps={{
@@ -130,21 +207,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
         </FormControl>
 
         <FormLabel component="legend">{t("visitType")}</FormLabel>
-        <FormGroup row>
-          {visitTypesList.map(visitType => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  // checked={}
-                  onChange={handleChange}
-                  name={visitType.id}
-                  color="primary"
-                />
-              }
-              label={t(visitType.name)}
-            />
-          ))}
-        </FormGroup>
+        <FormGroup row>{checkbox}</FormGroup>
       </form>
     </DialogContent>
   );
@@ -154,9 +217,10 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
       content={content}
       buttonsSet={[
         {
-          buttonType: "openButton",
+          buttonType: "filterButton",
           label: t("filterResult"),
-          classes: classes.filterButtonStyle
+          classes: classes.filterButtonStyle,
+          click: filterClick
         },
         {
           buttonType: "applyButton",

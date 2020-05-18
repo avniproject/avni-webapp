@@ -7,9 +7,9 @@ export const types = {
   SET_VISITTYPES: `${prefix}SET_VISITTYPES`
 };
 
-export const getCompletedVisit = completedVisitUuid => ({
+export const getCompletedVisit = completedVisitUrl => ({
   type: types.GET_COMPLETEDVISIT,
-  completedVisitUuid
+  completedVisitUrl
 });
 
 export const setCompletedVisit = completedVisit => ({
