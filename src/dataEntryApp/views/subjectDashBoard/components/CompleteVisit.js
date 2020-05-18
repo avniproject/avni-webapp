@@ -198,7 +198,6 @@ const SubjectsTable = ({ allVisits }) => {
       >
         <TableHead>
           <TableRow>
-            <TableCell />
             <TableCell className={classes.tableheader}>{t("visitName")}</TableCell>
             <TableCell align="left" className={classes.tableheader}>
               {t("visitcompleteddate")}
