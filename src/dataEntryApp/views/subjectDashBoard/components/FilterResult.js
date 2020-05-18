@@ -180,8 +180,8 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
                   id="date-picker-dialog"
                   label={t("visitscheduledate")}
                   format="dd/MM/yyyy"
-                  value={selectedDate}
-                  onChange={handleDateChange}
+                  value={selectedScheduleDate}
+                  onChange={scheduleDateChange}
                   KeyboardButtonProps={{
                     "aria-label": "change date",
                     color: "primary"
@@ -194,8 +194,8 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
                   id="date-picker-dialog"
                   label={t("visitcompleteddate")}
                   format="dd/MM/yyyy"
-                  value={selectedDate}
-                  onChange={handleDateChange}
+                  value={selectedCompletedDate}
+                  onChange={completedDateChange}
                   KeyboardButtonProps={{
                     "aria-label": "change date",
                     color: "primary"
