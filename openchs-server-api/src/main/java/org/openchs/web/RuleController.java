@@ -5,6 +5,7 @@ import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.RuleService;
 import org.openchs.web.request.RuleDependencyRequest;
 import org.openchs.web.request.RuleRequest;
+import org.openchs.web.request.rules.constant.WorkFlowTypeEnum;
 import org.openchs.web.request.rules.request.RequestEntityWrapper;
 import org.openchs.web.request.rules.response.RuleResponseEntity;
 import org.openchs.web.validation.ValidationException;
@@ -66,17 +67,17 @@ public class RuleController {
     ResponseEntity<?> decisionRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
         if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
-            switch (requestEntityWrapper.getRule().getWorkFlowType().toLowerCase()) {
-                case "individual":
+            switch (WorkFlowTypeEnum.valueOf(requestEntityWrapper.getRule().getWorkFlowType().toUpperCase())) {
+                case INDIVIDUAL:
                     ruleResponseEntity = ruleService.decisionRuleIndividualWorkFlow(requestEntityWrapper);
                     break;
-                case "programencounter":
+                case PROGRAMENCOUNTER:
                     ruleResponseEntity = ruleService.decisionRuleProgramEncounterWorkFlow(requestEntityWrapper);
                     break;
-                case "programenrolment":
+                case PROGRAMENROLMENT:
                     ruleResponseEntity = ruleService.decisionRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
                     break;
-                case "encounter":
+                case ENCOUNTER:
                     ruleResponseEntity = ruleService.decisionRuleEncounterWorkFlow(requestEntityWrapper);
                     break;
             }
@@ -92,11 +93,11 @@ public class RuleController {
     ResponseEntity<?> visitScheduleRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
         if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
-            switch (requestEntityWrapper.getRule().getWorkFlowType().toLowerCase()) {
-                case "programenrolment":
+            switch (WorkFlowTypeEnum.valueOf(requestEntityWrapper.getRule().getWorkFlowType().toUpperCase())) {
+                case PROGRAMENROLMENT:
                     ruleResponseEntity = ruleService.visitScheduleRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
                     break;
-                case "programencounter":
+                case PROGRAMENCOUNTER:
                     ruleResponseEntity = ruleService.visitScheduleRuleProgramEncounterWorkFlow(requestEntityWrapper);
                     break;
                 /* Encounter VisitSchedule , Not in scope of 2nd Release

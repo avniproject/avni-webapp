@@ -1,6 +1,7 @@
 package org.openchs.service;
 
 import com.bugsnag.Bugsnag;
+import org.openchs.common.EntityHelper;
 import org.openchs.dao.EncounterTypeRepository;
 import org.openchs.dao.ProgramEncounterRepository;
 import org.openchs.dao.ProgramEnrolmentRepository;
@@ -14,6 +15,8 @@ import org.openchs.web.request.PointRequest;
 import org.openchs.web.request.ProgramEncounterRequest;
 import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
+import org.openchs.web.request.rules.constant.EntityEnum;
+import org.openchs.web.request.rules.constant.RuleEnum;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class ProgramEncounterService extends AbstractController<ProgramEncounter> {
+public class ProgramEncounterService {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ProgramEncounterService.class);
     @Autowired
     Bugsnag bugsnag;
@@ -86,15 +89,7 @@ public class ProgramEncounterService extends AbstractController<ProgramEncounter
             try {
                 processVisitSchedule(uuid, visitSchedule);
             }catch (Exception e){
-                RuleFailureLog ruleFailureLog = new RuleFailureLog();
-                ruleFailureLog.setFormId(uuid);
-                ruleFailureLog.setRuleType("Save : Visit Schedule Rule");
-                ruleFailureLog.setEntityId(uuid);
-                ruleFailureLog.setEntityType("Save : Program Encounter Save");
-                ruleFailureLog.setSource("Web");
-                ruleFailureLog.setErrorMessage(e.getMessage() != null ? e.getMessage() : "");
-                ruleFailureLog.setStacktrace(e.getStackTrace().toString());
-                ruleFailureLog.setUuid(UUID.randomUUID().toString());
+                RuleFailureLog ruleFailureLog = RuleFailureLog.createInstance(uuid,"Save : Visit Schedule Rule",uuid,"Save : "+ EntityEnum.PROGRAM_ENCOUNTER_ENTITY.getEntityName(),"Web",e);
                 ruleFailureLogRepository.save(ruleFailureLog);
             }
         }
@@ -139,7 +134,7 @@ public class ProgramEncounterService extends AbstractController<ProgramEncounter
         logger.info(String.format("Saving programEncounter with uuid %s", request.getUuid()));
         checkForSchedulingCompleteConstraintViolation(request);
         EncounterType encounterType = encounterTypeRepository.findByUuidOrName(request.getEncounterType(), request.getEncounterTypeUUID());
-        ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());
+        ProgramEncounter encounter = EntityHelper.newOrExistingEntity(programEncounterRepository,request, new ProgramEncounter());
         //Planned visit can not overwrite completed encounter
         if (encounter.isCompleted() && request.isPlanned())
             return;

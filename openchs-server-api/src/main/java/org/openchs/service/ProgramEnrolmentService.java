@@ -1,6 +1,7 @@
 package org.openchs.service;
 
 import org.joda.time.DateTime;
+import org.openchs.common.EntityHelper;
 import org.openchs.dao.*;
 import org.openchs.domain.*;
 import org.openchs.geo.Point;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 import static org.springframework.data.jpa.domain.Specifications.where;
 
 @Service
-public class ProgramEnrolmentService extends AbstractController<ProgramEnrolment> {
+public class ProgramEnrolmentService {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ProgramEnrolmentService.class);
 
     private ProgramEnrolmentRepository programEnrolmentRepository;
@@ -104,8 +105,7 @@ public class ProgramEnrolmentService extends AbstractController<ProgramEnrolment
             program = programRepository.findByUuid(request.getProgramUUID());
         }
         ProgramOutcome programOutcome = programOutcomeRepository.findByUuid(request.getProgramOutcomeUUID());
-
-        ProgramEnrolment programEnrolment = newOrExistingEntity(programEnrolmentRepository, request, new ProgramEnrolment());
+        ProgramEnrolment programEnrolment = EntityHelper.newOrExistingEntity(programEnrolmentRepository,request, new ProgramEnrolment());
         programEnrolment.setProgram(program);
         programEnrolment.setProgramOutcome(programOutcome);
         programEnrolment.setEnrolmentDateTime(request.getEnrolmentDateTime());
