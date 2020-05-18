@@ -46,6 +46,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniBooleanInput } from "./components/AvniBooleanInput";
+import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonGroupInput";
 import { Paper } from "@material-ui/core";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
@@ -277,6 +278,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         validate={validateEmail}
         toolTipKey={"ADMIN_USER_EMAIL"}
       />
+
       <AvniTextInput
         source="phoneNumber"
         label="10 digit mobile number"
@@ -350,20 +352,57 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
           </Typography>
         </ToolTipContainer>
         <SelectInput source="settings.locale" label="Preferred Language" choices={languages} />
-        <BooleanInput source="settings.trackLocation" label="Track location" />
-        <BooleanInput source="settings.hideExit" label="Hide exit" />
-        <BooleanInput source="settings.hideEnrol" label="Hide enrol" />
-        <BooleanInput source="settings.hideRegister" label="Hide register" />
-        <BooleanInput source="settings.hideUnplanned" label="Hide unplanned" />
-        <BooleanInput source="settings.showBeneficiaryMode" label="Beneficiary mode" />
-        <BooleanInput source="settings.disableAutoRefresh" label="Disable dashboard auto refresh" />
-        <BooleanInput source="settings.registerEnrol" label="Register + Enrol" />
-        <TextInput source="settings.idPrefix" label="Identifier prefix" />
+        <AvniBooleanInput
+          source="settings.trackLocation"
+          label="Track location"
+          toolTipKey={"ADMIN_USER_SETTINGS_TRACK_LOCATION"}
+        />
+        <AvniBooleanInput
+          source="settings.hideExit"
+          label="Hide exit"
+          toolTipKey={"ADMIN_USER_SETTINGS_HIDE_EXIT"}
+        />
+        <AvniBooleanInput
+          source="settings.hideEnrol"
+          label="Hide enrol"
+          toolTipKey={"ADMIN_USER_SETTINGS_HIDE_ENROL"}
+        />
+        <AvniBooleanInput
+          source="settings.hideRegister"
+          label="Hide register"
+          toolTipKey={"ADMIN_USER_SETTINGS_HIDE_REGISTER"}
+        />
+        <AvniBooleanInput
+          source="settings.hideUnplanned"
+          label="Hide unplanned"
+          toolTipKey={"ADMIN_USER_SETTINGS_HIDE_UNPLANNED"}
+        />
+        <AvniBooleanInput
+          source="settings.showBeneficiaryMode"
+          label="Beneficiary mode"
+          toolTipKey={"ADMIN_USER_SETTINGS_BENEFICIARY_MODE"}
+        />
+        <AvniBooleanInput
+          source="settings.disableAutoRefresh"
+          label="Disable dashboard auto refresh"
+          toolTipKey={"ADMIN_USER_SETTINGS_DISABLE_AUTO_REFRESH"}
+        />
+        <AvniBooleanInput
+          source="settings.registerEnrol"
+          label="Register + Enrol"
+          toolTipKey={"ADMIN_USER_SETTINGS_REGISTER_ENROL"}
+        />
+        <AvniTextInput
+          source="settings.idPrefix"
+          label="Identifier prefix"
+          toolTipKey={"ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX"}
+        />
         <br />
-        <RadioButtonGroupInput
+        <AvniRadioButtonGroupInput
           source="settings.datePickerMode"
           label="Date picker mode"
           choices={datePickerModes}
+          toolTipKey={"ADMIN_USER_SETTINGS_DATE_PICKER_MODE"}
         />
       </Fragment>
     </SimpleForm>
