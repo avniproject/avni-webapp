@@ -15,8 +15,8 @@ import java.util.List;
 public interface ConceptRepository extends ReferenceDataRepository<Concept>, FindByLastModifiedDateTime<Concept> {
     Page<Concept> findByNameIgnoreCaseContaining(String name, Pageable pageable);
     List<Concept> findAllByDataType(String dataType);
-    List<Concept> findByNameIgnoreCaseContains(String name);
-    List<Concept> findByDataTypeAndNameIgnoreCaseContains(String dataType, String name);
+    List<Concept> findByIsVoidedFalseAndActiveTrueAndNameIgnoreCaseContains(String name);
+    List<Concept> findByIsVoidedFalseAndActiveTrueAndDataTypeAndNameIgnoreCaseContains(String dataType, String name);
 
     @Query("select c from Concept c where c.isVoided = false")
     Page<Concept> getAllNonVoidedConcepts(Pageable pageable);
