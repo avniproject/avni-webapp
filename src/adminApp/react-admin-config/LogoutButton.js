@@ -33,8 +33,10 @@ const mapStateToProps = state => ({
   username: state.app.user.username
 });
 const mapDispatchToProps = dispatch => ({
-  logout: () =>
-    userLogout() && Auth.signOut().then(() => (document.location.href = "/"))
+  logout: () => {
+    localStorage.clear();
+    userLogout() && Auth.signOut().then(() => (document.location.href = "/"));
+  }
 });
 
 export default connect(
