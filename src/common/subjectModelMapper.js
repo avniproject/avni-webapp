@@ -157,6 +157,7 @@ export const mapEnrolment = enrolmentList => {
       programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
       programEnrolment.program = mapOperationalProgram(enrolment);
       programEnrolment.uuid = enrolment.uuid;
+      programEnrolment.id = enrolment.id;
       return programEnrolment;
     });
 };

@@ -135,14 +135,19 @@ const ProgramView = ({ programData }) => {
           </label>
         </Grid>
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
-          <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
-          <SubjectButton btnLabel={t("vaccinations")} />
-          <InternalLink
-            to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
-            noUnderline
-          >
-            <SubjectButton btnLabel={t("newProgramVisit")} />
-          </InternalLink>
+          {/* <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
+          <SubjectButton btnLabel={t("vaccinations")} /> */}
+
+          {!enableReadOnly ? (
+            <InternalLink
+              to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
+              noUnderline
+            >
+              <SubjectButton btnLabel={t("newProgramVisit")} />
+            </InternalLink>
+          ) : (
+            ""
+          )}
         </Grid>
       </Grid>
       <Paper className={classes.root}>

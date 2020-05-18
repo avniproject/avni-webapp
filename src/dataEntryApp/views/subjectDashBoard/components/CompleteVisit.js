@@ -105,11 +105,11 @@ function Row(props) {
   return (
     <React.Fragment>
       <TableRow className={classes.root}>
-        <TableCell>
+        {/* <TableCell>
           <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
+        </TableCell> */}
         <TableCell component="th" scope="row">
           {t(row.name)}
         </TableCell>
@@ -123,6 +123,11 @@ function Row(props) {
         ) : (
           ""
         )}
+        <TableCell>
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -193,7 +198,6 @@ const SubjectsTable = ({ allVisits }) => {
       >
         <TableHead>
           <TableRow>
-            <TableCell />
             <TableCell className={classes.tableheader}>Visit Name</TableCell>
             <TableCell align="left" className={classes.tableheader}>
               Visit Completed Date
@@ -208,6 +212,7 @@ const SubjectsTable = ({ allVisits }) => {
             ) : (
               ""
             )}
+            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -253,13 +258,16 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
 
         <Breadcrumbs aria-label="breadcrumb" className={classes.Breadcrumbs}>
           <Link color="inherit" onClick={() => history.push("/app")}>
-            app
+            App
           </Link>
-          <Link color="inherit" onClick={() => history.push("/app/subject")}>
-            subject
+          <Link
+            color="inherit"
+            onClick={() => history.push("/app/subject?uuid=ed34cad1-50da-4356-9bab-1bae77780087")}
+          >
+            Subject Dashboard
           </Link>
           <Typography color="textPrimary" className={classes.Typography}>
-            completeVisit
+            CompleteVisit
           </Typography>
         </Breadcrumbs>
 
