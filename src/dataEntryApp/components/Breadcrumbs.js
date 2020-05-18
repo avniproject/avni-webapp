@@ -1,13 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Typography from "@material-ui/core/Typography";
-import { Breadcrumbs as Breadcrumb } from "@material-ui/core";
+import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
-import { isEqual } from "lodash";
-import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,68 +19,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Breadcrumbs = ({ path, match, ...props }) => {
+export default ({ path }) => {
   const classes = useStyles();
-  console.log("In breadcrumb ..props", props);
-  console.log("In breadcrumb ..Path", path);
   const parts = path.split(/\/+/g).filter(Boolean);
-  console.log("Parts", parts);
   const clickableParts = parts.slice(0, parts.length - 1);
-
   const currentpage = parts[parts.length - 1];
-  //   const isSubject = isEqual(match.path, "/app/subject");
-  //   useEffect(() => {
-  //   if (isSubject){
-  //     const subjectUuid = match.queryParams.uuid;
-  //     props.getSubjectProfile(subjectUuid);
-  //   }
-  // }, []);
-  const subjectName =
-    props.subjectProfile && props.subjectProfile.firstName + " " + props.subjectProfile.lastName;
-  const subjectUuid = props.subjectProfile && props.subjectProfile.uuid;
-  const urlMappings = [
-    { path: "app", breadcrumb: "Home", url: "#/app" },
-    {
-      path: "subject",
-      breadcrumb: subjectName + " " + "Dashborad",
-      url: "#/app/subject?uuid=" + subjectUuid
-    },
-    { path: "completeVisit", breadcrumb: "Completed Visits", url: "#/app" }
-  ];
-  console.log(props.subjectProfile);
-  console.log("all states", props.x);
 
   return (
-    <Breadcrumb className={classes.Breadcrumbs} aria-label="breadcrumb">
+    <Breadcrumbs className={classes.Breadcrumbs} aria-label="breadcrumb">
       {clickableParts.map((part, index) => (
-        <Link key={index} color="inherit" href={urlMappings.find(um => um.path === part).url}>
-          {urlMappings.find(um => um.path === part).breadcrumb}
-
-          {/* {part} */}
+        <Link key={index} color="inherit" href="/">
+          {part}
         </Link>
       ))}
       <Typography className={classes.Typography} component={"span"} color="textPrimary">
-        {urlMappings.find(um => um.path === currentpage).breadcrumb}
-        {/* {currentpage} */}
+        {currentpage}
       </Typography>
-    </Breadcrumb>
+    </Breadcrumbs>
   );
 };
-
-const mapStateToProps = state => ({
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  x: state
-});
-
-const mapDispatchToProps = {
-  getSubjectProfile
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      mapStateToProps,
-      mapDispatchToProps
-    )(Breadcrumbs)
-  )
-);

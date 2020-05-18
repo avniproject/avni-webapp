@@ -1,5 +1,6 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
 import { types, setCompletedVisit, setVisitTypes } from "../reducers/completedVisitReducer";
+import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapViewVisit } from "../../common/subjectModelMapper";
 
 import api from "../api";
@@ -23,5 +24,6 @@ export function* visitTypesFetchWatcher() {
 
 export function* visitTypesFetchWorker({ visitTypesUuid }) {
   const visitTypes = yield call(api.fetchVisitTypes, visitTypesUuid);
+  yield put(getSubjectProfile(visitTypes.subjectUuid));
   yield put(setVisitTypes(visitTypes));
 }
