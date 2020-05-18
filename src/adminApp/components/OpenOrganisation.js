@@ -6,7 +6,7 @@ import { getUserInfo } from "../../rootApp/ducks";
 
 class OpenOrganisation extends Component {
   handleClick = organisationUUID => {
-    http.setOrganisationUUID(organisationUUID);
+    localStorage.setItem("ORGANISATION_UUID", organisationUUID);
     this.props.getUserInfo();
   };
 
