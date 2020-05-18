@@ -42,6 +42,10 @@ public class HouseholdService {
             return null;
         }
         Individual memberSubject = groupSubject.getMemberSubject();
+        if (memberSubject.getGender() == null) {
+            errorMsgs.add(String.format("Member gender is not defined and cannot be added as '%s'", individualRelation.getName()));
+            return null;
+        }
         if (!(individualRelationGenderMapping.getGender().getName().equals(memberSubject.getGender().getName()))) {
             errorMsgs.add(String.format("Member cannot be added as '%s' since they were registered as '%s'", individualRelation.getName(), memberSubject.getGender().getName()));
             return null;
