@@ -132,6 +132,8 @@ const CommonModal = ({ content, buttonsSet, title }) => {
   };
 
   const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
+  const filterButton = buttonsSet.filter(element => element.buttonType === "filterButton").shift();
+
   const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
   const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
   const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
@@ -147,6 +149,23 @@ const CommonModal = ({ content, buttonsSet, title }) => {
           onClick={handleClickOpen}
         >
           {mainButton.label}
+        </Fab>
+      ) : (
+        ""
+      )}
+
+      {filterButton ? (
+        <Fab
+          className={filterButton.classes}
+          variant="extended"
+          color="primary"
+          aria-label="add"
+          onClick={() => {
+            handleClickOpen();
+            filterButton.click();
+          }}
+        >
+          {filterButton.label}
         </Fab>
       ) : (
         ""
@@ -174,13 +193,14 @@ const CommonModal = ({ content, buttonsSet, title }) => {
             ""
           )}
           {applyButton ? (
-            <Link to={applyButton.redirectTo}>
-              <SubjectButton
-                btnLabel={applyButton.label}
-                btnClass={applyButton.classes}
-                btnClick={applyButton.click}
-              />
-            </Link>
+            <SubjectButton
+              btnLabel={applyButton.label}
+              btnClass={applyButton.classes}
+              btnClick={() => {
+                applyButton.click();
+                handleClose();
+              }}
+            />
           ) : (
             ""
           )}

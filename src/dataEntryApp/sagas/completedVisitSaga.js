@@ -12,11 +12,8 @@ export function* completedVisitFetchWatcher() {
   yield takeLatest(types.GET_COMPLETEDVISIT, completedVisitFetchWorker);
 }
 
-export function* completedVisitFetchWorker({ completedVisitUuid }) {
-  const completedVisit = yield call(api.fetchcompletedVisit, completedVisitUuid);
-  // console.log("################ completed"+completedVisit);
-  //  const unique = [...new Set(viewVisit.content.map(item => item.encounterType.name))];
-  //  console.log("##########"+ JSON.stringify(unique));
+export function* completedVisitFetchWorker({ completedVisitUrl }) {
+  const completedVisit = yield call(api.fetchcompletedVisit, completedVisitUrl);
   yield put(setCompletedVisit(completedVisit));
 }
 
