@@ -26,15 +26,17 @@ const useStyles = makeStyles(theme => ({
   },
   btnCustom: {
     float: "left",
-    backgroundColor: "#fc9153",
-    height: "30px"
+    backgroundColor: "#f27510",
+    height: "30px",
+    boxShadow: "none"
   },
   cancelBtnCustom: {
     float: "left",
     backgroundColor: "#F8F9F9",
     color: "#fc9153",
     border: "1px solid #fc9153",
-    height: "30px"
+    height: "30px",
+    boxShadow: "none"
   },
   formControl: {
     marginTop: theme.spacing(2)
@@ -98,7 +100,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
                   autoOk
                   margin="normal"
                   id="date-picker-dialog"
-                  label="Visit schedule date"
+                  label={t("visitscheduledate")}
                   format="MM/dd/yyyy"
                   value={selectedDate}
                   onChange={handleDateChange}
@@ -113,7 +115,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
                   autoOk
                   margin="normal"
                   id="date-picker-dialog"
-                  label="Visit completed date"
+                  label={t("visitcompleteddate")}
                   format="MM/dd/yyyy"
                   value={selectedDate}
                   onChange={handleDateChange}
@@ -127,7 +129,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
           </MuiPickersUtilsProvider>
         </FormControl>
 
-        <FormLabel component="legend">Visit Type</FormLabel>
+        <FormLabel component="legend">{t("visitType")}</FormLabel>
         <FormGroup row>
           {visitTypesList.map(visitType => (
             <FormControlLabel
@@ -139,7 +141,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
                   color="primary"
                 />
               }
-              label={visitType.name}
+              label={t(visitType.name)}
             />
           ))}
         </FormGroup>
@@ -158,18 +160,18 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
         },
         {
           buttonType: "applyButton",
-          label: t("Apply"),
+          label: t("apply"),
           classes: classes.btnCustom,
           redirectTo: `/app/completeVisit`,
           click: applyClick
         },
         {
           buttonType: "cancelButton",
-          label: t("Cancel"),
+          label: t("cancel"),
           classes: classes.cancelBtnCustom
         }
       ]}
-      title={t("Filter Result")}
+      title={t("filterResult")}
     />
   );
 };

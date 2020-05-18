@@ -129,6 +129,7 @@ const ProgramView = ({ programData }) => {
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
         </Grid>
+
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
           <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
           <SubjectButton btnLabel={t("vaccinations")} btnClass={classes.vaccinationButtonStyle} />
@@ -230,7 +231,7 @@ const ProgramView = ({ programData }) => {
             >
               {programData && programData.encounters
                 ? programData.encounters.map((row, index) =>
-                    row.encounterDateTime && row.encounterType && index <= 4 ? (
+                    row.encounterDateTime && row.encounterType && index <= 3 ? (
                       <Visit
                         uuid={row.uuid}
                         name={row.encounterType.name}

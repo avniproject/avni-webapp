@@ -186,16 +186,16 @@ const SubjectsTable = ({ allVisits }) => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell className={classes.tableheader}>Visit Name</TableCell>
+            <TableCell className={classes.tableheader}>{t("visitName")}</TableCell>
             <TableCell align="left" className={classes.tableheader}>
-              Visit Completed Date
+              {t("visitcompleteddate")}
             </TableCell>
             <TableCell align="left" className={classes.tableheader}>
-              Visit Scheduled Date
+              {t("visitscheduledate")}
             </TableCell>
             {!enableReadOnly ? (
               <TableCell align="left" className={classes.tableheader}>
-                Action
+                {t("actions")}
               </TableCell>
             ) : (
               ""
@@ -242,11 +242,11 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
               <div align="left">
                 {/* <h1>Completed visits </h1> */}
                 <Typography variant="h6" gutterBottom className={classes.completedVsits}>
-                  Completed visits
+                  {t("completedVisits")}
                 </Typography>
                 {/* <h5>20 Results found</h5> */}
                 <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
-                  {completedVisit ? completedVisit.content.length : ""} Results found
+                  {completedVisit ? completedVisit.content.length : ""} {t("resultfound")}
                 </Typography>
               </div>
             </Grid>
