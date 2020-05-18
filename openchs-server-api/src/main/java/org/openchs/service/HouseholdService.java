@@ -34,7 +34,7 @@ public class HouseholdService {
     }
 
     public IndividualRelationship determineRelationshipWithHeadOfHousehold(GroupSubject groupSubject, IndividualRelation individualRelation, List<String> errorMsgs) {
-        GroupSubject headOfHouseholdGroupSubject = groupSubjectRepository.findByGroupSubjectAndGroupRoleAndIsVoidedFalse(groupSubject.getGroupSubject(), groupRoleRepository.findByRole("Head of household"));
+        GroupSubject headOfHouseholdGroupSubject = groupSubjectRepository.findByGroupSubjectAndGroupRoleAndIsVoidedFalse(groupSubject.getGroupSubject(), groupRoleRepository.findByRoleAndGroupSubjectTypeIdAndIsVoidedFalse("Head of household", groupSubject.getGroupSubject().getSubjectType().getId()));
         IndividualRelationGenderMapping individualRelationGenderMapping = individualRelationGenderMappingRepository.findByRelationAndIsVoidedFalse(individualRelation);
 
         if (individualRelationGenderMapping == null) {

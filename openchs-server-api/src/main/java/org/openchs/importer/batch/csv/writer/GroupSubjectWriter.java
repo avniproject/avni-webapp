@@ -63,7 +63,10 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
         IndividualRelationship individualRelationship = null;
 
         if (isHousehold) {
-            groupSubject.setGroupRole(getHouseholdGroupRole(row.getBool(householdMemberHeaders.isHeadOfHousehold), allErrorMsgs, householdMemberHeaders.isHeadOfHousehold));
+            groupSubject.setGroupRole(getHouseholdGroupRole(row.getBool(householdMemberHeaders.isHeadOfHousehold),
+                    allErrorMsgs,
+                    householdMemberHeaders.isHeadOfHousehold,
+                    groupSubject.getGroupSubject().getSubjectType().getId()));
             if (groupSubject.getGroupRole().getRole().equals("Member")) {
                 individualRelation = getRelationWithHeadOfHousehold(row.get(householdMemberHeaders.relationshipWithHeadOfHousehold), allErrorMsgs);
                 if (individualRelation != null) {
@@ -71,7 +74,10 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
                 }
             }
         } else {
-            groupSubject.setGroupRole(getGroupRole(row.get(groupMemberHeaders.role), allErrorMsgs, groupMemberHeaders.role));
+            groupSubject.setGroupRole(getGroupRole(row.get(groupMemberHeaders.role),
+                    allErrorMsgs,
+                    groupMemberHeaders.role,
+                    groupSubject.getGroupSubject().getSubjectType().getId()));
         }
 
         if (allErrorMsgs.size() > 0) {
@@ -130,12 +136,12 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
         return groupSubject;
     }
 
-    private GroupRole getGroupRole(String role, List<String> errorMsgs, String roleIdentifier) {
+    private GroupRole getGroupRole(String role, List<String> errorMsgs, String roleIdentifier, Long groupSubjectTypeId) {
         if (role == null || role.isEmpty()) {
             errorMsgs.add(String.format("'%s' field is required", roleIdentifier));
             return null;
         }
-        GroupRole groupRole = groupRoleRepository.findByRoleAndIsVoidedFalse(role);
+        GroupRole groupRole = groupRoleRepository.findByRoleAndGroupSubjectTypeIdAndIsVoidedFalse(role, groupSubjectTypeId);
         if (groupRole == null) { // || groupRole.isVoided()) {
             errorMsgs.add(String.format("'%s' role not found", role));
             return null;
@@ -143,14 +149,14 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
         return groupRole;
     }
 
-    private GroupRole getHouseholdGroupRole(Boolean isHeadOfHousehold, List<String> errorMsgs, String isHeadOfHouseholdIdentifier) {
+    private GroupRole getHouseholdGroupRole(Boolean isHeadOfHousehold, List<String> errorMsgs, String isHeadOfHouseholdIdentifier, Long groupSubjectTypeId) {
         if (isHeadOfHousehold == null) {
             errorMsgs.add(String.format("'%s' field is required", isHeadOfHouseholdIdentifier));
             return null;
         }
 
         String roleIdentifier = isHeadOfHousehold ? "Head of household" : "Member";
-        return groupRoleRepository.findByRole(roleIdentifier);
+        return groupRoleRepository.findByRoleAndGroupSubjectTypeIdAndIsVoidedFalse(roleIdentifier, groupSubjectTypeId);
     }
 
     private IndividualRelation getRelationWithHeadOfHousehold(String relationshipWithHeadOfHousehold, List<String> errorMsgs) {

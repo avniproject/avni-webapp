@@ -22,7 +22,7 @@ public interface GroupRoleRepository extends ReferenceDataRepository<GroupRole>,
 
     GroupRole findByRole(String role);
 
-    GroupRole findByRoleAndIsVoidedFalse(String role);
+    GroupRole findByRoleAndGroupSubjectTypeIdAndIsVoidedFalse(String role, Long subjectTypeId);
 
     GroupRole findByRoleAndGroupSubjectTypeUuid(String role, String uuid);
 
