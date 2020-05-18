@@ -10,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import Visit from "./Visit";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
+import { enableReadOnly } from "../../../../common/constants";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -61,7 +62,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
     <Fragment>
       <Paper className={classes.root}>
         <Grid container justify="flex-end">
-          <SubjectButton btnLabel={t("newform")} />
+          {!enableReadOnly ? <SubjectButton btnLabel={t("newform")} /> : ""}
         </Grid>
         <ExpansionPanel
           className={classes.expansionPanel}

@@ -244,10 +244,10 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
   if (sessionStorage.getItem("enrollment")) {
     localSavedEnrollment = JSON.parse(sessionStorage.getItem("enrollment"));
   }
-  console.log("completed vist localSavedSubject--->", localSavedEnrollment);
+  const completedVisitUrl = `/web/programEnrolment/${localSavedEnrollment.enrollmentId}/completed`;
 
   useEffect(() => {
-    getCompletedVisit(localSavedEnrollment.enrollmentId);
+    getCompletedVisit(completedVisitUrl);
     getVisitTypes(localSavedEnrollment.enrollmentUuid);
   }, []);
 
