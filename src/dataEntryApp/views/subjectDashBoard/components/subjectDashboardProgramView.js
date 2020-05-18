@@ -260,7 +260,9 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
           <Button color="primary">
-            <Link to={`/app/completeVisit?id=${programData.id}`}>{t("viewAllCompletedVisit")}</Link>
+            <Link to={`/app/subject/completeVisit?id=${programData.id}`}>
+              {t("viewAllCompletedVisit")}
+            </Link>
           </Button>
         </ExpansionPanel>
       </Paper>
