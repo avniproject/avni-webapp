@@ -28,10 +28,6 @@ public class AddressLevel extends OrganisationAwareEntity {
     @NotNull
     private String title;
 
-    @Column
-    @NotNull
-    private Double level;
-
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type_id")
@@ -75,11 +71,7 @@ public class AddressLevel extends OrganisationAwareEntity {
     }
 
     public Double getLevel() {
-        return level;
-    }
-
-    public void setLevel(Double level) {
-        this.level = level;
+        return this.getType().getLevel();
     }
 
     public AddressLevel getParent() {

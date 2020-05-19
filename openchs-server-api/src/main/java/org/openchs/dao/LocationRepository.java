@@ -31,8 +31,6 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
 
     AddressLevel findByTitleAndCatchmentsUuid(String title, String uuid);
 
-    List<AddressLevel> findByTitleAndLevelAndUuidNot(String title, Double level, String uuid);
-
     Page<AddressLevel> findByTitleIgnoreCaseStartingWithOrderByTitleAsc(String title, Pageable pageable);
 
     AddressLevel findByTitleIgnoreCase(String title);
