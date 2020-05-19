@@ -1,7 +1,7 @@
 export const isDevEnv = process.env.REACT_APP_ENVIRONMENT === "development";
 export const cognitoInDev = isDevEnv && process.env.REACT_APP_COGNITO_IN_DEV === "true";
 export const isProdEnv = process.env.REACT_APP_ENVIRONMENT === "production";
-export const devEnvUserName = process.env.REACT_APP_DEV_ENV_USER;
+export const devEnvUserName = "ihmp-admin";
 
 export const AWS_REGION = process.env.REACT_APP_AWS_REGION || "ap-south-1";
 
@@ -55,7 +55,5 @@ export const localeChoices = [
   { id: LOCALES.SANSKRIT, name: "Sanskrit" },
   { id: LOCALES.URDU, name: "Urdu" }
 ];
-
-export const withoutDataEntry = false;
 
 export const disableSession = true;
