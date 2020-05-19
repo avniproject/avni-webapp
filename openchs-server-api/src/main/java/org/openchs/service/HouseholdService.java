@@ -34,7 +34,6 @@ public class HouseholdService {
     }
 
     public IndividualRelationship determineRelationshipWithHeadOfHousehold(GroupSubject groupSubject, IndividualRelation individualRelation, List<String> errorMsgs) {
-        GroupSubject headOfHouseholdGroupSubject = groupSubjectRepository.findByGroupSubjectAndGroupRoleAndIsVoidedFalse(groupSubject.getGroupSubject(), groupRoleRepository.findByRoleAndGroupSubjectTypeIdAndIsVoidedFalse("Head of household", groupSubject.getGroupSubject().getSubjectType().getId()));
         IndividualRelationGenderMapping individualRelationGenderMapping = individualRelationGenderMappingRepository.findByRelationAndIsVoidedFalse(individualRelation);
 
         if (individualRelationGenderMapping == null) {
@@ -50,11 +49,11 @@ public class HouseholdService {
             errorMsgs.add(String.format("Member cannot be added as '%s' since they were registered as '%s'", individualRelation.getName(), memberSubject.getGender().getName()));
             return null;
         }
-        if (headOfHouseholdGroupSubject == null) {
-            errorMsgs.add(String.format("Head of household not yet defined for Household id '%s'", groupSubject.getGroupSubject().getLegacyId()));
+        Individual headOfHousehold = getHeadOfHouseholdForGroupSubject(groupSubject);
+        if (headOfHousehold == null) {
+            errorMsgs.add(String.format("Head of household not yet defined for Household id '%s'. Cannot add member.", groupSubject.getGroupSubject().getLegacyId()));
             return null;
         }
-        Individual headOfHousehold = headOfHouseholdGroupSubject.getMemberSubject();
         IndividualRelationship individualRelationship = new IndividualRelationship();
         individualRelationship.setIndividuala(headOfHousehold);
         individualRelationship.setIndividualB(memberSubject);
@@ -86,5 +85,10 @@ public class HouseholdService {
             individualRelationship.setRelationship(possibleRelationshipTypesList.get(0));
         }
         return individualRelationship;
+    }
+
+    public Individual getHeadOfHouseholdForGroupSubject(GroupSubject groupSubject) {
+        GroupSubject headOfHouseholdGroupSubject = groupSubjectRepository.findByGroupSubjectAndGroupRoleAndIsVoidedFalse(groupSubject.getGroupSubject(), groupRoleRepository.findByRoleAndGroupSubjectTypeIdAndIsVoidedFalse("Head of household", groupSubject.getGroupSubject().getSubjectType().getId()));
+        return (headOfHouseholdGroupSubject == null) ? null : headOfHouseholdGroupSubject.getMemberSubject();
     }
 }
