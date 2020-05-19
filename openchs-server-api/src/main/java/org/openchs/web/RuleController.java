@@ -67,14 +67,14 @@ public class RuleController {
     ResponseEntity<?> decisionRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
         if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
-            switch (WorkFlowTypeEnum.valueOf(requestEntityWrapper.getRule().getWorkFlowType().toUpperCase())) {
+            switch (WorkFlowTypeEnum.findByValue(requestEntityWrapper.getRule().getWorkFlowType().toLowerCase())) {
                 case INDIVIDUAL:
                     ruleResponseEntity = ruleService.decisionRuleIndividualWorkFlow(requestEntityWrapper);
                     break;
-                case PROGRAMENCOUNTER:
+                case PROGRAM_ENCOUNTER:
                     ruleResponseEntity = ruleService.decisionRuleProgramEncounterWorkFlow(requestEntityWrapper);
                     break;
-                case PROGRAMENROLMENT:
+                case PROGRAM_ENROLMENT:
                     ruleResponseEntity = ruleService.decisionRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
                     break;
                 case ENCOUNTER:
@@ -93,11 +93,11 @@ public class RuleController {
     ResponseEntity<?> visitScheduleRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
         if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
-            switch (WorkFlowTypeEnum.valueOf(requestEntityWrapper.getRule().getWorkFlowType().toUpperCase())) {
-                case PROGRAMENROLMENT:
+            switch (WorkFlowTypeEnum.findByValue(requestEntityWrapper.getRule().getWorkFlowType().toLowerCase())) {
+                case PROGRAM_ENROLMENT:
                     ruleResponseEntity = ruleService.visitScheduleRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
                     break;
-                case PROGRAMENCOUNTER:
+                case PROGRAM_ENCOUNTER:
                     ruleResponseEntity = ruleService.visitScheduleRuleProgramEncounterWorkFlow(requestEntityWrapper);
                     break;
                 /* Encounter VisitSchedule , Not in scope of 2nd Release
