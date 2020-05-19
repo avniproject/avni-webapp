@@ -59,15 +59,21 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const visitTypesList = [...new Set(visitTypes.programEncounters.map(item => item.encounterType))];
+  //const visitTypesList = [...new Set(visitTypes.programEncounters.map(item => item.encounterType))];
+  const key = "id";
+  const visitTypesList = [
+    ...new Map(
+      visitTypes.programEncounters.map(item => [item.encounterType[key], item.encounterType])
+    ).values()
+  ];
 
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
   const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
   const [selectedVisitType, setVisitType] = React.useState("");
   const [checked, setChecked] = React.useState(false);
 
-  let localSavedVisitType;
-  let checks = false;
+  // let localSavedVisitType;
+  // let checks = false;
   const scheduleDateChange = scheduledDate => {
     setSelectedScheduleDate(scheduledDate);
   };
@@ -83,7 +89,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
       selectedVisit.push(event.target.name);
       //sessionStorage.removeItem("visitType");
     } else {
-      selectedVisit = localSavedVisitType ? localSavedVisitType : selectedVisitType;
+      //   selectedVisit = localSavedVisitType ? localSavedVisitType : selectedVisitType;
       const index = selectedVisit.indexOf(event.target.name);
       if (index > -1) {
         selectedVisit.splice(index, 1);
@@ -94,12 +100,14 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
   };
 
   const filterClick = () => {
-    if (sessionStorage.getItem("visitType")) {
-      localSavedVisitType = JSON.parse(sessionStorage.getItem("visitType"));
-    }
-    if (localSavedVisitType > 0) {
-      setVisitType(localSavedVisitType);
-    }
+    setSelectedScheduleDate(null);
+    setSelectedCompletedDate(null);
+    // if (sessionStorage.getItem("visitType")) {
+    //   localSavedVisitType = JSON.parse(sessionStorage.getItem("visitType"));
+    // }
+    // if (localSavedVisitType > 0) {
+    //   setVisitType(localSavedVisitType);
+    // }
   };
 
   const applyClick = () => {

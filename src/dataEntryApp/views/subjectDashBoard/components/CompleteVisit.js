@@ -170,10 +170,10 @@ const SubjectsTable = ({ allVisits }) => {
       let sub = {
         name: a.encounterType.name ? a.encounterType.name : "-",
         earliestVisitDateTime: a.earliestVisitDateTime
-          ? moment(new Date(a.earliestVisitDateTime)).format("DD-MM-YYYY")
-          : moment(new Date(a.encounterDateTime)).format("DD-MM-YYYY"),
+          ? moment(a.earliestVisitDateTime).format("DD-MM-YYYY")
+          : "-",
         encounterDateTime: a.encounterDateTime
-          ? moment(new Date(a.encounterDateTime)).format("DD-MM-YYYY")
+          ? moment(a.encounterDateTime).format("DD-MM-YYYY")
           : "-",
         observations: mapObservation(a.observations)
       };
