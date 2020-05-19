@@ -46,6 +46,9 @@ const useStyles = makeStyles(theme => ({
   listItem: {
     paddingBottom: "0px",
     paddingTop: "0px"
+  },
+  infomsg: {
+    marginLeft: 10
   }
 }));
 
@@ -121,12 +124,11 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                   )
                 )
               ) : (
-                <Typography variant="caption" gutterBottom>
+                <Typography variant="caption" gutterBottom className={classes.infomsg}>
                   {" "}
-                  no{t("no")} {t("plannedVisits")}{" "}
+                  {t("no")} {t("plannedVisits")}{" "}
                 </Typography>
               )}
-              }
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -161,9 +163,9 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                   )
                 )
               ) : (
-                <Typography variant="caption" gutterBottom>
+                <Typography variant="caption" gutterBottom className={classes.infomsg}>
                   {" "}
-                  no{t("no")} {t("completedVisits")}{" "}
+                  {t("no")} {t("completedVisits")}{" "}
                 </Typography>
               )}
             </Grid>
