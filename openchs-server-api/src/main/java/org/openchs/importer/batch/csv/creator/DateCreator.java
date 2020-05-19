@@ -21,10 +21,10 @@ public class DateCreator {
             if (date == null && errorMessageIfNotExists != null) {
                 errorMsgs.add(errorMessageIfNotExists);
             }
+            return null;
         } catch (Exception ex) {
             logger.error(String.format("Error processing row %s", row), ex);
             errorMsgs.add(String.format("Invalid '%s'", header));
-        } finally {
             return null;
         }
     }
