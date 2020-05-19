@@ -19,7 +19,7 @@ import { enableReadOnly } from "common/constants";
 // import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
 import { store } from "../../../../common/store/createStore";
-import { types } from "../../../../common/store/conceptReducer";
+import { types } from "../../../reducers/completedVisitReducer";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -126,7 +126,7 @@ const ProgramView = ({ programData }) => {
     enrollmentId: programData.id,
     enrollmentUuid: programData.uuid
   };
-  // sessionStorage.setItem("enrollment", JSON.stringify(enrolldata));
+
   store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);

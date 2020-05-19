@@ -4,7 +4,8 @@ export const types = {
   GET_COMPLETEDVISIT: `${prefix}GET_COMPLETEDVISIT`,
   SET_COMPLETEDVISIT: `${prefix}SET_COMPLETEDVISIT`,
   GET_VISITTYPES: `${prefix}GET_VISITTYPES`,
-  SET_VISITTYPES: `${prefix}SET_VISITTYPES`
+  SET_VISITTYPES: `${prefix}SET_VISITTYPES`,
+  ADD_ENROLLDATA: `${prefix}ADD_ENROLLDATA`
 };
 
 export const getCompletedVisit = completedVisitUrl => ({
@@ -39,6 +40,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         visitTypes: action.visitTypes
+      };
+    }
+    case types.ADD_ENROLLDATA: {
+      return {
+        ...state,
+        enrolldata: action.value
       };
     }
     default:

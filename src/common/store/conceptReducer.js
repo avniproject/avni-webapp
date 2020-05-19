@@ -1,10 +1,8 @@
 export const types = {
-  ADD_CONCEPT: `ADD_CONCEPT`,
-  ADD_ENROLLDATA: "ADD_ENROLLDATA"
+  ADD_CONCEPT: `ADD_CONCEPT`
 };
 
 let concepts = [];
-
 export function conceptReducer(state = {}, action) {
   switch (action.type) {
     case types.ADD_CONCEPT:
@@ -13,13 +11,6 @@ export function conceptReducer(state = {}, action) {
         ...state,
         concepts: concepts
       };
-
-    case types.ADD_ENROLLDATA: {
-      return {
-        ...state,
-        enrolldata: action.value
-      };
-    }
     default:
       return state;
   }

@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getViewVisit } from "../../../reducers/viewVisitReducer";
+import { types } from "../../../reducers/completedVisitReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -14,7 +15,6 @@ import { InternalLink } from "../../../../common/components/utils";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
 import { store } from "../../../../common/store/createStore";
-import { types } from "../../../../common/store/conceptReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -58,11 +58,6 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
   const history = useHistory();
   let localSavedEnrollment;
   store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
-  // if (sessionStorage.getItem("enrollment")) {
-  //   localSavedEnrollment = JSON.parse(sessionStorage.getItem("enrollment"));
-  // }
-  // console.log("###########", viewVisit);
-  console.log("###########", enrolldata);
 
   useEffect(() => {
     getViewVisit(match.queryParams.uuid);
@@ -117,7 +112,7 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
 
 const mapStateToProps = state => ({
   viewVisit: state.dataEntry.viewVisitReducer.viewVisits,
-  enrolldata: state.dataEntry.conceptReducer.enrolldata
+  enrolldata: state.dataEntry.completedVisitReducer.enrolldata
 });
 
 const mapDispatchToProps = {

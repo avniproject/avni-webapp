@@ -21,7 +21,7 @@ import { withRouter, Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { withParams } from "../../../../common/components/utils";
-import { getCompletedVisit, getVisitTypes } from "../../../reducers/completedVisitReducer";
+import { getCompletedVisit, getVisitTypes, types } from "../../../reducers/completedVisitReducer";
 import { mapObservation } from "../../../../common/subjectModelMapper";
 import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
@@ -30,7 +30,6 @@ import FilterResult from "../components/FilterResult";
 import { enableReadOnly } from "common/constants";
 import moment from "moment/moment";
 import { store } from "../../../../common/store/createStore";
-import { types } from "../../../../common/store/conceptReducer";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -247,13 +246,9 @@ const CompleteVisit = ({
   const classes = useStyle();
   const { t } = useTranslation();
   const history = useHistory();
-  let localSavedEnrollment;
-  console.log("enrolldata------>", enrolldata);
+
   store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
 
-  if (sessionStorage.getItem("enrollment")) {
-    localSavedEnrollment = JSON.parse(sessionStorage.getItem("enrollment"));
-  }
   const completedVisitUrl = `/web/programEnrolment/${enrolldata.enrollmentId}/completed`;
 
   useEffect(() => {
@@ -313,7 +308,7 @@ const mapStateToProps = state => {
   return {
     completedVisit: state.dataEntry.completedVisitReducer.completedVisits,
     visitTypes: state.dataEntry.completedVisitReducer.visitTypes,
-    enrolldata: state.dataEntry.conceptReducer.enrolldata
+    enrolldata: state.dataEntry.completedVisitReducer.enrolldata
   };
 };
 
