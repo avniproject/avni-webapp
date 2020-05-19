@@ -13,6 +13,8 @@ import Button from "@material-ui/core/Button";
 import { InternalLink } from "../../../../common/components/utils";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
+import { store } from "../../../../common/store/createStore";
+import { types } from "../../../../common/store/conceptReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -50,16 +52,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ViewVisit = ({ match, getViewVisit, viewVisit }) => {
+const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
   let localSavedEnrollment;
-
-  if (sessionStorage.getItem("enrollment")) {
-    localSavedEnrollment = JSON.parse(sessionStorage.getItem("enrollment"));
-  }
-  console.log("###########", viewVisit);
+  store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
+  // if (sessionStorage.getItem("enrollment")) {
+  //   localSavedEnrollment = JSON.parse(sessionStorage.getItem("enrollment"));
+  // }
+  // console.log("###########", viewVisit);
+  console.log("###########", enrolldata);
 
   useEffect(() => {
     getViewVisit(match.queryParams.uuid);
@@ -98,7 +101,7 @@ const ViewVisit = ({ match, getViewVisit, viewVisit }) => {
           <Observations observations={viewVisit ? viewVisit.observations : ""} />
         </Paper>
         <Button color="primary">
-          <InternalLink to={`/app/completeVisit?id=${localSavedEnrollment.enrollmentId}`}>
+          <InternalLink to={`/app/subject/completeVisit?id=${enrolldata.enrollmentId}`}>
             {t("viewAllCompletedVisit")}
           </InternalLink>
         </Button>

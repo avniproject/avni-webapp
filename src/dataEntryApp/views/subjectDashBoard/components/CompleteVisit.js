@@ -29,6 +29,8 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
 import { enableReadOnly } from "common/constants";
 import moment from "moment/moment";
+import { store } from "../../../../common/store/createStore";
+import { types } from "../../../../common/store/conceptReducer";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -234,20 +236,29 @@ const SubjectsTable = ({ allVisits }) => {
   );
 };
 
-const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit, visitTypes }) => {
+const CompleteVisit = ({
+  match,
+  getCompletedVisit,
+  getVisitTypes,
+  completedVisit,
+  visitTypes,
+  enrolldata
+}) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const history = useHistory();
   let localSavedEnrollment;
+  console.log("enrolldata------>", enrolldata);
+  store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
 
   if (sessionStorage.getItem("enrollment")) {
     localSavedEnrollment = JSON.parse(sessionStorage.getItem("enrollment"));
   }
-  const completedVisitUrl = `/web/programEnrolment/${localSavedEnrollment.enrollmentId}/completed`;
+  const completedVisitUrl = `/web/programEnrolment/${enrolldata.enrollmentId}/completed`;
 
   useEffect(() => {
     getCompletedVisit(completedVisitUrl);
-    getVisitTypes(localSavedEnrollment.enrollmentUuid);
+    getVisitTypes(enrolldata.enrollmentUuid);
   }, []);
 
   return completedVisit && visitTypes ? (
@@ -301,7 +312,8 @@ const CompleteVisit = ({ match, getCompletedVisit, getVisitTypes, completedVisit
 const mapStateToProps = state => {
   return {
     completedVisit: state.dataEntry.completedVisitReducer.completedVisits,
-    visitTypes: state.dataEntry.completedVisitReducer.visitTypes
+    visitTypes: state.dataEntry.completedVisitReducer.visitTypes,
+    enrolldata: state.dataEntry.conceptReducer.enrolldata
   };
 };
 
