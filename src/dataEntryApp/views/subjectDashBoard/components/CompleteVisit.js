@@ -104,51 +104,59 @@ function Row(props) {
   const classes = useStyle();
 
   return (
-    <React.Fragment>
-      <TableRow className={classes.root}>
-        {/* <TableCell>
+    row && (
+      <React.Fragment>
+        <TableRow className={classes.root}>
+          {/* <TableCell>
           <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell> */}
-        <TableCell component="th" scope="row">
-          {t(row.name)}
-        </TableCell>
-        <TableCell align="left">{row.encounterDateTime}</TableCell>
-        <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
-        {!enableReadOnly ? (
-          <TableCell align="left">
-            {" "}
-            <Link to="">{t("edit")}</Link> | <Link to="">{t("visit")}</Link>
+          <TableCell component="th" scope="row">
+            {t(row.encounterType.name ? row.encounterType.name : "-")}
           </TableCell>
-        ) : (
-          ""
-        )}
-        <TableCell>
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                {t("summary")}
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableBody>
-                  <List>
-                    <Observations observations={row.observations ? row.observations : ""} />
-                  </List>
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
+          <TableCell align="left">
+            {row.encounterDateTime ? moment(row.encounterDateTime).format("DD-MM-YYYY") : "-"}
+          </TableCell>
+          <TableCell align="left">
+            {row.earliestVisitDateTime
+              ? moment(row.earliestVisitDateTime).format("DD-MM-YYYY")
+              : "-"}
+          </TableCell>
+          {!enableReadOnly ? (
+            <TableCell align="left">
+              {" "}
+              <Link to="">{t("edit")}</Link> | <Link to="">{t("visit")}</Link>
+            </TableCell>
+          ) : (
+            ""
+          )}
+          <TableCell>
+            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box margin={1}>
+                <Typography variant="h6" gutterBottom component="div">
+                  {t("summary")}
+                </Typography>
+                <Table size="small" aria-label="purchases">
+                  <TableBody>
+                    <List>
+                      <Observations observations={row.observations ? row.observations : ""} />
+                    </List>
+                  </TableBody>
+                </Table>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      </React.Fragment>
+    )
   );
 }
 
@@ -162,23 +170,23 @@ const SubjectsTable = ({ allVisits }) => {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  let allVisitsListObj = [];
+  // let allVisitsListObj = [];
 
-  if (allVisits) {
-    allVisits.content.forEach(function(a) {
-      let sub = {
-        name: a.encounterType.name ? a.encounterType.name : "-",
-        earliestVisitDateTime: a.earliestVisitDateTime
-          ? moment(a.earliestVisitDateTime).format("DD-MM-YYYY")
-          : "-",
-        encounterDateTime: a.encounterDateTime
-          ? moment(a.encounterDateTime).format("DD-MM-YYYY")
-          : "-",
-        observations: mapObservation(a.observations)
-      };
-      allVisitsListObj.push(sub);
-    });
-  }
+  // if (allVisits) {
+  //   allVisits.content.forEach(function(a) {
+  //     let sub = {
+  //       name: a.encounterType.name ? a.encounterType.name : "-",
+  //       earliestVisitDateTime: a.earliestVisitDateTime
+  //         ? moment(a.earliestVisitDateTime).format("DD-MM-YYYY")
+  //         : "-",
+  //       encounterDateTime: a.encounterDateTime
+  //         ? moment(a.encounterDateTime).format("DD-MM-YYYY")
+  //         : "-",
+  //       observations: mapObservation(a.observations)
+  //     };
+  //     allVisitsListObj.push(sub);
+  //   });
+  // }
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -189,7 +197,7 @@ const SubjectsTable = ({ allVisits }) => {
     setPage(0);
   };
 
-  return allVisitsListObj ? (
+  return allVisits && allVisits.content ? (
     <div>
       <Table
         className={classes.table}
@@ -217,13 +225,15 @@ const SubjectsTable = ({ allVisits }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {allVisitsListObj && allVisitsListObj.map(row => <Row key={row.name} row={row} />)}
+          {allVisits.content.map(row => (
+            <Row key={row.name} row={row} />
+          ))}
         </TableBody>
       </Table>
       <TablePagination
         rowsPerPageOptions={[10, 20, 50]}
         component="div"
-        count={allVisitsListObj.length}
+        count={allVisits.content.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}

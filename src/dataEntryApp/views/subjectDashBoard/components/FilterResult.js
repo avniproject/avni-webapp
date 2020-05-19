@@ -132,7 +132,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
     // checkbox
     if (selectedVisit.length > 0) {
       setVisitType(selectedVisit);
-      sessionStorage.setItem("visitType", JSON.stringify(selectedVisit));
+      // sessionStorage.setItem("visitType", JSON.stringify(selectedVisit));
       otherUrl = "encounterTypeIds=" + selectedVisit.join();
     }
     const searchParams = new URLSearchParams(otherUrl);
