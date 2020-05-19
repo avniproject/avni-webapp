@@ -192,7 +192,7 @@ public class ImportService {
                 .getForm()
                 .getApplicableFormElements()
                 .stream()
-                .map(formElement -> formElement.getConcept().getName())
+                .map(formElement -> "\"" + formElement.getConcept().getName() + "\"")
                 .collect(Collectors.toList());
         concatenatedString = concatenatedString.concat(String.join(",", conceptNames));
         return concatenatedString;
