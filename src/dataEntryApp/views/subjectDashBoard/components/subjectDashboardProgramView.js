@@ -109,6 +109,9 @@ const useStyles = makeStyles(theme => ({
   gridBottomBorder: {
     borderBottom: "1px solid rgba(0,0,0,0.12)",
     paddingBottom: "10px"
+  },
+  infomsg: {
+    marginLeft: 10
   }
 }));
 
@@ -246,9 +249,9 @@ const ProgramView = ({ programData }) => {
                   )
                 )
               ) : (
-                <Typography variant="caption" gutterBottom>
+                <Typography variant="caption" gutterBottom className={classes.infomsg}>
                   {" "}
-                  no{t("no")} {t("plannedVisits")}{" "}
+                  {t("no")} {t("plannedVisits")}{" "}
                 </Typography>
               )}
             </Grid>
@@ -293,9 +296,9 @@ const ProgramView = ({ programData }) => {
                   )
                 )
               ) : (
-                <Typography variant="caption" gutterBottom>
+                <Typography variant="caption" gutterBottom className={classes.infomsg}>
                   {" "}
-                  no{t("no")} {t("completedVisits")}{" "}
+                  {t("no")} {t("completedVisits")}{" "}
                 </Typography>
               )}
             </Grid>
