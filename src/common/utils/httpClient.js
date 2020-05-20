@@ -16,6 +16,7 @@ class HttpClient {
     this.initAuthContext = this.initAuthContext.bind(this);
     this.setHeaders = this.setHeaders.bind(this);
     this.fetchJson = this.fetchJson.bind(this);
+    this.getOrgUUID = this.getOrgUUID.bind(this);
     this.get = this._wrapAxiosMethod("get");
     this.post = this._wrapAxiosMethod("post");
     this.put = this._wrapAxiosMethod("put");
@@ -29,8 +30,9 @@ class HttpClient {
   }
 
   setOrgUuidHeader() {
-    if (!isEmpty(this.organisationUUID)) {
-      axios.defaults.headers.common["ORGANISATION-UUID"] = this.organisationUUID;
+    const organisationUUID = this.getOrgUUID();
+    if (!isEmpty(organisationUUID)) {
+      axios.defaults.headers.common["ORGANISATION-UUID"] = organisationUUID;
     } else {
       delete axios.defaults.headers.common["ORGANISATION-UUID"];
     }
@@ -43,12 +45,8 @@ class HttpClient {
     this.setOrgUuidHeader();
   }
 
-  setOrganisationUUID(orgUUID) {
-    this.organisationUUID = orgUUID;
-  }
-
-  getOrgId() {
-    return this.organisationUUID;
+  getOrgUUID() {
+    return localStorage.getItem("ORGANISATION_UUID");
   }
 
   async setHeaders(options) {
@@ -68,15 +66,18 @@ class HttpClient {
     if (devEnvUserName) {
       options.headers.set("user-name", devEnvUserName);
     }
-    if (!isEmpty(this.organisationUUID)) {
-      options.headers.set("ORGANISATION-UUID", this.organisationUUID);
+    if (!isEmpty(this.getOrgUUID())) {
+      options.headers.set("ORGANISATION-UUID", this.getOrgUUID());
     } else {
       options.headers.delete("ORGANISATION-UUID");
     }
   }
 
-  async fetchJson(url, options = {}) {
+  async fetchJson(url, options = {}, skipOrgUUIDHeader) {
     await this.setHeaders(options);
+    if (skipOrgUUIDHeader) {
+      options.headers.delete("ORGANISATION-UUID");
+    }
     return fetchUtils.fetchJson(url, options);
   }
 

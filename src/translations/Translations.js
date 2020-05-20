@@ -27,7 +27,7 @@ export const Translations = ({
   history
 }) => {
   useEffect(() => {
-    if (!isEmpty(http.getOrgId()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))) {
+    if (!isEmpty(http.getOrgUUID()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))) {
       getOrgConfig();
       getDashboardData("Android", EMPTY_TRANSLATION_KEY);
     }

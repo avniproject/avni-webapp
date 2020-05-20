@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { enableReadOnly } from "common/constants";
+import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -66,7 +67,17 @@ const truncate = input => {
   else return input;
 };
 
-const Visit = ({ uuid, name, key, index, visitDate, earliestVisitDate, overdueDate }) => {
+const Visit = ({
+  name,
+  visitDate,
+  overdueDate,
+  index,
+  earliestVisitDate,
+  encounterDateTime,
+  uuid,
+  enrolUuid,
+  encounterTypeUuid
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
   return (
@@ -124,10 +135,26 @@ const Visit = ({ uuid, name, key, index, visitDate, earliestVisitDate, overdueDa
           )} */}
         </List>
         {!enableReadOnly ? (
-          <div className={classes.visitButton}>
-            <Button color="primary">{t("dovisit")}</Button>
-            <Button color="primary">{t("cancelVisit")}</Button>
-          </div>
+          <>
+            {encounterDateTime ? (
+              <InternalLink
+                to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
+              >
+                <Button color="primary" className={classes.visitButton}>
+                  {t("edit visit")}
+                </Button>
+              </InternalLink>
+            ) : (
+              <div className={classes.visitButton}>
+                <InternalLink
+                  to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
+                >
+                  <Button color="primary">{t("do visit")}</Button>
+                </InternalLink>
+                <Button color="primary">{t("cancelVisit")}</Button>
+              </div>
+            )}
+          </>
         ) : (
           ""
         )}

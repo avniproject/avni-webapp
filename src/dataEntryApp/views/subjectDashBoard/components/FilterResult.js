@@ -15,6 +15,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
 import { getCompletedVisit } from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
+import { noop } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -212,6 +213,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
   return (
     <Modal
       content={content}
+      handleError={noop}
       buttonsSet={[
         {
           buttonType: "filterButton",

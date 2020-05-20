@@ -115,6 +115,7 @@ const ProgramEnrol = ({
                       size="small"
                       id="date-picker-dialog"
                       format="MM/dd/yyyy"
+                      placeholder="mm/dd/yyyy"
                       name="enrolmentDateTime"
                       value={new Date(programEnrolment.enrolmentDateTime)}
                       autoComplete="off"

@@ -59,7 +59,6 @@ export const CatchmentDetail = props => {
     <Show title={<Title title={"Catchment"} />} actions={<CustomShowActions />} {...props}>
       <SimpleShowLayout>
         <TextField label="Catchment" source="name" />
-        <TextField label="Type" source="type" />
         <ReferenceArrayField label="Locations" reference="locations" source="locationIds">
           <SingleFieldList>
             <TitleChip source="title" />
@@ -78,7 +77,6 @@ export const CatchmentList = props => (
   <List {...props} bulkActions={false} filters={<CatchmentFilter />}>
     <Datagrid rowClick="show">
       <TextField label="Catchment" source="name" />
-      <TextField label="Type" source="type" />
     </Datagrid>
   </List>
 );
@@ -129,7 +127,6 @@ const CatchmentForm = ({ edit, ...props }) => {
         Catchment
       </Typography>
       <AvniTextInput source="name" label="Name" toolTipKey={"ADMIN_CATCHMENT_NAME"} />
-      <AvniTextInput source="type" label="Type" toolTipKey={"ADMIN_CATCHMENT_TYPE"} />
 
       <ToolTipContainer toolTipKey={"ADMIN_CATCHMENT_LOCATIONS"}>
         <div style={{ maxWidth: 400 }}>

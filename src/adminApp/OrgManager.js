@@ -66,12 +66,6 @@ class OrgManager extends Component {
 
   constructor(props) {
     super(props);
-    if (
-      !isEmpty(intersection(this.props.user.roles, [ROLES.ADMIN])) &&
-      isEmpty(httpClient.getOrgId())
-    ) {
-      this.props.getAdminOrgs();
-    }
   }
 
   getChildContext() {
@@ -82,7 +76,7 @@ class OrgManager extends Component {
     const { organisation, user } = this.props;
     return (
       <React.Fragment>
-        {!isEmpty(httpClient.getOrgId()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
+        {!isEmpty(httpClient.getOrgUUID()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
           ? this.renderOrgAdminResources(user, organisation)
           : this.renderAdminResources(user)}
         <Footer />
