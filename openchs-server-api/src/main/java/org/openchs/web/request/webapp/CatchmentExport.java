@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 public class CatchmentExport {
     private String name;
     private String uuid;
-    private String type;
     private List<ReferenceDataContract> locations;
     private boolean voided;
 
@@ -28,14 +27,6 @@ public class CatchmentExport {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public List<ReferenceDataContract> getLocations() {
