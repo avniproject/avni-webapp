@@ -13,7 +13,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
-import { getCompletedVisit } from "../../../reducers/completedVisitReducer";
+import { getCompletedVisit } from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
 
 const useStyles = makeStyles(theme => ({
@@ -238,7 +238,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
 };
 
 const mapStateToProps = state => ({
-  completedVisitList: state.dataEntry.completedVisitReducer.completedVisitList
+  completedVisitList: state.dataEntry.completedVisitsReducer.completedVisitList
 });
 
 const mapDispatchToProps = {

@@ -19,7 +19,7 @@ import { enableReadOnly } from "common/constants";
 // import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
 import { store } from "../../../../common/store/createStore";
-import { types } from "../../../reducers/completedVisitReducer";
+import { types } from "../../../reducers/completedVisitsReducer";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -307,7 +307,7 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
           <Button color="primary">
-            <Link to={`/app/subject/completeVisit?id=${programData.id}`}>
+            <Link to={`/app/subject/completedVisits?id=${programData.id}`}>
               {t("viewAllCompletedVisit")}
             </Link>
           </Button>

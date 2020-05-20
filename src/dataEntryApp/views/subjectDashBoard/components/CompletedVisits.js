@@ -21,7 +21,7 @@ import { withRouter, Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { withParams } from "../../../../common/components/utils";
-import { getCompletedVisit, getVisitTypes, types } from "../../../reducers/completedVisitReducer";
+import { getCompletedVisit, getVisitTypes, types } from "../../../reducers/completedVisitsReducer";
 import { mapObservation } from "../../../../common/subjectModelMapper";
 import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
@@ -171,7 +171,7 @@ const SubjectsTable = ({ allVisits }) => {
   const [open, setOpen] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(20);
   // let allVisitsListObj = [];
 
   // if (allVisits) {
@@ -195,7 +195,7 @@ const SubjectsTable = ({ allVisits }) => {
   };
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    setRowsPerPage(parseInt(event.target.value, 20));
     setPage(0);
   };
 
@@ -233,7 +233,7 @@ const SubjectsTable = ({ allVisits }) => {
         </TableBody>
       </Table>
       <TablePagination
-        rowsPerPageOptions={[10, 20, 50]}
+        rowsPerPageOptions={[20, 50, 100]}
         component="div"
         count={allVisits.content.length}
         rowsPerPage={rowsPerPage}
@@ -318,9 +318,9 @@ const CompleteVisit = ({
 
 const mapStateToProps = state => {
   return {
-    completedVisit: state.dataEntry.completedVisitReducer.completedVisits,
-    visitTypes: state.dataEntry.completedVisitReducer.visitTypes,
-    enrolldata: state.dataEntry.completedVisitReducer.enrolldata
+    completedVisit: state.dataEntry.completedVisitsReducer.completedVisits,
+    visitTypes: state.dataEntry.completedVisitsReducer.visitTypes,
+    enrolldata: state.dataEntry.completedVisitsReducer.enrolldata
   };
 };
 

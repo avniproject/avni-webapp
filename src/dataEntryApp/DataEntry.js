@@ -10,7 +10,7 @@ import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
 import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
 import ProgramEnrol from "./views/subjectDashBoard/components/ProgramEnrol";
 import ViewVisit from "./views/subjectDashBoard/components/ViewVisit";
-import CompleteVisit from "./views/subjectDashBoard/components/CompleteVisit";
+import CompletedVisits from "./views/subjectDashBoard/components/CompletedVisits";
 import NewProgramVisit from "./views/subjectDashBoard/components/NewProgramVisit";
 import ProgramEncounter from "./views/subjectDashBoard/components/ProgramEncounter";
 import AppBar from "dataEntryApp/components/AppBar";
@@ -58,7 +58,7 @@ const DataEntry = ({
             <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
             <Route exact path={`${path}/subject/viewVisit`} component={ViewVisit} />
             {/* <Route exact path={`${path}/completeVisit/:id/:uuid`} component={CompleteVisit} /> */}
-            <Route exact path={`${path}/subject/completeVisit`} component={CompleteVisit} />
+            <Route exact path={`${path}/subject/completedVisits`} component={CompletedVisits} />
             <Route exact path={`${path}/subject/newProgramVisit`} component={NewProgramVisit} />
             <Route exact path={`${path}/subject/programEncounter`} component={ProgramEncounter} />
           </Grid>

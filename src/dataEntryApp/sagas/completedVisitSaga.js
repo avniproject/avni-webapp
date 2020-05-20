@@ -1,5 +1,5 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import { types, setCompletedVisit, setVisitTypes } from "../reducers/completedVisitReducer";
+import { types, setCompletedVisit, setVisitTypes } from "../reducers/completedVisitsReducer";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapViewVisit } from "../../common/subjectModelMapper";
 

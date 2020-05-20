@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getViewVisit } from "../../../reducers/viewVisitReducer";
-import { types } from "../../../reducers/completedVisitReducer";
+import { types } from "../../../reducers/completedVisitsReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -96,7 +96,7 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
           <Observations observations={viewVisit ? viewVisit.observations : ""} />
         </Paper>
         <Button color="primary">
-          <InternalLink to={`/app/subject/completeVisit?id=${enrolldata.enrollmentId}`}>
+          <InternalLink to={`/app/subject/completedVisits?id=${enrolldata.enrollmentId}`}>
             {t("viewAllCompletedVisit")}
           </InternalLink>
         </Button>
@@ -112,7 +112,7 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
 
 const mapStateToProps = state => ({
   viewVisit: state.dataEntry.viewVisitReducer.viewVisits,
-  enrolldata: state.dataEntry.completedVisitReducer.enrolldata
+  enrolldata: state.dataEntry.completedVisitsReducer.enrolldata
 });
 
 const mapDispatchToProps = {

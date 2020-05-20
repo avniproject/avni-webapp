@@ -69,6 +69,9 @@ const useStyles = makeStyles(theme => ({
   gridBottomBorder: {
     borderBottom: "1px solid rgba(0,0,0,0.12)",
     paddingBottom: "10px"
+  },
+  infomsg: {
+    marginLeft: 10
   }
 }));
 
@@ -138,7 +141,14 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <GridCommonList gridListDetails={profile.relationships} path={path} />
+            {profile.relationships != undefined ? (
+              <GridCommonList gridListDetails={profile.relationships} path={path} />
+            ) : (
+              <Typography variant="caption" gutterBottom className={classes.infomsg}>
+                {" "}
+                {t("no")} {t("Relatives")}{" "}
+              </Typography>
+            )}
           </ExpansionPanelDetails>
           {!enableReadOnly ? <Button color="primary"> {t("addARelative")}</Button> : ""}
         </ExpansionPanel>
