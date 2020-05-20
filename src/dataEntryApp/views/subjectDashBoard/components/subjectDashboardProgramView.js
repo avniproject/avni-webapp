@@ -245,11 +245,12 @@ const ProgramView = ({ programData }) => {
                     <Visit
                       uuid={row.uuid}
                       name={row.name}
-                      key={index}
                       index={index}
                       visitDate={row.encounterDateTime}
                       earliestVisitDate={row.earliestVisitDateTime}
                       overdueDate={row.maxVisitDateTime}
+                      enrolUuid={programData.uuid}
+                      encounterTypeUuid={row.encounterType.uuid}
                     />
                   ) : (
                     ""
@@ -297,6 +298,8 @@ const ProgramView = ({ programData }) => {
                       index={index}
                       visitDate={row.encounterDateTime}
                       earliestVisitDate={row.earliestVisitDateTime}
+                      encounterDateTime={row.encounterDateTime}
+                      enrolUuid={programData.uuid}
                     />
                   ) : (
                     ""

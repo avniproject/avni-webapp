@@ -162,6 +162,7 @@ export const mapEnrolment = enrolmentList => {
     });
 };
 
+//To get list Program Encounters
 export const mapProgramEncounters = programEncountersList => {
   if (programEncountersList)
     return programEncountersList.map(programEncounters => {
@@ -176,6 +177,21 @@ export const mapProgramEncounters = programEncountersList => {
     });
 };
 
+//To get Program Encounter with observations
+export const mapProgramEncounter = programEncounter => {
+  if (programEncounter) {
+    const programEncounterObj = General.assignFields(
+      programEncounter,
+      new ProgramEncounter(),
+      ["uuid", "name"],
+      ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime"]
+    );
+    programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
+    programEncounterObj.observations = mapObservation(programEncounter["observations"]);
+    return programEncounterObj;
+  }
+};
+
 export const mapOperationalProgram = enrolment => {
   const operationalProgram = General.assignFields(enrolment, new Program(), [
     "operationalProgramName"
@@ -185,7 +201,7 @@ export const mapOperationalProgram = enrolment => {
 };
 
 export const mapEncounterType = encounterType => {
-  return General.assignFields(encounterType, new EncounterType(), ["name"]);
+  return General.assignFields(encounterType, new EncounterType(), ["name", "uuid"]);
 };
 
 // general tab subject Dashbord

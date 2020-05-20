@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { remove, isNil } from "lodash";
+import { remove, isNil, isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -13,9 +13,10 @@ import {
   getProgramEncounterForm,
   onLoad,
   setProgramEncounter,
-  saveProgramEncounterComplete,
   updateProgramEncounter,
-  setEncounterDateValidation
+  setEncounterDateValidation,
+  onLoadEditProgramEncounter,
+  setInitialState
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 
@@ -39,15 +40,22 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
   const { t } = useTranslation();
   const classes = useStyles();
   const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
-  const enrolmentUuid = match.queryParams.enrolUuid;
-  const encounterTypeUuid = match.queryParams.uuid;
+  const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
+  const enrolUuid = match.queryParams.enrolUuid;
+  const uuid = match.queryParams.uuid;
 
   useEffect(() => {
+    props.setInitialState();
     props.setProgramEncounter();
-    props.saveProgramEncounterComplete(false);
     (async function fetchData() {
-      await props.onLoad(enrolmentUuid);
-      props.getProgramEncounterForm(encounterTypeUuid, enrolmentUuid);
+      if (editProgramEncounter) {
+        //uuid - programEncounterUuid
+        await props.onLoadEditProgramEncounter(uuid, enrolUuid);
+      } else {
+        //uuid - encounterTypeUuid
+        await props.onLoad(enrolUuid);
+        props.getProgramEncounterForm(uuid, enrolUuid);
+      }
     })();
   }, []);
 
@@ -71,6 +79,7 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                       size="small"
                       id="date-picker-dialog"
                       format="MM/dd/yyyy"
+                      placeholder="mm/dd/yyyy"
                       name="visitDateTime"
                       autoComplete="off"
                       required
@@ -128,9 +137,10 @@ const mapDispatchToProps = {
   getProgramEncounterForm,
   onLoad,
   setProgramEncounter,
-  saveProgramEncounterComplete,
   updateProgramEncounter,
-  setEncounterDateValidation
+  setEncounterDateValidation,
+  onLoadEditProgramEncounter,
+  setInitialState
 };
 
 export default withRouter(

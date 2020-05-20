@@ -100,6 +100,14 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#F8F9F9",
     float: "left",
     display: "inline"
+  },
+  error: {
+    color: "red",
+    padding: "3px",
+    fontSize: "12px"
+  },
+  errorText: {
+    color: "red"
   }
 }));
 
@@ -122,9 +130,15 @@ const styles = theme => ({
 const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match }) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
+  const [errorStatus, setError] = React.useState(false);
 
   const handleChange = event => {
     setSelectedProgram(event.target.value);
+    setError(!event.target.value);
+  };
+
+  const handleError = isError => {
+    setError(isError);
   };
 
   const { t } = useTranslation();
@@ -137,7 +151,11 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
     <DialogContent>
       <form className={classes.form} noValidate>
         <FormControl className={classes.formControl}>
-          <InputLabel shrink id="demo-simple-select-placeholder-label-label">
+          <InputLabel
+            shrink
+            id="demo-simple-select-placeholder-label-label"
+            className={errorStatus ? classes.errorText : ""}
+          >
             Program
           </InputLabel>
 
@@ -148,6 +166,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
               name: "selected_program",
               id: "selected_program-native-helper"
             }}
+            error={errorStatus}
           >
             <option key={"emptyElement"} value="" />
 
@@ -159,6 +178,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                 ))
               : ""}
           </NativeSelect>
+          {errorStatus ? <div className={classes.error}>Please select program to enrol.</div> : ""}
         </FormControl>
       </form>
     </DialogContent>
@@ -212,6 +232,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             <div>
               <Modal
                 content={content}
+                handleError={handleError}
                 buttonsSet={[
                   {
                     buttonType: "openButton",
@@ -222,7 +243,9 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                     buttonType: "saveButton",
                     label: t("Enrol"),
                     classes: classes.btnCustom,
-                    redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`
+                    redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`,
+                    requiredField: selectedProgram,
+                    handleError: handleError
                   },
                   {
                     buttonType: "cancelButton",

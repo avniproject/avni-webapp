@@ -61,6 +61,11 @@ const DataEntry = ({
             <Route exact path={`${path}/subject/completedVisits`} component={CompletedVisits} />
             <Route exact path={`${path}/subject/newProgramVisit`} component={NewProgramVisit} />
             <Route exact path={`${path}/subject/programEncounter`} component={ProgramEncounter} />
+            <Route
+              exact
+              path={`${path}/subject/editProgramEncounter`}
+              component={ProgramEncounter}
+            />
           </Grid>
         </Grid>
       </div>

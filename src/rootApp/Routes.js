@@ -4,7 +4,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import { AccessDenied, WithProps } from "../common/components/utils";
 import { OrgManager } from "../adminApp";
-import { ROLES, withoutDataEntry } from "../common/constants";
+import { ROLES } from "../common/constants";
 import "./SecureApp.css";
 import DataEntry from "../dataEntryApp/DataEntry";
 import Homepage from "./views/Homepage";
@@ -91,22 +91,6 @@ const Routes = ({ user, organisation }) => (
   </Switch>
 );
 
-const RoutesWithoutDataEntry = ({ user }) => (
-  <Switch>
-    <Route path="/admin">
-      <RestrictedRoute
-        path="/"
-        allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
-        currentUserRoles={user.roles}
-        component={OrgManager}
-      />
-    </Route>
-    <Route exact path="/">
-      <Redirect to="/admin" />
-    </Route>
-  </Switch>
-);
-
 const mapStateToProps = state => ({
   organisation: state.app.organisation,
   user: state.app.user
@@ -115,4 +99,4 @@ const mapStateToProps = state => ({
 export default connect(
   mapStateToProps,
   null
-)(withoutDataEntry ? RoutesWithoutDataEntry : Routes);
+)(Routes);

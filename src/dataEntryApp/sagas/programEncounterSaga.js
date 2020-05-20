@@ -19,6 +19,7 @@ import { mapForm } from "../../common/adapters";
 import { ProgramEncounter, ProgramEnrolment, ObservationsHolder, Concept } from "avni-models";
 import { ModelGeneral as General, EncounterType } from "avni-models";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
+import { mapProgramEncounter } from "common/subjectModelMapper";
 
 export default function*() {
   yield all(
@@ -26,7 +27,8 @@ export default function*() {
       programEncouterOnLoadWatcher,
       programEncounterFetchFormWatcher,
       updateEncounterObsWatcher,
-      saveProgramEncounterWatcher
+      saveProgramEncounterWatcher,
+      loadEditProgramEncounterWatcher
     ].map(fork)
   );
 }
@@ -197,9 +199,31 @@ export function* saveProgramEncounterWorker() {
   const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
   let resource = programEncounter.toResource;
   yield call(api.saveProgramEncouter, resource);
-  yield put(saveProgramEncounterComplete(true));
+  yield put(saveProgramEncounterComplete());
 }
 
 export function* saveProgramEncounterWatcher() {
   yield takeLatest(types.SAVE_PROGRAM_ENCOUNTER, saveProgramEncounterWorker);
+}
+
+function* loadEditProgramEncounterWatcher() {
+  yield takeLatest(types.ON_LOAD_EDIT_PROGRAM_ENCOUNTER, loadEditProgramEncounterWorker);
+}
+
+export function* loadEditProgramEncounterWorker({ programEncounterUuid, enrolUuid }) {
+  const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
+  const programEnrolmentJson = yield call(api.fetchProgramEnrolment, enrolUuid);
+  const programEncounter = mapProgramEncounter(programEncounterJson);
+  const formMapping = yield select(
+    selectFormMappingByEncounterTypeUuid(programEncounter.encounterType.uuid)
+  );
+  const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
+  const programEnrolment = new ProgramEnrolment();
+  programEnrolment.uuid = enrolUuid;
+  programEnrolment.enrolmentDateTime = new Date(programEnrolmentJson.enrolmentDateTime);
+  programEncounter.programEnrolment = programEnrolment;
+
+  yield put(setProgramEncounterForm(mapForm(programEncounterForm)));
+  yield put.resolve(setProgramEncounter(programEncounter));
+  yield put(getSubjectProfile(programEnrolmentJson.subjectUuid));
 }
