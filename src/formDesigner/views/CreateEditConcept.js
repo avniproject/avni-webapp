@@ -25,6 +25,7 @@ import { Redirect } from "react-router-dom";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
+import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -619,11 +620,10 @@ class CreateEditConcept extends Component {
             {!this.props.isCreatePage && (
               <>
                 <p />
-                <AvniSwitch
-                  checked={this.state.active ? true : false}
-                  onChange={event => this.handleActive(event)}
-                  name="Active"
-                  toolTipKey={"APP_DESIGNER_CONCEPT_ACTIVE"}
+                <ConceptActiveSwitch
+                  active={this.state.active}
+                  handleActive={this.handleActive}
+                  conceptUUID={this.state.uuid}
                 />
                 <p />
               </>
