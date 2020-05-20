@@ -81,13 +81,14 @@ public class ProgramEncounterService {
     }
 
     public List<ProgramEncounter> constructVisitSchedules(ProgramEnrolment programEnrolment,String encounterTypeName){
-        return programEnrolment.getProgramEncounters().stream().filter(programEncounter -> programEncounter.getEncounterType().getOperationalEncounterTypeName().equals(encounterTypeName)).collect(Collectors.toList());
+        return programEnrolment.getProgramEncounters().stream().filter(programEncounter -> programEncounter.getEncounterType().getName().equals(encounterTypeName)).collect(Collectors.toList());
     }
 
     public void saveVisitSchedules(String uuid,List<VisitSchedule> visitSchedules){
+        ProgramEnrolment programEnrolment = getAllEncountersForEnrolment(uuid);
         for( VisitSchedule visitSchedule : visitSchedules){
             try {
-                processVisitSchedule(uuid, visitSchedule);
+                processVisitSchedule(programEnrolment, visitSchedule);
             }catch (Exception e){
                 RuleFailureLog ruleFailureLog = RuleFailureLog.createInstance(uuid,"Save : Visit Schedule Rule",uuid,"Save : "+ EntityEnum.PROGRAM_ENCOUNTER_ENTITY.getEntityName(),"Web",e);
                 ruleFailureLogRepository.save(ruleFailureLog);
@@ -95,9 +96,8 @@ public class ProgramEncounterService {
         }
     }
 
-    public void processVisitSchedule(String uuid,VisitSchedule visitSchedule) throws Exception {
-        ProgramEnrolment programEnrolment = getAllEncountersForEnrolment(uuid);
-        List<ProgramEncounter> allScheduleEncountersByType = constructVisitSchedules(programEnrolment,visitSchedule.getName());
+    public void processVisitSchedule(ProgramEnrolment programEnrolment ,VisitSchedule visitSchedule) throws Exception {
+        List<ProgramEncounter> allScheduleEncountersByType = constructVisitSchedules(programEnrolment,visitSchedule.getEncounterType());
         if(allScheduleEncountersByType.isEmpty() || "createNew".equals(visitSchedule.getVisitCreationStrategy())){
             EncounterType encounterType = encounterTypeRepository.findByName(visitSchedule.getEncounterType());
             if(encounterType == null){
