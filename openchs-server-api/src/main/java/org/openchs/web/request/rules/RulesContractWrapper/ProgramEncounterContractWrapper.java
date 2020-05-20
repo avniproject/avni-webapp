@@ -10,13 +10,22 @@ import java.util.List;
 public class ProgramEncounterContractWrapper extends ProgramEncountersContract {
     private List<ObservationContract> observations;
     private RuleRequestEntity rule;
-    private EnrolmentContract programEnrolment;
+    private ProgramEnrolmentContractWrapper programEnrolment;
+    private List<VisitSchedule> visitSchedules;
 
-    public EnrolmentContract getProgramEnrolment() {
+    public List<VisitSchedule> getVisitSchedules() {
+        return visitSchedules;
+    }
+
+    public void setVisitSchedules(List<VisitSchedule> visitSchedules) {
+        this.visitSchedules = visitSchedules;
+    }
+
+    public ProgramEnrolmentContractWrapper getProgramEnrolment() {
         return programEnrolment;
     }
 
-    public void setProgramEnrolment(EnrolmentContract programEnrolment) {
+    public void setProgramEnrolment(ProgramEnrolmentContractWrapper programEnrolment) {
         this.programEnrolment = programEnrolment;
     }
 

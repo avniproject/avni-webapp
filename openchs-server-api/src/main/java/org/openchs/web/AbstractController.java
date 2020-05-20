@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.joda.time.DateTime;
+import org.openchs.common.EntityHelper;
 import org.openchs.dao.CHSRepository;
 import org.openchs.dao.UserRepository;
 import org.openchs.domain.CHSEntity;
@@ -12,11 +13,6 @@ public abstract class AbstractController<T extends CHSEntity> {
     private UserRepository userRepository;
 
     protected T newOrExistingEntity(CHSRepository<T> chsRepository, CHSRequest chsRequest, T chsEntity) {
-        T t = chsRepository.findByUuid(chsRequest.getUuid());
-        if (t == null) {
-            t = chsEntity;
-            t.setUuid(chsRequest.getUuid());
-        }
-        return t;
+        return EntityHelper.newOrExistingEntity(chsRepository,chsRequest,chsEntity);
     }
 }

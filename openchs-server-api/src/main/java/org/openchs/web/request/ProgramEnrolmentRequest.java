@@ -1,6 +1,7 @@
 package org.openchs.web.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 
 import java.util.List;
 
@@ -8,6 +9,15 @@ import java.util.List;
 public class ProgramEnrolmentRequest extends org.openchs.web.request.common.CommonProgramEnrolmentRequest {
     private List<ObservationRequest> observations;
     private List<ObservationRequest> programExitObservations;
+    private List<VisitSchedule> visitSchedules;
+
+    public List<VisitSchedule> getVisitSchedules() {
+        return visitSchedules;
+    }
+
+    public void setVisitSchedules(List<VisitSchedule> visitSchedules) {
+        this.visitSchedules = visitSchedules;
+    }
 
     public List<ObservationRequest> getObservations() {
         return observations;

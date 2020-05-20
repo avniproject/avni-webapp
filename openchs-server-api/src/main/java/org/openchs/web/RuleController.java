@@ -5,6 +5,7 @@ import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.RuleService;
 import org.openchs.web.request.RuleDependencyRequest;
 import org.openchs.web.request.RuleRequest;
+import org.openchs.web.request.rules.constant.WorkFlowTypeEnum;
 import org.openchs.web.request.rules.request.RequestEntityWrapper;
 import org.openchs.web.request.rules.response.RuleResponseEntity;
 import org.openchs.web.validation.ValidationException;
@@ -66,19 +67,44 @@ public class RuleController {
     ResponseEntity<?> decisionRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
         RuleResponseEntity ruleResponseEntity = null;
         if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
-            switch (requestEntityWrapper.getRule().getWorkFlowType().toLowerCase()) {
-                case "individual":
+            switch (WorkFlowTypeEnum.findByValue(requestEntityWrapper.getRule().getWorkFlowType().toLowerCase())) {
+                case INDIVIDUAL:
                     ruleResponseEntity = ruleService.decisionRuleIndividualWorkFlow(requestEntityWrapper);
                     break;
-                case "programencounter":
+                case PROGRAM_ENCOUNTER:
                     ruleResponseEntity = ruleService.decisionRuleProgramEncounterWorkFlow(requestEntityWrapper);
                     break;
-                case "programenrolment":
+                case PROGRAM_ENROLMENT:
                     ruleResponseEntity = ruleService.decisionRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
                     break;
-                case "encounter":
+                case ENCOUNTER:
                     ruleResponseEntity = ruleService.decisionRuleEncounterWorkFlow(requestEntityWrapper);
                     break;
+            }
+        }
+        if(ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
+            return ResponseEntity.ok().body(ruleResponseEntity);
+        }else{
+            return ResponseEntity.badRequest().body(ruleResponseEntity);
+        }
+    }
+
+    @RequestMapping(value = "/web/visitrule", method = RequestMethod.POST)
+    ResponseEntity<?> visitScheduleRules(@RequestBody RequestEntityWrapper requestEntityWrapper) throws IOException, JSONException {
+        RuleResponseEntity ruleResponseEntity = null;
+        if(requestEntityWrapper.getRule().getWorkFlowType() != null) {
+            switch (WorkFlowTypeEnum.findByValue(requestEntityWrapper.getRule().getWorkFlowType().toLowerCase())) {
+                case PROGRAM_ENROLMENT:
+                    ruleResponseEntity = ruleService.visitScheduleRuleProgramEnrolmentWorkFlow(requestEntityWrapper);
+                    break;
+                case PROGRAM_ENCOUNTER:
+                    ruleResponseEntity = ruleService.visitScheduleRuleProgramEncounterWorkFlow(requestEntityWrapper);
+                    break;
+                /* Encounter VisitSchedule , Not in scope of 2nd Release
+                case "encounter":
+                    ruleResponseEntity = ruleService.visitScheduleRuleEncounterWorkFlow(requestEntityWrapper);
+                    break;
+                */
             }
         }
         if(ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
