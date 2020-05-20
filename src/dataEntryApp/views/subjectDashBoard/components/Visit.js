@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     padding: "2px 5px"
   },
   cancelLabel: {
-    color: "#555555",
+    color: "gray",
     backgroundColor: "#DCDCDC",
     fontSize: "12px",
     padding: "2px 5px"
@@ -85,7 +85,6 @@ const Visit = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  console.log("cancelDateTime ", cancelDateTime);
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
       <Paper className={classes.paper}>

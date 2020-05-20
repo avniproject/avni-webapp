@@ -14,7 +14,6 @@ import moment from "moment";
 import {
   getCancelProgramEncounterForm,
   setProgramEncounter,
-  saveProgramEncounterComplete,
   updateProgramEncounter,
   setEncounterDateValidation,
   setInitialState,
@@ -27,14 +26,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3, 2),
     margin: theme.spacing(1, 3),
     flexGrow: 1
-  },
-  mainHeading: {
-    fontSize: "20px"
-  },
-  container: {
-    display: "inline",
-    flexWrap: "wrap",
-    fontSize: "13px"
   }
 }));
 
@@ -47,8 +38,8 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
-    props.setProgramEncounter();
     props.setInitialState();
+    props.setProgramEncounter();
     if (editCancelProgramEncounter) {
       props.onLoadEditCancelProgramEncounter(uuid, enrolUuid);
     } else {
@@ -77,55 +68,50 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <div className={classes.tableView}>
-          <Grid justify="center" alignItems="center" container spacing={3}>
-            <Grid item xs={12}>
-              {props.cancelProgramEncounterForm && programEncounter && props.subjectProfile ? (
-                <CancelProgramEncounterForm>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                      style={{ width: "30%" }}
-                      label="Cancel Date"
-                      margin="none"
-                      size="small"
-                      id="date-picker-dialog"
-                      format="MM/dd/yyyy"
-                      placeholder="mm/dd/yyyy"
-                      name="visitDateTime"
-                      autoComplete="off"
-                      required
-                      value={new Date(programEncounter.cancelDateTime)}
-                      error={
-                        !isNil(validationResultForCancelDate) &&
-                        !validationResultForCancelDate.success
-                      }
-                      helperText={
-                        !isNil(validationResultForCancelDate) &&
-                        t(validationResultForCancelDate.messageKey)
-                      }
-                      onChange={date => {
-                        const cancelDate = isNil(date) ? undefined : new Date(date);
-                        props.updateProgramEncounter("cancelDateTime", cancelDate);
-                        remove(
-                          enconterDateValidation,
-                          vr => vr.formIdentifier === CANCEL_DATE_TIME
-                        );
-                        enconterDateValidation.push(validateCancelDate(cancelDate));
-                        props.setEncounterDateValidation(enconterDateValidation);
-                      }}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date",
-                        color: "primary"
-                      }}
-                    />
-                  </MuiPickersUtilsProvider>
-                </CancelProgramEncounterForm>
-              ) : (
-                <div>Loading</div>
-              )}
-            </Grid>
+        <Grid justify="center" alignItems="center" container spacing={3}>
+          <Grid item xs={12}>
+            {props.cancelProgramEncounterForm && programEncounter && props.subjectProfile ? (
+              <CancelProgramEncounterForm>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    style={{ width: "30%" }}
+                    label="Cancel Date"
+                    margin="none"
+                    size="small"
+                    id="date-picker-dialog"
+                    format="MM/dd/yyyy"
+                    placeholder="mm/dd/yyyy"
+                    name="cancelDateTime"
+                    autoComplete="off"
+                    required
+                    value={new Date(programEncounter.cancelDateTime)}
+                    error={
+                      !isNil(validationResultForCancelDate) &&
+                      !validationResultForCancelDate.success
+                    }
+                    helperText={
+                      !isNil(validationResultForCancelDate) &&
+                      t(validationResultForCancelDate.messageKey)
+                    }
+                    onChange={date => {
+                      const cancelDate = isNil(date) ? undefined : new Date(date);
+                      props.updateProgramEncounter("cancelDateTime", cancelDate);
+                      remove(enconterDateValidation, vr => vr.formIdentifier === CANCEL_DATE_TIME);
+                      enconterDateValidation.push(validateCancelDate(cancelDate));
+                      props.setEncounterDateValidation(enconterDateValidation);
+                    }}
+                    KeyboardButtonProps={{
+                      "aria-label": "change date",
+                      color: "primary"
+                    }}
+                  />
+                </MuiPickersUtilsProvider>
+              </CancelProgramEncounterForm>
+            ) : (
+              <div>Loading</div>
+            )}
           </Grid>
-        </div>
+        </Grid>
       </Paper>
     </Fragment>
   );
@@ -140,7 +126,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   setProgramEncounter,
-  saveProgramEncounterComplete,
   updateProgramEncounter,
   setEncounterDateValidation,
   onLoadEditCancelProgramEncounter,

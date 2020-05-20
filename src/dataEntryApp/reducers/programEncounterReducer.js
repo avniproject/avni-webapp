@@ -181,9 +181,9 @@ export default function(state = initialState, action) {
     case types.SET_INITIAL_STATE: {
       return {
         ...state,
-        saved: initialState.saved,
-        validationResults: initialState.validationResults,
-        enconterDateValidation: initialState.enconterDateValidation
+        saved: false,
+        validationResults: [],
+        enconterDateValidation: []
       };
     }
     default:
