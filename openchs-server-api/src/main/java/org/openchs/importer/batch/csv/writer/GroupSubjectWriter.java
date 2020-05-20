@@ -1,5 +1,6 @@
 package org.openchs.importer.batch.csv.writer;
 
+import org.joda.time.LocalDate;
 import org.openchs.dao.GroupRoleRepository;
 import org.openchs.dao.GroupSubjectRepository;
 import org.openchs.dao.IndividualRepository;
@@ -12,6 +13,7 @@ import org.openchs.domain.GroupSubject;
 import org.openchs.domain.Individual;
 import org.openchs.domain.individualRelationship.IndividualRelation;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
+import org.openchs.importer.batch.csv.creator.DateCreator;
 import org.openchs.importer.batch.csv.writer.header.GroupMemberHeaders;
 import org.openchs.importer.batch.csv.writer.header.HouseholdMemberHeaders;
 import org.openchs.importer.batch.model.Row;
@@ -35,6 +37,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
 
     private final GroupMemberHeaders groupMemberHeaders = new GroupMemberHeaders();
     private final HouseholdMemberHeaders householdMemberHeaders = new HouseholdMemberHeaders();
+    private DateCreator dateCreator;
 
     @Autowired
     public GroupSubjectWriter(GroupSubjectRepository groupSubjectRepository, GroupRoleRepository groupRoleRepository, IndividualRepository individualRepository, IndividualRelationRepository individualRelationRepository, IndividualRelationshipTypeRepository individualRelationshipTypeRepository, IndividualRelationGenderMappingRepository individualRelationGenderMappingRepository, IndividualRelationshipRepository individualRelationshipRepository, HouseholdService householdService) {
@@ -44,6 +47,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
         this.individualRelationRepository = individualRelationRepository;
         this.individualRelationshipRepository = individualRelationshipRepository;
         this.householdService = householdService;
+        this.dateCreator = new DateCreator();
     }
 
     @Override
@@ -63,6 +67,7 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
         IndividualRelationship individualRelationship = null;
 
         if (isHousehold) {
+            Individual existingHeadOfHousehold = householdService.getHeadOfHouseholdForGroupSubject(groupSubject);
             groupSubject.setGroupRole(getHouseholdGroupRole(row.getBool(householdMemberHeaders.isHeadOfHousehold),
                     allErrorMsgs,
                     householdMemberHeaders.isHeadOfHousehold,
@@ -72,6 +77,10 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
                 if (individualRelation != null) {
                     individualRelationship = householdService.determineRelationshipWithHeadOfHousehold(groupSubject, individualRelation, allErrorMsgs);
                 }
+            } else if (groupSubject.getGroupRole().getRole().equals("Head of household")) {
+                if (existingHeadOfHousehold != null && !existingHeadOfHousehold.getId().equals(groupSubject.getMemberSubject().getId())) {
+                    allErrorMsgs.add(String.format("Member with id '%s' cannot be head of household because another member is already head of household.", groupSubject.getMemberSubject().getLegacyId()));
+                }
             }
         } else {
             groupSubject.setGroupRole(getGroupRole(row.get(groupMemberHeaders.role),
@@ -79,6 +88,8 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
                     groupMemberHeaders.role,
                     groupSubject.getGroupSubject().getSubjectType().getId()));
         }
+
+        saveMembershipDates(row, groupSubject, allErrorMsgs);
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));
@@ -179,6 +190,17 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
 
             individualRelationship.assignUUIDIfRequired();
             individualRelationshipRepository.save(individualRelationship);
+        }
+    }
+
+    private void saveMembershipDates(Row row, GroupSubject groupSubject, List<String> errorMsgs) {
+        LocalDate membershipStartDate = dateCreator.getDate(row, groupMemberHeaders.membershipStartDate, errorMsgs, null);
+        if (membershipStartDate != null) {
+            groupSubject.setMembershipStartDate(membershipStartDate.toDateTimeAtStartOfDay());
+        }
+        LocalDate membershipEndDate = dateCreator.getDate(row, groupMemberHeaders.membershipEndDate, errorMsgs, null);
+        if (membershipEndDate != null) {
+            groupSubject.setMembershipEndDate(membershipEndDate.toDateTimeAtStartOfDay());
         }
     }
 

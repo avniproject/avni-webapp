@@ -14,17 +14,17 @@ public class DateCreator {
     public LocalDate getDate(Row row, String header, List<String> errorMsgs, String errorMessageIfNotExists) {
         try {
             String date = row.get(header);
-            if (date != null) {
+            if (date != null && !date.trim().isEmpty()) {
                 return LocalDate.parse(date);
             }
 
-            if (date == null && errorMessageIfNotExists != null) {
+            if (errorMessageIfNotExists != null) {
                 errorMsgs.add(errorMessageIfNotExists);
             }
+            return null;
         } catch (Exception ex) {
             logger.error(String.format("Error processing row %s", row), ex);
             errorMsgs.add(String.format("Invalid '%s'", header));
-        } finally {
             return null;
         }
     }

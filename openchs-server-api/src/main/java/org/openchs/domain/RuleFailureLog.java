@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
+
 @Entity
 @Table(name = "rule_failure_log")
 public class RuleFailureLog extends OrganisationAwareEntity{
@@ -74,5 +76,18 @@ public class RuleFailureLog extends OrganisationAwareEntity{
     }
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public static RuleFailureLog createInstance(String formUuid,String ruleType,String entityId,String entityType,String source,Exception e){
+        RuleFailureLog ruleFailureLog = new RuleFailureLog();
+        ruleFailureLog.setFormId(formUuid);
+        ruleFailureLog.setRuleType(ruleType);
+        ruleFailureLog.setEntityId(entityId);
+        ruleFailureLog.setEntityType(entityType);
+        ruleFailureLog.setSource(source);
+        ruleFailureLog.setErrorMessage(e.getMessage() != null ? e.getMessage() : "");
+        ruleFailureLog.setStacktrace(e.getStackTrace().toString());
+        ruleFailureLog.setUuid(UUID.randomUUID().toString());
+        return ruleFailureLog;
     }
 }

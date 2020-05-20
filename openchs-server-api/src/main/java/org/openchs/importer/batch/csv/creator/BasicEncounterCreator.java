@@ -1,6 +1,6 @@
 package org.openchs.importer.batch.csv.creator;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.openchs.application.FormType;
 import org.openchs.domain.AbstractEncounter;
 import org.openchs.importer.batch.csv.writer.header.ProgramEncounterHeaders;
@@ -32,25 +32,28 @@ public class BasicEncounterCreator {
 
     public AbstractEncounter updateEncounter(Row row, AbstractEncounter basicEncounter, List<String> allErrorMsgs, FormType formType) throws Exception {
 
-        basicEncounter.setEarliestVisitDateTime(new DateTime(
-                dateCreator.getDate(
-                        row,
-                        headers.earliestVisitDate,
-                        allErrorMsgs, null
-                )));
-        basicEncounter.setMaxVisitDateTime(new DateTime(
-                dateCreator.getDate(
-                        row,
-                        headers.maxVisitDate,
-                        allErrorMsgs, null
-                )));
+        LocalDate earliestVisitDate = dateCreator.getDate(
+                row,
+                headers.earliestVisitDate,
+                allErrorMsgs, null
+        );
+        if (earliestVisitDate != null)
+            basicEncounter.setEarliestVisitDateTime(earliestVisitDate.toDateTimeAtStartOfDay());
 
-        basicEncounter.setEncounterDateTime(new DateTime(
-                dateCreator.getDate(
-                        row,
-                        headers.visitDate,
-                        allErrorMsgs, String.format("%s is mandatory", headers.visitDate
-                        ))));
+        LocalDate maxVisitDate = dateCreator.getDate(
+                row,
+                headers.maxVisitDate,
+                allErrorMsgs, null
+        );
+        if (maxVisitDate != null) basicEncounter.setMaxVisitDateTime(maxVisitDate.toDateTimeAtStartOfDay());
+
+        LocalDate visitDate = dateCreator.getDate(
+                row,
+                headers.visitDate,
+                allErrorMsgs, String.format("%s is mandatory", headers.visitDate
+                ));
+        if (visitDate != null) basicEncounter.setEncounterDateTime(visitDate.toDateTimeAtStartOfDay());
+
         basicEncounter.setEncounterLocation(locationCreator.getLocation(row, headers.encounterLocation, allErrorMsgs));
         basicEncounter.setCancelLocation(locationCreator.getLocation(row, headers.cancelLocation, allErrorMsgs));
         basicEncounter.setEncounterType(encounterTypeCreator.getEncounterType(row.get(headers.encounterType), allErrorMsgs, headers.encounterType));

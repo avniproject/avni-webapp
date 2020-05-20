@@ -1,11 +1,11 @@
 package org.openchs.importer.batch.csv.writer;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.openchs.application.FormType;
 import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.ProgramEnrolment;
-import org.openchs.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.openchs.importer.batch.csv.creator.*;
+import org.openchs.importer.batch.csv.writer.header.ProgramEnrolmentHeaders;
 import org.openchs.importer.batch.model.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,18 +54,19 @@ public class ProgramEnrolmentWriter implements ItemWriter<Row>, Serializable {
         List<String> allErrorMsgs = new ArrayList<>();
 
         programEnrolment.setIndividual(subjectCreator.getSubject(row.get(headers.subjectId), allErrorMsgs, headers.subjectId));
-        programEnrolment.setEnrolmentDateTime(new DateTime(
-                dateCreator.getDate(
-                        row,
-                        headers.enrolmentDate,
-                        allErrorMsgs, String.format("%s is mandatory", headers.enrolmentDate)
-                )));
-        programEnrolment.setProgramExitDateTime(new DateTime(
-                dateCreator.getDate(
-                        row,
-                        headers.exitDate,
-                        allErrorMsgs, null
-                )));
+        LocalDate enrolmentDate = dateCreator.getDate(
+                row,
+                headers.enrolmentDate,
+                allErrorMsgs, String.format("%s is mandatory", headers.enrolmentDate)
+        );
+        if (enrolmentDate != null) programEnrolment.setEnrolmentDateTime(enrolmentDate.toDateTimeAtStartOfDay());
+        LocalDate exitDate = dateCreator.getDate(
+                row,
+                headers.exitDate,
+                allErrorMsgs, null
+        );
+        if (exitDate != null) programEnrolment.setProgramExitDateTime(exitDate.toDateTimeAtStartOfDay());
+
         programEnrolment.setEnrolmentLocation(locationCreator.getLocation(row, headers.enrolmentLocation, allErrorMsgs));
         programEnrolment.setExitLocation(locationCreator.getLocation(row, headers.exitLocation, allErrorMsgs));
         programEnrolment.setProgram(programCreator.getProgram(row.get(headers.program), allErrorMsgs, headers.program));

@@ -37,10 +37,8 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-public class ProgramEncounterController extends AbstractController<ProgramEncounter> implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter>, OperatingIndividualScopeAwareFilterController<ProgramEncounter> {
+public class ProgramEncounterController implements RestControllerResourceProcessor<ProgramEncounter>, OperatingIndividualScopeAwareController<ProgramEncounter>, OperatingIndividualScopeAwareFilterController<ProgramEncounter> {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(IndividualController.class);
-    @Autowired
-    Bugsnag bugsnag;
     private EncounterTypeRepository encounterTypeRepository;
     private ProgramEncounterRepository programEncounterRepository;
     private ProgramEnrolmentRepository programEnrolmentRepository;
@@ -102,46 +100,14 @@ public class ProgramEncounterController extends AbstractController<ProgramEncoun
         return ResponseEntity.ok(programEncountersContract);
     }
 
-    private void checkForSchedulingCompleteConstraintViolation(ProgramEncounterRequest request) {
-        if ((request.getEarliestVisitDateTime() != null || request.getMaxVisitDateTime() != null)
-                && (request.getEarliestVisitDateTime() == null || request.getMaxVisitDateTime() == null)
-        ) {
-            //violating constraint so notify bugsnag
-            bugsnag.notify(new Exception(String.format("ProgramEncounter violating scheduling constraint uuid %s earliest %s max %s", request.getUuid(), request.getEarliestVisitDateTime(), request.getMaxVisitDateTime())));
-        }
-
-    }
-
     @RequestMapping(value = "/programEncounters", method = RequestMethod.POST)
     @Transactional
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void save(@RequestBody ProgramEncounterRequest request) {
-        logger.info(String.format("Saving programEncounter with uuid %s", request.getUuid()));
-        checkForSchedulingCompleteConstraintViolation(request);
-        EncounterType encounterType = encounterTypeRepository.findByUuidOrName(request.getEncounterType(), request.getEncounterTypeUUID());
-        ProgramEncounter encounter = newOrExistingEntity(programEncounterRepository, request, new ProgramEncounter());
-        //Planned visit can not overwrite completed encounter
-        if (encounter.isCompleted() && request.isPlanned())
-            return;
-
-        encounter.setEncounterDateTime(request.getEncounterDateTime());
-        encounter.setProgramEnrolment(programEnrolmentRepository.findByUuid(request.getProgramEnrolmentUUID()));
-        encounter.setEncounterType(encounterType);
-        encounter.setObservations(observationService.createObservations(request.getObservations()));
-        encounter.setName(request.getName());
-        encounter.setEarliestVisitDateTime(request.getEarliestVisitDateTime());
-        encounter.setMaxVisitDateTime(request.getMaxVisitDateTime());
-        encounter.setCancelDateTime(request.getCancelDateTime());
-        encounter.setCancelObservations(observationService.createObservations(request.getCancelObservations()));
-        PointRequest encounterLocation = request.getEncounterLocation();
-        if (encounterLocation != null)
-            encounter.setEncounterLocation(new Point(encounterLocation.getX(), encounterLocation.getY()));
-        PointRequest cancelLocation = request.getCancelLocation();
-        if (cancelLocation != null)
-            encounter.setCancelLocation(new Point(cancelLocation.getX(), cancelLocation.getY()));
-
-        programEncounterRepository.save(encounter);
-        logger.info(String.format("Saved programEncounter with uuid %s", request.getUuid()));
+        if(request.getVisitSchedules() != null && request.getVisitSchedules().size() > 0) {
+            programEncounterService.saveVisitSchedules(request.getProgramEnrolmentUUID(),request.getVisitSchedules());
+        }
+        programEncounterService.saveProgramEncounters(request);
     }
 
     @RequestMapping(value = "/programEncounter/search/byIndividualsOfCatchmentAndLastModified", method = RequestMethod.GET)

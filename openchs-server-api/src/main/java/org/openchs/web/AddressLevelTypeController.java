@@ -1,6 +1,8 @@
 package org.openchs.web;
 
 import org.openchs.dao.AddressLevelTypeRepository;
+import org.openchs.dao.LocationRepository;
+import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
 import org.openchs.service.LocationService;
 import org.openchs.util.ReactAdminUtil;
@@ -17,17 +19,20 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class AddressLevelTypeController extends AbstractController<AddressLevelType> {
 
     private final AddressLevelTypeRepository addressLevelTypeRepository;
+    private final LocationRepository locationRepository;
     private Logger logger;
     private LocationService locationService;
 
     @Autowired
-    public AddressLevelTypeController(AddressLevelTypeRepository addressLevelTypeRepository, LocationService locationService) {
+    public AddressLevelTypeController(AddressLevelTypeRepository addressLevelTypeRepository, LocationRepository locationRepository, LocationService locationService) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
+        this.locationRepository = locationRepository;
         this.locationService = locationService;
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -70,6 +75,8 @@ public class AddressLevelTypeController extends AbstractController<AddressLevelT
         AddressLevelType addressLevelType = addressLevelTypeRepository.findByUuid(contract.getUuid());
         addressLevelType.setName(contract.getName());
         addressLevelType.setLevel(contract.getLevel());
+        Set<AddressLevel> addressLevels = addressLevelType.getAddressLevels();
+        addressLevels.forEach(addressLevel -> addressLevel.updateAudit());
         addressLevelTypeRepository.save(addressLevelType);
         return new ResponseEntity<>(addressLevelType, HttpStatus.CREATED);
     }

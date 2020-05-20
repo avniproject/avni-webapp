@@ -2,6 +2,7 @@ package org.openchs.web.request.rules.constructWrappers;
 
 import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.ProgramEnrolmentRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.*;
 import org.openchs.web.request.rules.RulesContractWrapper.IndividualContractWrapper;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
@@ -25,16 +27,19 @@ public class ProgramEnrolmentConstructionService {
     private final ObservationConstructionService observationConstructionService;
     private final IndividualRepository individualRepository;
     private final ConceptRepository conceptRepository;
+    private final ProgramEnrolmentRepository programEnrolmentRepository;
 
     @Autowired
     public ProgramEnrolmentConstructionService(
             ObservationConstructionService observationConstructionService,
             IndividualRepository individualRepository,
-            ConceptRepository conceptRepository) {
+            ConceptRepository conceptRepository,
+            ProgramEnrolmentRepository programEnrolmentRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.observationConstructionService = observationConstructionService;
         this.individualRepository = individualRepository;
         this.conceptRepository = conceptRepository;
+        this.programEnrolmentRepository = programEnrolmentRepository;
     }
 
 
@@ -53,7 +58,26 @@ public class ProgramEnrolmentConstructionService {
         if(programEnrolmentRequestEntity.getIndividualUUID() != null) {
             programEnrolmentContractWrapper.setSubject(getSubjectInfo(individualRepository.findByUuid(programEnrolmentRequestEntity.getIndividualUUID())));
         }
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(programEnrolmentRequestEntity.getUuid());
+        Set<ProgramEncountersContract> encountersContractList = constructEncounters(programEnrolment.getProgramEncounters());
+        programEnrolmentContractWrapper.setProgramEncounters(encountersContractList);
         return programEnrolmentContractWrapper;
+    }
+
+    public Set<ProgramEncountersContract> constructEncounters(Set<ProgramEncounter> encounters) {
+        return encounters.stream().map(encounter -> {
+            ProgramEncountersContract encountersContract = new ProgramEncountersContract();
+            EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
+            encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
+            encountersContract.setUuid(encounter.getUuid());
+            encountersContract.setName(encounter.getName());
+            encountersContract.setEncounterType(encounterTypeContract);
+            encountersContract.setEncounterDateTime(encounter.getEncounterDateTime());
+            encountersContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
+            encountersContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
+            encountersContract.setVoided(encounter.isVoided());
+            return encountersContract;
+        }).collect(Collectors.toSet());
     }
 
     public IndividualContractWrapper getSubjectInfo(Individual individual) {
