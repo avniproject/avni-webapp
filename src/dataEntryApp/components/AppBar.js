@@ -235,6 +235,7 @@ const PrimarySearchAppBar = ({
                   <ExpandMoreIcon />
                 </Button>
                 <Popper
+                  style={{ zIndex: 9 }}
                   open={open}
                   anchorEl={anchorRef.current}
                   role={undefined}

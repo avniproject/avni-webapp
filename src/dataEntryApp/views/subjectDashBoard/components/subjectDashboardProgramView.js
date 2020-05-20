@@ -114,6 +114,10 @@ const useStyles = makeStyles(theme => ({
   },
   infomsg: {
     marginLeft: 10
+  },
+  visitAllButton: {
+    marginLeft: "20px",
+    marginBottom: "10px"
   }
 }));
 
@@ -306,10 +310,8 @@ const ProgramView = ({ programData }) => {
               )}
             </Grid>
           </ExpansionPanelDetails>
-          <Button color="primary">
-            <Link to={`/app/subject/completedVisits?id=${programData.id}`}>
-              {t("viewAllCompletedVisit")}
-            </Link>
+          <Button color="primary" className={classes.visitAllButton}>
+            <Link to={`/app/subject/completedVisits?id=${programData.id}`}>VIWE ALL VISITS</Link>
           </Button>
         </ExpansionPanel>
       </Paper>

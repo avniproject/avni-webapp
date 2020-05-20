@@ -33,22 +33,34 @@ const useStyles = makeStyles(theme => ({
   },
   mainHeading: {
     fontSize: "1.5vw",
-    fontWeight: "bold"
+    fontWeight: 400,
+    marginLeft: 10,
+    marginBottom: 10
   },
   scheduledHeading: {
     fontSize: "1vw",
-    fontWeight: "300"
+    fontWeight: "300",
+    marginBottom: 10
   },
   subHeading: {
     fontSize: "1vw",
     fontWeight: "bold"
   },
+  summaryHeading: {
+    fontSize: "1vw",
+    fontWeight: "bold",
+    marginBottom: 10
+  },
   programStatusStyle: {
-    color: "green",
-    backgroundColor: "#36fb85a8",
-    fontSize: "15px",
+    // color: "green",
+    backgroundColor: "#54fb36a8",
+    fontSize: "12px",
     padding: theme.spacing(0.6, 0.6),
     margin: theme.spacing(1, 1)
+  },
+  scheduleddateStyle: {
+    marginBottom: 20,
+    marginTop: 10
   }
 }));
 
@@ -69,27 +81,29 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
       <Paper className={classes.root}>
         <Grid container direction="row" justify="space-between" alignItems="baseline">
           <Typography component={"span"} className={classes.mainHeading}>
-            {t("ViewVisit")} {t(viewVisit.encounterType.name)}
+            {t("ViewVisit")}: {t(viewVisit.encounterType.name)}
           </Typography>
           {viewVisit.earliestVisitDateTime ? (
             <Typography component={"span"} className={classes.scheduledHeading}>
-              {t("Scheduledon")}{" "}
+              {t("Scheduledon")}
+              {":  "}
               {`${moment(new Date(viewVisit.earliestVisitDateTime)).format("DD-MM-YYYY")}`}
             </Typography>
           ) : (
             ""
           )}
         </Grid>
-
-        <Typography component={"span"} className={classes.programStatusStyle}>
-          {t("Completed")}
-        </Typography>
-        <Typography component={"span"} className={classes.subHeading}>
-          {`${moment(new Date(viewVisit.encounterDateTime)).format("DD-MM-YYYY")}`}
-        </Typography>
+        <div className={classes.scheduleddateStyle}>
+          <Typography component={"span"} className={classes.programStatusStyle}>
+            {t("Completed")}
+          </Typography>
+          <Typography component={"span"} className={classes.subHeading}>
+            {`${moment(new Date(viewVisit.encounterDateTime)).format("DD-MM-YYYY")}`}
+          </Typography>
+        </div>
 
         <Paper className={classes.innerPaper}>
-          <Typography component={"span"} className={classes.subHeading}>
+          <Typography component={"span"} className={classes.summaryHeading}>
             {t("summary")}
           </Typography>
 
