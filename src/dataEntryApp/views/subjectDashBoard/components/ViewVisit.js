@@ -61,6 +61,10 @@ const useStyles = makeStyles(theme => ({
   scheduleddateStyle: {
     marginBottom: 20,
     marginTop: 10
+  },
+  visitButton: {
+    marginLeft: "8px",
+    fontSize: "14px"
   }
 }));
 
@@ -109,11 +113,11 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
 
           <Observations observations={viewVisit ? viewVisit.observations : ""} />
         </Paper>
-        <Button color="primary">
-          <InternalLink to={`/app/subject/completedVisits?id=${enrolldata.enrollmentId}`}>
-            {t("viewAllCompletedVisit")}
-          </InternalLink>
-        </Button>
+        <InternalLink to={`/app/subject/completedVisits?id=${enrolldata.enrollmentId}`}>
+          <Button color="primary" className={classes.visitButton}>
+            {t("viewAllCompletedVisits")}
+          </Button>
+        </InternalLink>
         <Button color="primary" onClick={() => history.goBack()}>
           {t("back")}
         </Button>

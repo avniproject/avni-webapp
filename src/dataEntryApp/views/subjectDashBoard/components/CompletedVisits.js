@@ -52,7 +52,7 @@ const useStyle = makeStyles(theme => ({
   tableheader: {
     color: "rgba(0, 0, 0, 4.54)",
     fontSize: "0.75rem",
-    fontWeight: "530"
+    fontWeight: "500"
   },
   searchCreateToolbar: {
     display: "flex"
