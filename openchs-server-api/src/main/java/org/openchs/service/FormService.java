@@ -31,6 +31,7 @@ public class FormService {
                 .withVisitScheduleRule(formRequest.getVisitScheduleRule())
                 .withValidationRule(formRequest.getValidationRule())
                 .withChecklistRule(formRequest.getChecklistsRule())
+                .withVoided(formRequest.isVoided())
                 .build();
         //Form audit values might not change for changes in form element groups or form elements.
         //This updateAudit forces audit updates

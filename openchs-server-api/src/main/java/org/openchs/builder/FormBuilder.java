@@ -47,6 +47,11 @@ public class FormBuilder extends BaseBuilder<Form, FormBuilder> {
         return this;
     }
 
+    public FormBuilder withVoided(boolean voided) {
+        this.get().setVoided(voided);
+        return this;
+    }
+
     private FormElementGroup getExistingFormElementGroup(String uuid) {
         return this.get().findFormElementGroup(uuid);
     }

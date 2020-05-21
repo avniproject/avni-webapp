@@ -14,6 +14,7 @@ import org.openchs.projection.FormWebProjection;
 import org.openchs.service.FormMappingService;
 import org.openchs.service.FormService;
 import org.openchs.util.ApiException;
+import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.FormMappingContract;
 import org.openchs.web.request.FormatContract;
@@ -163,6 +164,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
                 formMappingService.createOrUpdateFormMapping(formMappingContract);
             }
             existingForm.setVoided(!existingForm.isVoided());
+            existingForm.setName(ReactAdminUtil.getVoidedName(existingForm.getName(), existingForm.getId()));
             formRepository.save(existingForm);
         } catch (Exception e) {
             e.printStackTrace();

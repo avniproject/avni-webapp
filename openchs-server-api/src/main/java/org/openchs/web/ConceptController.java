@@ -8,6 +8,7 @@ import org.openchs.projection.CodedConceptProjection;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.service.ConceptService;
 import org.openchs.util.ObjectMapperSingleton;
+import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.ConceptContract;
 import org.openchs.web.request.application.ConceptUsageContract;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -72,7 +74,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     @GetMapping(value = "/web/concepts")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
     @ResponseBody
-    public PagedResources<Resource<Concept>> getAll(@RequestParam(value = "name", required = false) String name,  Pageable pageable) {
+    public PagedResources<Resource<Concept>> getAll(@RequestParam(value = "name", required = false) String name, Pageable pageable) {
         Sort sortWithId = pageable.getSort().and(new Sort("id"));
         PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), sortWithId);
         if (name == null) {
@@ -113,6 +115,22 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         return Stream.of(ConceptDataType.values())
                 .map(ConceptDataType::name)
                 .collect(Collectors.toList());
+    }
+
+    @DeleteMapping(value = "/concept/{conceptUUID}")
+    @Transactional
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    public ResponseEntity deleteWeb(@PathVariable String conceptUUID) {
+        try {
+            Concept existingConcept = conceptRepository.findByUuid(conceptUUID);
+            existingConcept.setVoided(!existingConcept.isVoided());
+            existingConcept.setName(ReactAdminUtil.getVoidedName(existingConcept.getName(), existingConcept.getId()));
+            conceptRepository.save(existingConcept);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
