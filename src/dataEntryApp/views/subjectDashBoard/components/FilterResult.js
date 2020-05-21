@@ -13,9 +13,14 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
-import { getCompletedVisit } from "../../../reducers/completedVisitsReducer";
+import {
+  getCompletedVisit,
+  addVisitTypeFilters,
+  types
+} from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
 import { noop } from "lodash";
+// import { store } from "../../../../common/store/createStore";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -56,9 +61,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => {
+const FilterResult = ({
+  getCompletedVisit,
+  addVisitTypeFilters,
+  selectedVisitTypesFilter,
+  completedVisitList,
+  visitTypes,
+  visitTypeData
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
+
+  console.log("store data" + selectedVisitTypesFilter);
 
   //const visitTypesList = [...new Set(visitTypes.programEncounters.map(item => item.encounterType))];
   const key = "id";
@@ -70,7 +84,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
 
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
   const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
-  const [selectedVisitType, setVisitType] = React.useState("");
+  // const [selectedVisitType, setVisitType] = React.useState("");
   const [checked, setChecked] = React.useState(false);
 
   // let localSavedVisitType;
@@ -84,35 +98,32 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
   };
 
   // checkbox
-  let selectedVisit = [];
+  let selectedVisitTypes = [];
   const visitTypeChange = event => {
+    selectedVisitTypesFilter = [];
     if (event.target.checked) {
-      selectedVisit.push(event.target.name);
-      //sessionStorage.removeItem("visitType");
+      selectedVisitTypes.push(event.target.name);
     } else {
-      //   selectedVisit = localSavedVisitType ? localSavedVisitType : selectedVisitType;
-      const index = selectedVisit.indexOf(event.target.name);
+      const index = selectedVisitTypes.indexOf(event.target.name);
       if (index > -1) {
-        selectedVisit.splice(index, 1);
+        selectedVisitTypes.splice(index, 1);
       }
-      setVisitType(selectedVisit);
-      //sessionStorage.removeItem("visitType");
+      // addVisitTypeFilters(SelectedvisitTypesList);
+
+      // setVisitType(selectedVisit);
     }
   };
 
   const filterClick = () => {
-    setSelectedScheduleDate(null);
-    setSelectedCompletedDate(null);
-    // if (sessionStorage.getItem("visitType")) {
-    //   localSavedVisitType = JSON.parse(sessionStorage.getItem("visitType"));
-    // }
-    // if (localSavedVisitType > 0) {
-    //   setVisitType(localSavedVisitType);
-    // }
+    console.log("store data" + selectedVisitTypesFilter);
+
+    // selectedVisitTypes
+    // setSelectedScheduleDate(null);
+    // setSelectedCompletedDate(null);
   };
 
   const applyClick = () => {
-    console.log("apply visit" + selectedCompletedDate, selectedScheduleDate, selectedVisitType);
+    // console.log("apply visit" + selectedCompletedDate, selectedScheduleDate, selectedVisitTypesFilter);
     let otherUrl;
 
     if (selectedScheduleDate !== null) {
@@ -131,10 +142,13 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
     }
 
     // checkbox
-    if (selectedVisit.length > 0) {
-      setVisitType(selectedVisit);
-      // sessionStorage.setItem("visitType", JSON.stringify(selectedVisit));
-      otherUrl = "encounterTypeIds=" + selectedVisit.join();
+    if (selectedVisitTypes.length > 0) {
+      //setVisitType(selectedVisits);
+      // sessionStorage.setItem("visitType", JSON.stringify(selectedVisits));
+      const SelectedvisitTypesList = [...new Set(selectedVisitTypes.map(item => item))];
+      addVisitTypeFilters(SelectedvisitTypesList);
+      // store.dispatch({ type: types.ADD_VISITTYPE, value: selectedVisits });
+      otherUrl = "encounterTypeIds=" + SelectedvisitTypesList.join();
     }
     const searchParams = new URLSearchParams(otherUrl);
     const otherPathString = searchParams.toString();
@@ -146,12 +160,10 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
     <FormControlLabel
       control={
         <Checkbox
-          // checked={
-          //   selectedVisitType &&
-          //   selectedVisitType.find(element => element == visitType.id) != undefined
-          //     ? true
-          //     : false
-          // }
+          checked={
+            selectedVisitTypesFilter &&
+            selectedVisitTypesFilter.find(element => element == visitType.id) == visitType.id
+          }
           onChange={visitTypeChange}
           name={visitType.id}
           color="primary"
@@ -240,11 +252,13 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, visitTypes }) => 
 };
 
 const mapStateToProps = state => ({
-  completedVisitList: state.dataEntry.completedVisitsReducer.completedVisitList
+  completedVisitList: state.dataEntry.completedVisitsReducer.completedVisitList,
+  selectedVisitTypesFilter: state.dataEntry.completedVisitsReducer.selectedVisitTypesFilter
 });
 
 const mapDispatchToProps = {
-  getCompletedVisit
+  getCompletedVisit,
+  addVisitTypeFilters
 };
 
 export default withRouter(

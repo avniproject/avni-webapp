@@ -5,7 +5,8 @@ export const types = {
   SET_COMPLETEDVISIT: `${prefix}SET_COMPLETEDVISIT`,
   GET_VISITTYPES: `${prefix}GET_VISITTYPES`,
   SET_VISITTYPES: `${prefix}SET_VISITTYPES`,
-  ADD_ENROLLDATA: `${prefix}ADD_ENROLLDATA`
+  ADD_ENROLLDATA: `${prefix}ADD_ENROLLDATA`,
+  ADD_VISIT_TYPE_FILTERS: `${prefix}ADD_VISIT_TYPE_FILTERS`
 };
 
 export const getCompletedVisit = completedVisitUrl => ({
@@ -28,6 +29,11 @@ export const setVisitTypes = visitTypes => ({
   visitTypes
 });
 
+export const addVisitTypeFilters = selectedVisitTypesFilter => ({
+  type: types.ADD_VISIT_TYPE_FILTERS,
+  selectedVisitTypesFilter
+});
+
 export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_COMPLETEDVISIT: {
@@ -46,6 +52,12 @@ export default function(state = {}, action) {
       return {
         ...state,
         enrolldata: action.value
+      };
+    }
+    case types.ADD_VISIT_TYPE_FILTERS: {
+      return {
+        ...state,
+        selectedVisitTypesFilter: action.selectedVisitTypesFilter
       };
     }
     default:
