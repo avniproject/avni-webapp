@@ -3,7 +3,7 @@ package org.openchs.web;
 import org.openchs.domain.Concept;
 import org.openchs.domain.Organisation;
 import org.openchs.framework.security.UserContextHolder;
-import org.openchs.service.ImplementationService;
+import org.openchs.service.OrganisationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.repository.query.Param;
@@ -25,11 +25,11 @@ import java.util.zip.ZipOutputStream;
 @RestController
 public class ImplementationController implements RestControllerResourceProcessor<Concept> {
 
-    private final ImplementationService implementationService;
+    private final OrganisationService organisationService;
 
     @Autowired
-    public ImplementationController(ImplementationService implementationService) {
-        this.implementationService = implementationService;
+    public ImplementationController(OrganisationService organisationService) {
+        this.organisationService = organisationService;
     }
 
     @RequestMapping(value = "/implementation/export/{includeLocations}", method = RequestMethod.GET)
@@ -43,28 +43,28 @@ public class ImplementationController implements RestControllerResourceProcessor
         //ZipOutputStream will be automatically closed because we are using try-with-resources.
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
             if (includeLocations) {
-                implementationService.addAddressLevelTypesJson(orgId, zos);
-                implementationService.addAddressLevelsJson(orgId, zos);
-                implementationService.addCatchmentsJson(organisation, zos);
+                organisationService.addAddressLevelTypesJson(orgId, zos);
+                organisationService.addAddressLevelsJson(orgId, zos);
+                organisationService.addCatchmentsJson(organisation, zos);
             }
-            implementationService.addSubjectTypesJson(orgId, zos);
-            implementationService.addOperationalSubjectTypesJson(organisation, zos);
-            implementationService.addEncounterTypesJson(organisation, zos);
-            implementationService.addOperationalEncounterTypesJson(organisation, zos);
-            implementationService.addProgramsJson(organisation, zos);
-            implementationService.addOperationalProgramsJson(organisation, zos);
-            implementationService.addConceptsJson(orgId, zos);
-            implementationService.addFormsJson(orgId, zos);
-            implementationService.addFormMappingsJson(orgId, zos);
-            implementationService.addOrganisationConfigJson(orgId, zos);
+            organisationService.addSubjectTypesJson(orgId, zos);
+            organisationService.addOperationalSubjectTypesJson(organisation, zos);
+            organisationService.addEncounterTypesJson(organisation, zos);
+            organisationService.addOperationalEncounterTypesJson(organisation, zos);
+            organisationService.addProgramsJson(organisation, zos);
+            organisationService.addOperationalProgramsJson(organisation, zos);
+            organisationService.addConceptsJson(orgId, zos);
+            organisationService.addFormsJson(orgId, zos);
+            organisationService.addFormMappingsJson(orgId, zos);
+            organisationService.addOrganisationConfigJson(orgId, zos);
             //Id source is mapped to a catchment so if includeLocations is false we don't add those sources to json
-            implementationService.addIdentifierSourceJson(zos, includeLocations);
-            implementationService.addRelationJson(zos);
-            implementationService.addRelationShipTypeJson(zos);
-            implementationService.addChecklistDetailJson(zos);
-            implementationService.addGroupsJson(zos);
-            implementationService.addGroupRoleJson(zos);
-            implementationService.addGroupPrivilegeJson(zos);
+            organisationService.addIdentifierSourceJson(zos, includeLocations);
+            organisationService.addRelationJson(zos);
+            organisationService.addRelationShipTypeJson(zos);
+            organisationService.addChecklistDetailJson(zos);
+            organisationService.addGroupsJson(zos);
+            organisationService.addGroupRoleJson(zos);
+            organisationService.addGroupPrivilegeJson(zos);
         }
 
         byte[] baosByteArray = baos.toByteArray();
@@ -81,9 +81,9 @@ public class ImplementationController implements RestControllerResourceProcessor
     @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
     @Transactional
     public ResponseEntity delete(@Param("deleteMetadata") boolean deleteMetadata) {
-        implementationService.deleteTransactionalData();
+        organisationService.deleteTransactionalData();
         if (deleteMetadata) {
-            implementationService.deleteMetadata();
+            organisationService.deleteMetadata();
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

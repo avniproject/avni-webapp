@@ -37,7 +37,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Service
-public class ImplementationService {
+public class OrganisationService {
 
     private final FormRepository formRepository;
     private final AddressLevelTypeRepository addressLevelTypeRepository;
@@ -87,50 +87,50 @@ public class ImplementationService {
     private ObjectMapper objectMapper;
 
     @Autowired
-    public ImplementationService(FormRepository formRepository,
-                                 AddressLevelTypeRepository addressLevelTypeRepository,
-                                 LocationRepository locationRepository,
-                                 CatchmentRepository catchmentRepository,
-                                 SubjectTypeRepository subjectTypeRepository,
-                                 OperationalSubjectTypeRepository operationalSubjectTypeRepository,
-                                 OperationalEncounterTypeRepository operationalEncounterTypeRepository,
-                                 EncounterTypeRepository encounterTypeRepository,
-                                 ProgramRepository programRepository,
-                                 OperationalProgramRepository operationalProgramRepository,
-                                 FormMappingRepository formMappingRepository,
-                                 OrganisationConfigRepository organisationConfigRepository,
-                                 IdentifierSourceRepository identifierSourceRepository,
-                                 ConceptRepository conceptRepository,
-                                 IndividualRelationService individualRelationService,
-                                 IndividualRelationshipTypeService individualRelationshipTypeService,
-                                 ChecklistDetailService checklistDetailService,
-                                 GroupRepository groupRepository,
-                                 GroupRoleRepository groupRoleRepository,
-                                 GroupPrivilegeRepository groupPrivilegeRepository,
-                                 UserGroupRepository userGroupRepository,
-                                 ChecklistItemDetailRepository checklistItemDetailRepository,
-                                 ChecklistDetailRepository checklistDetailRepository,
-                                 IdentifierUserAssignmentRepository identifierUserAssignmentRepository,
-                                 IndividualRelationGenderMappingRepository individualRelationGenderMappingRepository,
-                                 IndividualRelationshipTypeRepository individualRelationshipTypeRepository,
-                                 IndividualRelationRepository individualRelationRepository,
-                                 FormElementRepository formElementRepository,
-                                 FormElementGroupRepository formElementGroupRepository,
-                                 ConceptAnswerRepository conceptAnswerRepository,
-                                 TranslationRepository translationRepository,
-                                 RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
-                                 IdentifierAssignmentRepository identifierAssignmentRepository,
-                                 SyncTelemetryRepository syncTelemetryRepository,
-                                 VideoTelemetricRepository videoTelemetricRepository,
-                                 GroupSubjectRepository groupSubjectRepository,
-                                 IndividualRelationshipRepository individualRelationshipRepository,
-                                 ChecklistItemRepository checklistItemRepository,
-                                 ChecklistRepository checklistRepository,
-                                 ProgramEncounterRepository programEncounterRepository,
-                                 ProgramEnrolmentRepository programEnrolmentRepository,
-                                 EncounterRepository encounterRepository,
-                                 IndividualRepository individualRepository,
-                                 ObjectMapper objectMapper) {
+    public OrganisationService(FormRepository formRepository,
+                               AddressLevelTypeRepository addressLevelTypeRepository,
+                               LocationRepository locationRepository,
+                               CatchmentRepository catchmentRepository,
+                               SubjectTypeRepository subjectTypeRepository,
+                               OperationalSubjectTypeRepository operationalSubjectTypeRepository,
+                               OperationalEncounterTypeRepository operationalEncounterTypeRepository,
+                               EncounterTypeRepository encounterTypeRepository,
+                               ProgramRepository programRepository,
+                               OperationalProgramRepository operationalProgramRepository,
+                               FormMappingRepository formMappingRepository,
+                               OrganisationConfigRepository organisationConfigRepository,
+                               IdentifierSourceRepository identifierSourceRepository,
+                               ConceptRepository conceptRepository,
+                               IndividualRelationService individualRelationService,
+                               IndividualRelationshipTypeService individualRelationshipTypeService,
+                               ChecklistDetailService checklistDetailService,
+                               GroupRepository groupRepository,
+                               GroupRoleRepository groupRoleRepository,
+                               GroupPrivilegeRepository groupPrivilegeRepository,
+                               UserGroupRepository userGroupRepository,
+                               ChecklistItemDetailRepository checklistItemDetailRepository,
+                               ChecklistDetailRepository checklistDetailRepository,
+                               IdentifierUserAssignmentRepository identifierUserAssignmentRepository,
+                               IndividualRelationGenderMappingRepository individualRelationGenderMappingRepository,
+                               IndividualRelationshipTypeRepository individualRelationshipTypeRepository,
+                               IndividualRelationRepository individualRelationRepository,
+                               FormElementRepository formElementRepository,
+                               FormElementGroupRepository formElementGroupRepository,
+                               ConceptAnswerRepository conceptAnswerRepository,
+                               TranslationRepository translationRepository,
+                               RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
+                               IdentifierAssignmentRepository identifierAssignmentRepository,
+                               SyncTelemetryRepository syncTelemetryRepository,
+                               VideoTelemetricRepository videoTelemetricRepository,
+                               GroupSubjectRepository groupSubjectRepository,
+                               IndividualRelationshipRepository individualRelationshipRepository,
+                               ChecklistItemRepository checklistItemRepository,
+                               ChecklistRepository checklistRepository,
+                               ProgramEncounterRepository programEncounterRepository,
+                               ProgramEnrolmentRepository programEnrolmentRepository,
+                               EncounterRepository encounterRepository,
+                               IndividualRepository individualRepository,
+                               ObjectMapper objectMapper) {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
@@ -387,7 +387,7 @@ public class ImplementationService {
         }
         for (Form form : forms) {
             FormContract formContract = FormContract.fromForm(form);
-            addFileToZip(zos, String.format("forms/%s.json", form.getName()), formContract);
+            addFileToZip(zos, String.format("forms/%s.json", form.getName().replaceAll("/","_")), formContract);
         }
     }
 
