@@ -58,6 +58,7 @@ import { ROLES } from "../common/constants";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
 import Footer from "../common/components/Footer";
+import { OrganisationDetail } from "./OrganisationDetail";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -192,6 +193,11 @@ class OrgManager extends Component {
           show={IdentifierUserAssignmentDetail}
           create={IdentifierUserAssignmentCreate}
           edit={IdentifierUserAssignmentEdit}
+        />
+        <Resource
+          name="organisationDetails"
+          options={{ label: "Organisation Details" }}
+          list={WithProps({ organisation }, OrganisationDetail)}
         />
       </Admin>
     );
