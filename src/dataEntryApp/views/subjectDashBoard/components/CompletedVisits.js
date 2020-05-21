@@ -104,7 +104,7 @@ const CompletedVisitsTable = ({ allVisits }) => {
   // const [open, setOpen] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   let tableHeaderName = [];
   let allVisitsListObj = [];
   if (enableReadOnly) {
@@ -187,7 +187,7 @@ const CompletedVisitsTable = ({ allVisits }) => {
   };
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    setRowsPerPage(parseInt(event.target.value, 5));
     setPage(0);
   };
   const emptyRows =
