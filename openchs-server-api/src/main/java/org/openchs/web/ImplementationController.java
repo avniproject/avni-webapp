@@ -6,7 +6,9 @@ import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.ImplementationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.transaction.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
@@ -72,6 +75,17 @@ public class ImplementationController implements RestControllerResourceProcessor
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new ByteArrayResource(baosByteArray));
 
+    }
+
+    @RequestMapping(value = "/implementation/delete", method = RequestMethod.DELETE)
+    @PreAuthorize("hasAnyAuthority('admin','organisation_admin')")
+    @Transactional
+    public ResponseEntity delete(@Param("deleteMetadata") boolean deleteMetadata) {
+        implementationService.deleteTransactionalData();
+        if (deleteMetadata) {
+            implementationService.deleteMetadata();
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private HttpHeaders getHttpHeaders() {

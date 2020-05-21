@@ -35,4 +35,6 @@ public interface UserGroupRepository extends ReferenceDataRepository<UserGroup> 
     List<UserGroup> findByGroup_IdAndIsVoidedFalse(Long groupId);
 
     List<UserGroup> findByOrganisationId(Long organisationId);
+
+    Long deleteAllByGroup_NameNot(String groupName);
 }

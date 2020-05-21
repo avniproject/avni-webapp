@@ -6,8 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.application.Form;
 import org.openchs.application.FormMapping;
 import org.openchs.dao.*;
+import org.openchs.dao.application.FormElementGroupRepository;
+import org.openchs.dao.application.FormElementRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.dao.application.FormRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationGenderMappingRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationshipRepository;
+import org.openchs.dao.individualRelationship.IndividualRelationshipTypeRepository;
 import org.openchs.domain.*;
 import org.openchs.web.request.*;
 import org.openchs.web.request.application.ChecklistDetailRequest;
@@ -17,10 +23,12 @@ import org.openchs.web.request.webapp.CatchmentsExport;
 import org.openchs.web.request.webapp.ConceptExport;
 import org.openchs.web.request.webapp.IdentifierSourceContractWeb;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,7 +58,32 @@ public class ImplementationService {
     private final ChecklistDetailService checklistDetailService;
     private final GroupRepository groupRepository;
     private final GroupRoleRepository groupRoleRepository;
-    private GroupPrivilegeRepository groupPrivilegeRepository;
+    private final GroupPrivilegeRepository groupPrivilegeRepository;
+    private final UserGroupRepository userGroupRepository;
+    private final ChecklistItemDetailRepository checklistItemDetailRepository;
+    private final ChecklistDetailRepository checklistDetailRepository;
+    private final IdentifierUserAssignmentRepository identifierUserAssignmentRepository;
+    private final IndividualRelationGenderMappingRepository individualRelationGenderMappingRepository;
+    private final IndividualRelationshipTypeRepository individualRelationshipTypeRepository;
+    private final IndividualRelationRepository individualRelationRepository;
+    private final FormElementRepository formElementRepository;
+    private final FormElementGroupRepository formElementGroupRepository;
+    private final ConceptAnswerRepository conceptAnswerRepository;
+    private final TranslationRepository translationRepository;
+
+    //Tx repositories
+    private final RuleFailureTelemetryRepository ruleFailureTelemetryRepository;
+    private final IdentifierAssignmentRepository identifierAssignmentRepository;
+    private final SyncTelemetryRepository syncTelemetryRepository;
+    private final VideoTelemetricRepository videoTelemetricRepository;
+    private final GroupSubjectRepository groupSubjectRepository;
+    private final IndividualRelationshipRepository individualRelationshipRepository;
+    private final ChecklistItemRepository checklistItemRepository;
+    private final ChecklistRepository checklistRepository;
+    private final ProgramEncounterRepository programEncounterRepository;
+    private final ProgramEnrolmentRepository programEnrolmentRepository;
+    private final EncounterRepository encounterRepository;
+    private final IndividualRepository individualRepository;
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -74,6 +107,29 @@ public class ImplementationService {
                                  GroupRepository groupRepository,
                                  GroupRoleRepository groupRoleRepository,
                                  GroupPrivilegeRepository groupPrivilegeRepository,
+                                 UserGroupRepository userGroupRepository,
+                                 ChecklistItemDetailRepository checklistItemDetailRepository,
+                                 ChecklistDetailRepository checklistDetailRepository,
+                                 IdentifierUserAssignmentRepository identifierUserAssignmentRepository,
+                                 IndividualRelationGenderMappingRepository individualRelationGenderMappingRepository,
+                                 IndividualRelationshipTypeRepository individualRelationshipTypeRepository,
+                                 IndividualRelationRepository individualRelationRepository,
+                                 FormElementRepository formElementRepository,
+                                 FormElementGroupRepository formElementGroupRepository,
+                                 ConceptAnswerRepository conceptAnswerRepository,
+                                 TranslationRepository translationRepository,
+                                 RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
+                                 IdentifierAssignmentRepository identifierAssignmentRepository,
+                                 SyncTelemetryRepository syncTelemetryRepository,
+                                 VideoTelemetricRepository videoTelemetricRepository,
+                                 GroupSubjectRepository groupSubjectRepository,
+                                 IndividualRelationshipRepository individualRelationshipRepository,
+                                 ChecklistItemRepository checklistItemRepository,
+                                 ChecklistRepository checklistRepository,
+                                 ProgramEncounterRepository programEncounterRepository,
+                                 ProgramEnrolmentRepository programEnrolmentRepository,
+                                 EncounterRepository encounterRepository,
+                                 IndividualRepository individualRepository,
                                  ObjectMapper objectMapper) {
         this.formRepository = formRepository;
         this.addressLevelTypeRepository = addressLevelTypeRepository;
@@ -95,9 +151,31 @@ public class ImplementationService {
         this.groupRepository = groupRepository;
         this.groupRoleRepository = groupRoleRepository;
         this.groupPrivilegeRepository = groupPrivilegeRepository;
+        this.userGroupRepository = userGroupRepository;
+        this.checklistItemDetailRepository = checklistItemDetailRepository;
+        this.checklistDetailRepository = checklistDetailRepository;
+        this.identifierUserAssignmentRepository = identifierUserAssignmentRepository;
+        this.individualRelationGenderMappingRepository = individualRelationGenderMappingRepository;
+        this.individualRelationshipTypeRepository = individualRelationshipTypeRepository;
+        this.individualRelationRepository = individualRelationRepository;
+        this.formElementRepository = formElementRepository;
+        this.formElementGroupRepository = formElementGroupRepository;
+        this.conceptAnswerRepository = conceptAnswerRepository;
+        this.translationRepository = translationRepository;
+        this.ruleFailureTelemetryRepository = ruleFailureTelemetryRepository;
+        this.identifierAssignmentRepository = identifierAssignmentRepository;
+        this.syncTelemetryRepository = syncTelemetryRepository;
+        this.videoTelemetricRepository = videoTelemetricRepository;
+        this.groupSubjectRepository = groupSubjectRepository;
+        this.individualRelationshipRepository = individualRelationshipRepository;
+        this.checklistItemRepository = checklistItemRepository;
+        this.checklistRepository = checklistRepository;
+        this.programEncounterRepository = programEncounterRepository;
+        this.programEnrolmentRepository = programEnrolmentRepository;
+        this.encounterRepository = encounterRepository;
+        this.individualRepository = individualRepository;
         this.objectMapper = objectMapper;
     }
-
 
 
     public void addOrganisationConfigJson(Long orgId, ZipOutputStream zos) throws IOException {
@@ -329,4 +407,61 @@ public class ImplementationService {
         zos.putNextEntry(entry);
         zos.closeEntry();
     }
+
+    public void deleteTransactionalData() {
+        JpaRepository[] transactionalRepositories = {
+                ruleFailureTelemetryRepository,
+                identifierAssignmentRepository,
+                syncTelemetryRepository,
+                videoTelemetricRepository,
+                groupSubjectRepository,
+                individualRelationshipRepository,
+                checklistItemRepository,
+                checklistRepository,
+                programEncounterRepository,
+                programEnrolmentRepository,
+                encounterRepository,
+                individualRepository
+        };
+
+        Arrays.asList(transactionalRepositories).forEach(this::deleteAll);
+    }
+
+    public void deleteMetadata() {
+        JpaRepository[] metadataRepositories = {
+                groupPrivilegeRepository,
+                groupRoleRepository,
+                checklistItemDetailRepository,
+                checklistDetailRepository,
+                identifierUserAssignmentRepository,
+                identifierSourceRepository,
+                individualRelationGenderMappingRepository,
+                individualRelationshipTypeRepository,
+                individualRelationRepository,
+                formMappingRepository,
+                formElementRepository,
+                formElementGroupRepository,
+                formRepository,
+                conceptAnswerRepository,
+                conceptRepository,
+                operationalEncounterTypeRepository,
+                encounterTypeRepository,
+                operationalProgramRepository,
+                programRepository,
+                operationalSubjectTypeRepository,
+                subjectTypeRepository,
+                organisationConfigRepository,
+                translationRepository
+        };
+
+        Arrays.asList(metadataRepositories).forEach(this::deleteAll);
+        String defaultGroupName = "Everyone";
+        groupRepository.deleteAllByNameNot(defaultGroupName);
+        userGroupRepository.deleteAllByGroup_NameNot(defaultGroupName);
+    }
+
+    private void deleteAll(JpaRepository repository) {
+        repository.deleteAllInBatch();
+    }
+
 }
