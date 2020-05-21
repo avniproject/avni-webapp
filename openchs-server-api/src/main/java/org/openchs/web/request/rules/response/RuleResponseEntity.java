@@ -1,5 +1,6 @@
 package org.openchs.web.request.rules.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.openchs.web.request.EncounterContract;
 import org.openchs.web.request.ObservationContract;
 import org.openchs.web.request.ProgramEncountersContract;
@@ -7,6 +8,7 @@ import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RuleResponseEntity{
     private String status;
     private DecisionResponseEntity data;

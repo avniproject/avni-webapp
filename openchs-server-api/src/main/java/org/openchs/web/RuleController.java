@@ -84,6 +84,8 @@ public class RuleController {
         }
         if(ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
             return ResponseEntity.ok().body(ruleResponseEntity);
+        }else if(HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())){
+            return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
         }else{
             return ResponseEntity.badRequest().body(ruleResponseEntity);
         }
@@ -109,6 +111,8 @@ public class RuleController {
         }
         if(ruleResponseEntity.getStatus().equalsIgnoreCase("success")) {
             return ResponseEntity.ok().body(ruleResponseEntity);
+        }else if(HttpStatus.NOT_FOUND.toString().equals(ruleResponseEntity.getStatus())){
+            return new ResponseEntity<>(ruleResponseEntity, HttpStatus.NOT_FOUND);
         }else{
             return ResponseEntity.badRequest().body(ruleResponseEntity);
         }
