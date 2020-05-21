@@ -72,13 +72,23 @@ const ProgramEnrol = ({
   const formType = match.queryParams.formType;
 
   useEffect(() => {
-    onLoad(
-      "Individual",
-      match.queryParams.programName,
-      formType,
-      match.queryParams.programEnrolmentUuid
-    );
-    getSubjectProfile(match.queryParams.uuid);
+    (async function fetchData() {
+      await onLoad(
+        "Individual",
+        match.queryParams.programName,
+        formType,
+        match.queryParams.programEnrolmentUuid
+      );
+      await getSubjectProfile(match.queryParams.uuid);
+    })();
+
+    // onLoad(
+    //   "Individual",
+    //   match.queryParams.programName,
+    //   formType,
+    //   match.queryParams.programEnrolmentUuid
+    // );
+    // getSubjectProfile(match.queryParams.uuid);
 
     // (async function fetchData() {
     //   await onLoad("Individual", match.queryParams.programName, formType, match.queryParams.programEnrolmentUuid);

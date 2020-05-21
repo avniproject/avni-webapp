@@ -97,7 +97,7 @@ export const mapProgramEnrolment = json => {
   if (json.enrolmentDateTime) programEnrolment.enrolmentDateTime = new Date(json.enrolmentDateTime);
   if (json.programExitDateTime)
     programEnrolment.programExitDateTime = new Date(json.programExitDateTime);
-  programEnrolment.programExitObservations = mapObservation(json.programExitObservations);
+  programEnrolment.programExitObservations = mapObservation(json.exitObservations);
   programEnrolment.observations = mapObservation(json.observations);
   const program = new Program();
   program.uuid = json.programUuid;
@@ -155,6 +155,7 @@ export const mapProgram = subjectProgram => {
   if (subjectProgram) {
     let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);
     programIndividual.enrolments = mapEnrolment(subjectProgram.enrolments);
+    programIndividual.exitObservations = mapEnrolment(subjectProgram.exitObservations);
     return programIndividual;
   }
 };
@@ -168,6 +169,7 @@ export const mapEnrolment = enrolmentList => {
         ["programExitDateTime", "enrolmentDateTime"]
       );
       programEnrolment.observations = mapObservation(enrolments["observations"]);
+      programEnrolment.exitObservations = mapObservation(enrolments["exitObservations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolments["programEncounters"]);
       programEnrolment.program = mapOperationalProgramName(enrolments);
       return programEnrolment;

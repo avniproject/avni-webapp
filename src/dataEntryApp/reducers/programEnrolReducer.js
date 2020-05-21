@@ -11,8 +11,14 @@ export const types = {
   UPDATE_EXIT_OBS: `${prefix}UPDATE_EXIT_OBS`,
   SAVE_PROGRAM_COMPLETE: `${prefix}SAVE_PROGRAM_COMPLETE`,
   SET_PROGRAM_ENROLMENT: `${prefix}SET_PROGRAM_ENROLMENT`,
+  GET_PROGRAM_ENROLMENT: `${prefix}GET_PROGRAM_ENROLMENT`,
   UPDATE_PROGRAM_ENROLMENT: `${prefix}UPDATE_PROGRAM_ENROLMENT`
 };
+
+export const getProgramEnrolment = programEnrolmentUuid => ({
+  type: types.GET_PROGRAM_ENROLMENT,
+  programEnrolmentUuid
+});
 
 export const setProgramEnrolment = programEnrolment => ({
   type: types.SET_PROGRAM_ENROLMENT,

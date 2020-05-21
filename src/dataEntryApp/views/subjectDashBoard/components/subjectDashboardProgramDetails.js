@@ -18,7 +18,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-const programDetails = ({ tabPanelValue, programData, tabType }) => {
+const programDetails = ({ tabPanelValue, programData, handleUpdateComponent }) => {
   return (
     <div>
       {programData && programData.enrolments
@@ -27,9 +27,9 @@ const programDetails = ({ tabPanelValue, programData, tabType }) => {
               <TabPanel value={tabPanelValue} index={index}>
                 <ProgramView
                   subjectUuid={programData.uuid}
-                  tabType={tabType}
                   programData={element}
                   key={index}
+                  handleUpdateComponent={handleUpdateComponent}
                 />
               </TabPanel>
             </Fragment>

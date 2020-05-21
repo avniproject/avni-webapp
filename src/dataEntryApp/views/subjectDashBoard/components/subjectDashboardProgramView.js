@@ -27,6 +27,7 @@ import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
+import { getSubjectProgram } from "../../../reducers/programSubjectDashboardReducer";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -95,7 +96,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({ programData, subjectUuid, tabType, undoExitEnrolment }) => {
+const ProgramView = ({
+  programData,
+  subjectUuid,
+  undoExitEnrolment,
+  handleUpdateComponent,
+  getSubjectProgram
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [expandedPanel, setExpanded] = React.useState("");
@@ -123,7 +130,9 @@ const ProgramView = ({ programData, subjectUuid, tabType, undoExitEnrolment }) =
   const handleUndoExit = (programEnrolmentUuid, Link) => {
     undoExitEnrolment(programEnrolmentUuid);
     handleClose();
+    //handleUpdateComponent(true);
 
+    getSubjectProgram(subjectUuid);
     //history.push(Link);
     // window.location.reload();
   };
@@ -160,9 +169,24 @@ const ProgramView = ({ programData, subjectUuid, tabType, undoExitEnrolment }) =
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid item xs={12}>
               <List>
-                <Observations observations={programData ? programData.observations : ""} />
+                <Observations
+                  observations={
+                    programData && !programData.programExitDateTime
+                      ? programData.observations
+                      : programData
+                      ? programData.exitObservations
+                      : ""
+                  }
+                  additionalData={
+                    programData && !programData.programExitDateTime
+                      ? [{ key: "Enrolment Date", value: programData.enrolmentDateTime }]
+                      : programData
+                      ? [{ key: "Exit Enrolment Date", value: programData.programExitDateTime }]
+                      : ""
+                  }
+                />
               </List>
-              {tabType === "ActiveProgram" ? (
+              {!programData.programExitDateTime ? (
                 <>
                   <Link
                     to={`/app/enrol?uuid=${subjectUuid}&programName=${
@@ -172,11 +196,14 @@ const ProgramView = ({ programData, subjectUuid, tabType, undoExitEnrolment }) =
                     <Button color="primary">{t("Exit")}</Button>
                   </Link>
 
-                  <Button color="primary" onClick={handleClickOpen}>
-                    {t("Undo Exit")}
-                  </Button>
-
-                  <Dialog
+                  <Link
+                    to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                      programData.program.operationalProgramName
+                    }&formType=ProgramEnrolment&programEnrolmentUuid=${programData.uuid}`}
+                  >
+                    <Button color="primary">{t("Edit")}</Button>
+                  </Link>
+                  {/* <Dialog
                     open={open}
                     onClose={handleClose}
                     aria-labelledby="alert-dialog-title"
@@ -196,7 +223,7 @@ const ProgramView = ({ programData, subjectUuid, tabType, undoExitEnrolment }) =
                         onClick={handleUndoExit.bind(
                           this,
                           programData.uuid,
-                          `/app/subject?uuid=${subjectUuid}&undo=true`
+                          `/app/subject?uuid=${subjectUuid}`
                         )}
                         color="primary"
                         autoFocus
@@ -204,7 +231,7 @@ const ProgramView = ({ programData, subjectUuid, tabType, undoExitEnrolment }) =
                         Undo Exit
                       </Button>
                     </DialogActions>
-                  </Dialog>
+                  </Dialog> */}
                 </>
               ) : (
                 <>
@@ -330,13 +357,12 @@ const ProgramView = ({ programData, subjectUuid, tabType, undoExitEnrolment }) =
 //export default ProgramView;
 
 const mapStateToProps = state => ({
-  enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment
+  subjectProgram: state.dataEntry.subjectProgram.subjectProgram
 });
 
 const mapDispatchToProps = {
-  undoExitEnrolment
+  undoExitEnrolment,
+  getSubjectProgram
 };
 
 export default withRouter(

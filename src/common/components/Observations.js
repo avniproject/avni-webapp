@@ -22,18 +22,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Observations = ({ observations }) => {
+const ObservationsAdditional = ({ additionalData }) => {
   const conceptService = new ConceptService();
-  // const observation = new Observation();
   const i = new i18n();
   const { t } = useTranslation();
   const classes = useStyles();
 
-  // debugger
   return (
     <div>
-      {observations
-        ? observations.map((element, index) => {
+      {additionalData
+        ? additionalData.map((element, index) => {
             return (
               <Fragment key={index}>
                 <Table className={classes.table} size="small" aria-label="a dense table">
@@ -45,7 +43,7 @@ const Observations = ({ observations }) => {
                         scope="row"
                         width="50%"
                       >
-                        {t(element.concept["name"])}
+                        {element.concept ? t(element.concept["name"]) : t(element.key)}
                       </TableCell>
                       <TableCell align="left" width="50%">
                         <div>
@@ -55,8 +53,10 @@ const Observations = ({ observations }) => {
                               {" "}
                               <ErrorIcon /> {Observation.valueAsString(element, conceptService, i)}
                             </span>
-                          ) : (
+                          ) : element.concept ? (
                             Observation.valueAsString(element, conceptService, i)
+                          ) : (
+                            "" + element.value.toLocaleDateString("en-US")
                           )}{" "}
                         </div>
                       </TableCell>
@@ -67,6 +67,15 @@ const Observations = ({ observations }) => {
             );
           })
         : ""}
+    </div>
+  );
+};
+
+const Observations = ({ observations, additionalData }) => {
+  return (
+    <div>
+      <ObservationsAdditional additionalData={additionalData} />
+      <ObservationsAdditional additionalData={observations} />
     </div>
   );
 };

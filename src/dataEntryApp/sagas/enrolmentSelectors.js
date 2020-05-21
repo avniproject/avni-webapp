@@ -46,7 +46,7 @@ export const selectEnrolmentFormMappingForSubjectType = (
   formType
 ) => state => {
   const program = selectProgramUUID(programName)(state);
-  debugger;
+
   return selectEnrolmentFormMapping(
     selectEnrolSubjectTypeFromName(subjectTypeName)(state),
     program.uuid,

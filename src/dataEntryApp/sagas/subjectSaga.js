@@ -36,6 +36,7 @@ import {
   setEnrolForm,
   setProgramEnrolment,
   saveProgramComplete,
+  getProgramEnrolment,
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import _ from "lodash";
@@ -73,8 +74,25 @@ function* setupNewEnrolmentWorker({
   const subject = state.dataEntry.subjectProfile.subjectProfile;
   subject.subjectType = SubjectType.create("Individual");
 
-  if (formType == "ProgramEnrolment") {
+  if (formType == "ProgramEnrolment" && programEnrolmentUuid) {
+    let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+    programEnrolment = mapProgramEnrolment(programEnrolment);
+    programEnrolment.individual = subject;
+    programEnrolment.programExitObservations = [];
+    yield put.resolve(setProgramEnrolment(programEnrolment));
+  } else if (formType == "ProgramEnrolment") {
     let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
+    yield put.resolve(setProgramEnrolment(programEnrolment));
+  } else if (formType == "ProgramExit" && programEnrolmentUuid) {
+    let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+    programEnrolment = mapProgramEnrolment(programEnrolment);
+    programEnrolment.individual = subject;
+
+    if (!programEnrolment.programExitObservations) {
+      programEnrolment.programExitObservations = [];
+      programEnrolment.programExitDateTime = new Date();
+    }
+
     yield put.resolve(setProgramEnrolment(programEnrolment));
   } else {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
@@ -109,6 +127,8 @@ export function* saveSubjectWatcher() {
 
 export function* saveProgramEnrolmentWorker() {
   const programEnrolment = yield select(selectEnrolmentSubject);
+
+  debugger;
   let resource = programEnrolment.toResource;
 
   //sessionStorage.removeItem("programEnrolment");
@@ -132,6 +152,7 @@ export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
   subject.subjectType = SubjectType.create("Individual");
 
   programEnrolment.individual = subject;
+
   let resource = programEnrolment.toResource;
   yield call(api.saveProgram, resource);
   yield put(saveProgramComplete());

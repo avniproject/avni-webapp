@@ -20,6 +20,13 @@ const SubjectDashboardProgramTab = ({ program }) => {
   let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [selectedTabExited, setSelectedTabExited] = React.useState(false);
+  const [isUpdate, setUpdate] = React.useState(false);
+
+  const handleUpdateComponent = value => {
+    //debugger;
+    setUpdate(value);
+    // window.location.reload(false);
+  };
 
   const handleTabChange = (event, newValue) => {
     setSelectedTabExited(false);
@@ -85,23 +92,25 @@ const SubjectDashboardProgramTab = ({ program }) => {
         </div>
         {selectedTab !== false ? (
           <ProgramDetails
-            tabType={
-              program.enrolments && program.enrolments[0].programExitDateTime
-                ? "ExitedProgram"
-                : "ActiveProgram"
-            }
+            // tabType={
+            //   program.enrolments && program.enrolments[0].programExitDateTime
+            //     ? "ExitedProgram"
+            //     : "ActiveProgram"
+            // }
             tabPanelValue={selectedTab}
             programData={program}
+            handleUpdateComponent={handleUpdateComponent}
           />
         ) : (
           <ProgramDetails
-            tabType={
-              program.enrolments && program.enrolments[0].programExitDateTime
-                ? "ExitedProgram"
-                : "ActiveProgram"
-            }
+            // tabType={
+            //   program.enrolments && program.enrolments[0].programExitDateTime
+            //     ? "ExitedProgram"
+            //     : "ActiveProgram"
+            // }
             tabPanelValue={selectedTabExited}
             programData={program}
+            handleUpdateComponent={handleUpdateComponent}
           />
         )}
       </Paper>

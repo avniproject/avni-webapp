@@ -2,8 +2,14 @@ const prefix = "app/dataEntry/reducer/subjectProgram/";
 
 export const types = {
   GET_SUBJECT_PROGRAM: `${prefix}GET_SUBJECT_PROGRAM`,
-  SET_SUBJECT_PROGRAM: `${prefix}SET_SUBJECT_PROGRAM`
+  SET_SUBJECT_PROGRAM: `${prefix}SET_SUBJECT_PROGRAM`,
+  UPDATE_SUBJECT_PROGRAM: `${prefix}UPDATE_SUBJECT_PROGRAM`
 };
+
+export const updateSubjectProgram = program => ({
+  type: types.UPDATE_SUBJECT_PROGRAM,
+  program
+});
 
 export const getSubjectProgram = subjectProgramUUID => ({
   type: types.GET_SUBJECT_PROGRAM,
