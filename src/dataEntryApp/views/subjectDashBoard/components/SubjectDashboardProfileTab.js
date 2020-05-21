@@ -72,6 +72,9 @@ const useStyles = makeStyles(theme => ({
   },
   infomsg: {
     marginLeft: 10
+  },
+  expandMoreIcon: {
+    color: "#0e6eff"
   }
 }));
 
@@ -93,7 +96,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
           onChange={handleChange("registrationPanel")}
         >
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="registrationPanelbh-content"
             id="registrationPanelbh-header"
           >
@@ -132,7 +135,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
           onChange={handleChange("relativesPanel")}
         >
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="relativesPanelbh-content"
             id="relativesPanelbh-header"
           >

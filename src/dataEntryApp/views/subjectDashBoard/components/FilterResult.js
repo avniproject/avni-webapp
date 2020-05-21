@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { withParams } from "common/components/utils";
+import { withParams, LineBreak } from "common/components/utils";
 import Grid from "@material-ui/core/Grid";
 import { useTranslation } from "react-i18next";
 import Modal from "../components/CommonModal";
@@ -35,7 +35,10 @@ const useStyles = makeStyles(theme => ({
     float: "left",
     backgroundColor: "#f27510",
     height: "30px",
-    boxShadow: "none"
+    boxShadow: "none",
+    "&:hover": {
+      backgroundColor: "#f27510"
+    }
   },
   cancelBtnCustom: {
     float: "left",
@@ -43,7 +46,10 @@ const useStyles = makeStyles(theme => ({
     color: "#fc9153",
     border: "1px solid #fc9153",
     height: "30px",
-    boxShadow: "none"
+    boxShadow: "none",
+    "&:hover": {
+      backgroundColor: "#F8F9F9"
+    }
   },
   formControl: {
     marginTop: theme.spacing(2)
@@ -215,7 +221,7 @@ const FilterResult = ({
             </Grid>
           </MuiPickersUtilsProvider>
         </FormControl>
-
+        <LineBreak num={1} />
         <FormLabel component="legend">{t("visitType")}</FormLabel>
         <FormGroup row>{checkbox}</FormGroup>
       </form>
