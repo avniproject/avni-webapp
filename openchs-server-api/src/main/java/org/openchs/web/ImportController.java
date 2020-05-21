@@ -17,10 +17,8 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.PagedResources.PageMetadata;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.springframework.http.MediaType.*;
@@ -48,7 +45,10 @@ public class ImportController {
     private final ImportService importService;
 
     @Autowired
-    public ImportController(OldDataImportService oldDataImportService, JobService jobService, BulkUploadS3Service bulkUploadS3Service, ImportService importService) {
+    public ImportController(OldDataImportService oldDataImportService,
+                            JobService jobService,
+                            BulkUploadS3Service bulkUploadS3Service,
+                            ImportService importService) {
         this.oldDataImportService = oldDataImportService;
         this.jobService = jobService;
         this.bulkUploadS3Service = bulkUploadS3Service;
@@ -111,16 +111,8 @@ public class ImportController {
 
     @GetMapping("/import/status")
     @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
-    public PagedResources<?> getUploadStats(Pageable pageable) {
-        List<JobStatus> jobStatuses = jobService.getAll();
-        PageMetadata pageMetadata = new PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), jobStatuses.size());
-        List<Resource<JobStatus>> pagedContent = jobStatuses
-                .stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .map(it -> new Resource<>(it))
-                .collect(Collectors.toList());
-        return new PagedResources<>(pagedContent, pageMetadata);
+    public Page<JobStatus> getUploadStats(Pageable pageable) {
+        return jobService.getAll(pageable);
     }
 
     @GetMapping(value = "/import/errorfile",

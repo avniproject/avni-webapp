@@ -3,16 +3,23 @@ package org.openchs.dao;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
 
+@Entity
 public class JobStatus {
+    @Id
     private String uuid;
+
+    @Column(name="file_name")
     private String fileName;
     private String s3Key;
     private Long userId;
     private String type;
-    private BatchStatus status;
-    private ExitStatus exitStatus;
+    private String status;
+    private String exitStatus;
     private Date startTime;
     private Date endTime;
     private int total;
@@ -61,19 +68,19 @@ public class JobStatus {
         this.type = type;
     }
 
-    public BatchStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(BatchStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public ExitStatus getExitStatus() {
+    public String getExitStatus() {
         return exitStatus;
     }
 
-    public void setExitStatus(ExitStatus exitStatus) {
+    public void setExitStatus(String exitStatus) {
         this.exitStatus = exitStatus;
     }
 

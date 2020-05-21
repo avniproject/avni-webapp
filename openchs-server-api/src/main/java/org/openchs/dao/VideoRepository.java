@@ -1,7 +1,5 @@
 package org.openchs.dao;
 
-import org.openchs.dao.FindByLastModifiedDateTime;
-import org.openchs.dao.ImplReferenceDataRepository;
 import org.openchs.domain.Video;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;

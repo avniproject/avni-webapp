@@ -1,7 +1,9 @@
 package org.openchs.importer.batch;
 
 import org.joda.time.DateTime;
+import org.openchs.dao.AvniJobRepository;
 import org.openchs.dao.JobStatus;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.S3Service;
 import org.openchs.service.UserService;
 import org.slf4j.Logger;
@@ -14,14 +16,14 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static org.springframework.batch.core.BatchStatus.*;
@@ -35,15 +37,17 @@ public class JobService {
     private Job importZipJob;
     private JobLauncher bgJobLauncher;
     private UserService userService;
+    private AvniJobRepository avniJobRepository;
 
     @Autowired
-    public JobService(JobExplorer jobExplorer, JobRepository jobRepository, Job importJob, Job importZipJob, JobLauncher bgJobLauncher, UserService userService) {
+    public JobService(JobExplorer jobExplorer, JobRepository jobRepository, Job importJob, Job importZipJob, JobLauncher bgJobLauncher, UserService userService, AvniJobRepository avniJobRepository) {
         this.jobExplorer = jobExplorer;
         this.jobRepository = jobRepository;
         this.importJob = importJob;
         this.importZipJob = importZipJob;
         this.bgJobLauncher = bgJobLauncher;
         this.userService = userService;
+        this.avniJobRepository = avniJobRepository;
         logger = LoggerFactory.getLogger(getClass());
     }
 
@@ -83,39 +87,8 @@ public class JobService {
         return type.equals("metadataZip") ? bgJobLauncher.run(importZipJob, parameters) : bgJobLauncher.run(importJob, parameters);
     }
 
-    public List<JobStatus> getAll() {
-        Long currentUserId = userService.getCurrentUser().getId();
-        List<JobInstance> importJobInstances = jobExplorer.findJobInstancesByJobName(importJob.getName(), 0, Integer.MAX_VALUE);
-        List<JobInstance> zipImportJobInstances = jobExplorer.findJobInstancesByJobName(importZipJob.getName(), 0, Integer.MAX_VALUE);
-        return Stream.concat(importJobInstances.stream(), zipImportJobInstances.stream())
-                .flatMap(x -> jobExplorer.getJobExecutions(x).stream())
-                .map(execution -> {
-                    JobStatus jobStatus = new JobStatus();
-                    JobParameters parameters = execution.getJobParameters();
-                    jobStatus.setUuid(parameters.getString("uuid"));
-                    jobStatus.setFileName(parameters.getString("fileName"));
-                    jobStatus.setNoOfLines(parameters.getLong("noOfLines"));
-                    jobStatus.setS3Key(parameters.getString("s3Key"));
-                    jobStatus.setUserId(parameters.getLong("userId"));
-                    jobStatus.setType(parameters.getString("type"));
-                    jobStatus.setStatus(execution.getStatus());
-                    jobStatus.setExitStatus(execution.getExitStatus());
-                    jobStatus.setCreateTime(execution.getCreateTime());
-                    jobStatus.setStartTime(execution.getStartTime());
-                    jobStatus.setEndTime(execution.getEndTime());
-                    execution.getStepExecutions()
-                            .stream()
-                            .filter(it -> "importStep".equals(it.getStepName()) || "importZipStep".equals(it.getStepName()))
-                            .findFirst()
-                            .ifPresent(step -> {
-                                jobStatus.setTotal(step.getReadCount());
-                                jobStatus.setCompleted(step.getWriteCount());
-                                jobStatus.setSkipped(step.getWriteSkipCount());
-                            });
-                    return jobStatus;
-                })
-                .filter(status -> currentUserId.equals(status.getUserId()))
-                .sorted(Comparator.comparing(JobStatus::getCreateTime).reversed())
-                .collect(Collectors.toList());
+    @Transactional
+    public Page<JobStatus> getAll(@NotNull Pageable pageable) {
+        return avniJobRepository.getJobStatuses(UserContextHolder.getUser(), pageable);
     }
 }
