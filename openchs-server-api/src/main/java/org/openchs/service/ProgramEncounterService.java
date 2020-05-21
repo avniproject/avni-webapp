@@ -61,6 +61,7 @@ public class ProgramEncounterService {
             programEncountersContract.setUuid(programEncounter.getUuid());
             programEncountersContract.setName(programEncounter.getName());
             programEncountersContract.setEncounterType(encounterTypeContract);
+            programEncountersContract.setSubjectUUID(programEncounter.getProgramEnrolment().getIndividual().getUuid());
             programEncountersContract.setEncounterDateTime(programEncounter.getEncounterDateTime());
             programEncountersContract.setCancelDateTime(programEncounter.getCancelDateTime());
             programEncountersContract.setEarliestVisitDateTime(programEncounter.getEarliestVisitDateTime());

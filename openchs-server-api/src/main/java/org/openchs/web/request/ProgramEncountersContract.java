@@ -14,6 +14,7 @@ public class ProgramEncountersContract extends CHSRequest {
     private DateTime encounterDateTime;
     private List<ObservationContract> observations;
     private List<ObservationContract> cancelObservations;
+    private String subjectUUID;
 
     public String getName() {
         return name;
@@ -77,5 +78,13 @@ public class ProgramEncountersContract extends CHSRequest {
 
     public void setCancelObservations(List<ObservationContract> cancelObservations) {
         this.cancelObservations = cancelObservations;
+    }
+
+    public String getSubjectUUID() {
+        return subjectUUID;
+    }
+
+    public void setSubjectUUID(String subjectUUID) {
+        this.subjectUUID = subjectUUID;
     }
 }
