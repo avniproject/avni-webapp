@@ -313,11 +313,15 @@ const ProgramView = ({ programData }) => {
               )}
             </Grid>
           </ExpansionPanelDetails>
-          <InternalLink to={`/app/subject/completedVisits?id=${programData.id}`}>
-            <Button color="primary" className={classes.visitAllButton}>
-              {t("viewAllVisits")}
-            </Button>
-          </InternalLink>
+          {programData && programData.encounters && completedVisits.length != 0 ? (
+            <InternalLink to={`/app/subject/completedVisits?id=${programData.id}`}>
+              <Button color="primary" className={classes.visitAllButton}>
+                {t("viewAllVisits")}
+              </Button>
+            </InternalLink>
+          ) : (
+            ""
+          )}
         </ExpansionPanel>
       </Paper>
     </div>

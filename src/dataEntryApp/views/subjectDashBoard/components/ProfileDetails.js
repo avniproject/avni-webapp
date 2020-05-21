@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import { enableReadOnly } from "common/constants";
+import AccountCircle from "@material-ui/icons/AccountCircle";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -108,6 +109,11 @@ const useStyles = makeStyles(theme => ({
   },
   errorText: {
     color: "red"
+  },
+  iconStyle: {
+    fontSize: "50px",
+    color: "#676173",
+    marginTop: "10px"
   }
 }));
 
@@ -190,11 +196,15 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
         {`${profileDetails.firstName} ${profileDetails.lastName}`} {t("Dashboard")}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
-        <Grid item>
+        {/* <Grid item>
           <Avatar
             src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
             className={classes.bigAvatar}
           />
+          
+        </Grid> */}
+        <Grid item>
+          <AccountCircle className={classes.iconStyle} />
         </Grid>
         <Grid item xs={4}>
           <Table aria-label="caption table" className={classes.table}>
