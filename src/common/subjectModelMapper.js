@@ -233,6 +233,7 @@ export const mapViewVisit = viewVisitDetails => {
     programEnconter.encounterType = mapEncounterType(viewVisitDetails.encounterType);
 
     programEnconter.observations = mapObservation(viewVisitDetails["observations"]);
+    programEnconter.subjectUuid = viewVisitDetails["subjectUUID"];
     return programEnconter;
   }
 };
