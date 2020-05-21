@@ -118,9 +118,11 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
             {t("viewAllCompletedVisits")}
           </Button>
         </InternalLink>
-        <Button color="primary" onClick={() => history.goBack()}>
-          {t("back")}
-        </Button>
+        <InternalLink to={`/app/subject?uuid=${viewVisit.subjectUuid}`}>
+          <Button color="primary" className={classes.visitButton}>
+            {t("back")}
+          </Button>
+        </InternalLink>
       </Paper>
     </Fragment>
   ) : (
