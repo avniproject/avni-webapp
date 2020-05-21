@@ -20,8 +20,7 @@ const useStyles = makeStyles(theme => ({
     borderRight: "1px solid rgba(0,0,0,0.12)",
     "&:nth-child(4n),&:last-child": {
       borderRight: "0px solid rgba(0,0,0,0.12)"
-    },
-    marginTop: "15px"
+    }
   },
   title: {
     fontSize: 14
