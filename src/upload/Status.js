@@ -75,7 +75,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {map(get(statuses, "_embedded.jobStatuses"), jobStatus => (
+          {map(get(statuses, "content"), jobStatus => (
             <TableRow key={jobStatus.uuid}>
               <Tooltip
                 title={<span style={{ fontSize: "2em" }}>{jobStatus.fileName}</span>}
