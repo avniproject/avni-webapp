@@ -141,16 +141,16 @@ public class ProgramEnrolmentController extends AbstractController<ProgramEnrolm
         return ResponseEntity.ok(enrolmentContract);
     }
 
-    @GetMapping("/web/programEnrolment/{id}/completed")
+    @GetMapping("/web/programEnrolment/{uuid}/completed")
     @PreAuthorize(value = "hasAnyAuthority('user')")
     @ResponseBody
     public Page<ProgramEncountersContract> getAllCompletedEncounters(
-            @PathVariable Long id,
+            @PathVariable String uuid,
             @RequestParam(value = "encounterDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime encounterDateTime,
             @RequestParam(value = "earliestVisitDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime earliestVisitDateTime,
-            @RequestParam(value = "encounterTypeIds",required = false) String encounterTypeIds,
+            @RequestParam(value = "encounterTypeUuids",required = false) String encounterTypeUuids,
             Pageable pageable) {
-        return programEnrolmentService.getAllCompletedEncounters(id,encounterTypeIds,encounterDateTime,earliestVisitDateTime,pageable);
+        return programEnrolmentService.getAllCompletedEncounters(uuid,encounterTypeUuids,encounterDateTime,earliestVisitDateTime,pageable);
     }
 
     @Override

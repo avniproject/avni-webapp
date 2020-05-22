@@ -80,18 +80,19 @@ public class ProgramEnrolmentService {
         return enrolmentContract;
     }
 
-    public Page<ProgramEncountersContract> getAllCompletedEncounters(Long id, String encounterTypeIds, DateTime encounterDateTime, DateTime earliestVisitDateTime, Pageable pageable){
+    public Page<ProgramEncountersContract> getAllCompletedEncounters(String uuid, String encounterTypeUuids, DateTime encounterDateTime, DateTime earliestVisitDateTime, Pageable pageable){
         Page<ProgramEncountersContract> programEncountersContract = null;
-        List<Long> encounterTypeIdList = new ArrayList<>();
-        if(encounterTypeIds != null) {
-            encounterTypeIdList = Arrays.stream(encounterTypeIds.split(",")).map(Long::parseLong).collect(Collectors.toList());
+        List<String> encounterTypeIdList = new ArrayList<>();
+        if(encounterTypeUuids != null) {
+            encounterTypeIdList = Arrays.asList(encounterTypeUuids.split(","));
         }
+        ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
         programEncountersContract = programEncounterRepository.findAll(
-                where(programEncounterRepository.withProgramEncounterId(id))
-                .and(programEncounterRepository.withProgramEncounterTypeIdIn(encounterTypeIdList))
-                .and(programEncounterRepository.withProgramEncounterEarliestVisitDateTime(earliestVisitDateTime))
-                .and(programEncounterRepository.withProgramEncounterDateTime(encounterDateTime))
-                .and(programEncounterRepository.withNotNullEncounterDateTime())
+                where(programEncounterRepository.withProgramEncounterId(programEnrolment.getId()))
+                        .and(programEncounterRepository.withProgramEncounterTypeIdUuids(encounterTypeIdList))
+                        .and(programEncounterRepository.withProgramEncounterEarliestVisitDateTime(earliestVisitDateTime))
+                        .and(programEncounterRepository.withProgramEncounterDateTime(encounterDateTime))
+                        .and(programEncounterRepository.withNotNullEncounterDateTime())
                 ,pageable).map(programEncounter -> programEncounterService.constructProgramEncounters(programEncounter));
         return programEncountersContract;
     }
