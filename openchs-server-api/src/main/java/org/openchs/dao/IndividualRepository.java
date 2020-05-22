@@ -10,10 +10,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 import static org.openchs.domain.OperatingIndividualScope.ByCatchment;
@@ -89,10 +86,21 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
     }
 
     default Specification<Individual> getFilterSpecForName(String value) {
-        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
-                value == null ? cb.and() : cb.or(
-                        cb.like(cb.upper(root.get("firstName")), "%" + value.toUpperCase() + "%"),
-                        cb.like(cb.upper(root.get("lastName")), "%" + value.toUpperCase() + "%"));
+        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
+            if (value != null){
+                Predicate[] predicates = new Predicate[2];
+                String[] values = value.trim().split(" ");
+                if (values.length > 0) {
+                    predicates[0] = cb.like(cb.upper(root.get("firstName")), "%" + values[0].toUpperCase() + "%");
+                    predicates[1] = cb.like(cb.upper(root.get("lastName")), "%" + values[0].toUpperCase() + "%");
+                }
+                if (values.length > 1) {
+                    predicates[1] = cb.like(cb.upper(root.get("lastName")), "%" + values[1].toUpperCase() + "%");
+                }
+                return cb.or(predicates[0], predicates[1]);
+            }
+            return cb.and();
+        };
     }
 
     default Specification<Individual> getFilterSpecForObs(String value) {
