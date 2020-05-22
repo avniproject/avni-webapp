@@ -67,6 +67,7 @@ public class ProgramEncounterService {
             programEncountersContract.setEarliestVisitDateTime(programEncounter.getEarliestVisitDateTime());
             programEncountersContract.setMaxVisitDateTime(programEncounter.getMaxVisitDateTime());
             programEncountersContract.setVoided(programEncounter.isVoided());
+            programEncountersContract.setEnrolmentUUID(programEncounter.getProgramEnrolment().getUuid());
             if(programEncounter.getObservations() != null) {
                 programEncountersContract.setObservations(individualService.constructObservations(programEncounter.getObservations()));
             }

@@ -16,6 +16,16 @@ public class ProgramEncountersContract extends CHSRequest {
     private List<ObservationContract> cancelObservations;
     private String subjectUUID;
 
+    public String getEnrolmentUUID() {
+        return enrolmentUUID;
+    }
+
+    public void setEnrolmentUUID(String enrolmentUUID) {
+        this.enrolmentUUID = enrolmentUUID;
+    }
+
+    private String enrolmentUUID;
+
     public String getName() {
         return name;
     }
