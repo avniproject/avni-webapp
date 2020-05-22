@@ -108,9 +108,9 @@ const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
           </Typography>
           <Observations observations={encounter ? encounter.observations : ""} />
         </Paper>
-        <InternalLink to={`/app/subject/completedVisits?id=${enrolldata.enrollmentId}`}>
+        <InternalLink to={`/app/subject/completedVisits?uuid=${encounter.enrolmentUuid}`}>
           <Button color="primary" className={classes.visitButton}>
-            {t("viewAllVisits")}
+            {t("viewAllCompletedVisits")}
           </Button>
         </InternalLink>
         <InternalLink to={`/app/subject?uuid=${encounter.subjectUuid}`}>

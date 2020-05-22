@@ -231,6 +231,7 @@ export const mapEncounter = encounterDetails => {
     programEnconter.encounterType = mapEncounterType(encounterDetails.encounterType);
     programEnconter.observations = mapObservation(encounterDetails["observations"]);
     programEnconter.subjectUuid = encounterDetails["subjectUUID"];
+    programEnconter.enrolmentUuid = encounterDetails["enrolmentUUID"];
     return programEnconter;
   }
 };
