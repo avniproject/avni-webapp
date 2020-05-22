@@ -29,9 +29,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,8 +189,10 @@ public class RuleService {
         programEnrolmentContractWrapper.setRule(requestEntityWrapper.getRule());
         RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Program Enrolment",requestEntityWrapper.getProgramEnrolmentRequestEntity().getUuid());
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENROLMENT_RULE.getRuleName(),programEnrolmentContractWrapper);
-        ruleResponseEntity.getData().setEnrolmentDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEnrolmentDecisions(),ruleFailureLog));
-        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEnrolmentDecisions()));
+        if("success".equals(ruleResponseEntity.getStatus())) {
+            ruleResponseEntity.getData().setEnrolmentDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEnrolmentDecisions(), ruleFailureLog));
+            ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEnrolmentDecisions()));
+        }
         return ruleResponseEntity;
     }
 
@@ -195,8 +202,10 @@ public class RuleService {
         encounterContractWrapper.setRule(requestEntityWrapper.getRule());
         RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Encounter",requestEntityWrapper.getEncounterRequestEntity().getUuid());
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.ENCOUNTER_RULE.getRuleName(),encounterContractWrapper);
-        ruleResponseEntity.getData().setEncounterDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(),ruleFailureLog));
-        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEncounterDecisions()));
+        if("success".equals(ruleResponseEntity.getStatus())) {
+            ruleResponseEntity.getData().setEncounterDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(), ruleFailureLog));
+            ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEncounterDecisions()));
+        }
         return ruleResponseEntity;
     }
 
@@ -206,8 +215,10 @@ public class RuleService {
         programEncounterContractWrapper.setRule(requestEntityWrapper.getRule());
         RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Program Encounter",requestEntityWrapper.getProgramEncounterRequestEntity().getUuid());
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.PROGRAM_ENCOUNTER_RULE.getRuleName(),programEncounterContractWrapper);
-        ruleResponseEntity.getData().setEncounterDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(),ruleFailureLog));
-        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEncounterDecisions()));
+        if("success".equals(ruleResponseEntity.getStatus())) {
+            ruleResponseEntity.getData().setEncounterDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getEncounterDecisions(), ruleFailureLog));
+            ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getEncounterDecisions()));
+        }
         return ruleResponseEntity;
     }
 
@@ -217,9 +228,10 @@ public class RuleService {
         individualContractWrapper.setRule(requestEntityWrapper.getRule());
         RuleFailureLog ruleFailureLog = decisionRuleValidation.generateRuleFailureLog(requestEntityWrapper,"Web","Rules : Individual",requestEntityWrapper.getIndividualRequestEntity().getUuid());
         RuleResponseEntity ruleResponseEntity = createHttpHeaderAndSendRequest("/api/"+ruleType+"_"+ RuleEnum.INDIVIDUAL_RULE.getRuleName(),individualContractWrapper);
-        ruleResponseEntity.getData().setRegistrationDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getRegistrationDecisions(),ruleFailureLog));
-        ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getRegistrationDecisions()));
-
+        if("success".equals(ruleResponseEntity.getStatus())) {
+            ruleResponseEntity.getData().setRegistrationDecisions(decisionRuleValidation.validateDecision(ruleResponseEntity.getData().getRegistrationDecisions(), ruleFailureLog));
+            ruleResponseEntity.setObservation(observationConstructionService.responseObservation(ruleResponseEntity.getData().getRegistrationDecisions()));
+        }
         return ruleResponseEntity;
     }
 
@@ -232,7 +244,12 @@ public class RuleService {
             RuleResponseEntity ruleResponseEntity = mapper.readValue(decisionResponse, RuleResponseEntity.class);
             return ruleResponseEntity;
         }
-        catch (Exception e){
+        catch (HttpClientErrorException e){
+            RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
+            ruleResponseEntity.setMessage(e.getStatusText());
+            ruleResponseEntity.setStatus(e.getStatusCode().toString());
+            return ruleResponseEntity;
+        } catch (Exception e){
             RuleResponseEntity ruleResponseEntity = new RuleResponseEntity();
             ruleResponseEntity.setMessage("SomeThing went wrong at server side");
             ruleResponseEntity.setStatus("failure");
