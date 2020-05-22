@@ -47,17 +47,8 @@ export default {
   fetchEnrolments: uuid => {
     return httpClient.fetchJson(`/api/enrolments/`).then(response => response.json);
   },
-
-  fetchViewVisit: viewVisitUuid =>
-    httpClient.fetchJson(`/web/programEncounter/${viewVisitUuid}`).then(response => {
-      return response.json;
-    }),
   fetchcompletedVisit: completedVisitUrl =>
     httpClient.fetchJson(completedVisitUrl).then(response => {
-      return response.json;
-    }),
-  fetchVisitTypes: visitTypeUuid =>
-    httpClient.fetchJson(`/web/programEnrolment/${visitTypeUuid}`).then(response => {
       return response.json;
     }),
   fetchProgramEnrolment: enrolmentUuid =>
