@@ -14,7 +14,7 @@ import { withRouter, Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { withParams } from "../../../../common/components/utils";
-import { getCompletedVisit, getVisitTypes, types } from "../../../reducers/completedVisitsReducer";
+import { getCompletedVisit, getEnrolments, types } from "../../../reducers/completedVisitsReducer";
 import { mapObservation } from "../../../../common/subjectModelMapper";
 import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
@@ -267,9 +267,9 @@ const CompletedVisitsTable = ({ allVisits }) => {
 const CompleteVisit = ({
   match,
   getCompletedVisit,
-  getVisitTypes,
+  getEnrolments,
   completedVisit,
-  visitTypes,
+  enrolments,
   enrolldata
 }) => {
   const classes = useStyle();
@@ -282,10 +282,10 @@ const CompleteVisit = ({
 
   useEffect(() => {
     getCompletedVisit(completedVisitUrl);
-    getVisitTypes(enrolldata.enrollmentUuid);
+    getEnrolments(enrolldata.enrollmentUuid);
   }, []);
 
-  return completedVisit && visitTypes ? (
+  return completedVisit && enrolments ? (
     <div>
       <Fragment>
         <Breadcrumbs path={match.path} />
@@ -303,7 +303,7 @@ const CompleteVisit = ({
               </div>
             </Grid>
             <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult visitTypes={visitTypes} />
+              <FilterResult enrolments={enrolments} />
             </Grid>
           </Grid>
           <Paper className={classes.tableBox}>
@@ -320,14 +320,14 @@ const CompleteVisit = ({
 const mapStateToProps = state => {
   return {
     completedVisit: state.dataEntry.completedVisitsReducer.completedVisits,
-    visitTypes: state.dataEntry.completedVisitsReducer.visitTypes,
+    enrolments: state.dataEntry.completedVisitsReducer.enrolments,
     enrolldata: state.dataEntry.completedVisitsReducer.enrolldata
   };
 };
 
 const mapDispatchToProps = {
   getCompletedVisit,
-  getVisitTypes
+  getEnrolments
 };
 
 export default withRouter(

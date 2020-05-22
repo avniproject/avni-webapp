@@ -3,10 +3,9 @@ const prefix = "app/dataEntry/reducer/completedVisit";
 export const types = {
   GET_COMPLETEDVISIT: `${prefix}GET_COMPLETEDVISIT`,
   SET_COMPLETEDVISIT: `${prefix}SET_COMPLETEDVISIT`,
-  GET_VISITTYPES: `${prefix}GET_VISITTYPES`,
-  SET_VISITTYPES: `${prefix}SET_VISITTYPES`,
-  ADD_ENROLLDATA: `${prefix}ADD_ENROLLDATA`,
-  ADD_VISIT_TYPE_FILTERS: `${prefix}ADD_VISIT_TYPE_FILTERS`
+  GET_ENROLMENTS: `${prefix}GET_ENROLMENTS`,
+  SET_ENROLMENTS: `${prefix}SET_ENROLMENTS`,
+  ADD_ENROLLDATA: `${prefix}ADD_ENROLLDATA`
 };
 
 export const getCompletedVisit = completedVisitUrl => ({
@@ -19,19 +18,14 @@ export const setCompletedVisit = completedVisit => ({
   completedVisit
 });
 
-export const getVisitTypes = visitTypesUuid => ({
-  type: types.GET_VISITTYPES,
-  visitTypesUuid
+export const getEnrolments = enrolmentUuid => ({
+  type: types.GET_ENROLMENTS,
+  enrolmentUuid
 });
 
-export const setVisitTypes = visitTypes => ({
-  type: types.SET_VISITTYPES,
-  visitTypes
-});
-
-export const addVisitTypeFilters = selectedVisitTypesFilter => ({
-  type: types.ADD_VISIT_TYPE_FILTERS,
-  selectedVisitTypesFilter
+export const setEnrolments = enrolments => ({
+  type: types.SET_ENROLMENTS,
+  enrolments
 });
 
 export default function(state = {}, action) {
@@ -42,22 +36,16 @@ export default function(state = {}, action) {
         completedVisits: action.completedVisit
       };
     }
-    case types.SET_VISITTYPES: {
+    case types.SET_ENROLMENTS: {
       return {
         ...state,
-        visitTypes: action.visitTypes
+        enrolments: action.enrolments
       };
     }
     case types.ADD_ENROLLDATA: {
       return {
         ...state,
         enrolldata: action.value
-      };
-    }
-    case types.ADD_VISIT_TYPE_FILTERS: {
-      return {
-        ...state,
-        selectedVisitTypesFilter: action.selectedVisitTypesFilter
       };
     }
     default:

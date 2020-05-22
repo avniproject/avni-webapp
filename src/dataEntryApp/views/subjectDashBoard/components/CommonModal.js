@@ -143,7 +143,6 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
 
   const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
   const filterButton = buttonsSet.filter(element => element.buttonType === "filterButton").shift();
-
   const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
   const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
   const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();

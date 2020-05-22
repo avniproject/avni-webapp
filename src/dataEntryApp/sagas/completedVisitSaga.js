@@ -1,12 +1,11 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import { types, setCompletedVisit, setVisitTypes } from "../reducers/completedVisitsReducer";
+import { types, setCompletedVisit, setEnrolments } from "../reducers/completedVisitsReducer";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
-import { mapViewVisit } from "../../common/subjectModelMapper";
 
 import api from "../api";
 
 export default function*() {
-  yield all([completedVisitFetchWatcher, visitTypesFetchWatcher].map(fork));
+  yield all([completedVisitFetchWatcher, enrolmentFetchWatcher].map(fork));
 }
 
 export function* completedVisitFetchWatcher() {
@@ -18,12 +17,12 @@ export function* completedVisitFetchWorker({ completedVisitUrl }) {
   yield put(setCompletedVisit(completedVisit));
 }
 
-export function* visitTypesFetchWatcher() {
-  yield takeLatest(types.GET_VISITTYPES, visitTypesFetchWorker);
+export function* enrolmentFetchWatcher() {
+  yield takeLatest(types.GET_ENROLMENTS, enrolmentFetchWorker);
 }
 
-export function* visitTypesFetchWorker({ visitTypesUuid }) {
-  const visitTypes = yield call(api.fetchVisitTypes, visitTypesUuid);
-  yield put(getSubjectProfile(visitTypes.subjectUuid));
-  yield put(setVisitTypes(visitTypes));
+export function* enrolmentFetchWorker({ enrolmentUuid }) {
+  const enrolments = yield call(api.fetchProgramEnrolment, enrolmentUuid);
+  yield put(getSubjectProfile(enrolments.subjectUuid));
+  yield put(setEnrolments(enrolments));
 }
