@@ -104,15 +104,17 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
 
     const SelectedvisitTypesListSort = Object.keys(selectedVisitTypes)
       .filter(selectedId => selectedVisitTypes[selectedId])
-      .map(Number);
+      .map(String);
 
     if (SelectedvisitTypesListSort.length > 0) {
       const SelectedvisitTypesList = [...new Set(SelectedvisitTypesListSort.map(item => item))];
-      otherUrl.encounterTypeIds = SelectedvisitTypesList.join();
+      otherUrl.encounterTypeUuids = SelectedvisitTypesList.join();
     }
     const searchParams = new URLSearchParams(otherUrl);
     const otherPathString = searchParams.toString();
-    const completedVisitUrl = `/web/programEnrolment/${enrolments.id}/completed?${otherPathString}`;
+    const completedVisitUrl = `/web/programEnrolment/${
+      enrolments.uuid
+    }/completed?${otherPathString}`;
     getCompletedVisit(completedVisitUrl);
   };
 
@@ -166,9 +168,9 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedVisitTypes[visitType.id]}
+                  checked={selectedVisitTypes[visitType.uuid]}
                   onChange={visitTypeChange}
-                  name={visitType.id}
+                  name={visitType.uuid}
                   color="primary"
                 />
               }

@@ -278,7 +278,7 @@ const CompleteVisit = ({
 
   store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
 
-  const completedVisitUrl = `/web/programEnrolment/${enrolldata.enrollmentId}/completed`;
+  const completedVisitUrl = `/web/programEnrolment/${enrolldata.enrollmentUuid}/completed`;
 
   useEffect(() => {
     getCompletedVisit(completedVisitUrl);
