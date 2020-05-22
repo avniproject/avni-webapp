@@ -95,8 +95,8 @@ public interface ProgramEncounterRepository extends TransactionalDataRepository<
         return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("encounterDateTime"));
     }
 
-    default Specification<ProgramEncounter> withProgramEncounterTypeIdUuid(List<String> encounterTypeUuid) {
+    default Specification<ProgramEncounter> withProgramEncounterTypeIdUuids(List<String> encounterTypeUuids) {
         return (Root<ProgramEncounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
-                encounterTypeUuid.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuid);
+                encounterTypeUuids.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuids);
     }
 }

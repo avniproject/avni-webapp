@@ -89,7 +89,7 @@ public class ProgramEnrolmentService {
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
         programEncountersContract = programEncounterRepository.findAll(
                 where(programEncounterRepository.withProgramEncounterId(programEnrolment.getId()))
-                        .and(programEncounterRepository.withProgramEncounterTypeIdUuid(encounterTypeIdList))
+                        .and(programEncounterRepository.withProgramEncounterTypeIdUuids(encounterTypeIdList))
                         .and(programEncounterRepository.withProgramEncounterEarliestVisitDateTime(earliestVisitDateTime))
                         .and(programEncounterRepository.withProgramEncounterDateTime(encounterDateTime))
                         .and(programEncounterRepository.withNotNullEncounterDateTime())
