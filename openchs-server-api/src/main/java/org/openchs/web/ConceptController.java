@@ -80,7 +80,7 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         if (name == null) {
             return wrap(conceptRepository.getAllNonVoidedConcepts(pageRequest));
         } else {
-            return wrap(conceptRepository.findByNameIgnoreCaseContaining(name, pageRequest));
+            return wrap(conceptRepository.findByIsVoidedFalseAndNameIgnoreCaseContaining(name, pageRequest));
         }
     }
 
