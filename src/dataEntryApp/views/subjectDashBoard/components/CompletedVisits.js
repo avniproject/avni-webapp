@@ -278,11 +278,11 @@ const CompleteVisit = ({
 
   store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
 
-  const completedVisitUrl = `/web/programEnrolment/${enrolldata.enrollmentUuid}/completed`;
+  const completedVisitUrl = `/web/programEnrolment/${match.queryParams.uuid}/completed`;
 
   useEffect(() => {
     getCompletedVisit(completedVisitUrl);
-    getEnrolments(enrolldata.enrollmentUuid);
+    getEnrolments(match.queryParams.uuid);
   }, []);
 
   return completedVisit && enrolments ? (

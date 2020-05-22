@@ -314,7 +314,7 @@ const ProgramView = ({ programData }) => {
             </Grid>
           </ExpansionPanelDetails>
           {programData && programData.encounters && completedVisits.length != 0 ? (
-            <InternalLink to={`/app/subject/completedVisits?id=${programData.uuid}`}>
+            <InternalLink to={`/app/subject/completedVisits?uuid=${programData.uuid}`}>
               <Button color="primary" className={classes.visitAllButton}>
                 {t("viewAllVisits")}
               </Button>
