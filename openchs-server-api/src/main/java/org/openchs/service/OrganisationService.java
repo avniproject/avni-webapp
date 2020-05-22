@@ -70,6 +70,8 @@ public class OrganisationService {
     private final FormElementGroupRepository formElementGroupRepository;
     private final ConceptAnswerRepository conceptAnswerRepository;
     private final TranslationRepository translationRepository;
+    private final VideoRepository videoRepository;
+    private final VideoService videoService;
 
     //Tx repositories
     private final RuleFailureTelemetryRepository ruleFailureTelemetryRepository;
@@ -118,6 +120,8 @@ public class OrganisationService {
                                FormElementGroupRepository formElementGroupRepository,
                                ConceptAnswerRepository conceptAnswerRepository,
                                TranslationRepository translationRepository,
+                               VideoRepository videoRepository,
+                               VideoService videoService,
                                RuleFailureTelemetryRepository ruleFailureTelemetryRepository,
                                IdentifierAssignmentRepository identifierAssignmentRepository,
                                SyncTelemetryRepository syncTelemetryRepository,
@@ -162,6 +166,8 @@ public class OrganisationService {
         this.formElementGroupRepository = formElementGroupRepository;
         this.conceptAnswerRepository = conceptAnswerRepository;
         this.translationRepository = translationRepository;
+        this.videoRepository = videoRepository;
+        this.videoService = videoService;
         this.ruleFailureTelemetryRepository = ruleFailureTelemetryRepository;
         this.identifierAssignmentRepository = identifierAssignmentRepository;
         this.syncTelemetryRepository = syncTelemetryRepository;
@@ -182,6 +188,13 @@ public class OrganisationService {
         OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(orgId);
         if (organisationConfig != null) {
             addFileToZip(zos, "organisationConfig.json", OrganisationConfigRequest.fromOrganisationConfig(organisationConfig));
+        }
+    }
+
+    public void addVideoJson(ZipOutputStream zos) throws IOException {
+        List<VideoContract> videoContracts = videoService.getAllVideos();
+        if (!videoContracts.isEmpty()) {
+            addFileToZip(zos, "video.json", videoContracts);
         }
     }
 
@@ -387,7 +400,7 @@ public class OrganisationService {
         }
         for (Form form : forms) {
             FormContract formContract = FormContract.fromForm(form);
-            addFileToZip(zos, String.format("forms/%s.json", form.getName().replaceAll("/","_")), formContract);
+            addFileToZip(zos, String.format("forms/%s.json", form.getName().replaceAll("/", "_")), formContract);
         }
     }
 
@@ -451,7 +464,8 @@ public class OrganisationService {
                 operationalSubjectTypeRepository,
                 subjectTypeRepository,
                 organisationConfigRepository,
-                translationRepository
+                translationRepository,
+                videoRepository
         };
 
         Arrays.asList(metadataRepositories).forEach(this::deleteAll);

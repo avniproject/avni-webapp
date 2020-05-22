@@ -55,6 +55,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
     private GroupRoleService groupRoleService;
     private SubjectTypeRepository subjectTypeRepository;
     private GroupPrivilegeService groupPrivilegeService;
+    private VideoService videoService;
 
     @Value("#{jobParameters['userId']}")
     private Long userId;
@@ -82,6 +83,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
         add("groups.json");
         add("groupRole.json");
         add("groupPrivilege.json");
+        add("video.json");
     }};
 
 
@@ -94,7 +96,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                          IndividualRelationshipTypeService individualRelationshipTypeService, ChecklistDetailService checklistDetailService,
                          IdentifierSourceService identifierSourceService, GroupsService groupsService,
                          GroupRoleService groupRoleService, SubjectTypeRepository subjectTypeRepository,
-                         GroupPrivilegeService groupPrivilegeService) {
+                         GroupPrivilegeService groupPrivilegeService, VideoService videoService) {
         this.authService = authService;
         this.conceptService = conceptService;
         this.formService = formService;
@@ -113,6 +115,7 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
         this.groupRoleService = groupRoleService;
         this.subjectTypeRepository = subjectTypeRepository;
         this.groupPrivilegeService = groupPrivilegeService;
+        this.videoService = videoService;
         objectMapper = ObjectMapperSingleton.getObjectMapper();
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -256,6 +259,11 @@ public class ZipFileWriter implements ItemWriter<JsonFile> {
                     groupPrivilegeService.uploadPrivileges(groupPrivilegeContract);
                 }
                 break;
+            case "video.json":
+                VideoContract[] videoContracts = convertString(fileData, VideoContract[].class);
+                for (VideoContract videoContract : videoContracts) {
+                    videoService.saveVideo(videoContract);
+                }
         }
     }
 
