@@ -76,28 +76,28 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
 
   const visitTypesList = [
     ...new Map(
-      enrolments.programEncounters.map(item => [item.encounterType["id"], item.encounterType])
+      enrolments.programEncounters.map(item => [item.encounterType["uuid"], item.encounterType])
     ).values()
   ];
-  const [selectedVisitTypes, setVisitType] = React.useState({});
+  const [selectedVisitTypes, setVisitTypes] = React.useState({});
 
-  const visitTypeChange = event => {
+  const visitTypesChange = event => {
     if (event.target.checked) {
-      setVisitType({ ...selectedVisitTypes, [event.target.name]: event.target.checked });
+      setVisitTypes({ ...selectedVisitTypes, [event.target.name]: event.target.checked });
     } else {
-      setVisitType({ ...selectedVisitTypes, [event.target.name]: event.target.checked });
+      setVisitTypes({ ...selectedVisitTypes, [event.target.name]: event.target.checked });
     }
   };
 
   const applyClick = () => {
-    let otherUrl = {};
+    let filterParams = {};
     if (selectedScheduleDate != null) {
-      otherUrl.earliestVisitDateTime = moment(selectedScheduleDate)
+      filterParams.earliestVisitDateTime = moment(selectedScheduleDate)
         .utc()
         .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
     }
     if (selectedCompletedDate != null) {
-      otherUrl.encounterDateTime = moment(selectedCompletedDate)
+      filterParams.encounterDateTime = moment(selectedCompletedDate)
         .utc()
         .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
     }
@@ -108,10 +108,10 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
 
     if (SelectedvisitTypesListSort.length > 0) {
       const SelectedvisitTypesList = [...new Set(SelectedvisitTypesListSort.map(item => item))];
-      otherUrl.encounterTypeUuids = SelectedvisitTypesList.join();
+      filterParams.encounterTypeUuids = SelectedvisitTypesList.join();
     }
-    const searchParams = new URLSearchParams(otherUrl);
-    const otherPathString = searchParams.toString();
+    const SearchParamsFilter = new URLSearchParams(filterParams);
+    const otherPathString = SearchParamsFilter.toString();
     const completedVisitUrl = `/web/programEnrolment/${
       enrolments.uuid
     }/completed?${otherPathString}`;
@@ -169,7 +169,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
               control={
                 <Checkbox
                   checked={selectedVisitTypes[visitType.uuid]}
-                  onChange={visitTypeChange}
+                  onChange={visitTypesChange}
                   name={visitType.uuid}
                   color="primary"
                 />

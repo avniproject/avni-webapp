@@ -220,20 +220,17 @@ export const mapGeneral = subjectGeneral => {
   }
 };
 
-//ViewVisit
-
-export const mapViewVisit = viewVisitDetails => {
-  if (viewVisitDetails) {
+export const mapEncounter = encounterDetails => {
+  if (encounterDetails) {
     const programEnconter = General.assignFields(
-      viewVisitDetails,
+      encounterDetails,
       new ProgramEncounter(),
       ["uuid", "name"],
       ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime"]
     );
-    programEnconter.encounterType = mapEncounterType(viewVisitDetails.encounterType);
-
-    programEnconter.observations = mapObservation(viewVisitDetails["observations"]);
-    programEnconter.subjectUuid = viewVisitDetails["subjectUUID"];
+    programEnconter.encounterType = mapEncounterType(encounterDetails.encounterType);
+    programEnconter.observations = mapObservation(encounterDetails["observations"]);
+    programEnconter.subjectUuid = encounterDetails["subjectUUID"];
     return programEnconter;
   }
 };

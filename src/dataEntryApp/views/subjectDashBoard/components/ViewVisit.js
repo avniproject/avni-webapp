@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { getViewVisit } from "../../../reducers/viewVisitReducer";
+import { getEncounter } from "../../../reducers/viewVisitReducer";
 import { types } from "../../../reducers/completedVisitsReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
@@ -68,30 +68,26 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
+const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const history = useHistory();
-  let localSavedEnrollment;
   store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
-
   useEffect(() => {
-    getViewVisit(match.queryParams.uuid);
+    getEncounter(match.queryParams.uuid);
   }, []);
-
-  return viewVisit ? (
+  return encounter ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <Grid container direction="row" justify="space-between" alignItems="baseline">
           <Typography component={"span"} className={classes.mainHeading}>
-            {t("ViewVisit")}: {t(viewVisit.encounterType.name)}
+            {t("ViewVisit")}: {t(encounter.encounterType.name)}
           </Typography>
-          {viewVisit.earliestVisitDateTime ? (
+          {encounter.earliestVisitDateTime ? (
             <Typography component={"span"} className={classes.scheduledHeading}>
               {t("Scheduledon")}
               {":  "}
-              {`${moment(new Date(viewVisit.earliestVisitDateTime)).format("DD-MM-YYYY")}`}
+              {`${moment(new Date(encounter.earliestVisitDateTime)).format("DD-MM-YYYY")}`}
             </Typography>
           ) : (
             ""
@@ -102,7 +98,7 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
             {t("Completed")}
           </Typography>
           <Typography component={"span"} className={classes.subHeading}>
-            {`${moment(new Date(viewVisit.encounterDateTime)).format("DD-MM-YYYY")}`}
+            {`${moment(new Date(encounter.encounterDateTime)).format("DD-MM-YYYY")}`}
           </Typography>
         </div>
 
@@ -110,15 +106,14 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
           <Typography component={"span"} className={classes.summaryHeading}>
             {t("summary")}
           </Typography>
-
-          <Observations observations={viewVisit ? viewVisit.observations : ""} />
+          <Observations observations={encounter ? encounter.observations : ""} />
         </Paper>
         <InternalLink to={`/app/subject/completedVisits?id=${enrolldata.enrollmentId}`}>
           <Button color="primary" className={classes.visitButton}>
-            {t("viewAllCompletedVisits")}
+            {t("viewAllVisits")}
           </Button>
         </InternalLink>
-        <InternalLink to={`/app/subject?uuid=${viewVisit.subjectUuid}`}>
+        <InternalLink to={`/app/subject?uuid=${encounter.subjectUuid}`}>
           <Button color="primary" className={classes.visitButton}>
             {t("back")}
           </Button>
@@ -131,12 +126,12 @@ const ViewVisit = ({ match, getViewVisit, viewVisit, enrolldata }) => {
 };
 
 const mapStateToProps = state => ({
-  viewVisit: state.dataEntry.viewVisitReducer.viewVisits,
+  encounter: state.dataEntry.viewVisitReducer.encounter,
   enrolldata: state.dataEntry.completedVisitsReducer.enrolldata
 });
 
 const mapDispatchToProps = {
-  getViewVisit
+  getEncounter
 };
 
 export default withRouter(

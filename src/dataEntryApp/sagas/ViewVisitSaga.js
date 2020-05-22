@@ -1,19 +1,19 @@
 import { all, call, fork, put, takeLatest } from "redux-saga/effects";
-import { types, setViewVisit } from "../reducers/viewVisitReducer";
-import { mapViewVisit } from "../../common/subjectModelMapper";
+import { types, setEncounter } from "../reducers/viewVisitReducer";
+import { mapEncounter } from "../../common/subjectModelMapper";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
 import api from "../api";
 
 export default function*() {
-  yield all([viewVisitFetchWatcher].map(fork));
+  yield all([encounterFetchWatcher].map(fork));
 }
 
-export function* viewVisitFetchWatcher() {
-  yield takeLatest(types.GET_VIEWVISIT, viewVisitFetchWorker);
+export function* encounterFetchWatcher() {
+  yield takeLatest(types.GET_ENCOUNTER, encounterFetchWorker);
 }
 
-export function* viewVisitFetchWorker({ viewVisitUuid }) {
-  const viewVisit = yield call(api.fetchProgramEncounter, viewVisitUuid);
-  yield put(getSubjectProfile(viewVisit.subjectUUID));
-  yield put(setViewVisit(mapViewVisit(viewVisit)));
+export function* encounterFetchWorker({ encounterUuid }) {
+  const encounter = yield call(api.fetchProgramEncounter, encounterUuid);
+  yield put(getSubjectProfile(encounter.subjectUUID));
+  yield put(setEncounter(mapEncounter(encounter)));
 }
