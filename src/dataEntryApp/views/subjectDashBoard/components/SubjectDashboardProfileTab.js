@@ -15,12 +15,15 @@ import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
+import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
-    fontSize: theme.typography.pxToRem(16),
+    fontSize: "1rem",
     flexBasis: "33.33%",
-    flexShrink: 0
+    flexShrink: 0,
+    fontWeight: "500",
+    margin: "0"
   },
   expansionSecondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
@@ -28,13 +31,24 @@ const useStyles = makeStyles(theme => ({
   },
   root: {
     flexGrow: 1,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    boxShadow: "0px 0px 4px 1px rgba(0,0,0,0.3)"
+  },
+  expansionSubHeading: {
+    fontSize: theme.typography.pxToRem(13),
+    flexBasis: "33.33%",
+    flexShrink: 0,
+    fontWeight: "400",
+    margin: "0"
   },
   listItemView: {
     border: "1px solid lightGrey"
   },
   expansionPanel: {
-    marginBottom: "11px"
+    marginBottom: "11px",
+    borderRadius: "5px",
+    boxShadow:
+      "0px 0px 3px 1px rgba(0,0,0,0.2), 0px 1px 2px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   card: {
     boxShadow: "0px 0px 0px 0px rgba(0,0,0,0.12)",
@@ -55,6 +69,12 @@ const useStyles = makeStyles(theme => ({
   gridBottomBorder: {
     borderBottom: "1px solid rgba(0,0,0,0.12)",
     paddingBottom: "10px"
+  },
+  infomsg: {
+    marginLeft: 10
+  },
+  expandMoreIcon: {
+    color: "#0e6eff"
   }
 }));
 
@@ -76,32 +96,36 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
           onChange={handleChange("registrationPanel")}
         >
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="registrationPanelbh-content"
             id="registrationPanelbh-header"
           >
-            <div>
-              <h5>
+            <Typography component={"span"}>
+              <p className={classes.expansionHeading}>
                 {t("registration")} {t("details")}
-              </h5>
-              <p>
+              </p>
+              <p className={classes.expansionSubHeading}>
                 {t("registrationDate")}:{" "}
                 {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
               </p>
-            </div>
+            </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid item xs={12}>
               <List>
                 <Observations observations={profile ? profile.observations : ""} />
               </List>
-              <Button color="primary">{t("void")}</Button>
+              {!enableReadOnly ? <Button color="primary">{t("void")}</Button> : ""}
               {/* <Button color="primary">{t("edit")}</Button> */}
-              <Button color="primary">
-                <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
-                  {t("edit")}{" "}
-                </InternalLink>
-              </Button>
+              {!enableReadOnly ? (
+                <Button color="primary">
+                  <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
+                    {t("edit")}{" "}
+                  </InternalLink>
+                </Button>
+              ) : (
+                ""
+              )}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -111,7 +135,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
           onChange={handleChange("relativesPanel")}
         >
           <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="relativesPanelbh-content"
             id="relativesPanelbh-header"
           >
@@ -120,9 +144,16 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <GridCommonList gridListDetails={profile.relationships} path={path} />
+            {profile.relationships != undefined ? (
+              <GridCommonList gridListDetails={profile.relationships} path={path} />
+            ) : (
+              <Typography variant="caption" gutterBottom className={classes.infomsg}>
+                {" "}
+                {t("no")} {t("Relatives")}{" "}
+              </Typography>
+            )}
           </ExpansionPanelDetails>
-          <Button color="primary"> {t("addARelative")}</Button>
+          {!enableReadOnly ? <Button color="primary"> {t("addARelative")}</Button> : ""}
         </ExpansionPanel>
       </Paper>
     </Fragment>

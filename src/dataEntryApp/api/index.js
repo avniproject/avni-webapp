@@ -47,6 +47,10 @@ export default {
   fetchEnrolments: uuid => {
     return httpClient.fetchJson(`/api/enrolments/`).then(response => response.json);
   },
+  fetchcompletedVisit: completedVisitUrl =>
+    httpClient.fetchJson(completedVisitUrl).then(response => {
+      return response.json;
+    }),
   fetchProgramEnrolment: enrolmentUuid =>
     httpClient.fetchJson(`/web/programEnrolment/${enrolmentUuid}`).then(response => {
       return response.json;

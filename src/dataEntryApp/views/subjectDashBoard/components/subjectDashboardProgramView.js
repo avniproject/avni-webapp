@@ -1,5 +1,6 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
@@ -14,22 +15,48 @@ import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
+import { enableReadOnly } from "common/constants";
+// import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
+import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
+import { store } from "../../../../common/store/createStore";
+import { types } from "../../../reducers/completedVisitsReducer";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
-    fontSize: "18px"
+    fontSize: "18px",
+    fontWeight: "500"
   },
   growthButtonStyle: {
     marginBottom: theme.spacing(2),
+    height: "28px",
+    boxShadow: "none",
     marginRight: "10px",
-    height: "28px"
+    marginLeft: "120px",
+    backgroundColor: "#0e6eff"
+  },
+  vaccinationButtonStyle: {
+    marginBottom: theme.spacing(2),
+    boxShadow: "none",
+    height: "28px",
+    backgroundColor: "#0e6eff"
+  },
+  newProgVisitButtonStyle: {
+    marginBottom: theme.spacing(2),
+    boxShadow: "none",
+    height: "28px",
+    marginLeft: "10px",
+    backgroundColor: "#0e6eff"
   },
   root: {
     flexGrow: 1,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    boxShadow: "0px 0px 4px 0px rgba(0,0,0,0.3)"
   },
   expansionPanel: {
-    marginBottom: "11px"
+    marginBottom: "11px",
+    borderRadius: "5px",
+    boxShadow:
+      "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   paper: {
     textAlign: "left",
@@ -47,7 +74,8 @@ const useStyles = makeStyles(theme => ({
   expansionHeading: {
     fontSize: theme.typography.pxToRem(16),
     flexBasis: "33.33%",
-    flexShrink: 0
+    flexShrink: 0,
+    fontWeight: "500"
   },
   listItem: {
     paddingBottom: "0px",
@@ -79,35 +107,89 @@ const useStyles = makeStyles(theme => ({
   visitButton: {
     marginLeft: "8px",
     fontSize: "14px"
+  },
+  gridBottomBorder: {
+    borderBottom: "1px solid rgba(0,0,0,0.12)",
+    paddingBottom: "10px"
+  },
+  infomsg: {
+    marginLeft: 10
+  },
+  visitAllButton: {
+    marginLeft: "20px",
+    marginBottom: "10px"
   }
 }));
 
 const ProgramView = ({ programData }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [expandedPanel, setExpanded] = React.useState("");
 
+  const [expandedPanel, setExpanded] = React.useState("");
+  const enrolldata = {
+    enrollmentId: programData.id,
+    enrollmentUuid: programData.uuid
+  };
+
+  store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
+  let plannedVisits = [];
+  let completedVisits = [];
+
+  if (programData && programData.encounters) {
+    programData.encounters.forEach(function(row, index) {
+      if (!row.encounterDateTime) {
+        let sub = {
+          uuid: row.uuid,
+          name: row.name,
+          key: index,
+          index: index,
+          visitDate: row.encounterDateTime,
+          earliestVisitDate: row.earliestVisitDateTime,
+          overdueDate: row.maxVisitDateTime
+        };
+        plannedVisits.push(sub);
+      } else if (row.encounterDateTime && row.encounterType && index <= 3) {
+        let sub = {
+          uuid: row.uuid,
+          name: row.name,
+          key: index,
+          index: index,
+          visitDate: row.encounterDateTime,
+          earliestVisitDate: row.earliestVisitDateTime,
+          overdueDate: row.maxVisitDateTime
+        };
+        completedVisits.push(sub);
+      }
+    });
+  }
+
   return (
     <div>
       <Grid container spacing={3}>
-        <Grid item xs={6}>
+        <Grid item xs={4} container direction="row" justify="flex-start" alignItems="flex-start">
           <label className={classes.programLabel}>
             {t(programData.program.operationalProgramName)} {t("programdetails")}
           </label>
         </Grid>
-        <Grid item xs={6}>
-          <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
-          <SubjectButton btnLabel={t("vaccinations")} />
-          <InternalLink
-            to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
-            noUnderline
-          >
-            <SubjectButton btnLabel={t("newProgramVisit")} />
-          </InternalLink>
+
+        <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
+          {/* <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
+          <SubjectButton btnLabel={t("vaccinations")} /> */}
+
+          {!enableReadOnly ? (
+            <InternalLink
+              to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
+              noUnderline
+            >
+              <SubjectButton btnLabel={t("newProgramVisit")} />
+            </InternalLink>
+          ) : (
+            ""
+          )}
         </Grid>
       </Grid>
       <Paper className={classes.root}>
@@ -130,8 +212,8 @@ const ProgramView = ({ programData }) => {
               <List>
                 <Observations observations={programData ? programData.observations : ""} />
               </List>
-              <Button color="primary">{t("void")}</Button>
-              <Button color="primary">{t("edit")}</Button>
+              {!enableReadOnly ? <Button color="primary">{t("void")}</Button> : ""}
+              {!enableReadOnly ? <Button color="primary">{t("edit")}</Button> : ""}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -150,24 +232,36 @@ const ProgramView = ({ programData }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <Grid container spacing={2}>
-              {programData && programData.encounters
-                ? programData.encounters.map((row, index) =>
-                    !row.encounterDateTime ? (
-                      <Visit
-                        name={row.name}
-                        key={index}
-                        index={index}
-                        visitDate={row.earliestVisitDateTime}
-                        overdueDate={row.maxVisitDateTime}
-                        enrolUuid={programData.uuid}
-                        encounterTypeUuid={row.encounterType.uuid}
-                      />
-                    ) : (
-                      ""
-                    )
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="flex-start"
+              spacing={2}
+            >
+              {programData && programData.encounters && plannedVisits.length != 0 ? (
+                programData.encounters.map((row, index) =>
+                  !row.encounterDateTime ? (
+                    <Visit
+                      uuid={row.uuid}
+                      name={row.name}
+                      index={index}
+                      visitDate={row.encounterDateTime}
+                      earliestVisitDate={row.earliestVisitDateTime}
+                      overdueDate={row.maxVisitDateTime}
+                      enrolUuid={programData.uuid}
+                      encounterTypeUuid={row.encounterType.uuid}
+                    />
+                  ) : (
+                    ""
                   )
-                : ""}
+                )
+              ) : (
+                <Typography variant="caption" gutterBottom className={classes.infomsg}>
+                  {" "}
+                  {t("no")} {t("plannedVisits")}{" "}
+                </Typography>
+              )}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -186,27 +280,48 @@ const ProgramView = ({ programData }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            <Grid container spacing={2}>
-              {programData && programData.encounters
-                ? programData.encounters.map((row, index) =>
-                    row.encounterDateTime && row.encounterType ? (
-                      <Visit
-                        name={row.encounterType.name}
-                        key={index}
-                        index={index}
-                        visitDate={row.encounterDateTime}
-                        earliestVisitDate={row.earliestVisitDateTime}
-                        encounterDateTime={row.encounterDateTime}
-                        uuid={row.uuid}
-                        enrolUuid={programData.uuid}
-                      />
-                    ) : (
-                      ""
-                    )
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="flex-start"
+              spacing={2}
+              className={classes.gridBottomBorder}
+            >
+              {programData && programData.encounters && completedVisits.length != 0 ? (
+                programData.encounters.map((row, index) =>
+                  row.encounterDateTime && row.encounterType && index <= 3 ? (
+                    <Visit
+                      uuid={row.uuid}
+                      name={row.encounterType.name}
+                      key={index}
+                      index={index}
+                      visitDate={row.encounterDateTime}
+                      earliestVisitDate={row.earliestVisitDateTime}
+                      encounterDateTime={row.encounterDateTime}
+                      enrolUuid={programData.uuid}
+                    />
+                  ) : (
+                    ""
                   )
-                : ""}
+                )
+              ) : (
+                <Typography variant="caption" gutterBottom className={classes.infomsg}>
+                  {" "}
+                  {t("no")} {t("completedVisits")}{" "}
+                </Typography>
+              )}
             </Grid>
           </ExpansionPanelDetails>
+          {programData && programData.encounters && completedVisits.length != 0 ? (
+            <InternalLink to={`/app/subject/completedVisits?uuid=${programData.uuid}`}>
+              <Button color="primary" className={classes.visitAllButton}>
+                {t("viewAllVisits")}
+              </Button>
+            </InternalLink>
+          ) : (
+            ""
+          )}
         </ExpansionPanel>
       </Paper>
     </div>

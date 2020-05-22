@@ -19,20 +19,34 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
+import { enableReadOnly } from "common/constants";
+import AccountCircle from "@material-ui/icons/AccountCircle";
 
 const useStyles = makeStyles(theme => ({
-  tableCell: {
+  tableCellDetails: {
     borderBottom: "none",
-    padding: "0px 0px 0px 16px"
+    padding: "0px 21px 0px 11px",
+    fontWeight: "500",
+    color: "#1010101",
+    fontSize: "14px"
   },
   enrollButtonStyle: {
-    backgroundColor: "#fc9153",
+    backgroundColor: "#f27510",
     height: "38px",
-    zIndex: 1
+    zIndex: 1,
+    marginLeft: theme.spacing(77),
+    // marginLeft:"512px",
+    marginTop: "1px",
+    boxShadow: "none"
   },
   bigAvatar: {
     width: 42,
-    height: 42
+    height: 42,
+    marginTop: "20px",
+    marginBottom: "8px"
+  },
+  table: {
+    marginTop: "10px"
   },
   tableView: {
     flexGrow: 1,
@@ -40,12 +54,15 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center"
   },
   mainHeading: {
-    fontSize: "20px"
+    fontSize: "20px",
+    fontWeight: "500"
   },
-  tableHeader: {
+  tableCell: {
     color: "#555555",
     fontSize: "12px",
-    fontFamily: "Roboto Reg"
+    borderBottom: "none",
+    padding: "0px 0px 0px 11px",
+    fontWeight: "500"
   },
   btnCustom: {
     float: "left",
@@ -92,6 +109,11 @@ const useStyles = makeStyles(theme => ({
   },
   errorText: {
     color: "red"
+  },
+  iconStyle: {
+    fontSize: "50px",
+    color: "#676173",
+    marginTop: "10px"
   }
 }));
 
@@ -173,15 +195,19 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
       <Typography component={"span"} className={classes.mainHeading}>
         {`${profileDetails.firstName} ${profileDetails.lastName}`} {t("Dashboard")}
       </Typography>
-      <Grid justify="center" alignItems="center" container spacing={2}>
-        <Grid item>
+      <Grid alignItems="center" container spacing={1}>
+        {/* <Grid item>
           <Avatar
             src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
             className={classes.bigAvatar}
           />
+          
+        </Grid> */}
+        <Grid item>
+          <AccountCircle className={classes.iconStyle} />
         </Grid>
-        <Grid item xs={5}>
-          <Table aria-label="caption table">
+        <Grid item xs={4}>
+          <Table aria-label="caption table" className={classes.table}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
                 <TableCell className={classes.tableCell}>{t("name")}</TableCell>
@@ -192,46 +218,57 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell className={classes.tableCell}>{`${profileDetails.firstName} ${
+                <TableCell className={classes.tableCellDetails}>{`${profileDetails.firstName} ${
                   profileDetails.lastName
                 }`}</TableCell>
-                <TableCell className={classes.tableCell}>{t(profileDetails.gender.name)}</TableCell>
-                <TableCell className={classes.tableCell}>
+                <TableCell className={classes.tableCellDetails}>
+                  {t(profileDetails.gender.name)}
+                </TableCell>
+                <TableCell className={classes.tableCellDetails}>
                   {new Date().getFullYear() -
                     new Date(profileDetails.dateOfBirth).getFullYear() +
+                    " " +
                     `${t("year")}`}
                 </TableCell>
-                <TableCell className={classes.tableCell}>
+                <TableCell className={classes.tableCellDetails}>
                   {profileDetails.lowestAddressLevel.name}
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </Grid>
-        <Grid item xs={6} align="right">
-          <div>
-            <Modal
-              content={content}
-              handleError={handleError}
-              buttonsSet={[
-                {
-                  buttonType: "openButton",
-                  label: t("enrolInProgram"),
-                  classes: classes.enrollButtonStyle
-                },
-                {
-                  buttonType: "saveButton",
-                  label: t("Enrol"),
-                  classes: classes.btnCustom,
-                  redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`,
-                  requiredField: selectedProgram,
-                  handleError: handleError
-                },
-                { buttonType: "cancelButton", label: t("Cancel"), classes: classes.cancelBtnCustom }
-              ]}
-              title={t("Enrol in program")}
-            />
-          </div>
+        <Grid item>
+          {!enableReadOnly ? (
+            <div>
+              <Modal
+                content={content}
+                handleError={handleError}
+                buttonsSet={[
+                  {
+                    buttonType: "openButton",
+                    label: t("enrolInProgram"),
+                    classes: classes.enrollButtonStyle
+                  },
+                  {
+                    buttonType: "saveButton",
+                    label: t("Enrol"),
+                    classes: classes.btnCustom,
+                    redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`,
+                    requiredField: selectedProgram,
+                    handleError: handleError
+                  },
+                  {
+                    buttonType: "cancelButton",
+                    label: t("Cancel"),
+                    classes: classes.cancelBtnCustom
+                  }
+                ]}
+                title={t("Enrol in program")}
+              />
+            </div>
+          ) : (
+            ""
+          )}
         </Grid>
       </Grid>
     </div>

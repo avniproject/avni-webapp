@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
 const styles = theme => ({
   root: {
     margin: 0,
-    backgroundColor: "black",
+    backgroundColor: "#555555",
     padding: "6px 16px",
     color: "white"
   },
@@ -132,10 +132,6 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
 
   //const { t } = useTranslation();
 
-  const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
-  const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
-  const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
-
   const handleClickOpen = () => {
     setOpen(true);
     handleError(false);
@@ -144,6 +140,12 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
     setOpen(false);
     handleError(false);
   };
+
+  const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
+  const filterButton = buttonsSet.filter(element => element.buttonType === "filterButton").shift();
+  const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
+  const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
+  const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
 
   return (
     <React.Fragment>
@@ -156,6 +158,23 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
           onClick={handleClickOpen}
         >
           {mainButton.label}
+        </Fab>
+      ) : (
+        ""
+      )}
+
+      {filterButton ? (
+        <Fab
+          className={filterButton.classes}
+          variant="extended"
+          color="primary"
+          aria-label="add"
+          onClick={() => {
+            handleClickOpen();
+            filterButton.click();
+          }}
+        >
+          {filterButton.label}
         </Fab>
       ) : (
         ""
@@ -184,6 +203,18 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
               btnLabel={saveButton.label}
               btnClass={saveButton.classes}
               btnClick={handleError.bind(this, true)}
+            />
+          ) : (
+            ""
+          )}
+          {applyButton ? (
+            <SubjectButton
+              btnLabel={applyButton.label}
+              btnClass={applyButton.classes}
+              btnClick={() => {
+                applyButton.click();
+                handleClose();
+              }}
             />
           ) : (
             ""

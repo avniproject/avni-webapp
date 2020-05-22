@@ -56,4 +56,5 @@ export const localeChoices = [
   { id: LOCALES.URDU, name: "Urdu" }
 ];
 
-export const disableSession = true;
+export const disableSession = false;
+export const enableReadOnly = true;

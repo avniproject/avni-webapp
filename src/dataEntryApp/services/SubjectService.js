@@ -4,7 +4,7 @@ export default {
   search(params) {
     const _params = {
       page: 0,
-      size: 20,
+      size: 1000,
       ...params
     };
     return httpClient

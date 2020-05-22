@@ -150,13 +150,14 @@ export const mapEnrolment = enrolmentList => {
       let programEnrolment = General.assignFields(
         enrolment,
         new ProgramEnrolment(),
-        [],
+        ["uuid"],
         ["programExitDateTime", "enrolmentDateTime"]
       );
       programEnrolment.observations = mapObservation(enrolment["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
       programEnrolment.program = mapOperationalProgram(enrolment);
       programEnrolment.uuid = enrolment.uuid;
+      programEnrolment.id = enrolment.id;
       return programEnrolment;
     });
 };
@@ -216,5 +217,20 @@ export const mapGeneral = subjectGeneral => {
       generalEncounter.encounterType = mapEncounterType(encounters.encounterType);
       return generalEncounter;
     });
+  }
+};
+
+export const mapEncounter = encounterDetails => {
+  if (encounterDetails) {
+    const programEnconter = General.assignFields(
+      encounterDetails,
+      new ProgramEncounter(),
+      ["uuid", "name"],
+      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime"]
+    );
+    programEnconter.encounterType = mapEncounterType(encounterDetails.encounterType);
+    programEnconter.observations = mapObservation(encounterDetails["observations"]);
+    programEnconter.subjectUuid = encounterDetails["subjectUUID"];
+    return programEnconter;
   }
 };

@@ -8,6 +8,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { enableReadOnly } from "common/constants";
 import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
@@ -27,8 +29,7 @@ const useStyles = makeStyles(theme => ({
     borderRight: "1px solid rgba(0,0,0,0.12)",
     "&:nth-child(4n),&:last-child": {
       borderRight: "0px solid rgba(0,0,0,0.12)"
-    },
-    marginTop: "15px"
+    }
   },
   programStatusStyle: {
     color: "red",
@@ -83,17 +84,34 @@ const Visit = ({
       <Paper className={classes.paper}>
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>
-            <ListItemText
-              className={classes.ListItemText}
-              title={t(name)}
-              primary={truncate(t(name))}
-            />
+            {visitDate !== null ? (
+              <Link to={`/app/subject/viewVisit?uuid=${uuid}`}>
+                <ListItemText
+                  className={classes.ListItemText}
+                  title={t(name)}
+                  primary={truncate(t(name))}
+                />
+              </Link>
+            ) : (
+              <ListItemText
+                className={classes.ListItemText}
+                title={t(name)}
+                primary={truncate(t(name))}
+              />
+            )}
           </ListItem>
           <ListItem className={classes.listItem}>
-            <ListItemText
-              className={classes.listItemTextDate}
-              primary={moment(new Date(visitDate)).format("DD-MM-YYYY")}
-            />
+            {visitDate !== null ? (
+              <ListItemText
+                className={classes.listItemTextDate}
+                primary={moment(new Date(visitDate)).format("DD-MM-YYYY")}
+              />
+            ) : (
+              <ListItemText
+                className={classes.listItemTextDate}
+                primary={moment(new Date(earliestVisitDate)).format("DD-MM-YYYY")}
+              />
+            )}
           </ListItem>
           {overdueDate && new Date() > new Date(overdueDate) ? (
             <ListItem className={classes.listItem}>
@@ -105,7 +123,7 @@ const Visit = ({
             ""
           )}
 
-          {earliestVisitDate ? (
+          {/* {earliestVisitDate ? (
             <ListItem className={classes.listItem}>
               <label style={{ fontSize: "14px" }}>
                 {`Scheduled on : ${moment(new Date(earliestVisitDate)).format("DD-MM-YYYY")}`}{" "}
@@ -113,25 +131,31 @@ const Visit = ({
             </ListItem>
           ) : (
             ""
-          )}
+          )} */}
         </List>
-        {encounterDateTime ? (
-          <InternalLink
-            to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
-          >
-            <Button color="primary" className={classes.visitButton}>
-              {t("edit visit")}
-            </Button>
-          </InternalLink>
+        {!enableReadOnly ? (
+          <>
+            {encounterDateTime ? (
+              <InternalLink
+                to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
+              >
+                <Button color="primary" className={classes.visitButton}>
+                  {t("edit visit")}
+                </Button>
+              </InternalLink>
+            ) : (
+              <div className={classes.visitButton}>
+                <InternalLink
+                  to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
+                >
+                  <Button color="primary">{t("do visit")}</Button>
+                </InternalLink>
+                <Button color="primary">{t("cancelVisit")}</Button>
+              </div>
+            )}
+          </>
         ) : (
-          <div className={classes.visitButton}>
-            <InternalLink
-              to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
-            >
-              <Button color="primary">{t("do visit")}</Button>
-            </InternalLink>
-            <Button color="primary">{t("cancelVisit")}</Button>
-          </div>
+          ""
         )}
       </Paper>
     </Grid>
