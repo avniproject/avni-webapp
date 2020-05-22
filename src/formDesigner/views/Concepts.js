@@ -44,30 +44,16 @@ const Concepts = ({ history }) => {
     });
 
   const voidConcept = rowData => ({
-    icon: rowData.voided ? "restore_from_trash" : "delete_outline",
-    tooltip:
-      rowData.organisationId === 1
-        ? "Can not void core concepts"
-        : rowData.voided
-        ? "Unvoid Concept"
-        : "Void Concept",
+    icon: "delete_outline",
+    tooltip: rowData.organisationId === 1 ? "Can not void core concepts" : "Void Concept",
     onClick: (event, rowData) => {
-      const voidedMessage = rowData.voided
-        ? "Do you want to unvoid the concept " + rowData.name + " ?"
-        : "Do you want to void the concept " + rowData.name + " ?";
+      const voidedMessage = "Do you want to void the concept " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
-        http
-          .post("/concepts", [
-            {
-              uuid: rowData.uuid,
-              voided: !rowData.voided
-            }
-          ])
-          .then(response => {
-            if (response.status === 200) {
-              refreshTable(tableRef);
-            }
-          });
+        http.delete(`/concept/${rowData.uuid}`).then(response => {
+          if (response.status === 200) {
+            refreshTable(tableRef);
+          }
+        });
       }
     },
     disabled: rowData.organisationId === 1

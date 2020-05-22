@@ -277,6 +277,7 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
         label="Email Address"
         validate={validateEmail}
         toolTipKey={"ADMIN_USER_EMAIL"}
+        multiline
       />
 
       <AvniTextInput

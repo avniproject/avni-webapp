@@ -484,20 +484,14 @@ class CreateEditConcept extends Component {
 
   onDeleteConcept = () => {
     if (window.confirm("Do you really want to void the concept?")) {
-      http
-        .post("/concepts", [
-          {
-            uuid: this.state.uuid,
-            voided: true
-          }
-        ])
-        .then(response => {
-          if (response.status === 200) {
-            this.setState({
-              redirectOnDelete: true
-            });
-          }
-        });
+      http.delete(`/concept/${this.state.uuid}`).then(response => {
+        if (response.status === 200) {
+          this.setState({
+            redirectShow: false,
+            redirectOnDelete: true
+          });
+        }
+      });
     }
   };
 
