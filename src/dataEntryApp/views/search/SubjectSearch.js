@@ -71,12 +71,21 @@ const SubjectsTable = ({ type, subjects }) => {
   let tableHeaderName = [];
   let subjectsListObj = [];
 
+  const camelize = str => {
+    return (" " + str).toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function(match, chr) {
+      return chr.toUpperCase();
+    });
+  };
+
   subjects.forEach(function(a) {
+    let firstName = a.firstName ? camelize(a.firstName) : "";
+    let lastName = a.lastName ? camelize(a.lastName) : "";
     let sub = {
       uuid: a.uuid,
-      fullName: a.fullName,
+      fullName: firstName + " " + lastName,
       gender: a.gender ? t(a.gender.name) : "",
-      dateOfBirth: a.dateOfBirth,
+      dateOfBirth:
+        new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`,
       addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
       activePrograms: a.activePrograms
     };
@@ -91,7 +100,7 @@ const SubjectsTable = ({ type, subjects }) => {
         id: "dateOfBirth",
         numeric: true,
         disablePadding: false,
-        label: "dateOfBirth",
+        label: "age",
         align: "left"
       },
       {
@@ -144,25 +153,6 @@ const SubjectsTable = ({ type, subjects }) => {
     setSelected([]);
   };
 
-  // const handleClick = (event, name) => {
-  //   const selectedIndex = selected.indexOf(name);
-  //   let newSelected = [];
-
-  //   if (selectedIndex === -1) {
-  //     newSelected = newSelected.concat(selected, name);
-  //   } else if (selectedIndex === 0) {
-  //     newSelected = newSelected.concat(selected.slice(1));
-  //   } else if (selectedIndex === selected.length - 1) {
-  //     newSelected = newSelected.concat(selected.slice(0, -1));
-  //   } else if (selectedIndex > 0) {
-  //     newSelected = newSelected.concat(
-  //       selected.slice(0, selectedIndex),
-  //       selected.slice(selectedIndex + 1)
-  //     );
-  //   }
-
-  //   setSelected(newSelected);
-  // };
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -178,7 +168,6 @@ const SubjectsTable = ({ type, subjects }) => {
 
   return (
     <div>
-      {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
       <Table
         className={classes.table}
         aria-labelledby="tableTitle"
