@@ -376,6 +376,26 @@ class FormDetails extends Component {
     }
   };
 
+  getEntityNameForRules() {
+    switch (this.state.form.formType) {
+      case "IndividualProfile":
+        return "individual";
+      case "Encounter":
+      case "IndividualEncounterCancellation":
+        return "encounter";
+      case "ProgramEnrolment":
+      case "ProgramExit":
+        return "programEnrolment";
+      case "ProgramEncounter":
+      case "ProgramEncounterCancellation":
+        return "programEncounter";
+      case "ChecklistItem":
+        return "checklistItem";
+      default:
+        return "";
+    }
+  }
+
   renderGroups() {
     const formElements = [];
     _.forEach(this.state.form.formElementGroups, (group, index) => {
@@ -403,7 +423,8 @@ class FormDetails extends Component {
           onDeleteInlineConceptCodedAnswerDelete: this.onDeleteInlineConceptCodedAnswerDelete,
           handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
           onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer,
-          updateFormElementGroupRule: this.updateFormElementGroupRule
+          updateFormElementGroupRule: this.updateFormElementGroupRule,
+          entityName: this.getEntityNameForRules()
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -694,6 +715,7 @@ class FormDetails extends Component {
     this.btnGroupAdd(0);
     this.setState({ createFlag: false });
   }
+
   // END Group level Events
   validateForm() {
     let flag = false;
@@ -1212,6 +1234,7 @@ class FormDetails extends Component {
               form={this.state.form}
               onRuleUpdate={this.onRuleUpdate}
               onToggleExpandPanel={this.onToggleExpandPanel}
+              entityName={this.getEntityNameForRules()}
             />
           </div>
         </Grid>

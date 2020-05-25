@@ -177,7 +177,8 @@ function FormElementGroup(props) {
             props.onToggleInlineConceptCodedAnswerAttribute,
           onDeleteInlineConceptCodedAnswerDelete: props.onDeleteInlineConceptCodedAnswerDelete,
           handleInlineCodedAnswerAddition: props.handleInlineCodedAnswerAddition,
-          onDragInlineCodedConceptAnswer: props.onDragInlineCodedConceptAnswer
+          onDragInlineCodedConceptAnswer: props.onDragInlineCodedConceptAnswer,
+          entityName: props.entityName
         };
         formElements.push(
           <Draggable

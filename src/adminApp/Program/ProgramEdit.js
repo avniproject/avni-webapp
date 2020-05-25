@@ -38,6 +38,10 @@ import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
+import {
+  sampleEnrolmentEligibilityCheckRule,
+  sampleEnrolmentSummaryRule
+} from "../../formDesigner/common/SampleRule";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -253,7 +257,7 @@ const ProgramEdit = props => {
             toolTipKey={"APP_DESIGNER_PROGRAM_SUMMARY_RULE"}
           />
           <Editor
-            value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
+            value={program.enrolmentSummaryRule || sampleEnrolmentSummaryRule()}
             onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
             highlight={code => highlight(code, languages.js)}
             padding={10}
@@ -271,9 +275,7 @@ const ProgramEdit = props => {
             toolTipKey={"APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE"}
           />
           <Editor
-            value={
-              program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""
-            }
+            value={program.enrolmentEligibilityCheckRule || sampleEnrolmentEligibilityCheckRule()}
             onValueChange={event =>
               dispatch({ type: "enrolmentEligibilityCheckRule", payload: event })
             }

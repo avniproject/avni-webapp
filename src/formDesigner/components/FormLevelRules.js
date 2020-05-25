@@ -9,6 +9,12 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import PropTypes from "prop-types";
+import {
+  sampleChecklistRule,
+  sampleDecisionRule,
+  sampleValidationRule,
+  sampleVisitScheduleRule
+} from "../common/SampleRule";
 
 function FormLevelRules(props) {
   return (
@@ -29,7 +35,7 @@ function FormLevelRules(props) {
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Editor
-            value={props.form.decisionRule}
+            value={props.form.decisionRule || sampleDecisionRule(props.entityName)}
             onValueChange={event => props.onRuleUpdate("decisionRule", event)}
             highlight={code => highlight(code, languages.js)}
             padding={10}
@@ -61,7 +67,7 @@ function FormLevelRules(props) {
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Editor
-            value={props.form.visitScheduleRule}
+            value={props.form.visitScheduleRule || sampleVisitScheduleRule(props.entityName)}
             onValueChange={event => props.onRuleUpdate("visitScheduleRule", event)}
             highlight={code => highlight(code, languages.js)}
             padding={10}
@@ -92,7 +98,7 @@ function FormLevelRules(props) {
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Editor
-            value={props.form.validationRule}
+            value={props.form.validationRule || sampleValidationRule(props.entityName)}
             onValueChange={event => props.onRuleUpdate("validationRule", event)}
             highlight={code => highlight(code, languages.js)}
             padding={10}
@@ -125,7 +131,7 @@ function FormLevelRules(props) {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Editor
-              value={props.form.checklistsRule}
+              value={props.form.checklistsRule || sampleChecklistRule()}
               onValueChange={event => props.onRuleUpdate("checklistsRule", event)}
               highlight={code => highlight(code, languages.js)}
               padding={10}
