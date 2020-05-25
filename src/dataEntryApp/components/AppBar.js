@@ -25,6 +25,7 @@ import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { enableReadOnly } from "common/constants";
 import { getUserInfo } from "rootApp/ducks";
+import { InternalLink } from "common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -198,7 +199,9 @@ const PrimarySearchAppBar = ({
       <AppBar position="static" style={{ background: "white" }}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            <img src={logo} alt="logo" />
+            <InternalLink to={"/"}>
+              <img src={logo} alt="logo" />
+            </InternalLink>
           </Typography>
           {!enableReadOnly ? (
             <form noValidate autoComplete="off">

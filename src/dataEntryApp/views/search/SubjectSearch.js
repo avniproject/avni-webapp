@@ -71,14 +71,15 @@ const SubjectsTable = ({ type, subjects }) => {
   let tableHeaderName = [];
   let subjectsListObj = [];
 
-  subjects.forEach(function(a) {
+  subjects.forEach(function(subject) {
     let sub = {
-      uuid: a.uuid,
-      fullName: a.fullName,
-      gender: a.gender ? t(a.gender.name) : "",
-      dateOfBirth: a.dateOfBirth,
-      addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
-      activePrograms: a.activePrograms
+      uuid: subject.uuid,
+      fullName: subject.fullName,
+      subjectType: subject.subjectType.name,
+      gender: subject.gender ? t(subject.gender.name) : "",
+      dateOfBirth: subject.dateOfBirth,
+      addressLevel: subject.addressLevel ? subject.addressLevel.titleLineage : "",
+      activePrograms: subject.activePrograms
     };
     subjectsListObj.push(sub);
   });
@@ -86,6 +87,13 @@ const SubjectsTable = ({ type, subjects }) => {
   if (type.name === "Individual") {
     tableHeaderName = [
       { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+      {
+        id: "subjectType",
+        numeric: false,
+        disablePadding: true,
+        label: "SubjectType",
+        align: "left"
+      },
       { id: "gender", numeric: false, disablePadding: true, label: "Gender", align: "left" },
       {
         id: "dateOfBirth",
@@ -98,14 +106,14 @@ const SubjectsTable = ({ type, subjects }) => {
         id: "addressLevel",
         numeric: false,
         disablePadding: true,
-        label: "location",
+        label: "addressVillage",
         align: "left"
       },
       {
         id: "activePrograms",
         numeric: false,
         disablePadding: true,
-        label: "activeprograms",
+        label: "enrolments",
         align: "left"
       }
     ];
@@ -212,6 +220,9 @@ const SubjectsTable = ({ type, subjects }) => {
                 >
                   <TableCell component="th" scope="row" padding="none" width="20%">
                     <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
+                  </TableCell>
+                  <TableCell component="th" scope="row" padding="none" width="12%">
+                    {row.subjectType}
                   </TableCell>
                   {type.name === "Individual" && (
                     <TableCell align="left" className={classes.cellpadding}>
