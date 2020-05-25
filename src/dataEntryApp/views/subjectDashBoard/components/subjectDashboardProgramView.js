@@ -14,7 +14,6 @@ import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import CustomizedDialog from "../../../components/Dialog";
 
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -24,10 +23,9 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
 
-import { withRouter, useHistory } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import { getSubjectProgram } from "../../../reducers/programSubjectDashboardReducer";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -96,19 +94,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({
-  programData,
-  subjectUuid,
-  undoExitEnrolment,
-  handleUpdateComponent,
-  getSubjectProgram
-}) => {
+const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdateComponent }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [expandedPanel, setExpanded] = React.useState("");
-  const [undoExit, setUndoExit] = React.useState(false);
-  const history = useHistory();
-
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -123,18 +112,10 @@ const ProgramView = ({
     setExpanded(isExpanded ? panel : false);
   };
 
-  const undoExitHandler = () => {
-    setUndoExit(true);
-  };
-
   const handleUndoExit = (programEnrolmentUuid, Link) => {
     undoExitEnrolment(programEnrolmentUuid);
     handleClose();
-    //handleUpdateComponent(true);
-
-    getSubjectProgram(subjectUuid);
-    //history.push(Link);
-    // window.location.reload();
+    handleUpdateComponent(subjectUuid);
   };
 
   return (
@@ -203,35 +184,6 @@ const ProgramView = ({
                   >
                     <Button color="primary">{t("Edit")}</Button>
                   </Link>
-                  {/* <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">{"Undo Exit"}</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Do you want to undo exit and restore to enrolled state shows up
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleClose} color="primary">
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleUndoExit.bind(
-                          this,
-                          programData.uuid,
-                          `/app/subject?uuid=${subjectUuid}`
-                        )}
-                        color="primary"
-                        autoFocus
-                      >
-                        Undo Exit
-                      </Button>
-                    </DialogActions>
-                  </Dialog> */}
                 </>
               ) : (
                 <>
@@ -354,15 +306,12 @@ const ProgramView = ({
   );
 };
 
-//export default ProgramView;
-
 const mapStateToProps = state => ({
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram
 });
 
 const mapDispatchToProps = {
-  undoExitEnrolment,
-  getSubjectProgram
+  undoExitEnrolment
 };
 
 export default withRouter(

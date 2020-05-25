@@ -6,11 +6,6 @@ export const types = {
   UPDATE_SUBJECT_PROGRAM: `${prefix}UPDATE_SUBJECT_PROGRAM`
 };
 
-export const updateSubjectProgram = program => ({
-  type: types.UPDATE_SUBJECT_PROGRAM,
-  program
-});
-
 export const getSubjectProgram = subjectProgramUUID => ({
   type: types.GET_SUBJECT_PROGRAM,
   subjectProgramUUID
@@ -29,6 +24,7 @@ export default function(state = {}, action) {
         subjectProgram: action.subjectProgram
       };
     }
+
     default:
       return state;
   }

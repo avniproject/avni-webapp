@@ -3,8 +3,7 @@ import {
   ObservationsHolder,
   Concept,
   ProgramEnrolment,
-  SubjectType,
-  PrimitiveValue
+  SubjectType
 } from "avni-models";
 import {
   setSubject,
@@ -127,11 +126,7 @@ export function* saveSubjectWatcher() {
 
 export function* saveProgramEnrolmentWorker() {
   const programEnrolment = yield select(selectEnrolmentSubject);
-
-  debugger;
   let resource = programEnrolment.toResource;
-
-  //sessionStorage.removeItem("programEnrolment");
 
   yield call(api.saveProgram, resource);
   yield put(saveProgramComplete());

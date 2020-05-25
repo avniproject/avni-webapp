@@ -66,7 +66,7 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export default ({ profile, general, program }) => {
+export default ({ profile, general, program, handleUpdateComponent }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -103,7 +103,10 @@ export default ({ profile, general, program }) => {
       </MUAppBar>
       <TabContent value={value} index={0}>
         <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardProgramTab program={program} />
+          <SubjectDashboardProgramTab
+            program={program}
+            handleUpdateComponent={handleUpdateComponent}
+          />
         </Paper>
       </TabContent>
       <TabContent value={value} index={1}>
