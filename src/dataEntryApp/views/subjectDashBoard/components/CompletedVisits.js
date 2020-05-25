@@ -99,9 +99,8 @@ const CompletedVisitsTable = ({ allVisits }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("calories");
+  const [orderBy, setOrderBy] = React.useState("name");
   const [selected, setSelected] = React.useState([]);
-  // const [open, setOpen] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -187,9 +186,13 @@ const CompletedVisitsTable = ({ allVisits }) => {
   };
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 5));
+    setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  // const handleChangeDense = (event) => {
+  //   setDense(event.target.checked);
+  // };
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, allVisitsListObj.length - page * rowsPerPage);
 
@@ -250,7 +253,7 @@ const CompletedVisitsTable = ({ allVisits }) => {
       </Table>
 
       <TablePagination
-        rowsPerPageOptions={[5, 10, 20]}
+        rowsPerPageOptions={[5, 10, 25]}
         component="div"
         count={allVisitsListObj.length}
         rowsPerPage={rowsPerPage}

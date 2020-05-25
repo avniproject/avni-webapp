@@ -71,7 +71,7 @@ const GridCommonList = ({ gridListDetails }) => {
                       >
                         {new Date().getFullYear() -
                           new Date(relative.individualB.dateOfBirth).getFullYear() +
-                          `${t("year")}`}
+                          `${t("years")}`}
                       </Typography>
                     </CardContent>
                     {!enableReadOnly ? (
