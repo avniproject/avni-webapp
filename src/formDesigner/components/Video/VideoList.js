@@ -49,9 +49,9 @@ export const VideoList = ({ history }) => {
 
   const voidVideo = rowData => ({
     icon: "delete_outline",
-    tooltip: "Void Video",
+    tooltip: "Delete Video",
     onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to void video " + rowData.title + " ?";
+      const voidedMessage = "Do you really want to delete video " + rowData.title + " ?";
       if (window.confirm(voidedMessage)) {
         http
           .delete("/web/video/" + rowData.id)

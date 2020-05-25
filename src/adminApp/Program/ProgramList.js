@@ -137,9 +137,9 @@ const ProgramList = ({ history }) => {
 
   const voidProgram = rowData => ({
     icon: "delete_outline",
-    tooltip: "Void program",
+    tooltip: "Delete program",
     onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to void the program " + rowData.name + " ?";
+      const voidedMessage = "Do you really want to delete the program " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http
           .delete("/web/program/" + rowData.id)

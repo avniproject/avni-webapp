@@ -110,11 +110,11 @@ const FormListing = ({ history }) => {
 
   const voidForm = rowData => ({
     icon: rowData.voided ? "restore_from_trash" : "delete_outline",
-    tooltip: rowData.voided ? "Unvoid Form" : "Void Form",
+    tooltip: rowData.voided ? "Unvoid Form" : "Delete Form",
     onClick: (event, rowData) => {
       const voidedMessage = rowData.voided
         ? "Do you want to unvoid the form " + rowData.name + " ?"
-        : "Do you want to void the form " + rowData.name + " ?";
+        : "Do you want to delete the form " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http.delete("/web/forms/" + rowData.uuid).then(response => {
           if (response.status === 200) {
