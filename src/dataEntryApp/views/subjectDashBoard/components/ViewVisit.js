@@ -32,8 +32,8 @@ const useStyles = makeStyles(theme => ({
       "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   mainHeading: {
-    fontSize: "1.5vw",
-    fontWeight: 400,
+    fontSize: "20px",
+    fontWeight: "500",
     marginLeft: 10,
     marginBottom: 10
   },
@@ -47,9 +47,8 @@ const useStyles = makeStyles(theme => ({
     fontWeight: "bold"
   },
   summaryHeading: {
-    fontSize: "1vw",
-    fontWeight: "bold",
-    marginBottom: 10
+    fontSize: "18px",
+    fontWeight: "bold"
   },
   programStatusStyle: {
     // color: "green",
