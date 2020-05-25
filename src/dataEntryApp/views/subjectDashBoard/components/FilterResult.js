@@ -92,14 +92,14 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
   const applyClick = () => {
     let filterParams = {};
     if (selectedScheduleDate != null) {
-      filterParams.earliestVisitDateTime = moment(selectedScheduleDate)
-        .utc()
-        .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+      let dateformat = moment(selectedScheduleDate).format("YYYY-MM-DD");
+      let earliestVisitDateTime = moment(dateformat).format("YYYY-MM-DDT00:00:00.000") + "Z";
+      filterParams.earliestVisitDateTime = earliestVisitDateTime;
     }
     if (selectedCompletedDate != null) {
-      filterParams.encounterDateTime = moment(selectedCompletedDate)
-        .utc()
-        .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+      let dateformat = moment(selectedCompletedDate).format("YYYY-MM-DD");
+      let encounterDateTime = moment(dateformat).format("YYYY-MM-DDT00:00:00.000") + "Z";
+      filterParams.encounterDateTime = encounterDateTime;
     }
 
     const SelectedvisitTypesListSort = Object.keys(selectedVisitTypes)
@@ -132,6 +132,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
             >
               <Grid item xs={6}>
                 <KeyboardDatePicker
+                  allowKeyboardControl
                   margin="normal"
                   id="date-picker-dialog"
                   label={t("visitscheduledate")}
@@ -146,6 +147,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
               </Grid>
               <Grid item xs={6}>
                 <KeyboardDatePicker
+                  allowKeyboardControl
                   margin="normal"
                   id="date-picker-dialog"
                   label={t("visitcompleteddate")}
