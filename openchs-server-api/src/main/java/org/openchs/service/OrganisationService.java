@@ -470,8 +470,8 @@ public class OrganisationService {
 
         Arrays.asList(metadataRepositories).forEach(this::deleteAll);
         String defaultGroupName = "Everyone";
+        userGroupRepository.deleteAllByGroupIsNotIn(groupRepository.findAllByName(defaultGroupName));
         groupRepository.deleteAllByNameNot(defaultGroupName);
-        userGroupRepository.deleteAllByGroup_NameNot(defaultGroupName);
     }
 
     private void deleteAll(JpaRepository repository) {
