@@ -45,12 +45,12 @@ const Breadcrumbs = ({ path, match, ...props }) => {
       case urlPartLabels.SUBJECT: {
         if (subjectName && subjectUuid) {
           return {
-            breadcrumb: subjectName + " " + "Dashborad",
+            breadcrumb: subjectName + " " + "Dashboard",
             url: "#/app/subject?uuid=" + subjectUuid
           };
         } else {
           return {
-            breadcrumb: "Dashborad",
+            breadcrumb: "Dashboard",
             url: "#/app"
           };
         }

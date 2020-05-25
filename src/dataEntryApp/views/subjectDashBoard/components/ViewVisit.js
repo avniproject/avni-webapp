@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Observations from "common/components/Observations";
 import Button from "@material-ui/core/Button";
-import { InternalLink } from "../../../../common/components/utils";
+import { InternalLink, LineBreak } from "../../../../common/components/utils";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
 import { store } from "../../../../common/store/createStore";
@@ -106,6 +106,7 @@ const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
           <Typography component={"span"} className={classes.summaryHeading}>
             {t("summary")}
           </Typography>
+          <LineBreak num={2} />
           <Observations observations={encounter ? encounter.observations : ""} />
         </Paper>
         <InternalLink to={`/app/subject/completedVisits?uuid=${encounter.enrolmentUuid}`}>

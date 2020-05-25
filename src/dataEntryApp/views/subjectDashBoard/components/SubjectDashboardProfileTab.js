@@ -149,7 +149,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             ) : (
               <Typography variant="caption" gutterBottom className={classes.infomsg}>
                 {" "}
-                {t("no")} {t("Relatives")}{" "}
+                {t("noRelativesAdded")}{" "}
               </Typography>
             )}
           </ExpansionPanelDetails>
