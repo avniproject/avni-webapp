@@ -81,7 +81,7 @@ const useStyle = makeStyles(theme => ({
     flex: 1
   },
   searchBox: {
-    padding: "1.5rem",
+    padding: "24px",
     margin: "0rem 1rem"
   },
   tableBox: {
