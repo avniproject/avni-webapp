@@ -419,7 +419,8 @@
       "syncComplete": "સમન્વયન પૂર્ણ થયું",
       "invalidDateTimeFormat": "તે માન્ય તારીખ અને સમય નથી",
       "invalidTimeFormat": "તે માન્ય તારીખ નથી",
-      "invalidDateFormat": "તે માન્ય સમય નથી"
+      "invalidDateFormat": "તે માન્ય સમય નથી",
+      "notEnroledInAnyProgram": "કોઈ પણ પ્રોગ્રામમાં પ્રવેશ નથી"
     }
   },
   "en": {
@@ -1048,7 +1049,8 @@
       "back": "Back",
       "invalidDateTimeFormat": "Is not a valid date time",
       "invalidTimeFormat": "Is not a valid time",
-      "invalidDateFormat": "Is not a valid date"
+      "invalidDateFormat": "Is not a valid date",
+      "notEnroledInAnyProgram": "Not enroled in any program"
     }
   },
   "mr_IN": {
@@ -3927,7 +3929,8 @@
       "back": "परत",
       "invalidDateTimeFormat": "ती वैध तारीख आणि वेळ नाही",
       "invalidTimeFormat": "ती वैध तारीख नाही",
-      "invalidDateFormat": "ती वैध वेळ नाही"
+      "invalidDateFormat": "ती वैध वेळ नाही",
+      "notEnroledInAnyProgram": "कोणत्याही प्रोग्रामात इंरोल केली नाही"
     }
   },
   "hi_IN": {
@@ -4361,7 +4364,8 @@
       "Relatives": "रिश्तेदारों",
       "invalidDateTimeFormat": "यह एक मान्य दिनांक और समय नहीं है",
       "invalidTimeFormat": "यह मान्य तिथि नहीं है",
-      "invalidDateFormat": "यह मान्य समय नहीं है"
+      "invalidDateFormat": "यह मान्य समय नहीं है",
+      "notEnroledInAnyProgram": "किसी प्रोग्राम में एनरोल नहीं"
     }
   }
 }
