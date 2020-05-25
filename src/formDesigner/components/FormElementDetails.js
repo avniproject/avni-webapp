@@ -539,7 +539,7 @@ function FormElementDetails(props) {
                   props.handleGroupElementKeyValueChange(
                     props.groupIndex,
                     "imageQuality",
-                    event.target.value,
+                    _.toNumber(event.target.value),
                     props.index
                   )
                 }
