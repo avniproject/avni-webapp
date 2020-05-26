@@ -36,24 +36,20 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid red"
   },
   iconlay: {
-    padding: "5px 20px 20px 0px"
+    flex: 1,
+    alignItems: "center"
   },
   questionCount: {
     paddingTop: "5px"
   },
-  deleteicon: {
-    padding: "9px 30px 20px 30px",
-    marginTop: "-10px"
-  },
+
   absolute: {
     position: "absolute",
     marginLeft: -35,
     marginTop: -5
   },
   heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0
+    fontSize: theme.typography.pxToRem(15)
   },
   secondaryHeading: {
     flexBasis: "70%",
@@ -67,6 +63,9 @@ const useStyles = makeStyles(theme => ({
   tab: {
     minHeight: "26px",
     height: "26px"
+  },
+  formElementGroupInputText: {
+    lineHeight: "56px"
   }
 }));
 const ExpansionPanel = withStyles({
@@ -90,6 +89,7 @@ const ExpansionPanelSummary = withStyles({
     paddingRight: 0,
     backgroundColor: "#dbdbdb",
     border: "1px solid #2196F3",
+    paddingLeft: 0,
     minHeight: 56,
     "&$expanded": {
       minHeight: 56
@@ -100,10 +100,14 @@ const ExpansionPanelSummary = withStyles({
   },
   focused: {},
   content: {
-    margin: "10px 0 0 0",
-    "&$expanded": { margin: "10px 0 0 0" }
+    margin: "0",
+    "&$expanded": { margin: "0" }
   },
-  expanded: {}
+  expanded: {},
+  icon: {
+    marginHorizontal: "8px",
+    display: "inline"
+  }
 })(MuiExpansionPanelSummary);
 
 function FormElementGroup(props) {
@@ -240,18 +244,20 @@ function FormElementGroup(props) {
                   aria-controls={panel + "bh-content"}
                   id={panel + "bh-header"}
                 >
-                  <div className={classes.iconlay}>
-                    {props.groupData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                  </div>
-
                   <Grid container sm={12} alignItems={"center"}>
-                    <Grid item sm={8}>
-                      <Typography component={"div"} className={classes.heading}>
+                    <Grid item sm={7}>
+                      {props.groupData.expanded ? (
+                        <ExpandLessIcon classes={{ root: classes.icon }} />
+                      ) : (
+                        <ExpandMoreIcon classes={{ root: classes.icon }} />
+                      )}
+                      <Typography component={"span"} className={classes.heading}>
                         {props.groupData.error && (
                           <div style={{ color: "red" }}>Please enter group name.</div>
                         )}
-                        <FormControl fullWidth>
+                        <FormControl style={{ width: "90%" }}>
                           <Input
+                            classes={{ input: classes.formElementGroupInputText }}
                             type="text"
                             placeholder="Group name"
                             disableUnderline={true}
@@ -264,28 +270,21 @@ function FormElementGroup(props) {
                         </FormControl>
                       </Typography>
                     </Grid>
-
-                    <Grid item sm={2}>
+                    <Grid item sm={4}>
                       <Typography component={"div"} className={classes.questionCount}>
-                        No. of questions : {questionCount}
+                        {questionCount} questions
                       </Typography>
                     </Grid>
-                  </Grid>
-                  <Grid item sm={2}>
-                    <IconButton
-                      className={classes.deleteicon}
-                      aria-label="delete"
-                      onClick={handleDelete}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Grid>
-                  <Grid item sm={1}>
-                    <ToolTip
-                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
-                      onHover
-                      displayPosition={"bottom"}
-                    />
+                    <Grid item sm={1}>
+                      <IconButton aria-label="delete" onClick={handleDelete}>
+                        <DeleteIcon />
+                      </IconButton>
+                      <ToolTip
+                        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
+                        onHover
+                        displayPosition={"bottom"}
+                      />
+                    </Grid>
                   </Grid>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>

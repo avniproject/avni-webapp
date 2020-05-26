@@ -8,7 +8,8 @@ import _ from "lodash";
 export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
   const styles = {
     root: {
-      position: "relative"
+      position: "relative",
+      display: "inline-block"
     },
     content: {
       position: "absolute",
