@@ -26,6 +26,9 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { Paper } from "@material-ui/core";
 import { AvniReferenceInput } from "./components/AvniReferenceInput";
+import { formatRoles } from "./UserHelper";
+import moment from "moment";
+import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 export const LocationTypeList = props => (
   <List
@@ -77,10 +80,8 @@ export const LocationTypeDetail = props => (
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
       <ParentReferenceField label="Parent Type" Field={ReferenceField} />
-      <TextField label="Created by" source="createdBy" />
-      <TextField label="Last modified by" source="lastModifiedBy" />
-      <TextField label="Created On(datetime)" source="createdDateTime" />
-      <TextField label="Last modified On(datetime)" source="lastModifiedDateTime" />
+      <FunctionField label="Created" render={audit => createdAudit(audit)} />
+      <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
     </SimpleShowLayout>
   </Show>
 );

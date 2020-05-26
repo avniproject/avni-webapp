@@ -183,7 +183,8 @@ export default function AutoSuggestSingleSelection(props) {
           placeholder: props.placeholder,
           value: props.showAnswer.name,
           onChange: handleChange("single"),
-          disabled: props.visibility
+          disabled: props.visibility,
+          autoFocus: true
         }}
         theme={{
           container: classes.container,

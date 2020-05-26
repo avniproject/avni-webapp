@@ -22,6 +22,7 @@ import { Redirect } from "react-router-dom";
 
 import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
+import { Audit } from "../components/Audit";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -1200,32 +1201,7 @@ class FormDetails extends Component {
                 )}
               </Droppable>
             </DragDropContext>
-            <Grid container item sm={12}>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Created by : {this.state.form.createdBy}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Last modified by : {this.state.form.lastModifiedBy}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Creation datetime : {this.state.form.createdDateTime}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Last modified datetime : {this.state.form.modifiedDateTime}{" "}
-                </InputLabel>
-              </Grid>
-            </Grid>
+            <Audit {...this.state.form} direction={"row"} />
             {/* </div> */}
           </TabContainer>
 

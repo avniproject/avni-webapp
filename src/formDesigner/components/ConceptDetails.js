@@ -16,6 +16,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { withRouter } from "react-router-dom";
 import { isEmpty } from "lodash";
 import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
+import { Audit } from "./Audit";
 
 const useStyles = makeStyles({
   table: {
@@ -235,33 +236,7 @@ function ConceptDetails(props) {
           </>
 
           <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Created by</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>{data.createdBy}</span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Last modified by</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>{data.lastModifiedBy}</span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Created on(datetime)</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>
-              <Moment parse="YYYY-MM-DD HH:mm::ss">{data.createdDateTime}</Moment>
-            </span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Last modified on(datetime)</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>
-              <Moment parse="YYYY-MM-DD HH:mm::ss">{data.lastModifiedDateTime}</Moment>
-            </span>
-          </div>
+          <Audit {...data} />
         </div>
 
         {editAlert && <Redirect to={"/appdesigner/concept/" + props.match.params.uuid + "/edit"} />}
