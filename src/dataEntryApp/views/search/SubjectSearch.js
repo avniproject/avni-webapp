@@ -20,6 +20,7 @@ import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
 import { useTranslation } from "react-i18next";
+import { ToolTipContainer } from "../../components/ToolTipContainer";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -45,7 +46,8 @@ const useStyle = makeStyles(theme => ({
   },
   searchBtnShadow: {
     boxShadow: "none",
-    backgroundColor: "#0e6eff"
+    backgroundColor: "#0e6eff",
+    marginRight: 10
   },
   createButtonHolder: {
     flex: 1
@@ -310,13 +312,15 @@ const SubjectSearch = props => {
             />
           </FormControl>
           <FormControl className={classes.searchFormItem}>
-            <PrimaryButton
-              type={"submit"}
-              onClick={handleSubmit}
-              className={classes.searchBtnShadow}
-            >
-              {t("search")}
-            </PrimaryButton>
+            <ToolTipContainer toolTipKey={t("searchHelpText")}>
+              <PrimaryButton
+                type={"submit"}
+                onClick={handleSubmit}
+                className={classes.searchBtnShadow}
+              >
+                {t("search")}
+              </PrimaryButton>
+            </ToolTipContainer>
           </FormControl>
         </form>
         <RegistrationMenu className={classes.createButtonHolder} />
