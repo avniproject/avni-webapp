@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -16,140 +16,70 @@ import {
   sampleVisitScheduleRule
 } from "../common/SampleRule";
 
-function FormLevelRules(props) {
+const FormRule = ({ title, value, onValueChange }) => {
+  const [expanded, setExpanded] = useState(false);
+  const onToggleExpand = () => setExpanded(!expanded);
+
+  return (
+    <ExpansionPanel expanded={expanded}>
+      <ExpansionPanelSummary
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+        style={{ marginTop: "3%" }}
+      >
+        <Grid container item sm={12} onClick={onToggleExpand}>
+          <span>{expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
+          <Typography>{title}</Typography>
+        </Grid>
+      </ExpansionPanelSummary>
+      <ExpansionPanelDetails>
+        <Editor
+          value={value}
+          onValueChange={onValueChange}
+          highlight={code => highlight(code, languages.js)}
+          padding={10}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 15,
+            width: "100%",
+            height: "auto",
+            borderStyle: "solid",
+            borderWidth: "1px"
+          }}
+        />
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+  );
+};
+
+const FormLevelRules = props => {
   return (
     <div>
-      <ExpansionPanel expanded={props.form.decisionExpand}>
-        <ExpansionPanelSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          style={{ marginTop: "3%" }}
-        >
-          <Grid
-            container
-            item
-            sm={12}
-            onClick={event => props.onToggleExpandPanel("decisionExpand")}
-          >
-            <span>{props.form.decisionExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
-
-            <Typography>Decision Rule</Typography>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Editor
-            value={props.form.decisionRule || sampleDecisionRule(props.entityName)}
-            onValueChange={event => props.onRuleUpdate("decisionRule", event)}
-            highlight={code => highlight(code, languages.js)}
-            padding={10}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 15,
-              width: "100%",
-              height: "auto",
-              borderStyle: "solid",
-              borderWidth: "1px"
-            }}
-          />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-
-      <ExpansionPanel expanded={props.form.visitScheduleExpand}>
-        <ExpansionPanelSummary
-          aria-controls="panel2a-content"
-          id="panel2a-header"
-          style={{ marginTop: "3%" }}
-          onClick={event => props.onToggleExpandPanel("visitScheduleExpand")}
-        >
-          <Grid container item sm={12}>
-            <span>{props.form.visitScheduleExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
-
-            <Typography>Visit Schedule Rule</Typography>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Editor
-            value={props.form.visitScheduleRule || sampleVisitScheduleRule(props.entityName)}
-            onValueChange={event => props.onRuleUpdate("visitScheduleRule", event)}
-            highlight={code => highlight(code, languages.js)}
-            padding={10}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 15,
-              width: "100%",
-              height: "auto",
-              borderStyle: "solid",
-              borderWidth: "1px"
-            }}
-          />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel expanded={props.form.validationExpand}>
-        <ExpansionPanelSummary
-          aria-controls="panel3a-content"
-          id="panel3a-header"
-          style={{ marginTop: "3%" }}
-          onClick={event => props.onToggleExpandPanel("validationExpand")}
-        >
-          <Grid container item sm={12}>
-            <span>{props.form.validationExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
-
-            <Typography>Validation Rule</Typography>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Editor
-            value={props.form.validationRule || sampleValidationRule(props.entityName)}
-            onValueChange={event => props.onRuleUpdate("validationRule", event)}
-            highlight={code => highlight(code, languages.js)}
-            padding={10}
-            style={{
-              fontFamily: '"Fira code", "Fira Mono", monospace',
-              fontSize: 15,
-              height: "auto",
-              width: "100%",
-              borderStyle: "solid",
-              borderWidth: "1px"
-            }}
-          />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-
+      <FormRule
+        title={"Decision Rule"}
+        value={props.form.decisionRule || sampleDecisionRule(props.entityName)}
+        onValueChange={event => props.onRuleUpdate("decisionRule", event)}
+      />
+      <FormRule
+        title={"Visit Schedule Rule"}
+        value={props.form.visitScheduleRule || sampleVisitScheduleRule(props.entityName)}
+        onValueChange={event => props.onRuleUpdate("visitScheduleRule", event)}
+      />
+      <FormRule
+        title={"Validation Rule"}
+        value={props.form.validationRule || sampleValidationRule(props.entityName)}
+        onValueChange={event => props.onRuleUpdate("validationRule", event)}
+      />
       {props.form.formType === "ProgramEnrolment" && (
-        <ExpansionPanel expanded={props.form.checklistExpand}>
-          <ExpansionPanelSummary
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-            style={{ marginTop: "3%" }}
-            onClick={event => props.onToggleExpandPanel("checklistExpand")}
-          >
-            <Grid container item sm={12}>
-              <span>{props.form.checklistExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
-
-              <Typography>Checklist Rule</Typography>
-            </Grid>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Editor
-              value={props.form.checklistsRule || sampleChecklistRule()}
-              onValueChange={event => props.onRuleUpdate("checklistsRule", event)}
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                width: "100%",
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+        <FormRule
+          title={"Checklist Rule"}
+          value={props.form.checklistsRule || sampleChecklistRule()}
+          onValueChange={event => props.onRuleUpdate("checklistsRule", event)}
+        />
       )}
     </div>
   );
-}
+};
 
 FormLevelRules.propTypes = {
   form: PropTypes.object.isRequired,
