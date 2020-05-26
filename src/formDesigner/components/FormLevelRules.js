@@ -25,10 +25,13 @@ function FormLevelRules(props) {
           id="panel1a-header"
           style={{ marginTop: "3%" }}
         >
-          <Grid container item sm={12}>
-            <span onClick={event => props.onToggleExpandPanel("decisionExpand")}>
-              {props.form.decisionExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </span>
+          <Grid
+            container
+            item
+            sm={12}
+            onClick={event => props.onToggleExpandPanel("decisionExpand")}
+          >
+            <span>{props.form.decisionExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
 
             <Typography>Decision Rule</Typography>
           </Grid>
@@ -56,11 +59,10 @@ function FormLevelRules(props) {
           aria-controls="panel2a-content"
           id="panel2a-header"
           style={{ marginTop: "3%" }}
+          onClick={event => props.onToggleExpandPanel("visitScheduleExpand")}
         >
           <Grid container item sm={12}>
-            <span onClick={event => props.onToggleExpandPanel("visitScheduleExpand")}>
-              {props.form.visitScheduleExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </span>
+            <span>{props.form.visitScheduleExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
 
             <Typography>Visit Schedule Rule</Typography>
           </Grid>
@@ -87,11 +89,10 @@ function FormLevelRules(props) {
           aria-controls="panel3a-content"
           id="panel3a-header"
           style={{ marginTop: "3%" }}
+          onClick={event => props.onToggleExpandPanel("validationExpand")}
         >
           <Grid container item sm={12}>
-            <span onClick={event => props.onToggleExpandPanel("validationExpand")}>
-              {props.form.validationExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </span>
+            <span>{props.form.validationExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
 
             <Typography>Validation Rule</Typography>
           </Grid>
@@ -120,11 +121,10 @@ function FormLevelRules(props) {
             aria-controls="panel1a-content"
             id="panel1a-header"
             style={{ marginTop: "3%" }}
+            onClick={event => props.onToggleExpandPanel("checklistExpand")}
           >
             <Grid container item sm={12}>
-              <span onClick={event => props.onToggleExpandPanel("checklistExpand")}>
-                {props.form.checklistExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </span>
+              <span>{props.form.checklistExpand ? <ExpandLessIcon /> : <ExpandMoreIcon />}</span>
 
               <Typography>Checklist Rule</Typography>
             </Grid>
