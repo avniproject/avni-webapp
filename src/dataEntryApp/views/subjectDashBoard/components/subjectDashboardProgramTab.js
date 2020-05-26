@@ -88,7 +88,7 @@ const SubjectDashboardProgramTab = ({ program }) => {
               ""
             )}
 
-            {!program.enrolments && (
+            {!(program && program.enrolments) && (
               <Typography variant="caption" gutterBottom className={classes.infomsg}>
                 {" "}
                 {t("notEnroledInAnyProgram")}{" "}
