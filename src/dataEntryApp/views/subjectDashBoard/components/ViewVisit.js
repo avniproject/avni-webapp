@@ -71,6 +71,7 @@ const useStyles = makeStyles(theme => ({
 const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const history = useHistory();
   store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
   useEffect(() => {
     getEncounter(match.queryParams.uuid);
@@ -114,11 +115,15 @@ const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
             {t("viewAllCompletedVisits")}
           </Button>
         </InternalLink>
-        <InternalLink to={`/app/subject?uuid=${encounter.subjectUuid}`}>
+        {/* Re-direct to Dashboard on Back Click*/}
+        {/* <InternalLink to={`/app/subject?uuid=${encounter.subjectUuid}`}>
           <Button color="primary" className={classes.visitButton}>
             {t("back")}
           </Button>
-        </InternalLink>
+        </InternalLink> */}
+        <Button color="primary" className={classes.visitButton} onClick={history.goBack}>
+          {t("back")}
+        </Button>
       </Paper>
     </Fragment>
   ) : (
