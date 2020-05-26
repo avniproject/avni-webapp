@@ -1,6 +1,8 @@
 package org.openchs.service;
 
+import org.joda.time.DateTime;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.EncounterRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.domain.*;
 import org.openchs.domain.individualRelationship.IndividualRelation;
@@ -9,6 +11,8 @@ import org.openchs.web.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
+import static org.springframework.data.jpa.domain.Specifications.where;
 
 
 @Service
@@ -25,13 +30,15 @@ public class IndividualService {
     private final IndividualRepository individualRepository;
     private final ConceptRepository conceptRepository;
     private final ProjectionFactory projectionFactory;
+    private final EncounterRepository encounterRepository;
 
     @Autowired
-    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory) {
+    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory,EncounterRepository encounterRepository) {
         this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.individualRepository = individualRepository;
+        this.encounterRepository = encounterRepository;
     }
 
     public  IndividualContract getSubjectEncounters(String individualUuid){

@@ -8,14 +8,9 @@ import org.openchs.domain.Individual;
 import org.openchs.domain.SubjectType;
 import org.openchs.geo.Point;
 import org.openchs.projection.IndividualWebProjection;
-import org.openchs.service.ConceptService;
-import org.openchs.service.IndividualService;
-import org.openchs.service.ObservationService;
-import org.openchs.service.UserService;
+import org.openchs.service.*;
 import org.openchs.util.S;
-import org.openchs.web.request.IndividualContract;
-import org.openchs.web.request.IndividualRequest;
-import org.openchs.web.request.PointRequest;
+import org.openchs.web.request.*;
 import org.openchs.web.response.ResponsePage;
 import org.openchs.web.response.SubjectResponse;
 import org.slf4j.LoggerFactory;
@@ -54,9 +49,10 @@ public class IndividualController extends AbstractController<Individual> impleme
     private final IndividualService individualService;
     private ConceptRepository conceptRepository;
     private ConceptService conceptService;
+    private final EncounterService encounterService;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService, ConceptRepository conceptRepository, ConceptService conceptService) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService, ConceptRepository conceptRepository, ConceptService conceptService,EncounterService encounterService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -67,6 +63,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.individualService = individualService;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
+        this.encounterService = encounterService;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -199,6 +196,18 @@ public class IndividualController extends AbstractController<Individual> impleme
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(individualEncounterContract);
+    }
+
+    @GetMapping("/web/subject/{uuid}/completed")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public Page<EncounterContract> getAllCompletedEncounters(
+            @PathVariable String uuid,
+            @RequestParam(value = "encounterDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime encounterDateTime,
+            @RequestParam(value = "earliestVisitDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime earliestVisitDateTime,
+            @RequestParam(value = "encounterTypeUuids",required = false) String encounterTypeUuids,
+            Pageable pageable) {
+        return encounterService.getAllCompletedEncounters(uuid,encounterTypeUuids,encounterDateTime,earliestVisitDateTime,pageable);
     }
 
     @Override
