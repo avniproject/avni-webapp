@@ -334,7 +334,7 @@ function FormElementDetails(props) {
               <>
                 <Grid container item sm={12}>
                   <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
-                  {props.formElementData.concept.answers.map(function(d) {
+                  {_.orderBy(props.formElementData.concept.answers, "order").map(function(d) {
                     if (!d.excluded && !d.voided) {
                       return (
                         <Chip

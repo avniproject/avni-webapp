@@ -14,7 +14,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { withRouter } from "react-router-dom";
-import { isEmpty } from "lodash";
+import { isEmpty, orderBy } from "lodash";
 import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
 import { Audit } from "./Audit";
 
@@ -120,7 +120,7 @@ function ConceptDetails(props) {
               <FormLabel style={{ fontSize: "13px" }}>Answers</FormLabel>
               <br />
               {data.conceptAnswers &&
-                data.conceptAnswers.map((answer, index) => {
+                orderBy(data.conceptAnswers, "order").map((answer, index) => {
                   return (
                     !answer.voided && (
                       <div key={index} style={{ width: "100%" }}>
