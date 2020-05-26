@@ -20,7 +20,6 @@ import FormElementWithAddButton from "./FormElementWithAddButton";
 import GroupIcon from "@material-ui/icons/ViewList";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import { TabContainer } from "../views/FormDetails";
 import { FormElementGroupRule } from "./FormElementGroupRule";
 import { ToolTip } from "../../common/components/ToolTip";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -284,28 +283,59 @@ function FormElementGroup(props) {
                   </Grid>
                 </Grid>
               </ExpansionPanelSummary>
-              <ExpansionPanelDetails>
-                <Grid style={{ width: "100%", alignContent: "center", marginBottom: 8 }}>
-                  <Typography component={"span"} className={classes.root}>
-                    <Droppable droppableId={"Group" + props.index} type="task">
-                      {provided => (
-                        <div ref={provided.innerRef} {...provided.droppableProps}>
-                          {renderFormElements()}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
+              <MuiExpansionPanelDetails style={{ padding: 0, paddingLeft: 0, paddingRight: 0 }}>
+                <Grid direction={"column"} style={{ width: "100%" }}>
+                  <Tabs
+                    style={{
+                      background: "#2196f3",
+                      color: "white",
+                      width: "100%",
+                      marginBottom: 24,
+                      height: 40
+                    }}
+                    classes={{ root: classes.tabs }}
+                    value={tabIndex}
+                    onChange={(event, value) => setTabIndex(value)}
+                  >
+                    <Tab label="Details" classes={{ root: classes.tab }} />
+                    <Tab label="Rules" classes={{ root: classes.tab }} />
+                  </Tabs>
+                  <Grid
+                    hidden={tabIndex !== 0}
+                    style={{ width: "100%", alignContent: "center", marginBottom: 8 }}
+                  >
+                    <Typography component={"span"} className={classes.root}>
+                      <Droppable droppableId={"Group" + props.index} type="task">
+                        {provided => (
+                          <div ref={provided.innerRef} {...provided.droppableProps}>
+                            {renderFormElements()}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
 
-                    {questionCount === 0 && (
-                      <FormControl fullWidth>
-                        <Button variant="contained" color="secondary" onClick={separateAddElement}>
-                          Add Question
-                        </Button>
-                      </FormControl>
-                    )}
-                  </Typography>
+                      {questionCount === 0 && (
+                        <FormControl fullWidth>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={separateAddElement}
+                          >
+                            Add Question
+                          </Button>
+                        </FormControl>
+                      )}
+                    </Typography>
+                  </Grid>
+                  <Grid hidden={tabIndex !== 1}>
+                    <FormElementGroupRule
+                      rule={props.groupData.rule}
+                      onChange={props.updateFormElementGroupRule}
+                      index={props.index}
+                    />
+                  </Grid>
                 </Grid>
-              </ExpansionPanelDetails>
+              </MuiExpansionPanelDetails>
             </ExpansionPanel>
           </Grid>
           {hover && (
