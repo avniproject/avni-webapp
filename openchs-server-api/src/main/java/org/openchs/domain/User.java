@@ -235,6 +235,14 @@ public class User {
         return createdBy;
     }
 
+    public String getCreatedByUserName() {
+        return this.createdBy.getName();
+    }
+
+    public String getLastModifiedByUserName() {
+        return this.lastModifiedBy.getName();
+    }
+
     @NotNull
     public DateTime getCreatedDateTime() {
         return createdDateTime;
