@@ -305,6 +305,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
             ConceptContract answerConceptContract = new ConceptContract();
             answerConceptContract.setUuid(answer.getAnswerConcept().getUuid());
             answerConceptContract.setName(answer.getAnswerConcept().getName());
+            answerConceptContract.setOrder(answer.getOrder());
             answerConceptContract.setVoided(answer.isVoided());
             conceptContract.getAnswers().add(answerConceptContract);
         }
