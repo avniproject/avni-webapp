@@ -17,11 +17,15 @@ import AddIcon from "@material-ui/icons/Add";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 
 import FormElementWithAddButton from "./FormElementWithAddButton";
+import GroupIcon from "@material-ui/icons/ViewList";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import { TabContainer } from "../views/FormDetails";
 import { FormElementGroupRule } from "./FormElementGroupRule";
 import { ToolTip } from "../../common/components/ToolTip";
+import Tooltip from "@material-ui/core/Tooltip";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -80,7 +84,8 @@ const ExpansionPanel = withStyles({
 const ExpansionPanelDetails = withStyles({
   root: {
     width: "100%",
-    border: "1px solid #2196F3"
+    border: "1px solid #2196F3",
+    paddingHorizontal: 0
   }
 })(MuiExpansionPanelDetails);
 
@@ -221,73 +226,66 @@ function FormElementGroup(props) {
           onMouseLeave={hoverHideAddGroup}
         >
           <Grid item>
-            <Tabs
-              style={{ background: "#2196f3", color: "white" }}
-              classes={{ root: classes.tabs }}
-              value={tabIndex}
-              onChange={(event, value) => setTabIndex(value)}
+            <ExpansionPanel
+              {...provided.dragHandleProps}
+              TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
+              expanded={props.groupData.expanded}
+              className={props.groupData.error ? classes.rootError : classes.root}
+              onChange={event =>
+                props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
+              }
             >
-              <Tab label="Details" classes={{ root: classes.tab }} />
-              <Tab label="Rules" classes={{ root: classes.tab }} />
-            </Tabs>
-            <TabContainer hidden={tabIndex !== 0} skipStyles={true}>
-              <ExpansionPanel
-                {...provided.dragHandleProps}
-                TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
-                expanded={props.groupData.expanded}
-                className={props.groupData.error ? classes.rootError : classes.root}
-                onChange={event =>
-                  props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
-                }
-              >
-                <ExpansionPanelSummary
-                  aria-controls={panel + "bh-content"}
-                  id={panel + "bh-header"}
-                >
-                  <Grid container sm={12} alignItems={"center"}>
-                    <Grid item sm={7}>
-                      {props.groupData.expanded ? (
-                        <ExpandLessIcon classes={{ root: classes.icon }} />
-                      ) : (
-                        <ExpandMoreIcon classes={{ root: classes.icon }} />
-                      )}
-                      <Typography component={"span"} className={classes.heading}>
-                        {props.groupData.error && (
-                          <div style={{ color: "red" }}>Please enter group name.</div>
-                        )}
-                        <FormControl style={{ width: "90%" }}>
-                          <Input
-                            classes={{ input: classes.formElementGroupInputText }}
-                            type="text"
-                            placeholder="Group name"
-                            disableUnderline={true}
-                            onClick={stopPropagation}
-                            name={"name" + panel}
-                            value={props.groupData.name}
-                            onChange={event => eventCall(props.index, "name", event.target.value)}
-                            autoComplete="off"
-                          />
-                        </FormControl>
-                      </Typography>
-                    </Grid>
-                    <Grid item sm={4}>
-                      <Typography component={"div"} className={classes.questionCount}>
-                        {questionCount} questions
-                      </Typography>
-                    </Grid>
-                    <Grid item sm={1}>
-                      <IconButton aria-label="delete" onClick={handleDelete}>
-                        <DeleteIcon />
-                      </IconButton>
-                      <ToolTip
-                        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
-                        onHover
-                        displayPosition={"bottom"}
-                      />
-                    </Grid>
+              <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
+                <Grid container sm={12} alignItems={"center"}>
+                  <Grid item sm={1}>
+                    <Tooltip title={"Grouped Questions"}>
+                      <GroupIcon style={{ marginLeft: 12, marginRight: 4 }} />
+                    </Tooltip>
+                    {props.groupData.expanded ? (
+                      <ExpandLessIcon classes={{ root: classes.icon }} />
+                    ) : (
+                      <ExpandMoreIcon classes={{ root: classes.icon }} />
+                    )}
                   </Grid>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+                  <Grid item sm={6}>
+                    <Typography className={classes.heading}>
+                      {props.groupData.error && (
+                        <div style={{ color: "red" }}>Please enter group name.</div>
+                      )}
+                      <FormControl fullWidth>
+                        <Input
+                          classes={{ input: classes.formElementGroupInputText }}
+                          type="text"
+                          placeholder="Group name"
+                          name={"name" + panel}
+                          disableUnderline={true}
+                          onClick={stopPropagation}
+                          value={props.groupData.name}
+                          onChange={event => eventCall(props.index, "name", event.target.value)}
+                          autoComplete="off"
+                        />
+                      </FormControl>
+                    </Typography>
+                  </Grid>
+                  <Grid item sm={4}>
+                    <Typography component={"div"} className={classes.questionCount}>
+                      {questionCount} questions
+                    </Typography>
+                  </Grid>
+                  <Grid item sm={1}>
+                    <IconButton aria-label="delete" onClick={handleDelete}>
+                      <DeleteIcon />
+                    </IconButton>
+                    <ToolTip
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
+                      onHover
+                      displayPosition={"bottom"}
+                    />
+                  </Grid>
+                </Grid>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <Grid style={{ width: "100%", alignContent: "center", marginBottom: 8 }}>
                   <Typography component={"span"} className={classes.root}>
                     <Droppable droppableId={"Group" + props.index} type="task">
                       {provided => (
@@ -306,16 +304,9 @@ function FormElementGroup(props) {
                       </FormControl>
                     )}
                   </Typography>
-                </ExpansionPanelDetails>
-              </ExpansionPanel>
-            </TabContainer>
-            <div hidden={tabIndex !== 1}>
-              <FormElementGroupRule
-                rule={props.groupData.rule}
-                onChange={props.updateFormElementGroupRule}
-                index={props.index}
-              />
-            </div>
+                </Grid>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
           </Grid>
           {hover && (
             <Fab
