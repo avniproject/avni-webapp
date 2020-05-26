@@ -140,7 +140,7 @@ export const CreateEditVideo = ({ edit, ...props }) => {
         <p />
         <AvniTextField
           id="duration"
-          label="Duration"
+          label="Duration (in seconds)"
           autoComplete="off"
           value={video.duration}
           onChange={event => dispatch({ type: "duration", payload: event.target.value })}
