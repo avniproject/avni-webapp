@@ -270,7 +270,9 @@ const CompleteVisit = ({
   completedVisit,
   enrolments,
   enrolldata,
-  enableReadOnly
+  enableReadOnly,
+  encounterTypes,
+  loaded
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -285,7 +287,7 @@ const CompleteVisit = ({
     getEnrolments(match.queryParams.uuid);
   }, []);
 
-  return completedVisit && enrolments ? (
+  return completedVisit && loaded ? (
     <div>
       <Fragment>
         <Breadcrumbs path={match.path} />
@@ -303,7 +305,7 @@ const CompleteVisit = ({
               </div>
             </Grid>
             <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult enrolments={enrolments} />
+              <FilterResult enrolments={enrolments} encounterTypes={encounterTypes} />
             </Grid>
           </Grid>
           <Paper className={classes.tableBox}>
@@ -322,7 +324,9 @@ const mapStateToProps = state => {
     completedVisit: state.dataEntry.completedVisitsReducer.completedVisits,
     enrolments: state.dataEntry.completedVisitsReducer.enrolments,
     enrolldata: state.dataEntry.completedVisitsReducer.enrolldata,
-    enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
+    encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
+    enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly,
+    loaded: state.dataEntry.completedVisitsReducer.loaded
   };
 };
 

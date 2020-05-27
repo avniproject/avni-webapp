@@ -5,7 +5,9 @@ export const types = {
   SET_COMPLETEDVISIT: `${prefix}SET_COMPLETEDVISIT`,
   GET_ENROLMENTS: `${prefix}GET_ENROLMENTS`,
   SET_ENROLMENTS: `${prefix}SET_ENROLMENTS`,
-  ADD_ENROLLDATA: `${prefix}ADD_ENROLLDATA`
+  SET_ENCOUNTER_TYPES: `${prefix}SET_ENCOUNTER_TYPES`,
+  ADD_ENROLLDATA: `${prefix}ADD_ENROLLDATA`,
+  SET_LOADED: `${prefix}SET_LOADED`
 };
 
 export const getCompletedVisit = completedVisitUrl => ({
@@ -28,6 +30,16 @@ export const setEnrolments = enrolments => ({
   enrolments
 });
 
+export const setEncounterTypes = encounterTypes => ({
+  type: types.SET_ENCOUNTER_TYPES,
+  encounterTypes
+});
+
+export const setLoaded = loaded => ({
+  type: types.SET_LOADED,
+  loaded
+});
+
 export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_COMPLETEDVISIT: {
@@ -46,6 +58,18 @@ export default function(state = {}, action) {
       return {
         ...state,
         enrolldata: action.value
+      };
+    }
+    case types.SET_ENCOUNTER_TYPES: {
+      return {
+        ...state,
+        encounterTypes: action.encounterTypes
+      };
+    }
+    case types.SET_LOADED: {
+      return {
+        ...state,
+        loaded: action.loaded
       };
     }
     default:

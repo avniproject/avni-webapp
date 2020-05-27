@@ -1,4 +1,4 @@
-import { find, get, isNil } from "lodash";
+import { find, get, isNil, some, filter } from "lodash";
 
 export const selectSubjectTypeFromName = subjectTypeName => state =>
   find(
@@ -20,3 +20,20 @@ export const selectRegistrationFormMappingForSubjectType = subjectTypeName => st
   selectRegistrationFormMapping(selectSubjectTypeFromName(subjectTypeName)(state))(state);
 
 export const selectRegistrationSubject = state => get(state, "dataEntry.registration.subject");
+
+export const selectEncounterTypes = (subjectTypeUuid, programUuid) => state => {
+  const formMappings = filter(
+    get(state, "dataEntry.metadata.operationalModules.formMappings"),
+    fm =>
+      fm.subjectTypeUUID === subjectTypeUuid &&
+      fm.programUUID === programUuid &&
+      fm.formType === "ProgramEncounter"
+  );
+
+  const encounterTypes = filter(
+    get(state, "dataEntry.metadata.operationalModules.encounterTypes"),
+    encounterType => some(formMappings, fm => fm.encounterTypeUUID === encounterType.uuid)
+  );
+
+  return encounterTypes;
+};

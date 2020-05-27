@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => {
+const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments, encounterTypes }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
@@ -74,11 +74,6 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
     setSelectedCompletedDate(completedDate);
   };
 
-  const visitTypesList = [
-    ...new Map(
-      enrolments.programEncounters.map(item => [item.encounterType["uuid"], item.encounterType])
-    ).values()
-  ];
   const [selectedVisitTypes, setVisitTypes] = React.useState({});
 
   const visitTypesChange = event => {
@@ -164,7 +159,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
         <LineBreak num={1} />
         <FormLabel component="legend">{t("visitType")}</FormLabel>
         <FormGroup row>
-          {visitTypesList.map(visitType => (
+          {encounterTypes.map(visitType => (
             <FormControlLabel
               control={
                 <Checkbox
