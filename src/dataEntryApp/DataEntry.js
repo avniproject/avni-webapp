@@ -56,9 +56,15 @@ const DataEntry = ({
             <Route path={`${path}/editSubject`} component={SubjectRegister} />
             <Route exact path={`${path}/subject`} component={SubjectDashboard} />
             <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
-            <Route exact path={`${path}/subject/viewVisit`} component={ViewVisit} />
+            <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
+            <Route exact path={`${path}/subject/viewEncounter`} component={ViewVisit} />
             {/* <Route exact path={`${path}/completeVisit/:id/:uuid`} component={CompleteVisit} /> */}
-            <Route exact path={`${path}/subject/completedVisits`} component={CompletedVisits} />
+            <Route exact path={`${path}/subject/completedEncounters`} component={CompletedVisits} />
+            <Route
+              exact
+              path={`${path}/subject/completedProgramEncounters`}
+              component={CompletedVisits}
+            />
             <Route exact path={`${path}/subject/newProgramVisit`} component={NewProgramVisit} />
             <Route exact path={`${path}/subject/programEncounter`} component={ProgramEncounter} />
             <Route

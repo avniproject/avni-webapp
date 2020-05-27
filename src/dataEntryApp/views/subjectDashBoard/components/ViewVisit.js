@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { getEncounter } from "../../../reducers/viewVisitReducer";
+import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
 import { types } from "../../../reducers/completedVisitsReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
@@ -68,13 +68,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
+const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
+  const isViewEncounter = match.path === "/app/subject/viewEncounter";
+  let viewAllCompletedUrl;
+
+  if (encounter) {
+    viewAllCompletedUrl = isViewEncounter
+      ? `/app/subject/completedEncounters?uuid=${encounter.subjectUuid}`
+      : `/app/subject/completedProgramEncounters?uuid=${encounter.enrolmentUuid}`;
+  }
   useEffect(() => {
-    getEncounter(match.queryParams.uuid);
+    isViewEncounter
+      ? getEncounter(match.queryParams.uuid)
+      : getProgramEncounter(match.queryParams.uuid);
   }, []);
   return encounter ? (
     <Fragment>
@@ -110,7 +119,8 @@ const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
           <LineBreak num={2} />
           <Observations observations={encounter ? encounter.observations : ""} />
         </Paper>
-        <InternalLink to={`/app/subject/completedVisits?uuid=${encounter.enrolmentUuid}`}>
+
+        <InternalLink to={viewAllCompletedUrl}>
           <Button color="primary" className={classes.visitButton}>
             {t("viewAllCompletedVisits")}
           </Button>
@@ -132,12 +142,12 @@ const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
 };
 
 const mapStateToProps = state => ({
-  encounter: state.dataEntry.viewVisitReducer.encounter,
-  enrolldata: state.dataEntry.completedVisitsReducer.enrolldata
+  encounter: state.dataEntry.viewVisitReducer.encounter
 });
 
 const mapDispatchToProps = {
-  getEncounter
+  getEncounter,
+  getProgramEncounter
 };
 
 export default withRouter(

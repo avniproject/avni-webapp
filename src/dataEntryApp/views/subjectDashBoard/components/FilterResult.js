@@ -13,7 +13,10 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
-import { getCompletedVisit } from "../../../reducers/completedVisitsReducer";
+import {
+  getCompletedEncounters,
+  getCompletedProgramEncounters
+} from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
 import { noop } from "lodash";
 
@@ -62,7 +65,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments, encounterTypes }) => {
+const FilterResult = ({
+  getCompletedEncounters,
+  getCompletedProgramEncounters,
+  isForProgramEncounters,
+  entityUuid,
+  encounterTypes
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
@@ -106,11 +115,13 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments, encou
       filterParams.encounterTypeUuids = SelectedvisitTypesList.join();
     }
     const SearchParamsFilter = new URLSearchParams(filterParams);
-    const otherPathString = SearchParamsFilter.toString();
-    const completedVisitUrl = `/web/programEnrolment/${
-      enrolments.uuid
-    }/completed?${otherPathString}`;
-    getCompletedVisit(completedVisitUrl);
+    const filterQueryString = SearchParamsFilter.toString();
+
+    if (isForProgramEncounters) {
+      getCompletedProgramEncounters(entityUuid, filterQueryString);
+    } else {
+      getCompletedEncounters(entityUuid, filterQueryString);
+    }
   };
 
   const content = (
@@ -205,18 +216,15 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments, encou
   );
 };
 
-const mapStateToProps = state => ({
-  completedVisitList: state.dataEntry.completedVisitsReducer.completedVisitList
-});
-
 const mapDispatchToProps = {
-  getCompletedVisit
+  getCompletedProgramEncounters,
+  getCompletedEncounters
 };
 
 export default withRouter(
   withParams(
     connect(
-      mapStateToProps,
+      null,
       mapDispatchToProps
     )(FilterResult)
   )

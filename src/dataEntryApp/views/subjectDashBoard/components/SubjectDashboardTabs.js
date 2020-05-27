@@ -113,7 +113,11 @@ export default ({ profile, general, program, enableReadOnly }) => {
       </TabContent>
       <TabContent value={value} index={2}>
         <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardGeneralTab general={general} enableReadOnly={enableReadOnly} />
+          <SubjectDashboardGeneralTab
+            subjectUuid={profile.uuid}
+            general={general}
+            enableReadOnly={enableReadOnly}
+          />
         </Paper>
       </TabContent>
     </Fragment>

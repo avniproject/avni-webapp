@@ -21,13 +21,27 @@ export const selectRegistrationFormMappingForSubjectType = subjectTypeName => st
 
 export const selectRegistrationSubject = state => get(state, "dataEntry.registration.subject");
 
-export const selectEncounterTypes = (subjectTypeUuid, programUuid) => state => {
+export const selectProgramEncounterTypes = (subjectTypeUuid, programUuid) => state => {
   const formMappings = filter(
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     fm =>
       fm.subjectTypeUUID === subjectTypeUuid &&
       fm.programUUID === programUuid &&
       fm.formType === "ProgramEncounter"
+  );
+
+  const encounterTypes = filter(
+    get(state, "dataEntry.metadata.operationalModules.encounterTypes"),
+    encounterType => some(formMappings, fm => fm.encounterTypeUUID === encounterType.uuid)
+  );
+
+  return encounterTypes;
+};
+
+export const selectGeneralEncounterTypes = subjectTypeUuid => state => {
+  const formMappings = filter(
+    get(state, "dataEntry.metadata.operationalModules.formMappings"),
+    fm => fm.subjectTypeUUID === subjectTypeUuid && fm.formType === "Encounter"
   );
 
   const encounterTypes = filter(
