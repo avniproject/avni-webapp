@@ -420,7 +420,8 @@
       "invalidDateTimeFormat": "તે માન્ય તારીખ અને સમય નથી",
       "invalidTimeFormat": "તે માન્ય તારીખ નથી",
       "invalidDateFormat": "તે માન્ય સમય નથી",
-      "notEnroledInAnyProgram": "કોઈ પણ પ્રોગ્રામમાં પ્રવેશ નથી"
+      "notEnroledInAnyProgram": "કોઈ પણ પ્રોગ્રામમાં પ્રવેશ નથી",
+      "resetAll": "બધા ફરીથી સેટ કરો"
     }
   },
   "en": {
@@ -1050,7 +1051,8 @@
       "invalidDateTimeFormat": "Is not a valid date time",
       "invalidTimeFormat": "Is not a valid time",
       "invalidDateFormat": "Is not a valid date",
-      "notEnroledInAnyProgram": "Not enroled in any program"
+      "notEnroledInAnyProgram": "Not enroled in any program",
+      "resetAll": "Reset All"
     }
   },
   "mr_IN": {
@@ -3930,7 +3932,8 @@
       "invalidDateTimeFormat": "ती वैध तारीख आणि वेळ नाही",
       "invalidTimeFormat": "ती वैध तारीख नाही",
       "invalidDateFormat": "ती वैध वेळ नाही",
-      "notEnroledInAnyProgram": "कोणत्याही प्रोग्रामात इंरोल केली नाही"
+      "notEnroledInAnyProgram": "कोणत्याही प्रोग्रामात इंरोल केली नाही",
+      "resetAll": "सर्व रीसेट करा"
     }
   },
   "hi_IN": {
@@ -4365,7 +4368,8 @@
       "invalidDateTimeFormat": "यह एक मान्य दिनांक और समय नहीं है",
       "invalidTimeFormat": "यह मान्य तिथि नहीं है",
       "invalidDateFormat": "यह मान्य समय नहीं है",
-      "notEnroledInAnyProgram": "किसी प्रोग्राम में एनरोल नहीं"
+      "notEnroledInAnyProgram": "किसी प्रोग्राम में एनरोल नहीं",
+      "resetAll": "सभी को रीसेट करें"
     }
   }
 }
