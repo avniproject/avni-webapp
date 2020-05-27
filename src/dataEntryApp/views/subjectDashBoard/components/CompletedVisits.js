@@ -9,14 +9,6 @@ import {
   List
 } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Collapse from "@material-ui/core/Collapse";
-import IconButton from "@material-ui/core/IconButton";
-// import Grid from "@material-ui/core/Grid";
-import TableHead from "@material-ui/core/TableHead";
-// import Typography from "@material-ui/core/Typography";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Typography from "@material-ui/core/Typography";
 import { withRouter, Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
@@ -89,7 +81,7 @@ const useStyle = makeStyles(theme => ({
     flex: 1
   },
   searchBox: {
-    padding: "24px",
+    padding: "1.5rem",
     margin: "0rem 1rem"
   },
   tableBox: {
@@ -102,65 +94,14 @@ const useStyle = makeStyles(theme => ({
     fontSize: "12px"
   }
 }));
-function Row(props) {
-  const { t } = useTranslation();
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
-  const classes = useStyle();
-
-  return (
-    <React.Fragment>
-      <TableRow className={classes.root}>
-        <TableCell component="th" scope="row">
-          {/* {t(row.name)} */}
-          <Link to={`/app/subject/viewVisit?uuid=${row.uuid}`}>{t(row.name)}</Link>
-        </TableCell>
-        <TableCell align="left">{row.encounterDateTime}</TableCell>
-        <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
-        {!enableReadOnly ? (
-          <TableCell align="left">
-            {" "}
-            <Link to="">
-              {t("edit")} {t("visit")}
-            </Link>
-          </TableCell>
-        ) : (
-          ""
-        )}
-        <TableCell>
-          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                {t("summary")}
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableBody>
-                  <List>
-                    <Observations observations={row.observations ? row.observations : ""} />
-                  </List>
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
-  );
-}
 
 const CompletedVisitsTable = ({ allVisits }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("name");
+  const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
+  // const [open, setOpen] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -246,13 +187,9 @@ const CompletedVisitsTable = ({ allVisits }) => {
   };
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    setRowsPerPage(parseInt(event.target.value, 5));
     setPage(0);
   };
-
-  // const handleChangeDense = (event) => {
-  //   setDense(event.target.checked);
-  // };
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, allVisitsListObj.length - page * rowsPerPage);
 
@@ -275,22 +212,45 @@ const CompletedVisitsTable = ({ allVisits }) => {
           rowCount={allVisitsListObj.length}
         />
         <TableBody>
-          {/* {allVisitsListObj && allVisitsListObj.map(row => <Row key={row.name} row={row} />)} */}
           {stableSort(allVisitsListObj, getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map(row => (
-              <Row key={row.name} row={row} />
-            ))}
-          {/* {emptyRows > 0 && (
+            .map((row, index) => {
+              return (
+                <TableRow>
+                  <TableCell component="th" scope="row" padding="none" width="30%">
+                    <Link to={`/app/subject/viewVisit?uuid=${row.uuid}`}>{t(row.name)}</Link>
+                  </TableCell>
+
+                  <TableCell align="left" className={classes.cellpadding}>
+                    {row.encounterDateTime}
+                  </TableCell>
+                  <TableCell align="left" className={classes.cellpadding}>
+                    {row.earliestVisitDateTime}
+                  </TableCell>
+
+                  {!enableReadOnly ? (
+                    <TableCell align="left" className={classes.cellpadding}>
+                      {" "}
+                      <Link to="">
+                        {t("edit")} {t("visit")}
+                      </Link>
+                    </TableCell>
+                  ) : (
+                    ""
+                  )}
+                </TableRow>
+              );
+            })}
+          {emptyRows > 0 && (
             <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
               <TableCell colSpan={6} />
             </TableRow>
-          )} */}
+          )}
         </TableBody>
       </Table>
 
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 20]}
         component="div"
         count={allVisitsListObj.length}
         rowsPerPage={rowsPerPage}
