@@ -13,7 +13,10 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
-import { getCompletedVisit } from "../../../reducers/completedVisitsReducer";
+import {
+  getCompletedEncounters,
+  getCompletedProgramEncounters
+} from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
 import { noop, isNil } from "lodash";
 import IconButton from "@material-ui/core/IconButton";
@@ -71,7 +74,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => {
+const FilterResult = ({
+  getCompletedEncounters,
+  getCompletedProgramEncounters,
+  isForProgramEncounters,
+  entityUuid,
+  encounterTypes
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
@@ -83,11 +92,11 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
     setSelectedCompletedDate(completedDate);
   };
 
-  const visitTypesList = [
-    ...new Map(
-      enrolments.programEncounters.map(item => [item.encounterType["uuid"], item.encounterType])
-    ).values()
-  ];
+  // const visitTypesList = [
+  //   ...new Map(
+  //     enrolments.programEncounters.map(item => [item.encounterType["uuid"], item.encounterType])
+  //   ).values()
+  // ];
   const [selectedVisitTypes, setVisitTypes] = React.useState(null);
 
   const visitTypesChange = event => {
@@ -123,11 +132,13 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
       filterParams.encounterTypeUuids = SelectedvisitTypesList.join();
     }
     const SearchParamsFilter = new URLSearchParams(filterParams);
-    const otherPathString = SearchParamsFilter.toString();
-    const completedVisitUrl = `/web/programEnrolment/${
-      enrolments.uuid
-    }/completed?${otherPathString}`;
-    getCompletedVisit(completedVisitUrl);
+    const filterQueryString = SearchParamsFilter.toString();
+
+    if (isForProgramEncounters) {
+      getCompletedProgramEncounters(entityUuid, filterQueryString);
+    } else {
+      getCompletedEncounters(entityUuid, filterQueryString);
+    }
   };
 
   const resetClick = () => {
@@ -196,7 +207,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
         <LineBreak num={1} />
         <FormLabel component="legend">{t("visitType")}</FormLabel>
         <FormGroup row>
-          {visitTypesList.map(visitType => (
+          {encounterTypes.map(visitType => (
             <FormControlLabel
               control={
                 <Checkbox
@@ -245,18 +256,15 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
   );
 };
 
-const mapStateToProps = state => ({
-  completedVisitList: state.dataEntry.completedVisitsReducer.completedVisitList
-});
-
 const mapDispatchToProps = {
-  getCompletedVisit
+  getCompletedProgramEncounters,
+  getCompletedEncounters
 };
 
 export default withRouter(
   withParams(
     connect(
-      mapStateToProps,
+      null,
       mapDispatchToProps
     )(FilterResult)
   )

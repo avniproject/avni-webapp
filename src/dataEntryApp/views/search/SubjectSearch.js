@@ -22,6 +22,7 @@ import PrimaryButton from "../../components/PrimaryButton";
 import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
 import { TablePaginationActions } from "./SubjectSearchPagination";
 import { useTranslation } from "react-i18next";
+import { ToolTipContainer } from "../../components/ToolTipContainer";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -49,7 +50,8 @@ const useStyle = makeStyles(theme => ({
   },
   searchBtnShadow: {
     boxShadow: "none",
-    backgroundColor: "#0e6eff"
+    backgroundColor: "#0e6eff",
+    marginRight: 10
   },
   createButtonHolder: {
     flex: 1
@@ -88,9 +90,11 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
     subjects.map(a => {
       let firstName = a.firstName ? camelize(a.firstName) : "";
       let lastName = a.lastName ? camelize(a.lastName) : "";
+      // let subjectType = a.subjectType.name;
       let sub = {
         uuid: a.uuid,
         fullName: firstName + " " + lastName,
+        subjectType: a.subjectType.name,
         gender: a.gender ? t(a.gender.name) : "",
         dateOfBirth:
           new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`,
@@ -103,6 +107,13 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
   if (type.name === "Individual") {
     tableHeaderName = [
       { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+      {
+        id: "subjectType",
+        numeric: false,
+        disablePadding: true,
+        label: "SubjectType",
+        align: "left"
+      },
       { id: "gender", numeric: false, disablePadding: true, label: "Gender", align: "left" },
       {
         id: "dateOfBirth",
@@ -115,14 +126,14 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
         id: "addressLevel",
         numeric: false,
         disablePadding: true,
-        label: "location",
+        label: "addressVillage",
         align: "left"
       },
       {
         id: "activePrograms",
         numeric: false,
         disablePadding: true,
-        label: "activeprograms",
+        label: "enrolments",
         align: "left"
       }
     ];
@@ -198,6 +209,9 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
                 <TableRow key={row.fullName}>
                   <TableCell component="th" scope="row" padding="none" width="20%">
                     <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
+                  </TableCell>
+                  <TableCell component="th" scope="row" padding="none" width="12%">
+                    {row.subjectType}
                   </TableCell>
                   {type.name === "Individual" && (
                     <TableCell align="left" className={classes.cellpadding}>
@@ -298,13 +312,15 @@ const SubjectSearch = props => {
               />
             </FormControl>
             <FormControl className={classes.searchFormItem}>
-              <PrimaryButton
-                type={"submit"}
-                onClick={handleSubmit}
-                className={classes.searchBtnShadow}
-              >
-                {t("search")}
-              </PrimaryButton>
+              <ToolTipContainer toolTipKey={t("searchHelpText")}>
+                <PrimaryButton
+                  type={"submit"}
+                  onClick={handleSubmit}
+                  className={classes.searchBtnShadow}
+                >
+                  {t("search")}
+                </PrimaryButton>
+              </ToolTipContainer>
             </FormControl>
           </form>
           <RegistrationMenu className={classes.createButtonHolder} />

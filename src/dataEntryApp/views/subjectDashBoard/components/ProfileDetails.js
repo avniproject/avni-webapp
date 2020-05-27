@@ -19,7 +19,6 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
-import { enableReadOnly } from "common/constants";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 
 const useStyles = makeStyles(theme => ({
@@ -133,7 +132,14 @@ const styles = theme => ({
   }
 });
 
-const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match }) => {
+const ProfileDetails = ({
+  profileDetails,
+  getPrograms,
+  programs,
+  subjectUuid,
+  match,
+  enableReadOnly
+}) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
   const [errorStatus, setError] = React.useState(false);

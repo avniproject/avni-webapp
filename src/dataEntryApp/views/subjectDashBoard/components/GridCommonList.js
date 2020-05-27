@@ -9,7 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
 import { Link, withRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { enableReadOnly } from "common/constants";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GridCommonList = ({ gridListDetails }) => {
+const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -94,4 +94,8 @@ const GridCommonList = ({ gridListDetails }) => {
   );
 };
 
-export default withRouter(GridCommonList);
+const mapStateToProps = state => ({
+  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
+});
+
+export default withRouter(connect(mapStateToProps)(GridCommonList));
