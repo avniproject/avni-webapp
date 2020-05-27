@@ -15,7 +15,9 @@ import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
 import { getCompletedVisit } from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
-import { noop } from "lodash";
+import { noop, isNil } from "lodash";
+import IconButton from "@material-ui/core/IconButton";
+import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -46,19 +48,26 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: "#F8F9F9"
     }
   },
-  formControl: {
-    marginTop: theme.spacing(2)
-  },
-  formControlLabel: {
-    marginTop: theme.spacing(1)
-  },
   form: {
     display: "flex",
     flexDirection: "column",
     margin: "auto",
-    width: "fit-content",
+    width: "fit-content"
     // minWidth: "600px",
-    minHeight: "300px"
+    // minHeight: "300px"
+  },
+  resetButton: {
+    fontSize: "13px",
+    color: "red",
+    "&:hover": {
+      backgroundColor: "#fff"
+    },
+    "&:focus": {
+      outline: "0"
+    }
+  },
+  cancelIcon: {
+    fontSize: "14px"
   }
 }));
 
@@ -79,7 +88,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
       enrolments.programEncounters.map(item => [item.encounterType["uuid"], item.encounterType])
     ).values()
   ];
-  const [selectedVisitTypes, setVisitTypes] = React.useState({});
+  const [selectedVisitTypes, setVisitTypes] = React.useState(null);
 
   const visitTypesChange = event => {
     if (event.target.checked) {
@@ -102,9 +111,12 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
       filterParams.encounterDateTime = encounterDateTime;
     }
 
-    const SelectedvisitTypesListSort = Object.keys(selectedVisitTypes)
-      .filter(selectedId => selectedVisitTypes[selectedId])
-      .map(String);
+    const SelectedvisitTypesListSort =
+      selectedVisitTypes != null
+        ? Object.keys(selectedVisitTypes)
+            .filter(selectedId => selectedVisitTypes[selectedId])
+            .map(String)
+        : [];
 
     if (SelectedvisitTypesListSort.length > 0) {
       const SelectedvisitTypesList = [...new Set(SelectedvisitTypesListSort.map(item => item))];
@@ -118,8 +130,24 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
     getCompletedVisit(completedVisitUrl);
   };
 
+  const resetClick = () => {
+    setSelectedScheduleDate(null);
+    setSelectedCompletedDate(null);
+    setVisitTypes(null);
+  };
+
   const content = (
     <DialogContent>
+      <Grid container direction="row" justify="flex-end" alignItems="flex-start">
+        <IconButton
+          color="secondary"
+          className={classes.resetButton}
+          onClick={resetClick}
+          aria-label="add an alarm"
+        >
+          <CancelIcon className={classes.cancelIcon} /> {t("resetAll")}
+        </IconButton>
+      </Grid>
       <form className={classes.form} noValidate>
         <FormControl className={classes.formControl}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -137,6 +165,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
                   id="date-picker-dialog"
                   label={t("visitscheduledate")}
                   format="dd/MM/yyyy"
+                  autoComplete="off"
                   value={selectedScheduleDate}
                   onChange={scheduleDateChange}
                   KeyboardButtonProps={{
@@ -152,6 +181,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
                   id="date-picker-dialog"
                   label={t("visitcompleteddate")}
                   format="dd/MM/yyyy"
+                  autoComplete="off"
                   value={selectedCompletedDate}
                   onChange={completedDateChange}
                   KeyboardButtonProps={{
@@ -170,7 +200,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={selectedVisitTypes[visitType.uuid]}
+                  checked={selectedVisitTypes != null ? selectedVisitTypes[visitType.uuid] : false}
                   onChange={visitTypesChange}
                   name={visitType.uuid}
                   color="primary"
@@ -199,7 +229,10 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
           label: t("apply"),
           classes: classes.btnCustom,
           redirectTo: `/app/completeVisit`,
-          click: applyClick
+          click: applyClick,
+          disabled:
+            (!isNil(selectedScheduleDate) && !moment(selectedScheduleDate).isValid()) ||
+            (!isNil(selectedCompletedDate) && !moment(selectedCompletedDate).isValid())
         },
         {
           buttonType: "cancelButton",
