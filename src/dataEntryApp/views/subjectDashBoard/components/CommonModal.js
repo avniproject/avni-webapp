@@ -12,6 +12,7 @@ import SubjectButton from "./Button";
 import Fab from "@material-ui/core/Fab";
 //import Link from "@material-ui/core/Link";
 import { Link } from "react-router-dom";
+import CustomizedDialog from "../../../components/Dialog";
 
 const useStyles = makeStyles(theme => ({
   tableCell: {
@@ -76,13 +77,19 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#F8F9F9",
     float: "left",
     display: "inline"
+  },
+  root: {
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2)
+    }
   }
 }));
 
 const styles = theme => ({
   root: {
     margin: 0,
-    backgroundColor: "black",
+    backgroundColor: "#555555",
     padding: "6px 16px",
     color: "white"
   },
@@ -118,22 +125,27 @@ const DialogActions = withStyles(theme => ({
   }
 }))(MuiDialogActions);
 
-const CommonModal = ({ content, buttonsSet, title }) => {
+const CommonModal = ({ content, buttonsSet, title, handleError }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [validMsg, setValidationMsg] = React.useState(false);
 
   //const { t } = useTranslation();
 
   const handleClickOpen = () => {
     setOpen(true);
+    handleError(false);
   };
   const handleClose = () => {
     setOpen(false);
+    handleError(false);
   };
 
   const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
+  const filterButton = buttonsSet.filter(element => element.buttonType === "filterButton").shift();
   const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
   const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
+  const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
 
   return (
     <React.Fragment>
@@ -151,6 +163,23 @@ const CommonModal = ({ content, buttonsSet, title }) => {
         ""
       )}
 
+      {filterButton ? (
+        <Fab
+          className={filterButton.classes}
+          variant="extended"
+          color="primary"
+          aria-label="add"
+          onClick={() => {
+            handleClickOpen();
+            filterButton.click();
+          }}
+        >
+          {filterButton.label}
+        </Fab>
+      ) : (
+        ""
+      )}
+
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle
           id="customized-dialog-title"
@@ -161,7 +190,7 @@ const CommonModal = ({ content, buttonsSet, title }) => {
         </DialogTitle>
         {content}
         <DialogActions className={classes.borderBottom}>
-          {saveButton ? (
+          {saveButton && saveButton.requiredField ? (
             <Link to={saveButton.redirectTo}>
               <SubjectButton
                 btnLabel={saveButton.label}
@@ -169,6 +198,24 @@ const CommonModal = ({ content, buttonsSet, title }) => {
                 btnClick={handleClose}
               />
             </Link>
+          ) : saveButton ? (
+            <SubjectButton
+              btnLabel={saveButton.label}
+              btnClass={saveButton.classes}
+              btnClick={handleError.bind(this, true)}
+            />
+          ) : (
+            ""
+          )}
+          {applyButton ? (
+            <SubjectButton
+              btnLabel={applyButton.label}
+              btnClass={applyButton.classes}
+              btnClick={() => {
+                applyButton.click();
+                handleClose();
+              }}
+            />
           ) : (
             ""
           )}
@@ -183,6 +230,19 @@ const CommonModal = ({ content, buttonsSet, title }) => {
           )}
         </DialogActions>
       </Dialog>
+      {validMsg ? (
+        <CustomizedDialog
+          showSuccessIcon="true"
+          message={validMsg}
+          showOkbtn={validMsg}
+          openDialogContainer={validMsg}
+          onOk={() => {
+            setValidationMsg(false);
+          }}
+        />
+      ) : (
+        ""
+      )}
     </React.Fragment>
   );
 };

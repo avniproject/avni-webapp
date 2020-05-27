@@ -13,6 +13,8 @@ import { default as UUID } from "uuid";
 import { constFormType } from "../common/constants";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
+import { SaveComponent } from "../../common/components/SaveComponent";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 class FormSettings extends Component {
   constructor(props) {
@@ -240,7 +242,10 @@ class FormSettings extends Component {
   programNameElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="programUuid">Program Name</InputLabel>
+        <AvniFormLabel
+          label={"Program Name"}
+          toolTipKey={"APP_DESIGNER_FORM_MAPPING_PROGRAM_NAME"}
+        />
         <Select
           name="programUuid"
           value={this.state.formMappings[index].programUuid}
@@ -277,7 +282,10 @@ class FormSettings extends Component {
   subjectTypeElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="subjectTypeUuid">Subject Type</InputLabel>
+        <AvniFormLabel
+          label={"Subject Type"}
+          toolTipKey={"APP_DESIGNER_FORM_MAPPING_SUBJECT_TYPE"}
+        />
         <Select
           name="subjectTypeUuid"
           value={this.state.formMappings[index].subjectTypeUuid}
@@ -324,7 +332,10 @@ class FormSettings extends Component {
   encounterTypesElement(index) {
     return (
       <FormControl fullWidth margin="dense">
-        <InputLabel htmlFor="encounterTypeUuid">Encounter Type</InputLabel>
+        <AvniFormLabel
+          label={"Encounter Type"}
+          toolTipKey={"APP_DESIGNER_FORM_MAPPING_ENCOUNTER_TYPE"}
+        />
         <Select
           name="encounterTypeUuid"
           value={this.state.formMappings[index].encounterTypeUuid}
@@ -407,12 +418,17 @@ class FormSettings extends Component {
                 <li style={{ color: "red" }}>{this.state.errorMsg}</li>
               </FormControl>
             )}
-            <InputLabel htmlFor="formname" style={{ fontSize: "12px" }}>
-              Form name
-            </InputLabel>
+            <AvniFormLabel
+              label={"Form name"}
+              style={{ fontSize: "12px" }}
+              toolTipKey={"APP_DESIGNER_FORM_MAPPING_FORM_NAME"}
+            />
             {this.state.name}
             <FormControl fullWidth margin="dense">
-              <InputLabel htmlFor="formType">Form Type</InputLabel>
+              <AvniFormLabel
+                label={"Form Type"}
+                toolTipKey={"APP_DESIGNER_FORM_MAPPING_FORM_TYPE"}
+              />
               <Select
                 id="formType"
                 name="formType"
@@ -480,15 +496,12 @@ class FormSettings extends Component {
             </Button>
           )}
           <div>
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!this.state.dirtyFlag}
-              onClick={this.onFormSubmit.bind(this)}
-              style={{ marginTop: 10 }}
-            >
-              Save
-            </Button>
+            <SaveComponent
+              name="Save"
+              onSubmit={this.onFormSubmit.bind(this)}
+              styleClass={{ marginTop: 10 }}
+              disabledFlag={!this.state.dirtyFlag}
+            />
           </div>
           {this.state.showUpdateAlert && (
             <CustomizedSnackbar

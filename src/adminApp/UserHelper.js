@@ -7,7 +7,7 @@ export const UserTitle = ({ record, titlePrefix }) => {
   return (
     record && (
       <span>
-        {titlePrefix} user <b>{record.username}</b>
+        {titlePrefix} User <b>{record.username}</b>
       </span>
     )
   );

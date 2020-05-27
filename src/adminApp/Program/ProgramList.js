@@ -13,6 +13,7 @@ import {
   findProgramEnrolmentForm,
   findProgramExitForm
 } from "../domain/formMapping";
+import { CreateComponent } from "../../common/components/CreateComponent";
 
 const ProgramList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -42,7 +43,7 @@ const ProgramList = ({ history }) => {
       render: rowData => <a href={`#/appDesigner/program/${rowData.id}/show`}>{rowData.name}</a>
     },
     {
-      title: "Subject type",
+      title: "Subject Type",
       sorting: false,
       render: rowData => (
         <ShowSubjectType
@@ -55,7 +56,7 @@ const ProgramList = ({ history }) => {
       )
     },
     {
-      title: "Enrolment form name",
+      title: "Enrolment Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -70,7 +71,7 @@ const ProgramList = ({ history }) => {
       )
     },
     {
-      title: "Exit form name",
+      title: "Exit Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -102,6 +103,7 @@ const ProgramList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
 
   const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   const fetchData = query =>
     new Promise(resolve => {
@@ -126,18 +128,40 @@ const ProgramList = ({ history }) => {
     setRedirect(true);
   };
 
+  const editProgram = rowData => ({
+    icon: "edit",
+    tooltip: "Edit program",
+    onClick: event => history.push(`/appDesigner/program/${rowData.id}`),
+    disabled: rowData.voided
+  });
+
+  const voidProgram = rowData => ({
+    icon: "delete_outline",
+    tooltip: "Delete program",
+    onClick: (event, rowData) => {
+      const voidedMessage = "Do you really want to delete the program " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        http
+          .delete("/web/program/" + rowData.id)
+          .then(response => {
+            if (response.status === 200) {
+              refreshTable(tableRef);
+            }
+          })
+          .catch(error => {});
+      }
+    }
+  });
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Program" />
+        <Title title="Programs" />
 
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <Button color="primary" onClick={addNewConcept}>
-                {" "}
-                + CREATE{" "}
-              </Button>
+              <CreateComponent onSubmit={addNewConcept} name="New Program" />
             </div>
 
             <MaterialTable
@@ -154,9 +178,10 @@ const ProgramList = ({ history }) => {
                 debounceInterval: 500,
                 search: false,
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
+              actions={[editProgram, voidProgram]}
             />
           </div>
         </div>

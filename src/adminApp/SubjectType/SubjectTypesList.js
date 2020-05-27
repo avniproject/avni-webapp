@@ -5,9 +5,9 @@ import { get, isEmpty, isEqual } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
 import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
+import { CreateComponent } from "../../common/components/CreateComponent";
 
 const SubjectTypesList = ({ history }) => {
   const [formMappings, setFormMappings] = useState([]);
@@ -22,7 +22,7 @@ const SubjectTypesList = ({ history }) => {
       render: rowData => <a href={`#/appDesigner/subjectType/${rowData.id}/show`}>{rowData.name}</a>
     },
     {
-      title: "Registration form name",
+      title: "Registration Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -44,6 +44,7 @@ const SubjectTypesList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
 
   const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   const fetchData = query =>
     new Promise(resolve => {
@@ -68,18 +69,40 @@ const SubjectTypesList = ({ history }) => {
     setRedirect(true);
   };
 
+  const editSubjectType = rowData => ({
+    icon: "edit",
+    tooltip: "Edit subject type",
+    onClick: event => history.push(`/appDesigner/subjectType/${rowData.id}`),
+    disabled: rowData.voided
+  });
+
+  const voidSubjectType = rowData => ({
+    icon: "delete_outline",
+    tooltip: "Delete subject type",
+    onClick: (event, rowData) => {
+      const voidedMessage = "Do you really want to delete the subject type " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        http
+          .delete("/web/subjectType/" + rowData.id)
+          .then(response => {
+            if (response.status === 200) {
+              refreshTable(tableRef);
+            }
+          })
+          .catch(error => {});
+      }
+    }
+  });
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Subject Type" />
+        <Title title="Subject Types" />
 
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <Button color="primary" onClick={addNewConcept}>
-                {" "}
-                + CREATE{" "}
-              </Button>
+              <CreateComponent onSubmit={addNewConcept} name="New Subject type" />
             </div>
 
             <MaterialTable
@@ -96,9 +119,10 @@ const SubjectTypesList = ({ history }) => {
                 debounceInterval: 500,
                 search: false,
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
+              actions={[editSubjectType, voidSubjectType]}
             />
           </div>
         </div>

@@ -8,6 +8,8 @@ import http from "common/utils/httpClient";
 import _ from "lodash";
 import CustomizedSnackbar from "../../formDesigner/components/CustomizedSnackbar";
 import { Title } from "react-admin";
+import { SaveComponent } from "../../common/components/SaveComponent";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 
 const options = localeChoices.map(l => ({ label: l.name, value: l.id }));
 
@@ -49,23 +51,23 @@ export const CreateEditLanguages = props => {
 
   return (
     <div>
-      <Title title="Edit language" />
+      <Title title="Edit Language" />
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Box m={2}>
-          <Select isMulti value={lang} options={options} onChange={name => setLang(name)} />
-        </Box>
-        <Box m={2} display="flex" justifyContent="left">
-          <Button variant="contained" onClick={saveLanguage} color="primary" aria-haspopup="false">
-            Save
-          </Button>
-        </Box>
-        {messageStatus.display && (
-          <CustomizedSnackbar
-            message={messageStatus.message}
-            getDefaultSnackbarStatus={status => setSnackBarStatus(status)}
-            defaultSnackbarStatus={snackBarStatus}
-          />
-        )}
+        <DocumentationContainer filename={"Language.md"}>
+          <Box m={2}>
+            <Select isMulti value={lang} options={options} onChange={name => setLang(name)} />
+          </Box>
+          <Box m={2} display="flex" justifyContent="left">
+            <SaveComponent name="Save" onSubmit={saveLanguage} />
+          </Box>
+          {messageStatus.display && (
+            <CustomizedSnackbar
+              message={messageStatus.message}
+              getDefaultSnackbarStatus={status => setSnackBarStatus(status)}
+              defaultSnackbarStatus={snackBarStatus}
+            />
+          )}
+        </DocumentationContainer>
       </Box>
     </div>
   );

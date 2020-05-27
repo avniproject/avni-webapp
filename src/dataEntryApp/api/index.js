@@ -17,6 +17,17 @@ export default {
       body: JSON.stringify(programEnrolment)
     }),
 
+  saveProgramEncouter: programEncounter =>
+    httpClient.fetchJson("/programEncounters", {
+      method: "POST",
+      body: JSON.stringify(programEncounter)
+    }),
+
+  fetchProgramEncounter: uuid =>
+    httpClient.fetchJson(`/web/programEncounter/${uuid}`).then(response => {
+      return response.json;
+    }),
+
   fetchSubjectProfile: uuid =>
     httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
       return response.json;
@@ -38,5 +49,13 @@ export default {
   },
   fetchProgramEnrolments: uuid => {
     return httpClient.fetchJson(`/web/programEnrolments/${uuid}`).then(response => response.json);
-  }
+  },
+  fetchcompletedVisit: completedVisitUrl =>
+    httpClient.fetchJson(completedVisitUrl).then(response => {
+      return response.json;
+    }),
+  fetchProgramEnrolment: enrolmentUuid =>
+    httpClient.fetchJson(`/web/programEnrolment/${enrolmentUuid}`).then(response => {
+      return response.json;
+    })
 };

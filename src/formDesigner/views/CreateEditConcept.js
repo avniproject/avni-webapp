@@ -1,14 +1,11 @@
 import React, { Component } from "react";
 import MenuItem from "@material-ui/core/MenuItem";
-import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import http from "common/utils/httpClient";
-import Button from "@material-ui/core/Button";
 import { default as UUID } from "uuid";
 import NumericConcept from "../components/NumericConcept";
 import CodedConcept from "../components/CodedConcept";
-import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
@@ -18,6 +15,17 @@ import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import KeyValues from "../components/KeyValues";
 import { filter, trim } from "lodash";
+import { SaveComponent } from "../../common/components/SaveComponent";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import { ToolTipContainer } from "../../common/components/ToolTipContainer";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import { Redirect } from "react-router-dom";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
+import { ConceptActiveSwitch } from "../components/ConceptActiveSwitch";
 
 class CreateEditConcept extends Component {
   constructor(props) {
@@ -51,7 +59,10 @@ class CreateEditConcept extends Component {
       conceptCreationAlert: false,
       error: {},
       defaultSnackbarStatus: true,
-      keyValues: []
+      keyValues: [],
+      redirectShow: false,
+      redirectOnDelete: false,
+      active: false
     };
   }
 
@@ -90,6 +101,7 @@ class CreateEditConcept extends Component {
             name: response.data.name,
             uuid: response.data.uuid,
             dataType: response.data.dataType,
+            active: response.data.active,
             lowAbsolute: response.data.lowAbsolute,
             highAbsolute: response.data.highAbsolute,
             lowNormal: response.data.lowNormal,
@@ -111,6 +123,12 @@ class CreateEditConcept extends Component {
 
   getDefaultSnackbarStatus = defaultSnackbarStatus => {
     this.setState({ defaultSnackbarStatus: defaultSnackbarStatus });
+  };
+
+  setRedirectShow = () => {
+    this.setState({
+      redirectShow: true
+    });
   };
 
   onDeleteAnswer = index => {
@@ -190,14 +208,16 @@ class CreateEditConcept extends Component {
         answers: answers
       },
       () => {
+        const Uuid = UUID.v4();
         http
           .post("/concepts", [
             {
               name: this.state.name,
-              uuid: this.props.isCreatePage ? UUID.v4() : this.state.uuid,
+              uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
               dataType: this.state.dataType,
               keyValues: this.state.keyValues,
-              answers: this.state.answers
+              answers: this.state.answers,
+              active: this.props.isCreatePage ? true : this.state.active
             }
           ])
           .then(response => {
@@ -205,7 +225,7 @@ class CreateEditConcept extends Component {
               this.setState({
                 conceptCreationAlert: true,
                 name: this.props.isCreatePage ? "" : this.state.name,
-                uuid: this.props.isCreatePage ? "" : this.state.uuid,
+                uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
                 dataType: this.props.isCreatePage ? "" : this.state.dataType,
                 keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
                 lowAbsolute: null,
@@ -214,7 +234,8 @@ class CreateEditConcept extends Component {
                 highNormal: null,
                 unit: null,
                 answers: this.props.isCreatePage ? [] : this.state.answers,
-                defaultSnackbarStatus: true
+                defaultSnackbarStatus: true,
+                redirectShow: true
               });
             }
           })
@@ -381,18 +402,20 @@ class CreateEditConcept extends Component {
       }
     } else {
       if (!this.state.error.absoluteValidation || !this.state.error.normalValidation) {
+        const Uuid = UUID.v4();
         http
           .post("/concepts", [
             {
               name: this.state.name,
-              uuid: this.props.isCreatePage ? UUID.v4() : this.state.uuid,
+              uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
               dataType: this.state.dataType,
               keyValues: this.state.keyValues,
               lowAbsolute: this.state.lowAbsolute,
               highAbsolute: this.state.highAbsolute,
               lowNormal: this.state.lowNormal,
               highNormal: this.state.highNormal,
-              unit: this.state.unit === "" ? null : this.state.unit
+              unit: this.state.unit === "" ? null : this.state.unit,
+              active: this.props.isCreatePage ? true : this.state.active
             }
           ])
           .then(response => {
@@ -401,14 +424,15 @@ class CreateEditConcept extends Component {
                 conceptCreationAlert: true,
                 defaultSnackbarStatus: true,
                 name: this.props.isCreatePage ? "" : this.state.name,
-                uuid: this.props.isCreatePage ? "" : this.state.uuid,
+                uuid: this.props.isCreatePage ? Uuid : this.state.uuid,
                 dataType: this.props.isCreatePage ? "" : this.state.dataType,
                 keyValues: this.props.isCreatePage ? [] : this.state.keyValues,
                 lowAbsolute: this.props.isCreatePage ? "" : this.state.lowAbsolute,
                 highAbsolute: this.props.isCreatePage ? "" : this.state.highAbsolute,
                 lowNormal: this.props.isCreatePage ? "" : this.state.lowNormal,
                 highNormal: this.props.isCreatePage ? "" : this.state.highNormal,
-                unit: this.props.isCreatePage ? "" : this.state.unit
+                unit: this.props.isCreatePage ? "" : this.state.unit,
+                redirectShow: true
               });
             }
           })
@@ -452,6 +476,25 @@ class CreateEditConcept extends Component {
     this.setState({ ...this.state, keyValues });
   };
 
+  handleActive = event => {
+    this.setState({
+      active: event.target.checked
+    });
+  };
+
+  onDeleteConcept = () => {
+    if (window.confirm("Do you really want to delete the concept?")) {
+      http.delete(`/concept/${this.state.uuid}`).then(response => {
+        if (response.status === 200) {
+          this.setState({
+            redirectShow: false,
+            redirectOnDelete: true
+          });
+        }
+      });
+    }
+  };
+
   render() {
     let dataType;
     const classes = {
@@ -477,7 +520,7 @@ class CreateEditConcept extends Component {
       ? "Concept created successfully."
       : "Concept updated successfully.";
 
-    const appBarTitle = this.props.isCreatePage ? "Create a Concept" : "Edit a Concept";
+    const appBarTitle = this.props.isCreatePage ? "Create Concept" : "Edit Concept";
 
     if (this.state.dataType === "Numeric") {
       dataType = (
@@ -502,105 +545,126 @@ class CreateEditConcept extends Component {
     }
 
     return (
-      <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={appBarTitle} />
-        <Grid container justify="flex-start">
-          <Grid item sm={12}>
-            <TextField
-              id="name"
-              label="Concept name"
-              value={this.state.name}
-              onChange={this.handleChange("name")}
-              style={classes.textField}
-              margin="normal"
-              autoComplete="off"
-            />
-            {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
-            {!this.state.error.isEmptyName &&
-              (this.state.error.nameError && (
-                <FormHelperText error>Same name concept already exist.</FormHelperText>
-              ))}
-          </Grid>
+      <Box boxShadow={2} p={2} bgcolor="background.paper">
+        <DocumentationContainer filename={"Concept.md"}>
+          <Title title={appBarTitle} />
+          {!this.props.isCreatePage && (
+            <Grid container item={12} style={{ justifyContent: "flex-end" }}>
+              <Button color="primary" type="button" onClick={() => this.setRedirectShow()}>
+                <VisibilityIcon /> Show
+              </Button>
+            </Grid>
+          )}
+          <div className="container" style={{ float: "left" }}>
+            <div>
+              <AvniTextField
+                id="name"
+                label="Concept name"
+                value={this.state.name}
+                onChange={this.handleChange("name")}
+                style={classes.textField}
+                margin="normal"
+                autoComplete="off"
+                toolTipKey={"APP_DESIGNER_CONCEPT_NAME"}
+              />
+              {this.state.error.isEmptyName && <FormHelperText error>*Required.</FormHelperText>}
+              {!this.state.error.isEmptyName &&
+                (this.state.error.nameError && (
+                  <FormHelperText error>Same name concept already exist.</FormHelperText>
+                ))}
+            </div>
 
-          <Grid item sm={3}>
-            {this.props.isCreatePage && (
-              <FormControl>
-                <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
-                <Select
+            <div>
+              {this.props.isCreatePage && (
+                <ToolTipContainer toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}>
+                  <FormControl>
+                    <InputLabel style={classes.inputLabel}>Datatype *</InputLabel>
+                    <Select
+                      id="dataType"
+                      label="DataType"
+                      value={this.state.dataType}
+                      onChange={this.handleChange("dataType")}
+                      style={classes.select}
+                    >
+                      {this.state.dataTypes.map(datatype => {
+                        return (
+                          <MenuItem value={datatype} key={datatype}>
+                            {datatype}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                    {this.state.error.dataTypeSelectionAlert && (
+                      <FormHelperText error>*Required</FormHelperText>
+                    )}
+                  </FormControl>
+                </ToolTipContainer>
+              )}
+              {!this.props.isCreatePage && (
+                <AvniTextField
                   id="dataType"
                   label="DataType"
                   value={this.state.dataType}
-                  onChange={this.handleChange("dataType")}
                   style={classes.select}
-                >
-                  {this.state.dataTypes.map(datatype => {
-                    return (
-                      <MenuItem value={datatype} key={datatype}>
-                        {datatype}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-                {this.state.error.dataTypeSelectionAlert && (
-                  <FormHelperText error>*Required</FormHelperText>
-                )}
-              </FormControl>
-            )}
+                  disabled={true}
+                  toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
+                />
+              )}
+            </div>
             {!this.props.isCreatePage && (
-              <TextField
-                id="dataType"
-                label="DataType"
-                value={this.state.dataType}
-                style={classes.select}
-                disabled={true}
-              />
+              <>
+                <p />
+                <ConceptActiveSwitch
+                  active={this.state.active}
+                  handleActive={this.handleActive}
+                  conceptUUID={this.state.uuid}
+                />
+                <p />
+              </>
             )}
-          </Grid>
-          <Grid item sm={8} />
-          {dataType}
-        </Grid>
-        <KeyValues
-          keyValues={this.state.keyValues}
-          onKeyValueChange={this.onKeyValueChange}
-          onAddNewKeyValue={this.onAddNewKeyValue}
-          onDeleteKeyValue={this.onDeleteKeyValue}
-          error={this.state.error.keyValueError}
-        />
-        <Grid>
-          <Button
-            type="button"
-            color="primary"
-            variant="contained"
-            style={classes.button}
-            onClick={this.handleSubmit}
-          >
-            Submit
-          </Button>
-        </Grid>
 
-        {!this.props.isCreatePage && (
-          <div style={{ marginTop: "50px" }}>
-            <InputLabel style={classes.inputLabel}>Created by </InputLabel>
-            {this.state.createdBy}
-
-            <InputLabel style={classes.inputLabel}>Last modified by </InputLabel>
-            {this.state.lastModifiedBy}
-
-            <InputLabel style={classes.inputLabel}>Creation datetime </InputLabel>
-            {this.state.creationDateTime}
-
-            <InputLabel style={classes.inputLabel}>Last modified datetime </InputLabel>
-            {this.state.lastModifiedDateTime}
+            {dataType}
+            <KeyValues
+              keyValues={this.state.keyValues}
+              onKeyValueChange={this.onKeyValueChange}
+              onAddNewKeyValue={this.onAddNewKeyValue}
+              onDeleteKeyValue={this.onDeleteKeyValue}
+              error={this.state.error.keyValueError}
+            />
           </div>
-        )}
 
-        {this.state.conceptCreationAlert && (
-          <CustomizedSnackbar
-            message={conceptCreationMessage}
-            getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
-            defaultSnackbarStatus={this.state.defaultSnackbarStatus}
-          />
+          <Grid container item sm={12}>
+            <Grid item sm={2}>
+              <SaveComponent
+                name="save"
+                onSubmit={this.handleSubmit}
+                styleClass={{ marginLeft: "12px", marginTop: "10px" }}
+              />{" "}
+            </Grid>
+            <Grid item sm={10}>
+              {!this.props.isCreatePage && (
+                <Button
+                  style={{ float: "right", color: "red", marginTop: "10px" }}
+                  onClick={() => this.onDeleteConcept()}
+                >
+                  <DeleteIcon /> Delete
+                </Button>
+              )}
+            </Grid>
+          </Grid>
+
+          {this.state.conceptCreationAlert && (
+            <CustomizedSnackbar
+              message={conceptCreationMessage}
+              getDefaultSnackbarStatus={this.getDefaultSnackbarStatus}
+              defaultSnackbarStatus={this.state.defaultSnackbarStatus}
+            />
+          )}
+        </DocumentationContainer>
+        {this.state.redirectShow && (
+          <Redirect to={`/appDesigner/concept/${this.state.uuid}/show`} />
         )}
+        {this.state.redirectOnDelete && <Redirect to={`/appDesigner/concepts`} />}
       </Box>
     );
   }

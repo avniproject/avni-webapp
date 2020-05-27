@@ -15,7 +15,8 @@ const useStyles = makeStyles(theme => ({
     paddingTop: "0px"
   },
   table: {
-    border: "1px solid rgba(224, 224, 224, 1)"
+    borderRadius: "3px",
+    boxShadow: "0px 0px 1px"
   },
   abnormalColor: {
     color: "#ff4f33"
@@ -30,13 +31,13 @@ const ObservationsAdditional = ({ additionalData }) => {
 
   return (
     <div>
-      {additionalData
-        ? additionalData.map((element, index) => {
-            return (
-              <Fragment key={index}>
-                <Table className={classes.table} size="small" aria-label="a dense table">
-                  <TableBody>
-                    <TableRow>
+      <Fragment>
+        <Table className={classes.table} size="small" aria-label="a dense table">
+          <TableBody>
+            {additionalData
+              ? additionalData.map((element, index) => {
+                  return (
+                    <TableRow key={index}>
                       <TableCell
                         style={{ color: "#555555" }}
                         component="th"
@@ -47,26 +48,30 @@ const ObservationsAdditional = ({ additionalData }) => {
                       </TableCell>
                       <TableCell align="left" width="50%">
                         <div>
-                          {" "}
-                          {element.abnormal === true ? (
-                            <span className={classes.abnormalColor}>
-                              {" "}
-                              <ErrorIcon /> {Observation.valueAsString(element, conceptService, i)}
-                            </span>
+                          {element.concept && element.concept.datatype === "Coded" ? (
+                            element.abnormal === true ? (
+                              <span className={classes.abnormalColor}>
+                                {" "}
+                                <ErrorIcon />{" "}
+                                {t(Observation.valueAsString(element, conceptService, i))}
+                              </span>
+                            ) : (
+                              t(Observation.valueAsString(element, conceptService, i))
+                            )
                           ) : element.concept ? (
                             Observation.valueAsString(element, conceptService, i)
                           ) : (
                             "" + element.value.toLocaleDateString("en-US")
-                          )}{" "}
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
-                  </TableBody>
-                </Table>
-              </Fragment>
-            );
-          })
-        : ""}
+                  );
+                })
+              : ""}
+          </TableBody>
+        </Table>
+      </Fragment>
     </div>
   );
 };

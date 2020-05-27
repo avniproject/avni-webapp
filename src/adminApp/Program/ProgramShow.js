@@ -13,6 +13,8 @@ import { highlight, languages } from "prismjs/components/prism-core";
 import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import { get } from "lodash";
 import { findProgramEnrolmentForm, findProgramExitForm } from "../domain/formMapping";
+import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
+import { Audit } from "../../formDesigner/components/Audit";
 
 const ProgramShow = props => {
   const [program, setProgram] = useState({});
@@ -57,7 +59,7 @@ const ProgramShow = props => {
           </div>
           <p />
           <div>
-            <FormLabel style={{ fontSize: "13px" }}>Subject type</FormLabel>
+            <FormLabel style={{ fontSize: "13px" }}>Subject Type</FormLabel>
             <br />
             <ShowSubjectType
               rowDetails={program}
@@ -82,6 +84,7 @@ const ProgramShow = props => {
             </div>
           </div>
           <p />
+          <ActiveStatusInShow status={program.active} />
 
           <div>
             <FormLabel style={{ fontSize: "13px" }}>Program Subject Label</FormLabel>
@@ -90,7 +93,7 @@ const ProgramShow = props => {
           </div>
           <p />
           <div>
-            <FormLabel style={{ fontSize: "13px" }}>Enrolment form name</FormLabel>
+            <FormLabel style={{ fontSize: "13px" }}>Enrolment Form</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>
               <a
@@ -105,7 +108,7 @@ const ProgramShow = props => {
           </div>
           <p />
           <div>
-            <FormLabel style={{ fontSize: "13px" }}>Exit form name</FormLabel>
+            <FormLabel style={{ fontSize: "13px" }}>Exit Form</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>
               <a
@@ -163,33 +166,7 @@ const ProgramShow = props => {
             />
           </div>
           <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Created by</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>{program.createdBy}</span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Last modified by</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>{program.lastModifiedBy}</span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Created on(datetime)</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>
-              <Moment parse="YYYY-MM-DD HH:mm::ss">{program.createdDateTime}</Moment>
-            </span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Last modified on(datetime)</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>
-              <Moment parse="YYYY-MM-DD HH:mm::ss">{program.modifiedDateTime}</Moment>
-            </span>
-          </div>
+          <Audit {...program} />
         </div>
 
         {editAlert && <Redirect to={"/appDesigner/program/" + props.match.params.id} />}

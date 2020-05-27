@@ -90,7 +90,7 @@ function NewMenu({ operationalModules }) {
         })}
       </List>
       <FormControl className={classes.FormControlRadio} component="fieldset">
-        <label className={classes.FormLabel}>Register and Enrollment For</label>
+        {/* <label className={classes.FormLabel}>Register and Enrollment For</label> */}
         {operationalModules.programs.map((element, index) => {
           return (
             <React.Fragment>

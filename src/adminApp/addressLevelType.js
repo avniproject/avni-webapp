@@ -22,6 +22,13 @@ import {
 import { None } from "../common/components/utils";
 import { isNil } from "lodash";
 import { Title } from "./components/Title";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { AvniTextInput } from "./components/AvniTextInput";
+import { Paper } from "@material-ui/core";
+import { AvniReferenceInput } from "./components/AvniReferenceInput";
+import { formatRoles } from "./UserHelper";
+import moment from "moment";
+import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 export const LocationTypeList = props => (
   <List
@@ -46,19 +53,20 @@ export const LocationTypeList = props => (
   </List>
 );
 
-const ParentReferenceField = props => {
+const ParentReferenceField = ({ Field, ...props }) => {
   return isNil(props.record.parentId) ? (
     <None />
   ) : (
-    <ReferenceField
+    <Field
       {...props}
       source="parentId"
       linkType="show"
       reference="addressLevelType"
       allowEmpty
+      toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
     >
-      <FunctionField render={record => record.name} />
-    </ReferenceField>
+      <FunctionField render={record => record.name} {...props} />
+    </Field>
   );
 };
 
@@ -71,11 +79,9 @@ export const LocationTypeDetail = props => (
     <SimpleShowLayout>
       <TextField label="Location Type" source="name" />
       <TextField label="Level" source="level" />
-      <ParentReferenceField label="Parent Type" />
-      <TextField label="Created by" source="createdBy" />
-      <TextField label="Last modified by" source="lastModifiedBy" />
-      <TextField label="Created On(datetime)" source="createdDateTime" />
-      <TextField label="Last modified On(datetime)" source="lastModifiedDateTime" />
+      <ParentReferenceField label="Parent Type" Field={ReferenceField} />
+      <FunctionField label="Created" render={audit => createdAudit(audit)} />
+      <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
     </SimpleShowLayout>
   </Show>
 );
@@ -83,34 +89,59 @@ export const LocationTypeDetail = props => (
 const CreateEditToolbar = ({ edit, ...props }) => (
   <Toolbar {...props}>
     <SaveButton />
-    {edit && <DeleteButton undoable={false} disabled={!props.record.voidable} />}
+    {edit && (
+      <DeleteButton
+        undoable={false}
+        disabled={!props.record.voidable}
+        style={{ marginLeft: "auto" }}
+      />
+    )}
   </Toolbar>
 );
 
 const LocationTypeForm = ({ edit, ...props }) => {
   return (
     <SimpleForm toolbar={<CreateEditToolbar edit={edit} />} {...props} redirect="show">
-      <TextInput source="name" label="Name" validate={required()} />
-      <TextInput source="level" label="Level" validate={[required(), number()]} />
+      <AvniTextInput
+        source="name"
+        label="Name"
+        validate={required()}
+        toolTipKey={"ADMIN_LOCATION_TYPE_NAME"}
+      />
+      <AvniTextInput
+        source="level"
+        label="Level"
+        validate={[required(), number()]}
+        toolTipKey={"ADMIN_LOCATION_TYPE_LEVEL"}
+      />
       {edit ? (
-        <ParentReferenceField label="Parent Type" />
+        <ParentReferenceField label="Parent Type" Field={AvniReferenceInput} {...props} />
       ) : (
-        <ReferenceInput source="parentId" reference="addressLevelType" label="Parent">
+        <AvniReferenceInput
+          source="parentId"
+          reference="addressLevelType"
+          label="Parent"
+          toolTipKey={"ADMIN_LOCATION_TYPE_PARENT"}
+        >
           <SelectInput optionText="name" resettable />
-        </ReferenceInput>
+        </AvniReferenceInput>
       )}
     </SimpleForm>
   );
 };
 
 export const LocationTypeCreate = props => (
-  <Create {...props} title="Add new Location Type">
-    <LocationTypeForm />
-  </Create>
+  <Paper>
+    <DocumentationContainer filename={"LocationType.md"}>
+      <Create {...props} title="Add New Location Type">
+        <LocationTypeForm />
+      </Create>
+    </DocumentationContainer>
+  </Paper>
 );
 
 export const LocationTypeEdit = props => (
-  <Edit {...props} title="Modify Location Type" undoable={false}>
+  <Edit {...props} title="Edit Location Type" undoable={false}>
     <LocationTypeForm edit />
   </Edit>
 );

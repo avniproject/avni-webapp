@@ -29,7 +29,6 @@ import {
 } from "./IdentifierUserAssignment";
 import customConfig from "./OrganisationConfig";
 import { WithProps } from "../common/components/utils";
-import Link from "@material-ui/core/Link";
 
 import { Dashboard as UploadDashboard } from "../upload";
 import customRoutes from "./customRoutes";
@@ -59,6 +58,7 @@ import { ROLES } from "../common/constants";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
 import Footer from "../common/components/Footer";
+import { OrganisationDetail } from "./OrganisationDetail";
 
 class OrgManager extends Component {
   static childContextTypes = {
@@ -67,12 +67,6 @@ class OrgManager extends Component {
 
   constructor(props) {
     super(props);
-    if (
-      !isEmpty(intersection(this.props.user.roles, [ROLES.ADMIN])) &&
-      isEmpty(httpClient.getOrgId())
-    ) {
-      this.props.getAdminOrgs();
-    }
   }
 
   getChildContext() {
@@ -83,7 +77,7 @@ class OrgManager extends Component {
     const { organisation, user } = this.props;
     return (
       <React.Fragment>
-        {!isEmpty(httpClient.getOrgId()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
+        {!isEmpty(httpClient.getOrgUUID()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
           ? this.renderOrgAdminResources(user, organisation)
           : this.renderAdminResources(user)}
         <Footer />
@@ -186,7 +180,7 @@ class OrgManager extends Component {
         <Resource name="upload" options={{ label: "Upload" }} list={UploadDashboard} />
         <Resource
           name="identifierSource"
-          options={{ label: "Identifier source" }}
+          options={{ label: "Identifier Source" }}
           list={IdentifierSourceList}
           show={IdentifierSourceDetail}
           create={IdentifierSourceCreate}
@@ -194,11 +188,16 @@ class OrgManager extends Component {
         />
         <Resource
           name="identifierUserAssignment"
-          options={{ label: "Identifier user assignment" }}
+          options={{ label: "Identifier User Assignment" }}
           list={IdentifierUserAssignmentList}
           show={IdentifierUserAssignmentDetail}
           create={IdentifierUserAssignmentCreate}
           edit={IdentifierUserAssignmentEdit}
+        />
+        <Resource
+          name="organisationDetails"
+          options={{ label: "Organisation Details" }}
+          list={WithProps({ organisation }, OrganisationDetail)}
         />
       </Admin>
     );

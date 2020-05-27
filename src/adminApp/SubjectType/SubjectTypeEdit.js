@@ -19,6 +19,10 @@ import { useFormMappings } from "./effects";
 import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
 import _ from "lodash";
 import SelectForm from "./SelectForm";
+import { SaveComponent } from "../../common/components/SaveComponent";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import { AvniSwitch } from "../../common/components/AvniSwitch";
+import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -67,6 +71,7 @@ const SubjectTypeEdit = props => {
           name: subjectType.name,
           id: props.match.params.id,
           organisationId: subjectTypeData.organisationId,
+          active: subjectType.active,
           subjectTypeOrganisationId: subjectTypeData.subjectTypeOrganisationId,
           voided: subjectTypeData.voided,
           group: subjectType.group,
@@ -128,39 +133,38 @@ const SubjectTypeEdit = props => {
           </Button>
         </Grid>
         <div className="container" style={{ float: "left" }}>
-          <TextField
+          <AvniTextField
             id="name"
             label="Name"
             autoComplete="off"
             value={subjectType.name}
             onChange={event => dispatch({ type: "name", payload: event.target.value })}
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
           />
           <p />
-          <Grid component="label" container alignItems="center" spacing={2}>
-            <Grid>Household</Grid>
-            <Grid>
-              <Switch
-                color={"primary"}
-                checked={subjectType.household}
-                onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
-                name="household"
-              />
-            </Grid>
-          </Grid>
-          <Grid component="label" container alignItems="center" spacing={2}>
-            <Grid>Group</Grid>
-            <Grid>
-              <Switch
-                disabled={subjectType.household}
-                checked={subjectType.group}
-                onChange={event => handleGroupChange(event, subjectType, dispatch)}
-                name="group"
-              />
-            </Grid>
-          </Grid>
+          <AvniSwitch
+            checked={subjectType.household}
+            onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
+            name="Household"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_HOUSEHOLD"}
+          />
+          <AvniSwitch
+            disabled={subjectType.household}
+            checked={subjectType.group}
+            onChange={event => handleGroupChange(event, subjectType, dispatch)}
+            name="Group"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_GROUP"}
+          />
           <p />
-          <SelectForm
-            label={"Registration form name"}
+          <AvniSwitch
+            checked={subjectType.active ? true : false}
+            onChange={event => dispatch({ type: "active", payload: event.target.checked })}
+            name="Active"
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_ACTIVE"}
+          />
+          <p />
+          <AvniSelectForm
+            label={"Registration Form"}
             value={_.get(subjectType, "registrationForm.formName")}
             onChange={selectedForm =>
               dispatch({
@@ -169,6 +173,7 @@ const SubjectTypeEdit = props => {
               })
             }
             formList={findRegistrationForms(formList)}
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM"}
           />
           <p />
           {subjectType.group && (
@@ -200,14 +205,7 @@ const SubjectTypeEdit = props => {
         </div>
         <Grid container item sm={12}>
           <Grid item sm={1}>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => onSubmit()}
-              style={{ marginLeft: "14px" }}
-            >
-              <i className="material-icons">save</i>Save
-            </Button>
+            <SaveComponent name="save" onSubmit={onSubmit} styleClass={{ marginLeft: "14px" }} />
           </Grid>
           <Grid item sm={11}>
             <Button

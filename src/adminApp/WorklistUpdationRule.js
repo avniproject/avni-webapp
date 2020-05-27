@@ -11,9 +11,10 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../formDesigner/components/CustomizedSnackbar";
+import { SaveComponent } from "../common/components/SaveComponent";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { sampleWorkListUpdationRule } from "../formDesigner/common/SampleRule";
 
 export const WorklistUpdationRule = () => {
   const emptyOrgSettings = {
@@ -86,53 +87,38 @@ export const WorklistUpdationRule = () => {
     <Box>
       <Title title="Worklist Updation Rule" />
       <Paper>
-        <ExpansionPanel expanded={true}>
-          <ExpansionPanelSummary
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-            style={{ marginTop: "3%" }}
-          >
-            <Grid container item sm={12}>
-              <Grid item sm={2}>
-                <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>
-                  Worklist updation rule
-                </span>
-              </Grid>
-              <Grid item sm={8} />
+        <DocumentationContainer filename={"WorklistUpdationRule.md"}>
+          <ExpansionPanel expanded={true}>
+            <ExpansionPanelSummary aria-controls="panel1a-content" id="panel1a-header">
+              <span style={{ fontSize: "1.25rem", fontFamily: "Roboto", fontWeight: "500" }}>
+                Worklist Updation Rule
+              </span>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Editor
+                value={worklistUpdationRule ? worklistUpdationRule : sampleWorkListUpdationRule()}
+                onValueChange={event => setRule(event)}
+                highlight={code => highlight(code, languages.js)}
+                padding={10}
+                style={{
+                  fontFamily: '"Fira code", "Fira Mono", monospace',
+                  fontSize: 15,
+                  width: "100%",
+                  height: "auto",
+                  borderStyle: "solid",
+                  borderWidth: "1px"
+                }}
+              />
+            </ExpansionPanelDetails>
 
-              <Grid item sm={2}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={event => onSaveWorklistUpdationRule(event)}
-                  style={{
-                    marginLeft: "60%"
-                  }}
-                  disabled={!enableRuleSave}
-                >
-                  <SaveIcon />
-                  &nbsp;Save
-                </Button>
-              </Grid>
-            </Grid>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Editor
-              value={worklistUpdationRule ? worklistUpdationRule : ""}
-              onValueChange={event => setRule(event)}
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                width: "100%",
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
+            <SaveComponent
+              name="Save"
+              onSubmit={onSaveWorklistUpdationRule}
+              styleClass={{ marginLeft: "25px", marginBottom: "10px" }}
+              disabledFlag={!enableRuleSave}
             />
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+          </ExpansionPanel>
+        </DocumentationContainer>
       </Paper>
       {notificationAlert && (
         <CustomizedSnackbar

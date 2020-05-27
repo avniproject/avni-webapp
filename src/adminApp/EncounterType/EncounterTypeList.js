@@ -5,12 +5,12 @@ import _, { get } from "lodash";
 import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import Button from "@material-ui/core/Button";
 import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
 import {
   findProgramEncounterCancellationForm,
   findProgramEncounterForm
 } from "../domain/formMapping";
+import { CreateComponent } from "../../common/components/CreateComponent";
 
 const EncounterTypeList = ({ history }) => {
   const [redirect, setRedirect] = useState(false);
@@ -20,6 +20,7 @@ const EncounterTypeList = ({ history }) => {
   const [formList, setFormList] = useState([]);
 
   const tableRef = React.createRef();
+  const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
   useEffect(() => {
     http
@@ -45,7 +46,7 @@ const EncounterTypeList = ({ history }) => {
       )
     },
     {
-      title: "Subject type",
+      title: "Subject Type",
       sorting: false,
       render: rowData => (
         <ShowSubjectType
@@ -70,7 +71,7 @@ const EncounterTypeList = ({ history }) => {
       )
     },
     {
-      title: "Encounter form",
+      title: "Encounter Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -85,7 +86,7 @@ const EncounterTypeList = ({ history }) => {
       )
     },
     {
-      title: "Cancellation form",
+      title: "Cancellation Form",
       field: "formName",
       sorting: false,
       render: rowData => (
@@ -124,18 +125,41 @@ const EncounterTypeList = ({ history }) => {
     setRedirect(true);
   };
 
+  const editEncounterType = rowData => ({
+    icon: "edit",
+    tooltip: "Edit encounter type",
+    onClick: event => history.push(`/appDesigner/encounterType/${rowData.id}`),
+    disabled: rowData.voided
+  });
+
+  const voidEncounterType = rowData => ({
+    icon: "delete_outline",
+    tooltip: "Delete encounter type",
+    onClick: (event, rowData) => {
+      const voidedMessage =
+        "Do you really want to delete the encounter type " + rowData.name + " ?";
+      if (window.confirm(voidedMessage)) {
+        http
+          .delete("/web/encounterType/" + rowData.id)
+          .then(response => {
+            if (response.status === 200) {
+              refreshTable(tableRef);
+            }
+          })
+          .catch(error => {});
+      }
+    }
+  });
+
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title="Encounter types" />
+        <Title title="Encounter Types" />
 
         <div className="container">
           <div>
             <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-              <Button color="primary" onClick={addNewConcept}>
-                {" "}
-                + CREATE{" "}
-              </Button>
+              <CreateComponent onSubmit={addNewConcept} name="New Encounter type" />
             </div>
 
             <MaterialTable
@@ -152,9 +176,10 @@ const EncounterTypeList = ({ history }) => {
                 debounceInterval: 500,
                 search: false,
                 rowStyle: rowData => ({
-                  backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
+                  backgroundColor: rowData["active"] ? "#fff" : "#DBDBDB"
                 })
               }}
+              actions={[editEncounterType, voidEncounterType]}
             />
           </div>
         </div>

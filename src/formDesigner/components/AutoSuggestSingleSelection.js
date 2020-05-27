@@ -126,7 +126,9 @@ export default function AutoSuggestSingleSelection(props) {
 
   const getSuggestionValue = suggestion => {
     if (props.finalReturn) {
-      props.onChangeAnswerName(suggestion, props.index);
+      !props.inlineConcept && props.onChangeAnswerName(suggestion, props.index);
+      props.inlineConcept &&
+        props.onChangeAnswerName(suggestion, props.groupIndex, props.elementIndex, props.index);
     }
     return suggestion;
   };
@@ -148,7 +150,16 @@ export default function AutoSuggestSingleSelection(props) {
       [name]: autoSuggestedName
     });
     //    if (!props.finalReturn) {
-    props.onChangeAnswerName(autoSuggestedName, props.index, false);
+    !props.inlineConcept && props.onChangeAnswerName(autoSuggestedName, props.index, false);
+    props.inlineConcept &&
+      props.inlineConcept &&
+      props.onChangeAnswerName(
+        autoSuggestedName,
+        props.groupIndex,
+        props.elementIndex,
+        props.index
+      );
+
     //    }
   };
 
@@ -172,7 +183,8 @@ export default function AutoSuggestSingleSelection(props) {
           placeholder: props.placeholder,
           value: props.showAnswer.name,
           onChange: handleChange("single"),
-          disabled: props.visibility
+          disabled: props.visibility,
+          autoFocus: true
         }}
         theme={{
           container: classes.container,

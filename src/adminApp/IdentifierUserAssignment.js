@@ -8,27 +8,29 @@ import {
   Create,
   Edit,
   SimpleForm,
-  TextInput,
   ReferenceField,
   SelectInput,
-  FormDataConsumer,
   ReferenceInput,
   required
 } from "react-admin";
 import { change } from "redux-form";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { AvniTextInput } from "./components/AvniTextInput";
+import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
+import { Paper } from "@material-ui/core";
 
 const Title = ({ record }) => {
   return (
     record && (
       <span>
-        Identifier user assignment: <b>{record.name}</b>
+        Identifier User Assignment: <b>{record.name}</b>
       </span>
     )
   );
 };
 
 export const IdentifierUserAssignmentList = props => (
-  <List {...props} bulkActions={false} title={"Identifier user assignment"}>
+  <List {...props} bulkActions={false} title={"Identifier User Assignment"}>
     <Datagrid rowClick="show">
       <TextField source="identifierSource.name" label="Source name" />
       <TextField source="identifierStart" />
@@ -59,104 +61,73 @@ export const UserSelectInput = props => {
   return <SelectInput {...props} choices={choices} />;
 };
 
+const IdentifierUserAssignmentForm = props => (
+  <SimpleForm {...props} redirect="show">
+    <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_USER_NAME"} {...props}>
+      {({ formData, dispatch, ...rest }) =>
+        !formData.orgAdmin && (
+          <Fragment>
+            <ReferenceInput
+              source="userId"
+              reference="user"
+              label="Which user?"
+              validate={[required()]}
+              onChange={(e, newVal) => {
+                dispatch(change(newVal));
+              }}
+              {...rest}
+            >
+              <UserSelectInput source="name" />
+            </ReferenceInput>
+          </Fragment>
+        )
+      }
+    </AvniFormDataConsumer>
+    <AvniFormDataConsumer toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_SOURCE"} {...props}>
+      {({ formData, dispatch, ...rest }) =>
+        !formData.orgAdmin && (
+          <Fragment>
+            <ReferenceInput
+              source="identifierSourceId"
+              reference="identifierSource"
+              label="Which IdentifierSource?"
+              validate={[required()]}
+              onChange={(e, newVal) => {
+                dispatch(change(newVal));
+              }}
+              {...rest}
+            >
+              <SelectInput source="name" />
+            </ReferenceInput>
+          </Fragment>
+        )
+      }
+    </AvniFormDataConsumer>
+    <AvniTextInput
+      source="identifierStart"
+      required
+      toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_START"}
+    />
+    <AvniTextInput source="identifierEnd" required toolTipKey={"ADMIN_IDENTIFIER_ASSIGNMENT_END"} />
+  </SimpleForm>
+);
+
 export const IdentifierUserAssignmentEdit = props => {
   return (
-    <Edit undoable={false} title="Edit identifier user assignment" {...props}>
-      <SimpleForm redirect="show">
-        <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) =>
-            !formData.orgAdmin && (
-              <Fragment>
-                <ReferenceInput
-                  source="userId"
-                  reference="user"
-                  label="Which user?"
-                  validate={[required()]}
-                  onChange={(e, newVal) => {
-                    dispatch(change(newVal));
-                  }}
-                  {...rest}
-                >
-                  <UserSelectInput source="name" />
-                </ReferenceInput>
-              </Fragment>
-            )
-          }
-        </FormDataConsumer>
-        <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) =>
-            !formData.orgAdmin && (
-              <Fragment>
-                <ReferenceInput
-                  source="identifierSourceId"
-                  reference="identifierSource"
-                  label="Which IdentifierSource?"
-                  validate={[required()]}
-                  onChange={(e, newVal) => {
-                    dispatch(change(newVal));
-                  }}
-                  {...rest}
-                >
-                  <SelectInput source="name" />
-                </ReferenceInput>
-              </Fragment>
-            )
-          }
-        </FormDataConsumer>
-        <TextInput source="identifierStart" required />
-        <TextInput source="identifierEnd" required />
-      </SimpleForm>
+    <Edit undoable={false} title="Edit Identifier User Assignment" {...props}>
+      <IdentifierUserAssignmentForm />
     </Edit>
   );
 };
 
 export const IdentifierUserAssignmentCreate = props => {
   return (
-    <Create title="Add a new identifier user assignment" {...props}>
-      <SimpleForm redirect="show">
-        <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) =>
-            !formData.orgAdmin && (
-              <Fragment>
-                <ReferenceInput
-                  source="userId"
-                  reference="user"
-                  label="Which user?"
-                  validate={[required()]}
-                  onChange={(e, newVal) => {
-                    dispatch(change(newVal));
-                  }}
-                  {...rest}
-                >
-                  <UserSelectInput source="name" />
-                </ReferenceInput>
-              </Fragment>
-            )
-          }
-        </FormDataConsumer>
-        <FormDataConsumer>
-          {({ formData, dispatch, ...rest }) =>
-            !formData.orgAdmin && (
-              <Fragment>
-                <ReferenceInput
-                  source="identifierSourceId"
-                  reference="identifierSource"
-                  label="Which IdentifierSource?"
-                  validate={[required()]}
-                  onChange={(e, newVal) => {
-                    dispatch(change(newVal));
-                  }}
-                  {...rest}
-                >
-                  <SelectInput source="name" />
-                </ReferenceInput>
-              </Fragment>
-            )
-          }
-        </FormDataConsumer>
-        <TextInput source="identifierStart" required />
-        <TextInput source="identifierEnd" required />
-      </SimpleForm>
-    </Create>
+    <Paper>
+      <DocumentationContainer filename={"IdentifierUserAssignment.md"}>
+        <Create title="Add New Identifier User Assignment" {...props}>
+          <IdentifierUserAssignmentForm />
+        </Create>
+      </DocumentationContainer>
+    </Paper>
   );
 };

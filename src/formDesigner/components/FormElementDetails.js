@@ -5,12 +5,17 @@ import {
   Checkbox,
   FormControlLabel,
   Select,
-  FormGroup
+  FormGroup,
+  Paper,
+  Button,
+  FormLabel
 } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiFormControl from "@material-ui/core/FormControl";
 import AutoSuggestSingleSelection from "./AutoSuggestSingleSelection";
+import InlineConcept from "./InlineConcept";
+
 import MenuItem from "@material-ui/core/MenuItem";
 import _, { isEqual, get } from "lodash";
 import TextField from "@material-ui/core/TextField";
@@ -18,8 +23,10 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
+import { AvniFormControl } from "../../common/components/AvniFormControl";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
-const FormControl = withStyles({
+export const FormControl = withStyles({
   root: {
     paddingBottom: 10
   }
@@ -34,7 +41,11 @@ const useStyles = makeStyles(theme => ({
 const showDatePicker = (cssClasses, props) => {
   return (
     <Grid container item sm={12}>
-      <InputLabel style={cssClasses.label}>Date Picker Mode</InputLabel>
+      <AvniFormLabel
+        style={cssClasses.label}
+        label={"Date Picker Mode"}
+        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DATE_PICKER_MODE"}
+      />
 
       <RadioGroup
         aria-label="Date Picker Mode"
@@ -55,6 +66,19 @@ const showDatePicker = (cssClasses, props) => {
         <FormControlLabel value="Spinner" control={<Radio />} label="Spinner" />
       </RadioGroup>
     </Grid>
+  );
+};
+
+export const BackButton = props => {
+  return (
+    <Button
+      size="small"
+      variant="outlined"
+      style={props.style}
+      onClick={() => props.handleConceptFormLibrary(props.groupIndex, "", props.elementIndex, true)}
+    >
+      Cancel
+    </Button>
   );
 };
 
@@ -89,17 +113,6 @@ function FormElementDetails(props) {
     }
   }
 
-  // const onShowDialogueForConcept = () => {
-  //   return (
-  //     <Dialog open={show} aria-labelledby="form-dialog-title">
-  //       <DialogTitle id="form-dialog-title">Create Concept</DialogTitle>
-  //       <DialogContent dividers>
-  //       <CreateEditConcept isCreatePage={true} enableLeftMenuButton={false} />
-  //       </DialogContent>
-  //       <DialogActions><Button color="primary">Cancel</Button></DialogActions>
-  //     </Dialog>
-  //   );
-  // };
   function identifierSourceList() {
     var identifierSourceArr = [];
     _.forEach(props.identifierSources, (idSource, i) => {
@@ -109,155 +122,302 @@ function FormElementDetails(props) {
   }
 
   return (
-    <Grid container item sm={12}>
-      <Grid item sm={12}>
-        {props.formElementData.errorMessage && props.formElementData.errorMessage.name && (
-          <div style={{ color: "red" }}>Please enter name</div>
-        )}
-        <FormControl fullWidth>
-          <InputLabel htmlFor="elementNameDetails">{t("Question")}</InputLabel>
-          <Input
-            id="elementNameDetails"
-            value={props.formElementData.name}
-            onChange={event =>
-              props.handleGroupElementChange(
-                props.groupIndex,
-                "name",
-                event.target.value,
-                props.index
-              )
-            }
-          />
-        </FormControl>
-      </Grid>
-      <Grid item sm={12}>
-        {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
-          <div style={{ color: "red" }}>Please enter concept </div>
-        )}
-
-        <FormControl fullWidth>
-          <AutoSuggestSingleSelection
-            visibility={!props.formElementData.newFlag}
-            showAnswer={props.formElementData.concept}
-            onChangeAnswerName={onChangeAnswerName}
-            finalReturn={true}
-            index={0}
-            label="Concept"
-          />
-        </FormControl>
-      </Grid>
-      {/* <Grid item sm={1} /> */}
-      {/* <Grid item sm={2}>
-        <Button
-          fullWidth
-          variant="contained"
-          color="primary"
-          style={{ marginTop: "5%", outline: "none" }}
-          onClick={onShowDialogueForConcept}
+    <Grid container sm={12}>
+      {props.formElementData.errorMessage && props.formElementData.errorMessage.name && (
+        <div style={{ color: "red" }}>Please enter name</div>
+      )}
+      <FormControl fullWidth>
+        <AvniFormLabel label={t("Question")} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"} />
+        <Input
+          id="elementNameDetails"
+          value={props.formElementData.name}
+          onChange={event =>
+            props.handleGroupElementChange(
+              props.groupIndex,
+              "name",
+              event.target.value,
+              props.index
+            )
+          }
+        />
+      </FormControl>
+      <Paper style={{ width: "100%", marginBottom: "15px" }}>
+        <div
+          position="static"
+          style={{ backgroundColor: "#2a96f3", color: "white", height: "30px" }}
         >
-          + Concept
-        </Button>
-      </Grid> */}
-      {/* {show && onShowDialogueForConcept()} */}
-      {props.formElementData.concept.dataType === "Coded" && (
-        <Grid item sm={6}>
-          {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
-            <div style={{ color: "red" }}>Please select type</div>
-          )}
-          <FormControl fullWidth>
-            <InputLabel>Type</InputLabel>
-            <Select
-              name="type"
-              value={props.formElementData.type}
-              onChange={event =>
-                props.handleGroupElementChange(
-                  props.groupIndex,
-                  "type",
-                  event.target.value,
-                  props.index
-                )
+          <span style={{ marginLeft: "10px", marginTop: "15px", fontSize: "small" }}>CONCEPT</span>
+        </div>
+        {props.formElementData.showConceptLibrary === "" && (
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
+            <Button
+              color="primary"
+              type="button"
+              onClick={event =>
+                props.handleConceptFormLibrary(props.groupIndex, "chooseFromLibrary", props.index)
               }
-              required
             >
-              <MenuItem value="SingleSelect">SingleSelect</MenuItem>
-              <MenuItem value="MultiSelect">MultiSelect</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
+              Select from library
+            </Button>
+            <br />
+            OR
+            <br />
+            <Button
+              color="primary"
+              type="button"
+              onClick={event =>
+                props.handleConceptFormLibrary(props.groupIndex, "addNewConcept", props.index)
+              }
+            >
+              Create new
+            </Button>
+          </div>
+        )}
+        {props.formElementData.showConceptLibrary === "addNewConcept" && (
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
+            <InlineConcept
+              onSaveInlineConcept={props.onSaveInlineConcept}
+              formElementData={props.formElementData}
+              index={props.index}
+              groupIndex={props.groupIndex}
+              handleGroupElementChange={props.handleGroupElementChange}
+              handleInlineNumericAttributes={props.handleInlineNumericAttributes}
+              handleInlineCodedConceptAnswers={props.handleInlineCodedConceptAnswers}
+              onToggleInlineConceptCodedAnswerAttribute={
+                props.onToggleInlineConceptCodedAnswerAttribute
+              }
+              onDeleteInlineConceptCodedAnswerDelete={props.onDeleteInlineConceptCodedAnswerDelete}
+              handleInlineCodedAnswerAddition={props.handleInlineCodedAnswerAddition}
+              onDragInlineCodedConceptAnswer={props.onDragInlineCodedConceptAnswer}
+              handleConceptFormLibrary={props.handleConceptFormLibrary}
+            />
+          </div>
+        )}
+        {props.formElementData.showConceptLibrary === "chooseFromLibrary" && (
+          <div
+            style={{
+              marginLeft: "15px",
+              marginRight: "15px",
+              marginTop: "15px",
+              marginBottom: "15px"
+            }}
+          >
+            {" "}
+            <Grid item sm={12}>
+              {props.formElementData.errorMessage && props.formElementData.errorMessage.concept && (
+                <div style={{ color: "red" }}>Please enter concept </div>
+              )}
+
+              <FormControl fullWidth>
+                {props.formElementData.newFlag && (
+                  <AutoSuggestSingleSelection
+                    visibility={!props.formElementData.newFlag}
+                    showAnswer={props.formElementData.concept}
+                    onChangeAnswerName={onChangeAnswerName}
+                    finalReturn={true}
+                    index={0}
+                    label="Concept"
+                  />
+                )}
+                {!props.formElementData.newFlag && (
+                  <>
+                    <FormLabel style={{ fontSize: "13px" }}>Concept*</FormLabel>
+                    <a href={`#/appDesigner/concept/${props.formElementData.concept.uuid}/show`}>
+                      {props.formElementData.concept.name}
+                    </a>
+                  </>
+                )}
+              </FormControl>
+            </Grid>
+            {props.formElementData.concept.dataType !== "Coded" && <Grid item sm={6} />}
+            {props.formElementData.concept.dataType === "Numeric" && (
+              <Grid container item sm={12}>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <AvniFormLabel
+                      label={"Low Absolute"}
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_ABSOLUTE"}
+                    />
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.lowAbsolute
+                          ? props.formElementData.concept.lowAbsolute
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <AvniFormLabel
+                      label={"High Absolute"}
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_ABSOLUTE"}
+                    />
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.highAbsolute
+                          ? props.formElementData.concept.highAbsolute
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <AvniFormLabel
+                      label={"Low normal"}
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_LOW_NORMAL"}
+                    />
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.lowNormal
+                          ? props.formElementData.concept.lowNormal
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <AvniFormLabel
+                      label={"High normal"}
+                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_HIGH_NORMAL"}
+                    />
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.highNormal
+                          ? props.formElementData.concept.highNormal
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item sm={2}>
+                  <FormControl>
+                    <AvniFormLabel label={"Unit"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_UNIT"} />
+                    <Input
+                      disableUnderline={true}
+                      value={
+                        props.formElementData.concept.unit
+                          ? props.formElementData.concept.unit
+                          : "N.A"
+                      }
+                      disabled
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+            )}
+            {props.formElementData.concept.dataType === "Coded" && (
+              <>
+                <Grid container item sm={12}>
+                  <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
+                  {_.orderBy(props.formElementData.concept.answers, "order").map(function(d) {
+                    if (!d.excluded && !d.voided) {
+                      return (
+                        <Chip
+                          key={d.name}
+                          label={
+                            <a href={`#/appDesigner/concept/${d.uuid}/show`}>
+                              <span style={{ color: "black" }}>{d.name}</span>
+                            </a>
+                          }
+                          onDelete={event =>
+                            props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
+                          }
+                        />
+                      );
+                    }
+                    return "";
+                  })}
+                </Grid>
+              </>
+            )}
+            {props.formElementData.newFlag && (
+              <BackButton
+                handleConceptFormLibrary={props.handleConceptFormLibrary}
+                groupIndex={props.groupIndex}
+                elementIndex={props.index}
+                style={{}}
+              />
+            )}
+          </div>
+        )}
+      </Paper>
+      {props.formElementData.concept.dataType === "Coded" && (
+        <>
+          <Grid item sm={6}>
+            {props.formElementData.errorMessage && props.formElementData.errorMessage.type && (
+              <div style={{ color: "red" }}>Please select type</div>
+            )}
+            <FormControl fullWidth>
+              <AvniFormLabel label={"Type"} toolTipKey={"APP_DESIGNER_FORM_ELEMENT_CODED_TYPE"} />
+              <Select
+                name="type"
+                value={props.formElementData.type}
+                onChange={event =>
+                  props.handleGroupElementChange(
+                    props.groupIndex,
+                    "type",
+                    event.target.value,
+                    props.index
+                  )
+                }
+                required
+              >
+                <MenuItem value="SingleSelect">SingleSelect</MenuItem>
+                <MenuItem value="MultiSelect">MultiSelect</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <br />
+          <Grid container item sm={12}>
+            <InputLabel style={{ paddingTop: 10 }}>Excluded Answers:</InputLabel>{" "}
+            {props.formElementData.concept.answers.map(function(d) {
+              if (d.excluded && !d.voided) {
+                return (
+                  <Chip
+                    key={d.name}
+                    label={
+                      <a href={`#/appDesigner/concept/${d.uuid}/show`}>
+                        <span style={{ color: "black" }}>{d.name}</span>
+                      </a>
+                    }
+                    onDelete={event =>
+                      props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
+                    }
+                  />
+                );
+              }
+              return "";
+            })}
+          </Grid>
+        </>
       )}
-      {props.formElementData.concept.dataType !== "Coded" && <Grid item sm={6} />}
-      {props.formElementData.concept.dataType === "Numeric" && (
-        <Grid container item sm={12}>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>Low Absolute</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.lowAbsolute
-                    ? props.formElementData.concept.lowAbsolute
-                    : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>High Absolute</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.highAbsolute
-                    ? props.formElementData.concept.highAbsolute
-                    : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>Low normal</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.lowNormal
-                    ? props.formElementData.concept.lowNormal
-                    : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>High normal</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.highNormal
-                    ? props.formElementData.concept.highNormal
-                    : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item sm={2}>
-            <FormControl>
-              <InputLabel>Unit</InputLabel>
-              <Input
-                disableUnderline={true}
-                value={
-                  props.formElementData.concept.unit ? props.formElementData.concept.unit : "N.A"
-                }
-                disabled
-              />
-            </FormControl>
-          </Grid>
-        </Grid>
-      )}
+
       {props.formElementData.concept.dataType === "Video" && (
         <Grid container item sm={12}>
           <Grid item sm={4}>
@@ -286,7 +446,10 @@ function FormElementDetails(props) {
           <Grid item sm={1} />
           <Grid item sm={3}>
             <FormControl className={classes.formControl}>
-              <InputLabel>Video Quality</InputLabel>
+              <AvniFormLabel
+                label={"Video Quality"}
+                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VIDEO_QUALITY"}
+              />
               <Select
                 name="videoQuality"
                 classes={cssClasses.dropDown}
@@ -361,7 +524,10 @@ function FormElementDetails(props) {
           <Grid item sm={1} />
           <Grid item sm={3}>
             <FormControl className={classes.formControl}>
-              <InputLabel>Image Quality</InputLabel>
+              <AvniFormLabel
+                label={"Image Quality"}
+                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IMAGE_QUALITY"}
+              />
               <Select
                 name="imageQuality"
                 value={
@@ -373,7 +539,7 @@ function FormElementDetails(props) {
                   props.handleGroupElementKeyValueChange(
                     props.groupIndex,
                     "imageQuality",
-                    event.target.value,
+                    _.toNumber(event.target.value),
                     props.index
                   )
                 }
@@ -390,7 +556,11 @@ function FormElementDetails(props) {
 
       {["Date", "Duration"].includes(props.formElementData.concept.dataType) && (
         <Grid container item sm={12}>
-          <InputLabel style={cssClasses.label}>Duration Options</InputLabel>
+          <AvniFormLabel
+            style={cssClasses.label}
+            label={"Duration Options"}
+            toolTipKey={"APP_DESIGNER_FORM_ELEMENT_DURATION_OPTIONS"}
+          />
 
           <FormControl component="fieldset">
             <FormGroup row>
@@ -507,44 +677,6 @@ function FormElementDetails(props) {
 
       {props.formElementData.concept.dataType === "DateTime" && showDatePicker(cssClasses, props)}
 
-      {props.formElementData.concept.dataType === "Coded" && (
-        <>
-          <Grid container item sm={12}>
-            <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
-            {props.formElementData.concept.answers.map(function(d) {
-              if (!d.excluded && !d.voided) {
-                return (
-                  <Chip
-                    key={d.name}
-                    label={d.name}
-                    onDelete={event =>
-                      props.handleExcludedAnswers(d.name, true, props.groupIndex, props.index)
-                    }
-                  />
-                );
-              }
-              return "";
-            })}
-          </Grid>
-          <Grid container item sm={12}>
-            <InputLabel style={{ paddingTop: 10 }}>Excluded Answers:</InputLabel>{" "}
-            {props.formElementData.concept.answers.map(function(d) {
-              if (d.excluded && !d.voided) {
-                return (
-                  <Chip
-                    key={d.name}
-                    label={d.name}
-                    onDelete={event =>
-                      props.handleExcludedAnswers(d.name, false, props.groupIndex, props.index)
-                    }
-                  />
-                );
-              }
-              return "";
-            })}
-          </Grid>
-        </>
-      )}
       {["Numeric", "Text"].includes(props.formElementData.concept.dataType) && (
         <Grid item sm={12}>
           {props.formElementData.errorMessage && props.formElementData.errorMessage.validFormat && (
@@ -554,7 +686,10 @@ function FormElementDetails(props) {
             </div>
           )}
           <FormControl fullWidth>
-            <InputLabel htmlFor="validFormatRegex">Validation Regex</InputLabel>
+            <AvniFormLabel
+              label={"Validation Regex"}
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_REGEX"}
+            />
             <Input
               id="validFormatRegex"
               value={get(props.formElementData, "validFormat.regex", "")}
@@ -569,7 +704,10 @@ function FormElementDetails(props) {
             />
           </FormControl>
           <FormControl fullWidth>
-            <InputLabel htmlFor="validFormatRegex">Validation Description Key</InputLabel>
+            <AvniFormLabel
+              label={"Validation Description Key"}
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_VALIDATION_DESCRIPTION_KEY"}
+            />
             <Input
               id="validFormatDescriptionKey"
               value={get(props.formElementData, "validFormat.descriptionKey", "")}
@@ -587,55 +725,62 @@ function FormElementDetails(props) {
       )}
       <Grid container item sm={12}>
         <Grid item sm={6}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="mandatoryDetails"
-                checked={props.formElementData.mandatory}
-                value={props.formElementData.mandatory ? "yes" : "no"}
-                onChange={event =>
-                  props.handleGroupElementChange(
-                    props.groupIndex,
-                    "mandatory",
-                    event.target.value === "yes" ? false : true,
-                    props.index
-                  )
-                }
-              />
-            }
-            label="Mandatory"
-          />
-        </Grid>
-        {["Numeric", "Text", "Date", "DateTime"].includes(
-          props.formElementData.concept.dataType
-        ) && (
-          <Grid item sm={6}>
+          <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_MANDATORY"}>
             <FormControlLabel
               control={
                 <Checkbox
-                  id="editable"
-                  checked={
-                    typeof props.formElementData.keyValues.editable === "undefined" ? false : true
-                  }
+                  id="mandatoryDetails"
+                  checked={props.formElementData.mandatory}
+                  value={props.formElementData.mandatory ? "yes" : "no"}
                   onChange={event =>
-                    props.handleGroupElementKeyValueChange(
+                    props.handleGroupElementChange(
                       props.groupIndex,
-                      "editable",
-                      typeof props.formElementData.keyValues.editable,
+                      "mandatory",
+                      event.target.value === "yes" ? false : true,
                       props.index
                     )
                   }
                 />
               }
-              label="Read Only"
+              label="Mandatory"
             />
-          </Grid>
-        )}
+          </AvniFormControl>
+        </Grid>
+        <Grid item sm={6}>
+          {["Numeric", "Text", "Date", "DateTime"].includes(
+            props.formElementData.concept.dataType
+          ) && (
+            <AvniFormControl toolTipKey={"APP_DESIGNER_FORM_ELEMENT_READ_ONLY"}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    id="editable"
+                    checked={
+                      typeof props.formElementData.keyValues.editable === "undefined" ? false : true
+                    }
+                    onChange={event =>
+                      props.handleGroupElementKeyValueChange(
+                        props.groupIndex,
+                        "editable",
+                        typeof props.formElementData.keyValues.editable,
+                        props.index
+                      )
+                    }
+                  />
+                }
+                label="Read Only"
+              />
+            </AvniFormControl>
+          )}
+        </Grid>
       </Grid>
       {props.formElementData.concept.dataType === "Id" && (
         <Grid item sm={6}>
           <FormControl fullWidth>
-            <InputLabel>Identifier Source</InputLabel>
+            <AvniFormLabel
+              label={"Identifier Source"}
+              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_IDENTIFIER_SOURCE"}
+            />
             <Select
               name="identifierSource"
               value={props.formElementData.keyValues.IdSourceUUID}

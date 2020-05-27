@@ -18,7 +18,9 @@ const mapFormStateToProps = state => ({
   title: `New Enrolment`,
   saved: state.dataEntry.enrolmentReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
-  validationResults: state.dataEntry.registration.validationResults
+  staticValidationResults: state.dataEntry.enrolmentReducer.enrolDateValidation,
+  validationResults: state.dataEntry.registration.validationResults,
+  message: `${state.dataEntry.enrolmentReducer.programEnrolment.program.name} Enrolment Saved`
 });
 //need to change observations
 const mapFormDispatchToProps = {

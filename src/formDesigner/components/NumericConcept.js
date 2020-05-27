@@ -19,7 +19,16 @@ export default function NumericConcept(props) {
               placeholder="Enter Low Absolute"
               margin="normal"
               style={classes}
-              onChange={event => props.onNumericConceptAttributeAssignment(event)}
+              onChange={event =>
+                props.inlineConcept
+                  ? props.onNumericConceptAttributeAssignment(
+                      props.groupIndex,
+                      "lowAbsolute",
+                      event.target.value,
+                      props.index
+                    )
+                  : props.onNumericConceptAttributeAssignment(event)
+              }
               InputProps={{ inputProps: { min: 0 } }}
               defaultValue={props.numericDataTypeAttributes.lowAbsolute}
             />
@@ -32,7 +41,16 @@ export default function NumericConcept(props) {
               placeholder="Enter High Absolute"
               margin="normal"
               style={classes}
-              onChange={event => props.onNumericConceptAttributeAssignment(event)}
+              onChange={event =>
+                props.inlineConcept
+                  ? props.onNumericConceptAttributeAssignment(
+                      props.groupIndex,
+                      "highAbsolute",
+                      event.target.value,
+                      props.index
+                    )
+                  : props.onNumericConceptAttributeAssignment(event)
+              }
               InputProps={{ inputProps: { min: 0 } }}
               defaultValue={props.numericDataTypeAttributes.highAbsolute}
             />
@@ -50,7 +68,16 @@ export default function NumericConcept(props) {
               placeholder="Enter Low Normal"
               margin="normal"
               style={classes}
-              onChange={event => props.onNumericConceptAttributeAssignment(event)}
+              onChange={event =>
+                props.inlineConcept
+                  ? props.onNumericConceptAttributeAssignment(
+                      props.groupIndex,
+                      "lowNormal",
+                      event.target.value,
+                      props.index
+                    )
+                  : props.onNumericConceptAttributeAssignment(event)
+              }
               InputProps={{ inputProps: { min: 0 } }}
               defaultValue={props.numericDataTypeAttributes.lowNormal}
             />
@@ -63,7 +90,16 @@ export default function NumericConcept(props) {
               placeholder="Enter High Normal"
               margin="normal"
               style={classes}
-              onChange={event => props.onNumericConceptAttributeAssignment(event)}
+              onChange={event =>
+                props.inlineConcept
+                  ? props.onNumericConceptAttributeAssignment(
+                      props.groupIndex,
+                      "highNormal",
+                      event.target.value,
+                      props.index
+                    )
+                  : props.onNumericConceptAttributeAssignment(event)
+              }
               InputProps={{ inputProps: { min: 0 } }}
               defaultValue={props.numericDataTypeAttributes.highNormal}
             />
@@ -79,7 +115,16 @@ export default function NumericConcept(props) {
             label="Unit"
             placeholder="Enter unit"
             margin="normal"
-            onChange={event => props.onNumericConceptAttributeAssignment(event)}
+            onChange={event =>
+              props.inlineConcept
+                ? props.onNumericConceptAttributeAssignment(
+                    props.groupIndex,
+                    "unit",
+                    event.target.value,
+                    props.index
+                  )
+                : props.onNumericConceptAttributeAssignment(event)
+            }
             defaultValue={props.numericDataTypeAttributes.unit}
             style={classes}
           />
@@ -92,4 +137,8 @@ export default function NumericConcept(props) {
 NumericConcept.propTypes = {
   onNumericConceptAttributeAssignment: PropTypes.func.isRequired,
   numericDataTypeAttributes: PropTypes.object.isRequired
+};
+
+NumericConcept.defaultProps = {
+  inlineConcept: false
 };

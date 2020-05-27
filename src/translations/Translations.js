@@ -14,6 +14,7 @@ import { TranslationDashboard } from "./TranslationDashboard";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import { ROLES } from "../common/constants";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
 
 const EMPTY_TRANSLATION_KEY = "KEY_NOT_DEFINED";
 export const Translations = ({
@@ -26,7 +27,7 @@ export const Translations = ({
   history
 }) => {
   useEffect(() => {
-    if (!isEmpty(http.getOrgId()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))) {
+    if (!isEmpty(http.getOrgUUID()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))) {
       getOrgConfig();
       getDashboardData("Android", EMPTY_TRANSLATION_KEY);
     }
@@ -79,43 +80,53 @@ export const Translations = ({
 
   return (
     <ScreenWithAppBar appbarTitle={`Translations`}>
-      <div id={"margin"}>
-        <Box border={1} borderColor={"#ddd"} p={2}>
-          <TranslationDashboard data={dashboardData} emptyTranslationKey={EMPTY_TRANSLATION_KEY} />
-        </Box>
-        <p />
-        <Box border={1} borderColor={"#ddd"} p={2}>
-          <Grid>
-            <h5 id="title">Upload Translations</h5>
-          </Grid>
-          <Grid container direction="row" justify="flex-start" alignItems="center">
-            <Import
-              locales={localeChoices}
-              onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)}
+      <DocumentationContainer filename={"Translation.md"}>
+        <div id={"margin"}>
+          <Box border={1} borderColor={"#ddd"} p={2}>
+            <TranslationDashboard
+              data={dashboardData}
+              emptyTranslationKey={EMPTY_TRANSLATION_KEY}
             />
-          </Grid>
-        </Box>
-        <p />
-        <Box border={1} borderColor={"#ddd"} p={2}>
-          <Grid>
-            <h5 id="title">Download Translations</h5>
-          </Grid>
-          <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
-            <DropDown name="Platform" value={platform} onChange={setPlatform} options={platforms} />
-            <Box pl={2} pr={4}>
-              <Button
-                variant="contained"
-                onClick={onDownloadPressedHandler}
-                color="primary"
-                aria-haspopup="false"
-                disabled={isEmpty(platform)}
-              >
-                Download
-              </Button>
-            </Box>
-          </Grid>
-        </Box>
-      </div>
+          </Box>
+          <p />
+          <Box border={1} borderColor={"#ddd"} p={2}>
+            <Grid>
+              <h5 id="title">Upload Translations</h5>
+            </Grid>
+            <Grid container direction="row" justify="flex-start" alignItems="center">
+              <Import
+                locales={localeChoices}
+                onSuccessfulImport={() => getDashboardData("Android", EMPTY_TRANSLATION_KEY)}
+              />
+            </Grid>
+          </Box>
+          <p />
+          <Box border={1} borderColor={"#ddd"} p={2}>
+            <Grid>
+              <h5 id="title">Download Translations</h5>
+            </Grid>
+            <Grid container direction="row" justify="flex-start" alignItems="center" m={3}>
+              <DropDown
+                name="Platform"
+                value={platform}
+                onChange={setPlatform}
+                options={platforms}
+              />
+              <Box pl={2} pr={4}>
+                <Button
+                  variant="contained"
+                  onClick={onDownloadPressedHandler}
+                  color="primary"
+                  aria-haspopup="false"
+                  disabled={isEmpty(platform)}
+                >
+                  Download
+                </Button>
+              </Box>
+            </Grid>
+          </Box>
+        </div>
+      </DocumentationContainer>
     </ScreenWithAppBar>
   );
 };

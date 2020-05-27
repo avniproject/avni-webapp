@@ -7,8 +7,11 @@ import Grid from "@material-ui/core/Grid";
 import {
   onLoad,
   updateProgramEnrolment,
-  setProgramEnrolment
+  setProgramEnrolment,
+  setInitialState,
+  setEnrolDateValidation
 } from "../../../reducers/programEnrolReducer";
+import { isNil, remove } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -58,12 +61,17 @@ const ProgramEnrol = ({
   enrolForm,
   getSubjectProfile,
   programEnrolment,
-  updateProgramEnrolment
+  updateProgramEnrolment,
+  setInitialState,
+  setEnrolDateValidation,
+  enrolDateValidation
   //setProgramEnrolment
 }) => {
   const [value, setValue] = React.useState("Yes");
 
   const { t } = useTranslation();
+
+  const ENROLMENT_DATE = "ENROLMENT_DATE";
 
   const handleChange = event => {
     setValue(event.target.value);
@@ -73,6 +81,7 @@ const ProgramEnrol = ({
 
   useEffect(() => {
     (async function fetchData() {
+      await setInitialState();
       await onLoad(
         "Individual",
         match.queryParams.programName,
@@ -99,6 +108,10 @@ const ProgramEnrol = ({
     // })();
   }, []);
 
+  const validationResultForEnrolDate =
+    enrolDateValidation &&
+    enrolDateValidation.find(vr => !vr.success && vr.formIdentifier === ENROLMENT_DATE);
+
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -122,10 +135,31 @@ const ProgramEnrol = ({
                       size="small"
                       id="date-picker-dialog"
                       format="MM/dd/yyyy"
+                      placeholder="mm/dd/yyyy"
                       name="enrolmentDateTime"
                       value={new Date(programEnrolment.enrolmentDateTime)}
+                      autoComplete="off"
+                      required
+                      error={
+                        !isNil(validationResultForEnrolDate) &&
+                        !validationResultForEnrolDate.success
+                      }
+                      helperText={
+                        !isNil(validationResultForEnrolDate) &&
+                        t(validationResultForEnrolDate.messageKey)
+                      }
                       onChange={date => {
-                        updateProgramEnrolment("enrolmentDateTime", new Date(date));
+                        const enrolDate = isNil(date) ? undefined : new Date(date);
+                        updateProgramEnrolment("enrolmentDateTime", enrolDate);
+                        programEnrolment.enrolmentDateTime = enrolDate;
+                        remove(enrolDateValidation, vr => vr.formIdentifier === ENROLMENT_DATE);
+                        const result = programEnrolment
+                          .validateEnrolment()
+                          .find(vr => !vr.success && vr.formIdentifier === ENROLMENT_DATE);
+                        result
+                          ? enrolDateValidation.push(result)
+                          : enrolDateValidation.push(...programEnrolment.validateEnrolment());
+                        setEnrolDateValidation(enrolDateValidation);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -170,14 +204,17 @@ const ProgramEnrol = ({
 const mapStateToProps = state => ({
   enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment
+  programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment,
+  enrolDateValidation: state.dataEntry.enrolmentReducer.enrolDateValidation
 });
 
 const mapDispatchToProps = {
   onLoad,
   getSubjectProfile,
   updateProgramEnrolment,
-  setProgramEnrolment
+  setProgramEnrolment,
+  setInitialState,
+  setEnrolDateValidation
 };
 
 export default withRouter(

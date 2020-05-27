@@ -9,7 +9,6 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import { default as UUID } from "uuid";
-import SaveIcon from "@material-ui/icons/Save";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { FormControl } from "@material-ui/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
@@ -21,7 +20,9 @@ import TextField from "@material-ui/core/TextField";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { Redirect } from "react-router-dom";
 
+import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
+import { Audit } from "../components/Audit";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -35,8 +36,8 @@ export const areValidFormatValuesValid = formElement => {
   return result;
 };
 
-function TabContainer(props) {
-  const typographyCSS = { padding: 8 * 3 };
+export function TabContainer({ skipStyles, ...props }) {
+  const typographyCSS = skipStyles ? {} : { padding: 8 * 3 };
   return (
     <Typography {...props} component="div" style={typographyCSS}>
       {props.children}
@@ -63,7 +64,8 @@ class FormDetails extends Component {
       defaultSnackbarStatus: true,
       detectBrowserCloseEvent: false,
       nameError: false,
-      redirectToWorkflow: false
+      redirectToWorkflow: false,
+      availableDataTypes: []
     };
     this.btnGroupClick = this.btnGroupClick.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
@@ -75,7 +77,8 @@ class FormDetails extends Component {
     this.handleModeForDate = this.handleModeForDate.bind(this);
     this.handleRegex = this.handleRegex.bind(this);
     this.validateForm = this.validateForm.bind(this);
-    console.log("PROPS:::" + JSON.stringify(this.props));
+    this.handleConceptFormLibrary = this.handleConceptFormLibrary.bind(this);
+    this.handleInlineNumericAttributes = this.handleInlineNumericAttributes.bind(this);
   }
 
   onUpdateFormName = name => {
@@ -109,7 +112,10 @@ class FormDetails extends Component {
         identifierSources: transformIdentifierSources(responseData)
       });
     });
+    return this.getForm();
+  }
 
+  getForm() {
     return http
       .get(`/forms/export?formUUID=${this.props.match.params.formUUID}`)
       .then(response => response.data)
@@ -136,22 +142,7 @@ class FormDetails extends Component {
           group.formElements.forEach(fe => {
             fe.expanded = false;
             fe.error = false;
-            //             if (fe["rule"]) {
-            //               let ruleExtraction = fe["rule"];
-            //               ruleExtraction = ruleExtraction.replace(
-            //                 `'use strict';
-            // function rule(params, imports) {`,
-            //                 ""
-            //               );
-
-            //               ruleExtraction = ruleExtraction.replace(
-            //                 `};
-            // rule;`,
-            //                 ""
-            //               );
-            //               fe["rule"] = ruleExtraction;
-            //             }
-
+            fe.showConceptLibrary = "chooseFromLibrary";
             let keyValueObject = {};
 
             fe.keyValues.map(keyValue => {
@@ -188,6 +179,7 @@ class FormDetails extends Component {
         console.log(error);
       });
   }
+
   countGroupElements(form) {
     let groupFlag = true;
     _.forEach(form.formElementGroups, (groupElement, index) => {
@@ -216,7 +208,7 @@ class FormDetails extends Component {
       this.setState(
         produce(draft => {
           let form = draft.form;
-          if (form.formElementGroups[index].newFlag === "true") {
+          if (form.formElementGroups[index].newFlag === true) {
             form.formElementGroups.splice(index, 1);
           } else {
             form.formElementGroups[index].voided = true;
@@ -232,7 +224,7 @@ class FormDetails extends Component {
       this.setState(
         produce(draft => {
           let form = draft.form;
-          if (form.formElementGroups[index].formElements[elementIndex].newFlag === "true") {
+          if (form.formElementGroups[index].formElements[elementIndex].newFlag === true) {
             form.formElementGroups[index].formElements.splice(elementIndex, 1);
           } else {
             form.formElementGroups[index].formElements[elementIndex].voided = true;
@@ -290,6 +282,15 @@ class FormDetails extends Component {
     );
   };
 
+  updateFormElementGroupRule = (index, value) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index]["rule"] = value;
+        draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
   onUpdateDragDropOrder = (
     groupSourceIndex,
     sourceElementIndex,
@@ -307,18 +308,29 @@ class FormDetails extends Component {
               form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex]
             );
             sourceElement.uuid = UUID.v4();
-            form.formElementGroups[groupDestinationIndex].formElements.forEach((element, index) => {
-              if (!element.voided) {
-                counter += 1;
-                if (counter === destinationElementIndex) {
-                  form.formElementGroups[groupDestinationIndex].formElements.splice(
-                    index + 1,
-                    0,
-                    sourceElement
-                  );
+            if (destinationElementIndex !== 0) {
+              form.formElementGroups[groupDestinationIndex].formElements.forEach(
+                (element, index) => {
+                  if (!element.voided) {
+                    counter += 1;
+
+                    if (counter === destinationElementIndex) {
+                      form.formElementGroups[groupDestinationIndex].formElements.splice(
+                        index + 1,
+                        0,
+                        sourceElement
+                      );
+                    }
+                  }
                 }
-              }
-            });
+              );
+            } else {
+              form.formElementGroups[groupDestinationIndex].formElements.splice(
+                destinationElementIndex,
+                0,
+                sourceElement
+              );
+            }
 
             form.formElementGroups[groupSourceIndex].formElements[sourceElementIndex].voided = true;
           } else {
@@ -365,6 +377,26 @@ class FormDetails extends Component {
     }
   };
 
+  getEntityNameForRules() {
+    switch (this.state.form.formType) {
+      case "IndividualProfile":
+        return "individual";
+      case "Encounter":
+      case "IndividualEncounterCancellation":
+        return "encounter";
+      case "ProgramEnrolment":
+      case "ProgramExit":
+        return "programEnrolment";
+      case "ProgramEncounter":
+      case "ProgramEncounterCancellation":
+        return "programEncounter";
+      case "ChecklistItem":
+        return "checklistItem";
+      default:
+        return "";
+    }
+  }
+
   renderGroups() {
     const formElements = [];
     _.forEach(this.state.form.formElementGroups, (group, index) => {
@@ -383,7 +415,17 @@ class FormDetails extends Component {
           handleExcludedAnswers: this.handleExcludedAnswers,
           updateSkipLogicRule: this.updateSkipLogicRule,
           handleModeForDate: this.handleModeForDate,
-          handleRegex: this.handleRegex
+          handleRegex: this.handleRegex,
+          handleConceptFormLibrary: this.handleConceptFormLibrary,
+          onSaveInlineConcept: this.onSaveInlineConcept,
+          handleInlineNumericAttributes: this.handleInlineNumericAttributes,
+          handleInlineCodedConceptAnswers: this.handleInlineCodedConceptAnswers,
+          onToggleInlineConceptCodedAnswerAttribute: this.onToggleInlineConceptCodedAnswerAttribute,
+          onDeleteInlineConceptCodedAnswerDelete: this.onDeleteInlineConceptCodedAnswerDelete,
+          handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
+          onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer,
+          updateFormElementGroupRule: this.updateFormElementGroupRule,
+          entityName: this.getEntityNameForRules()
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -405,6 +447,35 @@ class FormDetails extends Component {
           }
         );
         draft.detectBrowserCloseEvent = true;
+      })
+    );
+  };
+
+  handleConceptFormLibrary = (index, value, elementIndex, inlineConcept = false) => {
+    this.setState(
+      produce(draft => {
+        if (inlineConcept) {
+          draft.form.formElementGroups[index].formElements[elementIndex].showConceptLibrary = value;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].inlineConceptErrorMessage = this.assignEmptyFormElementMetaData().inlineConceptErrorMessage;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].inlineNumericDataTypeAttributes = this.assignEmptyFormElementMetaData().inlineNumericDataTypeAttributes;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].inlineCodedAnswers = this.assignEmptyFormElementMetaData().inlineCodedAnswers;
+          draft.form.formElementGroups[index].formElements[elementIndex].inlineConceptName = "";
+          draft.form.formElementGroups[index].formElements[elementIndex].inlineConceptDataType = "";
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].concept = this.assignEmptyFormElementMetaData().concept;
+          draft.form.formElementGroups[index].formElements[
+            elementIndex
+          ].errorMessage = this.assignEmptyFormElementMetaData().errorMessage;
+        } else {
+          draft.form.formElementGroups[index].formElements[elementIndex].showConceptLibrary = value;
+        }
       })
     );
   };
@@ -473,27 +544,159 @@ class FormDetails extends Component {
     );
   }
 
+  handleInlineNumericAttributes(index, propertyName, value, elementIndex) {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex][
+          "inlineNumericDataTypeAttributes"
+        ][propertyName] = value;
+      })
+    );
+  }
+
+  handleInlineCodedConceptAnswers = (answerName, groupIndex, elementIndex, answerIndex) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers[
+          answerIndex
+        ].name = answerName;
+      })
+    );
+  };
+
+  handleInlineCodedAnswerAddition = (groupIndex, elementIndex) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers.push(
+          {
+            name: "",
+            uuid: "",
+            unique: false,
+            abnormal: false,
+            editable: true,
+            voided: false,
+            order: 0,
+            isEmptyAnswer: false
+          }
+        );
+      })
+    );
+  };
+
+  onToggleInlineConceptCodedAnswerAttribute = (
+    propertyName,
+    groupIndex,
+    elementIndex,
+    answerIndex
+  ) => {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers[
+          answerIndex
+        ][propertyName] = !draft.form.formElementGroups[groupIndex].formElements[elementIndex]
+          .inlineCodedAnswers[answerIndex][propertyName];
+      })
+    );
+  };
+
+  onDeleteInlineConceptCodedAnswerDelete = (groupIndex, elementIndex, answerIndex) => {
+    const form = cloneDeep(this.state.form);
+
+    form.formElementGroups[groupIndex].formElements[elementIndex].inlineCodedAnswers.splice(
+      answerIndex,
+      1
+    );
+    this.setState({
+      form
+    });
+  };
+
+  updateConceptElementData(index, propertyName, value, elementIndex = -1) {
+    this.setState(
+      produce(draft => {
+        draft.form.formElementGroups[index].formElements[elementIndex]["concept"][
+          propertyName
+        ] = value;
+      })
+    );
+  }
+
+  assignEmptyFormElementMetaData = () => {
+    return {
+      uuid: UUID.v4(),
+      displayOrder: -1,
+      newFlag: true,
+      name: "",
+      type: "",
+      keyValues: {},
+      mandatory: false,
+      voided: false,
+      expanded: true,
+      concept: { name: "", dataType: "" },
+      errorMessage: { name: false, concept: false, type: false },
+      inlineConceptErrorMessage: { name: "", dataType: "", inlineConceptError: "" },
+      inlineNumericDataTypeAttributes: {
+        lowAbsolute: null,
+        highAbsolute: null,
+        lowNormal: null,
+        highNormal: null,
+        unit: "",
+        error: {}
+      },
+      inlineCodedAnswers: [
+        {
+          name: "",
+          uuid: "",
+          unique: false,
+          abnormal: false,
+          editable: true,
+          voided: false,
+          order: 0,
+          isEmptyAnswer: false
+        }
+      ],
+      showConceptLibrary: "",
+      inlineConceptName: "",
+      inlineConceptDataType: ""
+    };
+  };
+
+  onDragInlineCodedConceptAnswer = result => {
+    const { destination, source } = result;
+    if (!destination) {
+      return;
+    }
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
+    const sourceElementIndex = result.draggableId.replace("Element", "");
+
+    const destinationElementIndex = result.destination.index;
+
+    const groupElementIndex = source.droppableId.replace("Group", "").split("-");
+    const clonedForm = cloneDeep(this.state.form);
+
+    const answer = clonedForm["formElementGroups"][parseInt(groupElementIndex[0])]["formElements"][
+      parseInt(groupElementIndex[1])
+    ]["inlineCodedAnswers"].splice(sourceElementIndex, 1);
+
+    clonedForm.formElementGroups[parseInt(groupElementIndex[0])].formElements[
+      parseInt(groupElementIndex[1])
+    ]["inlineCodedAnswers"].splice(destinationElementIndex, 0, answer[0]);
+    this.setState({
+      form: clonedForm
+    });
+  };
+
   btnGroupAdd(index, elementIndex = -1) {
     this.setState(
       produce(draft => {
         let form = draft.form;
-        const formElement_temp = {
-          uuid: UUID.v4(),
-          displayOrder: -1,
-          newFlag: "true",
-          name: "",
-          type: "",
-          keyValues: {},
-          mandatory: false,
-          voided: false,
-          expanded: true,
-          concept: { name: "", dataType: "" },
-          errorMessage: { name: false, concept: false, type: false }
-        };
+        const formElement_temp = this.assignEmptyFormElementMetaData();
         if (elementIndex === -1) {
           form.formElementGroups.splice(index + 1, 0, {
             uuid: UUID.v4(),
-            newFlag: "true",
+            newFlag: true,
             expanded: true,
             displayOrder: -1,
             name: "",
@@ -513,6 +716,7 @@ class FormDetails extends Component {
     this.btnGroupAdd(0);
     this.setState({ createFlag: false });
   }
+
   // END Group level Events
   validateForm() {
     let flag = false;
@@ -659,6 +863,7 @@ class FormDetails extends Component {
           });
         }
       })
+      .then(() => this.getForm())
       .catch(error => {
         this.setState({
           saveCall: false,
@@ -668,7 +873,6 @@ class FormDetails extends Component {
   };
 
   onDragEnd = result => {
-    console.log(result);
     const { destination, source } = result;
 
     if (!destination) {
@@ -712,6 +916,196 @@ class FormDetails extends Component {
         draft.detectBrowserCloseEvent = true;
       })
     );
+  };
+
+  onSubmitInlineConcept = (inlineConceptObject, clonedForm, formElement) => {
+    inlineConceptObject.answers.forEach((answer, index) => {
+      answer.order = index;
+    });
+    http
+      .post("/concepts", [inlineConceptObject])
+      .then(response => {
+        if (response.status === 200) {
+          formElement["concept"].name = inlineConceptObject.name;
+          formElement["concept"]["uuid"] = inlineConceptObject.uuid;
+          formElement["concept"].dataType = inlineConceptObject.dataType;
+
+          formElement.showConceptLibrary = "chooseFromLibrary";
+          formElement["concept"].lowAbsolute = inlineConceptObject.lowAbsolute;
+          formElement["concept"].highAbsolute = inlineConceptObject.highAbsolute;
+          formElement["concept"].lowNormal = inlineConceptObject.lowNormal;
+          formElement["concept"].highNormal = inlineConceptObject.highNormal;
+          formElement["concept"].unit = inlineConceptObject.unit;
+
+          formElement["concept"].answers = inlineConceptObject.answers;
+          formElement.newFlag = false;
+
+          this.setState({
+            form: clonedForm
+          });
+        }
+      })
+      .catch(error => {
+        if (error.response.status === 500) {
+          formElement.inlineConceptErrorMessage["inlineConceptError"] = "Concept already exist";
+        } else {
+          formElement.inlineConceptErrorMessage["inlineConceptError"] = error.response.data;
+        }
+
+        this.setState({
+          form: clonedForm
+        });
+      });
+  };
+
+  onSaveInlineConcept = (groupIndex, elementIndex) => {
+    let clonedForm = cloneDeep(this.state.form);
+    let clonedFormElement =
+      clonedForm["formElementGroups"][groupIndex]["formElements"][elementIndex];
+    let absoluteValidation = false,
+      normalValidation = false;
+
+    const inlineConceptObject = {
+      name: clonedFormElement.inlineConceptName,
+      uuid: UUID.v4(),
+      dataType: clonedFormElement.inlineConceptDataType,
+      lowAbsolute: clonedFormElement["inlineNumericDataTypeAttributes"].lowAbsolute,
+      highAbsolute: clonedFormElement["inlineNumericDataTypeAttributes"].highAbsolute,
+      lowNormal: clonedFormElement["inlineNumericDataTypeAttributes"].lowNormal,
+      highNormal: clonedFormElement["inlineNumericDataTypeAttributes"].highNormal,
+      unit:
+        clonedFormElement["inlineNumericDataTypeAttributes"].unit === ""
+          ? null
+          : clonedFormElement["inlineNumericDataTypeAttributes"].unit,
+      answers: clonedFormElement["inlineCodedAnswers"]
+    };
+
+    if (inlineConceptObject.dataType === "Numeric") {
+      if (
+        parseInt(inlineConceptObject.lowAbsolute) === null ||
+        parseInt(inlineConceptObject.highAbsolute) === null
+      ) {
+        absoluteValidation = false;
+      } else if (
+        parseInt(inlineConceptObject.lowAbsolute) > parseInt(inlineConceptObject.highAbsolute)
+      ) {
+        absoluteValidation = true;
+      } else {
+        absoluteValidation = false;
+      }
+
+      if (
+        parseInt(inlineConceptObject.lowNormal) === null ||
+        parseInt(inlineConceptObject.highNormal === null)
+      ) {
+        normalValidation = false;
+      } else if (
+        parseInt(inlineConceptObject.lowNormal) > parseInt(inlineConceptObject.highNormal)
+      ) {
+        normalValidation = true;
+      } else {
+        normalValidation = false;
+      }
+    }
+
+    if (
+      inlineConceptObject.dataType !== "" &&
+      inlineConceptObject.name.trim() !== "" &&
+      normalValidation === false &&
+      absoluteValidation === false
+    ) {
+      clonedFormElement.inlineConceptErrorMessage["name"] = "";
+      clonedFormElement.inlineConceptErrorMessage["dataType"] = "";
+      clonedFormElement.inlineConceptErrorMessage["inlineConceptError"] = "";
+
+      if (inlineConceptObject.dataType === "Coded") {
+        const length = inlineConceptObject.answers.length;
+        let counter = 0;
+        let flagForEmptyAnswer = false;
+        if (length === 0) {
+          this.onSubmitInlineConcept(inlineConceptObject, clonedForm, clonedFormElement);
+        }
+
+        inlineConceptObject.answers.forEach(answer => {
+          if (answer.name.trim() === "") {
+            flagForEmptyAnswer = true;
+            answer.isEmptyAnswer = true;
+          } else {
+            answer.isEmptyAnswer = false;
+          }
+          http
+            .get(`/web/concept?name=${encodeURIComponent(answer.name)}`)
+            .then(response => {
+              if (response.status === 200) {
+                answer.uuid = response.data.uuid;
+                answer.order = counter;
+                counter = counter + 1;
+
+                if (counter === length) {
+                  !flagForEmptyAnswer &&
+                    this.onSubmitInlineConcept(inlineConceptObject, clonedForm, clonedFormElement);
+                }
+              }
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                answer.uuid = UUID.v4();
+                http
+                  .post("/concepts", [
+                    {
+                      name: answer.name,
+                      uuid: answer.uuid,
+                      dataType: "NA",
+                      lowAbsolute: null,
+                      highAbsolute: null,
+                      lowNormal: null,
+                      highNormal: null,
+                      unit: null
+                    }
+                  ])
+                  .then(response => {
+                    if (response.status === 200) {
+                      console.log("Dynamic concept added through Coded", response);
+                      counter = counter + 1;
+                      if (counter === length) {
+                        !flagForEmptyAnswer &&
+                          this.onSubmitInlineConcept(
+                            inlineConceptObject,
+                            clonedForm,
+                            clonedFormElement
+                          );
+                      }
+                    }
+                  });
+              } else {
+                console.log(error);
+              }
+            });
+          if (flagForEmptyAnswer === true) {
+            this.setState({
+              form: clonedForm
+            });
+          }
+        });
+      } else {
+        this.onSubmitInlineConcept(inlineConceptObject, clonedForm, clonedFormElement);
+      }
+    } else {
+      clonedFormElement.inlineConceptErrorMessage["name"] =
+        inlineConceptObject.name.trim() === "" ? "concept name is required" : "";
+      clonedFormElement.inlineConceptErrorMessage["dataType"] =
+        inlineConceptObject.dataType === "" ? "concept datatype is required" : "";
+      clonedFormElement.inlineNumericDataTypeAttributes.error[
+        "normalValidation"
+      ] = normalValidation;
+      clonedFormElement.inlineNumericDataTypeAttributes.error[
+        "absoluteValidation"
+      ] = absoluteValidation;
+
+      this.setState({
+        form: clonedForm
+      });
+    }
   };
 
   onToggleExpandPanel = name => {
@@ -763,21 +1157,16 @@ class FormDetails extends Component {
 
           {!this.state.createFlag && (
             <Grid item sm={2}>
-              <Button
-                fullWidth
-                variant="contained"
-                color="secondary"
-                margin="normal"
-                onClick={this.validateForm}
-                style={{
+              <SaveComponent
+                name="Save"
+                onSubmit={this.validateForm}
+                styleClass={{
                   marginTop: "30px",
                   marginBottom: "2px"
                 }}
-                disabled={!this.state.detectBrowserCloseEvent}
-              >
-                <SaveIcon />
-                &nbsp;Save
-              </Button>
+                disabledFlag={!this.state.detectBrowserCloseEvent}
+                fullWidth={true}
+              />
             </Grid>
           )}
         </Grid>
@@ -812,32 +1201,7 @@ class FormDetails extends Component {
                 )}
               </Droppable>
             </DragDropContext>
-            <Grid container item sm={12}>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Created by : {this.state.form.createdBy}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Last modified by : {this.state.form.lastModifiedBy}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Creation datetime : {this.state.form.createdDateTime}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Last modified datetime : {this.state.form.modifiedDateTime}{" "}
-                </InputLabel>
-              </Grid>
-            </Grid>
+            <Audit {...this.state.form} direction={"row"} />
             {/* </div> */}
           </TabContainer>
 
@@ -846,6 +1210,7 @@ class FormDetails extends Component {
               form={this.state.form}
               onRuleUpdate={this.onRuleUpdate}
               onToggleExpandPanel={this.onToggleExpandPanel}
+              entityName={this.getEntityNameForRules()}
             />
           </div>
         </Grid>

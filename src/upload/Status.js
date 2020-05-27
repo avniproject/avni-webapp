@@ -7,6 +7,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
+import RefreshIcon from "@material-ui/icons/Refresh";
 import { getStatuses } from "./reducers";
 import { capitalize, get, isNil, map } from "lodash";
 import Types from "./Types";
@@ -16,6 +17,7 @@ import FileDownloadButton from "../common/components/FileDownloadButton";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import TablePagination from "@material-ui/core/TablePagination";
+import Button from "@material-ui/core/Button";
 
 const createStyles = makeStyles(theme => ({
   filename: {
@@ -36,8 +38,21 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
     getStatuses(newPage);
   };
 
+  const getRefreshStatuse = () => {
+    getStatuses(page);
+  };
+
   return (
     <Box>
+      <Button
+        color="primary"
+        variant="contained"
+        onClick={event => getRefreshStatuse()}
+        style={{ float: "right", margin: "10px" }}
+      >
+        <RefreshIcon />
+        REFRESH STATUS{" "}
+      </Button>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -60,7 +75,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {map(get(statuses, "_embedded.jobStatuses"), jobStatus => (
+          {map(get(statuses, "content"), jobStatus => (
             <TableRow key={jobStatus.uuid}>
               <Tooltip
                 title={<span style={{ fontSize: "2em" }}>{jobStatus.fileName}</span>}
@@ -101,7 +116,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
         rowsPerPageOptions={[5]}
         component="div"
         count={get(statuses, "page.totalElements") || 0}
-        rowsPerPage={10}
+        rowsPerPage={5}
         page={page}
         backIconButtonProps={{ "aria-label": "previous page" }}
         nextIconButtonProps={{ "aria-label": "next page" }}

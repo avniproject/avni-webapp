@@ -7,6 +7,18 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import React from "react";
 import http from "common/utils/httpClient";
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 200,
+    color: "white"
+  },
+  whiteColor: {
+    color: "white"
+  }
+}));
 
 export const OrganisationOptions = ({
   getUserInfo,
@@ -17,6 +29,8 @@ export const OrganisationOptions = ({
   organisations,
   ...props
 }) => {
+  const classes = useStyles();
+
   const options = [
     { name: "", value: "" },
     ...map(organisations, ({ name, uuid }) => ({
@@ -27,16 +41,16 @@ export const OrganisationOptions = ({
 
   const handleChange = event => {
     if (event.target.value !== "") {
-      http.setOrganisationUUID(event.target.value);
+      localStorage.setItem("ORGANISATION_UUID", event.target.value);
       history.push("/home");
       getUserInfo();
     } else {
-      http.setOrganisationUUID("");
+      localStorage.setItem("ORGANISATION_UUID", "");
     }
   };
 
   const resetOrgUUID = () => {
-    http.setOrganisationUUID("");
+    localStorage.setItem("ORGANISATION_UUID", "");
     getUserInfo();
     history.push("/#/admin/account");
   };
@@ -45,18 +59,18 @@ export const OrganisationOptions = ({
     !isEmpty(organisations) && (
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         {!isEmpty(intersection(user.roles, [ROLES.ADMIN])) && (
-          <FormControl className={styles.formControl}>
-            <InputLabel id="organisation-select-label" className={styles.whiteColor}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="organisation-select-label" style={{ color: "white" }}>
               Select Organisation
             </InputLabel>
             <Select
               labelid="organisation-select"
               id="organisation-select"
-              value={organisation}
+              value={localStorage.getItem("ORGANISATION_UUID") || ""}
               onChange={handleChange}
               classes={{
-                root: styles.whiteColor,
-                icon: styles.whiteColor
+                root: classes.whiteColor,
+                icon: classes.whiteColor
               }}
             >
               {options.map((option, index) => (
@@ -67,8 +81,10 @@ export const OrganisationOptions = ({
             </Select>
           </FormControl>
         )}
-        {!isEmpty(intersection(user.roles, [ROLES.ADMIN])) && !isEmpty(http.getOrgId()) && (
-          <Button onClick={() => resetOrgUUID()}>Back To Admin</Button>
+        {!isEmpty(intersection(user.roles, [ROLES.ADMIN])) && !isEmpty(http.getOrgUUID()) && (
+          <Button onClick={() => resetOrgUUID()} style={{ color: "white" }}>
+            Back To Admin
+          </Button>
         )}
       </div>
     )

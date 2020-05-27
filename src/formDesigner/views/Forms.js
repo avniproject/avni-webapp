@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import NewFormModal from "../components/NewFormModal";
-import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -9,6 +8,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import FormListing from "../components/FormListing";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
+import { CreateComponent } from "../../common/components/CreateComponent";
 
 const Forms = props => {
   const [showNewFormDialog, setShowNewFormDialog] = useState(false);
@@ -21,10 +21,7 @@ const Forms = props => {
       <div className="container">
         <div>
           <div style={{ float: "right", right: "50px", marginTop: "15px" }}>
-            <Button variant="outlined" color="secondary" onClick={openNewFormDialog}>
-              {" "}
-              New Form{" "}
-            </Button>
+            <CreateComponent onSubmit={openNewFormDialog} name="New Form" />
           </div>
           <Dialog
             fullWidth

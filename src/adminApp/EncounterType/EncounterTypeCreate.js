@@ -1,4 +1,3 @@
-import TextField from "@material-ui/core/TextField";
 import { Redirect } from "react-router-dom";
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
@@ -10,18 +9,20 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import { encounterTypeInitialState } from "../Constant";
 import { encounterTypeReducer } from "../Reducers";
-import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
 import _ from "lodash";
-import SelectForm from "../SubjectType/SelectForm";
 import {
   findEncounterCancellationForms,
   findEncounterForms,
   findProgramEncounterCancellationForms,
   findProgramEncounterForms
 } from "../domain/formMapping";
+import { DocumentationContainer } from "../../common/components/DocumentationContainer";
+import { AvniTextField } from "../../common/components/AvniTextField";
+import { AvniSelect } from "../../common/components/AvniSelect";
+import { AvniSelectForm } from "../../common/components/AvniSelectForm";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { sampleEncounterEligibilityCheckRule } from "../../formDesigner/common/SampleRule";
 
 const EncounterTypeCreate = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -136,126 +137,122 @@ const EncounterTypeCreate = props => {
   return (
     <>
       <Box boxShadow={2} p={3} bgcolor="background.paper">
-        <Title title={"Create encounter type"} />
+        <DocumentationContainer filename={"EncounterType.md"}>
+          <Title title={"Create Encounter Type"} />
 
-        <div className="container" style={{ float: "left" }}>
-          <form onSubmit={onSubmit}>
-            <TextField
-              id="name"
-              label="Name*"
-              autoComplete="off"
-              value={encounterType.name}
-              onChange={event => dispatch({ type: "name", payload: event.target.value })}
-            />
-            <div />
-            {nameValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty name is not allowed.
-              </FormLabel>
-            )}
-            {error !== "" && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                {error}
-              </FormLabel>
-            )}
-            <p />
-            <FormControl>
-              <InputLabel id="subjectType">Select subject type*</InputLabel>
-              <Select
-                label="Select subject type"
+          <div className="container">
+            <form onSubmit={onSubmit}>
+              <AvniTextField
+                id="name"
+                label="Name*"
+                autoComplete="off"
+                value={encounterType.name}
+                onChange={event => dispatch({ type: "name", payload: event.target.value })}
+                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_NAME"}
+              />
+              <div />
+              {nameValidation && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  Empty name is not allowed.
+                </FormLabel>
+              )}
+              {error !== "" && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  {error}
+                </FormLabel>
+              )}
+              <p />
+              <AvniSelect
+                label="Select subject type *"
                 value={_.isEmpty(subjectT) ? "" : subjectT}
                 onChange={event => setSubjectT(event.target.value)}
                 style={{ width: "200px" }}
                 required
-              >
-                {subjectType.map(subject => {
-                  return (
-                    <MenuItem value={subject} key={subject.uuid}>
-                      {subject.name}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-            <div />
-            {subjectValidation && (
-              <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
-                Empty subject type is not allowed.
-              </FormLabel>
-            )}
-            <p />
-            <FormControl>
-              <InputLabel id="program">Select program</InputLabel>
-              <Select
-                label="Select program"
+                options={subjectType.map(option => (
+                  <MenuItem value={option} key={option.uuid}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_SUBJECT"}
+              />
+              <div />
+              {subjectValidation && (
+                <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+                  Empty subject type is not allowed.
+                </FormLabel>
+              )}
+              <p />
+              <AvniSelect
+                label="Select Program"
                 value={_.isEmpty(programT) ? "" : programT}
                 onChange={event => updateProgram(event.target.value)}
                 style={{ width: "200px" }}
                 required
-              >
-                <MenuItem value={""}>Select Program</MenuItem>
-                {program.map(prog => {
-                  return (
-                    <MenuItem value={prog} key={prog.uuid}>
-                      {prog.name}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-            <div />
-            <p />
-            <SelectForm
-              label={"Select Encounter form"}
-              value={_.get(encounterType, "programEncounterForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programEncounterForm",
-                  payload: selectedForm
-                })
-              }
-              formList={getEncounterForms()}
-            />
-            <p />
-            <SelectForm
-              label={"Select Encounter cancellation form"}
-              value={_.get(encounterType, "programEncounterCancellationForm.formName")}
-              onChange={selectedForm =>
-                dispatch({
-                  type: "programEncounterCancellationForm",
-                  payload: selectedForm
-                })
-              }
-              formList={getCancellationForms()}
-            />
-            <p />
-            <FormLabel>Encounter Eligibility Check Rule</FormLabel>
-            <Editor
-              value={
-                encounterType.encounterEligibilityCheckRule
-                  ? encounterType.encounterEligibilityCheckRule
-                  : ""
-              }
-              onValueChange={event =>
-                dispatch({ type: "encounterEligibilityCheckRule", payload: event })
-              }
-              highlight={code => highlight(code, languages.js)}
-              padding={10}
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 15,
-                height: "auto",
-                borderStyle: "solid",
-                borderWidth: "1px"
-              }}
-            />
-            <p />
+                options={program.map(option => (
+                  <MenuItem value={option} key={option.uuid}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_PROGRAM"}
+              />
+              <div />
+              <p />
+              <AvniSelectForm
+                label={"Select Encounter Form"}
+                value={_.get(encounterType, "programEncounterForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "programEncounterForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={getEncounterForms()}
+                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_FORM"}
+              />
+              <p />
+              <AvniSelectForm
+                label={"Select Encounter Cancellation Form"}
+                value={_.get(encounterType, "programEncounterCancellationForm.formName")}
+                onChange={selectedForm =>
+                  dispatch({
+                    type: "programEncounterCancellationForm",
+                    payload: selectedForm
+                  })
+                }
+                formList={getCancellationForms()}
+                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_CANCELLATION_FORM"}
+              />
+              <p />
+              <AvniFormLabel
+                label={"Encounter Eligibility Check Rule"}
+                toolTipKey={"APP_DESIGNER_ENCOUNTER_TYPE_ELIGIBILITY_RULE"}
+              />
+              <Editor
+                value={
+                  encounterType.encounterEligibilityCheckRule ||
+                  sampleEncounterEligibilityCheckRule()
+                }
+                onValueChange={event =>
+                  dispatch({ type: "encounterEligibilityCheckRule", payload: event })
+                }
+                highlight={code => highlight(code, languages.js)}
+                padding={10}
+                style={{
+                  fontFamily: '"Fira code", "Fira Mono", monospace',
+                  fontSize: 15,
+                  height: "auto",
+                  borderStyle: "solid",
+                  borderWidth: "1px"
+                }}
+              />
+              <p />
 
-            <Button color="primary" variant="contained" type="submit">
-              <i className="material-icons">save</i>Save
-            </Button>
-          </form>
-        </div>
+              <Button color="primary" variant="contained" type="submit">
+                <i className="material-icons">save</i>Save
+              </Button>
+            </form>
+          </div>
+        </DocumentationContainer>
       </Box>
       {alert && <Redirect to={"/appDesigner/encounterType/" + id + "/show"} />}
     </>

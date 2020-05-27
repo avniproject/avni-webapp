@@ -14,7 +14,8 @@ import {
   SingleFieldList,
   AutocompleteArrayInput,
   ReferenceArrayField,
-  Filter
+  Filter,
+  FunctionField
 } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
@@ -23,6 +24,11 @@ import LocationUtils from "./LocationUtils";
 import _ from "lodash";
 import { Title } from "./components/Title";
 import Chip from "@material-ui/core/Chip";
+import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { AvniTextInput } from "./components/AvniTextInput";
+import { ToolTipContainer } from "../common/components/ToolTipContainer";
+import { Paper } from "@material-ui/core";
+import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 const CatchmentFilter = props => (
   <Filter {...props}>
@@ -35,9 +41,13 @@ const TitleChip = props => {
 };
 
 export const CatchmentCreate = props => (
-  <Create {...props}>
-    <CatchmentForm />
-  </Create>
+  <Paper>
+    <DocumentationContainer filename={"Catchment.md"}>
+      <Create {...props}>
+        <CatchmentForm />
+      </Create>
+    </DocumentationContainer>
+  </Paper>
 );
 
 export const CatchmentEdit = props => (
@@ -51,16 +61,13 @@ export const CatchmentDetail = props => {
     <Show title={<Title title={"Catchment"} />} actions={<CustomShowActions />} {...props}>
       <SimpleShowLayout>
         <TextField label="Catchment" source="name" />
-        <TextField label="Type" source="type" />
         <ReferenceArrayField label="Locations" reference="locations" source="locationIds">
           <SingleFieldList>
             <TitleChip source="title" />
           </SingleFieldList>
         </ReferenceArrayField>
-        <TextField label="Created by" source="createdBy" />
-        <TextField label="Last modified by" source="lastModifiedBy" />
-        <TextField label="Created On(datetime)" source="createdDateTime" />
-        <TextField label="Last modified On(datetime)" source="modifiedDateTime" />
+        <FunctionField label="Created" render={audit => createdAudit(audit)} />
+        <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
       </SimpleShowLayout>
     </Show>
   );
@@ -70,7 +77,6 @@ export const CatchmentList = props => (
   <List {...props} bulkActions={false} filters={<CatchmentFilter />}>
     <Datagrid rowClick="show">
       <TextField label="Catchment" source="name" />
-      <TextField label="Type" source="type" />
     </Datagrid>
   </List>
 );
@@ -120,18 +126,21 @@ const CatchmentForm = ({ edit, ...props }) => {
       <Typography variant="title" component="h3">
         Catchment
       </Typography>
-      <TextInput source="name" label="Name" />
-      <TextInput source="type" label="Type" />
+      <AvniTextInput source="name" label="Name" toolTipKey={"ADMIN_CATCHMENT_NAME"} />
 
-      <ReferenceArrayInput
-        reference="locations"
-        source="locationIds"
-        perPage={1000}
-        label="Locations"
-        filterToQuery={searchText => ({ title: searchText })}
-      >
-        <LocationAutocomplete optionText={optionRenderer} />
-      </ReferenceArrayInput>
+      <ToolTipContainer toolTipKey={"ADMIN_CATCHMENT_LOCATIONS"}>
+        <div style={{ maxWidth: 400 }}>
+          <ReferenceArrayInput
+            reference="locations"
+            source="locationIds"
+            perPage={1000}
+            label="Locations"
+            filterToQuery={searchText => ({ title: searchText })}
+          >
+            <LocationAutocomplete optionText={optionRenderer} />
+          </ReferenceArrayInput>
+        </div>
+      </ToolTipContainer>
 
       <LineBreak num={1} />
     </SimpleForm>

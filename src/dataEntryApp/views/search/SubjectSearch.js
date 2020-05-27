@@ -1,21 +1,24 @@
 import React, { useEffect } from "react";
-import Table from "@material-ui/core/Table";
+import {
+  Table,
+  TablePagination,
+  TableBody,
+  TableCell,
+  TableRow,
+  FormControl,
+  InputLabel,
+  Input,
+  Button,
+  Paper
+} from "@material-ui/core";
 import { withRouter, Link } from "react-router-dom";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
-import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
-import Paper from "@material-ui/core/Paper";
+import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
 import { useTranslation } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
@@ -40,64 +43,230 @@ const useStyle = makeStyles(theme => ({
   searchFormItem: {
     margin: theme.spacing(1)
   },
+  searchBtnShadow: {
+    boxShadow: "none",
+    backgroundColor: "#0e6eff"
+  },
   createButtonHolder: {
     flex: 1
   },
   searchBox: {
     padding: "1.5rem",
     margin: "2rem 1rem"
+  },
+  cellpadding: {
+    padding: "14px 40px 14px 0px"
   }
 }));
 
 const SubjectsTable = ({ type, subjects }) => {
   const classes = useStyle();
   const { t } = useTranslation();
+  const [order, setOrder] = React.useState("asc");
+  const [orderBy, setOrderBy] = React.useState("calories");
+  const [selected, setSelected] = React.useState([]);
+  const [page, setPage] = React.useState(0);
+  const [dense, setDense] = React.useState(false);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  let tableHeaderName = [];
+  let subjectsListObj = [];
+
+  subjects.forEach(function(a) {
+    let sub = {
+      uuid: a.uuid,
+      fullName: a.fullName,
+      gender: a.gender ? t(a.gender.name) : "",
+      dateOfBirth: a.dateOfBirth,
+      addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
+      activePrograms: a.activePrograms
+    };
+    subjectsListObj.push(sub);
+  });
+
+  if (type.name === "Individual") {
+    tableHeaderName = [
+      { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+      { id: "gender", numeric: false, disablePadding: true, label: "Gender", align: "left" },
+      {
+        id: "dateOfBirth",
+        numeric: true,
+        disablePadding: false,
+        label: "dateOfBirth",
+        align: "left"
+      },
+      {
+        id: "addressLevel",
+        numeric: false,
+        disablePadding: true,
+        label: "location",
+        align: "left"
+      },
+      {
+        id: "activePrograms",
+        numeric: false,
+        disablePadding: true,
+        label: "activeprograms",
+        align: "left"
+      }
+    ];
+  } else {
+    tableHeaderName = [
+      { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+      {
+        id: "addressLevel",
+        numeric: false,
+        disablePadding: true,
+        label: "Location",
+        align: "left"
+      },
+      {
+        id: "activePrograms",
+        numeric: false,
+        disablePadding: true,
+        label: "Active Programs",
+        align: "left"
+      }
+    ];
+  }
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const handleSelectAllClick = event => {
+    if (event.target.checked) {
+      const newSelecteds = subjects.map(n => n.name);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+
+  // const handleClick = (event, name) => {
+  //   const selectedIndex = selected.indexOf(name);
+  //   let newSelected = [];
+
+  //   if (selectedIndex === -1) {
+  //     newSelected = newSelected.concat(selected, name);
+  //   } else if (selectedIndex === 0) {
+  //     newSelected = newSelected.concat(selected.slice(1));
+  //   } else if (selectedIndex === selected.length - 1) {
+  //     newSelected = newSelected.concat(selected.slice(0, -1));
+  //   } else if (selectedIndex > 0) {
+  //     newSelected = newSelected.concat(
+  //       selected.slice(0, selectedIndex),
+  //       selected.slice(selectedIndex + 1)
+  //     );
+  //   }
+
+  //   setSelected(newSelected);
+  // };
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const isSelected = name => selected.indexOf(name) !== -1;
+
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, subjects.length - page * rowsPerPage);
 
   return (
-    <Table className={classes.table}>
-      <TableHead>
-        <TableRow>
-          <TableCell>{t("name")}</TableCell>
-          {type.name === "Individual" && <TableCell align="center">{t("gender")}</TableCell>}
-          {type.name === "Individual" && <TableCell align="center">{t("dateOfBirth")}</TableCell>}
-          <TableCell align="center">{t("location")}</TableCell>
-          <TableCell align="center">{t("activeprograms")}</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {subjects.map((row, id) => (
-          <TableRow key={id}>
-            <TableCell component="th" scope="row">
-              <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
-            </TableCell>
-            {type.name === "Individual" && (
-              <TableCell align="center">{row.gender ? t(row.gender.name) : ""}</TableCell>
-            )}
-            {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
-            <TableCell align="center">
-              {row.addressLevel ? row.addressLevel.titleLineage : ""}
-            </TableCell>
-            <TableCell align="center">
-              {row.activePrograms.map((p, key) => (
-                <Button
-                  key={key}
-                  size="small"
-                  style={{
-                    height: 20,
-                    padding: 0,
-                    backgroundColor: p.colour,
-                    color: "white"
-                  }}
-                  disabled
+    <div>
+      {/* <EnhancedTableToolbar numSelected={selected.length} /> */}
+      <Table
+        className={classes.table}
+        aria-labelledby="tableTitle"
+        size={dense ? "small" : "medium"}
+        aria-label="enhanced table"
+      >
+        <EnhancedTableHead
+          headername={tableHeaderName}
+          classes={classes}
+          numSelected={selected.length}
+          order={order}
+          orderBy={orderBy}
+          onSelectAllClick={handleSelectAllClick}
+          onRequestSort={handleRequestSort}
+          rowCount={subjects.length}
+        />
+        <TableBody>
+          {stableSort(subjectsListObj, getComparator(order, orderBy))
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((row, index) => {
+              // const isItemSelected = isSelected(row.name);
+              return (
+                <TableRow
+                // hover
+                // onClick={event => handleClick(event, row.name)}
+                // role="checkbox"
+                // aria-checked={isItemSelected}
+                // tabIndex={-1}
+                // key={row.name}
+                // selected={isItemSelected}
                 >
-                  {t(p.operationalProgramName)}
-                </Button>
-              ))}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                  <TableCell component="th" scope="row" padding="none" width="20%">
+                    <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
+                  </TableCell>
+                  {type.name === "Individual" && (
+                    <TableCell align="left" className={classes.cellpadding}>
+                      {row.gender}
+                    </TableCell>
+                  )}
+                  {type.name === "Individual" && (
+                    <TableCell align="left" className={classes.cellpadding}>
+                      {row.dateOfBirth}
+                    </TableCell>
+                  )}
+                  <TableCell align="left" className={classes.cellpadding}>
+                    {row.addressLevel}
+                  </TableCell>
+                  <TableCell align="left" width="25%" className={classes.cellpadding}>
+                    {" "}
+                    {row.activePrograms.map((p, key) => (
+                      <Button
+                        key={key}
+                        size="small"
+                        style={{
+                          height: 20,
+                          padding: 2,
+                          margin: 2,
+                          backgroundColor: p.colour,
+                          color: "white",
+                          fontSize: 11
+                        }}
+                        disabled
+                      >
+                        {t(p.operationalProgramName)}
+                      </Button>
+                    ))}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          {emptyRows > 0 && (
+            <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+              <TableCell colSpan={6} />
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      <TablePagination
+        rowsPerPageOptions={[10, 20, 50]}
+        component="div"
+        count={subjectsListObj.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </div>
   );
 };
 
@@ -130,7 +299,11 @@ const SubjectSearch = props => {
             />
           </FormControl>
           <FormControl className={classes.searchFormItem}>
-            <PrimaryButton type={"submit"} onClick={handleSubmit}>
+            <PrimaryButton
+              type={"submit"}
+              onClick={handleSubmit}
+              className={classes.searchBtnShadow}
+            >
               {t("search")}
             </PrimaryButton>
           </FormControl>
