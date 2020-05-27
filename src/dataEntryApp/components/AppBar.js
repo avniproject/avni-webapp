@@ -23,7 +23,6 @@ import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
-import { enableReadOnly } from "common/constants";
 import { getUserInfo } from "rootApp/ducks";
 import { InternalLink } from "common/components/utils";
 
@@ -103,13 +102,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PrimarySearchAppBar = ({
-  getOrgConfigInfo,
-  getUserInfo,
-  orgConfig,
-  defaultLanguage,
-  user
-}) => {
+const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -301,7 +294,8 @@ const PrimarySearchAppBar = ({
 };
 
 const mapStateToProps = state => ({
-  user: state.app.user
+  user: state.app.user,
+  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
 });
 
 export default withRouter(

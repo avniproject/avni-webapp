@@ -20,7 +20,6 @@ import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
-import { enableReadOnly } from "common/constants";
 import moment from "moment/moment";
 import {
   EnhancedTableHead,
@@ -95,7 +94,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const CompletedVisitsTable = ({ allVisits }) => {
+const CompletedVisitsTable = ({ allVisits, enableReadOnly }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
@@ -270,7 +269,8 @@ const CompleteVisit = ({
   getEnrolments,
   completedVisit,
   enrolments,
-  enrolldata
+  enrolldata,
+  enableReadOnly
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -307,7 +307,7 @@ const CompleteVisit = ({
             </Grid>
           </Grid>
           <Paper className={classes.tableBox}>
-            <CompletedVisitsTable allVisits={completedVisit} />
+            <CompletedVisitsTable allVisits={completedVisit} enableReadOnly={enableReadOnly} />
           </Paper>
         </Paper>
       </Fragment>
@@ -321,7 +321,8 @@ const mapStateToProps = state => {
   return {
     completedVisit: state.dataEntry.completedVisitsReducer.completedVisits,
     enrolments: state.dataEntry.completedVisitsReducer.enrolments,
-    enrolldata: state.dataEntry.completedVisitsReducer.enrolldata
+    enrolldata: state.dataEntry.completedVisitsReducer.enrolldata,
+    enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
   };
 };
 

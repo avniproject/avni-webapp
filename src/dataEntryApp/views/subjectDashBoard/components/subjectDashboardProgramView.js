@@ -15,7 +15,6 @@ import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
-import { enableReadOnly } from "common/constants";
 // import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
 import { store } from "../../../../common/store/createStore";
@@ -121,7 +120,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({ programData }) => {
+const ProgramView = ({ programData, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -251,6 +250,7 @@ const ProgramView = ({ programData }) => {
                       overdueDate={row.maxVisitDateTime}
                       enrolUuid={programData.uuid}
                       encounterTypeUuid={row.encounterType.uuid}
+                      enableReadOnly={enableReadOnly}
                     />
                   ) : (
                     ""
@@ -300,6 +300,7 @@ const ProgramView = ({ programData }) => {
                       earliestVisitDate={row.earliestVisitDateTime}
                       encounterDateTime={row.encounterDateTime}
                       enrolUuid={programData.uuid}
+                      enableReadOnly={enableReadOnly}
                     />
                   ) : (
                     ""

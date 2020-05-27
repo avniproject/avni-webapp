@@ -10,7 +10,6 @@ import Typography from "@material-ui/core/Typography";
 import Visit from "./Visit";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
-import { enableReadOnly } from "../../../../common/constants";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -55,7 +54,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardGeneralTab = ({ general }) => {
+const SubjectDashboardGeneralTab = ({ general, enableReadOnly }) => {
   const [expanded, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
@@ -121,6 +120,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                       index={index}
                       visitDate={row.earliestVisitDateTime}
                       overdueDate={row.maxVisitDateTime}
+                      enableReadOnly={enableReadOnly}
                     />
                   ) : (
                     ""
@@ -160,6 +160,7 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                       index={index}
                       visitDate={row.encounterDateTime}
                       earliestVisitDate={row.earliestVisitDateTime}
+                      enableReadOnly={enableReadOnly}
                     />
                   ) : (
                     ""

@@ -24,7 +24,6 @@ import { saveUserInfo } from "rootApp/ducks";
 import { connect } from "react-redux";
 import { get } from "lodash";
 import { Auth } from "aws-amplify";
-import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -94,7 +93,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout }) => {
+const UserOption = ({
+  orgConfig,
+  userInfo,
+  defaultLanguage,
+  saveUserInfo,
+  logout,
+  enableReadOnly
+}) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -227,7 +233,8 @@ const mapStateToProps = state => ({
   defaultLanguage:
     state.app.userInfo.settings && state.app.userInfo.settings.locale
       ? state.app.userInfo.settings.locale
-      : "en"
+      : "en",
+  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
 });
 
 const mapDispatchToProps = {

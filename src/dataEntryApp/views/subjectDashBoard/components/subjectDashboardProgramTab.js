@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProgramTab = ({ program }) => {
+const SubjectDashboardProgramTab = ({ program, enableReadOnly }) => {
   let flagActive = false;
   let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -84,9 +84,17 @@ const SubjectDashboardProgramTab = ({ program }) => {
           </Grid>
         </div>
         {selectedTab !== false ? (
-          <ProgramDetails tabPanelValue={selectedTab} programData={program} />
+          <ProgramDetails
+            tabPanelValue={selectedTab}
+            programData={program}
+            enableReadOnly={enableReadOnly}
+          />
         ) : (
-          <ProgramDetails tabPanelValue={selectedTabExited} programData={program} />
+          <ProgramDetails
+            tabPanelValue={selectedTabExited}
+            programData={program}
+            enableReadOnly={enableReadOnly}
+          />
         )}
       </Paper>
     </Fragment>

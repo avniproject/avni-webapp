@@ -9,7 +9,6 @@ import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { enableReadOnly } from "common/constants";
 import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
@@ -75,7 +74,8 @@ const Visit = ({
   encounterDateTime,
   uuid,
   enrolUuid,
-  encounterTypeUuid
+  encounterTypeUuid,
+  enableReadOnly
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
