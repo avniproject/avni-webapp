@@ -6,16 +6,17 @@ import org.openchs.dao.*;
 import org.openchs.domain.Encounter;
 import org.openchs.domain.EncounterType;
 import org.openchs.domain.Individual;
-import org.openchs.domain.ProgramEncounter;
 import org.openchs.geo.Point;
 import org.openchs.service.ConceptService;
+import org.openchs.service.EncounterService;
 import org.openchs.service.ObservationService;
 import org.openchs.service.UserService;
 import org.openchs.util.S;
+import org.openchs.web.request.EncounterContract;
 import org.openchs.web.request.EncounterRequest;
 import org.openchs.web.request.PointRequest;
+import org.openchs.web.request.ProgramEncountersContract;
 import org.openchs.web.response.EncounterResponse;
-import org.openchs.web.response.ProgramEncounterResponse;
 import org.openchs.web.response.ResponsePage;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +30,11 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 public class EncounterController extends AbstractController<Encounter> implements RestControllerResourceProcessor<Encounter>, OperatingIndividualScopeAwareController<Encounter>, OperatingIndividualScopeAwareFilterController<Encounter> {
@@ -48,9 +47,18 @@ public class EncounterController extends AbstractController<Encounter> implement
     private Bugsnag bugsnag;
     private final ConceptRepository conceptRepository;
     private final ConceptService conceptService;
+    private final EncounterService encounterService;
 
     @Autowired
-    public EncounterController(IndividualRepository individualRepository, EncounterTypeRepository encounterTypeRepository, EncounterRepository encounterRepository, ObservationService observationService, UserService userService, Bugsnag bugsnag, ConceptRepository conceptRepository, ConceptService conceptService) {
+    public EncounterController(IndividualRepository individualRepository,
+                               EncounterTypeRepository encounterTypeRepository,
+                               EncounterRepository encounterRepository,
+                               ObservationService observationService,
+                               UserService userService,
+                               Bugsnag bugsnag,
+                               ConceptRepository conceptRepository,
+                               ConceptService conceptService,
+                               EncounterService encounterService) {
         this.individualRepository = individualRepository;
         this.encounterTypeRepository = encounterTypeRepository;
         this.encounterRepository = encounterRepository;
@@ -59,6 +67,7 @@ public class EncounterController extends AbstractController<Encounter> implement
         this.bugsnag = bugsnag;
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
+        this.encounterService = encounterService;
     }
 
     @RequestMapping(value = "/api/encounters", method = RequestMethod.GET)
@@ -79,6 +88,16 @@ public class EncounterController extends AbstractController<Encounter> implement
             encounterResponses.add(EncounterResponse.fromEncounter(encounter, conceptRepository, conceptService));
         });
         return new ResponsePage(encounterResponses, encounters.getNumberOfElements(), encounters.getTotalPages(), encounters.getSize());
+    }
+
+    @GetMapping(value = "/web/encounter/{uuid}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    public ResponseEntity<EncounterContract> getEncounterByUuid(@PathVariable("uuid") String uuid) {
+        EncounterContract encounterContract = encounterService.getEncounterByUuid(uuid);
+        if (encounterContract == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(encounterContract);
     }
 
     @GetMapping(value = "/api/encounter/{id}")

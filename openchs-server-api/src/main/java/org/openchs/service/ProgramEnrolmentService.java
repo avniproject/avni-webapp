@@ -29,7 +29,6 @@ public class ProgramEnrolmentService {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ProgramEnrolmentService.class);
 
     private ProgramEnrolmentRepository programEnrolmentRepository;
-    private IndividualService individualService;
     private ProgramEncounterService programEncounterService;
     private ProgramEncounterRepository programEncounterRepository;
     private ProgramRepository programRepository;
@@ -38,9 +37,8 @@ public class ProgramEnrolmentService {
     private ProgramOutcomeRepository programOutcomeRepository;
 
     @Autowired
-    public ProgramEnrolmentService(ProgramEnrolmentRepository programEnrolmentRepository,ProgramEncounterService programEncounterService,ProgramEncounterRepository programEncounterRepository,IndividualService individualService,ProgramRepository programRepository,ObservationService observationService,IndividualRepository individualRepository,ProgramOutcomeRepository programOutcomeRepository) {
+    public ProgramEnrolmentService(ProgramEnrolmentRepository programEnrolmentRepository,ProgramEncounterService programEncounterService,ProgramEncounterRepository programEncounterRepository,ProgramRepository programRepository,ObservationService observationService,IndividualRepository individualRepository,ProgramOutcomeRepository programOutcomeRepository) {
         this.programEnrolmentRepository = programEnrolmentRepository;
-        this.individualService = individualService;
         this.programEncounterService = programEncounterService;
         this.programEncounterRepository = programEncounterRepository;
         this.programRepository = programRepository;
@@ -72,10 +70,10 @@ public class ProgramEnrolmentService {
         enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
         enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
         enrolmentContract.setVoided(programEnrolment.isVoided());
-        List<ObservationContract> observationContractsList = individualService.constructObservations(programEnrolment.getObservations());
+        List<ObservationContract> observationContractsList = observationService.constructObservations(programEnrolment.getObservations());
         enrolmentContract.setObservations(observationContractsList);
         if (programEnrolment.getProgramExitObservations() != null) {
-            enrolmentContract.setExitObservations(individualService.constructObservations(programEnrolment.getProgramExitObservations()));
+            enrolmentContract.setExitObservations(observationService.constructObservations(programEnrolment.getProgramExitObservations()));
         }
         return enrolmentContract;
     }

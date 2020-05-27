@@ -2,13 +2,18 @@ package org.openchs.service;
 
 import org.openchs.dao.ConceptRepository;
 import org.openchs.domain.*;
+import org.openchs.web.request.ConceptContract;
+import org.openchs.web.request.ObservationContract;
 import org.openchs.web.request.ObservationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.singletonList;
 
 @Service
 public class ObservationService {
@@ -105,5 +110,41 @@ public class ObservationService {
         if(question.getConceptAnswers().stream().noneMatch(ans -> ans.getAnswerConcept().getUuid().equals(uuid))) {
             throw new IllegalArgumentException(String.format("Concept answer '%s' not found in Concept '%s'", uuid, question.getUuid()));
         }
+    }
+
+    public List<ObservationContract> constructObservations(@NotNull ObservationCollection observationCollection) {
+        return observationCollection.entrySet().stream().map(entry -> {
+            ObservationContract observationContract = new ObservationContract();
+            Concept questionConcept = conceptRepository.findByUuid(entry.getKey());
+            ConceptContract conceptContract = ConceptContract.create(questionConcept);
+            observationContract.setConcept(conceptContract);
+            Object value = entry.getValue();
+            if (questionConcept.getDataType().equalsIgnoreCase(ConceptDataType.Coded.toString())) {
+                List<String> answers = value instanceof List ? (List<String>) value : singletonList(value.toString());
+                if (value instanceof List) {
+                    List<ConceptContract> answerConceptList = questionConcept.getConceptAnswers().stream()
+                            .filter(it ->
+                                    answers.contains(it.getAnswerConcept().getUuid())
+                            ).map(it -> {
+                                ConceptContract cc = ConceptContract.create(it.getAnswerConcept());
+                                cc.setAbnormal(it.isAbnormal());
+                                return cc;
+                            }).collect(Collectors.toList());
+                    observationContract.setValue(answerConceptList);
+                } else {
+                    ConceptAnswer conceptAnswer = questionConcept.getConceptAnswers().stream()
+                            .filter(it -> value.equals(it.getAnswerConcept().getUuid())).findFirst().orElse(null);
+                    if(conceptAnswer != null) {
+                        ConceptContract cc = ConceptContract.create(conceptAnswer.getAnswerConcept());
+                        cc.setAbnormal(conceptAnswer.isAbnormal());
+                        observationContract.setValue(cc);
+                    }
+
+                }
+            } else {
+                observationContract.setValue(value);
+            }
+            return observationContract;
+        }).collect(Collectors.toList());
     }
 }
