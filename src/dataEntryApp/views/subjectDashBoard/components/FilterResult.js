@@ -15,7 +15,7 @@ import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
 import { getCompletedVisit } from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
-import { noop } from "lodash";
+import { noop, isNil } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -137,6 +137,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
                   id="date-picker-dialog"
                   label={t("visitscheduledate")}
                   format="dd/MM/yyyy"
+                  autoComplete="off"
                   value={selectedScheduleDate}
                   onChange={scheduleDateChange}
                   KeyboardButtonProps={{
@@ -152,6 +153,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
                   id="date-picker-dialog"
                   label={t("visitcompleteddate")}
                   format="dd/MM/yyyy"
+                  autoComplete="off"
                   value={selectedCompletedDate}
                   onChange={completedDateChange}
                   KeyboardButtonProps={{
@@ -199,7 +201,10 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
           label: t("apply"),
           classes: classes.btnCustom,
           redirectTo: `/app/completeVisit`,
-          click: applyClick
+          click: applyClick,
+          disabled:
+            (!isNil(selectedScheduleDate) && !moment(selectedScheduleDate).isValid()) ||
+            (!isNil(selectedCompletedDate) && !moment(selectedCompletedDate).isValid())
         },
         {
           buttonType: "cancelButton",

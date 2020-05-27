@@ -215,6 +215,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
                 applyButton.click();
                 handleClose();
               }}
+              btnDisabled={applyButton.disabled}
             />
           ) : (
             ""
