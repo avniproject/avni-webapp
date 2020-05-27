@@ -71,19 +71,19 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
 
     Encounter findByLegacyId(String legacyId);
 
-    default Specification<Encounter> withProgramEncounterId(Long id) {
+    default Specification<Encounter> withIndividualId(Long id) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
         {
             return id == null ? null : cb.equal(root.get("individual").get("id"), id);
         };
     }
 
-    default Specification<Encounter> withProgramEncounterEarliestVisitDateTime(DateTime earliestVisitDateTime) {
+    default Specification<Encounter> withEncounterEarliestVisitDateTime(DateTime earliestVisitDateTime) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 earliestVisitDateTime == null ? null : cb.equal(root.get("earliestVisitDateTime").as(Date.class), earliestVisitDateTime.toDate());
     }
 
-    default Specification<Encounter> withProgramEncounterDateTime(DateTime encounterDateTime) {
+    default Specification<Encounter> withEncounterDateTime(DateTime encounterDateTime) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 encounterDateTime == null ? null : cb.equal(root.get("encounterDateTime").as(Date.class), encounterDateTime.toDate());
     }
@@ -92,7 +92,7 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("encounterDateTime"));
     }
 
-    default Specification<Encounter> withProgramEncounterTypeIdUuids(List<String> encounterTypeUuids) {
+    default Specification<Encounter> withEncounterTypeIdUuids(List<String> encounterTypeUuids) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 encounterTypeUuids.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuids);
     }

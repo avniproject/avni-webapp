@@ -2,14 +2,9 @@ package org.openchs.service;
 
 import com.bugsnag.Bugsnag;
 import org.joda.time.DateTime;
-import org.openchs.common.EntityHelper;
 import org.openchs.dao.*;
-import org.openchs.dao.individualRelationship.RuleFailureLogRepository;
 import org.openchs.domain.*;
-import org.openchs.geo.Point;
 import org.openchs.web.request.*;
-import org.openchs.web.request.rules.RulesContractWrapper.VisitSchedule;
-import org.openchs.web.request.rules.constant.EntityEnum;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,8 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -30,13 +23,13 @@ public class EncounterService {
     @Autowired
     Bugsnag bugsnag;
     private EncounterRepository encounterRepository;
-    private IndividualService individualService;
+    private ObservationService observationService;
     private IndividualRepository individualRepository;
 
     @Autowired
-    public EncounterService(EncounterRepository encounterRepository, IndividualService individualService, IndividualRepository individualRepository) {
+    public EncounterService(EncounterRepository encounterRepository, ObservationService observationService, IndividualRepository individualRepository) {
         this.encounterRepository = encounterRepository;
-        this.individualService = individualService;
+        this.observationService = observationService;
         this.individualRepository = individualRepository;
     }
 
@@ -53,10 +46,10 @@ public class EncounterService {
         }
         Individual individual = individualRepository.findByUuid(uuid);
         encountersContract = encounterRepository.findAll(
-                where(encounterRepository.withProgramEncounterId(individual.getId()))
-                        .and(encounterRepository.withProgramEncounterTypeIdUuids(encounterTypeIdList))
-                        .and(encounterRepository.withProgramEncounterEarliestVisitDateTime(earliestVisitDateTime))
-                        .and(encounterRepository.withProgramEncounterDateTime(encounterDateTime))
+                where(encounterRepository.withIndividualId(individual.getId()))
+                        .and(encounterRepository.withEncounterTypeIdUuids(encounterTypeIdList))
+                        .and(encounterRepository.withEncounterEarliestVisitDateTime(earliestVisitDateTime))
+                        .and(encounterRepository.withEncounterDateTime(encounterDateTime))
                         .and(encounterRepository.withNotNullEncounterDateTime())
                 ,pageable).map(encounter -> constructEncounters(encounter));
         return encountersContract;
@@ -78,10 +71,10 @@ public class EncounterService {
             encountersContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
             encountersContract.setVoided(encounter.isVoided());
             if(encounter.getObservations() != null) {
-                encountersContract.setObservations(individualService.constructObservations(encounter.getObservations()));
+                encountersContract.setObservations(observationService.constructObservations(encounter.getObservations()));
             }
             if(encounter.getCancelObservations() != null) {
-                encountersContract.setCancelObservations(individualService.constructObservations(encounter.getCancelObservations()));
+                encountersContract.setCancelObservations(observationService.constructObservations(encounter.getCancelObservations()));
             }
         return  encountersContract;
     }

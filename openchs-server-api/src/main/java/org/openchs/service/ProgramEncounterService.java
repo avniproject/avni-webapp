@@ -31,16 +31,14 @@ public class ProgramEncounterService {
     @Autowired
     Bugsnag bugsnag;
     private ProgramEncounterRepository programEncounterRepository;
-    private IndividualService individualService;
     private EncounterTypeRepository encounterTypeRepository;
     private ObservationService observationService;
     private ProgramEnrolmentRepository programEnrolmentRepository;
     private RuleFailureLogRepository ruleFailureLogRepository;
 
     @Autowired
-    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository,IndividualService individualService,EncounterTypeRepository encounterTypeRepository,ObservationService observationService,ProgramEnrolmentRepository programEnrolmentRepository,RuleFailureLogRepository ruleFailureLogRepository) {
+    public ProgramEncounterService(ProgramEncounterRepository programEncounterRepository,EncounterTypeRepository encounterTypeRepository,ObservationService observationService,ProgramEnrolmentRepository programEnrolmentRepository,RuleFailureLogRepository ruleFailureLogRepository) {
         this.programEncounterRepository = programEncounterRepository;
-        this.individualService = individualService;
         this.encounterTypeRepository = encounterTypeRepository;
         this.observationService = observationService;
         this.programEnrolmentRepository = programEnrolmentRepository;
@@ -69,10 +67,10 @@ public class ProgramEncounterService {
             programEncountersContract.setVoided(programEncounter.isVoided());
             programEncountersContract.setEnrolmentUUID(programEncounter.getProgramEnrolment().getUuid());
             if(programEncounter.getObservations() != null) {
-                programEncountersContract.setObservations(individualService.constructObservations(programEncounter.getObservations()));
+                programEncountersContract.setObservations(observationService.constructObservations(programEncounter.getObservations()));
             }
             if(programEncounter.getCancelObservations() != null) {
-                programEncountersContract.setCancelObservations(individualService.constructObservations(programEncounter.getCancelObservations()));
+                programEncountersContract.setCancelObservations(observationService.constructObservations(programEncounter.getCancelObservations()));
             }
         return  programEncountersContract;
     }

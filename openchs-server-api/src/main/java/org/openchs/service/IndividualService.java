@@ -31,14 +31,16 @@ public class IndividualService {
     private final ConceptRepository conceptRepository;
     private final ProjectionFactory projectionFactory;
     private final EncounterRepository encounterRepository;
+    private final ObservationService observationService;
 
     @Autowired
-    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory,EncounterRepository encounterRepository) {
+    public IndividualService(ConceptRepository conceptRepository, IndividualRepository individualRepository, ProjectionFactory projectionFactory,EncounterRepository encounterRepository,ObservationService observationService) {
         this.projectionFactory = projectionFactory;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.individualRepository = individualRepository;
         this.encounterRepository = encounterRepository;
+        this.observationService = observationService;
     }
 
     public  IndividualContract getSubjectEncounters(String individualUuid){
@@ -73,7 +75,7 @@ public class IndividualService {
             return null;
         }
 
-        List<ObservationContract> observationContractsList = constructObservations(individual.getObservations());
+        List<ObservationContract> observationContractsList = observationService.constructObservations(individual.getObservations());
         List<RelationshipContract> relationshipContractList = constructRelationships(individual);
         List<EnrolmentContract> enrolmentContractList = constructEnrolments(individual);
         individualContract.setId(individual.getId());
@@ -115,10 +117,10 @@ public class IndividualService {
             enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
             enrolmentContract.setProgramEncounters(constructProgramEncounters(programEnrolment.getProgramEncounters()));
             enrolmentContract.setVoided(programEnrolment.isVoided());
-            List<ObservationContract> observationContractsList = constructObservations(programEnrolment.getObservations());
+            List<ObservationContract> observationContractsList = observationService.constructObservations(programEnrolment.getObservations());
             enrolmentContract.setObservations(observationContractsList);
             if (programEnrolment.getProgramExitObservations() != null) {
-                enrolmentContract.setExitObservations(constructObservations(programEnrolment.getProgramExitObservations()));
+                enrolmentContract.setExitObservations(observationService.constructObservations(programEnrolment.getProgramExitObservations()));
             }
             return enrolmentContract;
         }).collect(Collectors.toList());
@@ -209,44 +211,8 @@ public class IndividualService {
         relationshipContract.setExitDateTime(individualRelationship.getExitDateTime());
         relationshipContract.setVoided(individualRelationship.isVoided());
         if (individualRelationship.getExitObservations() != null) {
-            relationshipContract.setExitObservations(constructObservations(individualRelationship.getExitObservations()));
+            relationshipContract.setExitObservations(observationService.constructObservations(individualRelationship.getExitObservations()));
         }
         return relationshipContract;
-    }
-
-    public List<ObservationContract> constructObservations(@NotNull ObservationCollection observationCollection) {
-        return observationCollection.entrySet().stream().map(entry -> {
-            ObservationContract observationContract = new ObservationContract();
-            Concept questionConcept = conceptRepository.findByUuid(entry.getKey());
-            ConceptContract conceptContract = ConceptContract.create(questionConcept);
-            observationContract.setConcept(conceptContract);
-            Object value = entry.getValue();
-            if (questionConcept.getDataType().equalsIgnoreCase(ConceptDataType.Coded.toString())) {
-                List<String> answers = value instanceof List ? (List<String>) value : singletonList(value.toString());
-                if (value instanceof List) {
-                    List<ConceptContract> answerConceptList = questionConcept.getConceptAnswers().stream()
-                        .filter(it ->
-                                answers.contains(it.getAnswerConcept().getUuid())
-                        ).map(it -> {
-                            ConceptContract cc = ConceptContract.create(it.getAnswerConcept());
-                            cc.setAbnormal(it.isAbnormal());
-                            return cc;
-                        }).collect(Collectors.toList());
-                    observationContract.setValue(answerConceptList);
-                } else {
-                    ConceptAnswer conceptAnswer = questionConcept.getConceptAnswers().stream()
-                    .filter(it -> value.equals(it.getAnswerConcept().getUuid())).findFirst().orElse(null);
-                    if(conceptAnswer != null) {
-                        ConceptContract cc = ConceptContract.create(conceptAnswer.getAnswerConcept());
-                        cc.setAbnormal(conceptAnswer.isAbnormal());
-                        observationContract.setValue(cc);
-                    }
-                    
-                }
-            } else {
-                observationContract.setValue(value);
-            }
-            return observationContract;
-        }).collect(Collectors.toList());
     }
 }
