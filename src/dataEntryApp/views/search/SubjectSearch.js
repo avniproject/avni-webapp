@@ -125,14 +125,14 @@ const SubjectsTable = ({ type, subjects }) => {
         id: "addressLevel",
         numeric: false,
         disablePadding: true,
-        label: "Location",
+        label: "location",
         align: "left"
       },
       {
         id: "activePrograms",
         numeric: false,
         disablePadding: true,
-        label: "Active Programs",
+        label: "activeprograms",
         align: "left"
       }
     ];
