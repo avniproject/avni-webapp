@@ -15,8 +15,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#f9f9f9"
   },
   infomsg: {
-    padding: 25,
-    fontSize: 14
+    padding: 40
   }
 }));
 

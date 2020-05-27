@@ -4,11 +4,11 @@ export default {
   search(params) {
     const _params = {
       page: 0,
-      size: 1000,
+      size: 10,
       ...params
     };
     return httpClient
       .fetchJson(httpClient.withParams("/individual/search", _params))
-      .then(res => res.json.content);
+      .then(res => res.json);
   }
 };

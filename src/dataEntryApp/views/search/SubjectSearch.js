@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import {
   Table,
   TablePagination,
+  TableFooter,
   TableBody,
   TableCell,
   TableRow,
@@ -13,19 +14,22 @@ import {
 } from "@material-ui/core";
 import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
+import { TablePaginationActions } from "./SubjectSearchPagination";
 import { useTranslation } from "react-i18next";
 
 const useStyle = makeStyles(theme => ({
   root: {
     width: "100%",
     marginTop: theme.spacing(3),
-    overflowX: "auto"
+    overflowX: "auto",
+    flexShrink: 0,
+    marginLeft: theme.spacing(2.5)
   },
   table: {
     minWidth: 1000
@@ -59,17 +63,20 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({ type, subjects }) => {
+const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("calories");
+  const [orderBy, setOrderBy] = React.useState("fullName");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
   let tableHeaderName = [];
   let subjectsListObj = [];
+  let pageinfo = pageDetails.subjects;
+  let searchText = searchparam;
 
   const camelize = str => {
     return (" " + str).toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function(match, chr) {
@@ -77,20 +84,21 @@ const SubjectsTable = ({ type, subjects }) => {
     });
   };
 
-  subjects.forEach(function(a) {
-    let firstName = a.firstName ? camelize(a.firstName) : "";
-    let lastName = a.lastName ? camelize(a.lastName) : "";
-    let sub = {
-      uuid: a.uuid,
-      fullName: firstName + " " + lastName,
-      gender: a.gender ? t(a.gender.name) : "",
-      dateOfBirth:
-        new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`,
-      addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
-      activePrograms: a.activePrograms
-    };
-    subjectsListObj.push(sub);
-  });
+  subjects &&
+    subjects.map(a => {
+      let firstName = a.firstName ? camelize(a.firstName) : "";
+      let lastName = a.lastName ? camelize(a.lastName) : "";
+      let sub = {
+        uuid: a.uuid,
+        fullName: firstName + " " + lastName,
+        gender: a.gender ? t(a.gender.name) : "",
+        dateOfBirth:
+          new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`,
+        addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
+        activePrograms: a.activePrograms ? a.activePrograms : ""
+      };
+      subjectsListObj.push(sub);
+    });
 
   if (type.name === "Individual") {
     tableHeaderName = [
@@ -155,50 +163,39 @@ const SubjectsTable = ({ type, subjects }) => {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    pageDetails.setSearchParams({ page: newPage, query: searchText, size: rowsPerPage });
+    pageDetails.search();
   };
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+    pageDetails.setSearchParams({ page: 0, query: searchText, size: event.target.value });
+    pageDetails.search();
   };
 
   const isSelected = name => selected.indexOf(name) !== -1;
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, subjects.length - page * rowsPerPage);
+  // const emptyRows = rowsPerPage - Math.min(rowsPerPage, subjectsListObj.length - rowsPerPage);
 
   return (
-    <div>
-      <Table
-        className={classes.table}
-        aria-labelledby="tableTitle"
-        size={dense ? "small" : "medium"}
-        aria-label="enhanced table"
-      >
-        <EnhancedTableHead
-          headername={tableHeaderName}
-          classes={classes}
-          numSelected={selected.length}
-          order={order}
-          orderBy={orderBy}
-          onSelectAllClick={handleSelectAllClick}
-          onRequestSort={handleRequestSort}
-          rowCount={subjects.length}
-        />
-        <TableBody>
-          {stableSort(subjectsListObj, getComparator(order, orderBy))
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((row, index) => {
-              // const isItemSelected = isSelected(row.name);
+    subjectsListObj && (
+      <div>
+        <Table className={classes.table} aria-label="custom pagination table">
+          <EnhancedTableHead
+            headername={tableHeaderName}
+            classes={classes}
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={subjectsListObj.length}
+          />
+          <TableBody>
+            {stableSort(subjectsListObj, getComparator(order, orderBy)).map((row, index) => {
               return (
-                <TableRow
-                // hover
-                // onClick={event => handleClick(event, row.name)}
-                // role="checkbox"
-                // aria-checked={isItemSelected}
-                // tabIndex={-1}
-                // key={row.name}
-                // selected={isItemSelected}
-                >
+                <TableRow key={row.fullName}>
                   <TableCell component="th" scope="row" padding="none" width="20%">
                     <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
                   </TableCell>
@@ -238,34 +235,44 @@ const SubjectsTable = ({ type, subjects }) => {
                 </TableRow>
               );
             })}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-              <TableCell colSpan={6} />
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[10, 20, 50, { label: "All", value: -1 }]}
+                // component="div"
+                // colSpan={3}
+                count={pageinfo.totalElements}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-
-      <TablePagination
-        rowsPerPageOptions={[10, 20, 50]}
-        component="div"
-        count={subjectsListObj.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
-    </div>
+          </TableFooter>
+        </Table>
+      </div>
+    )
   );
 };
 
 const SubjectSearch = props => {
   const classes = useStyle();
   const { t } = useTranslation();
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [searchvalue, setSearchvalue] = React.useState("");
 
   const handleSubmit = event => {
     event.preventDefault();
+    console.log("-------------->", event.target);
     props.search();
+  };
+
+  const valueSubmit = e => {
+    props.setSearchParams({ page: 0, query: e.target.value, size: 10 });
+    setSearchvalue(e.target.value);
+    console.log("Serach value------>", e.target.value);
   };
 
   useEffect(() => {
@@ -274,33 +281,42 @@ const SubjectSearch = props => {
   }, []);
 
   return (
-    <Paper className={classes.searchBox}>
-      <div className={classes.searchCreateToolbar}>
-        <form onSubmit={handleSubmit} className={classes.searchForm}>
-          <FormControl className={classes.searchFormItem}>
-            <InputLabel htmlFor="search-field">{""}</InputLabel>
-            <Input
-              id="search-field"
-              autoFocus
-              type="text"
-              value={props.searchParams.query}
-              onChange={e => props.setSearchParams({ query: e.target.value })}
-            />
-          </FormControl>
-          <FormControl className={classes.searchFormItem}>
-            <PrimaryButton
-              type={"submit"}
-              onClick={handleSubmit}
-              className={classes.searchBtnShadow}
-            >
-              {t("search")}
-            </PrimaryButton>
-          </FormControl>
-        </form>
-        <RegistrationMenu className={classes.createButtonHolder} />
-      </div>
-      <SubjectsTable subjects={props.subjects} type={props.subjectType} />
-    </Paper>
+    props.subjects && (
+      <Paper className={classes.searchBox}>
+        <div className={classes.searchCreateToolbar}>
+          <form onSubmit={handleSubmit} className={classes.searchForm}>
+            <FormControl className={classes.searchFormItem}>
+              <InputLabel htmlFor="search-field">{""}</InputLabel>
+              <Input
+                id="search-field"
+                autoFocus
+                type="text"
+                value={props.searchParams.query}
+                // onChange={e =>
+                // props.setSearchParams({page:0,query:e.target.value,size:rowsPerPage})}
+                onChange={valueSubmit}
+              />
+            </FormControl>
+            <FormControl className={classes.searchFormItem}>
+              <PrimaryButton
+                type={"submit"}
+                onClick={handleSubmit}
+                className={classes.searchBtnShadow}
+              >
+                {t("search")}
+              </PrimaryButton>
+            </FormControl>
+          </form>
+          <RegistrationMenu className={classes.createButtonHolder} />
+        </div>
+        <SubjectsTable
+          subjects={props.subjects.content}
+          type={props.subjectType}
+          pageDetails={props}
+          searchparam={searchvalue}
+        />
+      </Paper>
+    )
   );
 };
 

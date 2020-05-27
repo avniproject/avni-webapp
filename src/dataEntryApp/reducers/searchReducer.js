@@ -21,7 +21,7 @@ export const setSubjectSearchParams = params => ({
 });
 
 const initialState = {
-  subjects: [],
+  subjects: {},
   subjectSearchParams: {}
 };
 
