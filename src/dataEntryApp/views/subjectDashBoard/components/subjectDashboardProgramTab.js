@@ -1,9 +1,10 @@
 import React, { Fragment } from "react";
-import { Paper } from "@material-ui/core";
+import { Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import ProgramDetails from "./subjectDashboardProgramDetails";
 import Program from "./Program";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -12,10 +13,15 @@ const useStyles = makeStyles(theme => ({
   programBar: {
     height: "100px",
     backgroundColor: "#f9f9f9"
+  },
+  infomsg: {
+    padding: 25,
+    fontSize: 14
   }
 }));
 
 const SubjectDashboardProgramTab = ({ program }) => {
+  const { t } = useTranslation();
   let flagActive = false;
   let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -80,6 +86,13 @@ const SubjectDashboardProgramTab = ({ program }) => {
               />
             ) : (
               ""
+            )}
+
+            {!(program && program.enrolments) && (
+              <Typography variant="caption" gutterBottom className={classes.infomsg}>
+                {" "}
+                {t("notEnroledInAnyProgram")}{" "}
+              </Typography>
             )}
           </Grid>
         </div>

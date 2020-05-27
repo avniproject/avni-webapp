@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: "15px",
     marginBottom: "0px",
     fontWeight: "600px",
-    color: "rgb(14 ,110, 255)"
+    color: "blue"
   },
   userDesignation: {
     fontSize: "12px",
