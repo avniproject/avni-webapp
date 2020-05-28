@@ -45,10 +45,6 @@ import { disableSession } from "../../common/constants";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { mapProfile } from "common/subjectModelMapper";
 
-export function* dataEntrySearchWatcher() {
-  yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
-}
-
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
   const registrationForm = yield call(api.fetchForm, formMapping.formUUID);
@@ -105,8 +101,12 @@ function* setupNewEnrolmentWorker({
   }
 }
 
-function* dataEntrySearchWorker() {
-  const params = yield select(state => state.dataEntry.search.subjectSearchParams);
+export function* dataEntrySearchWatcher() {
+  yield takeLatest(searchTypes.SEARCH_SUBJECTS, dataEntrySearchWorker);
+}
+
+function* dataEntrySearchWorker({ params }) {
+  // const params = yield select(state => state.dataEntry.search.subjectSearchParams);
   const subjects = yield call(SubjectService.search, params);
   yield put(setSubjects(subjects));
 }

@@ -125,7 +125,7 @@ const DialogActions = withStyles(theme => ({
   }
 }))(MuiDialogActions);
 
-const CommonModal = ({ content, buttonsSet, title, handleError }) => {
+const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [validMsg, setValidationMsg] = React.useState(false);
@@ -139,6 +139,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
   const handleClose = () => {
     setOpen(false);
     handleError(false);
+    btnHandleClose();
   };
 
   const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
@@ -215,6 +216,7 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
                 applyButton.click();
                 handleClose();
               }}
+              btnDisabled={applyButton.disabled}
             />
           ) : (
             ""

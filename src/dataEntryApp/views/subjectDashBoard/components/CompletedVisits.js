@@ -14,13 +14,12 @@ import { withRouter, Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { withParams } from "../../../../common/components/utils";
-import { getCompletedVisit, getEnrolments, types } from "../../../reducers/completedVisitsReducer";
+import { loadEncounters, loadProgramEncounters } from "../../../reducers/completedVisitsReducer";
 import { mapObservation } from "../../../../common/subjectModelMapper";
 import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
-import { enableReadOnly } from "common/constants";
 import moment from "moment/moment";
 import {
   EnhancedTableHead,
@@ -95,7 +94,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const CompletedVisitsTable = ({ allVisits }) => {
+const CompletedVisitsTable = ({ allVisits, enableReadOnly, isForProgramEncounters }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
@@ -190,8 +189,8 @@ const CompletedVisitsTable = ({ allVisits }) => {
     setRowsPerPage(parseInt(event.target.value, 5));
     setPage(0);
   };
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, allVisitsListObj.length - page * rowsPerPage);
+  // const emptyRows =
+  //   rowsPerPage - Math.min(rowsPerPage, allVisitsListObj.length - page * rowsPerPage);
 
   return allVisitsListObj ? (
     <div>
@@ -218,7 +217,15 @@ const CompletedVisitsTable = ({ allVisits }) => {
               return (
                 <TableRow>
                   <TableCell component="th" scope="row" padding="none" width="30%">
-                    <Link to={`/app/subject/viewVisit?uuid=${row.uuid}`}>{t(row.name)}</Link>
+                    <Link
+                      to={
+                        isForProgramEncounters
+                          ? `/app/subject/viewProgramEncounter?uuid=${row.uuid}`
+                          : `/app/subject/viewEncounter?uuid=${row.uuid}`
+                      }
+                    >
+                      {t(row.name)}
+                    </Link>
                   </TableCell>
 
                   <TableCell align="left" className={classes.cellpadding}>
@@ -241,11 +248,11 @@ const CompletedVisitsTable = ({ allVisits }) => {
                 </TableRow>
               );
             })}
-          {emptyRows > 0 && (
+          {/* {emptyRows > 0 && (
             <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
               <TableCell colSpan={6} />
             </TableRow>
-          )}
+          )} */}
         </TableBody>
       </Table>
 
@@ -268,24 +275,25 @@ const CompleteVisit = ({
   match,
   getCompletedVisit,
   getEnrolments,
-  completedVisit,
-  enrolments,
-  enrolldata
+  completedVisits,
+  enableReadOnly,
+  encounterTypes,
+  loaded,
+  loadProgramEncounters,
+  loadEncounters
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-  const history = useHistory();
 
-  store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
-
-  const completedVisitUrl = `/web/programEnrolment/${match.queryParams.uuid}/completed`;
+  const isForProgramEncounters = match.path === "/app/subject/completedProgramEncounters";
 
   useEffect(() => {
-    getCompletedVisit(completedVisitUrl);
-    getEnrolments(match.queryParams.uuid);
+    isForProgramEncounters
+      ? loadProgramEncounters(match.queryParams.uuid)
+      : loadEncounters(match.queryParams.uuid);
   }, []);
 
-  return completedVisit && enrolments ? (
+  return completedVisits && loaded ? (
     <div>
       <Fragment>
         <Breadcrumbs path={match.path} />
@@ -298,16 +306,24 @@ const CompleteVisit = ({
                   {t("completedVisits")}
                 </Typography>
                 <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
-                  {completedVisit ? completedVisit.content.length : ""} {t("resultfound")}
+                  {completedVisits ? completedVisits.content.length : ""} {t("resultfound")}
                 </Typography>
               </div>
             </Grid>
             <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult enrolments={enrolments} />
+              <FilterResult
+                isForProgramEncounters={isForProgramEncounters}
+                entityUuid={match.queryParams.uuid}
+                encounterTypes={encounterTypes}
+              />
             </Grid>
           </Grid>
           <Paper className={classes.tableBox}>
-            <CompletedVisitsTable allVisits={completedVisit} />
+            <CompletedVisitsTable
+              isForProgramEncounters={isForProgramEncounters}
+              allVisits={completedVisits}
+              enableReadOnly={enableReadOnly}
+            />
           </Paper>
         </Paper>
       </Fragment>
@@ -319,15 +335,16 @@ const CompleteVisit = ({
 
 const mapStateToProps = state => {
   return {
-    completedVisit: state.dataEntry.completedVisitsReducer.completedVisits,
-    enrolments: state.dataEntry.completedVisitsReducer.enrolments,
-    enrolldata: state.dataEntry.completedVisitsReducer.enrolldata
+    completedVisits: state.dataEntry.completedVisitsReducer.completedVisits,
+    encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
+    loaded: state.dataEntry.completedVisitsReducer.loaded,
+    enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
   };
 };
 
 const mapDispatchToProps = {
-  getCompletedVisit,
-  getEnrolments
+  loadEncounters,
+  loadProgramEncounters
 };
 
 export default withRouter(

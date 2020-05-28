@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { getEncounter } from "../../../reducers/viewVisitReducer";
+import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
 import { types } from "../../../reducers/completedVisitsReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Observations from "common/components/Observations";
 import Button from "@material-ui/core/Button";
-import { InternalLink } from "../../../../common/components/utils";
+import { InternalLink, LineBreak } from "../../../../common/components/utils";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
 import { store } from "../../../../common/store/createStore";
@@ -32,8 +32,8 @@ const useStyles = makeStyles(theme => ({
       "0px 0px 3px 0px rgba(0,0,0,0.4), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)"
   },
   mainHeading: {
-    fontSize: "1.5vw",
-    fontWeight: 400,
+    fontSize: "20px",
+    fontWeight: "500",
     marginLeft: 10,
     marginBottom: 10
   },
@@ -47,9 +47,8 @@ const useStyles = makeStyles(theme => ({
     fontWeight: "bold"
   },
   summaryHeading: {
-    fontSize: "1vw",
-    fontWeight: "bold",
-    marginBottom: 10
+    fontSize: "18px",
+    fontWeight: "bold"
   },
   programStatusStyle: {
     // color: "green",
@@ -68,12 +67,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
+const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
+  const history = useHistory();
+  const isViewEncounter = match.path === "/app/subject/viewEncounter";
+  let viewAllCompletedUrl;
+
+  if (encounter) {
+    viewAllCompletedUrl = isViewEncounter
+      ? `/app/subject/completedEncounters?uuid=${encounter.subjectUuid}`
+      : `/app/subject/completedProgramEncounters?uuid=${encounter.enrolmentUuid}`;
+  }
   useEffect(() => {
-    getEncounter(match.queryParams.uuid);
+    isViewEncounter
+      ? getEncounter(match.queryParams.uuid)
+      : getProgramEncounter(match.queryParams.uuid);
   }, []);
   return encounter ? (
     <Fragment>
@@ -106,18 +115,24 @@ const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
           <Typography component={"span"} className={classes.summaryHeading}>
             {t("summary")}
           </Typography>
+          <LineBreak num={2} />
           <Observations observations={encounter ? encounter.observations : ""} />
         </Paper>
-        <InternalLink to={`/app/subject/completedVisits?uuid=${encounter.enrolmentUuid}`}>
+
+        <InternalLink to={viewAllCompletedUrl}>
           <Button color="primary" className={classes.visitButton}>
             {t("viewAllCompletedVisits")}
           </Button>
         </InternalLink>
-        <InternalLink to={`/app/subject?uuid=${encounter.subjectUuid}`}>
+        {/* Re-direct to Dashboard on Back Click*/}
+        {/* <InternalLink to={`/app/subject?uuid=${encounter.subjectUuid}`}>
           <Button color="primary" className={classes.visitButton}>
             {t("back")}
           </Button>
-        </InternalLink>
+        </InternalLink> */}
+        <Button color="primary" className={classes.visitButton} onClick={history.goBack}>
+          {t("back")}
+        </Button>
       </Paper>
     </Fragment>
   ) : (
@@ -126,12 +141,12 @@ const ViewVisit = ({ match, getEncounter, encounter, enrolldata }) => {
 };
 
 const mapStateToProps = state => ({
-  encounter: state.dataEntry.viewVisitReducer.encounter,
-  enrolldata: state.dataEntry.completedVisitsReducer.enrolldata
+  encounter: state.dataEntry.viewVisitReducer.encounter
 });
 
 const mapDispatchToProps = {
-  getEncounter
+  getEncounter,
+  getProgramEncounter
 };
 
 export default withRouter(

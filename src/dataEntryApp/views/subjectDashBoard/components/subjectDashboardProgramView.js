@@ -1,6 +1,5 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
@@ -131,7 +130,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdateComponent }) => {
+const ProgramView = ({
+  programData,
+  subjectUuid,
+  undoExitEnrolment,
+  handleUpdateComponent,
+  enableReadOnly
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -150,7 +155,6 @@ const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdate
     enrollmentUuid: programData.uuid
   };
 
-  store.dispatch({ type: types.ADD_ENROLLDATA, value: enrolldata });
   const handleChange = panel => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -344,6 +348,7 @@ const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdate
                 programData.encounters.map((row, index) =>
                   !row.encounterDateTime ? (
                     <Visit
+                      type={"programEncounter"}
                       uuid={row.uuid}
                       name={row.name}
                       index={index}
@@ -352,6 +357,7 @@ const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdate
                       overdueDate={row.maxVisitDateTime}
                       enrolUuid={programData.uuid}
                       encounterTypeUuid={row.encounterType.uuid}
+                      enableReadOnly={enableReadOnly}
                     />
                   ) : (
                     ""
@@ -394,6 +400,7 @@ const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdate
                   row.encounterDateTime && row.encounterType && index <= 3 ? (
                     <Visit
                       uuid={row.uuid}
+                      type={"programEncounter"}
                       name={row.encounterType.name}
                       key={index}
                       index={index}
@@ -401,6 +408,7 @@ const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdate
                       earliestVisitDate={row.earliestVisitDateTime}
                       encounterDateTime={row.encounterDateTime}
                       enrolUuid={programData.uuid}
+                      enableReadOnly={enableReadOnly}
                     />
                   ) : (
                     ""
@@ -415,7 +423,7 @@ const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdate
             </Grid>
           </ExpansionPanelDetails>
           {programData && programData.encounters && completedVisits.length != 0 ? (
-            <InternalLink to={`/app/subject/completedVisits?uuid=${programData.uuid}`}>
+            <InternalLink to={`/app/subject/completedProgramEncounters?uuid=${programData.uuid}`}>
               <Button color="primary" className={classes.visitAllButton}>
                 {t("viewAllVisits")}
               </Button>

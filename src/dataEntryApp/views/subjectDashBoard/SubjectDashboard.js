@@ -26,7 +26,8 @@ const SubjectDashboard = ({
   getSubjectGeneral,
   subjectGeneral,
   getSubjectProgram,
-  subjectProgram
+  subjectProgram,
+  enableReadOnly
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -42,12 +43,17 @@ const SubjectDashboard = ({
   if (subjectProfile !== undefined) {
     paperInfo = (
       <Paper className={classes.root}>
-        <ProfileDetails profileDetails={subjectProfile} subjectUuid={match.queryParams.uuid} />
+        <ProfileDetails
+          profileDetails={subjectProfile}
+          subjectUuid={match.queryParams.uuid}
+          enableReadOnly={enableReadOnly}
+        />
         <SubjectDashboardTabs
           profile={subjectProfile}
           general={subjectGeneral}
           program={subjectProgram}
           handleUpdateComponent={handleUpdateComponent}
+          enableReadOnly={enableReadOnly}
         />
       </Paper>
     );
@@ -70,7 +76,8 @@ const SubjectDashboard = ({
 const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
-  subjectProgram: state.dataEntry.subjectProgram.subjectProgram
+  subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
+  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
 });
 
 const mapDispatchToProps = {
