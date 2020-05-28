@@ -7,7 +7,6 @@ import { withRouter } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
-import { enableReadOnly } from "common/constants";
 
 const useStyle = makeStyles(theme => ({
   createButton: {
@@ -15,7 +14,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const RegistrationMenu = ({ types }) => {
+const RegistrationMenu = ({ types, enableReadOnly }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -64,7 +63,8 @@ const RegistrationMenu = ({ types }) => {
 };
 
 const mapStateToProps = state => ({
-  types: state.dataEntry.metadata.operationalModules.subjectTypes
+  types: state.dataEntry.metadata.operationalModules.subjectTypes,
+  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
 });
 
 export default withRouter(connect(mapStateToProps)(RegistrationMenu));

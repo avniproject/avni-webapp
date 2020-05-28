@@ -15,7 +15,6 @@ import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
-import { enableReadOnly } from "common/constants";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -78,7 +77,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProfileTab = ({ profile, path }) => {
+const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [expanded, setExpanded] = React.useState("");
@@ -149,7 +148,7 @@ const SubjectDashboardProfileTab = ({ profile, path }) => {
             ) : (
               <Typography variant="caption" gutterBottom className={classes.infomsg}>
                 {" "}
-                {t("no")} {t("Relatives")}{" "}
+                {t("noRelativesAdded")}{" "}
               </Typography>
             )}
           </ExpansionPanelDetails>

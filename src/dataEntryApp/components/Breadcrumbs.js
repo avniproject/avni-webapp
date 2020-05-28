@@ -7,6 +7,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
+import { getEncounter } from "../reducers/viewVisitReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,6 +32,7 @@ const Breadcrumbs = ({ path, match, ...props }) => {
   const subjectName =
     props.subjectProfile && props.subjectProfile.firstName + " " + props.subjectProfile.lastName;
   const subjectUuid = props.subjectProfile && props.subjectProfile.uuid;
+  const visitName = props.encounter && props.encounter.encounterType.name;
   const urlPartLabels = {
     APP: "app",
     SUBJECT: "subject",
@@ -45,18 +47,25 @@ const Breadcrumbs = ({ path, match, ...props }) => {
       case urlPartLabels.SUBJECT: {
         if (subjectName && subjectUuid) {
           return {
-            breadcrumb: subjectName + " " + "Dashborad",
+            breadcrumb: subjectName + " " + "Dashboard",
             url: "#/app/subject?uuid=" + subjectUuid
           };
         } else {
           return {
-            breadcrumb: "Dashborad",
+            breadcrumb: "Dashboard",
             url: "#/app"
           };
         }
       }
       case urlPartLabels.VIEW_VISIT: {
-        return { breadcrumb: "View Visit", url: "#/app" };
+        if (visitName) {
+          return {
+            breadcrumb: "View Visit" + " " + visitName,
+            url: "#/app"
+          };
+        } else {
+          return { breadcrumb: "View Visit", url: "#/app" };
+        }
       }
       case urlPartLabels.COMPLETED_VISITS: {
         return { breadcrumb: "Completed Visits", url: "#/app" };
@@ -81,11 +90,13 @@ const Breadcrumbs = ({ path, match, ...props }) => {
 };
 
 const mapStateToProps = state => ({
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
+  encounter: state.dataEntry.viewVisitReducer.encounter
 });
 
 const mapDispatchToProps = {
-  getSubjectProfile
+  getSubjectProfile,
+  getEncounter
 };
 
 export default withRouter(

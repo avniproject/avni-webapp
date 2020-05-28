@@ -19,7 +19,6 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
-import { enableReadOnly } from "common/constants";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 
 const useStyles = makeStyles(theme => ({
@@ -133,7 +132,14 @@ const styles = theme => ({
   }
 });
 
-const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, match }) => {
+const ProfileDetails = ({
+  profileDetails,
+  getPrograms,
+  programs,
+  subjectUuid,
+  match,
+  enableReadOnly
+}) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
   const [errorStatus, setError] = React.useState(false);
@@ -210,7 +216,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
           <Table aria-label="caption table" className={classes.table}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
-                <TableCell className={classes.tableCell}>{t("name")}</TableCell>
+                {/* <TableCell className={classes.tableCell}>{t("name")}</TableCell> */}
                 <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
                 <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
                 <TableCell className={classes.tableCell}>{t("Village")}</TableCell>
@@ -218,9 +224,9 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell className={classes.tableCellDetails}>{`${profileDetails.firstName} ${
+                {/* <TableCell className={classes.tableCellDetails}>{`${profileDetails.firstName} ${
                   profileDetails.lastName
-                }`}</TableCell>
+                }`}</TableCell> */}
                 <TableCell className={classes.tableCellDetails}>
                   {t(profileDetails.gender.name)}
                 </TableCell>
@@ -228,7 +234,7 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
                   {new Date().getFullYear() -
                     new Date(profileDetails.dateOfBirth).getFullYear() +
                     " " +
-                    `${t("year")}`}
+                    `${t("years")}`}
                 </TableCell>
                 <TableCell className={classes.tableCellDetails}>
                   {profileDetails.lowestAddressLevel.name}

@@ -28,6 +28,11 @@ export default {
       return response.json;
     }),
 
+  fetchEncounter: uuid =>
+    httpClient.fetchJson(`/web/encounter/${uuid}`).then(response => {
+      return response.json;
+    }),
+
   fetchSubjectProfile: uuid =>
     httpClient.fetchJson(`/web/subjectProfile?uuid=${uuid}`).then(response => {
       return response.json;
@@ -47,10 +52,18 @@ export default {
   fetchEnrolments: uuid => {
     return httpClient.fetchJson(`/api/enrolments/`).then(response => response.json);
   },
-  fetchcompletedVisit: completedVisitUrl =>
-    httpClient.fetchJson(completedVisitUrl).then(response => {
-      return response.json;
-    }),
+  fetchCompletedProgramEncounters: (enrolmentUuid, filterQueryString) =>
+    httpClient
+      .fetchJson(`/web/programEnrolment/${enrolmentUuid}/completed?${filterQueryString}`)
+      .then(response => {
+        return response.json;
+      }),
+  fetchCompletedEncounters: (subjectUuid, filterQueryString) =>
+    httpClient
+      .fetchJson(`/web/subject/${subjectUuid}/completed?${filterQueryString}`)
+      .then(response => {
+        return response.json;
+      }),
   fetchProgramEnrolment: enrolmentUuid =>
     httpClient.fetchJson(`/web/programEnrolment/${enrolmentUuid}`).then(response => {
       return response.json;
