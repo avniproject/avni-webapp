@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
   },
   resetButton: {
     fontSize: "13px",
-    color: "red",
+    color: "#212529",
     "&:hover": {
       backgroundColor: "#fff"
     },
