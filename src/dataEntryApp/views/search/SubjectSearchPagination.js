@@ -7,7 +7,7 @@ import FirstPageIcon from "@material-ui/icons/FirstPage";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
-import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
+import { searchSubjects } from "../../reducers/searchReducer";
 
 const useStyles1 = makeStyles(theme => ({
   root: {
@@ -23,7 +23,6 @@ export const TablePaginationActions = props => {
 
   const handleFirstPageButtonClick = event => {
     onChangePage(event, 0);
-    setSubjectSearchParams({ page: 0, query: search, size: rowsPerPage });
     searchSubjects();
   };
 
@@ -37,11 +36,11 @@ export const TablePaginationActions = props => {
 
   const handleLastPageButtonClick = event => {
     onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-    setSubjectSearchParams({
-      page: rowsPerPage,
-      query: search,
-      size: Math.max(0, Math.ceil(count / rowsPerPage) - 1)
-    });
+    // setSubjectSearchParams({
+    //   page: rowsPerPage,
+    //   query: search,
+    //   size: Math.max(0, Math.ceil(count / rowsPerPage) - 1)
+    // });
     searchSubjects();
   };
 

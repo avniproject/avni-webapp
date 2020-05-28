@@ -16,7 +16,7 @@ import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { first } from "lodash";
-import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
+import { searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
@@ -65,7 +65,14 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
+const SubjectsTable = ({
+  type,
+  subjects,
+  pageDetails,
+  searchparam,
+  rowsPerPage,
+  setRowsPerPage
+}) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
@@ -73,10 +80,8 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   let tableHeaderName = [];
-  let subjectsListObj = [];
   let pageinfo = pageDetails.subjects;
   let searchText = searchparam;
 
@@ -86,8 +91,10 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
     });
   };
 
-  subjects &&
-    subjects.map(a => {
+  let subjectsListObj = [];
+
+  if (subjects) {
+    subjectsListObj = subjects.map(a => {
       let firstName = a.firstName ? camelize(a.firstName) : "";
       let lastName = a.lastName ? camelize(a.lastName) : "";
       // let subjectType = a.subjectType.name;
@@ -99,10 +106,11 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
         dateOfBirth:
           new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`,
         addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
-        activePrograms: a.activePrograms ? a.activePrograms : ""
+        activePrograms: a.activePrograms ? a.activePrograms : []
       };
-      subjectsListObj.push(sub);
+      return sub;
     });
+  }
 
   if (type.name === "Individual") {
     tableHeaderName = [
@@ -174,15 +182,15 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    pageDetails.setSearchParams({ page: newPage, query: searchText, size: rowsPerPage });
-    pageDetails.search();
+    // pageDetails.setSearchParams();
+    pageDetails.search({ page: newPage, query: searchText, size: rowsPerPage });
   };
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-    pageDetails.setSearchParams({ page: 0, query: searchText, size: event.target.value });
-    pageDetails.search();
+    // pageDetails.setSearchParams({ page: 0, query: searchText, size: event.target.value });
+    pageDetails.search({ page: 0, query: searchText, size: rowsPerPage });
   };
 
   const isSelected = name => selected.indexOf(name) !== -1;
@@ -204,7 +212,7 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
             rowCount={subjectsListObj.length}
           />
           <TableBody>
-            {stableSort(subjectsListObj, getComparator(order, orderBy)).map((row, index) => {
+            {subjectsListObj.map((row, index) => {
               return (
                 <TableRow key={row.fullName}>
                   <TableCell component="th" scope="row" padding="none" width="20%">
@@ -281,18 +289,19 @@ const SubjectSearch = props => {
   const handleSubmit = event => {
     event.preventDefault();
     console.log("-------------->", event.target);
-    props.search();
+    props.search({ query: searchvalue });
   };
 
   const valueSubmit = e => {
-    props.setSearchParams({ page: 0, query: e.target.value, size: 10 });
+    // props.setSearchParams({ page: 0, query: e.target.value, size: 10 });
     setSearchvalue(e.target.value);
+    // props.search({ page: 0, query: searchvalue, size: rowsPerPage })
     console.log("Serach value------>", e.target.value);
   };
 
   useEffect(() => {
     props.search();
-    sessionStorage.clear("subject");
+    // sessionStorage.clear("subject");
   }, []);
 
   return (
@@ -331,6 +340,8 @@ const SubjectSearch = props => {
           type={props.subjectType}
           pageDetails={props}
           searchparam={searchvalue}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={setRowsPerPage}
         />
       </Paper>
     )
@@ -347,8 +358,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  search: searchSubjects,
-  setSearchParams: setSubjectSearchParams
+  search: searchSubjects
 };
 
 export default withRouter(

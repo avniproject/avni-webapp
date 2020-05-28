@@ -11,12 +11,8 @@ export const setSubjects = subjects => ({
   subjects
 });
 
-export const searchSubjects = () => ({
-  type: types.SEARCH_SUBJECTS
-});
-
-export const setSubjectSearchParams = params => ({
-  type: types.SET_SUBJECT_SEARCH_PARAMS,
+export const searchSubjects = params => ({
+  type: types.SEARCH_SUBJECTS,
   params
 });
 
