@@ -190,8 +190,8 @@ const CompletedVisitsTable = ({ allVisits }) => {
     setRowsPerPage(parseInt(event.target.value, 5));
     setPage(0);
   };
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, allVisitsListObj.length - page * rowsPerPage);
+  // const emptyRows =
+  //   rowsPerPage - Math.min(rowsPerPage, allVisitsListObj.length - page * rowsPerPage);
 
   return allVisitsListObj ? (
     <div>
@@ -241,11 +241,11 @@ const CompletedVisitsTable = ({ allVisits }) => {
                 </TableRow>
               );
             })}
-          {emptyRows > 0 && (
+          {/* {emptyRows > 0 && (
             <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
               <TableCell colSpan={6} />
             </TableRow>
-          )}
+          )} */}
         </TableBody>
       </Table>
 

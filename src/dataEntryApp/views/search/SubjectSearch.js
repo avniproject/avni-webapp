@@ -242,6 +242,7 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
                 rowsPerPageOptions={[10, 20, 50, { label: "All", value: -1 }]}
                 // component="div"
                 // colSpan={3}
+                search={searchText}
                 count={pageinfo.totalElements}
                 rowsPerPage={rowsPerPage}
                 page={page}

@@ -19,11 +19,11 @@ const useStyles1 = makeStyles(theme => ({
 export const TablePaginationActions = props => {
   const classes = useStyles1();
   const theme = useTheme();
-  const { count, page, rowsPerPage, onChangePage } = props;
+  const { count, page, rowsPerPage, onChangePage, search } = props;
 
   const handleFirstPageButtonClick = event => {
     onChangePage(event, 0);
-    setSubjectSearchParams({ page: 0, size: rowsPerPage });
+    setSubjectSearchParams({ page: 0, query: search, size: rowsPerPage });
     searchSubjects();
   };
 
@@ -39,6 +39,7 @@ export const TablePaginationActions = props => {
     onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
     setSubjectSearchParams({
       page: rowsPerPage,
+      query: search,
       size: Math.max(0, Math.ceil(count / rowsPerPage) - 1)
     });
     searchSubjects();
