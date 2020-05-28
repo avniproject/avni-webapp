@@ -33,8 +33,10 @@ export const mapIndividual = individualDetails => {
   individual.gender = gender;
 
   const subjectType = new SubjectType();
-  subjectType.uuid = individualDetails.subjectType.uuid;
-  subjectType.name = individualDetails.subjectType.name;
+  if (individualDetails.subjectType) {
+    subjectType.uuid = individualDetails.subjectType.uuid;
+    subjectType.name = individualDetails.subjectType.name;
+  }
   individual.subjectType = subjectType;
 
   const addressLevel = new AddressLevel();
