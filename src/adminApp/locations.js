@@ -33,6 +33,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
 import { Paper } from "@material-ui/core";
+import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 const LocationFilter = props => (
   <Filter {...props}>
@@ -97,10 +98,8 @@ export const LocationDetail = props => {
         <ReferenceManyField label="Contains locations" reference="locations" target="parentId">
           <SubLocationsGrid />
         </ReferenceManyField>
-        <TextField label="Created by" source="createdBy" />
-        <TextField label="Last modified by" source="lastModifiedBy" />
-        <TextField label="Created On(datetime)" source="createdDateTime" />
-        <TextField label="Last modified On(datetime)" source="lastModifiedDateTime" />
+        <FunctionField label="Created" render={audit => createdAudit(audit)} />
+        <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
       </SimpleShowLayout>
     </Show>
   );

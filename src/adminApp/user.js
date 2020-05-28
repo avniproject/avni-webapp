@@ -48,6 +48,7 @@ import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniBooleanInput } from "./components/AvniBooleanInput";
 import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonGroupInput";
 import { Paper } from "@material-ui/core";
+import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
   <Paper>
@@ -212,10 +213,8 @@ export const UserDetail = ({ user, ...props }) => (
         }
       />
       <TextField label="Identifier prefix" source="settings.idPrefix" />
-      <TextField label="Created by" source="createdBy" />
-      <TextField label="Last modified by" source="lastModifiedBy" />
-      <TextField label="Created On(datetime)" source="createdDateTime" />
-      <TextField label="Last modified On(datetime)" source="lastModifiedDateTime" />
+      <FunctionField label="Created" render={audit => createdAudit(audit)} />
+      <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
     </SimpleShowLayout>
   </Show>
 );

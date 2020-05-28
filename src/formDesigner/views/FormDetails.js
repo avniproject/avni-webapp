@@ -22,6 +22,7 @@ import { Redirect } from "react-router-dom";
 
 import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
+import { Audit } from "../components/Audit";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -376,6 +377,26 @@ class FormDetails extends Component {
     }
   };
 
+  getEntityNameForRules() {
+    switch (this.state.form.formType) {
+      case "IndividualProfile":
+        return "individual";
+      case "Encounter":
+      case "IndividualEncounterCancellation":
+        return "encounter";
+      case "ProgramEnrolment":
+      case "ProgramExit":
+        return "programEnrolment";
+      case "ProgramEncounter":
+      case "ProgramEncounterCancellation":
+        return "programEncounter";
+      case "ChecklistItem":
+        return "checklistItem";
+      default:
+        return "";
+    }
+  }
+
   renderGroups() {
     const formElements = [];
     _.forEach(this.state.form.formElementGroups, (group, index) => {
@@ -403,7 +424,8 @@ class FormDetails extends Component {
           onDeleteInlineConceptCodedAnswerDelete: this.onDeleteInlineConceptCodedAnswerDelete,
           handleInlineCodedAnswerAddition: this.handleInlineCodedAnswerAddition,
           onDragInlineCodedConceptAnswer: this.onDragInlineCodedConceptAnswer,
-          updateFormElementGroupRule: this.updateFormElementGroupRule
+          updateFormElementGroupRule: this.updateFormElementGroupRule,
+          entityName: this.getEntityNameForRules()
         };
         formElements.push(<FormElementGroup {...propsGroup} />);
       }
@@ -694,6 +716,7 @@ class FormDetails extends Component {
     this.btnGroupAdd(0);
     this.setState({ createFlag: false });
   }
+
   // END Group level Events
   validateForm() {
     let flag = false;
@@ -1178,32 +1201,7 @@ class FormDetails extends Component {
                 )}
               </Droppable>
             </DragDropContext>
-            <Grid container item sm={12}>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Created by : {this.state.form.createdBy}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Last modified by : {this.state.form.lastModifiedBy}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Creation datetime : {this.state.form.createdDateTime}{" "}
-                </InputLabel>
-              </Grid>
-              <Grid item sm={3}>
-                {" "}
-                <InputLabel style={classes.inputLabel}>
-                  Last modified datetime : {this.state.form.modifiedDateTime}{" "}
-                </InputLabel>
-              </Grid>
-            </Grid>
+            <Audit {...this.state.form} direction={"row"} />
             {/* </div> */}
           </TabContainer>
 
@@ -1212,6 +1210,7 @@ class FormDetails extends Component {
               form={this.state.form}
               onRuleUpdate={this.onRuleUpdate}
               onToggleExpandPanel={this.onToggleExpandPanel}
+              entityName={this.getEntityNameForRules()}
             />
           </div>
         </Grid>

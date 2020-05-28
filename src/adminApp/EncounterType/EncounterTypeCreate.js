@@ -22,6 +22,7 @@ import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import { sampleEncounterEligibilityCheckRule } from "../../formDesigner/common/SampleRule";
 
 const EncounterTypeCreate = props => {
   const [encounterType, dispatch] = useReducer(encounterTypeReducer, encounterTypeInitialState);
@@ -228,9 +229,8 @@ const EncounterTypeCreate = props => {
               />
               <Editor
                 value={
-                  encounterType.encounterEligibilityCheckRule
-                    ? encounterType.encounterEligibilityCheckRule
-                    : ""
+                  encounterType.encounterEligibilityCheckRule ||
+                  sampleEncounterEligibilityCheckRule()
                 }
                 onValueChange={event =>
                   dispatch({ type: "encounterEligibilityCheckRule", payload: event })

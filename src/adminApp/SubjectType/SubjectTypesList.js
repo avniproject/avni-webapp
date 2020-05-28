@@ -78,9 +78,9 @@ const SubjectTypesList = ({ history }) => {
 
   const voidSubjectType = rowData => ({
     icon: "delete_outline",
-    tooltip: "Void subject type",
+    tooltip: "Delete subject type",
     onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to void the subject type " + rowData.name + " ?";
+      const voidedMessage = "Do you really want to delete the subject type " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http
           .delete("/web/subjectType/" + rowData.id)

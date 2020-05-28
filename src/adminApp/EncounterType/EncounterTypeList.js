@@ -134,9 +134,10 @@ const EncounterTypeList = ({ history }) => {
 
   const voidEncounterType = rowData => ({
     icon: "delete_outline",
-    tooltip: "Void encounter type",
+    tooltip: "Delete encounter type",
     onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to void the encounter type " + rowData.name + " ?";
+      const voidedMessage =
+        "Do you really want to delete the encounter type " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http
           .delete("/web/encounterType/" + rowData.id)

@@ -4,11 +4,13 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ReactMarkdown from "react-markdown";
 import Paper from "@material-ui/core/Paper";
 import _ from "lodash";
+import { LinkRenderer } from "./Documentation";
 
 export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
   const styles = {
     root: {
-      position: "relative"
+      position: "relative",
+      display: "inline-block"
     },
     content: {
       position: "absolute",
@@ -42,7 +44,7 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
 
   const displayMarkup = () => (
     <Paper style={styles.content}>
-      <ReactMarkdown source={message} escapeHtml={false} />
+      <ReactMarkdown source={message} escapeHtml={false} renderers={{ link: LinkRenderer }} />
     </Paper>
   );
 
