@@ -8,6 +8,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { inlineConceptDataType } from "../common/constants";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { BackButton } from "./FormElementDetails";
+import { AvniSelect } from "../../common/components/AvniSelect";
+import _ from "lodash";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 function InlineConcept(props) {
   return (
@@ -19,7 +22,7 @@ function InlineConcept(props) {
       )}
       <Grid item sm={12}>
         <FormControl fullWidth>
-          <InputLabel htmlFor="elementNameDetails">Concept Name</InputLabel>
+          <AvniFormLabel label={"Concept Name"} toolTipKey={"APP_DESIGNER_CONCEPT_NAME"} />
           <Input
             id="elementName"
             value={props.formElementData.inlineConceptName}
@@ -41,36 +44,28 @@ function InlineConcept(props) {
         </div>
       )}
       <Grid item sm={12}>
-        <FormControl>
-          <InputLabel>Datatype *</InputLabel>
-          <Select
-            id="dataType"
-            label="DataType"
-            value={props.formElementData.inlineConceptDataType}
-            onChange={event =>
-              props.handleGroupElementChange(
-                props.groupIndex,
-                "inlineConceptDataType",
-                event.target.value,
-                props.index
-              )
-            }
-            style={{ width: "200px", marginBottom: "10px" }}
-          >
-            {inlineConceptDataType.map(datatype => {
-              return (
-                <MenuItem value={datatype} key={datatype}>
-                  {datatype}
-                </MenuItem>
-              );
-            })}
-          </Select>
-          {props.formElementData.inlineConceptErrorMessage.dataType !== "" && (
-            <div style={{ color: "red", fontSize: "10px" }}>
-              {props.formElementData.inlineConceptErrorMessage.dataType}
-            </div>
-          )}
-        </FormControl>
+        <AvniSelect
+          label="Datatype *"
+          value={props.formElementData.inlineConceptDataType}
+          onChange={event =>
+            props.handleGroupElementChange(
+              props.groupIndex,
+              "inlineConceptDataType",
+              event.target.value,
+              props.index
+            )
+          }
+          style={{ width: "200px", marginBottom: "10px" }}
+          required
+          options={inlineConceptDataType.map(datatype => {
+            return (
+              <MenuItem value={datatype} key={datatype}>
+                {datatype}
+              </MenuItem>
+            );
+          })}
+          toolTipKey={"APP_DESIGNER_CONCEPT_DATA_TYPE"}
+        />
       </Grid>
       {props.formElementData.inlineConceptDataType === "Numeric" && (
         <NumericConcept

@@ -17,6 +17,7 @@ import {
   findProgramEncounterForm
 } from "../domain/formMapping";
 import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
+import { Audit } from "../../formDesigner/components/Audit";
 
 const EncounterTypeShow = props => {
   const [encounterType, setEncounterType] = useState({});
@@ -144,34 +145,7 @@ const EncounterTypeShow = props => {
             />
           </div>
           <p />
-
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Created by</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>{encounterType.createdBy}</span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Last modified by</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>{encounterType.lastModifiedBy}</span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Created on(datetime)</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>
-              <Moment parse="YYYY-MM-DD HH:mm::ss">{encounterType.createdDateTime}</Moment>
-            </span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Last modified on(datetime)</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>
-              <Moment parse="YYYY-MM-DD HH:mm::ss">{encounterType.modifiedDateTime}</Moment>
-            </span>
-          </div>
+          <Audit {...encounterType} />
         </div>
 
         {editAlert && <Redirect to={"/appDesigner/encounterType/" + props.match.params.id} />}

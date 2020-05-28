@@ -45,9 +45,9 @@ const Concepts = ({ history }) => {
 
   const voidConcept = rowData => ({
     icon: "delete_outline",
-    tooltip: rowData.organisationId === 1 ? "Can not void core concepts" : "Void Concept",
+    tooltip: rowData.organisationId === 1 ? "Can not delete core concepts" : "Delete Concept",
     onClick: (event, rowData) => {
-      const voidedMessage = "Do you want to void the concept " + rowData.name + " ?";
+      const voidedMessage = "Do you want to delete the concept " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http.delete(`/concept/${rowData.uuid}`).then(response => {
           if (response.status === 200) {

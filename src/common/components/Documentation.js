@@ -8,6 +8,17 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
+//Custom link renderer to open relative URLs in same tab and absolute URLs in new tab
+export const LinkRenderer = props => {
+  return props.href.startsWith("http") ? (
+    <a href={props.href} target="_blank">
+      {props.children}
+    </a>
+  ) : (
+    <a href={props.href}>{props.children}</a>
+  );
+};
+
 export const Documentation = ({ fileName }) => {
   const classes = useStyle();
   const [markdown, setMarkdown] = React.useState("");
@@ -17,17 +28,6 @@ export const Documentation = ({ fileName }) => {
       .then(res => res.text())
       .then(setMarkdown);
   }, []);
-
-  //Custom link renderer to open relative URLs in same tab and absolute URLs in new tab
-  const LinkRenderer = props => {
-    return props.href.startsWith("http") ? (
-      <a href={props.href} target="_blank">
-        {props.children}
-      </a>
-    ) : (
-      <a href={props.href}>{props.children}</a>
-    );
-  };
 
   return (
     <div style={{ backgroundColor: "#f6f6f6", borderRadius: 10, padding: 16, margin: 7 }}>

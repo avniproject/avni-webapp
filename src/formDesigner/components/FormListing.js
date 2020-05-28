@@ -12,6 +12,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 
 import NewFormModal from "../components/NewFormModal";
+import moment from "moment";
 
 const FormListing = ({ history }) => {
   const [cloneFormIndicator, setCloneFormIndicator] = useState(false);
@@ -30,7 +31,6 @@ const FormListing = ({ history }) => {
     {
       title: "Form Type",
       field: "formType",
-      defaultSort: "asc",
       render: rowData => constFormType[rowData.formType]
     },
     { title: "Subject Name", field: "subjectName", sorting: false },
@@ -39,6 +39,12 @@ const FormListing = ({ history }) => {
       field: "programName",
       sorting: false,
       render: rowData => (rowData.programName ? rowData.programName : "-")
+    },
+    {
+      title: "Last modified",
+      field: "lastModifiedDateTime",
+      defaultSort: "desc",
+      render: rowData => moment(rowData.lastModifiedDateTime).format("D/M/YYYY h:mm a")
     }
   ];
 
@@ -51,8 +57,13 @@ const FormListing = ({ history }) => {
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
       if (!_.isEmpty(query.search)) apiUrl += "&name=" + query.search;
-      if (!_.isEmpty(query.orderBy.field))
-        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      if (!_.isEmpty(query.orderBy.field)) {
+        const orderBy =
+          query.orderBy.field === "lastModifiedDateTime"
+            ? "auditLastModifiedDateTime"
+            : query.orderBy.field;
+        apiUrl += `&sort=${orderBy},${query.orderDirection}`;
+      }
       http
         .get(apiUrl)
         .then(response => response.data)
@@ -110,11 +121,11 @@ const FormListing = ({ history }) => {
 
   const voidForm = rowData => ({
     icon: rowData.voided ? "restore_from_trash" : "delete_outline",
-    tooltip: rowData.voided ? "Unvoid Form" : "Void Form",
+    tooltip: rowData.voided ? "Unvoid Form" : "Delete Form",
     onClick: (event, rowData) => {
       const voidedMessage = rowData.voided
         ? "Do you want to unvoid the form " + rowData.name + " ?"
-        : "Do you want to void the form " + rowData.name + " ?";
+        : "Do you want to delete the form " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http.delete("/web/forms/" + rowData.uuid).then(response => {
           if (response.status === 200) {

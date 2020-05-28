@@ -127,6 +127,7 @@ const customFilters = ({
 
   const deleteFilter = filterType => ({
     icon: "delete_outline",
+    tooltip: "Delete filter",
     onClick: (event, rowData) => {
       const voidedMessage = `Do you want to delete ${rowData.titleKey} filter ?`;
       if (window.confirm(voidedMessage)) {

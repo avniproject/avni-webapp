@@ -10,6 +10,7 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
+import { sampleFormElementRule } from "../common/SampleRule";
 
 function TabPanel(props) {
   const { children, value, index, propsIndex, ...other } = props;
@@ -91,7 +92,7 @@ function FormElementTabs(props) {
           }}
         > */}
         <Editor
-          value={props.formElementData.rule ? props.formElementData.rule : ""}
+          value={props.formElementData.rule || sampleFormElementRule(props.entityName)}
           onValueChange={event => props.updateSkipLogicRule(props.groupIndex, props.index, event)}
           highlight={code => highlight(code, languages.js)}
           padding={10}
