@@ -483,7 +483,7 @@ class CreateEditConcept extends Component {
   };
 
   onDeleteConcept = () => {
-    if (window.confirm("Do you really want to void the concept?")) {
+    if (window.confirm("Do you really want to delete the concept?")) {
       http.delete(`/concept/${this.state.uuid}`).then(response => {
         if (response.status === 200) {
           this.setState({

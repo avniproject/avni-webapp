@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProgramTab = ({ program }) => {
+const SubjectDashboardProgramTab = ({ program, enableReadOnly }) => {
   const { t } = useTranslation();
   let flagActive = false;
   let flagExited = false;
@@ -96,9 +96,17 @@ const SubjectDashboardProgramTab = ({ program }) => {
           </Grid>
         </div>
         {selectedTab !== false ? (
-          <ProgramDetails tabPanelValue={selectedTab} programData={program} />
+          <ProgramDetails
+            tabPanelValue={selectedTab}
+            programData={program}
+            enableReadOnly={enableReadOnly}
+          />
         ) : (
-          <ProgramDetails tabPanelValue={selectedTabExited} programData={program} />
+          <ProgramDetails
+            tabPanelValue={selectedTabExited}
+            programData={program}
+            enableReadOnly={enableReadOnly}
+          />
         )}
       </Paper>
     </Fragment>

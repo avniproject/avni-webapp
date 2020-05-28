@@ -48,6 +48,7 @@ import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniBooleanInput } from "./components/AvniBooleanInput";
 import { AvniRadioButtonGroupInput } from "../common/components/AvniRadioButtonGroupInput";
 import { Paper } from "@material-ui/core";
+import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 export const UserCreate = ({ user, organisation, ...props }) => (
   <Paper>
@@ -205,11 +206,15 @@ export const UserDetail = ({ user, ...props }) => (
           !isNil(user.settings) ? (user.settings.registerEnrol ? "True" : "False") : ""
         }
       />
+      <FunctionField
+        label="DataEntry App Readonly"
+        render={user =>
+          !isNil(user.settings) ? (user.settings.dataEntryAppReadonly ? "True" : "False") : ""
+        }
+      />
       <TextField label="Identifier prefix" source="settings.idPrefix" />
-      <TextField label="Created by" source="createdBy" />
-      <TextField label="Last modified by" source="lastModifiedBy" />
-      <TextField label="Created On(datetime)" source="createdDateTime" />
-      <TextField label="Last modified On(datetime)" source="lastModifiedDateTime" />
+      <FunctionField label="Created" render={audit => createdAudit(audit)} />
+      <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
     </SimpleShowLayout>
   </Show>
 );
@@ -392,6 +397,11 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
           source="settings.registerEnrol"
           label="Register + Enrol"
           toolTipKey={"ADMIN_USER_SETTINGS_REGISTER_ENROL"}
+        />
+        <AvniBooleanInput
+          source="settings.dataEntryAppReadonly"
+          label="DataEntry App Readonly"
+          toolTipKey={"ADMIN_USER_SETTINGS_READONLY_DATA_ENTRY_APP"}
         />
         <AvniTextInput
           source="settings.idPrefix"

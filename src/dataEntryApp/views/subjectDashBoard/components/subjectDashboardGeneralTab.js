@@ -10,7 +10,8 @@ import Typography from "@material-ui/core/Typography";
 import Visit from "./Visit";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
-import { enableReadOnly } from "../../../../common/constants";
+import { InternalLink } from "common/components/utils";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -52,10 +53,14 @@ const useStyles = makeStyles(theme => ({
   },
   expandMoreIcon: {
     color: "#0e6eff"
+  },
+  visitAllButton: {
+    marginLeft: "20px",
+    marginBottom: "10px"
   }
 }));
 
-const SubjectDashboardGeneralTab = ({ general }) => {
+const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) => {
   const [expanded, setExpanded] = React.useState("");
 
   const handleChange = panel => (event, isExpanded) => {
@@ -116,11 +121,13 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                 general.map((row, index) =>
                   !row.encounterDateTime ? (
                     <Visit
+                      type={"encounter"}
                       key={index}
                       name={row.encounterType.name}
                       index={index}
                       visitDate={row.earliestVisitDateTime}
                       overdueDate={row.maxVisitDateTime}
+                      enableReadOnly={enableReadOnly}
                     />
                   ) : (
                     ""
@@ -155,11 +162,14 @@ const SubjectDashboardGeneralTab = ({ general }) => {
                 general.map((row, index) =>
                   row.encounterDateTime ? (
                     <Visit
+                      type={"encounter"}
+                      uuid={row.uuid}
                       key={index}
                       name={t(row.encounterType.name)}
                       index={index}
                       visitDate={row.encounterDateTime}
                       earliestVisitDate={row.earliestVisitDateTime}
+                      enableReadOnly={enableReadOnly}
                     />
                   ) : (
                     ""
@@ -173,6 +183,15 @@ const SubjectDashboardGeneralTab = ({ general }) => {
               )}
             </Grid>
           </ExpansionPanelDetails>
+          {general && completedVisits.length != 0 ? (
+            <InternalLink to={`/app/subject/completedEncounters?uuid=${subjectUuid}`}>
+              <Button color="primary" className={classes.visitAllButton}>
+                {t("viewAllVisits")}
+              </Button>
+            </InternalLink>
+          ) : (
+            ""
+          )}
         </ExpansionPanel>
       </Paper>
     </Fragment>

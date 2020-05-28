@@ -4,13 +4,11 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import ReactMarkdown from "react-markdown";
 import Paper from "@material-ui/core/Paper";
 import _ from "lodash";
-import { LinkRenderer } from "./Documentation";
 
 export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
   const styles = {
     root: {
-      position: "relative",
-      display: "inline-block"
+      position: "relative"
     },
     content: {
       position: "absolute",
@@ -29,9 +27,10 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
   const [message, setMessage] = React.useState("");
 
   React.useEffect(() => {
-    fetch(`/documentation/toolTip.json`)
-      .then(res => res.json())
-      .then(data => setMessage(data[toolTipKey] || "No key found"));
+    setMessage(toolTipKey || "No key found");
+    // fetch(`/documentation/toolTip.json`)
+    //   .then(res => res.json())
+    //   .then(data => setMessage(data[toolTipKey] || "No key found"));
   }, []);
 
   const handleClick = () => {
@@ -44,7 +43,7 @@ export const ToolTip = ({ toolTipKey, onHover, displayPosition }) => {
 
   const displayMarkup = () => (
     <Paper style={styles.content}>
-      <ReactMarkdown source={message} escapeHtml={false} renderers={{ link: LinkRenderer }} />
+      <ReactMarkdown source={message} escapeHtml={false} />
     </Paper>
   );
 

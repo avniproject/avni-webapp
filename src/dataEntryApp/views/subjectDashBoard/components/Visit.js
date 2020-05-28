@@ -9,7 +9,6 @@ import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { enableReadOnly } from "common/constants";
 import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
@@ -75,17 +74,31 @@ const Visit = ({
   encounterDateTime,
   uuid,
   enrolUuid,
-  encounterTypeUuid
+  encounterTypeUuid,
+  enableReadOnly,
+  type
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  let visitUrl;
+  switch (type) {
+    case "programEncounter":
+      visitUrl = `/app/subject/viewProgramEncounter?uuid=${uuid}`;
+      break;
+    case "encounter":
+      visitUrl = `/app/subject/viewEncounter?uuid=${uuid}`;
+      break;
+    default:
+      throw new Error("Invalid type. Must be programEncounter or encounter.");
+  }
+
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
       <Paper className={classes.paper}>
         <List style={{ paddingBottom: "0px" }}>
           <ListItem className={classes.listItem}>
             {visitDate !== null ? (
-              <Link to={`/app/subject/viewVisit?uuid=${uuid}`}>
+              <Link to={visitUrl}>
                 <ListItemText
                   className={classes.ListItemText}
                   title={t(name)}

@@ -57,4 +57,3 @@ export const localeChoices = [
 ];
 
 export const disableSession = false;
-export const enableReadOnly = true;

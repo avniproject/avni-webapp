@@ -13,9 +13,12 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
-import { getCompletedVisit } from "../../../reducers/completedVisitsReducer";
+import {
+  getCompletedEncounters,
+  getCompletedProgramEncounters
+} from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
-import { noop, isNil } from "lodash";
+import { noop, isNil, isEmpty } from "lodash";
 import IconButton from "@material-ui/core/IconButton";
 import CancelIcon from "@material-ui/icons/Cancel";
 
@@ -23,7 +26,6 @@ const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
     height: "28px",
     zIndex: 1,
-    // marginLeft: theme.spacing(64),
     marginTop: "1px",
     boxShadow: "none",
     backgroundColor: "#0e6eff"
@@ -53,12 +55,10 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     margin: "auto",
     width: "fit-content"
-    // minWidth: "600px",
-    // minHeight: "300px"
   },
   resetButton: {
     fontSize: "13px",
-    color: "red",
+    color: "#212529",
     "&:hover": {
       backgroundColor: "#fff"
     },
@@ -71,23 +71,23 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => {
+const FilterResult = ({
+  getCompletedEncounters,
+  getCompletedProgramEncounters,
+  isForProgramEncounters,
+  entityUuid,
+  encounterTypes
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
   const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
-  const scheduleDateChange = scheduledDate => {
-    setSelectedScheduleDate(scheduledDate);
-  };
-  const completedDateChange = completedDate => {
-    setSelectedCompletedDate(completedDate);
-  };
+  const [filterDateErrors, setFilterDateErrors] = React.useState({
+    SCHEDULED_DATE: "",
+    COMPLETED_DATE: ""
+  });
+  const [msg, setMsg] = React.useState("");
 
-  const visitTypesList = [
-    ...new Map(
-      enrolments.programEncounters.map(item => [item.encounterType["uuid"], item.encounterType])
-    ).values()
-  ];
   const [selectedVisitTypes, setVisitTypes] = React.useState(null);
 
   const visitTypesChange = event => {
@@ -96,6 +96,32 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
     } else {
       setVisitTypes({ ...selectedVisitTypes, [event.target.name]: event.target.checked });
     }
+  };
+
+  const close = () => {
+    if (!moment(selectedScheduleDate).isValid()) setSelectedScheduleDate(null);
+    if (!moment(selectedCompletedDate).isValid()) setSelectedCompletedDate(null);
+    filterDateErrors["COMPLETED_DATE"] = "";
+    filterDateErrors["SCHEDULED_DATE"] = "";
+    setFilterDateErrors({ ...filterDateErrors });
+  };
+
+  const scheduleDateChange = scheduledDate => {
+    setSelectedScheduleDate(scheduledDate);
+    filterDateErrors["SCHEDULED_DATE"] = "";
+    if (!isNil(scheduledDate) && !moment(scheduledDate).isValid()) {
+      filterDateErrors["SCHEDULED_DATE"] = "invalidDateFormat";
+    }
+    setFilterDateErrors({ ...filterDateErrors });
+  };
+
+  const completedDateChange = completedDate => {
+    setSelectedCompletedDate(completedDate);
+    filterDateErrors["COMPLETED_DATE"] = "";
+    if (!isNil(completedDate) && !moment(completedDate).isValid()) {
+      filterDateErrors["COMPLETED_DATE"] = "invalidDateFormat";
+    }
+    setFilterDateErrors({ ...filterDateErrors });
   };
 
   const applyClick = () => {
@@ -123,11 +149,13 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
       filterParams.encounterTypeUuids = SelectedvisitTypesList.join();
     }
     const SearchParamsFilter = new URLSearchParams(filterParams);
-    const otherPathString = SearchParamsFilter.toString();
-    const completedVisitUrl = `/web/programEnrolment/${
-      enrolments.uuid
-    }/completed?${otherPathString}`;
-    getCompletedVisit(completedVisitUrl);
+    const filterQueryString = SearchParamsFilter.toString();
+
+    if (isForProgramEncounters) {
+      getCompletedProgramEncounters(entityUuid, filterQueryString);
+    } else {
+      getCompletedEncounters(entityUuid, filterQueryString);
+    }
   };
 
   const resetClick = () => {
@@ -172,6 +200,11 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
                     "aria-label": "change date",
                     color: "primary"
                   }}
+                  error={!isEmpty(filterDateErrors["SCHEDULED_DATE"])}
+                  helperText={
+                    !isEmpty(filterDateErrors["SCHEDULED_DATE"]) &&
+                    t(filterDateErrors["SCHEDULED_DATE"])
+                  }
                 />
               </Grid>
               <Grid item xs={6}>
@@ -184,6 +217,11 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
                   autoComplete="off"
                   value={selectedCompletedDate}
                   onChange={completedDateChange}
+                  error={!isEmpty(filterDateErrors["COMPLETED_DATE"])}
+                  helperText={
+                    !isEmpty(filterDateErrors["COMPLETED_DATE"]) &&
+                    t(filterDateErrors["COMPLETED_DATE"])
+                  }
                   KeyboardButtonProps={{
                     "aria-label": "change date",
                     color: "primary"
@@ -196,7 +234,7 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
         <LineBreak num={1} />
         <FormLabel component="legend">{t("visitType")}</FormLabel>
         <FormGroup row>
-          {visitTypesList.map(visitType => (
+          {encounterTypes.map(visitType => (
             <FormControlLabel
               control={
                 <Checkbox
@@ -231,8 +269,8 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
           redirectTo: `/app/completeVisit`,
           click: applyClick,
           disabled:
-            (!isNil(selectedScheduleDate) && !moment(selectedScheduleDate).isValid()) ||
-            (!isNil(selectedCompletedDate) && !moment(selectedCompletedDate).isValid())
+            !isEmpty(filterDateErrors["COMPLETED_DATE"]) ||
+            !isEmpty(filterDateErrors["SCHEDULED_DATE"])
         },
         {
           buttonType: "cancelButton",
@@ -241,22 +279,20 @@ const FilterResult = ({ getCompletedVisit, completedVisitList, enrolments }) => 
         }
       ]}
       title={t("filterResult")}
+      btnHandleClose={close}
     />
   );
 };
 
-const mapStateToProps = state => ({
-  completedVisitList: state.dataEntry.completedVisitsReducer.completedVisitList
-});
-
 const mapDispatchToProps = {
-  getCompletedVisit
+  getCompletedProgramEncounters,
+  getCompletedEncounters
 };
 
 export default withRouter(
   withParams(
     connect(
-      mapStateToProps,
+      null,
       mapDispatchToProps
     )(FilterResult)
   )

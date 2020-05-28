@@ -19,6 +19,10 @@ import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import MenuItem from "@material-ui/core/MenuItem";
+import {
+  sampleEnrolmentEligibilityCheckRule,
+  sampleEnrolmentSummaryRule
+} from "../../formDesigner/common/SampleRule";
 
 const ProgramCreate = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
@@ -192,7 +196,7 @@ const ProgramCreate = props => {
                 toolTipKey={"APP_DESIGNER_PROGRAM_SUMMARY_RULE"}
               />
               <Editor
-                value={program.enrolmentSummaryRule ? program.enrolmentSummaryRule : ""}
+                value={program.enrolmentSummaryRule || sampleEnrolmentSummaryRule()}
                 onValueChange={event => dispatch({ type: "enrolmentSummaryRule", payload: event })}
                 highlight={code => highlight(code, languages.js)}
                 padding={10}
@@ -211,7 +215,7 @@ const ProgramCreate = props => {
               />
               <Editor
                 value={
-                  program.enrolmentEligibilityCheckRule ? program.enrolmentEligibilityCheckRule : ""
+                  program.enrolmentEligibilityCheckRule || sampleEnrolmentEligibilityCheckRule()
                 }
                 onValueChange={event =>
                   dispatch({ type: "enrolmentEligibilityCheckRule", payload: event })

@@ -14,6 +14,7 @@ import Grid from "@material-ui/core/Grid";
 import CustomizedSnackbar from "../formDesigner/components/CustomizedSnackbar";
 import { SaveComponent } from "../common/components/SaveComponent";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import { sampleWorkListUpdationRule } from "../formDesigner/common/SampleRule";
 
 export const WorklistUpdationRule = () => {
   const emptyOrgSettings = {
@@ -95,7 +96,7 @@ export const WorklistUpdationRule = () => {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Editor
-                value={worklistUpdationRule ? worklistUpdationRule : ""}
+                value={worklistUpdationRule ? worklistUpdationRule : sampleWorkListUpdationRule()}
                 onValueChange={event => setRule(event)}
                 highlight={code => highlight(code, languages.js)}
                 padding={10}

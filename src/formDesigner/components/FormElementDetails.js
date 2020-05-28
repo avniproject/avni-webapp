@@ -334,7 +334,7 @@ function FormElementDetails(props) {
               <>
                 <Grid container item sm={12}>
                   <InputLabel style={{ paddingTop: 10 }}>Answers:</InputLabel>{" "}
-                  {props.formElementData.concept.answers.map(function(d) {
+                  {_.orderBy(props.formElementData.concept.answers, "order").map(function(d) {
                     if (!d.excluded && !d.voided) {
                       return (
                         <Chip
@@ -539,7 +539,7 @@ function FormElementDetails(props) {
                   props.handleGroupElementKeyValueChange(
                     props.groupIndex,
                     "imageQuality",
-                    event.target.value,
+                    _.toNumber(event.target.value),
                     props.index
                   )
                 }

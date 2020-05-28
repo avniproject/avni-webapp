@@ -66,7 +66,7 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export default ({ profile, general, program }) => {
+export default ({ profile, general, program, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -96,24 +96,28 @@ export default ({ profile, general, program }) => {
           aria-label="scrollable auto tabs example"
           className={classes.wrapper}
         >
-          <Tab label={t("Programs")} icon={<AssessmentIcon />} {...a11yProps(0)} />
+          <Tab label={t("programs")} icon={<AssessmentIcon />} {...a11yProps(0)} />
           <Tab label={t("profile")} icon={<PersonIcon />} {...a11yProps(1)} />
           <Tab label={t("General")} icon={<ListIcon />} {...a11yProps(2)} />
         </Tabs>
       </MUAppBar>
       <TabContent value={value} index={0}>
         <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardProgramTab program={program} />
+          <SubjectDashboardProgramTab program={program} enableReadOnly={enableReadOnly} />
         </Paper>
       </TabContent>
       <TabContent value={value} index={1}>
         <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardProfileTab profile={profile} />
+          <SubjectDashboardProfileTab profile={profile} enableReadOnly={enableReadOnly} />
         </Paper>
       </TabContent>
       <TabContent value={value} index={2}>
         <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardGeneralTab general={general} />
+          <SubjectDashboardGeneralTab
+            subjectUuid={profile.uuid}
+            general={general}
+            enableReadOnly={enableReadOnly}
+          />
         </Paper>
       </TabContent>
     </Fragment>

@@ -14,8 +14,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import { withRouter } from "react-router-dom";
-import { isEmpty } from "lodash";
+import { isEmpty, orderBy } from "lodash";
 import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
+import { Audit } from "./Audit";
 
 const useStyles = makeStyles({
   table: {
@@ -119,7 +120,7 @@ function ConceptDetails(props) {
               <FormLabel style={{ fontSize: "13px" }}>Answers</FormLabel>
               <br />
               {data.conceptAnswers &&
-                data.conceptAnswers.map((answer, index) => {
+                orderBy(data.conceptAnswers, "order").map((answer, index) => {
                   return (
                     !answer.voided && (
                       <div key={index} style={{ width: "100%" }}>
@@ -235,33 +236,7 @@ function ConceptDetails(props) {
           </>
 
           <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Created by</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>{data.createdBy}</span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Last modified by</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>{data.lastModifiedBy}</span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Created on(datetime)</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>
-              <Moment parse="YYYY-MM-DD HH:mm::ss">{data.createdDateTime}</Moment>
-            </span>
-          </div>
-          <p />
-          <div>
-            <FormLabel style={{ fontSize: "13px" }}>Last modified on(datetime)</FormLabel>
-            <br />
-            <span style={{ fontSize: "15px" }}>
-              <Moment parse="YYYY-MM-DD HH:mm::ss">{data.lastModifiedDateTime}</Moment>
-            </span>
-          </div>
+          <Audit {...data} />
         </div>
 
         {editAlert && <Redirect to={"/appdesigner/concept/" + props.match.params.uuid + "/edit"} />}

@@ -2,12 +2,13 @@ import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import React from "react";
 import Box from "@material-ui/core/Box";
+import { sampleFormElementGroupRule } from "../common/SampleRule";
 
 export const FormElementGroupRule = ({ rule, onChange, index }) => {
   return (
     <Box boxShadow={2} p={3} bgcolor="background.paper">
       <Editor
-        value={rule || ""}
+        value={rule || sampleFormElementGroupRule()}
         onValueChange={event => onChange(index, event)}
         highlight={code => highlight(code, languages.js)}
         padding={10}

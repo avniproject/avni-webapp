@@ -1,6 +1,6 @@
 import React from "react";
 
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
@@ -11,7 +11,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import Grid from "@material-ui/core/Grid";
 import { InputLabel } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
 import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
@@ -25,9 +24,6 @@ import NoteIcon from "@material-ui/icons/Note";
 import Tooltip from "@material-ui/core/Tooltip";
 import ImageIcon from "@material-ui/icons/Image";
 import VideocamIcon from "@material-ui/icons/Videocam";
-
-import Mandatory from "@material-ui/icons/CheckCircleOutline";
-import NonMandatory from "@material-ui/icons/HighlightOff";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
@@ -71,16 +67,9 @@ const useStyles = makeStyles(theme => ({
   secondaryHeading: {
     flexBasis: "70%",
     fontSize: theme.typography.pxToRem(15)
-    //color: theme.palette.text.secondary,
   },
-  iconMandatory: {
-    color: "Green"
-  },
-  iconNonMandatory: {
-    color: "Red"
-  },
-  requiredIcon: {
-    textAlign: "center"
+  asterisk: {
+    color: "red"
   }
 }));
 const ExpansionPanel = withStyles({
@@ -203,34 +192,25 @@ function FormElement(props) {
           </Typography>
         </div>
         <Grid container sm={12} alignItems={"center"}>
-          <Grid item sm={9} style={{ paddingTop: "10px" }}>
+          <Grid item sm={11} style={{ paddingTop: "10px" }}>
             <Typography component={"span"} className={classes.heading}>
               <span className={classes.expandIcon}>
                 {props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </span>
-              <InputLabel name={"name" + panel} style={{ width: "80%", display: "inline-block" }}>
+              <InputLabel
+                name={"name" + panel}
+                style={{ display: "inline-block" }}
+                required={props.formElementData.mandatory}
+                classes={{ asterisk: classes.asterisk }}
+              >
                 {props.formElementData.name}
               </InputLabel>
             </Typography>
           </Grid>
-
-          <Grid item sm={1}>
-            {props.formElementData.mandatory ? (
-              <Tooltip title="Required">
-                <Mandatory className={classes.iconMandatory} />
-              </Tooltip>
-            ) : (
-              <Tooltip title="Not required">
-                <NonMandatory className={classes.iconNonMandatory} />
-              </Tooltip>
-            )}
-          </Grid>
-          <Grid item sm={1}>
+          <Grid item sm={1} direction={"row"}>
             <IconButton aria-label="delete" onClick={handleDelete}>
               <DeleteIcon />
             </IconButton>
-          </Grid>
-          <Grid item sm={1}>
             <ToolTip
               toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"}
               onHover
