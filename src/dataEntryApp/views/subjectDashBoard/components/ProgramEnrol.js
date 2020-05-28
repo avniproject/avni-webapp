@@ -21,7 +21,6 @@ import ProgramExitEnrolmentForm from "./ProgramExitEnrolmentForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
-//import BrowserStore from "../../../api/browserStore";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,7 +32,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: "20px"
   },
   btnCustom: {
-    //float:'left',
     backgroundColor: "#fc9153",
     height: "30px",
     marginRight: "20px"
@@ -65,7 +63,6 @@ const ProgramEnrol = ({
   setInitialState,
   setEnrolDateValidation,
   enrolDateValidation
-  //setProgramEnrolment
 }) => {
   const [value, setValue] = React.useState("Yes");
 
@@ -90,22 +87,6 @@ const ProgramEnrol = ({
       );
       await getSubjectProfile(match.queryParams.uuid);
     })();
-
-    // onLoad(
-    //   "Individual",
-    //   match.queryParams.programName,
-    //   formType,
-    //   match.queryParams.programEnrolmentUuid
-    // );
-    // getSubjectProfile(match.queryParams.uuid);
-
-    // (async function fetchData() {
-    //   await onLoad("Individual", match.queryParams.programName, formType, match.queryParams.programEnrolmentUuid);
-    //   getSubjectProfile(match.queryParams.uuid);
-
-    //   // let programEnrolment = BrowserStore.fetchProgramEnrolment();
-    //   // setProgramEnrolment(programEnrolment);
-    // })();
   }, []);
 
   const validationResultForEnrolDate =

@@ -288,23 +288,11 @@ export function* updateExitEnrolmentObsWorker({ formElement, value }) {
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
 
-  console.log(programEnrolment);
-
-  // if(programEnrolment.observations.length === 0) {
-  //   programEnrolment.observations = updateObservations(
-  //     programEnrolment.observations,
-  //     formElement,
-  //     value
-  //   );
-  //  } else {
   programEnrolment.programExitObservations = updateObservations(
     programEnrolment.programExitObservations,
     formElement,
     value
   );
-  //  }
-
-  console.log(programEnrolment);
 
   yield put(setProgramEnrolment(programEnrolment));
   yield put(
@@ -319,15 +307,11 @@ export function* updateEnrolmentObsWorker({ formElement, value }) {
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
   const validationResults = yield select(state => state.dataEntry.registration.validationResults);
 
-  console.log(programEnrolment);
-
   programEnrolment.observations = updateObservations(
     programEnrolment.observations,
     formElement,
     value
   );
-
-  console.log(programEnrolment);
 
   yield put(setProgramEnrolment(programEnrolment));
   yield put(

@@ -13,8 +13,6 @@ const mapFormStateToProps = state => ({
   subject: state.dataEntry.subjectProfile.subjectProfile,
   observations: state.dataEntry.enrolmentReducer.programEnrolment.observations,
   obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.observations),
-  //observations: state.dataEntry.enrolmentReducer.programEnrolment.programExitObservations,
-  //obsHolder: new ObservationsHolder(state.dataEntry.enrolmentReducer.programEnrolment.programExitObservations),
   title: `New Enrolment`,
   saved: state.dataEntry.enrolmentReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
@@ -22,7 +20,7 @@ const mapFormStateToProps = state => ({
   validationResults: state.dataEntry.registration.validationResults,
   message: `${state.dataEntry.enrolmentReducer.programEnrolment.program.name} Enrolment Saved`
 });
-//need to change observations
+
 const mapFormDispatchToProps = {
   updateObs,
   onSave: saveProgramEnrolment,

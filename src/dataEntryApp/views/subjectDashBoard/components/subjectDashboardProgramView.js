@@ -27,7 +27,6 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
 import { enableReadOnly } from "common/constants";
-// import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
 import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
 import { store } from "../../../../common/store/createStore";
 import { types } from "../../../reducers/completedVisitsReducer";
@@ -202,9 +201,6 @@ const ProgramView = ({ programData, subjectUuid, undoExitEnrolment, handleUpdate
         </Grid>
 
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
-          {/* <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
-          <SubjectButton btnLabel={t("vaccinations")} /> */}
-
           {!enableReadOnly ? (
             <InternalLink
               to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}

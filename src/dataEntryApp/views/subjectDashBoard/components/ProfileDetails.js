@@ -5,8 +5,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Grid from "@material-ui/core/Grid";
-import Fab from "@material-ui/core/Fab";
-import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
@@ -80,7 +78,6 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     margin: "auto",
-    //width: 'fit-content',
     minWidth: "450px",
     minHeight: "170px"
   },
@@ -196,13 +193,6 @@ const ProfileDetails = ({ profileDetails, getPrograms, programs, subjectUuid, ma
         {`${profileDetails.firstName} ${profileDetails.lastName}`} {t("Dashboard")}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
-        {/* <Grid item>
-          <Avatar
-            src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
-            className={classes.bigAvatar}
-          />
-          
-        </Grid> */}
         <Grid item>
           <AccountCircle className={classes.iconStyle} />
         </Grid>
