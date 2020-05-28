@@ -111,10 +111,10 @@ const SubjectsTable = ({ type, subjects, pageDetails, searchparam }) => {
         id: "subjectType",
         numeric: false,
         disablePadding: true,
-        label: "SubjectType",
+        label: "subjectType",
         align: "left"
       },
-      { id: "gender", numeric: false, disablePadding: true, label: "Gender", align: "left" },
+      { id: "gender", numeric: false, disablePadding: true, label: "gender", align: "left" },
       {
         id: "dateOfBirth",
         numeric: true,

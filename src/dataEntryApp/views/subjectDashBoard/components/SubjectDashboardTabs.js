@@ -96,7 +96,7 @@ export default ({ profile, general, program, enableReadOnly }) => {
           aria-label="scrollable auto tabs example"
           className={classes.wrapper}
         >
-          <Tab label={t("Programs")} icon={<AssessmentIcon />} {...a11yProps(0)} />
+          <Tab label={t("programs")} icon={<AssessmentIcon />} {...a11yProps(0)} />
           <Tab label={t("profile")} icon={<PersonIcon />} {...a11yProps(1)} />
           <Tab label={t("General")} icon={<ListIcon />} {...a11yProps(2)} />
         </Tabs>
