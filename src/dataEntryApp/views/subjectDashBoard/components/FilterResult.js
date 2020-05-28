@@ -18,7 +18,7 @@ import {
   getCompletedProgramEncounters
 } from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
-import { noop, isNil } from "lodash";
+import { noop, isNil, isEmpty } from "lodash";
 import IconButton from "@material-ui/core/IconButton";
 import CancelIcon from "@material-ui/icons/Cancel";
 
@@ -26,7 +26,6 @@ const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
     height: "28px",
     zIndex: 1,
-    // marginLeft: theme.spacing(64),
     marginTop: "1px",
     boxShadow: "none",
     backgroundColor: "#0e6eff"
@@ -56,8 +55,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: "column",
     margin: "auto",
     width: "fit-content"
-    // minWidth: "600px",
-    // minHeight: "300px"
   },
   resetButton: {
     fontSize: "13px",
@@ -85,18 +82,12 @@ const FilterResult = ({
   const classes = useStyles();
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
   const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
-  const scheduleDateChange = scheduledDate => {
-    setSelectedScheduleDate(scheduledDate);
-  };
-  const completedDateChange = completedDate => {
-    setSelectedCompletedDate(completedDate);
-  };
+  const [filterDateErrors, setFilterDateErrors] = React.useState({
+    SCHEDULED_DATE: "",
+    COMPLETED_DATE: ""
+  });
+  const [msg, setMsg] = React.useState("");
 
-  // const visitTypesList = [
-  //   ...new Map(
-  //     enrolments.programEncounters.map(item => [item.encounterType["uuid"], item.encounterType])
-  //   ).values()
-  // ];
   const [selectedVisitTypes, setVisitTypes] = React.useState(null);
 
   const visitTypesChange = event => {
@@ -105,6 +96,32 @@ const FilterResult = ({
     } else {
       setVisitTypes({ ...selectedVisitTypes, [event.target.name]: event.target.checked });
     }
+  };
+
+  const close = () => {
+    if (!moment(selectedScheduleDate).isValid()) setSelectedScheduleDate(null);
+    if (!moment(selectedCompletedDate).isValid()) setSelectedCompletedDate(null);
+    filterDateErrors["COMPLETED_DATE"] = "";
+    filterDateErrors["SCHEDULED_DATE"] = "";
+    setFilterDateErrors({ ...filterDateErrors });
+  };
+
+  const scheduleDateChange = scheduledDate => {
+    setSelectedScheduleDate(scheduledDate);
+    filterDateErrors["SCHEDULED_DATE"] = "";
+    if (!isNil(scheduledDate) && !moment(scheduledDate).isValid()) {
+      filterDateErrors["SCHEDULED_DATE"] = "invalidDateFormat";
+    }
+    setFilterDateErrors({ ...filterDateErrors });
+  };
+
+  const completedDateChange = completedDate => {
+    setSelectedCompletedDate(completedDate);
+    filterDateErrors["COMPLETED_DATE"] = "";
+    if (!isNil(completedDate) && !moment(completedDate).isValid()) {
+      filterDateErrors["COMPLETED_DATE"] = "invalidDateFormat";
+    }
+    setFilterDateErrors({ ...filterDateErrors });
   };
 
   const applyClick = () => {
@@ -183,6 +200,11 @@ const FilterResult = ({
                     "aria-label": "change date",
                     color: "primary"
                   }}
+                  error={!isEmpty(filterDateErrors["SCHEDULED_DATE"])}
+                  helperText={
+                    !isEmpty(filterDateErrors["SCHEDULED_DATE"]) &&
+                    t(filterDateErrors["SCHEDULED_DATE"])
+                  }
                 />
               </Grid>
               <Grid item xs={6}>
@@ -195,6 +217,11 @@ const FilterResult = ({
                   autoComplete="off"
                   value={selectedCompletedDate}
                   onChange={completedDateChange}
+                  error={!isEmpty(filterDateErrors["COMPLETED_DATE"])}
+                  helperText={
+                    !isEmpty(filterDateErrors["COMPLETED_DATE"]) &&
+                    t(filterDateErrors["COMPLETED_DATE"])
+                  }
                   KeyboardButtonProps={{
                     "aria-label": "change date",
                     color: "primary"
@@ -242,8 +269,8 @@ const FilterResult = ({
           redirectTo: `/app/completeVisit`,
           click: applyClick,
           disabled:
-            (!isNil(selectedScheduleDate) && !moment(selectedScheduleDate).isValid()) ||
-            (!isNil(selectedCompletedDate) && !moment(selectedCompletedDate).isValid())
+            !isEmpty(filterDateErrors["COMPLETED_DATE"]) ||
+            !isEmpty(filterDateErrors["SCHEDULED_DATE"])
         },
         {
           buttonType: "cancelButton",
@@ -252,6 +279,7 @@ const FilterResult = ({
         }
       ]}
       title={t("filterResult")}
+      btnHandleClose={close}
     />
   );
 };
