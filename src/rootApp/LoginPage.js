@@ -102,24 +102,23 @@ export class CustomSignIn extends SignIn {
  */}
 
                   <span>
-                    {/* <a
+                    <a
                       className="text-indigo cursor-pointer hover:text-indigo-darker"
                       onClick={() => super.changeState("forgotPassword")}
-                    > */}
-
-                    <p
-                      className="text-grey-dark"
-                      style={{
-                        marginLeft: "147px",
-                        cursor: "pointer",
-                        color: "blue",
-                        fontSize: "12px",
-                        padding: "7px"
-                      }}
                     >
-                      Forgot password?
-                    </p>
-                    {/* </a> */}
+                      <p
+                        className="text-grey-dark"
+                        style={{
+                          marginLeft: "147px",
+                          cursor: "pointer",
+                          color: "blue",
+                          fontSize: "12px",
+                          padding: "7px"
+                        }}
+                      >
+                        Forgot password?
+                      </p>
+                    </a>
                     {/* <a
                     className="text-indigo cursor-pointer hover:text-indigo-darker"
                     onClick={() => super.changeState("forgotPassword")}
