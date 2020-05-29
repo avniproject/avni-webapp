@@ -158,11 +158,15 @@ const Visit = ({
               </InternalLink>
             ) : (
               <div className={classes.visitButton}>
-                <InternalLink
-                  to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
-                >
-                  <Button color="primary">{t("do visit")}</Button>
-                </InternalLink>
+                {encounterTypeUuid && enrolUuid ? (
+                  <InternalLink
+                    to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
+                  >
+                    <Button color="primary">{t("do visit")}</Button>
+                  </InternalLink>
+                ) : (
+                  ""
+                )}
                 <Button color="primary">{t("cancelVisit")}</Button>
               </div>
             )}
