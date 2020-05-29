@@ -26,8 +26,7 @@ const api = {
   fetchCognitoDetails: () => http.fetchJson("/cognito-details").then(response => response.json),
   fetchUserInfo: () => http.fetchJson("/me").then(response => response.json),
   fetchAdminOrgs: () => http.fetchJson("/organisation", {}, true).then(response => response.json),
-  // fetchTranslations: () => http.fetchJson("/web/translations").then(response => response.json),
-  fetchTranslations: () => data,
+  fetchTranslations: () => http.fetchJson("/web/translations").then(response => response.json),
   saveUserInfo: userInfo => http.post("/me", userInfo)
 };
 
