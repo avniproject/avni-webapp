@@ -37,7 +37,7 @@ const Breadcrumbs = ({ path, match, ...props }) => {
     APP: "app",
     SUBJECT: "subject",
     VIEW_VISIT: "viewVisit",
-    COMPLETED_VISITS: "completedVisits"
+    COMPLETED_VISITS: "completedProgramEncounters"
   };
   const urlMapper = part => {
     switch (part) {
