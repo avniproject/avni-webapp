@@ -133,19 +133,23 @@ public class IndividualController extends AbstractController<Individual> impleme
             @RequestParam(value = "locationIds", required = false) List<Long> locationIds,
             Pageable pageable) {
         IndividualRepository repo = this.individualRepository;
-        if (query != null && !"".equals(query.trim())) {
-            return repo.findAll(
-                            where(repo.getFilterSpecForAddress(query))
-                                    .or(repo.getFilterSpecForObs(query))
-                                    .or(repo.getFilterSpecForName(query))
-                    , pageable)
-                    .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
-        }
+//        if (query != null && !"".equals(query.trim())) {
+//            return repo.findAll(
+//                            where(repo.getFilterSpecForName(query))
+//                                    .or(repo.getFilterSpecForObs(query))
+//                                    .or(repo.getFilterSpecForAddress(query))
+//                    , pageable)
+//                    .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
+//        }
+//        return repo.findAll(
+//                where(repo.getFilterSpecForName(name))
+//                        .and(repo.getFilterSpecForVoid(includeVoided))
+//                        .and(repo.getFilterSpecForObs(obs))
+//                        .and(repo.getFilterSpecForLocationIds(locationIds))
+//                , pageable)
+//                .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
         return repo.findAll(
-                where(repo.getFilterSpecForVoid(includeVoided))
-                        .and(repo.getFilterSpecForName(name))
-                        .and(repo.getFilterSpecForObs(obs))
-                        .and(repo.getFilterSpecForLocationIds(locationIds))
+                where(repo.getFilterSpecForName(query))
                 , pageable)
                 .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
     }
