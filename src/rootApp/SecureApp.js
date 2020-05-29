@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Authenticator, Greetings, SignUp } from "aws-amplify-react";
+import { Authenticator, Greetings, SignUp, SignIn } from "aws-amplify-react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 
@@ -8,6 +8,10 @@ import App from "./App";
 import logo from "../logo.png";
 import { initCognito, setCognitoUser } from "./ducks";
 import { customAmplifyErrorMsgs } from "./utils";
+
+// import { SignIn } from "aws-amplify-react";
+// import config from "../../aws-exports";
+import { CustomSignIn } from "../rootApp/LoginPage";
 
 class SecureApp extends Component {
   constructor(props) {
@@ -32,13 +36,16 @@ class SecureApp extends Component {
       <App />
     ) : (
       <div className="centerContainer">
-        <img src={logo} alt="Avni" />
+        {/* <img src={logo} alt="Avni" /> */}
         {this.props.authConfigured && (
           <Authenticator
-            hide={[Greetings, SignUp]}
+            hide={[Greetings, SignUp, SignIn]}
             onStateChange={this.setAuthState}
             errorMessage={customAmplifyErrorMsgs}
-          />
+            // amplifyConfig={config}
+          >
+            <CustomSignIn />
+          </Authenticator>
         )}
       </div>
     );
