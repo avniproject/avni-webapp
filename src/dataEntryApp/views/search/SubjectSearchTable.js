@@ -81,7 +81,8 @@ export const SubjectsTable = ({
     });
   };
   let subjectsListObj = [];
-  let sortfields = orderBy + "," + order;
+  // let sortfields = orderBy + "," + order;
+  let sortfields;
 
   if (subjects) {
     subjectsListObj = subjects.map(a => {
@@ -189,7 +190,7 @@ export const SubjectsTable = ({
           {subjectsListObj.map(row => (
             <TableRow key={row.fullName}>
               <TableCell component="th" scope="row" padding="none" width="20%">
-                <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
+                <Link to={`/app/subject?uuid=${row.uuid}`}>{t(row.fullName)}</Link>
               </TableCell>
               <TableCell padding="none" width="12%">
                 {row.subjectType}

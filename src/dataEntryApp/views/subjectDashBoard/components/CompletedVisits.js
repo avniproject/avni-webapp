@@ -9,6 +9,11 @@ import {
   List
 } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import Collapse from "@material-ui/core/Collapse";
+import IconButton from "@material-ui/core/IconButton";
+import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Typography from "@material-ui/core/Typography";
 import { withRouter, Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
@@ -94,6 +99,68 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
+const Row = props => {
+  const { t } = useTranslation();
+  const { row } = props;
+  const [open, setOpen] = React.useState(false);
+  const classes = useStyle();
+
+  return (
+    <React.Fragment>
+      <TableRow className={classes.root}>
+        {/* <TableCell component="th" scope="row">
+          {/* {t(row.name)} */}
+        {/* <Link to={`/app/subject/viewVisit?uuid=${row.uuid}`}>{t(row.name)}</Link> */}
+        {/* </TableCell> */}
+
+        <TableCell component="th" scope="row" padding="none" width="30%">
+          <Link
+            to={
+              props.isForProgramEncounters
+                ? `/app/subject/viewProgramEncounter?uuid=${row.uuid}`
+                : `/app/subject/viewEncounter?uuid=${row.uuid}`
+            }
+          >
+            {t(row.name)}
+          </Link>
+        </TableCell>
+        <TableCell align="left">{row.encounterDateTime}</TableCell>
+        <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
+
+        <TableCell align="left" className={classes.cellpadding}>
+          {" "}
+          <Link to="">
+            {t("edit")} {t("visit")}
+          </Link>
+        </TableCell>
+        <TableCell>
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box margin={1}>
+              <Typography variant="h6" gutterBottom component="div">
+                {t("summary")}
+              </Typography>
+              <Table size="small" aria-label="purchases">
+                <TableBody>
+                  <List>
+                    <Observations observations={row.observations ? row.observations : ""} />
+                  </List>
+                </TableBody>
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
+  );
+};
+
 const CompletedVisitsTable = ({ allVisits, enableReadOnly, isForProgramEncounters }) => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -121,6 +188,13 @@ const CompletedVisitsTable = ({ allVisits, enableReadOnly, isForProgramEncounter
         numeric: true,
         disablePadding: false,
         label: "visitscheduledate",
+        align: "left"
+      },
+      {
+        id: "",
+        numeric: false,
+        disablePadding: true,
+        label: "",
         align: "left"
       }
     ];
@@ -213,46 +287,14 @@ const CompletedVisitsTable = ({ allVisits, enableReadOnly, isForProgramEncounter
         <TableBody>
           {stableSort(allVisitsListObj, getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((row, index) => {
-              return (
-                <TableRow>
-                  <TableCell component="th" scope="row" padding="none" width="30%">
-                    <Link
-                      to={
-                        isForProgramEncounters
-                          ? `/app/subject/viewProgramEncounter?uuid=${row.uuid}`
-                          : `/app/subject/viewEncounter?uuid=${row.uuid}`
-                      }
-                    >
-                      {t(row.name)}
-                    </Link>
-                  </TableCell>
-
-                  <TableCell align="left" className={classes.cellpadding}>
-                    {row.encounterDateTime}
-                  </TableCell>
-                  <TableCell align="left" className={classes.cellpadding}>
-                    {row.earliestVisitDateTime}
-                  </TableCell>
-
-                  {!enableReadOnly ? (
-                    <TableCell align="left" className={classes.cellpadding}>
-                      {" "}
-                      <Link to="">
-                        {t("edit")} {t("visit")}
-                      </Link>
-                    </TableCell>
-                  ) : (
-                    ""
-                  )}
-                </TableRow>
-              );
-            })}
-          {/* {emptyRows > 0 && (
-            <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )} */}
+            .map(row => (
+              <Row
+                key={row.name}
+                row={row}
+                isForProgramEncounters={isForProgramEncounters}
+                enableReadOnly={enableReadOnly}
+              />
+            ))}
         </TableBody>
       </Table>
 
