@@ -127,12 +127,16 @@ const Row = props => {
         <TableCell align="left">{row.encounterDateTime}</TableCell>
         <TableCell align="left">{row.earliestVisitDateTime}</TableCell>
 
-        <TableCell align="left" className={classes.cellpadding}>
-          {" "}
-          <Link to="">
-            {t("edit")} {t("visit")}
-          </Link>
-        </TableCell>
+        {!props.enableReadOnly ? (
+          <TableCell align="left">
+            {" "}
+            <Link to="">
+              {t("edit")} {t("visit")}
+            </Link>
+          </TableCell>
+        ) : (
+          ""
+        )}
         <TableCell>
           <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
