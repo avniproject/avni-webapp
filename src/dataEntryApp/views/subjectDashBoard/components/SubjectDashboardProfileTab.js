@@ -80,20 +80,11 @@ const useStyles = makeStyles(theme => ({
 const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [expanded, setExpanded] = React.useState("");
-
-  const handleChange = panel => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
 
   return (
     <Fragment>
       <Paper className={classes.root}>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expanded === "registrationPanel"}
-          onChange={handleChange("registrationPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="registrationPanelbh-content"
@@ -128,11 +119,7 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expanded === "relativesPanel"}
-          onChange={handleChange("relativesPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="relativesPanelbh-content"

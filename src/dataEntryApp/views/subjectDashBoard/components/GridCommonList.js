@@ -70,8 +70,8 @@ const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
                         gutterBottom
                       >
                         {new Date().getFullYear() -
-                          new Date(relative.individualB.dateOfBirth).getFullYear() +
-                          `${t("years")}`}
+                          new Date(relative.individualB.dateOfBirth).getFullYear()}{" "}
+                        {t("years")}
                       </Typography>
                     </CardContent>
                     {!enableReadOnly ? (

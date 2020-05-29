@@ -1,13 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-
 import IconButton from "@material-ui/core/IconButton";
 import FirstPageIcon from "@material-ui/icons/FirstPage";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
-import { searchSubjects } from "../../reducers/searchReducer";
 
 const useStyles1 = makeStyles(theme => ({
   root: {
@@ -19,11 +17,10 @@ const useStyles1 = makeStyles(theme => ({
 export const TablePaginationActions = props => {
   const classes = useStyles1();
   const theme = useTheme();
-  const { count, page, rowsPerPage, onChangePage, search } = props;
+  const { count, page, rowsPerPage, onChangePage } = props;
 
   const handleFirstPageButtonClick = event => {
     onChangePage(event, 0);
-    searchSubjects();
   };
 
   const handleBackButtonClick = event => {
@@ -36,12 +33,6 @@ export const TablePaginationActions = props => {
 
   const handleLastPageButtonClick = event => {
     onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-    // setSubjectSearchParams({
-    //   page: rowsPerPage,
-    //   query: search,
-    //   size: Math.max(0, Math.ceil(count / rowsPerPage) - 1)
-    // });
-    searchSubjects();
   };
 
   return (

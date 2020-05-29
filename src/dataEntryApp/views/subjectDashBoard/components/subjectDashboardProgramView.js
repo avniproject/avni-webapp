@@ -118,13 +118,6 @@ const useStyles = makeStyles(theme => ({
 const ProgramView = ({ programData, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
-  const [expandedPanel, setExpanded] = React.useState("");
-
-  const handleChange = panel => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
-
   let plannedVisits = [];
   let completedVisits = [];
 
@@ -182,11 +175,7 @@ const ProgramView = ({ programData, enableReadOnly }) => {
         </Grid>
       </Grid>
       <Paper className={classes.root}>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expandedPanel === "enrollmentPanel"}
-          onChange={handleChange("enrollmentPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="enrollmentPanelbh-content"
@@ -206,11 +195,7 @@ const ProgramView = ({ programData, enableReadOnly }) => {
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expandedPanel === "plannedVisitPanel"}
-          onChange={handleChange("plannedVisitPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="plannedVisitPanelbh-content"
@@ -256,11 +241,7 @@ const ProgramView = ({ programData, enableReadOnly }) => {
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expandedPanel === "completedVisitPanel"}
-          onChange={handleChange("completedVisitPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="completedVisitPanelbh-content"
@@ -277,7 +258,11 @@ const ProgramView = ({ programData, enableReadOnly }) => {
               justify="flex-start"
               alignItems="flex-start"
               spacing={2}
-              className={classes.gridBottomBorder}
+              className={
+                programData && programData.encounters && completedVisits.length != 0
+                  ? classes.gridBottomBorder
+                  : ""
+              }
             >
               {programData && programData.encounters && completedVisits.length != 0 ? (
                 programData.encounters.map((row, index) =>
