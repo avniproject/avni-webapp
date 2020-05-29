@@ -61,11 +61,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) => {
-  const [expanded, setExpanded] = React.useState("");
-
-  const handleChange = panel => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
   const { t } = useTranslation();
   const classes = useStyles();
   let plannedVisits = [];
@@ -101,11 +96,7 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
         <Grid container justify="flex-end">
           {!enableReadOnly ? <SubjectButton btnLabel={t("newform")} /> : ""}
         </Grid>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expanded === "plannedVisitPanel"}
-          onChange={handleChange("plannedVisitPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="plannedVisitPanelbh-content"
@@ -142,11 +133,7 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expanded === "completedVisitPanel"}
-          onChange={handleChange("completedVisitPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="completedVisitPanelbh-content"
