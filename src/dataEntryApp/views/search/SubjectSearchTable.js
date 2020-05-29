@@ -63,38 +63,30 @@ export const SubjectsTable = ({
   pageDetails,
   searchparam,
   rowsPerPage,
-  setRowsPerPage
+  setRowsPerPage,
+  page,
+  setPage
 }) => {
-  // export const SubjectsTable = ({type,subjects,pageDetails,searchparam}) => {
   const classes = useStyle();
   const { t } = useTranslation();
-  const [page, setPage] = React.useState(0);
   const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("fullName");
+  const [orderBy, setOrderBy] = React.useState("firstName");
   const [selected, setSelected] = React.useState([]);
-  // const [rowsPerPage, setRowsPerPage] = React.useState(10);
   let tableHeaderNames = [];
   let pageinfo = pageDetails.subjects;
   let searchText = searchparam;
-  console.log("pageinfo----", pageinfo);
-  console.log("type----", type);
-  console.log("subjects----", subjects);
-  console.log("pageDetails----", pageDetails);
-  console.log("searchparam----", searchparam);
-  console.log("rowsPerPage----", rowsPerPage);
-  console.log("setRowsPerPage----", setRowsPerPage);
   const camelize = str => {
     return (" " + str).toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function(match, chr) {
       return chr.toUpperCase();
     });
   };
   let subjectsListObj = [];
+  let sortfields = orderBy + "," + order;
 
   if (subjects) {
     subjectsListObj = subjects.map(a => {
       let firstName = a.firstName ? camelize(a.firstName) : "";
       let lastName = a.lastName ? camelize(a.lastName) : "";
-      // let subjectType = a.subjectType.name;
       let sub = {
         uuid: a.uuid,
         fullName: firstName + " " + lastName,
@@ -110,7 +102,7 @@ export const SubjectsTable = ({
   }
   if (type.name === "Individual") {
     tableHeaderNames = [
-      { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+      { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
       {
         id: "subjectType",
         numeric: false,
@@ -143,7 +135,7 @@ export const SubjectsTable = ({
     ];
   } else {
     tableHeaderNames = [
-      { id: "fullName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+      { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
       {
         id: "addressLevel",
         numeric: false,
@@ -165,26 +157,20 @@ export const SubjectsTable = ({
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
-  };
-
-  const handleSelectAllClick = event => {
-    if (event.target.checked) {
-      const newSelecteds = subjects.map(n => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
+    setPage(0);
+    sortfields = property + "," + order;
+    pageDetails.search({ page: 0, query: searchText, size: rowsPerPage, sort: sortfields });
   };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-    pageDetails.search({ page: newPage, query: searchText, size: rowsPerPage });
+    pageDetails.search({ page: newPage, query: searchText, size: rowsPerPage, sort: sortfields });
   };
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-    pageDetails.search({ page: 0, query: searchText, size: event.target.value });
+    pageDetails.search({ page: 0, query: searchText, size: event.target.value, sort: sortfields });
   };
 
   return subjectsListObj ? (
@@ -196,7 +182,6 @@ export const SubjectsTable = ({
           numSelected={selected.length}
           order={order}
           orderBy={orderBy}
-          onSelectAllClick={handleSelectAllClick}
           onRequestSort={handleRequestSort}
           rowCount={subjectsListObj.length}
         />

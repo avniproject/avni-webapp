@@ -61,13 +61,14 @@ const useStyle = makeStyles(theme => ({
 const SubjectSearch = props => {
   const classes = useStyle();
   const { t } = useTranslation();
+  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchvalue, setSearchvalue] = React.useState("");
 
   const handleSubmit = event => {
     event.preventDefault();
     // console.log("-------------->", event.target);
-    props.search({ page: 0, query: searchvalue, size: rowsPerPage });
+    props.search({ page: page, query: searchvalue, size: rowsPerPage });
   };
 
   const valueSubmit = e => {
@@ -120,6 +121,8 @@ const SubjectSearch = props => {
           searchparam={searchvalue}
           rowsPerPage={rowsPerPage}
           setRowsPerPage={setRowsPerPage}
+          page={page}
+          setPage={setPage}
         />
         {/* <SubjectsTable
           subjects={props.subjects.content}
