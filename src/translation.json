@@ -326,7 +326,9 @@
       "Relatives": "સંબંધીઓ",
       "action": "ક્રિયાઓ",
       "Pregnancy": "ગર્ભાવસ્થા",
-      "Program": "કાર્યક્રમ"
+      "Program": "કાર્યક્રમ",
+      "noRelativesAdded": "કોઈ સબંધીઓ ઉમેર્યા નથી",
+      "viewAllCompletedVisits": "બધી પૂર્ણ મુલાકાતો જુઓ"
     }
   },
   "en": {
@@ -698,10 +700,10 @@
       "Enrol": "Enrol",
       "Cancel": "Cancel",
       "Enrol in program": "Enrol in program",
-      "activeprograms": "Active Program",
+      "activeprograms": "Active Programs",
       "exitedProgram": "Exited Program",
       "newform": "New From",
-      "completedVisits": "Completed Visit",
+      "completedVisits": "Completed Visits",
       "programdetails": "Program Details",
       "viewAllVisits": "View All Visits",
       "Program": "Program",
@@ -719,7 +721,8 @@
       "searchHelpText": "Search is based on Name, SubjectType, Gender, Adrdress, Observations",
       "resetAll": "Reset All",
       "notEnroledInAnyProgram": "Not enroled in any program",
-      "noRelativesAdded": "No Relatives Added"
+      "noRelativesAdded": "No Relatives Added",
+      "viewAllCompletedVisits": "View All Completed Visits"
     }
   },
   "hi_IN": {
@@ -1060,7 +1063,9 @@
       "Child": "बच्चा",
       "Relatives": "रिश्तेदारों",
       "action": "कार्य",
-      "Pregnancy": "गर्भावस्था"
+      "Pregnancy": "गर्भावस्था",
+      "noRelativesAdded": "कोई रिश्तेदार नहीं जोड़ा गया",
+      "viewAllCompletedVisits": "सभी पूर्ण देखे गए दृश्य"
     }
   },
   "mr_IN": {
