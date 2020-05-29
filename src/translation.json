@@ -718,7 +718,8 @@
       "subjectType": "Subject Type",
       "searchHelpText": "Search is based on Name, SubjectType, Gender, Adrdress, Observations",
       "resetAll": "Reset All",
-      "notEnroledInAnyProgram": "Not enroled in any program"
+      "notEnroledInAnyProgram": "Not enroled in any program",
+      "noRelativesAdded": "No Relatives Added"
     }
   },
   "hi_IN": {
