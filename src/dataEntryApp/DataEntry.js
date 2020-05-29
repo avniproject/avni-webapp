@@ -45,7 +45,8 @@ const DataEntry = ({
   return operationalModules && orgConfig ? (
     <I18nextProvider i18n={i18n}>
       <div className={classes.root}>
-        <Grid container spacing={2} justify="center">
+        {/* <Grid container spacing={2} justify="center"> */}
+        <Grid container justify="center">
           <Grid item xs={12}>
             <AppBar />
           </Grid>

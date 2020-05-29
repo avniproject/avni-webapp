@@ -277,7 +277,11 @@ const ProgramView = ({ programData, enableReadOnly }) => {
               justify="flex-start"
               alignItems="flex-start"
               spacing={2}
-              className={classes.gridBottomBorder}
+              className={
+                programData && programData.encounters && completedVisits.length != 0
+                  ? classes.gridBottomBorder
+                  : ""
+              }
             >
               {programData && programData.encounters && completedVisits.length != 0 ? (
                 programData.encounters.map((row, index) =>
