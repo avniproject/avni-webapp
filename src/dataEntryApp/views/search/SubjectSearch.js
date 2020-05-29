@@ -19,8 +19,6 @@ import { first } from "lodash";
 import { searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
-import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
-import { TablePaginationActions } from "./SubjectSearchPagination";
 import { useTranslation } from "react-i18next";
 import { ToolTipContainer } from "../../components/ToolTipContainer";
 import { SubjectsTable } from "./SubjectSearchTable";
