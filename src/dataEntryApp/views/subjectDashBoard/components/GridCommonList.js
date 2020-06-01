@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GridCommonList = ({ gridListDetails, path, enableReadOnly }) => {
+const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
