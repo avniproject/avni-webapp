@@ -205,7 +205,8 @@ const ProfileDetails = ({
   return (
     <div className={classes.tableView}>
       <Typography component={"span"} className={classes.mainHeading}>
-        {`${camelize(profileDetails.firstName)} ${camelize(profileDetails.lastName)}`} {t("Dashboard")}
+        {`${camelize(profileDetails.firstName)} ${camelize(profileDetails.lastName)}`}{" "}
+        {t("Dashboard")}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
         {/* <Grid item>
@@ -237,10 +238,12 @@ const ProfileDetails = ({
                   {t(profileDetails.gender.name)}
                 </TableCell>
                 <TableCell className={classes.tableCellDetails}>
-                  {new Date().getFullYear() -
-                    new Date(profileDetails.dateOfBirth).getFullYear() +
-                    " " +
-                    `${t("years")}`}
+                  {profileDetails.dateOfBirth
+                    ? new Date().getFullYear() -
+                      new Date(profileDetails.dateOfBirth).getFullYear() +
+                      " " +
+                      `${t("years")}`
+                    : "-"}
                 </TableCell>
                 <TableCell className={classes.tableCellDetails}>
                   {profileDetails.lowestAddressLevel.name}
