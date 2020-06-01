@@ -1,5 +1,3 @@
-import TextField from "@material-ui/core/TextField";
-
 import React, { useEffect, useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -12,17 +10,19 @@ import Grid from "@material-ui/core/Grid";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
-import Switch from "@material-ui/core/Switch";
 import GroupRoles from "./GroupRoles";
-import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
 import { findRegistrationForm, findRegistrationForms } from "../domain/formMapping";
 import _ from "lodash";
-import SelectForm from "./SelectForm";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import { AvniTextField } from "../../common/components/AvniTextField";
 import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
+import Types from "./Types";
+import MenuItem from "@material-ui/core/MenuItem";
+import { AvniSelect } from "../../common/components/AvniSelect";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -56,7 +56,8 @@ const SubjectTypeEdit = props => {
   }, []);
 
   const onSubmit = () => {
-    validateGroup(subjectType.groupRoles, setGroupValidationError);
+    const groupValidationError = validateGroup(subjectType.groupRoles);
+    setGroupValidationError(groupValidationError);
     if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
@@ -65,32 +66,35 @@ const SubjectTypeEdit = props => {
 
     setNameValidation(false);
     let subjectTypeUuid;
-    let subjectTypeSavePromise = () =>
-      http
-        .put("/web/subjectType/" + props.match.params.id, {
-          name: subjectType.name,
-          id: props.match.params.id,
-          organisationId: subjectTypeData.organisationId,
-          active: subjectType.active,
-          subjectTypeOrganisationId: subjectTypeData.subjectTypeOrganisationId,
-          voided: subjectTypeData.voided,
-          group: subjectType.group,
-          household: subjectType.household,
-          groupRoles: subjectType.groupRoles,
-          registrationFormUuid: _.get(subjectType, "registrationForm.formUUID")
-        })
-        .then(response => {
-          if (response.status === 200) {
-            subjectTypeUuid = response.data.uuid;
-            setError("");
-            setRedirectShow(true);
-          }
-        })
-        .catch(error => {
-          setError(error.response.data.message);
-        });
+    if (!groupValidationError) {
+      let subjectTypeSavePromise = () =>
+        http
+          .put("/web/subjectType/" + props.match.params.id, {
+            name: subjectType.name,
+            id: props.match.params.id,
+            organisationId: subjectTypeData.organisationId,
+            active: subjectType.active,
+            subjectTypeOrganisationId: subjectTypeData.subjectTypeOrganisationId,
+            voided: subjectTypeData.voided,
+            group: subjectType.group,
+            household: subjectType.household,
+            groupRoles: subjectType.groupRoles,
+            registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
+            type: subjectType.type
+          })
+          .then(response => {
+            if (response.status === 200) {
+              subjectTypeUuid = response.data.uuid;
+              setError("");
+              setRedirectShow(true);
+            }
+          })
+          .catch(error => {
+            setError(error.response.data.message);
+          });
 
-    return subjectTypeSavePromise();
+      return subjectTypeSavePromise();
+    }
   };
 
   const onDelete = () => {
@@ -142,18 +146,18 @@ const SubjectTypeEdit = props => {
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
           />
           <p />
-          <AvniSwitch
-            checked={subjectType.household}
-            onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
-            name="Household"
-            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_HOUSEHOLD"}
-          />
-          <AvniSwitch
-            disabled={subjectType.household}
-            checked={subjectType.group}
-            onChange={event => handleGroupChange(event, subjectType, dispatch)}
-            name="Group"
-            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_GROUP"}
+          <AvniSelect
+            label="Select Type *"
+            value={_.isEmpty(subjectType.type) ? "" : subjectType.type}
+            onChange={event => dispatch({ type: "type", payload: event.target.value })}
+            style={{ width: "200px" }}
+            required
+            options={Types.types.map(({ type }, index) => (
+              <MenuItem value={type} key={index}>
+                {type}
+              </MenuItem>
+            ))}
+            toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
           />
           <p />
           <AvniSwitch
@@ -176,17 +180,19 @@ const SubjectTypeEdit = props => {
             toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM"}
           />
           <p />
-          {subjectType.group && (
+          {Types.isGroup(subjectType.type) && (
             <>
-              <Grid component="label" container alignItems="center" spacing={2}>
-                <Grid>Group Roles</Grid>
-              </Grid>
+              <AvniFormLabel
+                label={Types.isHousehold(subjectType.type) ? "Household Roles" : "Group Roles"}
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_GROUP_ROLES"}
+              />
               <GroupRoles
                 groupRoles={subjectType.groupRoles}
-                household={subjectType.household}
+                type={subjectType.type}
                 dispatch={dispatch}
                 error={groupValidationError}
                 edit={true}
+                memberSubjectType={subjectType.memberSubjectType}
               />
             </>
           )}
