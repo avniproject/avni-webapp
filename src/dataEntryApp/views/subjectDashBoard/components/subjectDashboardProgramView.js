@@ -164,6 +164,7 @@ const ProgramView = ({
     handleClose();
     handleUpdateComponent(subjectUuid);
   };
+
   let plannedVisits = [];
   let completedVisits = [];
 
@@ -218,11 +219,7 @@ const ProgramView = ({
         </Grid>
       </Grid>
       <Paper className={classes.root}>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expandedPanel === "enrollmentPanel"}
-          onChange={handleChange("enrollmentPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="enrollmentPanelbh-content"
@@ -322,11 +319,7 @@ const ProgramView = ({
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expandedPanel === "plannedVisitPanel"}
-          onChange={handleChange("plannedVisitPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="plannedVisitPanelbh-content"
@@ -372,11 +365,7 @@ const ProgramView = ({
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
-        <ExpansionPanel
-          className={classes.expansionPanel}
-          expanded={expandedPanel === "completedVisitPanel"}
-          onChange={handleChange("completedVisitPanel")}
-        >
+        <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
             aria-controls="completedVisitPanelbh-content"
@@ -393,7 +382,11 @@ const ProgramView = ({
               justify="flex-start"
               alignItems="flex-start"
               spacing={2}
-              className={classes.gridBottomBorder}
+              className={
+                programData && programData.encounters && completedVisits.length != 0
+                  ? classes.gridBottomBorder
+                  : ""
+              }
             >
               {programData && programData.encounters && completedVisits.length != 0 ? (
                 programData.encounters.map((row, index) =>

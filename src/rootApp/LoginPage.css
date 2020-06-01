@@ -1,0 +1,11 @@
+#img2 {
+  float: right;
+}
+#img1 {
+  margin-left: 20px;
+  margin: 100px 55px;
+}
+
+.custom_li {
+  list-style: none;
+}
