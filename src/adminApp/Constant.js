@@ -13,8 +13,6 @@ export const encounterTypeInitialState = {
 
 export const subjectTypeInitialState = {
   name: "",
-  group: false,
-  household: false,
   groupRoles: []
 };
 

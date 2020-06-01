@@ -7,16 +7,18 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
-import { Grid } from "@material-ui/core";
 import GroupRoles from "./GroupRoles";
-import { handleGroupChange, handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { validateGroup } from "./GroupHandlers";
 import { useFormMappings } from "./effects";
 import _ from "lodash";
 import { findRegistrationForms } from "../domain/formMapping";
 import { DocumentationContainer } from "../../common/components/DocumentationContainer";
 import { AvniTextField } from "../../common/components/AvniTextField";
-import { AvniSwitch } from "../../common/components/AvniSwitch";
 import { AvniSelectForm } from "../../common/components/AvniSelectForm";
+import { AvniSelect } from "../../common/components/AvniSelect";
+import MenuItem from "@material-ui/core/MenuItem";
+import Types from "./Types";
+import { AvniFormLabel } from "../../common/components/AvniFormLabel";
 
 const SubjectTypeCreate = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -27,7 +29,6 @@ const SubjectTypeCreate = props => {
   const [id, setId] = useState();
   const [formMappings, setFormMappings] = useState([]);
   const [formList, setFormList] = useState([]);
-  const [age, setAge] = useState();
 
   const consumeFormMappingResult = (formMap, forms) => {
     setFormMappings(formMap);
@@ -39,7 +40,8 @@ const SubjectTypeCreate = props => {
   const onSubmit = event => {
     event.preventDefault();
 
-    validateGroup(subjectType.groupRoles, setGroupValidationError);
+    const groupValidationError = validateGroup(subjectType.groupRoles);
+    setGroupValidationError(groupValidationError);
     if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
@@ -49,25 +51,27 @@ const SubjectTypeCreate = props => {
     setNameValidation(false);
     let subjectTypeUuid;
 
-    let subjectTypeSavePromise = () =>
-      http
-        .post("/web/subjectType", {
-          ...subjectType,
-          registrationFormUuid: _.get(subjectType, "registrationForm.formUUID")
-        })
-        .then(response => {
-          if (response.status === 200) {
-            subjectTypeUuid = response.data.uuid;
-            setError("");
-            setAlert(true);
-            setId(response.data.id);
-          }
-        })
-        .catch(error => {
-          setError(error.response.data.message);
-        });
+    if (!groupValidationError) {
+      let subjectTypeSavePromise = () =>
+        http
+          .post("/web/subjectType", {
+            ...subjectType,
+            registrationFormUuid: _.get(subjectType, "registrationForm.formUUID")
+          })
+          .then(response => {
+            if (response.status === 200) {
+              subjectTypeUuid = response.data.uuid;
+              setError("");
+              setAlert(true);
+              setId(response.data.id);
+            }
+          })
+          .catch(error => {
+            setError(error.response.data.message);
+          });
 
-    return subjectTypeSavePromise();
+      return subjectTypeSavePromise();
+    }
   };
 
   return (
@@ -87,19 +91,18 @@ const SubjectTypeCreate = props => {
                 toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_NAME"}
               />
               <p />
-              <AvniSwitch
-                checked={subjectType.household}
-                onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
-                name="Household"
-                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_HOUSEHOLD"}
-              />
-              <p />
-              <AvniSwitch
-                disabled={subjectType.household}
-                checked={subjectType.group}
-                onChange={event => handleGroupChange(event, subjectType, dispatch)}
-                name="Group"
-                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_GROUP"}
+              <AvniSelect
+                label="Select Type *"
+                value={_.isEmpty(subjectType.type) ? "" : subjectType.type}
+                onChange={event => dispatch({ type: "type", payload: event.target.value })}
+                style={{ width: "200px" }}
+                required
+                options={Types.types.map(({ type }, index) => (
+                  <MenuItem value={type} key={index}>
+                    {type}
+                  </MenuItem>
+                ))}
+                toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE"}
               />
               <p />
               <AvniSelectForm
@@ -115,16 +118,18 @@ const SubjectTypeCreate = props => {
                 toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM"}
               />
               <p />
-              {!subjectType.household && subjectType.group && (
+              {Types.isGroup(subjectType.type) && (
                 <>
-                  <Grid component="label" container alignItems="center" spacing={2}>
-                    <Grid>Group Roles</Grid>
-                  </Grid>
+                  <AvniFormLabel
+                    label={Types.isHousehold(subjectType.type) ? "Household Roles" : "Group Roles"}
+                    toolTipKey={"APP_DESIGNER_SUBJECT_TYPE_GROUP_ROLES"}
+                  />
                   <GroupRoles
                     groupRoles={subjectType.groupRoles}
-                    household={subjectType.household}
+                    type={subjectType.type}
                     dispatch={dispatch}
                     error={groupValidationError}
+                    memberSubjectType={subjectType.memberSubjectType}
                   />
                 </>
               )}
