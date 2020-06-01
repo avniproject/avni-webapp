@@ -3,6 +3,7 @@ import { SignIn } from "aws-amplify-react";
 import { TextField, FormLabel, Paper, Grid } from "@material-ui/core";
 import styles from "./LoginPage.css";
 import Fab from "@material-ui/core/Fab";
+import logo from "../../src/formDesigner/styles/images/avniLogo.png";
 
 // import Visibility from '@material-ui/icons/Visibility';
 // import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -39,24 +40,43 @@ export class CustomSignIn extends SignIn {
         <Grid>
           <div>
             <div>
-              <img
+              {/* <img
                 src={require("../../src/logo.png")}
                 id="img1"
                 style={{ marginLeft: "20px", margin: "69px 95px", marginTop: "90px" }}
+              /> */}
+              <img
+                src={logo}
+                alt="logo"
+                id="img1"
+                style={{
+                  marginLeft: "13%",
+                  marginBottom: "5%",
+                  marginTop: "9%",
+                  height: "45px"
+                }}
               />
+
               <img
                 src={require("../../src/login_image.png")}
                 id="img2"
                 style={{ float: "right" }}
               />
-              <div style={{ marginBottom: "25px" }}>
-                <FormLabel style={{ marginLeft: "95px", fontSize: "23px", color: "black" }}>
-                  <b>Sign In</b>
+              <div style={{ marginBottom: "1.5%" }}>
+                <FormLabel
+                  style={{
+                    marginLeft: "13%",
+                    fontSize: "23px",
+                    color: "black",
+                    FontWight: "350"
+                  }}
+                >
+                  Sign In
                 </FormLabel>
               </div>
             </div>
             <div className="mx-auto w-full max-w-xs">
-              <ul style={{ marginLeft: "64px", listStyleType: "none" }}>
+              <ul style={{ marginLeft: "10%", listStyleType: "none" }}>
                 <li>
                   <TextField
                     id="username"
@@ -65,7 +85,7 @@ export class CustomSignIn extends SignIn {
                     onChange={this.handleInputChange}
                     type="text"
                     label="Username"
-                    style={{ width: "249px" }}
+                    style={{ width: "25%", marginBottom: "2%" }}
                   />
                 </li>
                 <li>
@@ -76,7 +96,7 @@ export class CustomSignIn extends SignIn {
                     onChange={this.handleInputChange}
                     type="password"
                     label="Password"
-                    style={{ width: "249px" }}
+                    style={{ width: "25%", marginBottom: "1%" }}
                   />
 
                   {/* <InputLabel >Password</InputLabel>
@@ -109,11 +129,10 @@ export class CustomSignIn extends SignIn {
                       <p
                         className="text-grey-dark"
                         style={{
-                          marginLeft: "147px",
+                          marginLeft: "16%",
                           cursor: "pointer",
-                          color: "blue",
-                          fontSize: "12px",
-                          padding: "7px"
+                          color: "#0095ff",
+                          fontSize: "12px"
                         }}
                       >
                         Forgot password?
