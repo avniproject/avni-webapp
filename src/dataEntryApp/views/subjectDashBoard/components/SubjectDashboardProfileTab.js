@@ -133,7 +133,6 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
             {profile.relationships != undefined ? (
               <GridCommonList
                 gridListDetails={profile.relationships}
-                path={path}
                 enableReadOnly={enableReadOnly}
               />
             ) : (
