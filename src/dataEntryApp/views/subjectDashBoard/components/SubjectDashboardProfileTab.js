@@ -131,7 +131,11 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             {profile.relationships != undefined ? (
-              <GridCommonList gridListDetails={profile.relationships} path={path} />
+              <GridCommonList
+                gridListDetails={profile.relationships}
+                path={path}
+                enableReadOnly={enableReadOnly}
+              />
             ) : (
               <Typography variant="caption" gutterBottom className={classes.infomsg}>
                 {" "}

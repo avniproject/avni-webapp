@@ -67,7 +67,6 @@ const SubjectSearch = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    // console.log("-------------->", event.target);
     props.search({ page: page, query: searchvalue, size: rowsPerPage });
   };
 
@@ -75,7 +74,6 @@ const SubjectSearch = props => {
     // props.setSearchParams({ page: 0, query: e.target.value, size: 10 });
     setSearchvalue(e.target.value);
     // props.search({ page: 0, query: searchvalue, size: rowsPerPage })
-    console.log("Serach value------>", e.target.value);
   };
 
   useEffect(() => {

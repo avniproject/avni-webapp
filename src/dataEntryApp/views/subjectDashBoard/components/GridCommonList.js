@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
+const GridCommonList = ({ gridListDetails, path, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -48,7 +48,8 @@ const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
                   <Card className={classes.card}>
                     <CardContent>
                       <Typography component={"div"} color="primary">
-                        <Link to={`?uuid=${relative.individualB.uuid}`} replace>
+                        {/* <Link to={`?uuid=${relative.individualB.uuid}`}> */}
+                        <Link to={`/app/subject?uuid=${relative.individualB.uuid}`}>
                           {" "}
                           {relative.individualB.firstName +
                             " " +
@@ -94,8 +95,9 @@ const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
-});
+// const mapStateToProps = state => ({
+//   enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
+// });
 
-export default withRouter(connect(mapStateToProps)(GridCommonList));
+// export default withRouter(connect(mapStateToProps)(GridCommonList));
+export default GridCommonList;

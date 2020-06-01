@@ -93,8 +93,9 @@ export const SubjectsTable = ({
         fullName: firstName + " " + lastName,
         subjectType: a.subjectType.name,
         gender: a.gender ? t(a.gender.name) : "",
-        dateOfBirth:
-          new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`,
+        dateOfBirth: a.dateOfBirth
+          ? new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`
+          : "",
         addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
         activePrograms: a.activePrograms ? a.activePrograms : []
       };
