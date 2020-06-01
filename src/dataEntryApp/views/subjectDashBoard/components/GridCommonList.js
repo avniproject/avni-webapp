@@ -7,7 +7,6 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
-import { Link, withRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
@@ -95,9 +94,4 @@ const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
   );
 };
 
-// const mapStateToProps = state => ({
-//   enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
-// });
-
-// export default withRouter(connect(mapStateToProps)(GridCommonList));
 export default GridCommonList;
