@@ -42,7 +42,7 @@ export class CustomSignIn extends SignIn {
               <img
                 src={require("../../src/logo.png")}
                 id="img1"
-                style={{ marginLeft: "20px", margin: "69px 95px", marginTop: "90px" }}
+                style={{ marginLeft: "13%", marginBottom: "5%", marginTop: "9%" }}
               />
               <img
                 src={require("../../src/login_image.png")}
@@ -50,13 +50,20 @@ export class CustomSignIn extends SignIn {
                 style={{ float: "right" }}
               />
               <div style={{ marginBottom: "25px" }}>
-                <FormLabel style={{ marginLeft: "95px", fontSize: "23px", color: "black" }}>
-                  <b>Sign In</b>
+                <FormLabel
+                  style={{
+                    marginLeft: "13%",
+                    fontSize: "23px",
+                    color: "black",
+                    FontWight: "350px"
+                  }}
+                >
+                  Sign In
                 </FormLabel>
               </div>
             </div>
             <div className="mx-auto w-full max-w-xs">
-              <ul style={{ marginLeft: "64px", listStyleType: "none" }}>
+              <ul style={{ marginLeft: "10%", listStyleType: "none" }}>
                 <li>
                   <TextField
                     id="username"
@@ -65,7 +72,7 @@ export class CustomSignIn extends SignIn {
                     onChange={this.handleInputChange}
                     type="text"
                     label="Username"
-                    style={{ width: "249px" }}
+                    style={{ width: "25%" }}
                   />
                 </li>
                 <li>
@@ -76,7 +83,7 @@ export class CustomSignIn extends SignIn {
                     onChange={this.handleInputChange}
                     type="password"
                     label="Password"
-                    style={{ width: "249px" }}
+                    style={{ width: "25%" }}
                   />
 
                   {/* <InputLabel >Password</InputLabel>
