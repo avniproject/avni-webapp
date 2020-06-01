@@ -52,7 +52,8 @@ export class CustomSignIn extends SignIn {
                 style={{
                   marginLeft: "13%",
                   marginBottom: "5%",
-                  marginTop: "9%"
+                  marginTop: "9%",
+                  height: "45px"
                 }}
               />
 
@@ -61,13 +62,13 @@ export class CustomSignIn extends SignIn {
                 id="img2"
                 style={{ float: "right" }}
               />
-              <div style={{ marginBottom: "25px" }}>
+              <div style={{ marginBottom: "1.5%" }}>
                 <FormLabel
                   style={{
                     marginLeft: "13%",
                     fontSize: "23px",
                     color: "black",
-                    FontWight: "350px"
+                    FontWight: "350"
                   }}
                 >
                   Sign In
@@ -84,7 +85,7 @@ export class CustomSignIn extends SignIn {
                     onChange={this.handleInputChange}
                     type="text"
                     label="Username"
-                    style={{ width: "25%" }}
+                    style={{ width: "25%", marginBottom: "2%" }}
                   />
                 </li>
                 <li>
@@ -95,7 +96,7 @@ export class CustomSignIn extends SignIn {
                     onChange={this.handleInputChange}
                     type="password"
                     label="Password"
-                    style={{ width: "25%" }}
+                    style={{ width: "25%", marginBottom: "1%" }}
                   />
 
                   {/* <InputLabel >Password</InputLabel>
@@ -128,11 +129,10 @@ export class CustomSignIn extends SignIn {
                       <p
                         className="text-grey-dark"
                         style={{
-                          marginLeft: "147px",
+                          marginLeft: "16%",
                           cursor: "pointer",
-                          color: "blue",
-                          fontSize: "12px",
-                          padding: "7px"
+                          color: "#0095ff",
+                          fontSize: "12px"
                         }}
                       >
                         Forgot password?
