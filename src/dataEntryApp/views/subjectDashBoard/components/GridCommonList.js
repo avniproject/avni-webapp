@@ -10,6 +10,7 @@ import { bold } from "ansi-colors";
 import { Link, withRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
+import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -48,13 +49,12 @@ const GridCommonList = ({ gridListDetails, path, enableReadOnly }) => {
                   <Card className={classes.card}>
                     <CardContent>
                       <Typography component={"div"} color="primary">
-                        {/* <Link to={`?uuid=${relative.individualB.uuid}`}> */}
-                        <Link to={`/app/subject?uuid=${relative.individualB.uuid}`}>
+                        <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
                           {" "}
                           {relative.individualB.firstName +
                             " " +
                             relative.individualB.lastName}{" "}
-                        </Link>
+                        </InternalLink>
                       </Typography>
                       <Typography
                         component={"div"}
