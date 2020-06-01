@@ -87,7 +87,7 @@ public class IndividualService {
         individualContract.setFirstName(individual.getFirstName());
         individualContract.setLastName(individual.getLastName());
         if(null!=individual.getDateOfBirth())
-        individualContract.setDateOfBirth(individual.getDateOfBirth());
+            individualContract.setDateOfBirth(individual.getDateOfBirth());
         if(null!=individual.getGender()) {
             individualContract.setGender(individual.getGender().getName());
             individualContract.setGenderUUID(individual.getGender().getUuid());
