@@ -259,7 +259,7 @@ const FilterResult = ({
       buttonsSet={[
         {
           buttonType: "openButton",
-          label: t("filterResult"),
+          label: t("filterResults"),
           classes: classes.filterButtonStyle
         },
         {

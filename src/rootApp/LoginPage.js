@@ -3,6 +3,7 @@ import { SignIn } from "aws-amplify-react";
 import { TextField, FormLabel, Paper, Grid } from "@material-ui/core";
 import styles from "./LoginPage.css";
 import Fab from "@material-ui/core/Fab";
+import logo from "../../src/formDesigner/styles/images/avniLogo.png";
 
 // import Visibility from '@material-ui/icons/Visibility';
 // import VisibilityOff from '@material-ui/icons/VisibilityOff'
@@ -39,11 +40,22 @@ export class CustomSignIn extends SignIn {
         <Grid>
           <div>
             <div>
-              <img
+              {/* <img
                 src={require("../../src/logo.png")}
                 id="img1"
-                style={{ marginLeft: "13%", marginBottom: "5%", marginTop: "9%" }}
+                style={{ marginLeft: "20px", margin: "69px 95px", marginTop: "90px" }}
+              /> */}
+              <img
+                src={logo}
+                alt="logo"
+                id="img1"
+                style={{
+                  marginLeft: "13%",
+                  marginBottom: "5%",
+                  marginTop: "9%"
+                }}
               />
+
               <img
                 src={require("../../src/login_image.png")}
                 id="img2"
