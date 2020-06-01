@@ -26,6 +26,7 @@ public class SubjectTypeContractWeb {
     private String uuid;
     private List<GroupRoleContract> groupRoles;
     private String registrationFormUuid;
+    private String type;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -43,7 +44,16 @@ public class SubjectTypeContractWeb {
         contract.setHousehold(operationalSubjectType.isHousehold());
         contract.setGroupRoles(operationalSubjectType.getSubjectType().getGroupRolesContract());
         contract.setActive(operationalSubjectType.getSubjectType().getActive());
+        contract.setType(operationalSubjectType.getType().name());
         return contract;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public List<GroupRoleContract> getGroupRoles() {

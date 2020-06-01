@@ -1,5 +1,6 @@
 package org.openchs.service;
 
+import org.openchs.application.Subject;
 import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.domain.OperationalSubjectType;
@@ -36,6 +37,7 @@ public class SubjectTypeService {
         subjectType.setGroup(subjectTypeRequest.isGroup());
         subjectType.setHousehold(subjectTypeRequest.isHousehold());
         subjectType.setActive(subjectTypeRequest.getActive());
+        subjectType.setType(Subject.valueOf(subjectTypeRequest.getType()));
         subjectTypeRepository.save(subjectType);
     }
 
@@ -45,6 +47,7 @@ public class SubjectTypeService {
         subjectType.setVoided(programRequest.isVoided());
         subjectType.setGroup(programRequest.isGroup());
         subjectType.setActive(programRequest.getActive());
+        subjectType.setType(Subject.valueOf(programRequest.getType()));
         return subjectType;
     }
 

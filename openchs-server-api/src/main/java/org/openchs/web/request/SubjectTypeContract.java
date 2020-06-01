@@ -17,6 +17,9 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     private Boolean active;
 
+    private String type;
+
+
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
         contract.setName(subjectType.getName());
@@ -25,6 +28,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setIsGroup(subjectType.isGroup());
         contract.setHousehold(subjectType.isHousehold());
         contract.setActive(subjectType.getActive());
+        contract.setType(subjectType.getType().name());
         return contract;
     }
 
@@ -50,5 +54,13 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

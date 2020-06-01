@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
+import org.openchs.application.Subject;
 import org.openchs.application.projections.BaseProjection;
 import org.openchs.web.request.webapp.GroupRoleContract;
 import org.springframework.data.rest.core.config.Projection;
@@ -33,6 +34,10 @@ public class SubjectType extends OrganisationAwareEntity {
 
     @Column
     private boolean isHousehold;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Subject type;
 
     private Boolean active;
 
@@ -76,6 +81,14 @@ public class SubjectType extends OrganisationAwareEntity {
         this.operationalSubjectTypes = operationalSubjectTypes;
     }
 
+    public Subject getType() {
+        return type;
+    }
+
+    public void setType(Subject type) {
+        this.type = type;
+    }
+
     @JsonIgnore
     public String getOperationalSubjectTypeName() {
         return operationalSubjectTypes.stream()
@@ -114,5 +127,7 @@ public class SubjectType extends OrganisationAwareEntity {
         boolean isGroup();
 
         String getMemberSubjectUUIDs();
+
+        String getType();
     }
 }

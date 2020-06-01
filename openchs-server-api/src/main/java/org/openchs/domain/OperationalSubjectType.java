@@ -1,6 +1,7 @@
 package org.openchs.domain;
 
 import org.joda.time.DateTime;
+import org.openchs.application.Subject;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -54,6 +55,10 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
 
     public boolean isHousehold() {
         return subjectType.isHousehold();
+    }
+
+    public Subject getType() {
+        return subjectType.getType();
     }
 
     public DateTime getLastModifiedDateTime() {

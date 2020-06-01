@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.openchs.application.FormType;
+import org.openchs.application.Subject;
 import org.openchs.dao.GroupRoleRepository;
 import org.openchs.dao.OperationalSubjectTypeRepository;
 import org.openchs.dao.SubjectTypeRepository;
@@ -94,18 +95,24 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
             return ResponseEntity.badRequest().body(
                     ReactAdminUtil.generateJsonError(String.format("SubjectType %s already exists", request.getName()))
             );
+        if(request.getType() == null){
+            return ResponseEntity.badRequest().body(
+                    ReactAdminUtil.generateJsonError("Can't save subjectType with empty type")
+            );
+        }
         SubjectType subjectType = new SubjectType();
         subjectType.assignUUID();
         subjectType.setName(request.getName());
-        subjectType.setGroup(request.isGroup());
-        subjectType.setHousehold(request.isHousehold());
         subjectType.setActive(request.getActive());
+        subjectType.setType(Subject.valueOf(request.getType()));
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
-        if (request.isHousehold()) {
+        if (Subject.Household.toString().equals(request.getType())) {
             subjectType.setGroup(true);
-            createDefaultHouseholdRoles(savedSubjectType);
+            subjectType.setHousehold(true);
+            saveGroupRoles(savedSubjectType, request.getGroupRoles());
         }
-        if (subjectType.isGroup()) {
+        if (Subject.Group.toString().equals(request.getType())) {
+            subjectType.setGroup(true);
             saveGroupRoles(savedSubjectType, request.getGroupRoles());
         }
         OperationalSubjectType operationalSubjectType = new OperationalSubjectType();
@@ -142,15 +149,16 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         SubjectType subjectType = operationalSubjectType.getSubjectType();
 
         subjectType.setName(request.getName());
-        subjectType.setGroup(request.isGroup());
-        subjectType.setHousehold(request.isHousehold());
         subjectType.setActive(request.getActive());
+        subjectType.setType(Subject.valueOf(request.getType()));
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
-        if (request.isHousehold()) {
+        if (Subject.Household.toString().equals(request.getType())) {
             subjectType.setGroup(true);
-            createDefaultHouseholdRoles(savedSubjectType);
+            subjectType.setHousehold(true);
+            saveGroupRoles(savedSubjectType, request.getGroupRoles());
         }
-        if (subjectType.isGroup()) {
+        if (Subject.Group.toString().equals(request.getType())) {
+            subjectType.setGroup(true);
             saveGroupRoles(savedSubjectType, request.getGroupRoles());
         }
         operationalSubjectType.setName(request.getName());
@@ -218,29 +226,5 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         groupRole.setMinimumNumberOfMembers(groupRoleContract.getMinimumNumberOfMembers());
         groupRole.setMaximumNumberOfMembers(groupRoleContract.getMaximumNumberOfMembers());
         return groupRole;
-    }
-
-    private void createDefaultHouseholdRoles(SubjectType groupSubjectType) {
-        SubjectType memberSubjectType = subjectTypeRepository.findByName("Individual");
-        if (memberSubjectType == null) {
-            logger.info("Individual subject type does not exists creating one");
-            memberSubjectType = subjectTypeService.createIndividualSubjectType();
-        }
-        createRole(groupSubjectType, memberSubjectType, "Head of household", 1L);
-        createRole(groupSubjectType, memberSubjectType, "Member", 100L);
-    }
-
-    private void createRole(SubjectType groupSubjectType, SubjectType memberSubjectType, String role, Long maxMembers) {
-        GroupRole groupRole = groupRoleRepository.findByRoleAndGroupSubjectTypeUuid(role, groupSubjectType.getUuid());
-        if (groupRole == null) {
-            groupRole = new GroupRole();
-        }
-        groupRole.setGroupSubjectType(groupSubjectType);
-        groupRole.setMemberSubjectType(memberSubjectType);
-        groupRole.setRole(role);
-        groupRole.assignUUIDIfRequired();
-        groupRole.setMaximumNumberOfMembers(maxMembers);
-        groupRole.setMinimumNumberOfMembers(1L);
-        groupRoleRepository.save(groupRole);
     }
 }
