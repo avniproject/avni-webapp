@@ -21,7 +21,7 @@ const SelectForm = ({ label = "Please select", formList, value, onChange }) => {
     <FormControl style={{ minWidth: 200 }}>
       <InputLabel id={label}>{label}</InputLabel>
       <Select
-        labelId={label}
+        labelid={label}
         value={showValue}
         autoWidth
         native
