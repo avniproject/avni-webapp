@@ -278,7 +278,7 @@ const FilterResult = ({
           classes: classes.cancelBtnCustom
         }
       ]}
-      title={t("filterResult")}
+      title={t("filterResults")}
       btnHandleClose={close}
     />
   );
