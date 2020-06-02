@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getEncounter } from "../reducers/viewVisitReducer";
+import { capitalize } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,13 +31,14 @@ const Breadcrumbs = ({ path, match, ...props }) => {
   const clickableParts = parts.slice(0, parts.length - 1);
   const currentpage = parts[parts.length - 1];
   const subjectName =
-    props.subjectProfile && props.subjectProfile.firstName + " " + props.subjectProfile.lastName;
+    props.subjectProfile &&
+    capitalize(props.subjectProfile.firstName) + " " + capitalize(props.subjectProfile.lastName);
   const subjectUuid = props.subjectProfile && props.subjectProfile.uuid;
   const visitName = props.encounter && props.encounter.encounterType.name;
   const urlPartLabels = {
     APP: "app",
     SUBJECT: "subject",
-    VIEW_VISIT: "viewVisit",
+    VIEW_VISIT: "viewProgramEncounter",
     COMPLETED_VISITS: "completedProgramEncounters"
   };
   const urlMapper = part => {

@@ -259,7 +259,7 @@ const FilterResult = ({
       buttonsSet={[
         {
           buttonType: "openButton",
-          label: t("filterResult"),
+          label: t("filterResults"),
           classes: classes.filterButtonStyle
         },
         {
@@ -278,7 +278,7 @@ const FilterResult = ({
           classes: classes.cancelBtnCustom
         }
       ]}
-      title={t("filterResult")}
+      title={t("filterResults")}
       btnHandleClose={close}
     />
   );

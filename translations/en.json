@@ -115,7 +115,7 @@
     "exitProgram": "Exit",
     "encounterDate": "Visit Date",
     "visitDetails": "Visit Details",
-    "registrationDate": "Date of Registration",
+    "registrationDate": "Registration date",
     "Yes": "Yes",
     "No": "No",
     "notEnrolledInAnyProgram": "Not enrolled in any program",
@@ -389,6 +389,7 @@
     "resetAll": "Reset All",
     "notEnroledInAnyProgram": "Not enroled in any program",
     "noRelativesAdded": "No Relatives Added",
-    "viewAllCompletedVisits": "View All Completed Visits"
+    "registrationDetails": "Registration details",
+    "filterResults": "Filter results"
   }
 }

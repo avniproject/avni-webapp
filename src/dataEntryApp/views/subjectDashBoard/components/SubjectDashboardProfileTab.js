@@ -91,9 +91,7 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
             id="registrationPanelbh-header"
           >
             <Typography component={"span"}>
-              <p className={classes.expansionHeading}>
-                {t("registration")} {t("details")}
-              </p>
+              <p className={classes.expansionHeading}>{t("registrationDetails")}</p>
               <p className={classes.expansionSubHeading}>
                 {t("registrationDate")}:{" "}
                 {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
@@ -131,7 +129,10 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             {profile.relationships != undefined ? (
-              <GridCommonList gridListDetails={profile.relationships} path={path} />
+              <GridCommonList
+                gridListDetails={profile.relationships}
+                enableReadOnly={enableReadOnly}
+              />
             ) : (
               <Typography variant="caption" gutterBottom className={classes.infomsg}>
                 {" "}

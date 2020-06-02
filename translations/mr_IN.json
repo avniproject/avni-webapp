@@ -375,6 +375,8 @@
     "census": "जनगणना",
     "Pregnancy": "गरोदरपण",
     "noRelativesAdded": "कोणतेही नातेवाईक जोडले नाहीत",
-    "actions": "क्रिया"
+    "actions": "क्रिया",
+    "registrationDetails": "पंजीकरण तपशील",
+    "filterResults": "फिल्टर परिणाम"
   }
 }
