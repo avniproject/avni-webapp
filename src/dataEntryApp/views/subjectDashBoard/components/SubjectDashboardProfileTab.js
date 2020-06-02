@@ -91,9 +91,9 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
             id="registrationPanelbh-header"
           >
             <Typography component={"span"}>
-              <p className={classes.expansionHeading}>{t("_registrationDetails")}</p>
+              <p className={classes.expansionHeading}>{t("registrationDetails")}</p>
               <p className={classes.expansionSubHeading}>
-                {t("_registrationDate")}:{" "}
+                {t("registrationDate")}:{" "}
                 {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
               </p>
             </Typography>
