@@ -6,18 +6,14 @@ import org.openchs.domain.Locale;
 import org.openchs.domain.PlatformTranslation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
-@RepositoryRestResource(collectionResourceRel = "platformTranslation", path = "platformTranslation")
+@RepositoryRestResource(collectionResourceRel = "platformTranslation", path = "platformTranslation", exported = false)
 @PreAuthorize("hasAnyAuthority('user','admin','organisation_admin')")
 public interface PlatformTranslationRepository extends PagingAndSortingRepository<PlatformTranslation, Long> {
 
@@ -28,10 +24,14 @@ public interface PlatformTranslationRepository extends PagingAndSortingRepositor
 
     PlatformTranslation findByLanguage(Locale language);
 
-    @RestResource(path = "lastModified", rel = "lastModified")
-    Page<PlatformTranslation> findByLastModifiedDateTimeIsBetweenOrderByLastModifiedDateTimeAscIdAsc(
-            @Param("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
-            @Param("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+    @Query("select pt from PlatformTranslation pt " +
+            "where pt.platform = :platform " +
+            "and (pt.lastModifiedDateTime between :lastModifiedDateTime and :now) " +
+            "order by pt.lastModifiedDateTime asc")
+    Page<PlatformTranslation> findByPlatformAndLastModified(
+            Platform platform,
+            DateTime lastModifiedDateTime,
+            DateTime now,
             Pageable pageable);
 
 }

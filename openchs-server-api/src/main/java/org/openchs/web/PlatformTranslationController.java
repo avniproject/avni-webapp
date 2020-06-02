@@ -8,17 +8,18 @@ import org.openchs.domain.PlatformTranslation;
 import org.openchs.web.request.TranslationRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.rest.webmvc.RepositoryRestController;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 
-@RepositoryRestController
+@RestController
 public class PlatformTranslationController implements RestControllerResourceProcessor<PlatformTranslation> {
 
     private final PlatformTranslationRepository platformTranslationRepository;
@@ -48,6 +49,15 @@ public class PlatformTranslationController implements RestControllerResourceProc
         platformTranslationRepository.save(platformTranslation);
         logger.info(String.format("Saved Translation with UUID: %s", platformTranslation.getUuid()));
         return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/platformTranslation/search/lastModified", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
+    public PagedResources<Resource<PlatformTranslation>> get(
+            @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
+            @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
+            Pageable pageable) {
+        return wrap(platformTranslationRepository.findByPlatformAndLastModified(Platform.Android, lastModifiedDateTime, now, pageable));
     }
 
 }
