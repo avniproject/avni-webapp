@@ -1,5 +1,6 @@
 package org.openchs.service;
 
+import org.openchs.application.Platform;
 import org.openchs.dao.OrganisationConfigRepository;
 import org.openchs.dao.PlatformTranslationRepository;
 import org.openchs.dao.TranslationRepository;
@@ -51,7 +52,7 @@ public class TranslationService {
                 if (!responseObject.containsKey(language)) {
                     Map<String, JsonObject> translationMap = new HashMap<>();
                     Translation translation = translationRepository.findByOrganisationIdAndLanguage(organisationConfig.getOrganisationId(), Locale.valueOf(language));
-                    PlatformTranslation platformTranslation = platformTranslationRepository.findByLanguage(Locale.valueOf(language));
+                    PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatformAndLanguage(Platform.Web, Locale.valueOf(language));
                     if (Objects.nonNull(translation) && Objects.nonNull(platformTranslation)) {
                         JsonObject platformTranslationMap = platformTranslation.getTranslationJson();
                         translation.getTranslationJson().entrySet().stream().forEach(entry -> {
