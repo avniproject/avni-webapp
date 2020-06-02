@@ -14,6 +14,12 @@ deps: check-node-v
 start: check-node-v
 	yarn start
 
+test: check-node-v
+	yarn test
+
+prettier-all: check-node-v
+	yarn prettier-all
+
 port:= $(if $(port),$(port),8021)
 server:= $(if $(server),$(server),http://localhost)
 
