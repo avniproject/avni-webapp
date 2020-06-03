@@ -227,7 +227,9 @@ const ProfileDetails = ({
                 {isEqual(profileDetails.subjectType.name, "Individual") && (
                   <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
                 )}
-                <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
+                )}{" "}
                 <TableCell className={classes.tableCell}>{t("Village")}</TableCell>
               </TableRow>
             </TableHead>
@@ -238,14 +240,16 @@ const ProfileDetails = ({
                     {t(profileDetails.gender.name)}
                   </TableCell>
                 )}
-                <TableCell className={classes.tableCellDetails}>
-                  {profileDetails.dateOfBirth
-                    ? new Date().getFullYear() -
-                      new Date(profileDetails.dateOfBirth).getFullYear() +
-                      " " +
-                      `${t("years")}`
-                    : "-"}
-                </TableCell>
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCellDetails}>
+                    {profileDetails.dateOfBirth
+                      ? new Date().getFullYear() -
+                        new Date(profileDetails.dateOfBirth).getFullYear() +
+                        " " +
+                        `${t("years")}`
+                      : "-"}
+                  </TableCell>
+                )}
                 <TableCell className={classes.tableCellDetails}>
                   {profileDetails.lowestAddressLevel.name}
                 </TableCell>
