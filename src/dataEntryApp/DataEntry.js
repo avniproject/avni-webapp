@@ -18,8 +18,6 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "query-string";
 import i18n from "i18next";
-// import CustomizedBackdrop from "../../components/CustomizedBackdrop";
-
 import { I18nextProvider } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -34,7 +32,6 @@ const DataEntry = ({
   operationalModules,
   getOrgConfigInfo,
   orgConfig
-  //load
 }) => {
   const classes = useStyles();
   let location = useLocation();
@@ -80,16 +77,13 @@ const DataEntry = ({
       </div>
     </I18nextProvider>
   ) : (
-    // <div>
     <Loading />
-    //<CustomizedBackdrop load={load}/>
   );
 };
 
 const mapStateToProps = state => ({
   operationalModules: state.dataEntry.metadata.operationalModules,
   orgConfig: state.translationsReducer.orgConfig
-  // load: state.dataEntry.loadReducer.load
 });
 
 export default withRouter(
