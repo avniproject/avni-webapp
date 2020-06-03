@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import { isEqual } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -205,7 +206,7 @@ const ProfileDetails = ({
   return (
     <div className={classes.tableView}>
       <Typography component={"span"} className={classes.mainHeading}>
-        {`${camelize(profileDetails.firstName)} ${camelize(profileDetails.lastName)}`}{" "}
+        {`${camelize(profileDetails.firstName)} ${camelize(profileDetails.lastName || "")}`}{" "}
         {t("Dashboard")}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
@@ -223,28 +224,32 @@ const ProfileDetails = ({
           <Table aria-label="caption table" className={classes.table}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
-                {/* <TableCell className={classes.tableCell}>{t("name")}</TableCell> */}
-                <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
-                <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
+                )}
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
+                )}{" "}
                 <TableCell className={classes.tableCell}>{t("Village")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                {/* <TableCell className={classes.tableCellDetails}>{`${profileDetails.firstName} ${
-                  profileDetails.lastName
-                }`}</TableCell> */}
-                <TableCell className={classes.tableCellDetails}>
-                  {t(profileDetails.gender.name)}
-                </TableCell>
-                <TableCell className={classes.tableCellDetails}>
-                  {profileDetails.dateOfBirth
-                    ? new Date().getFullYear() -
-                      new Date(profileDetails.dateOfBirth).getFullYear() +
-                      " " +
-                      `${t("years")}`
-                    : "-"}
-                </TableCell>
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCellDetails}>
+                    {t(profileDetails.gender.name)}
+                  </TableCell>
+                )}
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCellDetails}>
+                    {profileDetails.dateOfBirth
+                      ? new Date().getFullYear() -
+                        new Date(profileDetails.dateOfBirth).getFullYear() +
+                        " " +
+                        `${t("years")}`
+                      : "-"}
+                  </TableCell>
+                )}
                 <TableCell className={classes.tableCellDetails}>
                   {profileDetails.lowestAddressLevel.name}
                 </TableCell>

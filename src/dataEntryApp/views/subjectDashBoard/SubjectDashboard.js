@@ -10,6 +10,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
+import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,7 +28,8 @@ const SubjectDashboard = ({
   subjectGeneral,
   getSubjectProgram,
   subjectProgram,
-  enableReadOnly
+  enableReadOnly,
+  load
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -59,6 +61,7 @@ const SubjectDashboard = ({
     <Fragment>
       <Breadcrumbs path={match.path} />
       {paperInfo}
+      <CustomizedBackdrop load={load} />
     </Fragment>
   );
 };
@@ -67,7 +70,8 @@ const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
-  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
+  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

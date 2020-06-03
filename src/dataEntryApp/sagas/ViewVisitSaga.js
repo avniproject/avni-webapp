@@ -3,6 +3,7 @@ import { types, setEncounter } from "../reducers/viewVisitReducer";
 import { mapEncounter, mapProgramEncounter } from "../../common/subjectModelMapper";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
 import api from "../api";
+import { setLoad } from "../reducers/loadReducer";
 
 export default function*() {
   yield all([programEncounterFetchWatcher, encounterFetchWatcher].map(fork));
@@ -13,9 +14,12 @@ export function* programEncounterFetchWatcher() {
 }
 
 export function* programEncounterFetchWorker({ encounterUuid }) {
+  yield put.resolve(setLoad(false));
+  yield put(setEncounter());
   const encounter = yield call(api.fetchProgramEncounter, encounterUuid);
   yield put(getSubjectProfile(encounter.subjectUUID));
   yield put(setEncounter(mapProgramEncounter(encounter)));
+  yield put.resolve(setLoad(true));
 }
 
 export function* encounterFetchWatcher() {
@@ -23,7 +27,10 @@ export function* encounterFetchWatcher() {
 }
 
 export function* encounterFetchWorker({ encounterUuid }) {
+  yield put.resolve(setLoad(false));
+  yield put(setEncounter());
   const encounter = yield call(api.fetchEncounter, encounterUuid);
   yield put(getSubjectProfile(encounter.subjectUUID));
   yield put(setEncounter(mapEncounter(encounter)));
+  yield put.resolve(setLoad(true));
 }
