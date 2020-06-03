@@ -32,7 +32,9 @@ const Breadcrumbs = ({ path, match, ...props }) => {
   const currentpage = parts[parts.length - 1];
   const subjectName =
     props.subjectProfile &&
-    capitalize(props.subjectProfile.firstName) + " " + capitalize(props.subjectProfile.lastName);
+    capitalize(props.subjectProfile.firstName) +
+      " " +
+      capitalize(props.subjectProfile.lastName || "");
   const subjectUuid = props.subjectProfile && props.subjectProfile.uuid;
   const visitName = props.encounter && props.encounter.encounterType.name;
   const urlPartLabels = {

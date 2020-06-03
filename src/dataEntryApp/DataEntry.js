@@ -18,7 +18,6 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "query-string";
 import i18n from "i18next";
-
 import { I18nextProvider } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
