@@ -50,9 +50,15 @@ REACT_APP_COGNITO_APP_CLIENT_ID=7dbsrgg56mptr4ue1g65nv3s86
 
 #### File/folder structure
 
+- There are multiple apps inside this repository
+  - Admin (Allow admins to do admin work like creating organisations, users, locations)
+  - App Designer (Allow admins to design the app)
+  - Reports (Allow admins to download longitudnal reports)
+  - Translations (Allow admins to upload translations)
+  - Data Entry App (Allow users to do data entry using web based app)
 - Folders per route/feature
   (See https://marmelab.com/blog/2015/12/17/react-directory-structure.html)
-- Reducers and actions in 'ducks' structure (See https://github.com/erikras/ducks-modular-redux)
+- Reducers and actions in 'ducks' structure (See https://github.com/erikras/ducks-modular-redux). This is not applicable for App Designer as it does not use Redux.
 
 #### Code Style
 
