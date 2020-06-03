@@ -39,6 +39,7 @@ import {
   saveProgramComplete,
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
+import { setLoad } from "../reducers/loadReducer";
 import _ from "lodash";
 import BrowserStore from "../api/browserStore";
 import { disableSession } from "../../common/constants";
@@ -80,8 +81,10 @@ export function* dataEntrySearchWatcher() {
 
 function* dataEntrySearchWorker({ params }) {
   // const params = yield select(state => state.dataEntry.search.subjectSearchParams);
+  yield put.resolve(setLoad(false));
   const subjects = yield call(SubjectService.search, params);
   yield put(setSubjects(subjects));
+  yield put.resolve(setLoad(true));
 }
 
 export function* dataEntryLoadRegistrationFormWatcher() {

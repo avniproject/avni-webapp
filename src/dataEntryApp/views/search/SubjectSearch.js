@@ -22,6 +22,7 @@ import PrimaryButton from "../../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
 import { ToolTipContainer } from "../../components/ToolTipContainer";
 import { SubjectsTable } from "./SubjectSearchTable";
+import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -78,60 +79,61 @@ const SubjectSearch = props => {
     console.log("Serach value------>", e.target.value);
   };
 
+  // console.log("props",props.load);
+
   useEffect(() => {
     props.search();
     sessionStorage.clear("subject");
   }, []);
 
   return (
-    props.subjects && (
-      <Paper className={classes.searchBox}>
-        <div className={classes.searchCreateToolbar}>
-          <form onSubmit={handleSubmit} className={classes.searchForm}>
-            <FormControl className={classes.searchFormItem}>
-              <InputLabel htmlFor="search-field">{""}</InputLabel>
-              <Input
-                id="search-field"
-                autoFocus
-                type="text"
-                value={props.searchParams.query}
-                // onChange={e =>
-                // props.setSearchParams({page:0,query:e.target.value,size:rowsPerPage})}
-                onChange={valueSubmit}
-              />
-            </FormControl>
-            <FormControl className={classes.searchFormItem}>
-              <ToolTipContainer toolTipKey={t("searchHelpText")}>
-                <PrimaryButton
-                  type={"submit"}
-                  onClick={handleSubmit}
-                  className={classes.searchBtnShadow}
-                >
-                  {t("search")}
-                </PrimaryButton>
-              </ToolTipContainer>
-            </FormControl>
-          </form>
-          <RegistrationMenu className={classes.createButtonHolder} />
-        </div>
-        <SubjectsTable
-          subjects={props.subjects.content}
-          type={props.subjectType}
-          pageDetails={props}
-          searchparam={searchvalue}
-          rowsPerPage={rowsPerPage}
-          setRowsPerPage={setRowsPerPage}
-          page={page}
-          setPage={setPage}
-        />
-        {/* <SubjectsTable
+    <Paper className={classes.searchBox}>
+      <div className={classes.searchCreateToolbar}>
+        <CustomizedBackdrop load={props.load} />
+        <form onSubmit={handleSubmit} className={classes.searchForm}>
+          <FormControl className={classes.searchFormItem}>
+            <InputLabel htmlFor="search-field">{""}</InputLabel>
+            <Input
+              id="search-field"
+              autoFocus
+              type="text"
+              value={props.searchParams.query}
+              // onChange={e =>
+              // props.setSearchParams({page:0,query:e.target.value,size:rowsPerPage})}
+              onChange={valueSubmit}
+            />
+          </FormControl>
+          <FormControl className={classes.searchFormItem}>
+            <ToolTipContainer toolTipKey={t("searchHelpText")}>
+              <PrimaryButton
+                type={"submit"}
+                onClick={handleSubmit}
+                className={classes.searchBtnShadow}
+              >
+                {t("search")}
+              </PrimaryButton>
+            </ToolTipContainer>
+          </FormControl>
+        </form>
+        <RegistrationMenu className={classes.createButtonHolder} />
+      </div>
+      <SubjectsTable
+        subjects={props.subjects.content}
+        type={props.subjectType}
+        pageDetails={props}
+        searchparam={searchvalue}
+        rowsPerPage={rowsPerPage}
+        setRowsPerPage={setRowsPerPage}
+        page={page}
+        setPage={setPage}
+      />
+      {/* <SubjectsTable
           subjects={props.subjects.content}
           type={props.subjectType}
           pageDetails={props}
           searchparam={searchvalue}         
         /> */}
-      </Paper>
-    )
+    </Paper>
   );
 };
 
@@ -140,7 +142,8 @@ const mapStateToProps = state => {
     user: state.app.user,
     subjects: state.dataEntry.search.subjects,
     searchParams: state.dataEntry.search.subjectSearchParams,
-    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes)
+    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes),
+    load: state.dataEntry.loadReducer.load
   };
 };
 
