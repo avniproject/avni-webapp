@@ -26,7 +26,7 @@ import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
 import CompletedVisitsTable from "./CompletedVisitsTable";
-import { store } from "../../../../common/store/createStore";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -91,7 +91,7 @@ const CompleteVisit = ({
   completedVisits,
   enableReadOnly,
   encounterTypes,
-  loaded,
+  load,
   loadProgramEncounters,
   loadEncounters
 }) => {
@@ -113,7 +113,7 @@ const CompleteVisit = ({
       : loadEncounters(match.queryParams.uuid, filterQueryString);
   }, []);
 
-  return completedVisits && loaded ? (
+  return completedVisits && load ? (
     <div>
       <Fragment>
         <Breadcrumbs path={match.path} />
@@ -145,13 +145,14 @@ const CompleteVisit = ({
               match={match}
               loadProgramEncounters={loadProgramEncounters}
               loadEncounters={loadEncounters}
+              load={load}
             />
           </Paper>
         </Paper>
       </Fragment>
     </div>
   ) : (
-    ""
+    <CustomizedBackdrop load={load} />
   );
 };
 
@@ -159,8 +160,8 @@ const mapStateToProps = state => {
   return {
     completedVisits: state.dataEntry.completedVisitsReducer.completedVisits,
     encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
-    loaded: state.dataEntry.completedVisitsReducer.loaded,
-    enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
+    enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly,
+    load: state.dataEntry.loadReducer.load
   };
 };
 

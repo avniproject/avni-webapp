@@ -32,6 +32,7 @@ import {
 } from "../../../../dataEntryApp/components/TableHeaderSorting";
 import { TablePaginationActions } from "../../../../dataEntryApp/components/TablePagination";
 import { store } from "../../../../common/store/createStore";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -114,7 +115,8 @@ const CompletedVisitsTable = ({
   isForProgramEncounters,
   match,
   loadProgramEncounters,
-  loadEncounters
+  loadEncounters,
+  load
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -239,8 +241,9 @@ const CompletedVisitsTable = ({
       : loadEncounters(match.queryParams.uuid, filterQueryString);
   };
 
-  return allVisitsListObj ? (
+  return (
     <div>
+      <CustomizedBackdrop load={load} />
       <Table
         className={classes.table}
         aria-labelledby="tableTitle"
@@ -281,8 +284,6 @@ const CompletedVisitsTable = ({
         ActionsComponent={TablePaginationActions}
       />
     </div>
-  ) : (
-    ""
   );
 };
 

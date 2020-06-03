@@ -1,10 +1,5 @@
 import { all, call, fork, put, takeLatest, select } from "redux-saga/effects";
-import {
-  types,
-  setCompletedVisits,
-  setEncounterTypes,
-  setLoaded
-} from "../reducers/completedVisitsReducer";
+import { types, setCompletedVisits, setEncounterTypes } from "../reducers/completedVisitsReducer";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapProfile } from "../../common/subjectModelMapper";
 
@@ -13,6 +8,7 @@ import {
   selectProgramEncounterTypes,
   selectGeneralEncounterTypes
 } from "dataEntryApp/sagas/selectors";
+import { setLoad } from "../reducers/loadReducer";
 
 export default function*() {
   yield all(
@@ -30,6 +26,7 @@ export function* loadProgramEncountersWatcher() {
 }
 
 export function* loadProgramEncountersWorker({ enrolmentUuid, filterQueryString }) {
+  yield put.resolve(setLoad(false));
   const completedVisits = yield call(
     api.fetchCompletedProgramEncounters,
     enrolmentUuid,
@@ -45,7 +42,7 @@ export function* loadProgramEncountersWorker({ enrolmentUuid, filterQueryString 
   yield put(setCompletedVisits(completedVisits));
   yield put(setSubjectProfile(subjectProfile));
   yield put(setEncounterTypes(encounterTypes));
-  yield put(setLoaded(true));
+  yield put.resolve(setLoad(true));
 }
 
 export function* loadEncountersWatcher() {
@@ -53,6 +50,7 @@ export function* loadEncountersWatcher() {
 }
 
 export function* loadEncountersWorker({ subjectUuid }) {
+  yield put.resolve(setLoad(false));
   const completedVisits = yield call(api.fetchCompletedEncounters, subjectUuid);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const subjectProfile = mapProfile(subjectProfileJson);
@@ -61,7 +59,7 @@ export function* loadEncountersWorker({ subjectUuid }) {
   yield put(setCompletedVisits(completedVisits));
   yield put(setSubjectProfile(subjectProfile));
   yield put(setEncounterTypes(encounterTypes));
-  yield put(setLoaded(true));
+  yield put.resolve(setLoad(true));
 }
 
 export function* getCompletedProgramEncountersWatcher() {
@@ -69,12 +67,14 @@ export function* getCompletedProgramEncountersWatcher() {
 }
 
 export function* getCompletedProgramEncountersWorker({ enrolmentUuid, filterQueryString }) {
+  yield put.resolve(setLoad(false));
   const completedVisits = yield call(
     api.fetchCompletedProgramEncounters,
     enrolmentUuid,
     filterQueryString
   );
   yield put(setCompletedVisits(completedVisits));
+  yield put.resolve(setLoad(true));
 }
 
 export function* getCompletedEncountersWatcher() {
@@ -82,6 +82,8 @@ export function* getCompletedEncountersWatcher() {
 }
 
 export function* getCompletedEncountersWorker({ subjectUuid, filterQueryString }) {
+  yield put.resolve(setLoad(false));
   const completedVisits = yield call(api.fetchCompletedEncounters, subjectUuid, filterQueryString);
   yield put(setCompletedVisits(completedVisits));
+  yield put.resolve(setLoad(true));
 }
