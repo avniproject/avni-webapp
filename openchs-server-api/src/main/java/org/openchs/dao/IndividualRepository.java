@@ -91,11 +91,11 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
                 Predicate[] predicates = new Predicate[2];
                 String[] values = value.trim().split(" ");
                 if (values.length > 0) {
-                    predicates[0] = cb.like(cb.upper(root.get("firstName")), "%" + values[0].toUpperCase() + "%");
-                    predicates[1] = cb.like(cb.upper(root.get("lastName")), "%" + values[0].toUpperCase() + "%");
+                    predicates[0] = cb.like(cb.upper(root.get("firstName")),  values[0].toUpperCase() + "%");
+                    predicates[1] = cb.like(cb.upper(root.get("lastName")),  values[0].toUpperCase() + "%");
                 }
                 if (values.length > 1) {
-                    predicates[1] = cb.like(cb.upper(root.get("lastName")), "%" + values[1].toUpperCase() + "%");
+                    predicates[1] = cb.like(cb.upper(root.get("lastName")),  values[1].toUpperCase() + "%");
                 }
                 return cb.or(predicates[0], predicates[1]);
             }
