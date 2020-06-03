@@ -29,8 +29,12 @@ export function* loadProgramEncountersWatcher() {
   yield takeLatest(types.LOAD_PROGRAM_ENCOUNTERS, loadProgramEncountersWorker);
 }
 
-export function* loadProgramEncountersWorker({ enrolmentUuid }) {
-  const completedVisits = yield call(api.fetchCompletedProgramEncounters, enrolmentUuid);
+export function* loadProgramEncountersWorker({ enrolmentUuid, filterQueryString }) {
+  const completedVisits = yield call(
+    api.fetchCompletedProgramEncounters,
+    enrolmentUuid,
+    filterQueryString
+  );
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, programEnrolment.subjectUuid);
   const subjectProfile = mapProfile(subjectProfileJson);

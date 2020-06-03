@@ -22,9 +22,10 @@ export const getCompletedEncounters = (subjectUuid, filterQueryString) => ({
   filterQueryString
 });
 
-export const loadProgramEncounters = enrolmentUuid => ({
+export const loadProgramEncounters = (enrolmentUuid, filterQueryString) => ({
   type: types.LOAD_PROGRAM_ENCOUNTERS,
-  enrolmentUuid
+  enrolmentUuid,
+  filterQueryString
 });
 
 export const loadEncounters = subjectUuid => ({
