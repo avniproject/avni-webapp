@@ -77,12 +77,15 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     public void init() {
         this.registrationMap = formMappingService.getFormMapping(subjectTypeUUID, null, null, FormType.IndividualProfile);
         if (reportType.equals(ReportType.All.name())) {
-            this.enrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
-            this.exitEnrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
-            this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
-            this.programEncounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounterCancellation);
-            this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
-            this.encounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.IndividualEncounterCancellation);
+            if (programUUID == null) {
+                this.encounterMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.Encounter);
+                this.encounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, null, encounterTypeUUID, FormType.IndividualEncounterCancellation);
+            } else {
+                this.enrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramEnrolment);
+                this.exitEnrolmentMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, null, FormType.ProgramExit);
+                this.programEncounterMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounter);
+                this.programEncounterCancelMap = formMappingService.getFormMapping(subjectTypeUUID, programUUID, encounterTypeUUID, FormType.ProgramEncounterCancellation);
+            }
             this.encounterTypeName = encounterTypeRepository.getEncounterTypeName(encounterTypeUUID);
             Long maxVisitCount = getMaxVisitCount();
             this.maxVisitCount = maxVisitCount == null ? 0 : maxVisitCount;
