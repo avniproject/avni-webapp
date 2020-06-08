@@ -124,10 +124,6 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private void setGender(Individual individual, Row row, List<String> errorMsgs) {
         try {
             String genderName = row.get(headers.gender);
-            if (genderName == null || genderName.trim().isEmpty()) {
-                errorMsgs.add(String.format("'%s' is a required field", headers.gender));
-                return;
-            }
             Gender gender = genderRepository.findByNameIgnoreCase(genderName);
             if (gender == null) {
                 errorMsgs.add(String.format("Invalid '%s' - '%s'", headers.gender, genderName));
