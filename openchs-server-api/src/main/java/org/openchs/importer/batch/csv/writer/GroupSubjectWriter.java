@@ -195,9 +195,8 @@ public class GroupSubjectWriter implements ItemWriter<Row>, Serializable {
 
     private void saveMembershipDates(Row row, GroupSubject groupSubject, List<String> errorMsgs) {
         LocalDate membershipStartDate = dateCreator.getDate(row, groupMemberHeaders.membershipStartDate, errorMsgs, null);
-        if (membershipStartDate != null) {
-            groupSubject.setMembershipStartDate(membershipStartDate.toDateTimeAtStartOfDay());
-        }
+        groupSubject.setMembershipStartDate(membershipStartDate != null ? membershipStartDate.toDateTimeAtStartOfDay() : LocalDate.now().toDateTimeAtCurrentTime());
+
         LocalDate membershipEndDate = dateCreator.getDate(row, groupMemberHeaders.membershipEndDate, errorMsgs, null);
         if (membershipEndDate != null) {
             groupSubject.setMembershipEndDate(membershipEndDate.toDateTimeAtStartOfDay());

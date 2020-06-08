@@ -105,7 +105,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private void setDateOfBirth(Individual individual, Row row, List<String> errorMsgs) {
         try {
             String dob = row.get(headers.dateOfBirth);
-            if (dob != null)
+            if (dob != null && !dob.trim().isEmpty())
                 individual.setDateOfBirth(LocalDate.parse(dob));
         } catch (Exception ex) {
             errorMsgs.add(String.format("Invalid '%s'", headers.dateOfBirth));
@@ -115,7 +115,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private void setRegistrationDate(Individual individual, Row row, List<String> errorMsgs) {
         try {
             String registrationDate = row.get(headers.registrationDate);
-            individual.setRegistrationDate(registrationDate != null ? LocalDate.parse(registrationDate) : LocalDate.now());
+            individual.setRegistrationDate(registrationDate != null && !registrationDate.trim().isEmpty() ? LocalDate.parse(registrationDate) : LocalDate.now());
         } catch (Exception ex) {
             errorMsgs.add(String.format("Invalid '%s'", headers.registrationDate));
         }

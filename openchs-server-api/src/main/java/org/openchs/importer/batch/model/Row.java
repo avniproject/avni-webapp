@@ -9,7 +9,7 @@ import static java.lang.String.format;
 
 public class Row extends HashMap<String, String> {
 
-    public static final Pattern TRUE_VALUE = Pattern.compile("yes|true|1");
+    public static final Pattern TRUE_VALUE = Pattern.compile("y|yes|true|1", Pattern.CASE_INSENSITIVE);
     private final String[] headers;
 
     public Row(String[] headers, String[] values) {
