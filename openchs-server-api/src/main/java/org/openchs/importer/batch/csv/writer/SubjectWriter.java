@@ -3,10 +3,12 @@ package org.openchs.importer.batch.csv.writer;
 import org.joda.time.LocalDate;
 import org.openchs.application.FormType;
 import org.openchs.dao.AddressLevelTypeRepository;
+import org.openchs.dao.GenderRepository;
 import org.openchs.dao.IndividualRepository;
 import org.openchs.dao.LocationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
+import org.openchs.domain.Gender;
 import org.openchs.domain.Individual;
 import org.openchs.importer.batch.csv.writer.header.SubjectHeaders;
 import org.openchs.importer.batch.csv.creator.LocationCreator;
@@ -31,6 +33,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     private final AddressLevelTypeRepository addressLevelTypeRepository;
     private final LocationRepository locationRepository;
     private final IndividualRepository individualRepository;
+    private final GenderRepository genderRepository;
     private static final SubjectHeaders headers = new SubjectHeaders();
     private SubjectTypeCreator subjectTypeCreator;
     private ObservationCreator observationCreator;
@@ -39,10 +42,11 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
     @Autowired
     public SubjectWriter(AddressLevelTypeRepository addressLevelTypeRepository,
                          LocationRepository locationRepository,
-                         IndividualRepository individualRepository, SubjectTypeCreator subjectTypeCreator, ObservationCreator observationCreator) {
+                         IndividualRepository individualRepository, GenderRepository genderRepository, SubjectTypeCreator subjectTypeCreator, ObservationCreator observationCreator) {
         this.addressLevelTypeRepository = addressLevelTypeRepository;
         this.locationRepository = locationRepository;
         this.individualRepository = individualRepository;
+        this.genderRepository = genderRepository;
         this.subjectTypeCreator = subjectTypeCreator;
         this.observationCreator = observationCreator;
         this.locationCreator = new LocationCreator();
@@ -71,6 +75,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         individual.setRegistrationLocation(locationCreator.getLocation(row, headers.registrationLocation, allErrorMsgs));
         setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
         individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
+        setGender(individual, row, allErrorMsgs);
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));
@@ -113,6 +118,24 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
             individual.setRegistrationDate(registrationDate != null ? LocalDate.parse(registrationDate) : LocalDate.now());
         } catch (Exception ex) {
             errorMsgs.add(String.format("Invalid '%s'", headers.registrationDate));
+        }
+    }
+
+    private void setGender(Individual individual, Row row, List<String> errorMsgs) {
+        try {
+            String genderName = row.get(headers.gender);
+            if (genderName == null || genderName.trim().isEmpty()) {
+                errorMsgs.add(String.format("'%s' is a required field", headers.gender));
+                return;
+            }
+            Gender gender = genderRepository.findByNameIgnoreCase(genderName);
+            if (gender == null) {
+                errorMsgs.add(String.format("Invalid '%s' - '%s'", headers.gender, genderName));
+                return;
+            }
+            individual.setGender(gender);
+        } catch (Exception ex) {
+            errorMsgs.add(String.format("Invalid '%s'", headers.gender));
         }
     }
 

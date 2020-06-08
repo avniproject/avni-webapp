@@ -9,9 +9,10 @@ public class SubjectHeaders implements Headers {
     public final String dobVerified = "Date Of Birth Verified";
     public final String registrationDate = "Date Of Registration";
     public final String registrationLocation = "Registration Location";
+    public final String gender = "Gender";
 
     @Override
     public String[] getAllHeaders() {
-        return new String[]{id, subjectType, firstName, lastName, dateOfBirth, dobVerified, registrationDate, registrationLocation};
+        return new String[]{id, subjectType, firstName, lastName, dateOfBirth, dobVerified, registrationDate, registrationLocation, gender};
     }
 }
