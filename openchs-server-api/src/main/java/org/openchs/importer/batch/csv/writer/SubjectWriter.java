@@ -75,7 +75,7 @@ public class SubjectWriter implements ItemWriter<Row>, Serializable {
         individual.setRegistrationLocation(locationCreator.getLocation(row, headers.registrationLocation, allErrorMsgs));
         setAddressLevel(individual, row, locationTypes, locations, allErrorMsgs);
         individual.setObservations(observationCreator.getObservations(row, headers, allErrorMsgs, FormType.IndividualProfile, individual.getObservations()));
-        setGender(individual, row, allErrorMsgs);
+        if (!individual.getSubjectType().isGroup()) setGender(individual, row, allErrorMsgs);
 
         if (allErrorMsgs.size() > 0) {
             throw new Exception(String.join(", ", allErrorMsgs));
