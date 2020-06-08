@@ -1,27 +1,12 @@
 import React, { Fragment, useEffect } from "react";
-import {
-  Table,
-  TablePagination,
-  TableBody,
-  TableCell,
-  TableRow,
-  Paper,
-  List
-} from "@material-ui/core";
+import { Paper } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import Collapse from "@material-ui/core/Collapse";
-import IconButton from "@material-ui/core/IconButton";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Typography from "@material-ui/core/Typography";
-import { withRouter, Link, useHistory } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { withParams } from "../../../../common/components/utils";
 import { loadEncounters, loadProgramEncounters } from "../../../reducers/completedVisitsReducer";
-import { mapObservation } from "../../../../common/subjectModelMapper";
-import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
@@ -97,8 +82,7 @@ const CompleteVisit = ({
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage] = React.useState(5);
   let totalVisits = completedVisits ? completedVisits.totalElements : "";
   let filterParams = {};
   filterParams.page = 0;

@@ -1,18 +1,16 @@
 import React, { Fragment } from "react";
-import { isNil, filter, isEmpty } from "lodash";
-import { withParams } from "../../../common/components/utils";
-import { withRouter, Redirect } from "react-router-dom";
+import { filter, isEmpty } from "lodash";
+import { LineBreak, withParams } from "../../../common/components/utils";
+import { Redirect, withRouter } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
-import { LineBreak } from "../../../common/components/utils";
 import moment from "moment/moment";
 import Form from "../../components/Form";
 import Summary from "./Summary";
-import { Box, Typography, Paper, Chip, Button } from "@material-ui/core";
+import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import BrowserStore from "../../api/browserStore";
 import { FormElementGroup, ValidationResults } from "avni-models";
-import { RelativeLink, InternalLink } from "common/components/utils";
-import { useHistory, useLocation } from "react-router-dom";
+import { InternalLink, RelativeLink } from "common/components/utils";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 
 const useStyle = makeStyles(theme => ({
@@ -122,7 +120,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Header = ({ subject, children }) => {
+const Header = ({ subject }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const fullName = subject.firstName + " " + subject.lastName || "-";
@@ -160,8 +158,6 @@ const Header = ({ subject, children }) => {
 };
 
 const WizardButton = ({ text, className, to, params, onClick, disabled }) => {
-  const classes = useStyle();
-
   if (disabled) {
     return (
       <Button disabled={disabled} className={className} onClick={onClick} type="button">
@@ -208,10 +204,6 @@ const FormWizard = ({
   const [redirect, setRedirect] = React.useState(false);
   const classes = useStyle();
   const { t } = useTranslation();
-  const history = useHistory();
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-
   if (saved) {
     BrowserStore.clear("subject");
     setTimeout(() => {

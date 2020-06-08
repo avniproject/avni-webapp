@@ -8,7 +8,6 @@ import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
 import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({

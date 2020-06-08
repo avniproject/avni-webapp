@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
-import { Table, TableRow, FormControl, InputLabel, Input, Button, Paper } from "@material-ui/core";
-import { withRouter, Link } from "react-router-dom";
+import { FormControl, Input, InputLabel, Paper } from "@material-ui/core";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
-import { ToolTipContainer } from "../../components/ToolTipContainer";
 import { SubjectsTable } from "./SubjectSearchTable";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 

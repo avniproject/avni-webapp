@@ -1,29 +1,16 @@
-import React, { Fragment, useEffect } from "react";
-import {
-  Table,
-  TablePagination,
-  TableBody,
-  TableCell,
-  TableRow,
-  Paper,
-  List
-} from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+import React from "react";
+import { Table, TablePagination, TableBody, TableCell, TableRow, List } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Typography from "@material-ui/core/Typography";
-import { withRouter, Link, useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { withParams } from "../../../../common/components/utils";
 import { mapObservation } from "../../../../common/subjectModelMapper";
 import Observations from "../../../../common/components/Observations";
 import { useTranslation } from "react-i18next";
-import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import FilterResult from "../components/FilterResult";
 import moment from "moment/moment";
 import {
   EnhancedTableHead,
@@ -31,7 +18,6 @@ import {
   getComparator
 } from "../../../../dataEntryApp/components/TableHeaderSorting";
 import { TablePaginationActions } from "../../../../dataEntryApp/components/TablePagination";
-import { store } from "../../../../common/store/createStore";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyle = makeStyles(theme => ({
@@ -119,18 +105,15 @@ const CompletedVisitsTable = ({
   load
 }) => {
   const classes = useStyle();
-  const { t } = useTranslation();
   const [order, setOrder] = React.useState("");
   const [orderBy, setOrderBy] = React.useState("name");
-  const [selected, setSelected] = React.useState([]);
+  const [selected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
+  const [dense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   let totalVisits = allVisits ? allVisits.totalElements : 0;
   let tableHeaderName = [];
   let allVisitsListObj = [];
-  let sortfields = "";
-
   if (enableReadOnly) {
     tableHeaderName = [
       { id: "name", numeric: false, disablePadding: true, label: "visitName", align: "left" },

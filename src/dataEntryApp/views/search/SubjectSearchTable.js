@@ -1,18 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
+  Button,
   Table,
-  TablePagination,
-  TableFooter,
   TableBody,
   TableCell,
-  TableRow,
-  Button,
-  Paper
+  TableFooter,
+  TablePagination,
+  TableRow
 } from "@material-ui/core";
-import { withRouter, Link } from "react-router-dom";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { first } from "lodash";
-import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
+import { Link } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import { EnhancedTableHead } from "../../components/TableHeaderSorting";
 import { TablePaginationActions } from "../../components/TablePagination";
 import { useTranslation } from "react-i18next";
 
@@ -71,7 +69,7 @@ export const SubjectsTable = ({
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("firstName");
-  const [selected, setSelected] = React.useState([]);
+  const [selected] = React.useState([]);
   let tableHeaderNames = [];
   let pageinfo = pageDetails.subjects;
   let searchText = searchparam;

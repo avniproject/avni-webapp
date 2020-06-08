@@ -108,7 +108,7 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general && plannedVisits.length != 0 ? (
+              {general && plannedVisits.length !== 0 ? (
                 general.map((row, index) =>
                   !row.encounterDateTime ? (
                     <Visit
@@ -145,7 +145,7 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general && completedVisits.length != 0 ? (
+              {general && completedVisits.length !== 0 ? (
                 general.map((row, index) =>
                   row.encounterDateTime ? (
                     <Visit
@@ -170,7 +170,7 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
               )}
             </Grid>
           </ExpansionPanelDetails>
-          {general && completedVisits.length != 0 ? (
+          {general && completedVisits.length !== 0 ? (
             <InternalLink to={`/app/subject/completedEncounters?uuid=${subjectUuid}`}>
               <Button color="primary" className={classes.visitAllButton}>
                 {t("viewAllVisits")}
