@@ -7,6 +7,7 @@ import { withRouter } from "react-router-dom";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
+import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyle = makeStyles(theme => ({
   createButton: {
@@ -64,7 +65,7 @@ const RegistrationMenu = ({ types, enableReadOnly }) => {
 
 const mapStateToProps = state => ({
   types: state.dataEntry.metadata.operationalModules.subjectTypes,
-  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
+  enableReadOnly: selectEnableReadonly(state)
 });
 
 export default withRouter(connect(mapStateToProps)(RegistrationMenu));

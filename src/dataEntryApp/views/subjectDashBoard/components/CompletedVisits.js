@@ -12,6 +12,7 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FilterResult from "../components/FilterResult";
 import CompletedVisitsTable from "./CompletedVisitsTable";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -144,7 +145,7 @@ const mapStateToProps = state => {
   return {
     completedVisits: state.dataEntry.completedVisitsReducer.completedVisits,
     encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
-    enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly,
+    enableReadOnly: selectEnableReadonly(state),
     load: state.dataEntry.loadReducer.load
   };
 };
