@@ -70,7 +70,6 @@ export const SubjectsTable = ({
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("firstName");
   const [selected] = React.useState([]);
-  let tableHeaderNames = [];
   let pageinfo = pageDetails.subjects;
   let searchText = searchparam;
   const camelize = str => {
@@ -100,58 +99,38 @@ export const SubjectsTable = ({
       return sub;
     });
   }
-  if (type.name === "Individual") {
-    tableHeaderNames = [
-      { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
-      {
-        id: "subjectType",
-        numeric: false,
-        disablePadding: true,
-        label: "subjectType",
-        align: "left"
-      },
-      { id: "gender", numeric: false, disablePadding: true, label: "gender", align: "left" },
-      {
-        id: "dateOfBirth",
-        numeric: true,
-        disablePadding: false,
-        label: "age",
-        align: "left"
-      },
-      {
-        id: "addressLevel",
-        numeric: false,
-        disablePadding: true,
-        label: "addressVillage",
-        align: "left"
-      },
-      {
-        id: "activePrograms",
-        numeric: false,
-        disablePadding: true,
-        label: "enrolments",
-        align: "left"
-      }
-    ];
-  } else {
-    tableHeaderNames = [
-      { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
-      {
-        id: "addressLevel",
-        numeric: false,
-        disablePadding: true,
-        label: "location",
-        align: "left"
-      },
-      {
-        id: "activePrograms",
-        numeric: false,
-        disablePadding: true,
-        label: "activeprograms",
-        align: "left"
-      }
-    ];
-  }
+  const tableHeaderNames = [
+    { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+    {
+      id: "subjectType",
+      numeric: false,
+      disablePadding: true,
+      label: "subjectType",
+      align: "left"
+    },
+    { id: "gender", numeric: false, disablePadding: true, label: "gender", align: "left" },
+    {
+      id: "dateOfBirth",
+      numeric: true,
+      disablePadding: false,
+      label: "age",
+      align: "left"
+    },
+    {
+      id: "addressLevel",
+      numeric: false,
+      disablePadding: true,
+      label: "addressVillage",
+      align: "left"
+    },
+    {
+      id: "activePrograms",
+      numeric: false,
+      disablePadding: true,
+      label: "enrolments",
+      align: "left"
+    }
+  ];
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -194,16 +173,12 @@ export const SubjectsTable = ({
               <TableCell padding="none" width="12%">
                 {row.subjectType}
               </TableCell>
-              {type.name === "Individual" && (
-                <TableCell align="left" className={classes.cellpadding}>
-                  {row.gender}
-                </TableCell>
-              )}
-              {type.name === "Individual" && (
-                <TableCell align="left" className={classes.cellpadding}>
-                  {row.dateOfBirth}
-                </TableCell>
-              )}
+              <TableCell align="left" className={classes.cellpadding}>
+                {row.gender}
+              </TableCell>
+              <TableCell align="left" className={classes.cellpadding}>
+                {row.dateOfBirth}
+              </TableCell>
               <TableCell align="left" className={classes.cellpadding}>
                 {row.addressLevel}
               </TableCell>
