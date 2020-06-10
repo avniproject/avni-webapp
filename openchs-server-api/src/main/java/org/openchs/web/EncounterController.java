@@ -91,7 +91,7 @@ public class EncounterController extends AbstractController<Encounter> implement
     }
 
     @GetMapping(value = "/web/encounter/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<EncounterContract> getEncounterByUuid(@PathVariable("uuid") String uuid) {
         EncounterContract encounterContract = encounterService.getEncounterByUuid(uuid);

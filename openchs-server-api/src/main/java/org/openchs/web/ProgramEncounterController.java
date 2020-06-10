@@ -91,7 +91,7 @@ public class ProgramEncounterController implements RestControllerResourceProcess
     }
 
     @GetMapping(value = "/web/programEncounter/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<ProgramEncountersContract> getProgramEncounterByUuid(@PathVariable("uuid") String uuid) {
         ProgramEncountersContract programEncountersContract = programEncounterService.getProgramEncounterByUuid(uuid);

@@ -442,7 +442,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
 //    }
 
     @GetMapping(value = "/web/form/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public FormWebProjection getFormForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(FormWebProjection.class, formRepository.findByUuid(uuid));

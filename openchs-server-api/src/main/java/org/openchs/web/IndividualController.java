@@ -155,14 +155,14 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = "/web/individual/{uuid}")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public IndividualWebProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(IndividualWebProjection.class, individualRepository.findByUuid(uuid));
     }
 
     @GetMapping(value = "/web/subjectProfile")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectProfile(@RequestParam("uuid") String uuid) {
         IndividualContract individualContract = individualService.getSubjectInfo(uuid);
@@ -170,7 +170,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = "/web/subject/{subjectUuid}/programs")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectProgramEnrollment(@PathVariable("subjectUuid") String uuid) {
         IndividualContract individualEnrolmentContract = individualService.getSubjectProgramEnrollment(uuid);
@@ -181,7 +181,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = "/web/subject/{subjectUuid}/eligiblePrograms")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getEligiblePrograms(@PathVariable("subjectUuid") String uuid) {
         IndividualContract individualEnrolmentContract = individualService.getSubjectProgramEnrollment(uuid);
@@ -192,7 +192,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping(value = "/web/subject/{uuid}/encounters")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<IndividualContract> getSubjectEncounters(@PathVariable("uuid") String uuid) {
         IndividualContract individualEncounterContract = individualService.getSubjectEncounters(uuid);
@@ -203,7 +203,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     }
 
     @GetMapping("/web/subject/{uuid}/completed")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public Page<EncounterContract> getAllCompletedEncounters(
             @PathVariable String uuid,

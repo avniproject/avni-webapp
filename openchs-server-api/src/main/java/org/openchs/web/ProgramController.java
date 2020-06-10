@@ -181,7 +181,7 @@ public class ProgramController implements RestControllerResourceProcessor<Progra
     }
 
     @GetMapping(value = "web/eligiblePrograms")
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public List<ProgramContractWeb> getEligiblePrograms(@RequestParam String subjectUuid) {
         Individual individual = individualRepository.findByUuid(subjectUuid);
