@@ -26,8 +26,8 @@ class CustomSignIn extends SignIn {
     const { classes } = this.props;
     const { passwordIsMasked } = this.state;
 
-    const handleClickShowPassword = () => {
-      this.setState({ showPassword: !this.state.showPassword });
+    const togglePasswordMask = () => {
+      this.setState({ passwordIsMasked: !this.state.passwordIsMasked });
     };
 
     const handleMouseDownPassword = event => {
@@ -73,7 +73,7 @@ class CustomSignIn extends SignIn {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <RemoveRedEye className={classes.eye} onClick={this.togglePasswordMask} />
+                      <RemoveRedEye className={classes.eye} onClick={togglePasswordMask} />
                     </InputAdornment>
                   )
                 }}

@@ -16,8 +16,15 @@ const NewSubjectSearchTable = () => {
     },
     { title: "Subject Type", field: "subjectType.name" },
     { title: "Gender", field: "gender.name" },
-    { title: "Age", field: "dateOfBirth" },
-    { title: "Address", field: "addressLevel.titleLineage" },
+    {
+      title: "Age",
+      field: "dateOfBirth",
+      render: row =>
+        row.dateOfBirth
+          ? `${new Date().getFullYear() - new Date(row.dateOfBirth).getFullYear()} ${t("years")}`
+          : ""
+    },
+    { title: "Address", field: "addressLevel.title", render: row => row.addressLevel.titleLineage },
     {
       title: "Enrolments",
       field: "activePrograms",
