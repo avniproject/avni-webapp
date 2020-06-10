@@ -66,7 +66,7 @@ public class ProgramEnrolmentService {
         EnrolmentContract enrolmentContract = new EnrolmentContract();
         enrolmentContract.setUuid(programEnrolment.getUuid());
         enrolmentContract.setProgramUuid(programEnrolment.getProgram().getUuid());
-        enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getName());
+        enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
         enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
         enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
         enrolmentContract.setVoided(programEnrolment.isVoided());

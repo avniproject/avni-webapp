@@ -112,7 +112,7 @@ public class ProgramEncounterConstructionService {
     public ProgramEnrolmentContractWrapper constructEnrolments(ProgramEnrolment programEnrolment) {
         ProgramEnrolmentContractWrapper enrolmentContract = new ProgramEnrolmentContractWrapper();
         enrolmentContract.setUuid(programEnrolment.getUuid());
-        enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getName());
+        enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
         enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
         enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
         enrolmentContract.setVoided(programEnrolment.isVoided());

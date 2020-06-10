@@ -115,7 +115,7 @@ public class IndividualService {
             enrolmentContract.setUuid(programEnrolment.getUuid());
             enrolmentContract.setId(programEnrolment.getId());
             enrolmentContract.setProgramUuid(programEnrolment.getProgram().getUuid());
-            enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getName());
+            enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
             enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
             enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
             enrolmentContract.setProgramEncounters(constructProgramEncounters(programEnrolment.getProgramEncounters()));
@@ -171,7 +171,7 @@ public class IndividualService {
             EnrolmentContract enrolmentContract = new EnrolmentContract();
             enrolmentContract.setId(programEnrolment.getId());
             enrolmentContract.setUuid(programEnrolment.getUuid());
-            enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getName());
+            enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
             enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
             enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
             enrolmentContract.setVoided(programEnrolment.isVoided());
