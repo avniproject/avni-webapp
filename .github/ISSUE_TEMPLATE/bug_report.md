@@ -36,3 +36,8 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+**Developer Checklist**
+Developer fixing the bug should fill this checklist.
+- [ ] Does the fix require extensive regression testing?
+- [ ] Are you mentioning the required scenarios that could be affected?
