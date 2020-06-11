@@ -1,6 +1,6 @@
 import React from "react";
 import Typography from "@material-ui/core/Typography";
-import { Breadcrumbs as Breadcrumb } from "@material-ui/core";
+import { Breadcrumbs as MUIBreadcrumb } from "@material-ui/core";
 import Link from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
 import { withRouter } from "react-router-dom";
@@ -9,6 +9,7 @@ import { withParams } from "common/components/utils";
 import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getEncounter } from "../reducers/viewVisitReducer";
 import { capitalize } from "lodash";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,6 +28,7 @@ const useStyles = makeStyles(theme => ({
 
 const Breadcrumbs = ({ path, match, ...props }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const parts = path.split(/\/+/g).filter(Boolean);
   const clickableParts = parts.slice(0, parts.length - 1);
   const currentpage = parts[parts.length - 1];
@@ -41,7 +43,9 @@ const Breadcrumbs = ({ path, match, ...props }) => {
     APP: "app",
     SUBJECT: "subject",
     VIEW_VISIT: "viewProgramEncounter",
-    COMPLETED_VISITS: "completedProgramEncounters"
+    COMPLETED_VISITS: "completedProgramEncounters",
+    VIEW_ENCOUNTER: "viewEncounter",
+    COMPLETED_ENCOUNTERS: "completedEncounters"
   };
   const urlMapper = part => {
     switch (part) {
@@ -51,12 +55,12 @@ const Breadcrumbs = ({ path, match, ...props }) => {
       case urlPartLabels.SUBJECT: {
         if (subjectName && subjectUuid) {
           return {
-            breadcrumb: `${subjectName} Dashboard`,
+            breadcrumb: `${subjectName} ${t("Dashboard")}`,
             url: "#/app/subject?uuid=" + subjectUuid
           };
         } else {
           return {
-            breadcrumb: "Dashboard",
+            breadcrumb: t("Dashboard"),
             url: "#/app"
           };
         }
@@ -64,15 +68,28 @@ const Breadcrumbs = ({ path, match, ...props }) => {
       case urlPartLabels.VIEW_VISIT: {
         if (visitName) {
           return {
-            breadcrumb: `View Visit ${visitName}`,
+            breadcrumb: `${t("ViewVisit")} ${t(visitName)}`,
+            url: "#/app"
+          };
+        } else {
+          return { breadcrumb: `${t("ViewVisit")}`, url: "#/app" };
+        }
+      }
+      case urlPartLabels.COMPLETED_VISITS: {
+        return { breadcrumb: t("completedVisits"), url: "#/app" };
+      }
+      case urlPartLabels.VIEW_ENCOUNTER: {
+        if (visitName) {
+          return {
+            breadcrumb: `${t("ViewVisit")} ${t(visitName)}`,
             url: "#/app"
           };
         } else {
           return { breadcrumb: "View Visit", url: "#/app" };
         }
       }
-      case urlPartLabels.COMPLETED_VISITS: {
-        return { breadcrumb: "Completed Visits", url: "#/app" };
+      case urlPartLabels.COMPLETED_ENCOUNTERS: {
+        return { breadcrumb: t("completedVisits"), url: "#/app" };
       }
       default:
         return { breadcrumb: part, url: "#/app" };
@@ -80,7 +97,7 @@ const Breadcrumbs = ({ path, match, ...props }) => {
   };
 
   return (
-    <Breadcrumb className={classes.Breadcrumbs} aria-label="breadcrumb">
+    <MUIBreadcrumb className={classes.Breadcrumbs} aria-label="breadcrumb">
       {clickableParts.map((part, index) => (
         <Link key={index} color="inherit" href={urlMapper(part).url}>
           {urlMapper(part).breadcrumb}
@@ -89,7 +106,7 @@ const Breadcrumbs = ({ path, match, ...props }) => {
       <Typography className={classes.Typography} component={"span"} color="textPrimary">
         {urlMapper(currentpage).breadcrumb}
       </Typography>
-    </Breadcrumb>
+    </MUIBreadcrumb>
   );
 };
 

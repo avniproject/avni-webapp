@@ -80,6 +80,7 @@ const Visit = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+
   let visitUrl;
   switch (type) {
     case "programEncounter":

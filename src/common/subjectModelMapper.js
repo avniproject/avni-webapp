@@ -201,7 +201,7 @@ export const mapGeneral = subjectGeneral => {
         encounters,
         new Encounter(),
         ["uuid"],
-        ["encounterDateTime", "earliestVisitDateTime", "maxVisitDateTime"]
+        ["encounterDateTime", "earliestVisitDateTime", "maxVisitDateTime", "cancelDateTime"]
       );
       generalEncounter.encounterType = mapEncounterType(encounters.encounterType);
       return generalEncounter;
@@ -215,7 +215,7 @@ export const mapProgramEncounter = encounterDetails => {
       encounterDetails,
       new ProgramEncounter(),
       ["uuid", "name"],
-      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime"]
+      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime", "cancelDateTime"]
     );
     programEnconter.encounterType = mapEncounterType(encounterDetails.encounterType);
     programEnconter.observations = mapObservation(encounterDetails["observations"]);
@@ -231,7 +231,7 @@ export const mapEncounter = encounterDetails => {
       encounterDetails,
       new Encounter(),
       ["uuid", "name"],
-      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime"]
+      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime", "cancelDateTime"]
     );
     encounter.encounterType = mapEncounterType(encounterDetails.encounterType);
     encounter.observations = mapObservation(encounterDetails["observations"]);
