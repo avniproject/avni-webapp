@@ -9,24 +9,32 @@ const NewSubjectSearchTable = () => {
   const { t } = useTranslation();
   const columns = [
     {
-      title: "Name",
+      title: t("name"),
       field: "firstName",
       defaultSort: "asc",
       render: rowData => <a href={`/#/app/subject?uuid=${rowData.uuid}`}>{rowData.fullName}</a>
     },
-    { title: "Subject Type", field: "subjectType.name" },
-    { title: "Gender", field: "gender.name" },
     {
-      title: "Age",
+      title: t("subjectType"),
+      field: "subjectType.name",
+      render: row => row.subjectType && t(row.subjectType.name)
+    },
+    { title: t("gender"), field: "gender.name", render: row => row.gender && t(row.gender.name) },
+    {
+      title: t("age"),
       field: "dateOfBirth",
       render: row =>
         row.dateOfBirth
           ? `${new Date().getFullYear() - new Date(row.dateOfBirth).getFullYear()} ${t("years")}`
           : ""
     },
-    { title: "Address", field: "addressLevel.title", render: row => row.addressLevel.titleLineage },
     {
-      title: "Enrolments",
+      title: t("Address"),
+      field: "addressLevel.title",
+      render: row => row.addressLevel.titleLineage
+    },
+    {
+      title: t("enrolments"),
       field: "activePrograms",
       sorting: false,
       render: row => {

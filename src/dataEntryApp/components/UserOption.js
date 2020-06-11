@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
     color: "blue",
     maxWidth: 360,
     position: "absolute",
-    zIndex: "2",
+    zIndex: "100",
     backgroundColor: theme.palette.background.paper,
     marginRight: "150px"
   },
