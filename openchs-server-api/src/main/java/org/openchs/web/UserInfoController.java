@@ -108,7 +108,7 @@ public class UserInfoController implements RestControllerResourceProcessor<UserI
 
     @RequestMapping(value = "/me", method = RequestMethod.POST)
     @Transactional
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public void saveMyProfile(@RequestBody UserInfo userInfo) {
         User user = userService.getCurrentUser();
         user.setSettings(userInfo.getSettings());

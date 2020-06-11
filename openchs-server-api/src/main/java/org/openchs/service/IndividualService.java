@@ -131,18 +131,19 @@ public class IndividualService {
 
     public Set<EncounterContract> constructEncounters(Set<Encounter> encounters) {
         return encounters.stream().map(encounter -> {
-            EncounterContract encountersContract = new EncounterContract();
+            EncounterContract encounterContract = new EncounterContract();
             EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
             encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
-            encountersContract.setId(encounter.getId());
-            encountersContract.setUuid(encounter.getUuid());
-            encountersContract.setName(encounter.getName());
-            encountersContract.setEncounterType(encounterTypeContract);
-            encountersContract.setEncounterDateTime(encounter.getEncounterDateTime());
-            encountersContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
-            encountersContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
-            encountersContract.setVoided(encounter.isVoided());
-            return encountersContract;
+            encounterContract.setId(encounter.getId());
+            encounterContract.setUuid(encounter.getUuid());
+            encounterContract.setName(encounter.getName());
+            encounterContract.setEncounterType(encounterTypeContract);
+            encounterContract.setEncounterDateTime(encounter.getEncounterDateTime());
+            encounterContract.setEarliestVisitDateTime(encounter.getEarliestVisitDateTime());
+            encounterContract.setMaxVisitDateTime(encounter.getMaxVisitDateTime());
+            encounterContract.setCancelDateTime(encounter.getCancelDateTime());
+            encounterContract.setVoided(encounter.isVoided());
+            return encounterContract;
         }).collect(Collectors.toSet());
     }
 
