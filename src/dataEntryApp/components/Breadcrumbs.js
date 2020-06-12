@@ -6,8 +6,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import { getSubjectProfile } from "../reducers/subjectDashboardReducer";
-import { getEncounter } from "../reducers/viewVisitReducer";
 import { capitalize } from "lodash";
 import { useTranslation } from "react-i18next";
 
@@ -115,16 +113,11 @@ const mapStateToProps = state => ({
   encounter: state.dataEntry.viewVisitReducer.encounter
 });
 
-const mapDispatchToProps = {
-  getSubjectProfile,
-  getEncounter
-};
-
 export default withRouter(
   withParams(
     connect(
       mapStateToProps,
-      mapDispatchToProps
+      null
     )(Breadcrumbs)
   )
 );

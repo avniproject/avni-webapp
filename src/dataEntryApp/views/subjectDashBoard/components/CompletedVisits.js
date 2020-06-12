@@ -13,6 +13,7 @@ import FilterResult from "../components/FilterResult";
 import CompletedVisitsTable from "./CompletedVisitsTable";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
+import NewCompletedVisitsTable from "dataEntryApp/views/subjectDashBoard/NewCompletedVisitsTable";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -83,14 +84,23 @@ const CompleteVisit = ({
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-  const [rowsPerPage] = React.useState(5);
-  let totalVisits = completedVisits ? completedVisits.totalElements : "";
-  let filterParams = {};
-  filterParams.page = 0;
-  filterParams.size = rowsPerPage;
-  const SearchParamsFilter = new URLSearchParams(filterParams);
-  const filterQueryString = SearchParamsFilter.toString();
+  const [filterParams, setFilterParams] = React.useState({});
+
+  // const [rowsPerPage] = React.useState(5);
+  let totalVisits = 0; //completedVisits ? completedVisits.totalElements : "";
+  // let filterParams = {};
+  // filterParams.page = 0;
+  // filterParams.size = rowsPerPage;
+  // const SearchParamsFilter = new URLSearchParams(filterParams);
+  const filterQueryString = new URLSearchParams(filterParams).toString();
   const isForProgramEncounters = match.path === "/app/subject/completedProgramEncounters";
+  const entityUuid = match.queryParams.uuid;
+  const apiUrl = isForProgramEncounters
+    ? `/web/programEnrolment/${entityUuid}/completed`
+    : `/web/subject/${entityUuid}/completed`;
+  const viewEncounterUrl = isForProgramEncounters
+    ? `/app/subject/viewProgramEncounter`
+    : `/app/subject/viewEncounter`;
 
   useEffect(() => {
     isForProgramEncounters
@@ -98,7 +108,7 @@ const CompleteVisit = ({
       : loadEncounters(match.queryParams.uuid, filterQueryString);
   }, []);
 
-  return completedVisits && load ? (
+  return encounterTypes && load ? (
     <div>
       <Fragment>
         <Breadcrumbs path={match.path} />
@@ -109,28 +119,21 @@ const CompleteVisit = ({
                 <Typography variant="h6" gutterBottom className={classes.completedVsits}>
                   {t("completedVisits")}
                 </Typography>
-                <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
+                {/* <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
                   {totalVisits} {t("resultfound")}
-                </Typography>
+                </Typography> */}
               </div>
             </Grid>
             <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult
-                isForProgramEncounters={isForProgramEncounters}
-                entityUuid={match.queryParams.uuid}
-                encounterTypes={encounterTypes}
-              />
+              <FilterResult encounterTypes={encounterTypes} setFilterParams={setFilterParams} />
             </Grid>
           </Grid>
           <Paper className={classes.tableBox}>
-            <CompletedVisitsTable
-              isForProgramEncounters={isForProgramEncounters}
-              allVisits={completedVisits}
-              enableReadOnly={enableReadOnly}
-              match={match}
-              loadProgramEncounters={loadProgramEncounters}
-              loadEncounters={loadEncounters}
-              load={load}
+            <NewCompletedVisitsTable
+              apiUrl={apiUrl}
+              viewEncounterUrl={viewEncounterUrl}
+              filterParams={filterParams}
+              entityUuid={match.queryParams.uuid}
             />
           </Paper>
         </Paper>
@@ -143,9 +146,9 @@ const CompleteVisit = ({
 
 const mapStateToProps = state => {
   return {
-    completedVisits: state.dataEntry.completedVisitsReducer.completedVisits,
+    // completedVisits: state.dataEntry.completedVisitsReducer.completedVisits,
     encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
-    enableReadOnly: selectEnableReadonly(state),
+    // enableReadOnly: selectEnableReadonly(state),
     load: state.dataEntry.loadReducer.load
   };
 };

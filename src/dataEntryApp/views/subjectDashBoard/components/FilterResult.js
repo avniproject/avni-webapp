@@ -1,8 +1,6 @@
-import React, { Fragment, useEffect } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { withParams, LineBreak } from "common/components/utils";
+import { LineBreak } from "common/components/utils";
 import Grid from "@material-ui/core/Grid";
 import { useTranslation } from "react-i18next";
 import Modal from "../components/CommonModal";
@@ -13,10 +11,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup } from "@material-ui/core";
-import {
-  getCompletedEncounters,
-  getCompletedProgramEncounters
-} from "../../../reducers/completedVisitsReducer";
 import moment from "moment/moment";
 import { noop, isNil, isEmpty } from "lodash";
 import IconButton from "@material-ui/core/IconButton";
@@ -71,13 +65,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FilterResult = ({
-  getCompletedEncounters,
-  getCompletedProgramEncounters,
-  isForProgramEncounters,
-  entityUuid,
-  encounterTypes
-}) => {
+const FilterResult = ({ encounterTypes, setFilterParams }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
@@ -148,14 +136,7 @@ const FilterResult = ({
       const SelectedvisitTypesList = [...new Set(SelectedvisitTypesListSort.map(item => item))];
       filterParams.encounterTypeUuids = SelectedvisitTypesList.join();
     }
-    const SearchParamsFilter = new URLSearchParams(filterParams);
-    const filterQueryString = SearchParamsFilter.toString();
-
-    if (isForProgramEncounters) {
-      getCompletedProgramEncounters(entityUuid, filterQueryString);
-    } else {
-      getCompletedEncounters(entityUuid, filterQueryString);
-    }
+    setFilterParams(filterParams);
   };
 
   const resetClick = () => {
@@ -284,16 +265,4 @@ const FilterResult = ({
   );
 };
 
-const mapDispatchToProps = {
-  getCompletedProgramEncounters,
-  getCompletedEncounters
-};
-
-export default withRouter(
-  withParams(
-    connect(
-      null,
-      mapDispatchToProps
-    )(FilterResult)
-  )
-);
+export default FilterResult;
