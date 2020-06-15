@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
-import Button from "@material-ui/core/Button";
+import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
 
 const NewSubjectSearchTable = () => {
@@ -39,21 +39,17 @@ const NewSubjectSearchTable = () => {
       sorting: false,
       render: row => {
         return row.activePrograms.map((p, key) => (
-          <Button
+          <Chip
             key={key}
             size="small"
+            label={t(p.operationalProgramName)}
             style={{
-              height: 20,
-              paddingTop: "2px",
               margin: 2,
               backgroundColor: p.colour,
-              color: "white",
-              fontSize: 11
+              color: "white"
             }}
             disabled
-          >
-            {t(p.operationalProgramName)}
-          </Button>
+          />
         ));
       }
     }

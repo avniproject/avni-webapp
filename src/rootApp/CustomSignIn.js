@@ -5,10 +5,12 @@ import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
-import SideImage from "../../src/login_image.png";
+// import SideImage from "../../src/login_image.png";
+import SideImage from "formDesigner/styles/images/background.jpg";
 import AvniLogo from "formDesigner/styles/images/avniLogo.png";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { RemoveRedEye } from "@material-ui/icons";
+import Paper from "@material-ui/core/Paper";
 
 class CustomSignIn extends SignIn {
   constructor(props) {
@@ -37,7 +39,7 @@ class CustomSignIn extends SignIn {
     return (
       <Grid container component="main" className={classes.root}>
         <Grid item xs={false} sm={4} md={7} className={classes.image} />
-        <Grid item xs={12} sm={8} md={5} elevation={6}>
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6}>
           <Box mt={10} ml={4} display={"flex"} flexDirection={"column"} alignItems={"flex-start"}>
             <Box mb={4}>
               <img src={AvniLogo} alt="logo" height="45px" />
@@ -49,6 +51,7 @@ class CustomSignIn extends SignIn {
           <Box display={"flex"} flexDirection={"column"} mb={8} ml={4} mr={4}>
             <form className={classes.form} noValidate>
               <TextField
+                variant="outlined"
                 margin="normal"
                 required
                 fullWidth
@@ -61,6 +64,7 @@ class CustomSignIn extends SignIn {
                 autoFocus
               />
               <TextField
+                variant="outlined"
                 margin="normal"
                 required
                 fullWidth
@@ -80,6 +84,7 @@ class CustomSignIn extends SignIn {
               />
               <Button
                 type="submit"
+                fullWidth
                 variant="contained"
                 className={classes.submit}
                 onClick={event => {
@@ -115,10 +120,16 @@ const useStyles = theme => ({
     height: "100vh"
   },
   image: {
+    // backgroundImage: `url(${SideImage})`,
+    // backgroundRepeat: "no-repeat",
+    // backgroundSize: "auto",
+    // backgroundPosition: "initial"
     backgroundImage: `url(${SideImage})`,
     backgroundRepeat: "no-repeat",
-    backgroundSize: "auto",
-    backgroundPosition: "initial"
+    backgroundColor:
+      theme.palette.type === "light" ? theme.palette.grey[50] : theme.palette.grey[900],
+    backgroundSize: "cover",
+    backgroundPosition: "center"
   },
   paper: {
     margin: theme.spacing(8, 4),
