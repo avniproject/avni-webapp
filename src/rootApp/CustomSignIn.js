@@ -1,13 +1,12 @@
 import React from "react";
 import { SignIn } from "aws-amplify-react";
-import { Grid, TextField, Box, Hidden } from "@material-ui/core";
+import { Grid, TextField, Box } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
-// import SideImage from "../../src/login_image.png";
-import SideImage from "formDesigner/styles/images/background.jpg";
-import AvniLogo from "formDesigner/styles/images/avniLogo.png";
+import SideImage from "avni-background.jpeg";
+import AvniLogo from "avni-logo-black.png";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { RemoveRedEye } from "@material-ui/icons";
 import Paper from "@material-ui/core/Paper";
@@ -120,10 +119,6 @@ const useStyles = theme => ({
     height: "100vh"
   },
   image: {
-    // backgroundImage: `url(${SideImage})`,
-    // backgroundRepeat: "no-repeat",
-    // backgroundSize: "auto",
-    // backgroundPosition: "initial"
     backgroundImage: `url(${SideImage})`,
     backgroundRepeat: "no-repeat",
     backgroundColor:
@@ -145,8 +140,7 @@ const useStyles = theme => ({
     margin: theme.spacing(3, 0, 2),
     backgroundColor: "#f27510",
     color: "white",
-    borderRadius: 50,
-    height: "38px",
+    height: "56px",
     boxShadow: "none",
     "&:hover": {
       backgroundColor: "#f27510"
