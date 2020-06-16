@@ -156,12 +156,6 @@ const ProfileDetails = ({
 
   const { t } = useTranslation();
 
-  const camelize = str => {
-    return (" " + str).toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function(match, chr) {
-      return chr.toUpperCase();
-    });
-  };
-
   useEffect(() => {
     getPrograms(subjectUuid);
   }, []);
@@ -206,8 +200,7 @@ const ProfileDetails = ({
   return (
     <div className={classes.tableView}>
       <Typography component={"span"} className={classes.mainHeading}>
-        {`${camelize(profileDetails.firstName)} ${camelize(profileDetails.lastName || "")}`}{" "}
-        {t("Dashboard")}
+        {`${profileDetails.nameString}`}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
         {/* <Grid item>

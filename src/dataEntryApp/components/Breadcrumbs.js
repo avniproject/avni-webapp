@@ -6,7 +6,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import { capitalize } from "lodash";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -30,11 +29,7 @@ const Breadcrumbs = ({ path, match, ...props }) => {
   const parts = path.split(/\/+/g).filter(Boolean);
   const clickableParts = parts.slice(0, parts.length - 1);
   const currentpage = parts[parts.length - 1];
-  const subjectName =
-    props.subjectProfile &&
-    capitalize(props.subjectProfile.firstName) +
-      " " +
-      capitalize(props.subjectProfile.lastName || "");
+  const subjectName = props.subjectProfile && props.subjectProfile.nameString;
   const subjectUuid = props.subjectProfile && props.subjectProfile.uuid;
   const visitName = props.encounter && props.encounter.encounterType.name;
   const urlPartLabels = {
@@ -53,7 +48,7 @@ const Breadcrumbs = ({ path, match, ...props }) => {
       case urlPartLabels.SUBJECT: {
         if (subjectName && subjectUuid) {
           return {
-            breadcrumb: `${subjectName} ${t("Dashboard")}`,
+            breadcrumb: subjectName,
             url: "#/app/subject?uuid=" + subjectUuid
           };
         } else {
