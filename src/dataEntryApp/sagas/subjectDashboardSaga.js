@@ -15,6 +15,7 @@ export function* subjectProfileFetchWatcher() {
 
 export function* subjectProfileFetchWorker({ subjectUUID }) {
   yield put.resolve(setLoad(false));
+  yield put.resolve(setSubjectProfile());
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUUID);
   const subjectProfile = mapProfile(subjectProfileJson);
   yield put(setSubjectProfile(subjectProfile));
