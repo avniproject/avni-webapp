@@ -19,6 +19,7 @@ import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { isEqual } from "lodash";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -134,7 +135,8 @@ const ProfileDetails = ({
   programs,
   subjectUuid,
   match,
-  enableReadOnly
+  enableReadOnly,
+  load
 }) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
@@ -197,10 +199,18 @@ const ProfileDetails = ({
 
   return (
     <div className={classes.tableView}>
+      <CustomizedBackdrop load={load} />
       <Typography component={"span"} className={classes.mainHeading}>
         {`${profileDetails.nameString}`}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
+        {/* <Grid item>
+          <Avatar
+            src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
+            className={classes.bigAvatar}
+          />
+
+        </Grid> */}
         <Grid item>
           <AccountCircle className={classes.iconStyle} />
         </Grid>
@@ -283,7 +293,8 @@ const ProfileDetails = ({
 };
 
 const mapStateToProps = state => ({
-  programs: state.dataEntry.programs ? state.dataEntry.programs.programs : ""
+  programs: state.dataEntry.programs ? state.dataEntry.programs.programs : "",
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
