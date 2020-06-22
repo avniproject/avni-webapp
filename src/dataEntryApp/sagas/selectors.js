@@ -51,3 +51,11 @@ export const selectGeneralEncounterTypes = subjectTypeUuid => state => {
 
   return encounterTypes;
 };
+
+export const selectEnableReadonly = state => {
+  let enableReadonly = true;
+  if (state.app.userInfo.settings && state.app.userInfo.settings.dataEntryAppEnableWrites) {
+    enableReadonly = false;
+  }
+  return enableReadonly;
+};

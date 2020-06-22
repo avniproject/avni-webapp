@@ -25,6 +25,7 @@ import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
 import { getUserInfo } from "rootApp/ducks";
 import { InternalLink } from "common/components/utils";
+import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -295,7 +296,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
 
 const mapStateToProps = state => ({
   user: state.app.user,
-  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
+  enableReadOnly: selectEnableReadonly(state)
 });
 
 export default withRouter(

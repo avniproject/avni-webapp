@@ -3,11 +3,7 @@ import { Box, TextField } from "@material-ui/core";
 import moment from "moment/moment";
 import _ from "lodash";
 import { LineBreak } from "../../../src/common/components/utils";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 

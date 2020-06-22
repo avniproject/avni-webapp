@@ -12,6 +12,8 @@ import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "common/components/utils";
 import Button from "@material-ui/core/Button";
+import PlannedEncounter from "dataEntryApp/views/subjectDashBoard/components/PlannedEncounter";
+import CompletedEncounter from "dataEntryApp/views/subjectDashBoard/components/CompletedEncounter";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -69,23 +71,9 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
   if (general) {
     general.forEach(function(row, index) {
       if (!row.encounterDateTime) {
-        let sub = {
-          key: index,
-          name: row.encounterType.name,
-          index: index,
-          visitDate: row.earliestVisitDateTime,
-          overdueDate: row.maxVisitDateTime
-        };
-        plannedVisits.push(sub);
+        plannedVisits.push(row);
       } else if (row.encounterDateTime) {
-        let sub = {
-          key: index,
-          name: row.encounterType.name,
-          index: index,
-          visitDate: row.encounterDateTime,
-          earliestVisitDate: row.earliestVisitDateTime
-        };
-        completedVisits.push(sub);
+        completedVisits.push(row);
       }
     });
   }
@@ -108,22 +96,10 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general && plannedVisits.length != 0 ? (
-                general.map((row, index) =>
-                  !row.encounterDateTime ? (
-                    <Visit
-                      type={"encounter"}
-                      key={index}
-                      name={row.encounterType.name}
-                      index={index}
-                      visitDate={row.earliestVisitDateTime}
-                      overdueDate={row.maxVisitDateTime}
-                      enableReadOnly={enableReadOnly}
-                    />
-                  ) : (
-                    ""
-                  )
-                )
+              {general && plannedVisits.length !== 0 ? (
+                plannedVisits.map((row, index) => (
+                  <PlannedEncounter index={index} encounter={row} />
+                ))
               ) : (
                 <Typography variant="caption" gutterBottom className={classes.infomsg}>
                   {" "}
@@ -145,23 +121,10 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Grid container spacing={2}>
-              {general && completedVisits.length != 0 ? (
-                general.map((row, index) =>
-                  row.encounterDateTime ? (
-                    <Visit
-                      type={"encounter"}
-                      uuid={row.uuid}
-                      key={index}
-                      name={t(row.encounterType.name)}
-                      index={index}
-                      visitDate={row.encounterDateTime}
-                      earliestVisitDate={row.earliestVisitDateTime}
-                      enableReadOnly={enableReadOnly}
-                    />
-                  ) : (
-                    ""
-                  )
-                )
+              {general && completedVisits.length !== 0 ? (
+                completedVisits.map((row, index) => (
+                  <CompletedEncounter index={index} encounter={row} />
+                ))
               ) : (
                 <Typography variant="caption" gutterBottom className={classes.infomsg}>
                   {" "}
@@ -170,7 +133,7 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
               )}
             </Grid>
           </ExpansionPanelDetails>
-          {general && completedVisits.length != 0 ? (
+          {general && completedVisits.length !== 0 ? (
             <InternalLink to={`/app/subject/completedEncounters?uuid=${subjectUuid}`}>
               <Button color="primary" className={classes.visitAllButton}>
                 {t("viewAllVisits")}

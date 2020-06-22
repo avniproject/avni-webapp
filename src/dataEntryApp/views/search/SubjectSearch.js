@@ -1,27 +1,16 @@
 import React, { useEffect } from "react";
-import {
-  Table,
-  TablePagination,
-  TableFooter,
-  TableBody,
-  TableCell,
-  TableRow,
-  FormControl,
-  InputLabel,
-  Input,
-  Button,
-  Paper
-} from "@material-ui/core";
-import { withRouter, Link } from "react-router-dom";
+import { FormControl, Input, InputLabel, Paper } from "@material-ui/core";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
-import { ToolTipContainer } from "../../components/ToolTipContainer";
 import { SubjectsTable } from "./SubjectSearchTable";
+import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import NewSubjectSearchTable from "dataEntryApp/views/search/NewSubjectSearchTable";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -49,6 +38,11 @@ const useStyle = makeStyles(theme => ({
     backgroundColor: "#0e6eff",
     marginRight: 10
   },
+  resetBtnShadow: {
+    boxShadow: "none",
+    backgroundColor: "#FF8C00",
+    marginRight: 10
+  },
   createButtonHolder: {
     flex: 1
   },
@@ -67,71 +61,25 @@ const SubjectSearch = props => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    // console.log("-------------->", event.target);
     props.search({ page: page, query: searchvalue, size: rowsPerPage });
+  };
+  const resethandleSubmit = event => {
+    event.preventDefault();
+    setSearchvalue("");
+    props.search({ page: 0, query: "", size: rowsPerPage });
   };
 
   const valueSubmit = e => {
-    // props.setSearchParams({ page: 0, query: e.target.value, size: 10 });
     setSearchvalue(e.target.value);
-    // props.search({ page: 0, query: searchvalue, size: rowsPerPage })
-    console.log("Serach value------>", e.target.value);
   };
 
-  useEffect(() => {
-    props.search();
-    sessionStorage.clear("subject");
-  }, []);
-
   return (
-    props.subjects && (
-      <Paper className={classes.searchBox}>
-        <div className={classes.searchCreateToolbar}>
-          <form onSubmit={handleSubmit} className={classes.searchForm}>
-            <FormControl className={classes.searchFormItem}>
-              <InputLabel htmlFor="search-field">{""}</InputLabel>
-              <Input
-                id="search-field"
-                autoFocus
-                type="text"
-                value={props.searchParams.query}
-                // onChange={e =>
-                // props.setSearchParams({page:0,query:e.target.value,size:rowsPerPage})}
-                onChange={valueSubmit}
-              />
-            </FormControl>
-            <FormControl className={classes.searchFormItem}>
-              <ToolTipContainer toolTipKey={t("searchHelpText")}>
-                <PrimaryButton
-                  type={"submit"}
-                  onClick={handleSubmit}
-                  className={classes.searchBtnShadow}
-                >
-                  {t("search")}
-                </PrimaryButton>
-              </ToolTipContainer>
-            </FormControl>
-          </form>
-          <RegistrationMenu className={classes.createButtonHolder} />
-        </div>
-        <SubjectsTable
-          subjects={props.subjects.content}
-          type={props.subjectType}
-          pageDetails={props}
-          searchparam={searchvalue}
-          rowsPerPage={rowsPerPage}
-          setRowsPerPage={setRowsPerPage}
-          page={page}
-          setPage={setPage}
-        />
-        {/* <SubjectsTable
-          subjects={props.subjects.content}
-          type={props.subjectType}
-          pageDetails={props}
-          searchparam={searchvalue}         
-        /> */}
-      </Paper>
-    )
+    <Paper className={classes.searchBox}>
+      <div className={classes.searchCreateToolbar}>
+        <RegistrationMenu className={classes.createButtonHolder} />
+      </div>
+      <NewSubjectSearchTable />
+    </Paper>
   );
 };
 

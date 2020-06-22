@@ -7,9 +7,8 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
-import { Link, withRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { connect } from "react-redux";
+import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -48,12 +47,12 @@ const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
                   <Card className={classes.card}>
                     <CardContent>
                       <Typography component={"div"} color="primary">
-                        <Link to={`?uuid=${relative.individualB.uuid}`} replace>
+                        <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
                           {" "}
                           {relative.individualB.firstName +
                             " " +
                             relative.individualB.lastName}{" "}
-                        </Link>
+                        </InternalLink>
                       </Typography>
                       <Typography
                         component={"div"}
@@ -94,8 +93,4 @@ const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
-});
-
-export default withRouter(connect(mapStateToProps)(GridCommonList));
+export default GridCommonList;

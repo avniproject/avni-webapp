@@ -207,9 +207,9 @@ export const UserDetail = ({ user, ...props }) => (
         }
       />
       <FunctionField
-        label="DataEntry App Readonly"
+        label="DataEntry WebApp Enable Writes"
         render={user =>
-          !isNil(user.settings) ? (user.settings.dataEntryAppReadonly ? "True" : "False") : ""
+          !isNil(user.settings) ? (user.settings.dataEntryAppEnableWrites ? "True" : "False") : ""
         }
       />
       <TextField label="Identifier prefix" source="settings.idPrefix" />
@@ -399,9 +399,9 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
           toolTipKey={"ADMIN_USER_SETTINGS_REGISTER_ENROL"}
         />
         <AvniBooleanInput
-          source="settings.dataEntryAppReadonly"
-          label="DataEntry App Readonly"
-          toolTipKey={"ADMIN_USER_SETTINGS_READONLY_DATA_ENTRY_APP"}
+          source="settings.dataEntryAppEnableWrites"
+          label="DataEntry WebApp Enable Writes"
+          toolTipKey={"ADMIN_USER_SETTINGS_DATA_ENTRY_APP_ENABLE_WRITES"}
         />
         <AvniTextInput
           source="settings.idPrefix"

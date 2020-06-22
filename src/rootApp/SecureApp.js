@@ -9,9 +9,7 @@ import logo from "../logo.png";
 import { initCognito, setCognitoUser } from "./ducks";
 import { customAmplifyErrorMsgs } from "./utils";
 
-// import { SignIn } from "aws-amplify-react";
-// import config from "../../aws-exports";
-import { CustomSignIn } from "../rootApp/LoginPage";
+import CustomSignIn from "./CustomSignIn";
 
 class SecureApp extends Component {
   constructor(props) {
