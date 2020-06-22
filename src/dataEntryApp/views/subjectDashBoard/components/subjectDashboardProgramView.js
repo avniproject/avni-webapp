@@ -29,6 +29,8 @@ import { enableReadOnly } from "common/constants";
 import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
 import { store } from "../../../../common/store/createStore";
 import { types } from "../../../reducers/completedVisitsReducer";
+import { Link } from "react-router-dom";
+import moment from "moment";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -240,11 +242,21 @@ const ProgramView = ({
                       ? programData.exitObservations
                       : ""
                   }
-                  additionalData={
+                  additionalRows={
                     programData && !programData.programExitDateTime
-                      ? [{ key: "Enrolment Date", value: programData.enrolmentDateTime }]
+                      ? [
+                          {
+                            label: "Enrolment Date",
+                            value: moment(programData.enrolmentDateTime).format("DD-MMM-YYYY")
+                          }
+                        ]
                       : programData
-                      ? [{ key: "Exit Enrolment Date", value: programData.programExitDateTime }]
+                      ? [
+                          {
+                            label: "Exit Enrolment Date",
+                            value: moment(programData.programExitDateTime).format("DD-MMM-YYYY")
+                          }
+                        ]
                       : ""
                   }
                 />
@@ -259,7 +271,6 @@ const ProgramView = ({
                     >
                       <Button color="primary">{t("Exit")}</Button>
                     </Link>
-
                     <Link
                       to={`/app/enrol?uuid=${subjectUuid}&programName=${
                         programData.program.operationalProgramName

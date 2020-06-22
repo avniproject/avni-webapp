@@ -24,6 +24,7 @@ const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, enableRead
   let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [selectedTabExited, setSelectedTabExited] = React.useState(false);
+  const { t } = useTranslation();
 
   const handleTabChange = (event, newValue) => {
     setSelectedTabExited(false);

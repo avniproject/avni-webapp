@@ -32,10 +32,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#f27510",
     height: "38px",
     zIndex: 1,
-    marginLeft: theme.spacing(77),
-    // marginLeft:"512px",
-    marginTop: "1px",
-    boxShadow: "none"
+    boxShadow: "none",
+    whiteSpace: "nowrap"
   },
   bigAvatar: {
     width: 42,
@@ -156,6 +154,9 @@ const ProfileDetails = ({
   useEffect(() => {
     getPrograms(subjectUuid);
   }, []);
+  const close = () => {
+    return true;
+  };
 
   const content = (
     <DialogContent>
@@ -242,7 +243,7 @@ const ProfileDetails = ({
             </TableBody>
           </Table>
         </Grid>
-        <Grid item xs={6} align="right">
+        <Grid item xs={7} align="right">
           {!enableReadOnly ? (
             <div>
               <Modal
@@ -269,6 +270,7 @@ const ProfileDetails = ({
                   }
                 ]}
                 title={t("Enrol in program")}
+                btnHandleClose={close}
               />
             </div>
           ) : (

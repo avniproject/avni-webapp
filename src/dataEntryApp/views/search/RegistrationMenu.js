@@ -8,6 +8,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
 import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
+import Grid from "@material-ui/core/Grid";
 
 const useStyle = makeStyles(theme => ({
   createButton: {
@@ -26,7 +27,7 @@ const RegistrationMenu = ({ types, enableReadOnly }) => {
   const handleClose = () => setAnchorEl(null);
 
   return (
-    <div>
+    <Grid container direction="row" justify="flex-end" alignItems="flex-start">
       {!enableReadOnly ? (
         <Button
           size="medium"
@@ -59,7 +60,7 @@ const RegistrationMenu = ({ types, enableReadOnly }) => {
           </InternalLink>
         ))}
       </Menu>
-    </div>
+    </Grid>
   );
 };
 
