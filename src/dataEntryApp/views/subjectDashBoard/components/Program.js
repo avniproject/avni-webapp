@@ -46,7 +46,8 @@ const useStyles = makeStyles(theme => ({
   },
   exitedProgramBar: {
     maxWidth: "372px",
-    marginTop: "14px"
+    marginTop: "14px",
+    marginLeft: "25px"
   },
   exitedProgramLabel: {
     fontSize: "12px",

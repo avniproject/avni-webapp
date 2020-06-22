@@ -5,8 +5,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Grid from "@material-ui/core/Grid";
-import Fab from "@material-ui/core/Fab";
-import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
@@ -35,10 +33,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#f27510",
     height: "38px",
     zIndex: 1,
-    marginLeft: theme.spacing(77),
-    // marginLeft:"512px",
-    marginTop: "1px",
-    boxShadow: "none"
+    boxShadow: "none",
+    whiteSpace: "nowrap"
   },
   bigAvatar: {
     width: 42,
@@ -81,7 +77,6 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     margin: "auto",
-    //width: 'fit-content',
     minWidth: "450px",
     minHeight: "170px"
   },
@@ -161,6 +156,9 @@ const ProfileDetails = ({
   useEffect(() => {
     getPrograms(subjectUuid);
   }, []);
+  const close = () => {
+    return true;
+  };
 
   const content = (
     <DialogContent>
@@ -255,7 +253,7 @@ const ProfileDetails = ({
             </TableBody>
           </Table>
         </Grid>
-        <Grid item>
+        <Grid item xs={7} align="right">
           {!enableReadOnly ? (
             <div>
               <Modal
@@ -271,7 +269,7 @@ const ProfileDetails = ({
                     buttonType: "saveButton",
                     label: t("Enrol"),
                     classes: classes.btnCustom,
-                    redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}`,
+                    redirectTo: `/app/enrol?uuid=${subjectUuid}&programName=${selectedProgram}&formType=ProgramEnrolment`,
                     requiredField: selectedProgram,
                     handleError: handleError
                   },
@@ -282,6 +280,7 @@ const ProfileDetails = ({
                   }
                 ]}
                 title={t("Enrol in program")}
+                btnHandleClose={close}
               />
             </div>
           ) : (

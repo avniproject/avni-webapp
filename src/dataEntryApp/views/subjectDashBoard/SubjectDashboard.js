@@ -34,6 +34,15 @@ const SubjectDashboard = ({
 }) => {
   const classes = useStyles();
   let paperInfo;
+
+  const handleUpdateComponent = () => {
+    (async function fetchData() {
+      await setTimeout(() => {
+        getSubjectProgram(match.queryParams.uuid);
+      }, 500);
+    })();
+  };
+
   if (subjectProfile !== undefined) {
     paperInfo = (
       <Paper className={classes.root}>
@@ -46,6 +55,7 @@ const SubjectDashboard = ({
           profile={subjectProfile}
           general={subjectGeneral}
           program={subjectProgram}
+          handleUpdateComponent={handleUpdateComponent}
           enableReadOnly={enableReadOnly}
         />
       </Paper>

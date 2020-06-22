@@ -19,12 +19,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProgramTab = ({ program, enableReadOnly }) => {
-  const { t } = useTranslation();
+const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, enableReadOnly }) => {
   let flagActive = false;
   let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
   const [selectedTabExited, setSelectedTabExited] = React.useState(false);
+  const { t } = useTranslation();
 
   const handleTabChange = (event, newValue) => {
     setSelectedTabExited(false);
@@ -99,12 +99,14 @@ const SubjectDashboardProgramTab = ({ program, enableReadOnly }) => {
           <ProgramDetails
             tabPanelValue={selectedTab}
             programData={program}
+            handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
           />
         ) : (
           <ProgramDetails
             tabPanelValue={selectedTabExited}
             programData={program}
+            handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
           />
         )}

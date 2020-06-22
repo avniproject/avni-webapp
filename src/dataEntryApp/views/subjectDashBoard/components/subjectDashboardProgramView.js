@@ -13,7 +13,24 @@ import Visit from "./Visit";
 import Button from "@material-ui/core/Button";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
+
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+
+import { undoExitEnrolment } from "../../../reducers/programEnrolReducer";
+
+import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
+import { enableReadOnly } from "common/constants";
+import { LineBreak, RelativeLink, withParams } from "../../../../common/components/utils";
+import { store } from "../../../../common/store/createStore";
+import { types } from "../../../reducers/completedVisitsReducer";
+import { Link } from "react-router-dom";
+import moment from "moment";
 
 const useStyles = makeStyles(theme => ({
   programLabel: {
@@ -115,9 +132,41 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProgramView = ({ programData, enableReadOnly }) => {
+const ProgramView = ({
+  programData,
+  subjectUuid,
+  undoExitEnrolment,
+  handleUpdateComponent,
+  enableReadOnly
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  const [expandedPanel, setExpanded] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const enrolldata = {
+    enrollmentId: programData.id,
+    enrollmentUuid: programData.uuid
+  };
+
+  const handleChange = panel => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
+  const handleUndoExit = (programEnrolmentUuid, Link) => {
+    undoExitEnrolment(programEnrolmentUuid);
+    handleClose();
+    handleUpdateComponent(subjectUuid);
+  };
+
   let plannedVisits = [];
   let completedVisits = [];
 
@@ -159,9 +208,6 @@ const ProgramView = ({ programData, enableReadOnly }) => {
         </Grid>
 
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
-          {/* <SubjectButton btnLabel={t("Growth Chart")} btnClass={classes.growthButtonStyle} />
-          <SubjectButton btnLabel={t("vaccinations")} /> */}
-
           {!enableReadOnly ? (
             <InternalLink
               to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
@@ -188,10 +234,99 @@ const ProgramView = ({ programData, enableReadOnly }) => {
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             <Grid item xs={12}>
               <List>
-                <Observations observations={programData ? programData.observations : ""} />
+                <Observations
+                  observations={
+                    programData && !programData.programExitDateTime
+                      ? programData.observations
+                      : programData
+                      ? programData.exitObservations
+                      : ""
+                  }
+                  additionalRows={
+                    programData && !programData.programExitDateTime
+                      ? [
+                          {
+                            label: "Enrolment Date",
+                            value: moment(programData.enrolmentDateTime).format("DD-MMM-YYYY")
+                          }
+                        ]
+                      : programData
+                      ? [
+                          {
+                            label: "Exit Enrolment Date",
+                            value: moment(programData.programExitDateTime).format("DD-MMM-YYYY")
+                          }
+                        ]
+                      : ""
+                  }
+                />
               </List>
-              {!enableReadOnly ? <Button color="primary">{t("void")}</Button> : ""}
-              {!enableReadOnly ? <Button color="primary">{t("edit")}</Button> : ""}
+              {!enableReadOnly ? (
+                !programData.programExitDateTime ? (
+                  <>
+                    <Link
+                      to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                        programData.program.operationalProgramName
+                      }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
+                    >
+                      <Button color="primary">{t("Exit")}</Button>
+                    </Link>
+                    <Link
+                      to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                        programData.program.operationalProgramName
+                      }&formType=ProgramEnrolment&programEnrolmentUuid=${programData.uuid}`}
+                    >
+                      <Button color="primary">{t("Edit")}</Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to={`/app/enrol?uuid=${subjectUuid}&programName=${
+                        programData.program.operationalProgramName
+                      }&formType=ProgramExit&programEnrolmentUuid=${programData.uuid}`}
+                    >
+                      <Button color="primary">{t("Edit Exit")}</Button>
+                    </Link>
+
+                    <Button color="primary" onClick={handleClickOpen}>
+                      {t("Undo Exit")}
+                    </Button>
+
+                    <Dialog
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">{"Undo Exit"}</DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          Do you want to undo exit and restore to enrolled state shows up
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleUndoExit.bind(
+                            this,
+                            programData.uuid,
+                            `/app/subject?uuid=${subjectUuid}&undo=true`
+                          )}
+                          color="primary"
+                          autoFocus
+                        >
+                          Undo Exit
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                  </>
+                )
+              ) : (
+                ""
+              )}
             </Grid>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -306,4 +441,19 @@ const ProgramView = ({ programData, enableReadOnly }) => {
   );
 };
 
-export default ProgramView;
+const mapStateToProps = state => ({
+  subjectProgram: state.dataEntry.subjectProgram.subjectProgram
+});
+
+const mapDispatchToProps = {
+  undoExitEnrolment
+};
+
+export default withRouter(
+  withParams(
+    connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(ProgramView)
+  )
+);

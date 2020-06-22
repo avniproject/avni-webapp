@@ -66,7 +66,7 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export default ({ profile, general, program, enableReadOnly }) => {
+export default ({ profile, general, program, handleUpdateComponent, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -103,7 +103,11 @@ export default ({ profile, general, program, enableReadOnly }) => {
       </MUAppBar>
       <TabContent value={value} index={0}>
         <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardProgramTab program={program} enableReadOnly={enableReadOnly} />
+          <SubjectDashboardProgramTab
+            program={program}
+            handleUpdateComponent={handleUpdateComponent}
+            enableReadOnly={enableReadOnly}
+          />
         </Paper>
       </TabContent>
       <TabContent value={value} index={1}>

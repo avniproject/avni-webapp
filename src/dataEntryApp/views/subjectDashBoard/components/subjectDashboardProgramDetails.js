@@ -18,14 +18,20 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-const programDetails = ({ tabPanelValue, programData, enableReadOnly }) => {
+const programDetails = ({ tabPanelValue, programData, handleUpdateComponent, enableReadOnly }) => {
   return (
     <div>
       {programData && programData.enrolments
         ? programData.enrolments.map((element, index) => (
             <Fragment key={index}>
               <TabPanel value={tabPanelValue} index={index}>
-                <ProgramView programData={element} key={index} enableReadOnly={enableReadOnly} />
+                <ProgramView
+                  subjectUuid={programData.uuid}
+                  programData={element}
+                  key={index}
+                  handleUpdateComponent={handleUpdateComponent}
+                  enableReadOnly={enableReadOnly}
+                />
               </TabPanel>
             </Fragment>
           ))

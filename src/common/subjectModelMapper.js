@@ -96,6 +96,21 @@ export const mapProfile = subjectProfile => {
   }
 };
 
+export const mapProgramEnrolment = json => {
+  const programEnrolment = new ProgramEnrolment();
+  programEnrolment.uuid = json.uuid;
+  if (json.enrolmentDateTime) programEnrolment.enrolmentDateTime = new Date(json.enrolmentDateTime);
+  if (json.programExitDateTime)
+    programEnrolment.programExitDateTime = new Date(json.programExitDateTime);
+  programEnrolment.programExitObservations = mapObservation(json.exitObservations);
+  programEnrolment.observations = mapObservation(json.observations);
+  const program = new Program();
+  program.uuid = json.programUuid;
+  programEnrolment.program = program;
+  programEnrolment.voided = false;
+  return programEnrolment;
+};
+
 export const mapRelationships = relationshipList => {
   if (relationshipList) {
     return relationshipList.map(relationship => {
@@ -145,6 +160,7 @@ export const mapProgram = subjectProgram => {
   if (subjectProgram) {
     let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);
     programIndividual.enrolments = mapEnrolment(subjectProgram.enrolments);
+    programIndividual.exitObservations = mapEnrolment(subjectProgram.exitObservations);
     return programIndividual;
   }
 };
@@ -159,6 +175,7 @@ export const mapEnrolment = enrolmentList => {
       );
       programEnrolment.observations = mapObservation(enrolment["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
+      programEnrolment.exitObservations = mapObservation(enrolment["exitObservations"]);
       programEnrolment.program = mapOperationalProgram(enrolment);
       programEnrolment.uuid = enrolment.uuid;
       programEnrolment.id = enrolment.id;
