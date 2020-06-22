@@ -337,7 +337,7 @@ const ProgramView = ({
               alignItems="flex-start"
               spacing={2}
             >
-              {programData && programData.encounters && plannedVisits.length != 0 ? (
+              {programData && programData.encounters && plannedVisits.length !== 0 ? (
                 programData.encounters.map((row, index) =>
                   !row.encounterDateTime ? (
                     <Visit
@@ -383,12 +383,12 @@ const ProgramView = ({
               alignItems="flex-start"
               spacing={2}
               className={
-                programData && programData.encounters && completedVisits.length != 0
+                programData && programData.encounters && completedVisits.length !== 0
                   ? classes.gridBottomBorder
                   : ""
               }
             >
-              {programData && programData.encounters && completedVisits.length != 0 ? (
+              {programData && programData.encounters && completedVisits.length !== 0 ? (
                 programData.encounters.map((row, index) =>
                   row.encounterDateTime && row.encounterType && index <= 3 ? (
                     <Visit
@@ -415,7 +415,7 @@ const ProgramView = ({
               )}
             </Grid>
           </ExpansionPanelDetails>
-          {programData && programData.encounters && completedVisits.length != 0 ? (
+          {programData && programData.encounters && completedVisits.length !== 0 ? (
             <InternalLink to={`/app/subject/completedProgramEncounters?uuid=${programData.uuid}`}>
               <Button color="primary" className={classes.visitAllButton}>
                 {t("viewAllVisits")}

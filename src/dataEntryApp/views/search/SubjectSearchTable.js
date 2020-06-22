@@ -1,18 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
+  Button,
   Table,
-  TablePagination,
-  TableFooter,
   TableBody,
   TableCell,
-  TableRow,
-  Button,
-  Paper
+  TableFooter,
+  TablePagination,
+  TableRow
 } from "@material-ui/core";
-import { withRouter, Link } from "react-router-dom";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { first } from "lodash";
-import { EnhancedTableHead, stableSort, getComparator } from "../../components/TableHeaderSorting";
+import { Link } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import { EnhancedTableHead } from "../../components/TableHeaderSorting";
 import { TablePaginationActions } from "../../components/TablePagination";
 import { useTranslation } from "react-i18next";
 
@@ -71,8 +69,7 @@ export const SubjectsTable = ({
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("firstName");
-  const [selected, setSelected] = React.useState([]);
-  let tableHeaderNames = [];
+  const [selected] = React.useState([]);
   let pageinfo = pageDetails.subjects;
   let searchText = searchparam;
   const camelize = str => {
@@ -93,66 +90,47 @@ export const SubjectsTable = ({
         fullName: firstName + " " + lastName,
         subjectType: a.subjectType.name,
         gender: a.gender ? t(a.gender.name) : "",
-        dateOfBirth:
-          new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`,
+        dateOfBirth: a.dateOfBirth
+          ? new Date().getFullYear() - new Date(a.dateOfBirth).getFullYear() + " " + `${t("years")}`
+          : "",
         addressLevel: a.addressLevel ? a.addressLevel.titleLineage : "",
         activePrograms: a.activePrograms ? a.activePrograms : []
       };
       return sub;
     });
   }
-  if (type.name === "Individual") {
-    tableHeaderNames = [
-      { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
-      {
-        id: "subjectType",
-        numeric: false,
-        disablePadding: true,
-        label: "subjectType",
-        align: "left"
-      },
-      { id: "gender", numeric: false, disablePadding: true, label: "gender", align: "left" },
-      {
-        id: "dateOfBirth",
-        numeric: true,
-        disablePadding: false,
-        label: "age",
-        align: "left"
-      },
-      {
-        id: "addressLevel",
-        numeric: false,
-        disablePadding: true,
-        label: "addressVillage",
-        align: "left"
-      },
-      {
-        id: "activePrograms",
-        numeric: false,
-        disablePadding: true,
-        label: "enrolments",
-        align: "left"
-      }
-    ];
-  } else {
-    tableHeaderNames = [
-      { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
-      {
-        id: "addressLevel",
-        numeric: false,
-        disablePadding: true,
-        label: "location",
-        align: "left"
-      },
-      {
-        id: "activePrograms",
-        numeric: false,
-        disablePadding: true,
-        label: "activeprograms",
-        align: "left"
-      }
-    ];
-  }
+  const tableHeaderNames = [
+    { id: "firstName", numeric: false, disablePadding: true, label: "Name", align: "left" },
+    {
+      id: "subjectType",
+      numeric: false,
+      disablePadding: true,
+      label: "subjectType",
+      align: "left"
+    },
+    { id: "gender", numeric: false, disablePadding: true, label: "gender", align: "left" },
+    {
+      id: "dateOfBirth",
+      numeric: true,
+      disablePadding: false,
+      label: "age",
+      align: "left"
+    },
+    {
+      id: "addressLevel",
+      numeric: false,
+      disablePadding: true,
+      label: "addressVillage",
+      align: "left"
+    },
+    {
+      id: "activePrograms",
+      numeric: false,
+      disablePadding: true,
+      label: "enrolments",
+      align: "left"
+    }
+  ];
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -195,16 +173,12 @@ export const SubjectsTable = ({
               <TableCell padding="none" width="12%">
                 {row.subjectType}
               </TableCell>
-              {type.name === "Individual" && (
-                <TableCell align="left" className={classes.cellpadding}>
-                  {row.gender}
-                </TableCell>
-              )}
-              {type.name === "Individual" && (
-                <TableCell align="left" className={classes.cellpadding}>
-                  {row.dateOfBirth}
-                </TableCell>
-              )}
+              <TableCell align="left" className={classes.cellpadding}>
+                {row.gender}
+              </TableCell>
+              <TableCell align="left" className={classes.cellpadding}>
+                {row.dateOfBirth}
+              </TableCell>
               <TableCell align="left" className={classes.cellpadding}>
                 {row.addressLevel}
               </TableCell>

@@ -4,6 +4,9 @@
   "APP_DESIGNER_SUBJECT_TYPE_GROUP": "When marked true, subject type becomes a group where you can add different members.",
   "APP_DESIGNER_SUBJECT_TYPE_SELECT_FORM": "Registration form for this subject type. Select 'New Form' if you don't already have one",
   "APP_DESIGNER_SUBJECT_TYPE_ACTIVE": "Switch off subject type if you don't want to use it anymore.",
+  "APP_DESIGNER_SUBJECT_TYPE_SELECT_TYPE": "Choose from the existing types. Read the documentation on right to get an idea of which type to use.",
+  "APP_DESIGNER_SUBJECT_TYPE_GROUP_ROLES": "Member roles that you can choose from while adding members to this group",
+  "APP_DESIGNER_SUBJECT_MEMBER_SUBJECT_TYPE": "Person subject type that can be added as member to the household",
   "APP_DESIGNER_PROGRAM_NAME": "Name of the program.",
   "APP_DESIGNER_PROGRAM_SUBJECT_TYPE": "Subject type to which this program will be linked.",
   "APP_DESIGNER_PROGRAM_COLOR": "This colour will be used on labels showing program enrolment. Choose a colour that resonates with the program",
@@ -93,7 +96,7 @@
   "ADMIN_USER_SETTINGS_BENEFICIARY_MODE": "Enables the Beneficiary mode - a limited mode that allows beneficiaries to use the Field App",
   "ADMIN_USER_SETTINGS_DISABLE_AUTO_REFRESH": "Disables Auto-refresh of MyDashboard of the Field App. Use if the dashboard is slow to refresh",
   "ADMIN_USER_SETTINGS_REGISTER_ENROL": "Adds extra quick menu items on the Register tab to register and enrol to programs in a single flow",
-  "ADMIN_USER_SETTINGS_READONLY_DATA_ENTRY_APP": "Switch web based data entry app into readonly mode",
+  "ADMIN_USER_SETTINGS_DATA_ENTRY_APP_ENABLE_WRITES": "Enable write functionality for web based data entry app. Write functionality is in beta so may have issues.",
   "ADMIN_USER_SETTINGS_IDENTIFIER_PREFIX": "Identifier prefix for ids generated for this user. See [documentation](https://avni.readme.io/docs/creating-identifiers) for more information",
   "ADMIN_USER_SETTINGS_DATE_PICKER_MODE": "Set default date picker for the Field App"
 }

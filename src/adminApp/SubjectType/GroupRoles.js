@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import _, { map } from "lodash";
+import _, { map, includes, filter } from "lodash";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -11,6 +11,10 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import MenuItem from "@material-ui/core/MenuItem";
 import httpClient from "../../common/utils/httpClient";
 import { default as UUID } from "uuid";
+import Types from "./Types";
+import { findRegistrationForms } from "../domain/formMapping";
+import { AvniSelectForm } from "../../common/components/AvniSelectForm";
+import { AvniSelect } from "../../common/components/AvniSelect";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,7 +33,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function GroupRoles({ groupRoles, household, dispatch, error, edit }) {
+export default function GroupRoles({ groupRoles, dispatch, error, edit, type, memberSubjectType }) {
   const classes = useStyles();
   React.useEffect(() => {
     httpClient.fetchJson("/web/operationalModules").then(response => {
@@ -39,7 +43,7 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
   }, []);
 
   const [subjectTypeOptions, setSubjectTypes] = React.useState();
-  const nonVoidedRoles = _.filter(groupRoles, ({ voided }) => !voided);
+  const nonVoidedRoles = filter(groupRoles, ({ voided }) => !voided);
 
   const onGroupRoleChange = (groupRole, index) => {
     const existing = [...groupRoles];
@@ -64,13 +68,42 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
     dispatch({ type: "groupRole", payload: existing });
   };
 
+  const filterOptions = option => {
+    return (
+      (Types.isHousehold(type) && includes(Types.householdMemberTypes, option.type)) ||
+      (Types.getType("Group") === type && includes(Types.groupMemberTypes, option.type))
+    );
+  };
+
   return (
-    <Box mt={2}>
+    <Box mt={1}>
+      <Box mb={2}>
+        {Types.isHousehold(type) && (
+          <AvniSelect
+            label="Select Member Subject *"
+            value={memberSubjectType || ""}
+            onChange={event =>
+              dispatch({ type: "householdMemberSubject", payload: event.target.value })
+            }
+            style={{ width: "200px", marginBottom: 5 }}
+            required
+            options={
+              subjectTypeOptions &&
+              subjectTypeOptions.filter(filterOptions).map(option => (
+                <MenuItem key={option.uuid} value={option.name}>
+                  {option.name}
+                </MenuItem>
+              ))
+            }
+            toolTipKey={"APP_DESIGNER_SUBJECT_MEMBER_SUBJECT_TYPE"}
+          />
+        )}
+      </Box>
       {map(nonVoidedRoles, (groupRole, index) => (
         <Grid key={index} container direction="row" alignItems="center">
           <Box className={classes.root} noValidate autoComplete="off">
             <TextField
-              disabled={household}
+              disabled={Types.isHousehold(type)}
               id="role"
               label="Role Name"
               variant="outlined"
@@ -81,7 +114,7 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
               }
             />
             <TextField
-              disabled={household}
+              disabled={Types.isHousehold(type)}
               id="subject-member-name"
               select
               label="Select Member Subject"
@@ -99,14 +132,14 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
               variant="outlined"
             >
               {subjectTypeOptions &&
-                subjectTypeOptions.map(option => (
+                subjectTypeOptions.filter(filterOptions).map(option => (
                   <MenuItem key={option.uuid} value={option.name}>
                     {option.name}
                   </MenuItem>
                 ))}
             </TextField>
             <TextField
-              disabled={household}
+              disabled={Types.isHousehold(type)}
               id="minimum-number-of-members"
               label="Minimum members"
               variant="outlined"
@@ -125,7 +158,7 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
               }
             />
             <TextField
-              disabled={household}
+              disabled={Types.isHousehold(type)}
               id="maximum-number-of-members"
               label="Maximum members"
               variant="outlined"
@@ -144,7 +177,7 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
               }
             />
           </Box>
-          {!household && (
+          {!Types.isHousehold(type) && (
             <IconButton
               aria-label="delete"
               onClick={() => onDeleteGroupRole(index, groupRole, edit)}
@@ -156,7 +189,7 @@ export default function GroupRoles({ groupRoles, household, dispatch, error, edi
         </Grid>
       ))}
       {error && <FormHelperText error>Group fields can not be blank</FormHelperText>}
-      {!household && (
+      {!Types.isHousehold(type) && (
         <Button
           type="button"
           className={classes.button}

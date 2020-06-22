@@ -18,6 +18,8 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import { isEqual } from "lodash";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   tableCellDetails: {
@@ -135,7 +137,8 @@ const ProfileDetails = ({
   programs,
   subjectUuid,
   match,
-  enableReadOnly
+  enableReadOnly,
+  load
 }) => {
   const classes = useStyles();
   const [selectedProgram, setSelectedProgram] = React.useState("");
@@ -151,12 +154,6 @@ const ProfileDetails = ({
   };
 
   const { t } = useTranslation();
-
-  const camelize = str => {
-    return (" " + str).toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function(match, chr) {
-      return chr.toUpperCase();
-    });
-  };
 
   useEffect(() => {
     getPrograms(subjectUuid);
@@ -201,10 +198,18 @@ const ProfileDetails = ({
 
   return (
     <div className={classes.tableView}>
+      <CustomizedBackdrop load={load} />
       <Typography component={"span"} className={classes.mainHeading}>
-        {`${camelize(profileDetails.firstName)} ${camelize(profileDetails.lastName)}`} {t("Dashboard")}
+        {`${profileDetails.nameString}`}
       </Typography>
       <Grid alignItems="center" container spacing={1}>
+        {/* <Grid item>
+          <Avatar
+            src="https://cdn2.iconfinder.com/data/icons/circle-icons-1/64/profle-512.png"
+            className={classes.bigAvatar}
+          />
+
+        </Grid> */}
         <Grid item>
           <AccountCircle className={classes.iconStyle} />
         </Grid>
@@ -212,26 +217,34 @@ const ProfileDetails = ({
           <Table aria-label="caption table" className={classes.table}>
             <TableHead>
               <TableRow className={classes.tableHeader}>
-                {/* <TableCell className={classes.tableCell}>{t("name")}</TableCell> */}
-                <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
-                <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
-                <TableCell className={classes.tableCell}>{t("Village")}</TableCell>
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCell}>{t("gender")}</TableCell>
+                )}
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
+                )}{" "}
+                <TableCell className={classes.tableCell}>
+                  {t(profileDetails.lowestAddressLevel.type)}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                {/* <TableCell className={classes.tableCellDetails}>{`${profileDetails.firstName} ${
-                  profileDetails.lastName
-                }`}</TableCell> */}
-                <TableCell className={classes.tableCellDetails}>
-                  {t(profileDetails.gender.name)}
-                </TableCell>
-                <TableCell className={classes.tableCellDetails}>
-                  {new Date().getFullYear() -
-                    new Date(profileDetails.dateOfBirth).getFullYear() +
-                    " " +
-                    `${t("years")}`}
-                </TableCell>
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCellDetails}>
+                    {t(profileDetails.gender.name)}
+                  </TableCell>
+                )}
+                {isEqual(profileDetails.subjectType.name, "Individual") && (
+                  <TableCell className={classes.tableCellDetails}>
+                    {profileDetails.dateOfBirth
+                      ? new Date().getFullYear() -
+                        new Date(profileDetails.dateOfBirth).getFullYear() +
+                        " " +
+                        `${t("years")}`
+                      : "-"}
+                  </TableCell>
+                )}
                 <TableCell className={classes.tableCellDetails}>
                   {profileDetails.lowestAddressLevel.name}
                 </TableCell>
@@ -278,7 +291,8 @@ const ProfileDetails = ({
 };
 
 const mapStateToProps = state => ({
-  programs: state.dataEntry.programs ? state.dataEntry.programs.programs : ""
+  programs: state.dataEntry.programs ? state.dataEntry.programs.programs : "",
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

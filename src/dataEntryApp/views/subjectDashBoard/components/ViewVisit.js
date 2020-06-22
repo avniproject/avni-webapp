@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
-import { types } from "../../../reducers/completedVisitsReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -14,7 +13,7 @@ import Button from "@material-ui/core/Button";
 import { InternalLink, LineBreak } from "../../../../common/components/utils";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
-import { store } from "../../../../common/store/createStore";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -67,7 +66,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter }) => {
+const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
@@ -136,12 +135,13 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter }) => {
       </Paper>
     </Fragment>
   ) : (
-    ""
+    <CustomizedBackdrop load={load} />
   );
 };
 
 const mapStateToProps = state => ({
-  encounter: state.dataEntry.viewVisitReducer.encounter
+  encounter: state.dataEntry.viewVisitReducer.encounter,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

@@ -5,7 +5,6 @@ export const types = {
   GET_COMPLETED_PROGRAM_ENCOUNTERS: `${prefix}GET_COMPLETED_PROGRAM_ENCOUNTERS`,
   GET_COMPLETED_ENCOUNTERS: `${prefix}GET_COMPLETED_ENCOUNTERS`,
   SET_ENCOUNTER_TYPES: `${prefix}SET_ENCOUNTER_TYPES`,
-  SET_LOADED: `${prefix}SET_LOADED`,
   LOAD_PROGRAM_ENCOUNTERS: `${prefix}LOAD_PROGRAM_ENCOUNTERS`,
   LOAD_ENCOUNTERS: `${prefix}LOAD_ENCOUNTERS`
 };
@@ -22,9 +21,10 @@ export const getCompletedEncounters = (subjectUuid, filterQueryString) => ({
   filterQueryString
 });
 
-export const loadProgramEncounters = enrolmentUuid => ({
+export const loadProgramEncounters = (enrolmentUuid, filterQueryString) => ({
   type: types.LOAD_PROGRAM_ENCOUNTERS,
-  enrolmentUuid
+  enrolmentUuid,
+  filterQueryString
 });
 
 export const loadEncounters = subjectUuid => ({
@@ -42,11 +42,6 @@ export const setEncounterTypes = encounterTypes => ({
   encounterTypes
 });
 
-export const setLoaded = loaded => ({
-  type: types.SET_LOADED,
-  loaded
-});
-
 export default function(state = {}, action) {
   switch (action.type) {
     case types.SET_COMPLETED_VISITS: {
@@ -59,12 +54,6 @@ export default function(state = {}, action) {
       return {
         ...state,
         encounterTypes: action.encounterTypes
-      };
-    }
-    case types.SET_LOADED: {
-      return {
-        ...state,
-        loaded: action.loaded
       };
     }
     default:

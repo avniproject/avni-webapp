@@ -10,6 +10,8 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
+import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,7 +29,8 @@ const SubjectDashboard = ({
   subjectGeneral,
   getSubjectProgram,
   subjectProgram,
-  enableReadOnly
+  enableReadOnly,
+  load
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -69,6 +72,7 @@ const SubjectDashboard = ({
     <Fragment>
       <Breadcrumbs path={match.path} />
       {paperInfo}
+      <CustomizedBackdrop load={load} />
     </Fragment>
   );
 };
@@ -77,7 +81,8 @@ const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
-  enableReadOnly: state.app.userInfo.settings.dataEntryAppReadonly
+  enableReadOnly: selectEnableReadonly(state),
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

@@ -189,13 +189,6 @@ const DefaultPage = props => {
 
   return (
     <div>
-      <div className={classes.topcaption}>
-        <Typography variant="caption" gutterBottom>
-          {" "}
-          {t("no")} {t("details")}{" "}
-        </Typography>
-      </div>
-
       <LineBreak num={1} />
       <div>
         {props.subject && (

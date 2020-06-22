@@ -18,7 +18,6 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "query-string";
 import i18n from "i18next";
-
 import { I18nextProvider } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -55,7 +54,13 @@ const DataEntry = ({
             <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
             <Route path={`${path}/register`} component={SubjectRegister} />
             <Route path={`${path}/editSubject`} component={SubjectRegister} />
-            <Route exact path={`${path}/subject`} component={SubjectDashboard} />
+            <Route
+              exact
+              path={`${path}/subject`}
+              component={SubjectDashboard}
+              key={`${Math.random()}`}
+            />
+            {/* <Route exact path={`${path}/subject`} component={SubjectDashboard} /> */}
             <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
             <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
             <Route exact path={`${path}/subject/viewEncounter`} component={ViewVisit} />
