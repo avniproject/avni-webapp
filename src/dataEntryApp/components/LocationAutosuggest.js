@@ -45,8 +45,6 @@ const LocationAutosuggest = ({
 
   const [value, setValue] = React.useState(selectedLocation);
   const [suggestions, setSuggestions] = React.useState([]);
-  const [firstnameerrormsg, setFirstnamemsg] = React.useState("");
-
   const getSuggestionValue = suggestion => suggestion.title;
 
   const renderSuggestion = suggestion => <div>{suggestion.title}</div>;
@@ -85,7 +83,7 @@ const LocationAutosuggest = ({
 
   const inputProps = {
     className: classes.rautosuggestinput,
-    placeholder: `${t(placeholder)}` + " " + `${t("name")}`,
+    placeholder: `${t(placeholder)} ${t("name")}`,
     value,
     onChange
   };

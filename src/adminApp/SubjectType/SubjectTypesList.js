@@ -36,8 +36,7 @@ const SubjectTypesList = ({ history }) => {
         </a>
       )
     },
-    { title: "Household", field: "household", type: "boolean" },
-    { title: "Group", field: "group", type: "boolean" },
+    { title: "Type", field: "type" },
     { title: "Organisation Id", field: "organisationId", type: "numeric" }
   ];
 
@@ -51,8 +50,10 @@ const SubjectTypesList = ({ history }) => {
       let apiUrl = "/web/subjectType?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
-      if (!isEmpty(query.orderBy.field))
-        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      if (!isEmpty(query.orderBy.field)) {
+        const sortBy = query.orderBy.field === "type" ? "subjectTypeType" : query.orderBy.field;
+        apiUrl += `&sort=${sortBy},${query.orderDirection}`;
+      }
       http
         .get(apiUrl)
         .then(response => response.data)
@@ -78,9 +79,9 @@ const SubjectTypesList = ({ history }) => {
 
   const voidSubjectType = rowData => ({
     icon: "delete_outline",
-    tooltip: "Void subject type",
+    tooltip: "Delete subject type",
     onClick: (event, rowData) => {
-      const voidedMessage = "Do you really want to void the subject type " + rowData.name + " ?";
+      const voidedMessage = "Do you really want to delete the subject type " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http
           .delete("/web/subjectType/" + rowData.id)

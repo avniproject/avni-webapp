@@ -14,7 +14,8 @@ import {
   SingleFieldList,
   AutocompleteArrayInput,
   ReferenceArrayField,
-  Filter
+  Filter,
+  FunctionField
 } from "react-admin";
 import Typography from "@material-ui/core/Typography";
 import CardActions from "@material-ui/core/CardActions";
@@ -27,6 +28,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { ToolTipContainer } from "../common/components/ToolTipContainer";
 import { Paper } from "@material-ui/core";
+import { createdAudit, modifiedAudit } from "./components/AuditUtil";
 
 const CatchmentFilter = props => (
   <Filter {...props}>
@@ -64,10 +66,8 @@ export const CatchmentDetail = props => {
             <TitleChip source="title" />
           </SingleFieldList>
         </ReferenceArrayField>
-        <TextField label="Created by" source="createdBy" />
-        <TextField label="Last modified by" source="lastModifiedBy" />
-        <TextField label="Created On(datetime)" source="createdDateTime" />
-        <TextField label="Last modified On(datetime)" source="modifiedDateTime" />
+        <FunctionField label="Created" render={audit => createdAudit(audit)} />
+        <FunctionField label="Modified" render={audit => modifiedAudit(audit)} />
       </SimpleShowLayout>
     </Show>
   );

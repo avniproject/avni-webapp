@@ -24,6 +24,7 @@ import { saveUserInfo } from "rootApp/ducks";
 import { connect } from "react-redux";
 import { get } from "lodash";
 import { Auth } from "aws-amplify";
+import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -50,7 +51,7 @@ const useStyles = makeStyles(theme => ({
     color: "blue",
     maxWidth: 360,
     position: "absolute",
-    zIndex: "2",
+    zIndex: "100",
     backgroundColor: theme.palette.background.paper,
     marginRight: "150px"
   },
@@ -93,7 +94,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout }) => {
+const UserOption = ({
+  orgConfig,
+  userInfo,
+  defaultLanguage,
+  saveUserInfo,
+  logout,
+  enableReadOnly
+}) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -173,31 +181,39 @@ const UserOption = ({ orgConfig, userInfo, defaultLanguage, saveUserInfo, logout
                   ))
                 : ""}
             </RadioGroup>
-            <FormLabel component="legend">{t("trackLocation")}</FormLabel>
-            <FormControlLabel control={<Switch checked={true} value="checkedA" />} label="On" />
+            {!enableReadOnly && <FormLabel component="legend">{t("trackLocation")}</FormLabel>}
+            {!enableReadOnly && (
+              <FormControlLabel control={<Switch checked={true} value="checkedA" />} label="On" />
+            )}
           </FormControl>
         </Collapse>
         <hr className={classes.horizontalLine} />
-        <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-          <ListItemIcon>
-            <VideoIcon style={{ color: "blue" }} />
-          </ListItemIcon>
-          <ListItemText primary={t("VideoList")} />
-        </ListItem>
-        <hr className={classes.horizontalLine} />
-        <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-          <ListItemIcon>
-            <SyncIcon style={{ color: "blue" }} />
-          </ListItemIcon>
-          <ListItemText primary={t("entitySyncStatus")} />
-        </ListItem>
-        <hr className={classes.horizontalLine} />
-        <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-          <ListItemIcon>
-            <LockIcon style={{ color: "blue" }} />
-          </ListItemIcon>
-          <ListItemText primary={t("changePassword")} />
-        </ListItem>
+        {!enableReadOnly && (
+          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+            <ListItemIcon>
+              <VideoIcon style={{ color: "blue" }} />
+            </ListItemIcon>
+            <ListItemText primary={t("VideoList")} />
+          </ListItem>
+        )}
+        {!enableReadOnly && <hr className={classes.horizontalLine} />}
+        {!enableReadOnly && (
+          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+            <ListItemIcon>
+              <SyncIcon style={{ color: "blue" }} />
+            </ListItemIcon>
+            <ListItemText primary={t("entitySyncStatus")} />
+          </ListItem>
+        )}
+        {!enableReadOnly && <hr className={classes.horizontalLine} />}
+        {!enableReadOnly && (
+          <ListItem button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
+            <ListItemIcon>
+              <LockIcon style={{ color: "blue" }} />
+            </ListItemIcon>
+            <ListItemText primary={t("changePassword")} />
+          </ListItem>
+        )}
         <hr className={classes.horizontalLine} />
         <ListItem onClick={logout} button style={{ paddingTop: "5px", paddingBottom: "5px" }}>
           <ListItemIcon>
@@ -218,7 +234,8 @@ const mapStateToProps = state => ({
   defaultLanguage:
     state.app.userInfo.settings && state.app.userInfo.settings.locale
       ? state.app.userInfo.settings.locale
-      : "en"
+      : "en",
+  enableReadOnly: selectEnableReadonly(state)
 });
 
 const mapDispatchToProps = {

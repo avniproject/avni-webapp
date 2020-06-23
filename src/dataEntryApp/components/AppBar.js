@@ -17,12 +17,15 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewMenu from "../views/dashboardNew/NewMenu";
 import Input from "@material-ui/core/Input";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import logo from "../../formDesigner/styles/images/avniLogo.png";
 import UserOption from "./UserOption";
 import { useTranslation } from "react-i18next";
+import { getUserInfo } from "rootApp/ducks";
+import { InternalLink } from "common/components/utils";
+import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -37,6 +40,21 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up("sm")]: {
       display: "block"
     }
+  },
+  userName: {
+    fontSize: "15px",
+    marginBottom: "0px",
+    fontWeight: "600px",
+    color: "blue"
+  },
+  userDesignation: {
+    fontSize: "12px",
+    marginRight: "6px",
+    marginBottom: "0px",
+    color: "grey"
+  },
+  users: {
+    marginRight: "3px"
   },
   sectionDesktop: {
     display: "none",
@@ -85,13 +103,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PrimarySearchAppBar = ({
-  getOrgConfigInfo,
-  getUserInfo,
-  orgConfig,
-  defaultLanguage,
-  userInfo
-}) => {
+const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -181,61 +193,78 @@ const PrimarySearchAppBar = ({
       <AppBar position="static" style={{ background: "white" }}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            <img src={logo} alt="logo" />
+            <InternalLink to={"/"}>
+              <img src={logo} alt="logo" />
+            </InternalLink>
           </Typography>
-          <form noValidate autoComplete="off">
-            <Input
-              className={classes.inputSearch}
-              placeholder={t("search")}
-              id="standard-adornment-search"
-              endAdornment={
-                <InputAdornment position="end">
+          {!enableReadOnly ? (
+            <form noValidate autoComplete="off">
+              <Input
+                className={classes.inputSearch}
+                placeholder={t("search")}
+                id="standard-adornment-search"
+                endAdornment={
+                  <InputAdornment position="end">
+                    <ExpandMoreIcon />
+                  </InputAdornment>
+                }
+                aria-describedby="standard-weight-helper-text"
+                inputProps={{
+                  "aria-label": "search"
+                }}
+              />
+            </form>
+          ) : (
+            ""
+          )}
+          {!enableReadOnly ? (
+            <ClickAwayListener onClickAway={newHandleclose}>
+              <div>
+                <Button
+                  className={classes.headerMenu}
+                  ref={anchorRef}
+                  aria-controls={open ? "menu-list-grow" : undefined}
+                  aria-haspopup="true"
+                  onClick={handleToggle}
+                  style={{ color: "#0e6eff" }}
+                >
+                  {t("new")}
                   <ExpandMoreIcon />
-                </InputAdornment>
-              }
-              aria-describedby="standard-weight-helper-text"
-              inputProps={{
-                "aria-label": "search"
-              }}
-            />
-          </form>
-          <ClickAwayListener onClickAway={newHandleclose}>
-            <div>
-              <Button
-                className={classes.headerMenu}
-                ref={anchorRef}
-                aria-controls={open ? "menu-list-grow" : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-                style={{ color: "#0e6eff" }}
-              >
-                {t("new")}
-                <ExpandMoreIcon />
-              </Button>
-              <Popper
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                transition
-                disablePortal
-              >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    style={{
-                      transformOrigin: placement === "bottom" ? "center top" : "center bottom"
-                    }}
-                  >
-                    <Paper>
-                      <NewMenu />
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-            </div>
-          </ClickAwayListener>
+                </Button>
+                <Popper
+                  style={{ zIndex: 9 }}
+                  open={open}
+                  anchorEl={anchorRef.current}
+                  role={undefined}
+                  transition
+                  disablePortal
+                >
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{
+                        transformOrigin: placement === "bottom" ? "center top" : "center bottom"
+                      }}
+                    >
+                      <Paper>
+                        <NewMenu />
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
+              </div>
+            </ClickAwayListener>
+          ) : (
+            ""
+          )}
 
           <div className={classes.grow} />
+          <div className={classes.users}>
+            <Typography component={"div"} color="inherit">
+              <p className={classes.userName}>{user.username}</p>
+              {/* <p className={classes.userDesignation}>{user.roles[0]}</p> */}
+            </Typography>
+          </div>
           <div className={classes.sectionDesktop}>
             <IconButton
               edge="end"
@@ -265,11 +294,16 @@ const PrimarySearchAppBar = ({
   );
 };
 
+const mapStateToProps = state => ({
+  user: state.app.user,
+  enableReadOnly: selectEnableReadonly(state)
+});
+
 export default withRouter(
   withParams(
     connect(
-      null,
-      null
+      mapStateToProps,
+      { getUserInfo }
     )(PrimarySearchAppBar)
   )
 );

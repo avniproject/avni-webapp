@@ -17,10 +17,10 @@ import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import ProgramEnrolmentForm from "./ProgramEnrolmentForm";
+import ProgramExitEnrolmentForm from "./ProgramExitEnrolmentForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
-//import BrowserStore from "../../../api/browserStore";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,7 +32,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: "20px"
   },
   btnCustom: {
-    //float:'left',
     backgroundColor: "#fc9153",
     height: "30px",
     marginRight: "20px"
@@ -64,7 +63,6 @@ const ProgramEnrol = ({
   setInitialState,
   setEnrolDateValidation,
   enrolDateValidation
-  //setProgramEnrolment
 }) => {
   const [value, setValue] = React.useState("Yes");
 
@@ -76,18 +74,18 @@ const ProgramEnrol = ({
     setValue(event.target.value);
   };
   const classes = useStyles();
+  const formType = match.queryParams.formType;
 
   useEffect(() => {
-    //onLoad("Individual", match.queryParams.programName);
-    //getSubjectProfile(match.queryParams.uuid);
-
     (async function fetchData() {
       await setInitialState();
-      await onLoad("Individual", match.queryParams.programName);
-      getSubjectProfile(match.queryParams.uuid);
-
-      // let programEnrolment = BrowserStore.fetchProgramEnrolment();
-      // setProgramEnrolment(programEnrolment);
+      await onLoad(
+        "Individual",
+        match.queryParams.programName,
+        formType,
+        match.queryParams.programEnrolmentUuid
+      );
+      await getSubjectProfile(match.queryParams.uuid);
     })();
   }, []);
 
@@ -105,8 +103,11 @@ const ProgramEnrol = ({
           </Typography>
           <Grid justify="center" alignItems="center" container spacing={3}>
             <Grid item xs={12}>
-              {enrolForm && programEnrolment ? (
-                <ProgramEnrolmentForm>
+              {enrolForm &&
+              programEnrolment &&
+              programEnrolment.enrolmentDateTime &&
+              formType === "ProgramEnrolment" ? (
+                <ProgramEnrolmentForm formType={formType}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}
@@ -148,6 +149,28 @@ const ProgramEnrol = ({
                     />
                   </MuiPickersUtilsProvider>
                 </ProgramEnrolmentForm>
+              ) : enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
+                <ProgramExitEnrolmentForm formType={formType}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      style={{ width: "30%" }}
+                      label="Exit Enrolment Date"
+                      margin="none"
+                      size="small"
+                      id="date-picker-dialog"
+                      format="MM/dd/yyyy"
+                      name="enrolmentDateTime"
+                      value={new Date(programEnrolment.enrolmentDateTime)}
+                      onChange={date => {
+                        updateProgramEnrolment("enrolmentDateTime", new Date(date));
+                      }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </ProgramExitEnrolmentForm>
               ) : (
                 <div>Loading</div>
               )}

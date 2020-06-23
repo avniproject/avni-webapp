@@ -33,8 +33,12 @@ export const mapIndividual = individualDetails => {
   individual.gender = gender;
 
   const subjectType = new SubjectType();
-  subjectType.uuid = individualDetails.subjectType.uuid;
-  subjectType.name = individualDetails.subjectType.name;
+  // subjectType.uuid = individualDetails.subjectType.uuid;
+  // subjectType.name = individualDetails.subjectType.name;
+  if (individualDetails.subjectType) {
+    subjectType.uuid = individualDetails.subjectType.uuid;
+    subjectType.name = individualDetails.subjectType.name;
+  }
   individual.subjectType = subjectType;
 
   const addressLevel = new AddressLevel();
@@ -92,6 +96,21 @@ export const mapProfile = subjectProfile => {
   }
 };
 
+export const mapProgramEnrolment = json => {
+  const programEnrolment = new ProgramEnrolment();
+  programEnrolment.uuid = json.uuid;
+  if (json.enrolmentDateTime) programEnrolment.enrolmentDateTime = new Date(json.enrolmentDateTime);
+  if (json.programExitDateTime)
+    programEnrolment.programExitDateTime = new Date(json.programExitDateTime);
+  programEnrolment.programExitObservations = mapObservation(json.exitObservations);
+  programEnrolment.observations = mapObservation(json.observations);
+  const program = new Program();
+  program.uuid = json.programUuid;
+  programEnrolment.program = program;
+  programEnrolment.voided = false;
+  return programEnrolment;
+};
+
 export const mapRelationships = relationshipList => {
   if (relationshipList) {
     return relationshipList.map(relationship => {
@@ -141,6 +160,7 @@ export const mapProgram = subjectProgram => {
   if (subjectProgram) {
     let programIndividual = General.assignFields(subjectProgram, new Individual(), ["uuid"]);
     programIndividual.enrolments = mapEnrolment(subjectProgram.enrolments);
+    programIndividual.exitObservations = mapEnrolment(subjectProgram.exitObservations);
     return programIndividual;
   }
 };
@@ -150,13 +170,15 @@ export const mapEnrolment = enrolmentList => {
       let programEnrolment = General.assignFields(
         enrolment,
         new ProgramEnrolment(),
-        [],
+        ["uuid"],
         ["programExitDateTime", "enrolmentDateTime"]
       );
       programEnrolment.observations = mapObservation(enrolment["observations"]);
       programEnrolment.encounters = mapProgramEncounters(enrolment["programEncounters"]);
+      programEnrolment.exitObservations = mapObservation(enrolment["exitObservations"]);
       programEnrolment.program = mapOperationalProgram(enrolment);
       programEnrolment.uuid = enrolment.uuid;
+      programEnrolment.id = enrolment.id;
       return programEnrolment;
     });
 };
@@ -174,22 +196,6 @@ export const mapProgramEncounters = programEncountersList => {
       programEnconter.encounterType = mapEncounterType(programEncounters["encounterType"]);
       return programEnconter;
     });
-};
-
-//To get Program Encounter with observations
-export const mapProgramEncounter = programEncounter => {
-  if (programEncounter) {
-    const programEncounterObj = General.assignFields(
-      programEncounter,
-      new ProgramEncounter(),
-      ["uuid", "name"],
-      ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
-    );
-    programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
-    programEncounterObj.observations = mapObservation(programEncounter["observations"]);
-    programEncounterObj.cancelObservations = mapObservation(programEncounter["cancelObservations"]);
-    return programEncounterObj;
-  }
 };
 
 export const mapOperationalProgram = enrolment => {
@@ -212,10 +218,43 @@ export const mapGeneral = subjectGeneral => {
         encounters,
         new Encounter(),
         ["uuid"],
-        ["encounterDateTime", "earliestVisitDateTime", "maxVisitDateTime"]
+        ["encounterDateTime", "earliestVisitDateTime", "maxVisitDateTime", "cancelDateTime"]
       );
       generalEncounter.encounterType = mapEncounterType(encounters.encounterType);
       return generalEncounter;
     });
+  }
+};
+
+//To get Program Encounter with observations
+export const mapProgramEncounter = programEncounter => {
+  if (programEncounter) {
+    const programEncounterObj = General.assignFields(
+      programEncounter,
+      new ProgramEncounter(),
+      ["uuid", "name"],
+      ["maxVisitDateTime", "earliestVisitDateTime", "encounterDateTime", "cancelDateTime"]
+    );
+    programEncounterObj.encounterType = mapEncounterType(programEncounter["encounterType"]);
+    programEncounterObj.observations = mapObservation(programEncounter["observations"]);
+    programEncounterObj.cancelObservations = mapObservation(programEncounter["cancelObservations"]);
+    programEncounterObj.subjectUuid = programEncounter["subjectUUID"];
+    programEncounterObj.enrolmentUuid = programEncounter["enrolmentUUID"];
+    return programEncounterObj;
+  }
+};
+
+export const mapEncounter = encounterDetails => {
+  if (encounterDetails) {
+    const encounter = General.assignFields(
+      encounterDetails,
+      new Encounter(),
+      ["uuid", "name"],
+      ["earliestVisitDateTime", "maxVisitDateTime", "encounterDateTime", "cancelDateTime"]
+    );
+    encounter.encounterType = mapEncounterType(encounterDetails.encounterType);
+    encounter.observations = mapObservation(encounterDetails["observations"]);
+    encounter.subjectUuid = encounterDetails["subjectUUID"];
+    return encounter;
   }
 };

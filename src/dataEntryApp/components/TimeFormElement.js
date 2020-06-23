@@ -14,7 +14,6 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardTimePicker
-        autoOk
         label={fe.display || fe.name}
         required={fe.mandatory}
         value={value}

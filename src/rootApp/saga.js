@@ -80,7 +80,7 @@ function* setUserDetails() {
     resources: translationData,
     fallbackLng: "en",
     lng: userDetails.settings ? userDetails.settings.locale : "en",
-    debug: false,
+    debug: isDevEnv,
     ns: ["translations"],
     defaultNS: "translations",
     keySeparator: false,

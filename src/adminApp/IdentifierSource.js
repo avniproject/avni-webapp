@@ -70,7 +70,7 @@ export const IdentifierSourceList = props => (
       <TextField source="batchGenerationSize" />
       <TextField source="minLength" />
       <TextField source="maxLength" />
-      <ReferenceField source="catchmentId" reference="catchment">
+      <ReferenceField source="catchmentId" reference="catchment" allowEmpty>
         <TextField source="name" />
       </ReferenceField>
     </Datagrid>
@@ -86,7 +86,7 @@ export const IdentifierSourceDetail = props => {
         <TextField source="batchGenerationSize" />
         <TextField source="minLength" />
         <TextField source="maxLength" />
-        <ReferenceField source="catchmentId" reference="catchment">
+        <ReferenceField source="catchmentId" reference="catchment" allowEmpty>
           <TextField source="name" />
         </ReferenceField>
         <TextField source="options.prefix" label="Prefix" />

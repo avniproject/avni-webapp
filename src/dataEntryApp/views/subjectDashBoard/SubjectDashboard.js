@@ -10,6 +10,8 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
+import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,18 +28,35 @@ const SubjectDashboard = ({
   getSubjectGeneral,
   subjectGeneral,
   getSubjectProgram,
-  subjectProgram
+  subjectProgram,
+  enableReadOnly,
+  load
 }) => {
   const classes = useStyles();
   let paperInfo;
+
+  const handleUpdateComponent = () => {
+    (async function fetchData() {
+      await setTimeout(() => {
+        getSubjectProgram(match.queryParams.uuid);
+      }, 500);
+    })();
+  };
+
   if (subjectProfile !== undefined) {
     paperInfo = (
       <Paper className={classes.root}>
-        <ProfileDetails profileDetails={subjectProfile} subjectUuid={match.queryParams.uuid} />
+        <ProfileDetails
+          profileDetails={subjectProfile}
+          subjectUuid={match.queryParams.uuid}
+          enableReadOnly={enableReadOnly}
+        />
         <SubjectDashboardTabs
           profile={subjectProfile}
           general={subjectGeneral}
           program={subjectProgram}
+          handleUpdateComponent={handleUpdateComponent}
+          enableReadOnly={enableReadOnly}
         />
       </Paper>
     );
@@ -53,6 +72,7 @@ const SubjectDashboard = ({
     <Fragment>
       <Breadcrumbs path={match.path} />
       {paperInfo}
+      <CustomizedBackdrop load={load} />
     </Fragment>
   );
 };
@@ -60,7 +80,9 @@ const SubjectDashboard = ({
 const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
-  subjectProgram: state.dataEntry.subjectProgram.subjectProgram
+  subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
+  enableReadOnly: selectEnableReadonly(state),
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

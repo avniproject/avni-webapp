@@ -7,8 +7,8 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
-import { Link, withRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { InternalLink } from "../../../../common/components/utils";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -19,8 +19,7 @@ const useStyles = makeStyles(theme => ({
     borderRight: "1px solid rgba(0,0,0,0.12)",
     "&:nth-child(4n),&:last-child": {
       borderRight: "0px solid rgba(0,0,0,0.12)"
-    },
-    marginTop: "15px"
+    }
   },
   title: {
     fontSize: 14
@@ -34,7 +33,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GridCommonList = ({ gridListDetails }) => {
+const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -48,12 +47,12 @@ const GridCommonList = ({ gridListDetails }) => {
                   <Card className={classes.card}>
                     <CardContent>
                       <Typography component={"div"} color="primary">
-                        <Link to={`?uuid=${relative.individualB.uuid}`} replace>
+                        <InternalLink to={`/app/subject?uuid=${relative.individualB.uuid}`}>
                           {" "}
                           {relative.individualB.firstName +
                             " " +
                             relative.individualB.lastName}{" "}
-                        </Link>
+                        </InternalLink>
                       </Typography>
                       <Typography
                         component={"div"}
@@ -70,14 +69,18 @@ const GridCommonList = ({ gridListDetails }) => {
                         gutterBottom
                       >
                         {new Date().getFullYear() -
-                          new Date(relative.individualB.dateOfBirth).getFullYear() +
-                          `${t("year")}`}
+                          new Date(relative.individualB.dateOfBirth).getFullYear()}{" "}
+                        {t("years")}
                       </Typography>
                     </CardContent>
-                    <CardActions>
-                      <Button color="primary">{t("remove")}</Button>
-                      <Button color="primary">{t("edit")}</Button>
-                    </CardActions>
+                    {!enableReadOnly ? (
+                      <CardActions>
+                        <Button color="primary">{t("remove")}</Button>
+                        <Button color="primary">{t("edit")}</Button>
+                      </CardActions>
+                    ) : (
+                      ""
+                    )}
                   </Card>
                 </Grid>
               );
@@ -90,4 +93,4 @@ const GridCommonList = ({ gridListDetails }) => {
   );
 };
 
-export default withRouter(GridCommonList);
+export default GridCommonList;

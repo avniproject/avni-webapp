@@ -37,7 +37,7 @@ const Routes = ({ user, organisation }) => (
     </Route>
     <RestrictedRoute
       path="/app"
-      allowedRoles={[ROLES.USER]}
+      allowedRoles={[ROLES.USER, ROLES.ORG_ADMIN]}
       currentUserRoles={user.roles}
       component={DataEntry}
     />

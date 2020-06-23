@@ -69,11 +69,9 @@ const Relationships = ({ history }) => {
 
   const voidRelationship = rowData => ({
     icon: "delete_outline",
-    tooltip: "Void relationship",
+    tooltip: "Delete relationship",
     onClick: (event, rowData) => {
-      const voidedMessage = rowData.voided
-        ? "Do you really want to unvoid the relationship " + rowData.name + " ?"
-        : "Do you really want to void the relationship " + rowData.name + " ?";
+      const voidedMessage = "Do you really want to delete the relationship " + rowData.name + " ?";
       if (window.confirm(voidedMessage)) {
         http
           .delete("/web/relation/" + rowData.id)

@@ -9,6 +9,8 @@ import Loading from "./components/Loading";
 import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
 import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
 import ProgramEnrol from "./views/subjectDashBoard/components/ProgramEnrol";
+import ViewVisit from "./views/subjectDashBoard/components/ViewVisit";
+import CompletedVisits from "./views/subjectDashBoard/components/CompletedVisits";
 import NewProgramVisit from "./views/subjectDashBoard/components/NewProgramVisit";
 import ProgramEncounter from "./views/subjectDashBoard/components/ProgramEncounter";
 import CancelProgramEncounter from "./views/subjectDashBoard/components/CancelProgramEncounter";
@@ -17,7 +19,6 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import qs from "query-string";
 import i18n from "i18next";
-
 import { I18nextProvider } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -44,7 +45,8 @@ const DataEntry = ({
   return operationalModules && orgConfig ? (
     <I18nextProvider i18n={i18n}>
       <div className={classes.root}>
-        <Grid container spacing={2} justify="center">
+        {/* <Grid container spacing={2} justify="center"> */}
+        <Grid container justify="center">
           <Grid item xs={12}>
             <AppBar />
           </Grid>
@@ -53,8 +55,23 @@ const DataEntry = ({
             <Route exact path={[path, `${path}/search`]} component={SubjectSearch} />
             <Route path={`${path}/register`} component={SubjectRegister} />
             <Route path={`${path}/editSubject`} component={SubjectRegister} />
-            <Route exact path={`${path}/subject`} component={SubjectDashboard} />
+            <Route
+              exact
+              path={`${path}/subject`}
+              component={SubjectDashboard}
+              key={`${Math.random()}`}
+            />
+            {/* <Route exact path={`${path}/subject`} component={SubjectDashboard} /> */}
             <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
+            <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
+            <Route exact path={`${path}/subject/viewEncounter`} component={ViewVisit} />
+            {/* <Route exact path={`${path}/completeVisit/:id/:uuid`} component={CompleteVisit} /> */}
+            <Route exact path={`${path}/subject/completedEncounters`} component={CompletedVisits} />
+            <Route
+              exact
+              path={`${path}/subject/completedProgramEncounters`}
+              component={CompletedVisits}
+            />
             <Route exact path={`${path}/subject/newProgramVisit`} component={NewProgramVisit} />
             <Route exact path={`${path}/subject/programEncounter`} component={ProgramEncounter} />
             <Route path={`${path}/subject/editProgramEncounter`} component={ProgramEncounter} />

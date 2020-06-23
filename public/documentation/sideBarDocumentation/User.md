@@ -4,4 +4,4 @@ Ensure that you have created catchments for your users before creating them. Use
 
 Users can be created or disabled. Disabled users cannot login. In case of password issues, the field application has the capability to reset passwords.
 
-[Learn more about Users](https://dash.readme.io/project/avni/v2.0/docs/access-control)
+[Learn more about Users](https://avni.readme.io/docs/access-control)

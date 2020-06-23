@@ -8,6 +8,7 @@ import { Observation } from "avni-models";
 import { ConceptService, i18n } from "../../dataEntryApp/services/ConceptService";
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -15,60 +16,79 @@ const useStyles = makeStyles(theme => ({
     paddingTop: "0px"
   },
   table: {
-    border: "1px solid rgba(224, 224, 224, 1)"
+    borderRadius: "3px",
+    boxShadow: "0px 0px 1px"
   },
   abnormalColor: {
     color: "#ff4f33"
   }
 }));
 
-const Observations = ({ observations }) => {
+const Observations = ({ observations, additionalRows }) => {
   const conceptService = new ConceptService();
-  // const observation = new Observation();
   const i = new i18n();
   const { t } = useTranslation();
   const classes = useStyles();
 
-  // debugger
+  const rows = observations.map((element, index) => {
+    return (
+      <TableRow key={index}>
+        <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+          {t(element.concept["name"])}
+        </TableCell>
+        <TableCell align="left" width="50%">
+          <div>
+            {element.concept && element.concept.datatype === "Coded" ? (
+              element.abnormal === true ? (
+                <span className={classes.abnormalColor}>
+                  {" "}
+                  <ErrorIcon /> {t(Observation.valueAsString(element, conceptService, i))}
+                </span>
+              ) : (
+                t(Observation.valueAsString(element, conceptService, i))
+              )
+            ) : element.concept ? (
+              Observation.valueAsString(element, conceptService, i)
+            ) : (
+              "" + element.value.toLocaleDateString("en-US")
+            )}
+          </div>
+        </TableCell>
+      </TableRow>
+    );
+  });
+
+  additionalRows &&
+    additionalRows.forEach((row, index) => {
+      rows.unshift(
+        <TableRow key={observations.length + index}>
+          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+            {row.label}
+          </TableCell>
+          <TableCell align="left" width="50%">
+            <div>{row.value}</div>
+          </TableCell>
+        </TableRow>
+      );
+    });
+
   return (
     <div>
-      {observations
-        ? observations.map((element, index) => {
-            return (
-              <Fragment key={index}>
-                <Table className={classes.table} size="small" aria-label="a dense table">
-                  <TableBody>
-                    <TableRow>
-                      <TableCell
-                        style={{ color: "#555555" }}
-                        component="th"
-                        scope="row"
-                        width="50%"
-                      >
-                        {t(element.concept["name"])}
-                      </TableCell>
-                      <TableCell align="left" width="50%">
-                        <div>
-                          {" "}
-                          {element.abnormal === true ? (
-                            <span className={classes.abnormalColor}>
-                              {" "}
-                              <ErrorIcon /> {Observation.valueAsString(element, conceptService, i)}
-                            </span>
-                          ) : (
-                            Observation.valueAsString(element, conceptService, i)
-                          )}{" "}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </Fragment>
-            );
-          })
-        : ""}
+      <Fragment>
+        <Table className={classes.table} size="small" aria-label="a dense table">
+          <TableBody>{rows}</TableBody>
+        </Table>
+      </Fragment>
     </div>
   );
+};
+
+Observations.propTypes = {
+  observations: PropTypes.arrayOf(Observation).isRequired,
+  additionalRows: PropTypes.arrayOf({
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired
+  })
 };
 
 export default Observations;

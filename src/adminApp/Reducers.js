@@ -1,3 +1,7 @@
+import Types from "./SubjectType/Types";
+import { default as UUID } from "uuid";
+import _, { map } from "lodash";
+
 export function programReducer(program, action) {
   switch (action.type) {
     case "name":
@@ -74,17 +78,55 @@ export function subjectTypeReducer(subjectType, action) {
       return { ...subjectType, registrationForm: action.payload };
     case "active":
       return { ...subjectType, active: action.payload };
+    case "type":
+      const type = action.payload;
+      if (!Types.isGroup(type)) {
+        return { ...subjectType, type, groupRoles: [] };
+      }
+      const groupRoles = Types.isHousehold(type) ? _getHouseholdRoles() : [];
+      const memberSubjectType = Types.isHousehold(type)
+        ? _.map(groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
+        : "";
+      return { ...subjectType, type, groupRoles, memberSubjectType };
+    case "householdMemberSubject":
+      const roles = map(
+        subjectType.groupRoles,
+        ({ groupRoleUUID, role, minimumNumberOfMembers, maximumNumberOfMembers }) => ({
+          subjectMemberName: action.payload,
+          groupRoleUUID,
+          role,
+          minimumNumberOfMembers,
+          maximumNumberOfMembers
+        })
+      );
+      return { ...subjectType, groupRoles: roles, memberSubjectType: action.payload };
     case "setData":
       return {
         ...subjectType,
         name: action.payload.name,
-        group: action.payload.group,
-        household: action.payload.household,
         groupRoles: action.payload.groupRoles,
         uuid: action.payload.uuid,
-        active: action.payload.active
+        active: action.payload.active,
+        type: action.payload.type,
+        memberSubjectType: Types.isHousehold(action.payload.type)
+          ? _.map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
+          : ""
       };
     default:
       return subjectType;
   }
 }
+
+const _getHouseholdRoles = () => {
+  const roles = [];
+  roles.push(_getRole("Head of household", 1, 1));
+  roles.push(_getRole("Member", 1, 100));
+  return roles;
+};
+
+const _getRole = (role, minimumNumberOfMembers, maximumNumberOfMembers) => ({
+  groupRoleUUID: UUID.v4(),
+  role,
+  minimumNumberOfMembers,
+  maximumNumberOfMembers
+});

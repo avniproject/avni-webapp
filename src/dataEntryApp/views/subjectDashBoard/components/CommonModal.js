@@ -89,7 +89,7 @@ const useStyles = makeStyles(theme => ({
 const styles = theme => ({
   root: {
     margin: 0,
-    backgroundColor: "black",
+    backgroundColor: "#555555",
     padding: "6px 16px",
     color: "white"
   },
@@ -125,16 +125,12 @@ const DialogActions = withStyles(theme => ({
   }
 }))(MuiDialogActions);
 
-const CommonModal = ({ content, buttonsSet, title, handleError }) => {
+const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [validMsg, setValidationMsg] = React.useState(false);
 
   //const { t } = useTranslation();
-
-  const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
-  const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
-  const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -143,7 +139,14 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
   const handleClose = () => {
     setOpen(false);
     handleError(false);
+    btnHandleClose();
   };
+
+  const mainButton = buttonsSet.filter(element => element.buttonType === "openButton").shift();
+  const filterButton = buttonsSet.filter(element => element.buttonType === "filterButton").shift();
+  const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
+  const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
+  const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
 
   return (
     <React.Fragment>
@@ -156,6 +159,23 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
           onClick={handleClickOpen}
         >
           {mainButton.label}
+        </Fab>
+      ) : (
+        ""
+      )}
+
+      {filterButton ? (
+        <Fab
+          className={filterButton.classes}
+          variant="extended"
+          color="primary"
+          aria-label="add"
+          onClick={() => {
+            handleClickOpen();
+            filterButton.click();
+          }}
+        >
+          {filterButton.label}
         </Fab>
       ) : (
         ""
@@ -184,6 +204,19 @@ const CommonModal = ({ content, buttonsSet, title, handleError }) => {
               btnLabel={saveButton.label}
               btnClass={saveButton.classes}
               btnClick={handleError.bind(this, true)}
+            />
+          ) : (
+            ""
+          )}
+          {applyButton ? (
+            <SubjectButton
+              btnLabel={applyButton.label}
+              btnClass={applyButton.classes}
+              btnClick={() => {
+                applyButton.click();
+                handleClose();
+              }}
+              btnDisabled={applyButton.disabled}
             />
           ) : (
             ""

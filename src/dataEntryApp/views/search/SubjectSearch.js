@@ -1,31 +1,24 @@
 import React, { useEffect } from "react";
-import Table from "@material-ui/core/Table";
-import { withRouter, Link } from "react-router-dom";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Input from "@material-ui/core/Input";
-import Button from "@material-ui/core/Button";
+import { FormControl, Input, InputLabel, Paper } from "@material-ui/core";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
-import { setSubjectSearchParams, searchSubjects } from "../../reducers/searchReducer";
+import { searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
 import PrimaryButton from "../../components/PrimaryButton";
-import Paper from "@material-ui/core/Paper";
 import { useTranslation } from "react-i18next";
+import { SubjectsTable } from "./SubjectSearchTable";
+import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import NewSubjectSearchTable from "dataEntryApp/views/search/NewSubjectSearchTable";
 
 const useStyle = makeStyles(theme => ({
   root: {
     width: "100%",
     marginTop: theme.spacing(3),
-    overflowX: "auto"
-  },
-  table: {
-    minWidth: 1000
+    overflowX: "auto",
+    flexShrink: 0,
+    marginLeft: theme.spacing(2.5)
   },
   searchCreateToolbar: {
     display: "flex"
@@ -40,6 +33,16 @@ const useStyle = makeStyles(theme => ({
   searchFormItem: {
     margin: theme.spacing(1)
   },
+  searchBtnShadow: {
+    boxShadow: "none",
+    backgroundColor: "#0e6eff",
+    marginRight: 10
+  },
+  resetBtnShadow: {
+    boxShadow: "none",
+    backgroundColor: "#FF8C00",
+    marginRight: 10
+  },
   createButtonHolder: {
     flex: 1
   },
@@ -49,95 +52,33 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectsTable = ({ type, subjects }) => {
-  const classes = useStyle();
-  const { t } = useTranslation();
-
-  return (
-    <Table className={classes.table}>
-      <TableHead>
-        <TableRow>
-          <TableCell>{t("name")}</TableCell>
-          {type.name === "Individual" && <TableCell align="center">{t("gender")}</TableCell>}
-          {type.name === "Individual" && <TableCell align="center">{t("dateOfBirth")}</TableCell>}
-          <TableCell align="center">{t("location")}</TableCell>
-          <TableCell align="center">{t("activeprograms")}</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {subjects.map((row, id) => (
-          <TableRow key={id}>
-            <TableCell component="th" scope="row">
-              <Link to={`/app/subject?uuid=${row.uuid}`}>{row.fullName}</Link>
-            </TableCell>
-            {type.name === "Individual" && (
-              <TableCell align="center">{row.gender ? t(row.gender.name) : ""}</TableCell>
-            )}
-            {type.name === "Individual" && <TableCell align="center">{row.dateOfBirth}</TableCell>}
-            <TableCell align="center">
-              {row.addressLevel ? row.addressLevel.titleLineage : ""}
-            </TableCell>
-            <TableCell align="center">
-              {row.activePrograms.map((p, key) => (
-                <Button
-                  key={key}
-                  size="small"
-                  style={{
-                    height: 20,
-                    padding: 0,
-                    backgroundColor: p.colour,
-                    color: "white"
-                  }}
-                  disabled
-                >
-                  {t(p.operationalProgramName)}
-                </Button>
-              ))}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-};
-
 const SubjectSearch = props => {
   const classes = useStyle();
   const { t } = useTranslation();
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [searchvalue, setSearchvalue] = React.useState("");
 
   const handleSubmit = event => {
     event.preventDefault();
-    props.search();
+    props.search({ page: page, query: searchvalue, size: rowsPerPage });
+  };
+  const resethandleSubmit = event => {
+    event.preventDefault();
+    setSearchvalue("");
+    props.search({ page: 0, query: "", size: rowsPerPage });
   };
 
-  useEffect(() => {
-    props.search();
-    sessionStorage.clear("subject");
-  }, []);
+  const valueSubmit = e => {
+    setSearchvalue(e.target.value);
+  };
 
   return (
     <Paper className={classes.searchBox}>
       <div className={classes.searchCreateToolbar}>
-        <form onSubmit={handleSubmit} className={classes.searchForm}>
-          <FormControl className={classes.searchFormItem}>
-            <InputLabel htmlFor="search-field">{""}</InputLabel>
-            <Input
-              id="search-field"
-              autoFocus
-              type="text"
-              value={props.searchParams.query}
-              onChange={e => props.setSearchParams({ query: e.target.value })}
-            />
-          </FormControl>
-          <FormControl className={classes.searchFormItem}>
-            <PrimaryButton type={"submit"} onClick={handleSubmit}>
-              {t("search")}
-            </PrimaryButton>
-          </FormControl>
-        </form>
         <RegistrationMenu className={classes.createButtonHolder} />
       </div>
-      <SubjectsTable subjects={props.subjects} type={props.subjectType} />
+      <NewSubjectSearchTable />
     </Paper>
   );
 };
@@ -152,8 +93,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  search: searchSubjects,
-  setSearchParams: setSubjectSearchParams
+  search: searchSubjects
 };
 
 export default withRouter(
