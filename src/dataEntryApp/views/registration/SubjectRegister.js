@@ -341,7 +341,7 @@ const DefaultPage = props => {
                       {props.selectedAddressLevelType.id === -1 ? null : (
                         <div>
                           <LocationAutosuggest
-                            selectedLocation={props.subject.lowestAddressLevel.name}
+                            selectedLocation={props.subject.lowestAddressLevel.name || ""}
                             errorMsg={subjectRegErrors.LOWEST_ADDRESS_LEVEL}
                             onSelect={location => {
                               props.updateSubject(
@@ -366,7 +366,7 @@ const DefaultPage = props => {
                             // }
 
                             // }
-                            data={props}
+                            subjectProps={props}
                             placeholder={props.selectedAddressLevelType.name}
                             typeId={props.selectedAddressLevelType.id}
                           />
