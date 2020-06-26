@@ -19,6 +19,7 @@ import {
   setInitialState
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -107,7 +108,9 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                 </MuiPickersUtilsProvider>
               </ProgramEncounterForm>
             ) : (
-              <div>Loading</div>
+              <div>
+                <CustomizedBackdrop load={false} />
+              </div>
             )}
           </Grid>
         </Grid>
@@ -120,7 +123,8 @@ const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
+  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

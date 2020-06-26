@@ -1,5 +1,6 @@
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import moment from "moment";
 import { ObservationsHolder } from "avni-models";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
@@ -21,7 +22,15 @@ const mapFormStateToProps = state => ({
   validationResults: state.dataEntry.programEncounterReducer.validationResults,
   message: state.dataEntry.programEncounterReducer.programEncounter.name
     ? `${state.dataEntry.programEncounterReducer.programEncounter.name} Encounter Canceled`
-    : `Encounter Canceled`
+    : `Encounter Canceled`,
+  additionalRows: [
+    {
+      label: "Cancel Date",
+      value: moment(state.dataEntry.programEncounterReducer.programEncounter.cancelDateTime).format(
+        "DD-MMM-YYYY"
+      )
+    }
+  ]
 });
 
 const mapFormDispatchToProps = {

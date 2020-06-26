@@ -134,19 +134,16 @@ const Visit = ({
               />
             )}
           </ListItem>
-          {overdueDate && new Date() > new Date(overdueDate) ? (
-            <ListItem className={classes.listItem}>
-              <ListItemText>
-                <label className={classes.programStatusStyle}>{t("Overdue")}</label>
-              </ListItemText>
-            </ListItem>
-          ) : (
-            ""
-          )}
           {cancelDateTime ? (
             <ListItem className={classes.listItem}>
               <ListItemText>
                 <label className={classes.cancelLabel}>{t("Cancelled")}</label>
+              </ListItemText>
+            </ListItem>
+          ) : overdueDate && new Date() > new Date(overdueDate) ? (
+            <ListItem className={classes.listItem}>
+              <ListItemText>
+                <label className={classes.programStatusStyle}>{t("Overdue")}</label>
               </ListItemText>
             </ListItem>
           ) : (

@@ -20,6 +20,7 @@ import {
   onLoadEditCancelProgramEncounter
 } from "../../../reducers/programEncounterReducer";
 import CancelProgramEncounterForm from "./CancelProgramEncounterForm";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -64,6 +65,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
   const validationResultForCancelDate =
     enconterDateValidation &&
     enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === CANCEL_DATE_TIME);
+
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -108,7 +110,9 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
                 </MuiPickersUtilsProvider>
               </CancelProgramEncounterForm>
             ) : (
-              <div>Loading</div>
+              <div>
+                <CustomizedBackdrop load={false} />
+              </div>
             )}
           </Grid>
         </Grid>
@@ -121,7 +125,8 @@ const mapStateToProps = state => ({
   cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
+  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

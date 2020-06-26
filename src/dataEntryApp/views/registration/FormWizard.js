@@ -197,6 +197,7 @@ const FormWizard = ({
   validationResults,
   staticValidationResults,
   setValidationResults,
+  additionalRows,
   registrationFlow,
   children
 }) => {
@@ -297,7 +298,7 @@ const FormWizard = ({
           </Box>
           <Paper className={classes.form}>
             {isOnSummaryPage ? (
-              <Summary observations={observations} />
+              <Summary observations={observations} additionalRows={additionalRows} />
             ) : (
               <Form
                 current={currentFormElementGroup}
