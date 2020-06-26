@@ -39,7 +39,9 @@ export const CreateEditFilters = props => {
   const typeOptions = getFilterTypes.map(t => ({ label: _.startCase(t), value: t }));
 
   const scopeOptions = _.values(CustomFilter.scope).map(s => ({ label: _.startCase(s), value: s }));
-  const widgetOptions = _.values(CustomFilter.widget).map(t => ({ label: t, value: t }));
+  const widgetOptions = _.values(CustomFilter.widget)
+    .filter(w => w !== CustomFilter.widget.Relative)
+    .map(t => ({ label: t, value: t }));
 
   const emptyFilter = {
     titleKey: "",
