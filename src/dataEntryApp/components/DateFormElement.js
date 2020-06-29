@@ -37,6 +37,11 @@ export const DateTimeFormElement = ({
   uuid
 }) => {
   const { t } = useTranslation();
+  const formtype = fe.formElementGroup.form.formType;
+  let fieldwidth = "30%";
+  if (formtype === "ProgramEnrolment") {
+    fieldwidth = "40%";
+  }
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -56,7 +61,7 @@ export const DateTimeFormElement = ({
         onError={console.log}
         // disablePast
         format="dd/MM/yyyy HH:mm"
-        style={{ width: "30%" }}
+        style={{ width: fieldwidth }}
         KeyboardButtonProps={{
           "aria-label": "change date",
           color: "primary"
@@ -74,6 +79,11 @@ const getValue = (keyValues, key) => {
 export const DateFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   let durationValue = getValue(fe.keyValues, "durationOptions");
   const { t } = useTranslation();
+  const formtype = fe.formElementGroup.form.formType;
+  let fieldwidth = "30%";
+  if (formtype === "ProgramEnrolment") {
+    fieldwidth = "40%";
+  }
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -98,7 +108,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
         error={validationResult && !validationResult.success}
         onError={console.log}
         format="dd/MM/yyyy"
-        style={{ width: "30%" }}
+        style={{ width: fieldwidth }}
         KeyboardButtonProps={{
           "aria-label": "change date",
           color: "primary"
@@ -116,6 +126,11 @@ export const DateAndDurationFormElement = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const formtype = fe.formElementGroup.form.formType;
+  let fieldwidth = "30%";
+  if (formtype === "ProgramEnrolment") {
+    fieldwidth = "40%";
+  }
 
   let durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
   const [units, setUnit] = React.useState(durationValue[0]);
@@ -164,7 +179,7 @@ export const DateAndDurationFormElement = ({
           error={validationResult && !validationResult.success}
           onError={console.log}
           format="dd/MM/yyyy"
-          style={{ width: "30%" }}
+          style={{ width: fieldwidth }}
           KeyboardButtonProps={{
             "aria-label": "change date",
             color: "primary"
@@ -183,12 +198,17 @@ export const DateAndDurationFormElement = ({
             InputLabelProps={{
               shrink: true
             }}
-            style={{ width: "30%" }}
+            style={{ width: fieldwidth }}
             value={duration}
             onChange={durationValue => onDurationChange(durationValue)}
           />
           {durationValue.map(item => (
-            <FormControlLabel value={item} control={<Radio color="primary" />} label={item} />
+            <FormControlLabel
+              value={item}
+              style={{ marginLeft: 20 }}
+              control={<Radio color="primary" />}
+              label={item}
+            />
           ))}
         </RadioGroup>
       </form>

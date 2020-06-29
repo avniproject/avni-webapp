@@ -110,7 +110,7 @@ const ProgramEnrol = ({
                 <ProgramEnrolmentForm formType={formType}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
-                      style={{ width: "30%" }}
+                      style={{ width: "40%" }}
                       label="Enrolment Date"
                       margin="none"
                       size="small"
@@ -153,7 +153,7 @@ const ProgramEnrol = ({
                 <ProgramExitEnrolmentForm formType={formType}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
-                      style={{ width: "30%" }}
+                      style={{ width: "40%" }}
                       label="Exit Enrolment Date"
                       margin="none"
                       size="small"

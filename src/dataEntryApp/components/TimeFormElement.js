@@ -6,6 +6,11 @@ import { useTranslation } from "react-i18next";
 
 const TimeFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   const { t } = useTranslation();
+  const formtype = fe.formElementGroup.form.formType;
+  let fieldwidth = "30%";
+  if (formtype === "ProgramEnrolment") {
+    fieldwidth = "40%";
+  }
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -22,7 +27,7 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
         mask="__:__ _M"
-        style={{ width: "30%" }}
+        style={{ width: fieldwidth }}
         KeyboardButtonProps={{
           "aria-label": "change time",
           color: "primary"

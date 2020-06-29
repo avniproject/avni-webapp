@@ -5,6 +5,11 @@ import { useTranslation } from "react-i18next";
 
 export default ({ formElement: fe, value, update, validationResults, uuid }) => {
   const { t } = useTranslation();
+  const formtype = fe.formElementGroup.form.formType;
+  let fieldwidth = "30%";
+  if (formtype === "ProgramEnrolment") {
+    fieldwidth = "40%";
+  }
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -18,7 +23,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
         required={fe.mandatory}
         name={fe.name}
         value={value ? value : ""}
-        style={{ width: "30%" }}
+        style={{ width: fieldwidth }}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
         onChange={e => {
