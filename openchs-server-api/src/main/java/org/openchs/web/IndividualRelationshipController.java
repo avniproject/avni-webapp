@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class IndividualRelationshipController extends AbstractController<IndividualRelationship> implements RestControllerResourceProcessor<IndividualRelationship>, OperatingIndividualScopeAwareController<IndividualRelationship>, OperatingIndividualScopeAwareFilterController<IndividualRelationship> {
@@ -113,4 +114,19 @@ public class IndividualRelationshipController extends AbstractController<Individ
     public OperatingIndividualScopeAwareRepositoryWithTypeFilter<IndividualRelationship> repository() {
         return individualRelationshipRepository;
     }
+
+    @DeleteMapping(value = "/web/relationShip/{id}")
+    @PreAuthorize(value =  "hasAnyAuthority('user', 'organisation_admin')")
+    @ResponseBody
+    @Transactional
+    public void deleteIndividualRelationShip(@PathVariable Long id) {
+        Optional<IndividualRelationship> relationShip = individualRelationshipRepository.findById(id);
+        if (relationShip.isPresent()) {
+            IndividualRelationship individualRelationShip = relationShip.get();
+            individualRelationShip.setVoided(true);
+            individualRelationshipRepository.save(individualRelationShip);
+        }
+    }
+
+
 }
