@@ -11,5 +11,6 @@ public interface FormElementGroupWebProjection {
     boolean isVoided();
     String getName();
     Double getDisplayOrder();
+    String getRule();
     Set<FormElementWebProjection> getApplicableFormElements();
 }
