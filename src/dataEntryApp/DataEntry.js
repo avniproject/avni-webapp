@@ -10,6 +10,7 @@ import DataEntryDashboard from "./views/dashboardNew/dashboardNew";
 import SubjectDashboard from "./views/subjectDashBoard/SubjectDashboard";
 import ProgramEnrol from "./views/subjectDashBoard/components/ProgramEnrol";
 import ViewVisit from "./views/subjectDashBoard/components/ViewVisit";
+import AddRelative from "./views/subjectDashBoard/components/AddRelative";
 import CompletedVisits from "./views/subjectDashBoard/components/CompletedVisits";
 import NewProgramVisit from "./views/subjectDashBoard/components/NewProgramVisit";
 import ProgramEncounter from "./views/subjectDashBoard/components/ProgramEncounter";
@@ -64,6 +65,7 @@ const DataEntry = ({
             <Route exact path={`${path}/enrol`} component={ProgramEnrol} />
             <Route exact path={`${path}/subject/viewProgramEncounter`} component={ViewVisit} />
             <Route exact path={`${path}/subject/viewEncounter`} component={ViewVisit} />
+            <Route exact path={`${path}/subject/addRelative`} component={AddRelative} />
             {/* <Route exact path={`${path}/completeVisit/:id/:uuid`} component={CompleteVisit} /> */}
             <Route exact path={`${path}/subject/completedEncounters`} component={CompletedVisits} />
             <Route

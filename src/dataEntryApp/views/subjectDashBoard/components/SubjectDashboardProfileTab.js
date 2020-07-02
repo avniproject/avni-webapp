@@ -145,7 +145,13 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
               </Typography>
             )}
           </ExpansionPanelDetails>
-          {!enableReadOnly ? <Button color="primary"> {t("addARelative")}</Button> : ""}
+          {!enableReadOnly ? (
+            <Button color="primary">
+              <InternalLink to={`/app/subject/addRelative`}> {t("addARelative")} </InternalLink>{" "}
+            </Button>
+          ) : (
+            ""
+          )}
         </ExpansionPanel>
       </Paper>
     </Fragment>
