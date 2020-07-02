@@ -8,8 +8,10 @@ import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
+import { findIndex, isNil } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -83,7 +85,10 @@ const Visit = ({
   encounterTypeUuid,
   cancelDateTime,
   enableReadOnly,
-  type
+  type,
+  programUuid,
+  operationalModules,
+  subjectProfile
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -99,6 +104,31 @@ const Visit = ({
     default:
       throw new Error("Invalid type. Must be programEncounter or encounter.");
   }
+
+  const isCancelFormAvailable =
+    findIndex(
+      operationalModules.formMappings,
+      fm =>
+        !isNil(encounterTypeUuid) &&
+        (fm.encounterTypeUUID === encounterTypeUuid &&
+          fm.programUUID === programUuid &&
+          fm.subjectTypeUUID === subjectProfile.subjectType.uuid &&
+          fm.formType === "ProgramEncounterCancellation")
+    ) > 0
+      ? true
+      : false;
+
+  const isProgramEncounterFormAvailable =
+    findIndex(
+      operationalModules.formMappings,
+      fm =>
+        !isNil(encounterTypeUuid) &&
+        (fm.encounterTypeUUID === encounterTypeUuid &&
+          fm.subjectTypeUUID === subjectProfile.subjectType.uuid &&
+          fm.formType === "ProgramEncounter")
+    ) > 0
+      ? true
+      : false;
 
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
@@ -162,7 +192,7 @@ const Visit = ({
         </List>
         {!enableReadOnly ? (
           <>
-            {encounterDateTime ? (
+            {encounterDateTime && uuid && enrolUuid && isProgramEncounterFormAvailable ? (
               <InternalLink
                 to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
               >
@@ -170,7 +200,7 @@ const Visit = ({
                   {t("edit visit")}
                 </Button>
               </InternalLink>
-            ) : cancelDateTime ? (
+            ) : cancelDateTime && uuid && enrolUuid && isCancelFormAvailable ? (
               <InternalLink
                 to={`/app/subject/editCancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
               >
@@ -180,7 +210,7 @@ const Visit = ({
               </InternalLink>
             ) : (
               <div className={classes.visitButton}>
-                {encounterTypeUuid && enrolUuid ? (
+                {encounterTypeUuid && enrolUuid && isProgramEncounterFormAvailable ? (
                   <InternalLink
                     to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
                   >
@@ -189,11 +219,15 @@ const Visit = ({
                 ) : (
                   ""
                 )}
-                <InternalLink
-                  to={`/app/subject/cancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
-                >
-                  <Button color="primary">{t("cancel Visit")}</Button>
-                </InternalLink>
+                {uuid && enrolUuid && isCancelFormAvailable ? (
+                  <InternalLink
+                    to={`/app/subject/cancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
+                  >
+                    <Button color="primary">{t("cancel Visit")}</Button>
+                  </InternalLink>
+                ) : (
+                  ""
+                )}
               </div>
             )}
           </>
@@ -205,4 +239,9 @@ const Visit = ({
   );
 };
 
-export default Visit;
+const mapStateToProps = state => ({
+  operationalModules: state.dataEntry.metadata.operationalModules,
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile
+});
+
+export default withRouter(connect(mapStateToProps)(Visit));

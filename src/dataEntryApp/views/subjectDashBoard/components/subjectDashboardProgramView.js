@@ -363,6 +363,7 @@ const ProgramView = ({
                       encounterTypeUuid={row.encounterType.uuid}
                       enableReadOnly={enableReadOnly}
                       cancelDateTime={row.cancelDateTime}
+                      programUuid={programData.program.uuid}
                     />
                   ) : (
                     ""
@@ -415,6 +416,8 @@ const ProgramView = ({
                       enrolUuid={programData.uuid}
                       enableReadOnly={enableReadOnly}
                       cancelDateTime={row.cancelDateTime}
+                      encounterTypeUuid={row.encounterType.uuid}
+                      programUuid={programData.program.uuid}
                     />
                   ) : (
                     ""
