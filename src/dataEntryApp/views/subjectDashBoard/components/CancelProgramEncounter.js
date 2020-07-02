@@ -13,10 +13,9 @@ import { ModelGeneral as General, ValidationResult } from "avni-models";
 import moment from "moment";
 import {
   getCancelProgramEncounterForm,
-  setProgramEncounter,
   updateProgramEncounter,
   setEncounterDateValidation,
-  setInitialState,
+  resetState,
   onLoadEditCancelProgramEncounter
 } from "../../../reducers/programEncounterReducer";
 import CancelProgramEncounterForm from "./CancelProgramEncounterForm";
@@ -39,8 +38,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
-    props.setInitialState();
-    props.setProgramEncounter();
+    props.resetState();
     if (editCancelProgramEncounter) {
       props.onLoadEditCancelProgramEncounter(uuid, enrolUuid);
     } else {
@@ -110,9 +108,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
                 </MuiPickersUtilsProvider>
               </CancelProgramEncounterForm>
             ) : (
-              <div>
-                <CustomizedBackdrop load={false} />
-              </div>
+              <CustomizedBackdrop load={false} />
             )}
           </Grid>
         </Grid>
@@ -125,17 +121,15 @@ const mapStateToProps = state => ({
   cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation,
-  load: state.dataEntry.loadReducer.load
+  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
 });
 
 const mapDispatchToProps = {
-  setProgramEncounter,
   updateProgramEncounter,
   setEncounterDateValidation,
   onLoadEditCancelProgramEncounter,
   getCancelProgramEncounterForm,
-  setInitialState
+  resetState
 };
 
 export default withRouter(

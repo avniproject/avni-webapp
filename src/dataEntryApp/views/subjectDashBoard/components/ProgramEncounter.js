@@ -12,11 +12,10 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   getProgramEncounterForm,
   onLoad,
-  setProgramEncounter,
   updateProgramEncounter,
   setEncounterDateValidation,
   onLoadEditProgramEncounter,
-  setInitialState
+  resetState
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -38,8 +37,7 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
-    props.setInitialState();
-    props.setProgramEncounter();
+    props.resetState();
     (async function fetchData() {
       if (editProgramEncounter) {
         //uuid - programEncounterUuid
@@ -108,9 +106,7 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                 </MuiPickersUtilsProvider>
               </ProgramEncounterForm>
             ) : (
-              <div>
-                <CustomizedBackdrop load={false} />
-              </div>
+              <CustomizedBackdrop load={false} />
             )}
           </Grid>
         </Grid>
@@ -123,18 +119,16 @@ const mapStateToProps = state => ({
   programEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
-  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation,
-  load: state.dataEntry.loadReducer.load
+  enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
 });
 
 const mapDispatchToProps = {
   getProgramEncounterForm,
   onLoad,
-  setProgramEncounter,
   updateProgramEncounter,
   setEncounterDateValidation,
   onLoadEditProgramEncounter,
-  setInitialState
+  resetState
 };
 
 export default withRouter(

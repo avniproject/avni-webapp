@@ -18,7 +18,7 @@ export const types = {
   ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER`,
   GET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}GET_CANCEL_PROGRAM_ENCOUNTER_FORM`,
   SET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_CANCEL_PROGRAM_ENCOUNTER_FORM`,
-  SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`
+  RESET_STATE: `${prefix}RESET_STATE`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -106,13 +106,14 @@ export const getCancelProgramEncounterForm = (programEncounterUuid, enrolmentUui
   enrolmentUuid
 });
 
-export const setCancelProgramEncounterForm = cancelProgramEncounterForm => ({
+export const setCancelProgramEncounterForm = (cancelProgramEncounterForm, programEncounter) => ({
   type: types.SET_CANCEL_PROGRAM_ENCOUNTER_FORM,
-  cancelProgramEncounterForm
+  cancelProgramEncounterForm,
+  programEncounter
 });
 
-export const setInitialState = () => ({
-  type: types.SET_INITIAL_STATE
+export const resetState = () => ({
+  type: types.RESET_STATE
 });
 
 const initialState = {
@@ -120,6 +121,7 @@ const initialState = {
   validationResults: [],
   enconterDateValidation: []
 };
+
 export default function(state = initialState, action) {
   switch (action.type) {
     case types.SET_PROGRAM_ENROLMENT: {
@@ -175,15 +177,19 @@ export default function(state = initialState, action) {
     case types.SET_CANCEL_PROGRAM_ENCOUNTER_FORM: {
       return {
         ...state,
-        cancelProgramEncounterForm: action.cancelProgramEncounterForm
+        cancelProgramEncounterForm: action.cancelProgramEncounterForm,
+        programEncounter: action.programEncounter
       };
     }
-    case types.SET_INITIAL_STATE: {
+    case types.RESET_STATE: {
       return {
         ...state,
         saved: false,
         validationResults: [],
-        enconterDateValidation: []
+        enconterDateValidation: [],
+        programEncounter: null,
+        cancelProgramEncounterForm: null,
+        programEncounterForm: null
       };
     }
     default:
