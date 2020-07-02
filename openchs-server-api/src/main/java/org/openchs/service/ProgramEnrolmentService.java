@@ -69,6 +69,7 @@ public class ProgramEnrolmentService {
         enrolmentContract.setOperationalProgramName(programEnrolment.getProgram().getOperationalProgramName());
         enrolmentContract.setEnrolmentDateTime(programEnrolment.getEnrolmentDateTime());
         enrolmentContract.setProgramExitDateTime(programEnrolment.getProgramExitDateTime());
+        enrolmentContract.setSubjectUuid(programEnrolment.getIndividual().getUuid());
         enrolmentContract.setVoided(programEnrolment.isVoided());
         List<ObservationContract> observationContractsList = observationService.constructObservations(programEnrolment.getObservations());
         enrolmentContract.setObservations(observationContractsList);
