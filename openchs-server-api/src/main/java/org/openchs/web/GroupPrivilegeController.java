@@ -58,15 +58,12 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
         List<GroupPrivilege> privilegesToBeAddedOrUpdated = new ArrayList<>();
 
         for (GroupPrivilegeContract groupPrivilege : request) {
-            if (groupPrivilege.getGroupPrivilegeId() != null) {
-                Optional<GroupPrivilege> groupPriv = groupPrivilegeRepository.findById(groupPrivilege.getGroupPrivilegeId());
-                if (groupPriv.isPresent()) {
-                    groupPriv.get().setAllow(groupPrivilege.isAllow());
-                } else {
-                    return ResponseEntity.badRequest().body(String.format("Invalid group privilege id %d", groupPrivilege.getGroupPrivilegeId()));
-                }
-                privilegesToBeAddedOrUpdated.add(groupPriv.get());
+            GroupPrivilege newGroupPrivilege = groupPrivilegeRepository.findByUuid(groupPrivilege.getUuid());
+            if (newGroupPrivilege != null) {
+                newGroupPrivilege.setAllow(groupPrivilege.isAllow());
+                privilegesToBeAddedOrUpdated.add(newGroupPrivilege);
             } else {
+                newGroupPrivilege = new GroupPrivilege();
                 Optional<Privilege> optionalPrivilege = privilegeRepository.findById(groupPrivilege.getPrivilegeId());
                 Group group = groupRepository.findOne(groupPrivilege.getGroupId());
                 SubjectType subjectType = subjectTypeRepository.findOne(groupPrivilege.getSubjectTypeId());
@@ -74,8 +71,6 @@ public class GroupPrivilegeController extends AbstractController<GroupPrivilege>
                 if (!optionalPrivilege.isPresent() || group == null || subjectType == null) {
                     return ResponseEntity.badRequest().body(String.format("Invalid privilege id %d or group id %d or subject type %s", groupPrivilege.getPrivilegeId(), groupPrivilege.getGroupId(), groupPrivilege.getSubjectTypeName()));
                 }
-
-                GroupPrivilege newGroupPrivilege = new GroupPrivilege();
                 newGroupPrivilege.setUuid(groupPrivilege.getUuid());
                 newGroupPrivilege.setPrivilege(optionalPrivilege.get());
                 newGroupPrivilege.setGroup(group);

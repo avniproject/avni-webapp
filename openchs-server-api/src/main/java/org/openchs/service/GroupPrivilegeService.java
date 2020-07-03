@@ -129,6 +129,8 @@ public class GroupPrivilegeService {
                                         groupPrivilege.setPrivilege(privilege);
                                         groupPrivilege.setSubjectType(subjectType);
                                         groupPrivilege.setChecklistDetail(checklistDetail);
+                                        groupPrivilege.setAllow(false);
+                                        groupPrivilege.assignUUID();
                                         allPrivileges.add(groupPrivilege);
                                     })
                     );
