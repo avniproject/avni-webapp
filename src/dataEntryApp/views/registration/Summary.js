@@ -15,7 +15,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Summary = ({ observations }) => {
+const Summary = ({ observations, additionalRows }) => {
   const classes = useStyle();
   const { t } = useTranslation();
 
@@ -40,20 +40,23 @@ const Summary = ({ observations }) => {
       </Typography>
       <Grid item xs={8}>
         <List>
-          <Observations observations={observations ? observations : ""} />
+          <Observations
+            observations={observations ? observations : ""}
+            additionalRows={additionalRows ? additionalRows : ""}
+          />
         </List>
         {/* <Button color="primary">{t("void")}</Button>
         <Button color="primary">{t("edit")}</Button> */}
       </Grid>
 
-      {/* <Table className={classes.table} aria-label="simple table">        
-        <TableBody>       
+      {/* <Table className={classes.table} aria-label="simple table">
+        <TableBody>
           {subject.observations.map(observation => (
             <TableRow key={observation.concept.name}>
               <TableCell component="th" scope="row">
               {observation.concept.name}
               </TableCell>
-              <TableCell align="right"> {observation.valueJSON.answer}</TableCell>              
+              <TableCell align="right"> {observation.valueJSON.answer}</TableCell>
             </TableRow>
           ))}
         </TableBody>

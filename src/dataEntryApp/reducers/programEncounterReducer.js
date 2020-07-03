@@ -9,12 +9,16 @@ export const types = {
   SET_PROGRAM_ENCOUNTER: `${prefix}SET_PROGRAM_ENCOUNTER`,
   SAVE_PROGRAM_ENCOUNTER: `${prefix}SAVE_PROGRAM_ENCOUNTER`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
+  UPDATE_CANCEL_OBS: `${prefix}UPDATE_CANCEL_OBS`,
   SAVE_PROGRAM_ENCOUNTER_COMPLETE: `${prefix}SAVE_PROGRAM_ENCOUNTER_COMPLETE`,
   UPDATE_PROGRAM_ENCOUNTER: `${prefix}UPDATE_PROGRAM_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
   ON_LOAD_EDIT_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_PROGRAM_ENCOUNTER`,
-  SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`
+  ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER: `${prefix}ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER`,
+  GET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}GET_CANCEL_PROGRAM_ENCOUNTER_FORM`,
+  SET_CANCEL_PROGRAM_ENCOUNTER_FORM: `${prefix}SET_CANCEL_PROGRAM_ENCOUNTER_FORM`,
+  RESET_STATE: `${prefix}RESET_STATE`
 };
 
 export const setUnplanProgramEncounters = unplanProgramEncounters => ({
@@ -54,6 +58,12 @@ export const updateObs = (formElement, value) => ({
   value
 });
 
+export const updateCancelObs = (formElement, value) => ({
+  type: types.UPDATE_CANCEL_OBS,
+  formElement,
+  value
+});
+
 export const saveProgramEncounter = () => ({
   type: types.SAVE_PROGRAM_ENCOUNTER
 });
@@ -84,8 +94,26 @@ export const onLoadEditProgramEncounter = (programEncounterUuid, enrolUuid) => (
   enrolUuid
 });
 
-export const setInitialState = () => ({
-  type: types.SET_INITIAL_STATE
+export const onLoadEditCancelProgramEncounter = (programEncounterUuid, enrolUuid) => ({
+  type: types.ON_LOAD_EDIT_CANCEL_PROGRAM_ENCOUNTER,
+  programEncounterUuid,
+  enrolUuid
+});
+
+export const getCancelProgramEncounterForm = (programEncounterUuid, enrolmentUuid) => ({
+  type: types.GET_CANCEL_PROGRAM_ENCOUNTER_FORM,
+  programEncounterUuid,
+  enrolmentUuid
+});
+
+export const setCancelProgramEncounterForm = (cancelProgramEncounterForm, programEncounter) => ({
+  type: types.SET_CANCEL_PROGRAM_ENCOUNTER_FORM,
+  cancelProgramEncounterForm,
+  programEncounter
+});
+
+export const resetState = () => ({
+  type: types.RESET_STATE
 });
 
 const initialState = {
@@ -93,6 +121,7 @@ const initialState = {
   validationResults: [],
   enconterDateValidation: []
 };
+
 export default function(state = initialState, action) {
   switch (action.type) {
     case types.SET_PROGRAM_ENROLMENT: {
@@ -145,12 +174,22 @@ export default function(state = initialState, action) {
         enconterDateValidation: action.enconterDateValidation
       };
     }
-    case types.SET_INITIAL_STATE: {
+    case types.SET_CANCEL_PROGRAM_ENCOUNTER_FORM: {
       return {
         ...state,
-        saved: initialState.saved,
-        validationResults: initialState.validationResults,
-        enconterDateValidation: initialState.enconterDateValidation
+        cancelProgramEncounterForm: action.cancelProgramEncounterForm,
+        programEncounter: action.programEncounter
+      };
+    }
+    case types.RESET_STATE: {
+      return {
+        ...state,
+        saved: false,
+        validationResults: [],
+        enconterDateValidation: [],
+        programEncounter: null,
+        cancelProgramEncounterForm: null,
+        programEncounterForm: null
       };
     }
     default:
