@@ -1,9 +1,10 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ""
-labels: ""
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 **Describe the bug**
@@ -19,6 +20,9 @@ Steps to reproduce the behavior:
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
+
+**Test Data**
+Give details of example users, environment detail, username against which this issue is happening.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
