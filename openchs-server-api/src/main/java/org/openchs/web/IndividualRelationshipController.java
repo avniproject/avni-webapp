@@ -10,6 +10,7 @@ import org.openchs.domain.Individual;
 import org.openchs.domain.individualRelationship.IndividualRelationship;
 import org.openchs.domain.individualRelationship.IndividualRelationshipType;
 import org.openchs.service.UserService;
+import org.openchs.util.ReactAdminUtil;
 import org.openchs.web.request.IndividualRelationshipRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -115,18 +117,18 @@ public class IndividualRelationshipController extends AbstractController<Individ
         return individualRelationshipRepository;
     }
 
-    @DeleteMapping(value = "/web/relationShip/{id}")
+    @DeleteMapping(value = "/web/relationShip/{uuid}")
     @PreAuthorize(value =  "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     @Transactional
-    public void deleteIndividualRelationShip(@PathVariable Long id) {
-        Optional<IndividualRelationship> relationShip = individualRelationshipRepository.findById(id);
-        if (relationShip.isPresent()) {
-            IndividualRelationship individualRelationShip = relationShip.get();
-            individualRelationShip.setVoided(true);
-            individualRelationshipRepository.save(individualRelationShip);
+    public ResponseEntity<?> deleteIndividualRelationShip(@PathVariable("uuid") String uuid) {
+        IndividualRelationship relationShip = individualRelationshipRepository.findByUuid(uuid);
+        if (null == relationShip) {
+            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("IndividualRelationShip with uuid %d not found", uuid)));
         }
+        relationShip.setVoided(true);
+        individualRelationshipRepository.save(relationShip);
+        return ResponseEntity.ok(null);
     }
-
 
 }
