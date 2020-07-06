@@ -55,5 +55,3 @@ export const localeChoices = [
   { id: LOCALES.SANSKRIT, name: "Sanskrit" },
   { id: LOCALES.URDU, name: "Urdu" }
 ];
-
-export const disableSession = false;

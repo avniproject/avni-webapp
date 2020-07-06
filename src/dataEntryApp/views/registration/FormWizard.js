@@ -8,7 +8,6 @@ import Form from "../../components/Form";
 import Summary from "./Summary";
 import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import BrowserStore from "../../api/browserStore";
 import { FormElementGroup, ValidationResults } from "avni-models";
 import { InternalLink, RelativeLink } from "common/components/utils";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
@@ -206,7 +205,6 @@ const FormWizard = ({
   const classes = useStyle();
   const { t } = useTranslation();
   if (saved) {
-    BrowserStore.clear("subject");
     setTimeout(() => {
       setRedirect(true);
     }, 2500);

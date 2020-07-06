@@ -1,5 +1,5 @@
-import React, { Fragment, createRef } from "react";
-import { Route, withRouter, Link } from "react-router-dom";
+import React, { Fragment } from "react";
+import { Route, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { Box, TextField, Chip, Typography, Paper, Button } from "@material-ui/core";
 import { ObservationsHolder, AddressLevel } from "avni-models";
@@ -17,7 +17,6 @@ import {
 } from "../../reducers/registrationReducer";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import moment from "moment/moment";
 import { getGenders } from "../../reducers/metadataReducer";
 import _, { get, sortBy, isEmpty } from "lodash";
 import { LineBreak, RelativeLink, withParams } from "../../../common/components/utils";
@@ -29,8 +28,6 @@ import Stepper from "dataEntryApp/views/registration/Stepper";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import FormWizard from "./FormWizard";
 import { useTranslation } from "react-i18next";
-import BrowserStore from "../../api/browserStore";
-import { disableSession } from "common/constants";
 import RadioButtonsGroup from "dataEntryApp/components/RadioButtonsGroup";
 
 const useStyles = makeStyles(theme => ({
@@ -508,10 +505,6 @@ const SubjectRegister = props => {
         await props.onLoad(props.match.queryParams.type);
       }
       props.saveCompleteFalse();
-      if (!disableSession) {
-        let subject = BrowserStore.fetchSubject();
-        if (subject) props.setSubject(subject);
-      }
     })();
   }, []);
 

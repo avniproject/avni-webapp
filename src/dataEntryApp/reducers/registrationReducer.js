@@ -119,7 +119,6 @@ export default function(state = initialState, action) {
     case types.UPDATE_SUBJECT: {
       const subject = state.subject.cloneForEdit();
       subject[action.field] = action.value;
-      sessionStorage.setItem("subject", JSON.stringify(subject));
       return {
         ...state,
         subject
