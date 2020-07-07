@@ -117,7 +117,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
         return individualRelationshipRepository;
     }
 
-    @DeleteMapping(value = "/web/relationShip/{uuid}")
+   /* @DeleteMapping(value = "/web/relationShip/{uuid}")
     @PreAuthorize(value =  "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     @Transactional
@@ -129,6 +129,20 @@ public class IndividualRelationshipController extends AbstractController<Individ
         relationShip.setVoided(true);
         individualRelationshipRepository.save(relationShip);
         return ResponseEntity.ok(null);
+    }*/
+
+    @DeleteMapping(value = "/web/relationShip/{id}")
+    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @ResponseBody
+    @Transactional
+    public void deleteIndividualRelationShip(@PathVariable Long id) {
+        Optional<IndividualRelationship> relationShip = individualRelationshipRepository.findById(id);
+        if (relationShip.isPresent()) {
+            IndividualRelationship individualRelationShip = relationShip.get();
+            individualRelationShip.setVoided(true);
+            individualRelationshipRepository.save(individualRelationShip);
+        }
     }
+
 
 }
