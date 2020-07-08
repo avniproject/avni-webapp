@@ -403,6 +403,7 @@ const DefaultPage = props => {
                       helperText={t(subjectRegErrors.FIRST_NAME)}
                       name="firstName"
                       value={props.subject.firstName}
+                      style={{ width: "30%" }}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
                         props.subject.setFirstName(e.target.value);
