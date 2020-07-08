@@ -14,6 +14,7 @@ import CompletedVisits from "./views/subjectDashBoard/components/CompletedVisits
 import NewProgramVisit from "./views/subjectDashBoard/components/NewProgramVisit";
 import ProgramEncounter from "./views/subjectDashBoard/components/ProgramEncounter";
 import CancelProgramEncounter from "./views/subjectDashBoard/components/CancelProgramEncounter";
+import SearchFilterForm from "./views/GlobalSearch/SearchFilterForm";
 import AppBar from "dataEntryApp/components/AppBar";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
@@ -83,6 +84,7 @@ const DataEntry = ({
               path={`${path}/subject/editCancelProgramEncounter`}
               component={CancelProgramEncounter}
             />
+            <Route exact path={`${path}/searchFilter`} component={SearchFilterForm} />
           </Grid>
         </Grid>
       </div>

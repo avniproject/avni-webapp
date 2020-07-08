@@ -199,20 +199,22 @@ const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
           </Typography>
           {!enableReadOnly ? (
             <form noValidate autoComplete="off">
-              <Input
-                className={classes.inputSearch}
-                placeholder={t("search")}
-                id="standard-adornment-search"
-                endAdornment={
-                  <InputAdornment position="end">
-                    <ExpandMoreIcon />
-                  </InputAdornment>
-                }
-                aria-describedby="standard-weight-helper-text"
-                inputProps={{
-                  "aria-label": "search"
-                }}
-              />
+              <InternalLink to={"/app/searchFilter"}>
+                <Input
+                  className={classes.inputSearch}
+                  placeholder={t("search")}
+                  id="standard-adornment-search"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <ExpandMoreIcon />
+                    </InputAdornment>
+                  }
+                  aria-describedby="standard-weight-helper-text"
+                  inputProps={{
+                    "aria-label": "search"
+                  }}
+                />
+              </InternalLink>
             </form>
           ) : (
             ""
