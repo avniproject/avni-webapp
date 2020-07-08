@@ -10,7 +10,7 @@ import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
 import { onLoad } from "../../../reducers/programEncounterReducer";
 import { ProgramEncounter } from "avni-models";
-import NewProgramVisitMenuView from "./NewProgramVisitMenuView";
+import NewVisitMenuView from "./NewVisitMenuView";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -71,10 +71,10 @@ const NewProgramVisit = ({ match, ...props }) => {
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <Typography component={"span"} className={classes.mainHeading}>
-          New program visit
+          {t("newProgramVisit")}
         </Typography>
         <LineBreak num={1} />
-        <NewProgramVisitMenuView sections={sections} enrolmentUuid={enrolmentUuid} />
+        <NewVisitMenuView sections={sections} enrolmentUuid={enrolmentUuid} />
       </Paper>
     </Fragment>
   );

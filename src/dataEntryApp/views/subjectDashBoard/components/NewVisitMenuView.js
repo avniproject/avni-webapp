@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
+const NewVisitMenuView = ({ sections, enrolmentUuid }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -92,4 +92,4 @@ const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
   );
 };
 
-export default NewProgramVisitMenuView;
+export default NewVisitMenuView;

@@ -82,7 +82,17 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
     <Fragment>
       <Paper className={classes.root}>
         <Grid container justify="flex-end">
-          {!enableReadOnly ? <SubjectButton btnLabel={t("newform")} /> : ""}
+          {!enableReadOnly ? (
+            <InternalLink
+              // to={`/app/subject/newGeneralVisit?enrolUuid=${programData.uuid}`}
+              to={`/app/subject/newGeneralVisit`}
+              noUnderline
+            >
+              <SubjectButton btnLabel={t("newGeneralVisit")} />
+            </InternalLink>
+          ) : (
+            ""
+          )}
         </Grid>
         <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary
