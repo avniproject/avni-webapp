@@ -28,11 +28,11 @@ const NewGeneralVisit = ({ match, ...props }) => {
   const classes = useStyles();
   const scheduledEncounters = [];
   const actualEncounters = [];
-  const enrolmentUuid = match.queryParams.enrolUuid;
+  const subjectUuid = match.queryParams.subjectUuid;
 
   useEffect(() => {
     // Get Plan & Unplan Encounters
-    props.onLoad(enrolmentUuid);
+    props.onLoad(subjectUuid);
   }, []);
 
   console.log("actualEncounters", props.actualEncounters);
@@ -51,10 +51,10 @@ const NewGeneralVisit = ({ match, ...props }) => {
 
   //Creating New Encounter Object for Unplan Encounter
   props.encounterFormMappings &&
-    props.encounterFormMappings.map(actualEncounter => {
+    props.encounterFormMappings.map(fm => {
       const encounter = new Encounter();
       encounter.encounterType = props.operationalModules.encounterTypes.find(
-        eT => eT.uuid === actualEncounter.encounterTypeUUID
+        eT => eT.uuid === fm.encounterTypeUUID
       );
       encounter.name =
         encounter.encounterType && encounter.encounterType.operationalEncounterTypeName;
@@ -77,7 +77,7 @@ const NewGeneralVisit = ({ match, ...props }) => {
           {t("newGeneralVisit")}
         </Typography>
         <LineBreak num={1} />
-        <NewVisitMenuView sections={sections} enrolmentUuid={enrolmentUuid} />
+        <NewVisitMenuView sections={sections} />
       </Paper>
     </Fragment>
   );

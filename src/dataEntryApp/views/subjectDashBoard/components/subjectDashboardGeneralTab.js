@@ -84,8 +84,7 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
         <Grid container justify="flex-end">
           {!enableReadOnly ? (
             <InternalLink
-              // to={`/app/subject/newGeneralVisit?enrolUuid=${programData.uuid}`}
-              to={`/app/subject/newGeneralVisit`}
+              to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
               noUnderline
             >
               <SubjectButton btnLabel={t("newGeneralVisit")} />

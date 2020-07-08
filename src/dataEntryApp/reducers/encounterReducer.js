@@ -10,9 +10,9 @@ export const setEncounterFormMappings = encounterFormMappings => ({
   encounterFormMappings
 });
 
-export const onLoad = enrolmentUuid => ({
+export const onLoad = subjectUuid => ({
   type: types.ON_LOAD,
-  enrolmentUuid
+  subjectUuid
 });
 
 export default function(state = {}, action) {
