@@ -65,17 +65,13 @@ const ProgramEnrol = ({
   enrolDateValidation
 }) => {
   const [value, setValue] = React.useState("Yes");
-
   const { t } = useTranslation();
-
   const ENROLMENT_DATE = "ENROLMENT_DATE";
-
   const handleChange = event => {
     setValue(event.target.value);
   };
   const classes = useStyles();
   const formType = match.queryParams.formType;
-
   useEffect(() => {
     (async function fetchData() {
       await setInitialState();
@@ -109,9 +105,16 @@ const ProgramEnrol = ({
               formType === "ProgramEnrolment" ? (
                 <ProgramEnrolmentForm formType={formType}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Typography
+                      variant="body1"
+                      gutterBottom
+                      style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
+                    >
+                      Enrolment Date
+                    </Typography>
                     <KeyboardDatePicker
-                      style={{ width: "40%" }}
-                      label="Enrolment Date"
+                      style={{ width: "30%" }}
+                      // label="Enrolment Date"
                       margin="none"
                       size="small"
                       id="date-picker-dialog"
@@ -152,9 +155,16 @@ const ProgramEnrol = ({
               ) : enrolForm && programEnrolment && programEnrolment.enrolmentDateTime ? (
                 <ProgramExitEnrolmentForm formType={formType}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Typography
+                      variant="body1"
+                      gutterBottom
+                      style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
+                    >
+                      Exit Enrolment Date
+                    </Typography>
                     <KeyboardDatePicker
-                      style={{ width: "40%" }}
-                      label="Exit Enrolment Date"
+                      style={{ width: "30%" }}
+                      // label="Exit Enrolment Date"
                       margin="none"
                       size="small"
                       id="date-picker-dialog"

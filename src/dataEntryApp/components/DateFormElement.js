@@ -12,7 +12,8 @@ import {
   FormControlLabel,
   FormControl,
   TextField,
-  FormLabel
+  FormLabel,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
@@ -26,6 +27,11 @@ const useStyles = makeStyles(theme => ({
       margin: theme.spacing(1),
       width: "20ch"
     }
+  },
+  lableStyle: {
+    width: "50%",
+    marginBottom: 10,
+    color: "rgba(0, 0, 0, 0.54)"
   }
 }));
 
@@ -37,11 +43,7 @@ export const DateTimeFormElement = ({
   uuid
 }) => {
   const { t } = useTranslation();
-  const formtype = fe.formElementGroup.form.formType;
-  let fieldwidth = "30%";
-  if (formtype === "ProgramEnrolment") {
-    fieldwidth = "40%";
-  }
+  const classes = useStyles();
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -49,10 +51,13 @@ export const DateTimeFormElement = ({
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+        {t(fe.display || fe.name)}
+      </Typography>
       <KeyboardDateTimePicker
         autoOk
         ampm={true}
-        label={fe.display || fe.name}
+        // label={fe.display || fe.name}
         required={fe.mandatory}
         value={value}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
@@ -61,7 +66,7 @@ export const DateTimeFormElement = ({
         onError={console.log}
         // disablePast
         format="dd/MM/yyyy HH:mm"
-        style={{ width: fieldwidth }}
+        style={{ width: "30%" }}
         KeyboardButtonProps={{
           "aria-label": "change date",
           color: "primary"
@@ -79,11 +84,7 @@ const getValue = (keyValues, key) => {
 export const DateFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   let durationValue = getValue(fe.keyValues, "durationOptions");
   const { t } = useTranslation();
-  const formtype = fe.formElementGroup.form.formType;
-  let fieldwidth = "30%";
-  if (formtype === "ProgramEnrolment") {
-    fieldwidth = "40%";
-  }
+  const classes = useStyles();
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -98,9 +99,12 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
     />
   ) : (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+        {t(fe.display || fe.name)}
+      </Typography>
       <KeyboardDatePicker
         autoOk
-        label={fe.display || fe.name}
+        // label={fe.display || fe.name}
         required={fe.mandatory}
         value={value}
         onChange={update}
@@ -108,7 +112,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
         error={validationResult && !validationResult.success}
         onError={console.log}
         format="dd/MM/yyyy"
-        style={{ width: fieldwidth }}
+        style={{ width: "30%" }}
         KeyboardButtonProps={{
           "aria-label": "change date",
           color: "primary"
@@ -126,12 +130,6 @@ export const DateAndDurationFormElement = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const formtype = fe.formElementGroup.form.formType;
-  let fieldwidth = "30%";
-  if (formtype === "ProgramEnrolment") {
-    fieldwidth = "40%";
-  }
-
   let durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
   const [units, setUnit] = React.useState(durationValue[0]);
   const today = moment();
@@ -169,9 +167,12 @@ export const DateAndDurationFormElement = ({
     <FormControl style={{ width: "100%" }}>
       <FormLabel>{fe.display || fe.name}</FormLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+          Select Date
+        </Typography>
         <KeyboardDatePicker
           autoOk
-          label="Select Date"
+          // label="Select Date"
           required={fe.mandatory}
           value={date}
           onChange={dateValue => onDateChange(dateValue)}
@@ -179,7 +180,7 @@ export const DateAndDurationFormElement = ({
           error={validationResult && !validationResult.success}
           onError={console.log}
           format="dd/MM/yyyy"
-          style={{ width: fieldwidth }}
+          style={{ width: "30%" }}
           KeyboardButtonProps={{
             "aria-label": "change date",
             color: "primary"
@@ -190,15 +191,18 @@ export const DateAndDurationFormElement = ({
         <FormLabel>OR</FormLabel>
       </div>
       <form>
+        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+          Enter Duration
+        </Typography>
         <RadioGroup row aria-label="gender" name="gender1" value={units} onChange={onChangeUnit}>
           <TextField
             id="standard-number"
-            label="Enter Duration"
+            // label="Enter Duration"
             type="number"
             InputLabelProps={{
               shrink: true
             }}
-            style={{ width: fieldwidth }}
+            style={{ width: "30%" }}
             value={duration}
             onChange={durationValue => onDurationChange(durationValue)}
           />

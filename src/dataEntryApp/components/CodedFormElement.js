@@ -40,7 +40,7 @@ export const CodedFormElement = ({
     <FormControl
       component="fieldset"
       {...props}
-      style={{ width: "80%" }}
+      style={{ width: "80%", marginBottom: "-20px" }}
       required={mandatory}
       error={(validationResult && !validationResult.success) || errorMsg}
     >
