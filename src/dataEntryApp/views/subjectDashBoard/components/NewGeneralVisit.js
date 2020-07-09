@@ -35,19 +35,19 @@ const NewGeneralVisit = ({ match, ...props }) => {
     props.onLoad(subjectUuid);
   }, []);
 
-  console.log("actualEncounters", props.actualEncounters);
-
-  //Creating New programEncounter Object for Plan Encounter
-  // props.planEncounters
-  //     .filter(pe => isNil(pe.encounterDateTime))
-  //     .map(planEncounter => {
-  //         const planVisit = new ProgramEncounter();
-  //         planVisit.encounterType = planEncounter.encounterType;
-  //         planVisit.encounterDateTime = planEncounter.encounterDateTime;
-  //         planVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
-  //         planVisit.name = planEncounter.name;
-  //         scheduledEncounters.push(planVisit);
-  //     });
+  // Creating New Encounter Object for Plan Encounter
+  props.subjectGeneral &&
+    props.subjectGeneral
+      .filter(e => isNil(e.encounterDateTime))
+      .map(pe => {
+        const encounter = new Encounter();
+        encounter.encounterType = pe.encounterType;
+        encounter.encounterDateTime = pe.encounterDateTime;
+        encounter.earliestVisitDateTime = pe.earliestVisitDateTime;
+        encounter.maxVisitDateTime = pe.maxVisitDateTime;
+        encounter.name = pe.name;
+        scheduledEncounters.push(encounter);
+      });
 
   //Creating New Encounter Object for Unplan Encounter
   props.encounterFormMappings &&
@@ -77,16 +77,14 @@ const NewGeneralVisit = ({ match, ...props }) => {
           {t("newGeneralVisit")}
         </Typography>
         <LineBreak num={1} />
-        <NewVisitMenuView sections={sections} />
+        <NewVisitMenuView sections={sections} isForEncounters={true} />
       </Paper>
     </Fragment>
   );
 };
 
 const mapStateToProps = state => ({
-  // planEncounters: state.dataEntry.programEncounterReducer.programEnrolment
-  //     ? state.dataEntry.programEncounterReducer.programEnrolment.programEncounters
-  //     : [],
+  subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   operationalModules: state.dataEntry.metadata.operationalModules,
   encounterFormMappings: state.dataEntry.encounterReducer.encounterFormMappings
 });

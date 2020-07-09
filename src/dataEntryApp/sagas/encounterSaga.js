@@ -4,7 +4,8 @@ import moment from "moment";
 import { types, setEncounterFormMappings } from "../reducers/encounterReducer";
 import api from "../api";
 import { selectFormMappingForSubjectType } from "./encounterSelector";
-import { getSubjectProfile, setSubjectProfile } from "../reducers/subjectDashboardReducer";
+import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
+import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { mapProfile } from "../../common/subjectModelMapper";
 
 export default function*() {
@@ -16,11 +17,13 @@ export function* programEncouterOnLoadWatcher() {
 }
 
 export function* programEncouterOnLoadWorker({ subjectUuid }) {
-  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
-  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield put.resolve(getSubjectGeneral(subjectUuid));
 
+  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const encounterFormMappings = yield select(
     selectFormMappingForSubjectType(subjectProfileJson.subjectType.uuid)
   );
-  yield put(setEncounterFormMappings(encounterFormMappings));
+
+  yield put.resolve(setEncounterFormMappings(encounterFormMappings));
+  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
 }
