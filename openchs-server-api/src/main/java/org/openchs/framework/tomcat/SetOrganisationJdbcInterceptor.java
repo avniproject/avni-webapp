@@ -33,6 +33,7 @@ public class SetOrganisationJdbcInterceptor extends JdbcInterceptor {
         try {
             Statement statement = pooledConnection.getConnection().createStatement();
             statement.execute("set role \"" + dbUser + "\";");
+            statement.execute("set application_name to \"" + dbUser + "\";");
             statement.close();
         } catch (SQLException exp) {
             throw new RuntimeException(exp);
