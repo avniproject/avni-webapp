@@ -17,6 +17,12 @@ export default {
       body: JSON.stringify(programEnrolment)
     }),
 
+  searchResult: searchData =>
+    httpClient.fetchJson("/individual/search/v2", {
+      method: "POST",
+      body: JSON.stringify(searchData)
+    }),
+
   saveProgramEncouter: programEncounter =>
     httpClient.fetchJson("/programEncounters", {
       method: "POST",

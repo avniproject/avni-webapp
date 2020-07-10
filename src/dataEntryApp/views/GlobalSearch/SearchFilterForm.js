@@ -13,8 +13,10 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { getOperationalModules } from "../../reducers/metadataReducer";
 import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
+import { getSearchFilters } from "../../reducers/searchFilterReducer";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,7 +40,8 @@ function SearchFilterForm({
   operationalModules,
   getOrgConfigInfo,
   orgConfig,
-  getSearchFilters
+  getSearchFilters,
+  searchResults
 }) {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -53,19 +56,37 @@ function SearchFilterForm({
   );
 
   const organizations = orgConfig._embedded.organisationConfig.map(organization => organization);
-  const initialSubjetTypeSearchFilter = organizations[0].settings.searchFilters.filter(
-    searchFilter => searchFilter.subjectTypeUUID === operationalModules.subjectTypes[0].uuid
-  );
+  const initialSubjetTypeSearchFilter =
+    organizations[0].settings.searchFilters &&
+    organizations[0].settings.searchFilters.filter(
+      searchFilter => searchFilter.subjectTypeUUID === operationalModules.subjectTypes[0].uuid
+    );
   const [selectedSearchFilter, setSelectedSearchFilter] = useState(initialSubjetTypeSearchFilter);
 
   const onSubjectTypeChange = event => {
     setSelectedSubjectType(event.target.value);
     organizations.map(organization => {
-      const slectedSubjetTypeSearchFilter = organization.settings.searchFilters.filter(
-        serarchFilter => serarchFilter.subjectTypeUUID === event.target.value
-      );
+      const slectedSubjetTypeSearchFilter =
+        organization.settings.searchFilters &&
+        organization.settings.searchFilters.filter(
+          serarchFilter => serarchFilter.subjectTypeUUID === event.target.value
+        );
       setSelectedSearchFilter(slectedSubjetTypeSearchFilter);
     });
+  };
+
+  const [enterValue, setEnterValue] = useState("");
+
+  const searchFilterValue = event => {
+    setEnterValue(event.target.value);
+  };
+
+  const searchResult = (subjectTypeUUID, name) => {
+    const request = {
+      subjectType: subjectTypeUUID,
+      name: name
+    };
+    getSearchFilters(request);
   };
 
   console.log("orgnization search filter", selectedSearchFilter);
@@ -97,15 +118,24 @@ function SearchFilterForm({
                 ))
               : ""}
           </RadioGroup>
-          {selectedSearchFilter.map(searchFilterForm => (
-            <TextField
-              id={searchFilterForm.titleKey}
-              label={searchFilterForm.titleKey}
-              type={searchFilterForm.type}
-            />
-          ))}
+          {selectedSearchFilter &&
+            selectedSearchFilter.map(searchFilterForm => (
+              <TextField
+                id={searchFilterForm.titleKey}
+                label={searchFilterForm.titleKey}
+                type={searchFilterForm.type}
+                value={enterValue}
+                onChange={searchFilterValue}
+              />
+            ))}
           <div className={classes.buttons}>
-            <Button variant="contained" color="primary">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => searchResult(selectedSubjectType, enterValue)}
+              component={Link}
+              to="/app/searchResult"
+            >
               Search
             </Button>
             <Button variant="contained" color="secondary">
@@ -123,15 +153,16 @@ function SearchFilterForm({
 const mapStateToProps = state => {
   return {
     operationalModules: state.dataEntry.metadata.operationalModules,
-    orgConfig: state.translationsReducer.orgConfig
-
+    orgConfig: state.translationsReducer.orgConfig,
+    searchResults: state.dataEntry.searchFilterReducer.searchFilters
     // load: state.dataEntry.loadReducer.load
   };
 };
 
 const mapDispatchToProps = {
   getOperationalModules,
-  getOrgConfigInfo
+  getOrgConfigInfo,
+  getSearchFilters
 };
 
 export default withRouter(
