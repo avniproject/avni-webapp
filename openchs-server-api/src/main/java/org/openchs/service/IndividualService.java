@@ -133,6 +133,7 @@ public class IndividualService {
         return encounters.stream().map(encounter -> {
             EncounterContract encounterContract = new EncounterContract();
             EncounterTypeContract encounterTypeContract = new EncounterTypeContract();
+            encounterTypeContract.setUuid(encounter.getEncounterType().getUuid());
             encounterTypeContract.setName(encounter.getEncounterType().getOperationalEncounterTypeName());
             encounterContract.setId(encounter.getId());
             encounterContract.setUuid(encounter.getUuid());
