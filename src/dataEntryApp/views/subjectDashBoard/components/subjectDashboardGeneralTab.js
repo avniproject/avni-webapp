@@ -14,6 +14,7 @@ import { InternalLink } from "common/components/utils";
 import Button from "@material-ui/core/Button";
 import PlannedEncounter from "dataEntryApp/views/subjectDashBoard/components/PlannedEncounter";
 import CompletedEncounter from "dataEntryApp/views/subjectDashBoard/components/CompletedEncounter";
+import { isEmpty, isNil, filter } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -62,11 +63,28 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) => {
+const SubjectDashboardGeneralTab = ({
+  general,
+  subjectUuid,
+  enableReadOnly,
+  subjectTypeUuid,
+  operationalModules
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
   let plannedVisits = [];
   let completedVisits = [];
+  const showNewGeneralVisit = !(
+    isEmpty(general) &&
+    isEmpty(
+      filter(
+        operationalModules.formMappings,
+        fm =>
+          isNil(fm.programUUID) &&
+          (fm.subjectTypeUUID === subjectTypeUuid && fm.formType === "Encounter")
+      )
+    )
+  );
 
   if (general) {
     general.forEach(function(row, index) {
@@ -82,7 +100,16 @@ const SubjectDashboardGeneralTab = ({ general, subjectUuid, enableReadOnly }) =>
     <Fragment>
       <Paper className={classes.root}>
         <Grid container justify="flex-end">
-          {!enableReadOnly ? <SubjectButton btnLabel={t("newform")} /> : ""}
+          {!enableReadOnly && showNewGeneralVisit ? (
+            <InternalLink
+              to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
+              noUnderline
+            >
+              <SubjectButton btnLabel={t("newGeneralVisit")} />
+            </InternalLink>
+          ) : (
+            ""
+          )}
         </Grid>
         <ExpansionPanel className={classes.expansionPanel}>
           <ExpansionPanelSummary

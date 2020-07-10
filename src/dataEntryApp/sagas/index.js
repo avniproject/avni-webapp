@@ -5,6 +5,7 @@ import subjectDashboardSaga from "./subjectDashboardSaga";
 import generalSubjectDashboardSaga from "./generalSubjectDashboardSaga";
 import programSubjectDashboardSaga from "./programSubjectDashboardSaga";
 import programEncounterSaga from "./programEncounterSaga";
+import encounterSaga from "./encounterSaga";
 import { saveUserInfoWatcher } from "rootApp/saga";
 import programSaga from "./programSaga";
 import viewVisitSaga from "./ViewVisitSaga";
@@ -23,7 +24,8 @@ export default function* rootSaga() {
       programSaga,
       viewVisitSaga,
       completedVisitSaga,
-      programEncounterSaga
+      programEncounterSaga,
+      encounterSaga
       // translationApiSaga
     ].map(fork)
   );

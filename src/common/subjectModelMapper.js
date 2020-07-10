@@ -217,7 +217,7 @@ export const mapGeneral = subjectGeneral => {
       let generalEncounter = General.assignFields(
         encounters,
         new Encounter(),
-        ["uuid"],
+        ["uuid", "name"],
         ["encounterDateTime", "earliestVisitDateTime", "maxVisitDateTime", "cancelDateTime"]
       );
       generalEncounter.encounterType = mapEncounterType(encounters.encounterType);

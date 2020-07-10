@@ -42,7 +42,9 @@ const Breadcrumbs = ({ path, match, ...props }) => {
     PROGRAM_ENCOUNTER: "programEncounter",
     EDIT_PROGRAM_ENCOUNTER: "editProgramEncounter",
     CANCEL_PROGRAM_ENCOUNTER: "cancelProgramEncounter",
-    EDIT_CANCEL_PROGRAM_ENCOUNTER: "editCancelProgramEncounter"
+    EDIT_CANCEL_PROGRAM_ENCOUNTER: "editCancelProgramEncounter",
+    NEW_PROGRAM_VISIT: "newProgramVisit",
+    NEW_GENERAL_VISIT: "newGeneralVisit"
   };
   const urlMapper = part => {
     switch (part) {
@@ -99,6 +101,12 @@ const Breadcrumbs = ({ path, match, ...props }) => {
       }
       case urlPartLabels.EDIT_PROGRAM_ENCOUNTER: {
         return { breadcrumb: t("Edit Program Encounter"), url: "#/app" };
+      }
+      case urlPartLabels.NEW_PROGRAM_VISIT: {
+        return { breadcrumb: t("newProgramVisit"), url: "#/app" };
+      }
+      case urlPartLabels.NEW_GENERAL_VISIT: {
+        return { breadcrumb: t("newGeneralVisit"), url: "#/app" };
       }
       default:
         return { breadcrumb: part, url: "#/app" };

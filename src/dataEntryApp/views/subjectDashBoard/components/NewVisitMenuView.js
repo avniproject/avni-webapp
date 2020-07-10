@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
+const NewVisitMenuView = ({ sections, enrolmentUuid, isForEncounters }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -64,9 +64,13 @@ const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
                                 width="50%"
                               >
                                 <InternalLink
-                                  to={`/app/subject/programEncounter?uuid=${
-                                    encounter.encounterType.uuid
-                                  }&enrolUuid=${enrolmentUuid}`}
+                                  to={
+                                    isForEncounters
+                                      ? `/app`
+                                      : `/app/subject/programEncounter?uuid=${
+                                          encounter.encounterType.uuid
+                                        }&enrolUuid=${enrolmentUuid}`
+                                  }
                                 >
                                   {encounter.name}
                                 </InternalLink>
@@ -92,4 +96,4 @@ const NewProgramVisitMenuView = ({ sections, enrolmentUuid }) => {
   );
 };
 
-export default NewProgramVisitMenuView;
+export default NewVisitMenuView;
