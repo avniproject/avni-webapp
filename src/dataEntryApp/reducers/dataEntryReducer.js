@@ -13,6 +13,7 @@ import completedVisitsReducer from "./completedVisitsReducer";
 import programEncounterReducer from "./programEncounterReducer";
 import encounterReducer from "./encounterReducer";
 import loadReducer from "./loadReducer";
+import searchFilterReducer from "./searchFilterReducer";
 
 export default combineReducers({
   search,
@@ -28,5 +29,6 @@ export default combineReducers({
   completedVisitsReducer,
   programEncounterReducer,
   encounterReducer,
-  loadReducer
+  loadReducer,
+  searchFilterReducer
 });
