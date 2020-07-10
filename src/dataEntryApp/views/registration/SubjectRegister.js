@@ -125,6 +125,11 @@ const useStyles = makeStyles(theme => ({
     "&:hover, &:focus": {
       textDecoration: "none"
     }
+  },
+  lableStyle: {
+    width: "50%",
+    marginBottom: 10,
+    color: "rgba(0, 0, 0, 0.54)"
   }
 }));
 
@@ -225,11 +230,14 @@ const DefaultPage = props => {
             <Paper className={classes.form}>
               <Box className={classes.topboxstyle} display="flex" flexDirection="column">
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                    {t("Date of registration")}
+                  </Typography>
                   <KeyboardDatePicker
                     autoComplete="off"
                     required
                     name="registrationDate"
-                    label={t("Date of registration")}
+                    // label={t("Date of registration")}
                     value={
                       _.isNil(props.subject.registrationDate) ? "" : props.subject.registrationDate
                     }
@@ -259,6 +267,9 @@ const DefaultPage = props => {
                 <LineBreak num={1} />
                 {get(props, "subject.subjectType.name") === "Individual" && (
                   <React.Fragment>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t("firstName")}
+                    </Typography>
                     <TextField
                       type="text"
                       autoComplete="off"
@@ -268,7 +279,7 @@ const DefaultPage = props => {
                       error={!_.isEmpty(subjectRegErrors.FIRST_NAME)}
                       helperText={t(subjectRegErrors.FIRST_NAME)}
                       style={{ width: "30%" }}
-                      label={t("firstName")}
+                      // label={t("firstName")}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
                         props.subject.setFirstName(e.target.value);
@@ -276,6 +287,9 @@ const DefaultPage = props => {
                       }}
                     />
                     <LineBreak num={1} />
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t("lastName")}
+                    </Typography>
                     <TextField
                       type="text"
                       autoComplete="off"
@@ -285,7 +299,7 @@ const DefaultPage = props => {
                       error={!_.isEmpty(subjectRegErrors.LAST_NAME)}
                       helperText={t(subjectRegErrors.LAST_NAME)}
                       style={{ width: "30%" }}
-                      label={t("lastName")}
+                      // label={t("lastName")}
                       onChange={e => {
                         props.updateSubject("lastName", e.target.value);
                         props.subject.setLastName(e.target.value);
@@ -373,8 +387,12 @@ const DefaultPage = props => {
 
                 {get(props, "subject.subjectType.name") !== "Individual" && (
                   <React.Fragment>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {/* {t("Name")} */}
+                      Name
+                    </Typography>
                     <TextField
-                      label="Name"
+                      // label="Name"
                       type="text"
                       autoComplete="off"
                       required
@@ -382,6 +400,7 @@ const DefaultPage = props => {
                       helperText={t(subjectRegErrors.FIRST_NAME)}
                       name="firstName"
                       value={props.subject.firstName}
+                      style={{ width: "30%" }}
                       onChange={e => {
                         props.updateSubject("firstName", e.target.value);
                         props.subject.setFirstName(e.target.value);

@@ -1,9 +1,18 @@
 import React from "react";
-import { TextField } from "@material-ui/core";
+import { TextField, Typography } from "@material-ui/core";
 import { isEmpty, find } from "lodash";
 import { useTranslation } from "react-i18next";
+import { makeStyles } from "@material-ui/core/styles";
+const useStyles = makeStyles(theme => ({
+  lableStyle: {
+    width: "50%",
+    marginBottom: 10,
+    color: "rgba(0, 0, 0, 0.54)"
+  }
+}));
 
 export default ({ formElement: fe, value, update, validationResults, uuid }) => {
+  const classes = useStyles();
   const { t } = useTranslation();
   const validationResult = find(
     validationResults,
@@ -11,8 +20,11 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
   );
   return (
     <div>
+      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+        {t(fe.display || fe.name)}
+      </Typography>
       <TextField
-        label={t(fe.display || fe.name)}
+        // label={t(fe.display || fe.name)}
         type={"text"}
         autoComplete="off"
         required={fe.mandatory}

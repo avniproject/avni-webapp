@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import DateFnsUtils from "@date-io/date-fns";
+import { Typography } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardTimePicker } from "@material-ui/pickers";
 import { find } from "lodash";
 import { useTranslation } from "react-i18next";
@@ -13,6 +14,13 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Typography
+        variant="body1"
+        gutterBottom
+        style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
+      >
+        {t(fe.display || fe.name)}
+      </Typography>
       <KeyboardTimePicker
         label={fe.display || fe.name}
         required={fe.mandatory}
