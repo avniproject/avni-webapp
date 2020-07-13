@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewVisitMenuView = ({ sections, enrolmentUuid, isForEncounters }) => {
+const NewVisitMenuView = ({ sections, uuid, isForEncounters }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -66,10 +66,12 @@ const NewVisitMenuView = ({ sections, enrolmentUuid, isForEncounters }) => {
                                 <InternalLink
                                   to={
                                     isForEncounters
-                                      ? `/app`
+                                      ? `/app/subject/encounter?uuid=${
+                                          encounter.encounterType.uuid
+                                        }&subjectUuid=${uuid}`
                                       : `/app/subject/programEncounter?uuid=${
                                           encounter.encounterType.uuid
-                                        }&enrolUuid=${enrolmentUuid}`
+                                        }&enrolUuid=${uuid}`
                                   }
                                 >
                                   {encounter.name}
