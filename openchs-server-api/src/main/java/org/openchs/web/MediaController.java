@@ -26,7 +26,7 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/media/uploadUrl/{fileName:.+}", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateUploadUrl(@PathVariable String fileName) {
         try {
             logger.info("getting media upload url");
@@ -43,7 +43,7 @@ public class MediaController {
     }
 
     @RequestMapping(value = "/media/signedUrl", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('user')")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     public ResponseEntity<String> generateDownloadUrl(@RequestParam String url) {
         try {
             return ResponseEntity.ok(s3Service.generateMediaDownloadUrl(url).toString());
