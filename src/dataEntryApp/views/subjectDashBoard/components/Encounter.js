@@ -9,7 +9,13 @@ import { withParams } from "common/components/utils";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
-import { getEncounterForm, onLoad, resetState } from "../../../reducers/encounterReducer";
+import {
+  getEncounterForm,
+  onLoad,
+  updateEncounter,
+  setEncounterDateValidation,
+  resetState
+} from "../../../reducers/encounterReducer";
 import EncounterForm from "./EncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
@@ -21,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Encounter = ({ match, encounter, ...props }) => {
+const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
@@ -37,13 +43,16 @@ const Encounter = ({ match, encounter, ...props }) => {
     })();
   }, []);
 
+  const validationResultForEncounterDate =
+    enconterDateValidation &&
+    enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === ENCOUNTER_DATE_TIME);
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <Grid justify="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
-            {props.encounterForm && props.subjectProfile ? (
+            {props.encounterForm && encounter && props.subjectProfile ? (
               <EncounterForm>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
@@ -57,9 +66,30 @@ const Encounter = ({ match, encounter, ...props }) => {
                     name="visitDateTime"
                     autoComplete="off"
                     required
+                    value={new Date(encounter.encounterDateTime)}
+                    error={
+                      !isNil(validationResultForEncounterDate) &&
+                      !validationResultForEncounterDate.success
+                    }
+                    helperText={
+                      !isNil(validationResultForEncounterDate) &&
+                      t(validationResultForEncounterDate.messageKey)
+                    }
                     onChange={date => {
                       const visitDate = isNil(date) ? undefined : new Date(date);
+                      props.updateEncounter("encounterDateTime", visitDate);
                       encounter.encounterDateTime = visitDate;
+                      remove(
+                        enconterDateValidation,
+                        vr => vr.formIdentifier === ENCOUNTER_DATE_TIME
+                      );
+                      const result = encounter
+                        .validate()
+                        .find(vr => !vr.success && vr.formIdentifier === ENCOUNTER_DATE_TIME);
+                      result
+                        ? enconterDateValidation.push(result)
+                        : enconterDateValidation.push(...encounter.validate());
+                      props.setEncounterDateValidation(enconterDateValidation);
                     }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -81,12 +111,15 @@ const Encounter = ({ match, encounter, ...props }) => {
 const mapStateToProps = state => ({
   encounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  encounter: state.dataEntry.encounterReducer.encounter
+  encounter: state.dataEntry.encounterReducer.encounter,
+  enconterDateValidation: state.dataEntry.encounterReducer.enconterDateValidation
 });
 
 const mapDispatchToProps = {
   getEncounterForm,
   onLoad,
+  updateEncounter,
+  setEncounterDateValidation,
   resetState
 };
 
