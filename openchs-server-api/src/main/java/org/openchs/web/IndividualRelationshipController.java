@@ -117,19 +117,7 @@ public class IndividualRelationshipController extends AbstractController<Individ
         return individualRelationshipRepository;
     }
 
-   /* @DeleteMapping(value = "/web/relationShip/{uuid}")
-    @PreAuthorize(value =  "hasAnyAuthority('user', 'organisation_admin')")
-    @ResponseBody
-    @Transactional
-    public ResponseEntity<?> deleteIndividualRelationShip(@PathVariable("uuid") String uuid) {
-        IndividualRelationship relationShip = individualRelationshipRepository.findByUuid(uuid);
-        if (null == relationShip) {
-            return ResponseEntity.badRequest().body(ReactAdminUtil.generateJsonError(String.format("IndividualRelationShip with uuid %d not found", uuid)));
-        }
-        relationShip.setVoided(true);
-        individualRelationshipRepository.save(relationShip);
-        return ResponseEntity.ok(null);
-    }*/
+
 
     @DeleteMapping(value = "/web/relationShip/{id}")
     @PreAuthorize(value = "hasAnyAuthority('user')")
