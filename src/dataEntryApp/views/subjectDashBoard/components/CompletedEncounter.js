@@ -1,10 +1,6 @@
 import React from "react";
-import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import { Paper } from "@material-ui/core";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -63,7 +59,7 @@ const truncate = input => {
   else return input;
 };
 
-const CompletedEncounter = ({ index, encounter }) => {
+const CompletedEncounter = ({ index, encounter, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -89,6 +85,17 @@ const CompletedEncounter = ({ index, encounter }) => {
             />
           </ListItem>
         </List>
+        {!enableReadOnly ? (
+          <>
+            {encounter.encounterDateTime && (
+              <Button color="primary" className={classes.visitButton}>
+                {t("edit visit")}
+              </Button>
+            )}
+          </>
+        ) : (
+          ""
+        )}
       </Paper>
     </Grid>
   );

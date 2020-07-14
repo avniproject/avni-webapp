@@ -5,6 +5,7 @@ import {
   setEncounterFormMappings,
   setEncounterForm,
   setEncounter,
+  saveEncounterComplete,
   setValidationResults
 } from "../reducers/encounterReducer";
 import api from "../api";
@@ -26,7 +27,12 @@ import { mapProfile } from "../../common/subjectModelMapper";
 
 export default function*() {
   yield all(
-    [encouterOnLoadWatcher, encounterFetchFormWatcher, updateEncounterObsWatcher].map(fork)
+    [
+      encouterOnLoadWatcher,
+      encounterFetchFormWatcher,
+      updateEncounterObsWatcher,
+      saveEncounterWatcher
+    ].map(fork)
   );
 }
 
@@ -38,12 +44,12 @@ export function* encouterOnLoadWorker({ subjectUuid }) {
   yield put.resolve(getSubjectGeneral(subjectUuid));
 
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
+  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
   const encounterFormMappings = yield select(
     selectFormMappingsForSubjectType(subjectProfileJson.subjectType.uuid)
   );
 
   yield put.resolve(setEncounterFormMappings(encounterFormMappings));
-  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
 }
 
 export function* encounterFetchFormWatcher() {
@@ -53,7 +59,7 @@ export function* encounterFetchFormWatcher() {
 export function* encounterFetchFormWorker({ encounterTypeUuid, subjectUuid }) {
   const formMapping = yield select(selectFormMappingForEncounter(encounterTypeUuid));
   const encounterForm = yield call(api.fetchForm, formMapping.formUUID);
-  yield put(setEncounterForm(mapForm(encounterForm)));
+  yield put.resolve(setEncounterForm(mapForm(encounterForm)));
 
   const state = yield select();
   const subjectGenerel = state.dataEntry.subjectGenerel.subjectGeneral;
@@ -158,4 +164,16 @@ function validate(formElement, value, observations, validationResults) {
 
   validationResults.push(validationResult);
   return validationResults;
+}
+
+export function* saveEncounterWatcher() {
+  yield takeLatest(types.SAVE_ENCOUNTER, saveEncounterWorker);
+}
+
+export function* saveEncounterWorker() {
+  const state = yield select();
+  const encounter = state.dataEntry.encounterReducer.encounter;
+  let resource = encounter.toResource;
+  yield call(api.saveEncounter, resource);
+  yield put(saveEncounterComplete());
 }

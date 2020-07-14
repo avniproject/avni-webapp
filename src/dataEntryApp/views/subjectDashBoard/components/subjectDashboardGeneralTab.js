@@ -74,17 +74,6 @@ const SubjectDashboardGeneralTab = ({
   const classes = useStyles();
   let plannedVisits = [];
   let completedVisits = [];
-  const showNewGeneralVisit = !(
-    isEmpty(general) &&
-    isEmpty(
-      filter(
-        operationalModules.formMappings,
-        fm =>
-          isNil(fm.programUUID) &&
-          (fm.subjectTypeUUID === subjectTypeUuid && fm.formType === "Encounter")
-      )
-    )
-  );
 
   if (general) {
     general.forEach(function(row, index) {
@@ -95,6 +84,18 @@ const SubjectDashboardGeneralTab = ({
       }
     });
   }
+
+  const showNewGeneralVisit = !(
+    isEmpty(plannedVisits) &&
+    isEmpty(
+      filter(
+        operationalModules.formMappings,
+        fm =>
+          isNil(fm.programUUID) &&
+          (fm.subjectTypeUUID === subjectTypeUuid && fm.formType === "Encounter")
+      )
+    )
+  );
 
   return (
     <Fragment>
@@ -125,7 +126,14 @@ const SubjectDashboardGeneralTab = ({
             <Grid container spacing={2}>
               {general && plannedVisits.length !== 0 ? (
                 plannedVisits.map((row, index) => (
-                  <PlannedEncounter index={index} encounter={row} />
+                  <PlannedEncounter
+                    index={index}
+                    encounter={row}
+                    subjectUuid={subjectUuid}
+                    enableReadOnly={enableReadOnly}
+                    subjectTypeUuid={subjectTypeUuid}
+                    operationalModules={operationalModules}
+                  />
                 ))
               ) : (
                 <Typography variant="caption" gutterBottom className={classes.infomsg}>
@@ -150,7 +158,11 @@ const SubjectDashboardGeneralTab = ({
             <Grid container spacing={2}>
               {general && completedVisits.length !== 0 ? (
                 completedVisits.map((row, index) => (
-                  <CompletedEncounter index={index} encounter={row} />
+                  <CompletedEncounter
+                    index={index}
+                    encounter={row}
+                    enableReadOnly={enableReadOnly}
+                  />
                 ))
               ) : (
                 <Typography variant="caption" gutterBottom className={classes.infomsg}>

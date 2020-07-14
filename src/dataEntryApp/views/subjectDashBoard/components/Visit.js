@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
-import { findIndex, isNil } from "lodash";
+import { find, isEmpty, isNil } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -105,8 +105,8 @@ const Visit = ({
       throw new Error("Invalid type. Must be programEncounter or encounter.");
   }
 
-  const isCancelFormAvailable =
-    findIndex(
+  const isCancelFormAvailable = !isEmpty(
+    find(
       operationalModules.formMappings,
       fm =>
         !isNil(encounterTypeUuid) &&
@@ -114,21 +114,19 @@ const Visit = ({
           fm.programUUID === programUuid &&
           fm.subjectTypeUUID === subjectProfile.subjectType.uuid &&
           fm.formType === "ProgramEncounterCancellation")
-    ) > 0
-      ? true
-      : false;
+    )
+  );
 
-  const isProgramEncounterFormAvailable =
-    findIndex(
+  const isProgramEncounterFormAvailable = !isEmpty(
+    find(
       operationalModules.formMappings,
       fm =>
         !isNil(encounterTypeUuid) &&
         (fm.encounterTypeUUID === encounterTypeUuid &&
           fm.subjectTypeUUID === subjectProfile.subjectType.uuid &&
           fm.formType === "ProgramEncounter")
-    ) > 0
-      ? true
-      : false;
+    )
+  );
 
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>

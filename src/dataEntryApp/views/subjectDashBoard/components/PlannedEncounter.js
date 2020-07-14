@@ -1,11 +1,10 @@
 import React from "react";
-import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import { Paper } from "@material-ui/core";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import moment from "moment/moment";
+import { InternalLink } from "../../../../common/components/utils";
+import { find, isEmpty, isNil } from "lodash";
+
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -62,7 +61,14 @@ const truncate = input => {
   else return input;
 };
 
-const PlannedEncounter = ({ index, encounter }) => {
+const PlannedEncounter = ({
+  index,
+  encounter,
+  subjectUuid,
+  enableReadOnly,
+  subjectTypeUuid,
+  operationalModules
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -80,6 +86,17 @@ const PlannedEncounter = ({ index, encounter }) => {
   } else if (encounter.earliestVisitDateTime && new Date() > encounter.earliestVisitDateTime) {
     status = "due";
   }
+
+  const isEncounterFormAvailable = !isEmpty(
+    find(
+      operationalModules.formMappings,
+      fm =>
+        !isNil(encounter.encounterType.uuid) &&
+        (fm.subjectTypeUUID === subjectTypeUuid &&
+          fm.encounterTypeUUID === encounter.encounterType.uuid &&
+          fm.formType === "Encounter")
+    )
+  );
 
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
@@ -106,6 +123,31 @@ const PlannedEncounter = ({ index, encounter }) => {
             </ListItem>
           )}
         </List>
+        {!enableReadOnly ? (
+          <>
+            {encounter.cancelDateTime ? (
+              <Button color="primary" className={classes.visitButton}>
+                {t("edit visit")}
+              </Button>
+            ) : (
+              <div className={classes.visitButton}>
+                {encounter.encounterType.uuid && subjectUuid && isEncounterFormAvailable ? (
+                  <InternalLink
+                    to={`/app/subject/encounter?uuid=${
+                      encounter.encounterType.uuid
+                    }&subjectUuid=${subjectUuid}`}
+                  >
+                    <Button color="primary">{t("do visit")}</Button>
+                  </InternalLink>
+                ) : (
+                  ""
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          ""
+        )}
       </Paper>
     </Grid>
   );

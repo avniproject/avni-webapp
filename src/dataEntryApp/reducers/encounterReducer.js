@@ -6,7 +6,9 @@ export const types = {
   GET_ENCOUNTER_FORM: `${prefix}GET_ENCOUNTER_FORM`,
   SET_ENCOUNTER_FORM: `${prefix}SET_ENCOUNTER_FORM`,
   SET_ENCOUNTER: `${prefix}SET_ENCOUNTER`,
+  SAVE_ENCOUNTER: `${prefix}SAVE_ENCOUNTER`,
   UPDATE_OBS: `${prefix}UPDATE_OBS`,
+  SAVE_ENCOUNTER_COMPLETE: `${prefix}SAVE_ENCOUNTER_COMPLETE`,
   UPDATE_ENCOUNTER: `${prefix}UPDATE_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
@@ -45,6 +47,14 @@ export const updateObs = (formElement, value) => ({
   value
 });
 
+export const saveEncounter = () => ({
+  type: types.SAVE_ENCOUNTER
+});
+
+export const saveEncounterComplete = () => ({
+  type: types.SAVE_ENCOUNTER_COMPLETE
+});
+
 export const updateEncounter = (field, value) => ({
   type: types.UPDATE_ENCOUNTER,
   field,
@@ -66,6 +76,7 @@ export const resetState = () => ({
 });
 
 const initialState = {
+  saved: false,
   validationResults: [],
   enconterDateValidation: []
 };
@@ -88,6 +99,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         encounter: action.encounter
+      };
+    }
+    case types.SAVE_ENCOUNTER_COMPLETE: {
+      return {
+        ...state,
+        saved: true
       };
     }
     case types.UPDATE_ENCOUNTER: {
@@ -113,6 +130,7 @@ export default function(state = initialState, action) {
     case types.RESET_STATE: {
       return {
         ...state,
+        saved: false,
         validationResults: [],
         enconterDateValidation: [],
         encounter: null,

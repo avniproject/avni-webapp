@@ -3,15 +3,24 @@ import { withRouter } from "react-router-dom";
 import moment from "moment";
 import { ObservationsHolder } from "avni-models";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
-import { updateObs, setValidationResults } from "dataEntryApp/reducers/encounterReducer";
+import {
+  updateObs,
+  saveEncounter,
+  setValidationResults
+} from "dataEntryApp/reducers/encounterReducer";
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.encounterReducer.encounterForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,
   observations: state.dataEntry.encounterReducer.encounter.observations,
   obsHolder: new ObservationsHolder(state.dataEntry.encounterReducer.encounter.observations),
+  saved: state.dataEntry.encounterReducer.saved,
+  onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   staticValidationResults: state.dataEntry.encounterReducer.enconterDateValidation,
   validationResults: state.dataEntry.encounterReducer.validationResults,
+  message: state.dataEntry.encounterReducer.encounter.name
+    ? `${state.dataEntry.encounterReducer.encounter.name} Encounter Saved`
+    : `Encounter Saved`,
   additionalRows: [
     {
       label: "Visit Date",
@@ -24,6 +33,7 @@ const mapFormStateToProps = state => ({
 
 const mapFormDispatchToProps = {
   updateObs,
+  onSave: saveEncounter,
   setValidationResults
 };
 
