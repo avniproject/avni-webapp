@@ -4,8 +4,9 @@ import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/
 import moment from "moment/moment";
 import { InternalLink } from "../../../../common/components/utils";
 import { find, isEmpty, isNil } from "lodash";
-
 import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import { selectFormMappingForEncounter } from "../../../sagas/encounterSelector";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -67,7 +68,7 @@ const PlannedEncounter = ({
   subjectUuid,
   enableReadOnly,
   subjectTypeUuid,
-  operationalModules
+  encounterFormMapping
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -86,17 +87,6 @@ const PlannedEncounter = ({
   } else if (encounter.earliestVisitDateTime && new Date() > encounter.earliestVisitDateTime) {
     status = "due";
   }
-
-  const isEncounterFormAvailable = !isEmpty(
-    find(
-      operationalModules.formMappings,
-      fm =>
-        !isNil(encounter.encounterType.uuid) &&
-        (fm.subjectTypeUUID === subjectTypeUuid &&
-          fm.encounterTypeUUID === encounter.encounterType.uuid &&
-          fm.formType === "Encounter")
-    )
-  );
 
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
@@ -131,7 +121,7 @@ const PlannedEncounter = ({
               </Button>
             ) : (
               <div className={classes.visitButton}>
-                {encounter.encounterType.uuid && subjectUuid && isEncounterFormAvailable ? (
+                {encounter.encounterType.uuid && subjectUuid && !isEmpty(encounterFormMapping) ? (
                   <InternalLink
                     to={`/app/subject/encounter?uuid=${
                       encounter.encounterType.uuid
@@ -153,4 +143,8 @@ const PlannedEncounter = ({
   );
 };
 
-export default PlannedEncounter;
+const mapStateToProps = (state, props) => ({
+  encounterFormMapping: selectFormMappingForEncounter(props.encounter.encounterType.uuid)(state)
+});
+
+export default connect(mapStateToProps)(PlannedEncounter);

@@ -12,6 +12,10 @@ import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
 import { find, isEmpty, isNil } from "lodash";
+import {
+  selectCancelProgramEncounterFormMapping,
+  selectFormMappingByEncounterTypeUuid
+} from "../../../sagas/programEncounterSelector";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -87,8 +91,9 @@ const Visit = ({
   enableReadOnly,
   type,
   programUuid,
-  operationalModules,
-  subjectProfile
+  subjectTypeUuid,
+  programEncounterFormMapping,
+  cancelProgramEncounterFormMapping
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -104,29 +109,6 @@ const Visit = ({
     default:
       throw new Error("Invalid type. Must be programEncounter or encounter.");
   }
-
-  const isCancelFormAvailable = !isEmpty(
-    find(
-      operationalModules.formMappings,
-      fm =>
-        !isNil(encounterTypeUuid) &&
-        (fm.encounterTypeUUID === encounterTypeUuid &&
-          fm.programUUID === programUuid &&
-          fm.subjectTypeUUID === subjectProfile.subjectType.uuid &&
-          fm.formType === "ProgramEncounterCancellation")
-    )
-  );
-
-  const isProgramEncounterFormAvailable = !isEmpty(
-    find(
-      operationalModules.formMappings,
-      fm =>
-        !isNil(encounterTypeUuid) &&
-        (fm.encounterTypeUUID === encounterTypeUuid &&
-          fm.subjectTypeUUID === subjectProfile.subjectType.uuid &&
-          fm.formType === "ProgramEncounter")
-    )
-  );
 
   return (
     <Grid key={index} item xs={6} sm={3} className={classes.rightBorder}>
@@ -190,7 +172,7 @@ const Visit = ({
         </List>
         {!enableReadOnly ? (
           <>
-            {encounterDateTime && uuid && enrolUuid && isProgramEncounterFormAvailable ? (
+            {encounterDateTime && uuid && enrolUuid && !isEmpty(programEncounterFormMapping) ? (
               <InternalLink
                 to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
               >
@@ -198,7 +180,10 @@ const Visit = ({
                   {t("edit visit")}
                 </Button>
               </InternalLink>
-            ) : cancelDateTime && uuid && enrolUuid && isCancelFormAvailable ? (
+            ) : cancelDateTime &&
+              uuid &&
+              enrolUuid &&
+              !isEmpty(cancelProgramEncounterFormMapping) ? (
               <InternalLink
                 to={`/app/subject/editCancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
               >
@@ -208,7 +193,7 @@ const Visit = ({
               </InternalLink>
             ) : (
               <div className={classes.visitButton}>
-                {encounterTypeUuid && enrolUuid && isProgramEncounterFormAvailable ? (
+                {encounterTypeUuid && enrolUuid && !isEmpty(programEncounterFormMapping) ? (
                   <InternalLink
                     to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
                   >
@@ -217,7 +202,7 @@ const Visit = ({
                 ) : (
                   ""
                 )}
-                {uuid && enrolUuid && isCancelFormAvailable ? (
+                {uuid && enrolUuid && !isEmpty(cancelProgramEncounterFormMapping) ? (
                   <InternalLink
                     to={`/app/subject/cancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
                   >
@@ -237,9 +222,13 @@ const Visit = ({
   );
 };
 
-const mapStateToProps = state => ({
-  operationalModules: state.dataEntry.metadata.operationalModules,
-  subjectProfile: state.dataEntry.subjectProfile.subjectProfile
+const mapStateToProps = (state, props) => ({
+  programEncounterFormMapping: selectFormMappingByEncounterTypeUuid(props.encounterTypeUuid)(state),
+  cancelProgramEncounterFormMapping: selectCancelProgramEncounterFormMapping(
+    props.encounterTypeUuid,
+    props.programUuid,
+    props.subjectTypeUuid
+  )(state)
 });
 
 export default withRouter(connect(mapStateToProps)(Visit));

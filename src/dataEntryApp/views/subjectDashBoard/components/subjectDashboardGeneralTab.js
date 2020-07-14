@@ -15,6 +15,8 @@ import Button from "@material-ui/core/Button";
 import PlannedEncounter from "dataEntryApp/views/subjectDashBoard/components/PlannedEncounter";
 import CompletedEncounter from "dataEntryApp/views/subjectDashBoard/components/CompletedEncounter";
 import { isEmpty, isNil, filter } from "lodash";
+import { connect } from "react-redux";
+import { selectFormMappingsForSubjectType } from "../../../sagas/encounterSelector";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -68,7 +70,7 @@ const SubjectDashboardGeneralTab = ({
   subjectUuid,
   enableReadOnly,
   subjectTypeUuid,
-  operationalModules
+  encounterFormMappings
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -85,23 +87,11 @@ const SubjectDashboardGeneralTab = ({
     });
   }
 
-  const showNewGeneralVisit = !(
-    isEmpty(plannedVisits) &&
-    isEmpty(
-      filter(
-        operationalModules.formMappings,
-        fm =>
-          isNil(fm.programUUID) &&
-          (fm.subjectTypeUUID === subjectTypeUuid && fm.formType === "Encounter")
-      )
-    )
-  );
-
   return (
     <Fragment>
       <Paper className={classes.root}>
         <Grid container justify="flex-end">
-          {!enableReadOnly && showNewGeneralVisit ? (
+          {!enableReadOnly && !(isEmpty(plannedVisits) && isEmpty(encounterFormMappings)) ? (
             <InternalLink
               to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
               noUnderline
@@ -132,7 +122,6 @@ const SubjectDashboardGeneralTab = ({
                     subjectUuid={subjectUuid}
                     enableReadOnly={enableReadOnly}
                     subjectTypeUuid={subjectTypeUuid}
-                    operationalModules={operationalModules}
                   />
                 ))
               ) : (
@@ -187,4 +176,8 @@ const SubjectDashboardGeneralTab = ({
   );
 };
 
-export default SubjectDashboardGeneralTab;
+const mapStateToProps = (state, props) => ({
+  encounterFormMappings: selectFormMappingsForSubjectType(props.subjectTypeUuid)(state)
+});
+
+export default connect(mapStateToProps)(SubjectDashboardGeneralTab);
