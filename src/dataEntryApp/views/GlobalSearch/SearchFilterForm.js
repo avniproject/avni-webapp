@@ -14,9 +14,12 @@ import FormLabel from "@material-ui/core/FormLabel";
 import { getOperationalModules } from "../../reducers/metadataReducer";
 import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
 import { getSearchFilters } from "../../reducers/searchFilterReducer";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
+import BasicForm from "../GlobalSearch/BasicForm";
+import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
+import NonConceptForm from "../GlobalSearch/NonConceptForm";
+import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -76,6 +79,7 @@ function SearchFilterForm({
   };
 
   const [enterValue, setEnterValue] = useState("");
+  console.log("enter value", enterValue);
 
   const searchFilterValue = event => {
     setEnterValue(event.target.value);
@@ -96,7 +100,7 @@ function SearchFilterForm({
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
         <Typography component={"span"} className={classes.mainHeading}>
-          Search Form
+          Search
         </Typography>
         <LineBreak num={1} />
         <FormControl component="fieldset">
@@ -118,16 +122,66 @@ function SearchFilterForm({
                 ))
               : ""}
           </RadioGroup>
+          {selectedSearchFilter ? (
+            <div>
+              <BasicForm searchFilterForms={selectedSearchFilter} onChange={searchFilterValue} />
+              <NonCodedConceptForm />
+              <NonConceptForm />
+              <CodedConceptForm />
+            </div>
+          ) : (
+            ""
+          )}
+          {/* 
           {selectedSearchFilter &&
             selectedSearchFilter.map(searchFilterForm => (
-              <TextField
-                id={searchFilterForm.titleKey}
-                label={searchFilterForm.titleKey}
-                type={searchFilterForm.type}
-                value={enterValue}
-                onChange={searchFilterValue}
-              />
+              <div>
+                {searchFilterForm.type === "Name" ||
+                searchFilterForm.type === "Age" ||
+                searchFilterForm.type === "SearchAll" ||
+                searchFilterForm.type === "Gender" ||
+                searchFilterForm.type === "Address" ? (
+                  <BasicForm searchFilterForm={searchFilterForm} onChange={searchFilterValue} />
+                ) : (
+                  ""
+                )}
+              </div>
             ))}
+          {selectedSearchFilter &&
+            selectedSearchFilter.map(searchFilterForm => (
+              <div>
+                {searchFilterForm.type === "Concept" &&
+                !searchFilterForm.conceptDataType === "Coded" ? (
+                  <NonCodedConceptForm />
+                ) : (
+                  ""
+                )}
+              </div>
+            ))}
+          {selectedSearchFilter &&
+            selectedSearchFilter.map(searchFilterForm => (
+              <div>
+                {searchFilterForm.type === "RegistrationDate" ||
+                searchFilterForm.type === "EnrolmentDate" ||
+                searchFilterForm.type === "ProgramEncounterDate" ||
+                searchFilterForm.type === "EncounterDate" ? (
+                  <NonConceptForm />
+                ) : (
+                  ""
+                )}
+              </div>
+            ))}
+          {selectedSearchFilter &&
+            selectedSearchFilter.map(searchFilterForm => (
+              <div>
+                {searchFilterForm.type === "Concept" &&
+                searchFilterForm.conceptDataType === "Coded" ? (
+                  <CodedConceptForm />
+                ) : (
+                  ""
+                )}
+              </div>
+            ))} */}
           <div className={classes.buttons}>
             <Button
               variant="contained"
