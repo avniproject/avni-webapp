@@ -12,7 +12,9 @@ export const types = {
   UPDATE_ENCOUNTER: `${prefix}UPDATE_ENCOUNTER`,
   SET_VALIDATION_RESULTS: `${prefix}SET_VALIDATION_RESULTS`,
   SET_ENCOUNTER_DATE_VALIDATION: `${prefix}SET_ENCOUNTER_DATE_VALIDATION`,
-  RESET_STATE: `${prefix}RESET_STATE`
+  RESET_STATE: `${prefix}RESET_STATE`,
+  CREATE_ENCOUNTER: `${prefix}CREATE_ENCOUNTER`,
+  CREATE_ENCOUNTER_FOR_SCHEDULED: `${prefix}CREATE_ENCOUNTER_FOR_SCHEDULED`
 };
 
 export const setEncounterFormMappings = encounterFormMappings => ({
@@ -25,10 +27,10 @@ export const onLoad = subjectUuid => ({
   subjectUuid
 });
 
-export const getEncounterForm = (encounterTypeUuid, subjectUuid) => ({
+export const getEncounterForm = (encounterTypeUuid, subjectTypeUuid) => ({
   type: types.GET_ENCOUNTER_FORM,
   encounterTypeUuid,
-  subjectUuid
+  subjectTypeUuid
 });
 
 export const setEncounterForm = encounterForm => ({
@@ -73,6 +75,17 @@ export const setEncounterDateValidation = enconterDateValidation => ({
 
 export const resetState = () => ({
   type: types.RESET_STATE
+});
+
+export const createEncounter = (encounterTypeUuid, subjectUuid) => ({
+  type: types.CREATE_ENCOUNTER,
+  encounterTypeUuid,
+  subjectUuid
+});
+
+export const createEncounterForScheduled = encounterUuid => ({
+  type: types.CREATE_ENCOUNTER_FOR_SCHEDULED,
+  encounterUuid
 });
 
 const initialState = {

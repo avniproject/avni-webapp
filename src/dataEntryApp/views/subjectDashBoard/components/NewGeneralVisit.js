@@ -46,6 +46,7 @@ const NewGeneralVisit = ({ match, ...props }) => {
         encounter.earliestVisitDateTime = pe.earliestVisitDateTime;
         encounter.maxVisitDateTime = pe.maxVisitDateTime;
         encounter.name = pe.name;
+        encounter.uuid = pe.uuid;
         scheduledEncounters.push(encounter);
       });
 

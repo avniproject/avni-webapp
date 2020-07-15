@@ -9,10 +9,12 @@ export const selectFormMappingsForSubjectType = subjectTypeUuid => state => {
   );
 };
 
-export const selectFormMappingForEncounter = encounterTypeUuid => state =>
+export const selectFormMappingForEncounter = (encounterTypeUuid, subjectTypeUuid) => state =>
   find(
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
     fm =>
       !isNil(encounterTypeUuid) &&
-      (fm.encounterTypeUUID === encounterTypeUuid && fm.formType === "Encounter")
+      (fm.subjectTypeUUID === subjectTypeUuid &&
+        fm.encounterTypeUUID === encounterTypeUuid &&
+        fm.formType === "Encounter")
   );

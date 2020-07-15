@@ -14,7 +14,9 @@ import {
   onLoad,
   updateEncounter,
   setEncounterDateValidation,
-  resetState
+  resetState,
+  createEncounter,
+  createEncounterForScheduled
 } from "../../../reducers/encounterReducer";
 import EncounterForm from "./EncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -31,16 +33,18 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
+  const encounterUuid = match.queryParams.encounterUuid;
   const subjectUuid = match.queryParams.subjectUuid;
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.resetState();
-    (async function fetchData() {
+    if (encounterUuid) {
+      props.createEncounterForScheduled(encounterUuid);
+    } else {
       //uuid - encounterTypeUuid
-      await props.onLoad(subjectUuid);
-      props.getEncounterForm(uuid, subjectUuid);
-    })();
+      props.createEncounter(uuid, subjectUuid);
+    }
   }, []);
 
   const validationResultForEncounterDate =
@@ -120,7 +124,9 @@ const mapDispatchToProps = {
   onLoad,
   updateEncounter,
   setEncounterDateValidation,
-  resetState
+  resetState,
+  createEncounter,
+  createEncounterForScheduled
 };
 
 export default withRouter(

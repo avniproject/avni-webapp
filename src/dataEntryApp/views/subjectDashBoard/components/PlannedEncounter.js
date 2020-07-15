@@ -121,12 +121,8 @@ const PlannedEncounter = ({
               </Button>
             ) : (
               <div className={classes.visitButton}>
-                {encounter.encounterType.uuid && subjectUuid && !isEmpty(encounterFormMapping) ? (
-                  <InternalLink
-                    to={`/app/subject/encounter?uuid=${
-                      encounter.encounterType.uuid
-                    }&subjectUuid=${subjectUuid}`}
-                  >
+                {encounter.uuid && !isEmpty(encounterFormMapping) ? (
+                  <InternalLink to={`/app/subject/encounter?encounterUuid=${encounter.uuid}`}>
                     <Button color="primary">{t("do visit")}</Button>
                   </InternalLink>
                 ) : (
@@ -144,7 +140,10 @@ const PlannedEncounter = ({
 };
 
 const mapStateToProps = (state, props) => ({
-  encounterFormMapping: selectFormMappingForEncounter(props.encounter.encounterType.uuid)(state)
+  encounterFormMapping: selectFormMappingForEncounter(
+    props.encounter.encounterType.uuid,
+    props.subjectTypeUuid
+  )(state)
 });
 
 export default connect(mapStateToProps)(PlannedEncounter);
