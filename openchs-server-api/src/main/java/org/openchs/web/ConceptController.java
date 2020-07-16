@@ -26,9 +26,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 @RestController
 public class ConceptController implements RestControllerResourceProcessor<Concept> {
@@ -59,6 +61,19 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     @ResponseBody
     public ConceptProjection getOneForWeb(@PathVariable String uuid) {
         return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
+    }
+
+    @GetMapping(value = "/web/concept1")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
+    @ResponseBody
+    public List<ConceptProjection> getconcept(@PathVariable String uuid) {
+
+        List<String> uuid1 = new ArrayList<>();
+        uuid1.add("483be0b2-b6ba-40e0-8bf7-91cb33c6e284");
+        uuid1.add("fd630fa3-7122-40b5-9a4c-12bfe7a314e0");
+       // conceptService.getConcept(uuid1).map(t -> projectionFactory.createProjection(ConceptProjection.class,t));
+        List<ConceptProjection> projection = conceptService.getConcept(uuid1).stream().map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept)) .collect(Collectors.toList());
+       return projection;
     }
 
     @GetMapping(value = "/web/concept")

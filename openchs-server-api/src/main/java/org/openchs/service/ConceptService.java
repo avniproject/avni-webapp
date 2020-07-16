@@ -200,6 +200,10 @@ public class ConceptService {
         return conceptRepository.findByUuid(uuid);
     }
 
+    public List<Concept> getConcept(List<String> uuid) {
+        return conceptRepository.getAllConceptByUuidIn(uuid);
+    }
+
     public ConceptAnswer getAnswer(String conceptUUID, String conceptAnswerUUID) {
         Concept concept = this.get(conceptUUID);
         Concept answerConcept = this.get(conceptAnswerUUID);
