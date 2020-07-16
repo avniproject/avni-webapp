@@ -1,5 +1,5 @@
 import { all, call, fork, put, select, takeLatest, takeEvery } from "redux-saga/effects";
-import { find, get, isNil, remove } from "lodash";
+import { find } from "lodash";
 import {
   types,
   setEncounterFormMappings,
@@ -15,16 +15,11 @@ import {
   selectFormMappingForEncounter
 } from "./encounterSelector";
 import { mapForm } from "../../common/adapters";
-import {
-  Encounter,
-  Individual,
-  ModelGeneral as General,
-  ObservationsHolder,
-  Concept
-} from "avni-models";
+import { Encounter, Individual, ModelGeneral as General } from "avni-models";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { mapProfile, mapEncounter } from "../../common/subjectModelMapper";
+import formElementService from "../services/FormElementService";
 
 export default function*() {
   yield all(
@@ -71,7 +66,7 @@ export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   const state = yield select();
   const individual = new Individual();
   individual.uuid = subjectProfileJson.uuid;
-  individual.registrationDate = subjectProfileJson.registrationDate;
+  individual.registrationDate = new Date(subjectProfileJson.registrationDate);
 
   /*create new encounter obj */
   const encounter = new Encounter();
@@ -101,7 +96,7 @@ export function* createEncounterForScheduledWorker({ encounterUuid }) {
 
   const individual = new Individual();
   individual.uuid = subjectProfileJson.uuid;
-  individual.registrationDate = subjectProfileJson.registrationDate;
+  individual.registrationDate = new Date(subjectProfileJson.registrationDate);
 
   const encounter = mapEncounter(encounterJson);
   encounter.encounterDateTime = new Date();
@@ -121,66 +116,23 @@ export function* updateEncounterObsWorker({ formElement, value }) {
   const state = yield select();
   const encounter = state.dataEntry.encounterReducer.encounter;
   const validationResults = state.dataEntry.encounterReducer.validationResults;
-  encounter.observations = updateObservations(encounter.observations, formElement, value);
+  encounter.observations = formElementService.updateObservations(
+    encounter.observations,
+    formElement,
+    value
+  );
 
   yield put(setEncounter(encounter));
   yield put(
-    setValidationResults(validate(formElement, value, encounter.observations, validationResults))
+    setValidationResults(
+      formElementService.validate(formElement, value, encounter.observations, validationResults)
+    )
   );
-}
-
-function updateObservations(observations, formElement, value) {
-  const observationHolder = new ObservationsHolder(observations);
-  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-    const answer = observationHolder.toggleMultiSelectAnswer(formElement.concept, value);
-  } else if (
-    formElement.concept.datatype === Concept.dataType.Coded &&
-    formElement.isSingleSelect()
-  ) {
-    observationHolder.toggleSingleSelectAnswer(formElement.concept, value);
-  } else if (
-    formElement.concept.datatype === Concept.dataType.Duration &&
-    !isNil(formElement.durationOptions)
-  ) {
-    observationHolder.updateCompositeDurationValue(formElement.concept, value);
-  } else if (
-    formElement.concept.datatype === Concept.dataType.Date &&
-    !isNil(formElement.durationOptions)
-  ) {
-    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
-  } else {
-    observationHolder.addOrUpdatePrimitiveObs(formElement.concept, value);
-  }
-  return observationHolder.observations;
-}
-
-function validate(formElement, value, observations, validationResults) {
-  let isNullForMultiselect = false;
-  if (formElement.concept.datatype === Concept.dataType.Coded && formElement.isMultiSelect()) {
-    const observationHolder = new ObservationsHolder(observations);
-    const answers =
-      observationHolder.findObservation(formElement.concept) &&
-      observationHolder.findObservation(formElement.concept).getValue();
-
-    isNullForMultiselect = isNil(answers);
-  }
-
-  const validationResult = formElement.validate(isNullForMultiselect ? null : value);
-
-  remove(
-    validationResults,
-    existingValidationResult =>
-      existingValidationResult.formIdentifier === validationResult.formIdentifier
-  );
-
-  validationResults.push(validationResult);
-  return validationResults;
 }
 
 export function* saveEncounterWatcher() {
   yield takeLatest(types.SAVE_ENCOUNTER, saveEncounterWorker);
 }
-
 export function* saveEncounterWorker() {
   const state = yield select();
   const encounter = state.dataEntry.encounterReducer.encounter;

@@ -342,6 +342,7 @@
     "noRelativesAdded": "कोई रिश्तेदार नहीं जोड़ा गया",
     "viewAllCompletedVisits": "सभी पूर्ण देखे गए दृश्य",
     "registrationDetails": "पंजीकरण विवरण",
-    "filterResults": "फिल्टर परिणाम"
+    "filterResults": "फिल्टर परिणाम",
+    "invalidDateFormat": "वैध तिथि नहीं है"
   }
 }
