@@ -119,8 +119,9 @@ function SearchFilterForm({
             defaultValue={selectedSubjectType}
           >
             {operationalModules.subjectTypes
-              ? operationalModules.subjectTypes.map(subjectType => (
+              ? operationalModules.subjectTypes.map((subjectType, index) => (
                   <FormControlLabel
+                    key={index}
                     value={subjectType.uuid}
                     control={<Radio color="primary" />}
                     label={subjectType.name}
@@ -148,6 +149,7 @@ function SearchFilterForm({
               <CodedConceptForm
                 searchFilterForms={selectedSearchFilter}
                 onChange={searchFilterValue}
+                genders={genders}
               />
             </div>
           ) : (

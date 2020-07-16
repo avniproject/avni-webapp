@@ -40,16 +40,17 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
 
   console.log(location);
   return searchFilterForms ? (
-    <Fragment className={classes.root}>
+    <Fragment key={searchFilterForms.uuid}>
       <Grid container spacing={3}>
-        {searchFilterForms.map(searchFilterForm =>
+        {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Name" ? (
-            <Grid item xs={3}>
+            <Grid item xs={3} key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
               <TextField
                 id={searchFilterForm.titleKey}
+                key={index}
                 autoComplete="off"
                 type="text"
                 style={{ width: "100%" }}
@@ -61,14 +62,15 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
           )
         )}
 
-        {searchFilterForms.map(searchFilterForm =>
+        {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Age" ? (
-            <Grid item xs={3}>
+            <Grid item xs={3} key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
               <TextField
                 id={searchFilterForm.titleKey}
+                key={index}
                 autoComplete="off"
                 type="number"
                 style={{ width: "100%" }}
@@ -80,14 +82,15 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
           )
         )}
 
-        {searchFilterForms.map(searchFilterForm =>
+        {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "SearchAll" ? (
-            <Grid item xs={3}>
+            <Grid item xs={3} key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
               <TextField
                 id={searchFilterForm.titleKey}
+                key={index}
                 autoComplete="off"
                 type="text"
                 style={{ width: "100%" }}
@@ -100,17 +103,18 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
         )}
       </Grid>
       <Grid container spacing={3}>
-        {searchFilterForms.map(searchFilterForm =>
+        {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Gender" ? (
-            <Grid item xs={12}>
+            <Grid item xs={12} key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
               <FormGroup row>
-                {genders.map(gender => (
+                {genders.map((gender, index) => (
                   <FormControlLabel
                     control={<Checkbox onChange={onChange} name="male" color="primary" />}
                     label={gender.name}
+                    key={index}
                   />
                 ))}
               </FormGroup>
@@ -122,9 +126,9 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
       </Grid>
 
       <Grid container spacing={3}>
-        {searchFilterForms.map(searchFilterForm =>
+        {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Address" ? (
-            <Grid item xs={12}>
+            <Grid item xs={12} key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
@@ -137,8 +141,9 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
                   defaultValue={selectedAddressLevelType}
                 >
                   {operationalModules.addressLevelTypes
-                    ? operationalModules.addressLevelTypes.map(addressLevelType => (
+                    ? operationalModules.addressLevelTypes.map((addressLevelType, index) => (
                         <FormControlLabel
+                          key={index}
                           value={addressLevelType.name}
                           control={<Radio color="primary" />}
                           label={addressLevelType.name}
@@ -164,7 +169,7 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
                     {option.title}
                   </React.Fragment>
                 )}
-                style={{ width: 500 }}
+                style={{ width: "30%" }}
                 renderInput={params => (
                   <TextField
                     {...params}
