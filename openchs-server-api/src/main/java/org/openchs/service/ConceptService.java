@@ -1,5 +1,6 @@
 package org.openchs.service;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.openchs.application.FormElement;
 import org.openchs.dao.ConceptAnswerRepository;
@@ -204,22 +205,7 @@ public class ConceptService {
         return conceptRepository.findByUuid(uuid);
     }
 
-    public List<Concept> getConcept(Long organisationId) {
-        OrganisationConfigRepository repo = this.organisationConfigRepository;
 
-        JsonObject jsonObject = repo.findByOrganisationId(organisationId).getSettings();
-
-        List<String> conceptUuid = new ArrayList<>();
-
-        for(Object obj: jsonObject.keySet()) {
-            String keyStr = (String) obj;
-            Object keyvalue = jsonObject.get(keyStr);
-            System.out.println("key: "+ keyStr + " value: " + keyvalue);
-
-        }
-
-        return conceptRepository.getAllConceptByUuidIn(conceptUuid);
-    }
 
     public ConceptAnswer getAnswer(String conceptUUID, String conceptAnswerUUID) {
         Concept concept = this.get(conceptUUID);

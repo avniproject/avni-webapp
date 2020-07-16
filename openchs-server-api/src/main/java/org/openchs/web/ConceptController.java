@@ -67,17 +67,6 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
         return projectionFactory.createProjection(ConceptProjection.class, conceptService.get(uuid));
     }
 
-    @GetMapping(value = "/web/concept1")
-    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
-    @ResponseBody
-    public List<ConceptProjection> getconcept() {
-        Long organisation = UserContextHolder.getUserContext().getOrganisation().getId();
-        //List<String> uuid1 = new ArrayList<>();
-       // uuid1.add("483be0b2-b6ba-40e0-8bf7-91cb33c6e284");
-        //uuid1.add("ab9596e4-04b6-48f2-9f4d-1c7a2c82dbf8");
-        return conceptService.getConcept(organisation).stream().map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept)) .collect(Collectors.toList());
-    }
-
     @GetMapping(value = "/web/concept")
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
     @ResponseBody
