@@ -1,4 +1,9 @@
-import { setGenders, setOperationalModules, types } from "../reducers/metadataReducer";
+import {
+  setGenders,
+  setOperationalModules,
+  setAllLocations,
+  types
+} from "../reducers/metadataReducer";
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import api from "../api";
 import { isEmpty } from "lodash/core";
@@ -34,6 +39,17 @@ export function* getGendersWorker() {
   yield put(setGenders(genders.content.map(mapGender)));
 }
 
+export function* getAllLocationWatcher() {
+  yield takeLatest(types.GET_ALLLOCATION, getAllLocationsWorker);
+}
+
+export function* getAllLocationsWorker() {
+  const allLocations = yield call(api.fetchAllLocation);
+  yield put(setAllLocations(allLocations));
+}
+
 export default function* referenceDataSaga() {
-  yield all([dataEntryLoadOperationalModulesWatcher, getGendersWatcher].map(fork));
+  yield all(
+    [dataEntryLoadOperationalModulesWatcher, getGendersWatcher, getAllLocationWatcher].map(fork)
+  );
 }

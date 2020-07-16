@@ -11,7 +11,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
-import { getOperationalModules } from "../../reducers/metadataReducer";
+import { getOperationalModules, getAllLocations, getGenders } from "../../reducers/metadataReducer";
 import { getOrgConfigInfo } from "i18nTranslations/TranslationReducers";
 import { getSearchFilters } from "../../reducers/searchFilterReducer";
 import Button from "@material-ui/core/Button";
@@ -44,7 +44,11 @@ function SearchFilterForm({
   getOrgConfigInfo,
   orgConfig,
   getSearchFilters,
-  searchResults
+  searchResults,
+  getAllLocations,
+  allLocations,
+  getGenders,
+  genders
 }) {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -52,6 +56,8 @@ function SearchFilterForm({
   useEffect(() => {
     getOperationalModules();
     getOrgConfigInfo();
+    getAllLocations();
+    getGenders();
   }, []);
 
   const [selectedSubjectType, setSelectedSubjectType] = useState(
@@ -95,7 +101,7 @@ function SearchFilterForm({
 
   console.log("orgnization search filter", selectedSearchFilter);
 
-  return operationalModules && orgConfig ? (
+  return operationalModules && orgConfig && genders && allLocations ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
@@ -124,64 +130,29 @@ function SearchFilterForm({
           </RadioGroup>
           {selectedSearchFilter ? (
             <div>
-              <BasicForm searchFilterForms={selectedSearchFilter} onChange={searchFilterValue} />
-              <NonCodedConceptForm />
-              <NonConceptForm />
-              <CodedConceptForm />
+              <BasicForm
+                searchFilterForms={selectedSearchFilter}
+                onChange={searchFilterValue}
+                operationalModules={operationalModules}
+                genders={genders}
+                allLocation={allLocations}
+              />
+              <NonCodedConceptForm
+                searchFilterForms={selectedSearchFilter}
+                onChange={searchFilterValue}
+              />
+              <NonConceptForm
+                searchFilterForms={selectedSearchFilter}
+                onChange={searchFilterValue}
+              />
+              <CodedConceptForm
+                searchFilterForms={selectedSearchFilter}
+                onChange={searchFilterValue}
+              />
             </div>
           ) : (
             ""
           )}
-          {/* 
-          {selectedSearchFilter &&
-            selectedSearchFilter.map(searchFilterForm => (
-              <div>
-                {searchFilterForm.type === "Name" ||
-                searchFilterForm.type === "Age" ||
-                searchFilterForm.type === "SearchAll" ||
-                searchFilterForm.type === "Gender" ||
-                searchFilterForm.type === "Address" ? (
-                  <BasicForm searchFilterForm={searchFilterForm} onChange={searchFilterValue} />
-                ) : (
-                  ""
-                )}
-              </div>
-            ))}
-          {selectedSearchFilter &&
-            selectedSearchFilter.map(searchFilterForm => (
-              <div>
-                {searchFilterForm.type === "Concept" &&
-                !searchFilterForm.conceptDataType === "Coded" ? (
-                  <NonCodedConceptForm />
-                ) : (
-                  ""
-                )}
-              </div>
-            ))}
-          {selectedSearchFilter &&
-            selectedSearchFilter.map(searchFilterForm => (
-              <div>
-                {searchFilterForm.type === "RegistrationDate" ||
-                searchFilterForm.type === "EnrolmentDate" ||
-                searchFilterForm.type === "ProgramEncounterDate" ||
-                searchFilterForm.type === "EncounterDate" ? (
-                  <NonConceptForm />
-                ) : (
-                  ""
-                )}
-              </div>
-            ))}
-          {selectedSearchFilter &&
-            selectedSearchFilter.map(searchFilterForm => (
-              <div>
-                {searchFilterForm.type === "Concept" &&
-                searchFilterForm.conceptDataType === "Coded" ? (
-                  <CodedConceptForm />
-                ) : (
-                  ""
-                )}
-              </div>
-            ))} */}
           <div className={classes.buttons}>
             <Button
               variant="contained"
@@ -208,15 +179,18 @@ const mapStateToProps = state => {
   return {
     operationalModules: state.dataEntry.metadata.operationalModules,
     orgConfig: state.translationsReducer.orgConfig,
-    searchResults: state.dataEntry.searchFilterReducer.searchFilters
-    // load: state.dataEntry.loadReducer.load
+    searchResults: state.dataEntry.searchFilterReducer.searchFilters,
+    allLocations: state.dataEntry.metadata.allLocations,
+    genders: state.dataEntry.metadata.genders
   };
 };
 
 const mapDispatchToProps = {
   getOperationalModules,
   getOrgConfigInfo,
-  getSearchFilters
+  getSearchFilters,
+  getAllLocations,
+  getGenders
 };
 
 export default withRouter(

@@ -4,7 +4,9 @@ export const types = {
   SET_OPERATIONAL_MODULES: `${prefix}SET_OPERATIONAL_MODULES`,
   GET_OPERATIONAL_MODULES: `${prefix}GET_OPERATIONAL_MODULES`,
   GET_GENDERS: `${prefix}GET_GENDERS`,
-  SET_GENDERS: `${prefix}SET_GENDERS`
+  SET_GENDERS: `${prefix}SET_GENDERS`,
+  GET_ALLLOCATION: `${prefix}GET_ALLLOCATION`,
+  SET_ALLLOCATION: `${prefix}SET_ALLLOCATION`
 };
 
 export const setOperationalModules = operationalModules => ({
@@ -24,6 +26,15 @@ export const setGenders = genders => ({
   type: types.SET_GENDERS,
   genders
 });
+export const getAllLocations = allLocations => ({
+  type: types.GET_ALLLOCATION,
+  allLocations
+});
+
+export const setAllLocations = allLocations => ({
+  type: types.SET_ALLLOCATION,
+  allLocations
+});
 
 const initialState = {};
 
@@ -40,6 +51,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         genders: action.genders
+      };
+    }
+    case types.SET_ALLLOCATION: {
+      return {
+        ...state,
+        allLocations: action.allLocations
       };
     }
     default:
