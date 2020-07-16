@@ -2,8 +2,12 @@ package org.openchs.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.OrganisationConfigRepository;
 import org.openchs.domain.Concept;
 import org.openchs.domain.ConceptDataType;
+import org.openchs.domain.Organisation;
+import org.openchs.domain.OrganisationConfig;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.projection.CodedConceptProjection;
 import org.openchs.projection.ConceptProjection;
 import org.openchs.service.ConceptService;
@@ -66,14 +70,12 @@ public class ConceptController implements RestControllerResourceProcessor<Concep
     @GetMapping(value = "/web/concept1")
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
     @ResponseBody
-    public List<ConceptProjection> getconcept(@PathVariable String uuid) {
-
-        List<String> uuid1 = new ArrayList<>();
-        uuid1.add("483be0b2-b6ba-40e0-8bf7-91cb33c6e284");
-        uuid1.add("fd630fa3-7122-40b5-9a4c-12bfe7a314e0");
-       // conceptService.getConcept(uuid1).map(t -> projectionFactory.createProjection(ConceptProjection.class,t));
-        List<ConceptProjection> projection = conceptService.getConcept(uuid1).stream().map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept)) .collect(Collectors.toList());
-       return projection;
+    public List<ConceptProjection> getconcept() {
+        Long organisation = UserContextHolder.getUserContext().getOrganisation().getId();
+        //List<String> uuid1 = new ArrayList<>();
+       // uuid1.add("483be0b2-b6ba-40e0-8bf7-91cb33c6e284");
+        //uuid1.add("ab9596e4-04b6-48f2-9f4d-1c7a2c82dbf8");
+        return conceptService.getConcept(organisation).stream().map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept)) .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/web/concept")
