@@ -29,23 +29,20 @@ public class OrganisationConfigSearchController {
         this.addressLevelService=addressLevelService;
     }
 
-
-
-    @GetMapping(value = "/web/organisationSearchConfig")
+    @GetMapping(value = "/web/organisationConfig")
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin', 'admin')")
     @ResponseBody
     public ResponseEntity<LinkedHashMap<String, Object>> getOrganisationSearchConfig()  {
         Long organisationId = UserContextHolder.getUserContext().getOrganisation().getId();
         try{
             return new ResponseEntity<>( organisationConfigService.getOrganisationSettings(organisationId), HttpStatus.OK);
-
         }catch (Exception e){
             logger.error(e.getMessage());
         }
         return ResponseEntity.status(500).build();
     }
 
-    @GetMapping(value = "/web/locationsForSearch")
+    @GetMapping(value = "/web/locations")
     @PreAuthorize(value = "hasAnyAuthority('user','admin','organisation_admin')")
     @ResponseBody
     public ResponseEntity<List<AddressLevelContract>> getAll() {
