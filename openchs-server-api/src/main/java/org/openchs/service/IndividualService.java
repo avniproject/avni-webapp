@@ -218,6 +218,8 @@ public class IndividualService {
         if (individualRelationship.getExitObservations() != null) {
             relationshipContract.setExitObservations(observationService.constructObservations(individualRelationship.getExitObservations()));
         }
+        if(null!=individualRelationship && null!=individualRelationship.getId())
+            individualRelationshipTypeContract.setId(individualRelationship.getRelationship().getId());
         return relationshipContract;
     }
 }
