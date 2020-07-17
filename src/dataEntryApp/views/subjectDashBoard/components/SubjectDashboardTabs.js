@@ -66,14 +66,7 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export default ({
-  profile,
-  general,
-  program,
-  handleUpdateComponent,
-  enableReadOnly,
-  operationalModules
-}) => {
+export default ({ profile, general, program, handleUpdateComponent, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -114,6 +107,7 @@ export default ({
             program={program}
             handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
+            subjectTypeUuid={profile.subjectType.uuid}
           />
         </Paper>
       </TabContent>
@@ -129,7 +123,6 @@ export default ({
             general={general}
             enableReadOnly={enableReadOnly}
             subjectTypeUuid={profile.subjectType.uuid}
-            operationalModules={operationalModules}
           />
         </Paper>
       </TabContent>

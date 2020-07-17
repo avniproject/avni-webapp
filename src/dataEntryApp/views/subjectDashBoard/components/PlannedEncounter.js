@@ -1,12 +1,12 @@
 import React from "react";
-import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import { Paper } from "@material-ui/core";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import moment from "moment/moment";
+import { InternalLink } from "../../../../common/components/utils";
+import { find, isEmpty, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import { selectFormMappingForEncounter } from "../../../sagas/encounterSelector";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,7 +62,14 @@ const truncate = input => {
   else return input;
 };
 
-const PlannedEncounter = ({ index, encounter }) => {
+const PlannedEncounter = ({
+  index,
+  encounter,
+  subjectUuid,
+  enableReadOnly,
+  subjectTypeUuid,
+  encounterFormMapping
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -106,9 +113,37 @@ const PlannedEncounter = ({ index, encounter }) => {
             </ListItem>
           )}
         </List>
+        {!enableReadOnly ? (
+          <>
+            {encounter.cancelDateTime ? (
+              <Button color="primary" className={classes.visitButton}>
+                {t("edit visit")}
+              </Button>
+            ) : (
+              <div className={classes.visitButton}>
+                {encounter.uuid && !isEmpty(encounterFormMapping) ? (
+                  <InternalLink to={`/app/subject/encounter?encounterUuid=${encounter.uuid}`}>
+                    <Button color="primary">{t("do visit")}</Button>
+                  </InternalLink>
+                ) : (
+                  ""
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          ""
+        )}
       </Paper>
     </Grid>
   );
 };
 
-export default PlannedEncounter;
+const mapStateToProps = (state, props) => ({
+  encounterFormMapping: selectFormMappingForEncounter(
+    props.encounter.encounterType.uuid,
+    props.subjectTypeUuid
+  )(state)
+});
+
+export default connect(mapStateToProps)(PlannedEncounter);

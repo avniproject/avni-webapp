@@ -74,7 +74,7 @@ const NewProgramVisit = ({ match, ...props }) => {
           {t("newProgramVisit")}
         </Typography>
         <LineBreak num={1} />
-        <NewVisitMenuView sections={sections} enrolmentUuid={enrolmentUuid} />
+        <NewVisitMenuView sections={sections} uuid={enrolmentUuid} />
       </Paper>
     </Fragment>
   );

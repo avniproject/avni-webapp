@@ -30,8 +30,7 @@ const SubjectDashboard = ({
   getSubjectProgram,
   subjectProgram,
   enableReadOnly,
-  load,
-  operationalModules
+  load
 }) => {
   const classes = useStyles();
   let paperInfo;
@@ -58,7 +57,6 @@ const SubjectDashboard = ({
           program={subjectProgram}
           handleUpdateComponent={handleUpdateComponent}
           enableReadOnly={enableReadOnly}
-          operationalModules={operationalModules}
         />
       </Paper>
     );
@@ -84,8 +82,7 @@ const mapStateToProps = state => ({
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   subjectProgram: state.dataEntry.subjectProgram.subjectProgram,
   enableReadOnly: selectEnableReadonly(state),
-  load: state.dataEntry.loadReducer.load,
-  operationalModules: state.dataEntry.metadata.operationalModules
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {

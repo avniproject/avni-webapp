@@ -109,7 +109,8 @@ export function* programEncounterFetchFormWorker({ encounterTypeUuid, enrolmentU
     planVisit.programEnrolment = programEnrolment;
     planVisit.observations = [];
     yield put.resolve(setProgramEncounter(planVisit));
-  } else if (unplanEncounter) {
+  }
+  if (unplanEncounter) {
     const unplanVisit = new ProgramEncounter();
     const encounterType = new EncounterType();
     const programEnrolment = new ProgramEnrolment();

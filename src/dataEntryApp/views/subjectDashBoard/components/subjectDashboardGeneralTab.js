@@ -15,6 +15,8 @@ import Button from "@material-ui/core/Button";
 import PlannedEncounter from "dataEntryApp/views/subjectDashBoard/components/PlannedEncounter";
 import CompletedEncounter from "dataEntryApp/views/subjectDashBoard/components/CompletedEncounter";
 import { isEmpty, isNil, filter } from "lodash";
+import { connect } from "react-redux";
+import { selectFormMappingsForSubjectType } from "../../../sagas/encounterSelector";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -68,23 +70,12 @@ const SubjectDashboardGeneralTab = ({
   subjectUuid,
   enableReadOnly,
   subjectTypeUuid,
-  operationalModules
+  encounterFormMappings
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   let plannedVisits = [];
   let completedVisits = [];
-  const showNewGeneralVisit = !(
-    isEmpty(general) &&
-    isEmpty(
-      filter(
-        operationalModules.formMappings,
-        fm =>
-          isNil(fm.programUUID) &&
-          (fm.subjectTypeUUID === subjectTypeUuid && fm.formType === "Encounter")
-      )
-    )
-  );
 
   if (general) {
     general.forEach(function(row, index) {
@@ -100,7 +91,7 @@ const SubjectDashboardGeneralTab = ({
     <Fragment>
       <Paper className={classes.root}>
         <Grid container justify="flex-end">
-          {!enableReadOnly && showNewGeneralVisit ? (
+          {!enableReadOnly && !(isEmpty(plannedVisits) && isEmpty(encounterFormMappings)) ? (
             <InternalLink
               to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
               noUnderline
@@ -125,7 +116,13 @@ const SubjectDashboardGeneralTab = ({
             <Grid container spacing={2}>
               {general && plannedVisits.length !== 0 ? (
                 plannedVisits.map((row, index) => (
-                  <PlannedEncounter index={index} encounter={row} />
+                  <PlannedEncounter
+                    index={index}
+                    encounter={row}
+                    subjectUuid={subjectUuid}
+                    enableReadOnly={enableReadOnly}
+                    subjectTypeUuid={subjectTypeUuid}
+                  />
                 ))
               ) : (
                 <Typography variant="caption" gutterBottom className={classes.infomsg}>
@@ -150,7 +147,11 @@ const SubjectDashboardGeneralTab = ({
             <Grid container spacing={2}>
               {general && completedVisits.length !== 0 ? (
                 completedVisits.map((row, index) => (
-                  <CompletedEncounter index={index} encounter={row} />
+                  <CompletedEncounter
+                    index={index}
+                    encounter={row}
+                    enableReadOnly={enableReadOnly}
+                  />
                 ))
               ) : (
                 <Typography variant="caption" gutterBottom className={classes.infomsg}>
@@ -175,4 +176,8 @@ const SubjectDashboardGeneralTab = ({
   );
 };
 
-export default SubjectDashboardGeneralTab;
+const mapStateToProps = (state, props) => ({
+  encounterFormMappings: selectFormMappingsForSubjectType(props.subjectTypeUuid)(state)
+});
+
+export default connect(mapStateToProps)(SubjectDashboardGeneralTab);
