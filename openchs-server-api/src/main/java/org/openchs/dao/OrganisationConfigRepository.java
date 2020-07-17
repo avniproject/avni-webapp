@@ -22,5 +22,5 @@ public interface OrganisationConfigRepository extends ReferenceDataRepository<Or
 
     OrganisationConfig findByOrganisationId(Long organisationId);
 
-    List<Concept> getAllConceptByUuidIn(List<String> uuid);
+
 }

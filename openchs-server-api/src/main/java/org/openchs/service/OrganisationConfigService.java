@@ -3,6 +3,7 @@ package org.openchs.service;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.openchs.dao.ConceptRepository;
 import org.openchs.dao.OrganisationConfigRepository;
 import org.openchs.domain.JsonObject;
 import org.openchs.domain.Organisation;
@@ -22,12 +23,14 @@ public class OrganisationConfigService {
 
     private final OrganisationConfigRepository organisationConfigRepository;
     private final ProjectionFactory projectionFactory;
+    private final ConceptRepository conceptRepository;
 
     @Autowired
-    public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository, ProjectionFactory projectionFactory) {
+    public OrganisationConfigService(OrganisationConfigRepository organisationConfigRepository, ProjectionFactory projectionFactory,ConceptRepository conceptRepository) {
 
         this.organisationConfigRepository = organisationConfigRepository;
         this.projectionFactory = projectionFactory;
+        this.conceptRepository=conceptRepository;
     }
 
     @Transactional
@@ -45,30 +48,32 @@ public class OrganisationConfigService {
         return organisationConfig;
     }
 
-    public Map<String,Object> getConcept(Long organisationId) throws JSONException {
-        OrganisationConfigRepository repo = this.organisationConfigRepository;
+    public LinkedHashMap<String,Object> getOrganisationSettings(Long organisationId) throws JSONException {
 
-        JsonObject jsonObject = repo.findByOrganisationId(organisationId).getSettings();
-
-        List<String> conceptUuid = new ArrayList<>();
+        JsonObject jsonObject = organisationConfigRepository.findByOrganisationId(organisationId).getSettings();
+        LinkedHashMap<String,Object> organisationSettingsConceptListMap = new LinkedHashMap<>();
+        List<String> conceptUuidList = new ArrayList<>();
         JSONObject jsonObj=new JSONObject(jsonObject.toString());
         JSONArray jsonArray=  jsonObj.getJSONArray("searchFilters");
-
+        String uuid=null;
         for(int i=0;i<jsonArray.length();i++)
-        {
-            System.out.println("loop : "+jsonArray.getJSONObject(i).getString("conceptUUID"));
-            conceptUuid.add(jsonArray.getJSONObject(i).getString("conceptUUID"));
-        }
+            {
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("organisationConfig", jsonObject);
-        List<ConceptProjection> conceptList=
-        organisationConfigRepository.getAllConceptByUuidIn(conceptUuid).stream()
-                .map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept))
-                .collect(Collectors.toList());
-        map.put("conceptList", conceptList);
+                uuid=jsonArray.getJSONObject(i).getString("conceptUUID");
+                if(null!=uuid && !"".equals(uuid.trim()))
+                    conceptUuidList.add(uuid.trim());
+            }
 
-        return map;
+
+                List<ConceptProjection> conceptList= conceptRepository.getAllConceptByUuidIn(conceptUuidList).stream()
+                    .map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept))
+                    .collect(Collectors.toList());
+
+
+        organisationSettingsConceptListMap.put("organisationConfig", jsonObject);
+        organisationSettingsConceptListMap.put("conceptList", conceptList);
+
+        return organisationSettingsConceptListMap;
     }
 
 }

@@ -1,5 +1,6 @@
 package org.openchs.dao;
 
+
 import org.joda.time.DateTime;
 import org.openchs.domain.AddressLevel;
 import org.openchs.domain.AddressLevelType;
@@ -74,4 +75,5 @@ public interface LocationRepository extends ReferenceDataRepository<AddressLevel
     List<String> getAllNames();
 
     Optional<AddressLevel> findByTitleLineageIgnoreCase(String locationTitleLineage);
+    List<AddressLevel> getAllByIsVoidedFalse();
 }
