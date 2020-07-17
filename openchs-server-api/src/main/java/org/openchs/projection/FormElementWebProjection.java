@@ -16,4 +16,5 @@ public interface FormElementWebProjection {
     boolean isMandatory();
     String getType();
     Format getValidFormat();
+    String getRule();
 }
