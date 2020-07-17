@@ -23,4 +23,6 @@ public interface ConceptRepository extends ReferenceDataRepository<Concept>, Fin
 
     @Query("select c.name from Concept c where c.isVoided = false")
     List<String> getAllNames();
+    List<Concept> getAllConceptByUuidIn(List<String> uuid);
+
 }

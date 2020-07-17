@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+
 import org.openchs.domain.Organisation;
 import org.openchs.domain.OrganisationConfig;
 import org.openchs.framework.security.UserContextHolder;
@@ -10,11 +11,9 @@ import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
+import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
+
 
 @RepositoryRestController
 public class OrganisationConfigController implements RestControllerResourceProcessor<OrganisationConfig> {
@@ -33,5 +32,6 @@ public class OrganisationConfigController implements RestControllerResourceProce
         OrganisationConfig organisationConfig = organisationConfigService.saveOrganisationConfig(request, organisation);
         return new ResponseEntity<>(organisationConfig, HttpStatus.CREATED);
     }
+
 
 }

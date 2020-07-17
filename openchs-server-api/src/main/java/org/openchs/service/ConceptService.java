@@ -1,8 +1,11 @@
 package org.openchs.service;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
 import org.openchs.application.FormElement;
 import org.openchs.dao.ConceptAnswerRepository;
 import org.openchs.dao.ConceptRepository;
+import org.openchs.dao.OrganisationConfigRepository;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.application.FormElementRepository;
 import org.openchs.domain.*;
@@ -34,11 +37,13 @@ public class ConceptService {
     private OrganisationRepository organisationRepository;
     private UserService userService;
     private FormElementRepository formElementRepository;
+    private final OrganisationConfigRepository organisationConfigRepository;
 
     @Autowired
-    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService, FormElementRepository formElementRepository) {
+    public ConceptService(ConceptRepository conceptRepository, ConceptAnswerRepository conceptAnswerRepository, OrganisationRepository organisationRepository, UserService userService, FormElementRepository formElementRepository, OrganisationConfigRepository organisationConfigRepository) {
         this.userService = userService;
         this.formElementRepository = formElementRepository;
+        this.organisationConfigRepository = organisationConfigRepository;
         logger = LoggerFactory.getLogger(this.getClass());
         this.conceptRepository = conceptRepository;
         this.conceptAnswerRepository = conceptAnswerRepository;
@@ -199,6 +204,8 @@ public class ConceptService {
     public Concept get(String uuid) {
         return conceptRepository.findByUuid(uuid);
     }
+
+
 
     public ConceptAnswer getAnswer(String conceptUUID, String conceptAnswerUUID) {
         Concept concept = this.get(conceptUUID);

@@ -222,4 +222,8 @@ public class IndividualService {
             individualRelationshipTypeContract.setId(individualRelationship.getRelationship().getId());
         return relationshipContract;
     }
+
+
+
+
 }
