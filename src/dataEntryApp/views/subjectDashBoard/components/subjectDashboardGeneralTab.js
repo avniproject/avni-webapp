@@ -151,6 +151,7 @@ const SubjectDashboardGeneralTab = ({
                     index={index}
                     encounter={row}
                     enableReadOnly={enableReadOnly}
+                    subjectTypeUuid={subjectTypeUuid}
                   />
                 ))
               ) : (

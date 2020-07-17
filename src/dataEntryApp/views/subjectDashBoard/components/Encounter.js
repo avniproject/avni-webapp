@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { isNil, isEmpty, first } from "lodash";
+import { isNil, isEmpty, first, isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -16,7 +16,8 @@ import {
   setEncounterDateValidation,
   resetState,
   createEncounter,
-  createEncounterForScheduled
+  createEncounterForScheduled,
+  editEncounter
 } from "../../../reducers/encounterReducer";
 import encounterService from "../../../services/EncounterService";
 import EncounterForm from "./EncounterForm";
@@ -33,13 +34,16 @@ const useStyles = makeStyles(theme => ({
 const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const editEncounter = isEqual(match.path, "/app/subject/editEncounter");
   const encounterUuid = match.queryParams.encounterUuid;
   const subjectUuid = match.queryParams.subjectUuid;
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.resetState();
-    if (encounterUuid) {
+    if (editEncounter) {
+      props.editEncounter(encounterUuid);
+    } else if (encounterUuid) {
       props.createEncounterForScheduled(encounterUuid);
     } else {
       //uuid - encounterTypeUuid
@@ -114,7 +118,8 @@ const mapDispatchToProps = {
   setEncounterDateValidation,
   resetState,
   createEncounter,
-  createEncounterForScheduled
+  createEncounterForScheduled,
+  editEncounter
 };
 
 export default withRouter(

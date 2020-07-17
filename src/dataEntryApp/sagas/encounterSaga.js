@@ -29,7 +29,8 @@ export default function*() {
       updateEncounterObsWatcher,
       saveEncounterWatcher,
       createEncounterWatcher,
-      createEncounterForScheduledWatcher
+      createEncounterForScheduledWatcher,
+      editEncounterWatcher
     ].map(fork)
   );
 }
@@ -139,4 +140,26 @@ export function* saveEncounterWorker() {
   let resource = encounter.toResource;
   yield call(api.saveEncounter, resource);
   yield put(saveEncounterComplete());
+}
+
+function* editEncounterWatcher() {
+  yield takeLatest(types.EDIT_ENCOUNTER, editEncounterWorker);
+}
+
+export function* editEncounterWorker({ encounterUuid }) {
+  const encounterJson = yield call(api.fetchEncounter, encounterUuid);
+  const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
+
+  const individual = new Individual();
+  individual.uuid = subjectProfileJson.uuid;
+  individual.registrationDate = new Date(subjectProfileJson.registrationDate);
+
+  const encounter = mapEncounter(encounterJson);
+  encounter.individual = individual;
+
+  yield put.resolve(setEncounter(encounter));
+  yield put.resolve(
+    getEncounterForm(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
+  );
+  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
 }
