@@ -52,9 +52,11 @@ public class OrganisationConfigService {
         JSONArray jsonArray=  jsonObj.getJSONArray("searchFilters");
         String uuid=null;
         for(int i=0;i<jsonArray.length();i++) {
-                uuid=jsonArray.getJSONObject(i).getString("conceptUUID");
-                if(null!=uuid && !"".equals(uuid.trim()))
+            if(jsonArray.getJSONObject(i).has("conceptUUID")) {
+                uuid = jsonArray.getJSONObject(i).getString("conceptUUID");
+                if (null != uuid && !"".equals(uuid.trim()))
                     conceptUuidList.add(uuid.trim());
+            }
         }
         List<ConceptProjection> conceptList= conceptRepository.getAllConceptByUuidIn(conceptUuidList).stream()
                     .map(concept -> projectionFactory.createProjection(ConceptProjection.class, concept))
