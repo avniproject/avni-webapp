@@ -3,7 +3,6 @@ const prefix = "app/dataEntry/reducer/encounter/";
 export const types = {
   ON_LOAD: `${prefix}ON_LOAD`,
   SET_ENCOUNTER_FORM_MAPPINGS: `${prefix}SET_ENCOUNTER_FORM_MAPPINGS`,
-  GET_ENCOUNTER_FORM: `${prefix}GET_ENCOUNTER_FORM`,
   SET_ENCOUNTER_FORM: `${prefix}SET_ENCOUNTER_FORM`,
   SET_ENCOUNTER: `${prefix}SET_ENCOUNTER`,
   SAVE_ENCOUNTER: `${prefix}SAVE_ENCOUNTER`,
@@ -15,7 +14,8 @@ export const types = {
   RESET_STATE: `${prefix}RESET_STATE`,
   CREATE_ENCOUNTER: `${prefix}CREATE_ENCOUNTER`,
   CREATE_ENCOUNTER_FOR_SCHEDULED: `${prefix}CREATE_ENCOUNTER_FOR_SCHEDULED`,
-  EDIT_ENCOUNTER: `${prefix}EDIT_ENCOUNTER`
+  EDIT_ENCOUNTER: `${prefix}EDIT_ENCOUNTER`,
+  CREATE_CANCEL_ENCOUNTER: `${prefix}CREATE_CANCEL_ENCOUNTER`
 };
 
 export const setEncounterFormMappings = encounterFormMappings => ({
@@ -26,12 +26,6 @@ export const setEncounterFormMappings = encounterFormMappings => ({
 export const onLoad = subjectUuid => ({
   type: types.ON_LOAD,
   subjectUuid
-});
-
-export const getEncounterForm = (encounterTypeUuid, subjectTypeUuid) => ({
-  type: types.GET_ENCOUNTER_FORM,
-  encounterTypeUuid,
-  subjectTypeUuid
 });
 
 export const setEncounterForm = encounterForm => ({
@@ -91,6 +85,11 @@ export const createEncounterForScheduled = encounterUuid => ({
 
 export const editEncounter = encounterUuid => ({
   type: types.EDIT_ENCOUNTER,
+  encounterUuid
+});
+
+export const createCancelEncounter = encounterUuid => ({
+  type: types.CREATE_CANCEL_ENCOUNTER,
   encounterUuid
 });
 

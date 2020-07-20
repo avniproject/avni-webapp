@@ -6,7 +6,10 @@ import { InternalLink } from "../../../../common/components/utils";
 import { isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
-import { selectFormMappingForEncounter } from "../../../sagas/encounterSelector";
+import {
+  selectFormMappingForEncounter,
+  selectFormMappingForCancelEncounter
+} from "../../../sagas/encounterSelector";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -68,7 +71,8 @@ const PlannedEncounter = ({
   subjectUuid,
   enableReadOnly,
   subjectTypeUuid,
-  encounterFormMapping
+  encounterFormMapping,
+  cancelEncounterFormMapping
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -128,6 +132,13 @@ const PlannedEncounter = ({
                 ) : (
                   ""
                 )}
+                {encounter.uuid && !isEmpty(cancelEncounterFormMapping) ? (
+                  <InternalLink to={`/app/subject/cancelEncounter?encounterUuid=${encounter.uuid}`}>
+                    <Button color="primary">{t("cancel Visit")}</Button>
+                  </InternalLink>
+                ) : (
+                  ""
+                )}
               </div>
             )}
           </>
@@ -141,6 +152,10 @@ const PlannedEncounter = ({
 
 const mapStateToProps = (state, props) => ({
   encounterFormMapping: selectFormMappingForEncounter(
+    props.encounter.encounterType.uuid,
+    props.subjectTypeUuid
+  )(state),
+  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(
     props.encounter.encounterType.uuid,
     props.subjectTypeUuid
   )(state)

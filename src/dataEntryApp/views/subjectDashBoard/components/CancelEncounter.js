@@ -10,15 +10,13 @@ import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
+  createCancelEncounter,
   updateEncounter,
   setEncounterDateValidation,
-  resetState,
-  createEncounter,
-  createEncounterForScheduled,
-  editEncounter
+  resetState
 } from "../../../reducers/encounterReducer";
 import encounterService from "../../../services/EncounterService";
-import EncounterForm from "./EncounterForm";
+import CancelEncounterForm from "./CancelEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
@@ -29,24 +27,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
+const CancelEncounter = ({ match, encounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const editEncounter = isEqual(match.path, "/app/subject/editEncounter");
   const encounterUuid = match.queryParams.encounterUuid;
-  const subjectUuid = match.queryParams.subjectUuid;
-  const uuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.resetState();
-    if (editEncounter) {
-      props.editEncounter(encounterUuid);
-    } else if (encounterUuid) {
-      props.createEncounterForScheduled(encounterUuid);
-    } else {
-      //uuid - encounterTypeUuid
-      props.createEncounter(uuid, subjectUuid);
-    }
+
+    //uuid - encounterTypeUuid
+    props.createCancelEncounter(encounterUuid);
   }, []);
 
   return (
@@ -55,21 +45,21 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
       <Paper className={classes.root}>
         <Grid justify="center" alignItems="center" container spacing={3}>
           <Grid item xs={12}>
-            {props.encounterForm && encounter && props.subjectProfile ? (
-              <EncounterForm>
+            {props.cancelEncounterForm && encounter && props.subjectProfile ? (
+              <CancelEncounterForm>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     style={{ width: "30%" }}
-                    label="Visit Date"
+                    label="Cancel Date"
                     margin="none"
                     size="small"
                     id="date-picker-dialog"
                     format="MM/dd/yyyy"
                     placeholder="mm/dd/yyyy"
-                    name="visitDateTime"
+                    name="cancelDateTime"
                     autoComplete="off"
                     required
-                    value={new Date(encounter.encounterDateTime)}
+                    value={new Date(encounter.cancelDateTime)}
                     error={
                       !isEmpty(enconterDateValidation) && !first(enconterDateValidation).success
                     }
@@ -78,11 +68,11 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
                       t(first(enconterDateValidation).messageKey)
                     }
                     onChange={date => {
-                      const visitDate = isNil(date) ? undefined : new Date(date);
-                      encounter.encounterDateTime = visitDate;
-                      props.updateEncounter("encounterDateTime", visitDate);
+                      const cancelDate = isNil(date) ? undefined : new Date(date);
+                      encounter.cancelDateTime = cancelDate;
+                      props.updateEncounter("cancelDateTime", cancelDate);
                       props.setEncounterDateValidation([
-                        encounterService.validateVisitDate(encounter)
+                        encounterService.validateCancelDate(encounter)
                       ]);
                     }}
                     KeyboardButtonProps={{
@@ -91,7 +81,7 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
                     }}
                   />
                 </MuiPickersUtilsProvider>
-              </EncounterForm>
+              </CancelEncounterForm>
             ) : (
               <CustomizedBackdrop load={false} />
             )}
@@ -103,19 +93,17 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
 };
 
 const mapStateToProps = state => ({
-  encounterForm: state.dataEntry.encounterReducer.encounterForm,
+  cancelEncounterForm: state.dataEntry.encounterReducer.encounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   encounter: state.dataEntry.encounterReducer.encounter,
   enconterDateValidation: state.dataEntry.encounterReducer.enconterDateValidation
 });
 
 const mapDispatchToProps = {
+  createCancelEncounter,
   updateEncounter,
   setEncounterDateValidation,
-  resetState,
-  createEncounter,
-  createEncounterForScheduled,
-  editEncounter
+  resetState
 };
 
 export default withRouter(
@@ -123,6 +111,6 @@ export default withRouter(
     connect(
       mapStateToProps,
       mapDispatchToProps
-    )(Encounter)
+    )(CancelEncounter)
   )
 );
