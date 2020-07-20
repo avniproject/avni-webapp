@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function CodedConceptForm({ searchFilterForms, onChange, genders }) {
+function CodedConceptForm({ searchFilterForms, onChange, conceptList }) {
   const classes = useStyles();
   const { t } = useTranslation();
   return searchFilterForms ? (
@@ -25,18 +25,22 @@ function CodedConceptForm({ searchFilterForms, onChange, genders }) {
       <Grid container spacing={3}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType === "Coded" ? (
-            <Grid item xs={6} key={index}>
+            <Grid item xs={12} key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
-              <FormGroup row>
-                {genders.map((gender, index) => (
-                  <FormControlLabel
-                    control={<Checkbox onChange={onChange} name="male" color="primary" />}
-                    label={gender.name}
-                    key={index}
-                  />
-                ))}
+              <FormGroup row key={index}>
+                {conceptList.map((concept, index) =>
+                  concept.uuid === searchFilterForm.conceptUUID
+                    ? concept.conceptAnswers.map((conceptAnswer, index) => (
+                        <FormControlLabel
+                          control={<Checkbox onChange={onChange} name="male" color="primary" />}
+                          label={conceptAnswer.answerConcept.name}
+                          key={index}
+                        />
+                      ))
+                    : ""
+                )}
               </FormGroup>
             </Grid>
           ) : (

@@ -21,14 +21,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function NonCodedConceptForm({ searchFilterForms, onChange }) {
+function NonCodedConceptForm({ searchFilterForms, onChange, value, onDateChange }) {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [selectedDate, setSelectedDate] = React.useState(null);
+  // const [value, setvalue] = React.useState(null);
 
-  const handleDateChange = date => {
-    setSelectedDate(date);
-  };
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
       <Grid container spacing={3}>
@@ -74,8 +71,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   <KeyboardDatePicker
                     id="date-picker-dialog"
                     format="dd/MM/yyyy"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onDateChange}
                     style={{ width: "30%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -93,8 +90,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   <KeyboardDateTimePicker
                     id="date-picker-dialog"
                     format="dd/MM/yyyy HH:mm"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onDateChange}
                     style={{ width: "30%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -111,8 +108,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   </Typography>
                   <KeyboardTimePicker
                     id="date-picker-dialog"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onDateChange}
                     style={{ width: "30%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -136,8 +133,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   <KeyboardDatePicker
                     id="date-picker-dialog"
                     format="dd/MM/yyyy"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onChange}
                     style={{ width: "14%", marginRight: "1%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -147,8 +144,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   <KeyboardDatePicker
                     id="date-picker-dialog"
                     format="dd/MM/yyyy"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onChange}
                     style={{ width: "14%", marginLeft: "1%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -166,8 +163,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   <KeyboardDateTimePicker
                     id="date-picker-dialog"
                     format="dd/MM/yyyy HH:mm"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onChange}
                     style={{ width: "14%", marginRight: "1%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -177,8 +174,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   <KeyboardDateTimePicker
                     id="date-picker-dialog"
                     format="dd/MM/yyyy HH:mm"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onChange}
                     style={{ width: "14%", marginLeft: "1%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -195,8 +192,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   </Typography>
                   <KeyboardTimePicker
                     id="date-picker-dialog"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onChange}
                     style={{ width: "14%", marginRight: "1%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
@@ -205,8 +202,8 @@ function NonCodedConceptForm({ searchFilterForms, onChange }) {
                   />
                   <KeyboardTimePicker
                     id="date-picker-dialog"
-                    value={selectedDate}
-                    onChange={handleDateChange}
+                    value={value}
+                    onChange={onChange}
                     style={{ width: "14%", marginLeft: "1%" }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",

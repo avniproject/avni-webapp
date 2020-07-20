@@ -21,14 +21,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function NonConceptForm({ searchFilterForms, onChange }) {
+function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [selectedDate, setSelectedDate] = React.useState(null);
+  // const [selectedDate, setSelectedDate] = React.useState(null);
 
-  const handleDateChange = date => {
-    setSelectedDate(date);
-  };
+  // const handleDateChange = date => {
+  //   setSelectedDate(date);
+  // };
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
       <Grid container spacing={3}>
@@ -46,8 +46,8 @@ function NonConceptForm({ searchFilterForms, onChange }) {
                 <KeyboardDatePicker
                   id="date-picker-dialog"
                   format="dd/MM/yyyy"
-                  value={selectedDate}
-                  onChange={handleDateChange}
+                  value={selectedDate.registrationDate.minValue}
+                  onChange={dateValue => onDateChange(dateValue)}
                   style={{ width: "30%" }}
                   KeyboardButtonProps={{
                     "aria-label": "change date",
@@ -69,8 +69,8 @@ function NonConceptForm({ searchFilterForms, onChange }) {
                 <KeyboardDatePicker
                   id="date-picker-dialog"
                   format="dd/MM/yyyy"
-                  value={selectedDate}
-                  onChange={handleDateChange}
+                  value={selectedDate.registrationDate.minValue}
+                  onChange={dateValue => onDateChange(dateValue)}
                   style={{ width: "14%", marginRight: "1%" }}
                   KeyboardButtonProps={{
                     "aria-label": "change date",
@@ -80,8 +80,8 @@ function NonConceptForm({ searchFilterForms, onChange }) {
                 <KeyboardDatePicker
                   id="date-picker-dialog"
                   format="dd/MM/yyyy"
-                  value={selectedDate}
-                  onChange={handleDateChange}
+                  value={selectedDate.registrationDate.mixValue}
+                  onChange={dateValue => onDateChange(dateValue)}
                   style={{ width: "14%", marginLeft: "1%" }}
                   KeyboardButtonProps={{
                     "aria-label": "change date",

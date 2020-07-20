@@ -2,12 +2,14 @@ import {
   setGenders,
   setOperationalModules,
   setAllLocations,
+  setOrganisationConfig,
   types
 } from "../reducers/metadataReducer";
 import { all, call, fork, put, select, takeLatest } from "redux-saga/effects";
 import api from "../api";
 import { isEmpty } from "lodash/core";
 import { mapGender, mapOperationalModules } from "../../common/adapters";
+import { setLoad } from "../reducers/loadReducer";
 
 export function* dataEntryLoadOperationalModulesWatcher() {
   yield takeLatest(types.GET_OPERATIONAL_MODULES, dataEntryLoadOperationalModulesWorker);
@@ -40,7 +42,7 @@ export function* getGendersWorker() {
 }
 
 export function* getAllLocationWatcher() {
-  yield takeLatest(types.GET_ALLLOCATION, getAllLocationsWorker);
+  yield takeLatest(types.GET_ALL_LOCATION, getAllLocationsWorker);
 }
 
 export function* getAllLocationsWorker() {
@@ -48,8 +50,23 @@ export function* getAllLocationsWorker() {
   yield put(setAllLocations(allLocations));
 }
 
+export function* getOrganisationConfigWatcher() {
+  yield takeLatest(types.GET_ORGANISATION_CONFIG, getOrganisationConfigWorker);
+}
+export function* getOrganisationConfigWorker() {
+  const organisationConfigs = yield call(api.fetchOrganisationConfigs);
+  yield put.resolve(setLoad(false));
+  yield put(setOrganisationConfig(organisationConfigs));
+  yield put.resolve(setLoad(true));
+}
+
 export default function* referenceDataSaga() {
   yield all(
-    [dataEntryLoadOperationalModulesWatcher, getGendersWatcher, getAllLocationWatcher].map(fork)
+    [
+      dataEntryLoadOperationalModulesWatcher,
+      getGendersWatcher,
+      getAllLocationWatcher,
+      getOrganisationConfigWatcher
+    ].map(fork)
   );
 }

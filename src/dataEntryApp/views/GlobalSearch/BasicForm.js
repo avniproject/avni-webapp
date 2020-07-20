@@ -26,7 +26,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function BasicForm({ searchFilterForms, onChange, operationalModules, genders, allLocation }) {
+function BasicForm({
+  searchFilterForms,
+  onChange,
+  operationalModules,
+  genders,
+  allLocation,
+  onGenderChange,
+  selectedGender,
+  onAddressSelect
+}) {
   const classes = useStyles();
   const { t } = useTranslation();
   const [selectedAddressLevelType, setSelectedAddressLevelType] = useState("Address");
@@ -34,11 +43,10 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
     console.log(event.target.value);
     setSelectedAddressLevelType(event.target.value);
   };
-  const location = allLocation._embedded.locations.filter(
-    locationType => locationType.typeString === selectedAddressLevelType
+  const location = allLocation.filter(
+    locationType => locationType.type === selectedAddressLevelType
   );
 
-  console.log(location);
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
       <Grid container spacing={3}>
@@ -51,6 +59,7 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
               <TextField
                 id={searchFilterForm.titleKey}
                 key={index}
+                name="name"
                 autoComplete="off"
                 type="text"
                 style={{ width: "100%" }}
@@ -72,6 +81,7 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
                 id={searchFilterForm.titleKey}
                 key={index}
                 autoComplete="off"
+                name="age"
                 type="number"
                 style={{ width: "100%" }}
                 onChange={onChange}
@@ -92,6 +102,7 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
                 id={searchFilterForm.titleKey}
                 key={index}
                 autoComplete="off"
+                name="searchAll"
                 type="text"
                 style={{ width: "100%" }}
                 onChange={onChange}
@@ -112,7 +123,14 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
               <FormGroup row>
                 {genders.map((gender, index) => (
                   <FormControlLabel
-                    control={<Checkbox onChange={onChange} name="male" color="primary" />}
+                    control={
+                      <Checkbox
+                        checked={selectedGender != null ? selectedGender[gender.uuid] : false}
+                        onChange={onGenderChange}
+                        name={gender.uuid}
+                        color="primary"
+                      />
+                    }
                     label={gender.name}
                     key={index}
                   />
@@ -157,7 +175,8 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
                 id="checkboxes-tags-demo"
                 options={location}
                 disableCloseOnSelect
-                getOptionLabel={option => option.title}
+                getOptionLabel={option => option.name}
+                onChange={onAddressSelect}
                 renderOption={(option, { selected }) => (
                   <React.Fragment>
                     <Checkbox
@@ -166,7 +185,7 @@ function BasicForm({ searchFilterForms, onChange, operationalModules, genders, a
                       style={{ marginRight: 8 }}
                       checked={selected}
                     />
-                    {option.title}
+                    {option.name}
                   </React.Fragment>
                 )}
                 style={{ width: "30%" }}
