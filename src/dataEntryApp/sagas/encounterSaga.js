@@ -7,8 +7,7 @@ import {
   setEncounterForm,
   setEncounter,
   saveEncounterComplete,
-  setValidationResults,
-  editEncounter
+  setValidationResults
 } from "../reducers/encounterReducer";
 import api from "../api";
 import {
@@ -127,7 +126,6 @@ export function* saveEncounterWorker() {
 function* editEncounterWatcher() {
   yield takeLatest(types.EDIT_ENCOUNTER, editEncounterWorker);
 }
-
 export function* editEncounterWorker({ encounterUuid }) {
   const encounterJson = yield call(api.fetchEncounter, encounterUuid);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
