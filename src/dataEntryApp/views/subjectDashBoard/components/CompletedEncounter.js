@@ -2,8 +2,12 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import moment from "moment/moment";
+import { isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { InternalLink } from "../../../../common/components/utils";
+import { selectFormMappingForEncounter } from "../../../sagas/encounterSelector";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -59,7 +63,13 @@ const truncate = input => {
   else return input;
 };
 
-const CompletedEncounter = ({ index, encounter, enableReadOnly }) => {
+const CompletedEncounter = ({
+  index,
+  encounter,
+  enableReadOnly,
+  subjectTypeUuid,
+  encounterFormMapping
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -87,10 +97,14 @@ const CompletedEncounter = ({ index, encounter, enableReadOnly }) => {
         </List>
         {!enableReadOnly ? (
           <>
-            {encounter.encounterDateTime && (
-              <Button color="primary" className={classes.visitButton}>
-                {t("edit visit")}
-              </Button>
+            {encounter.encounterDateTime && encounter.uuid && !isEmpty(encounterFormMapping) ? (
+              <InternalLink to={`/app/subject/editEncounter?encounterUuid=${encounter.uuid}`}>
+                <Button color="primary" className={classes.visitButton}>
+                  {t("edit visit")}
+                </Button>
+              </InternalLink>
+            ) : (
+              ""
             )}
           </>
         ) : (
@@ -101,4 +115,11 @@ const CompletedEncounter = ({ index, encounter, enableReadOnly }) => {
   );
 };
 
-export default CompletedEncounter;
+const mapStateToProps = (state, props) => ({
+  encounterFormMapping: selectFormMappingForEncounter(
+    props.encounter.encounterType.uuid,
+    props.subjectTypeUuid
+  )(state)
+});
+
+export default connect(mapStateToProps)(CompletedEncounter);

@@ -87,6 +87,7 @@ const DataEntry = ({
             />
             <Route exact path={`${path}/subject/newGeneralVisit`} component={NewGeneralVisit} />
             <Route exact path={`${path}/subject/encounter`} component={Encounter} />
+            <Route path={`${path}/subject/editEncounter`} component={Encounter} />
           </Grid>
         </Grid>
       </div>

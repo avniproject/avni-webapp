@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import moment from "moment/moment";
 import { InternalLink } from "../../../../common/components/utils";
-import { find, isEmpty, isNil } from "lodash";
+import { isEmpty } from "lodash";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { selectFormMappingForEncounter } from "../../../sagas/encounterSelector";

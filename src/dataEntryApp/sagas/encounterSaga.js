@@ -29,7 +29,8 @@ export default function*() {
       updateEncounterObsWatcher,
       saveEncounterWatcher,
       createEncounterWatcher,
-      createEncounterForScheduledWatcher
+      createEncounterForScheduledWatcher,
+      editEncounterWatcher
     ].map(fork)
   );
 }
@@ -64,27 +65,19 @@ export function* createEncounterWatcher() {
 export function* createEncounterWorker({ encounterTypeUuid, subjectUuid }) {
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const state = yield select();
-  const individual = new Individual();
-  individual.uuid = subjectProfileJson.uuid;
-  individual.registrationDate = new Date(subjectProfileJson.registrationDate);
 
   /*create new encounter obj */
   const encounter = new Encounter();
   encounter.uuid = General.randomUUID();
   encounter.encounterDateTime = new Date();
   encounter.observations = [];
-  encounter.individual = individual;
   encounter.encounterType = find(
     state.dataEntry.metadata.operationalModules.encounterTypes,
     eT => eT.uuid === encounterTypeUuid
   );
   encounter.name = encounter.encounterType.name;
 
-  yield put.resolve(setEncounter(encounter));
-  yield put.resolve(
-    getEncounterForm(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
-  );
-  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield setEncounterDetails(encounter, subjectProfileJson);
 }
 
 export function* createEncounterForScheduledWatcher() {
@@ -93,20 +86,9 @@ export function* createEncounterForScheduledWatcher() {
 export function* createEncounterForScheduledWorker({ encounterUuid }) {
   const encounterJson = yield call(api.fetchEncounter, encounterUuid);
   const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
-
-  const individual = new Individual();
-  individual.uuid = subjectProfileJson.uuid;
-  individual.registrationDate = new Date(subjectProfileJson.registrationDate);
-
   const encounter = mapEncounter(encounterJson);
   encounter.encounterDateTime = new Date();
-  encounter.individual = individual;
-
-  yield put.resolve(setEncounter(encounter));
-  yield put.resolve(
-    getEncounterForm(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
-  );
-  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield setEncounterDetails(encounter, subjectProfileJson);
 }
 
 function* updateEncounterObsWatcher() {
@@ -139,4 +121,27 @@ export function* saveEncounterWorker() {
   let resource = encounter.toResource;
   yield call(api.saveEncounter, resource);
   yield put(saveEncounterComplete());
+}
+
+function* editEncounterWatcher() {
+  yield takeLatest(types.EDIT_ENCOUNTER, editEncounterWorker);
+}
+export function* editEncounterWorker({ encounterUuid }) {
+  const encounterJson = yield call(api.fetchEncounter, encounterUuid);
+  const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
+  yield setEncounterDetails(mapEncounter(encounterJson), subjectProfileJson);
+}
+
+export function* setEncounterDetails(encounter, subjectProfileJson) {
+  const individual = new Individual();
+  individual.uuid = subjectProfileJson.uuid;
+  individual.registrationDate = new Date(subjectProfileJson.registrationDate);
+
+  encounter.individual = individual;
+
+  yield put.resolve(setEncounter(encounter));
+  yield put.resolve(
+    getEncounterForm(encounter.encounterType.uuid, subjectProfileJson.subjectType.uuid)
+  );
+  yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
 }
