@@ -2,6 +2,7 @@ package org.openchs.web.request;
 
 import org.openchs.web.request.common.CommonIndividualRequest;
 
+import java.math.BigInteger;
 import java.util.*;
 
 public class IndividualContract extends CommonIndividualRequest {
@@ -15,6 +16,34 @@ public class IndividualContract extends CommonIndividualRequest {
     private Set<EncounterContract> encounters = new HashSet<>();
 
     private SubjectTypeContract subjectType;
+    private String subjectTypeName;
+    private String fullName;
+
+    private BigInteger totalElements;
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public BigInteger getTotalElements() {
+        return totalElements;
+    }
+
+    public void setTotalElements(BigInteger totalElements) {
+        this.totalElements = totalElements;
+    }
+
+    public String getSubjectTypeName() {
+        return subjectTypeName;
+    }
+
+    public void setSubjectTypeName(String subjectTypeName) {
+        this.subjectTypeName = subjectTypeName;
+    }
 
     public List<RelationshipContract> getRelationships() {
         return relationships;
