@@ -44,8 +44,7 @@ public class PlatformTranslationController implements RestControllerResourceProc
         platformTranslation.assignUUIDIfRequired();
         platformTranslation.setPlatform(platform);
         platformTranslation.setLanguage(language);
-        platformTranslation.assignCreatedDateTimeIfRequired();
-        platformTranslation.setLastModifiedDateTime(new DateTime());
+        platformTranslation.updateAudit();
         platformTranslationRepository.save(platformTranslation);
         logger.info(String.format("Saved Translation with UUID: %s", platformTranslation.getUuid()));
         return new ResponseEntity<>(true, HttpStatus.OK);
@@ -57,7 +56,7 @@ public class PlatformTranslationController implements RestControllerResourceProc
             @RequestParam("lastModifiedDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime lastModifiedDateTime,
             @RequestParam("now") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime now,
             Pageable pageable) {
-        return wrap(platformTranslationRepository.findByPlatformAndLastModified(Platform.Android, lastModifiedDateTime, now, pageable));
+        return wrap(platformTranslationRepository.findByPlatformAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(Platform.Android, lastModifiedDateTime, now, pageable));
     }
 
 }

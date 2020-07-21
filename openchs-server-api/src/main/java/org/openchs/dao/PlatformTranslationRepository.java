@@ -24,11 +24,7 @@ public interface PlatformTranslationRepository extends PagingAndSortingRepositor
 
     PlatformTranslation findByLanguage(Locale language);
 
-    @Query("select pt from PlatformTranslation pt " +
-            "where pt.platform = :platform " +
-            "and (pt.lastModifiedDateTime between :lastModifiedDateTime and :now) " +
-            "order by pt.lastModifiedDateTime asc")
-    Page<PlatformTranslation> findByPlatformAndLastModified(
+    Page<PlatformTranslation> findByPlatformAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             Platform platform,
             DateTime lastModifiedDateTime,
             DateTime now,
