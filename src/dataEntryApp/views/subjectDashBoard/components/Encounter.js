@@ -40,7 +40,7 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
   useEffect(() => {
     props.resetState();
     if (editEncounter) {
-      props.editEncounter(encounterUuid);
+      props.editEncounter(uuid);
     } else if (encounterUuid) {
       props.createEncounterForScheduled(encounterUuid);
     } else {

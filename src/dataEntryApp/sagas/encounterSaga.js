@@ -30,7 +30,9 @@ export default function*() {
       createEncounterWatcher,
       createEncounterForScheduledWatcher,
       editEncounterWatcher,
-      createCancelEncounterWatcher
+      updateCancelEncounterObsWatcher,
+      createCancelEncounterWatcher,
+      editCancelEncounterWatcher
     ].map(fork)
   );
 }
@@ -136,6 +138,32 @@ export function* setEncounterDetails(encounter, subjectProfileJson) {
   yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
 }
 
+function* updateCancelEncounterObsWatcher() {
+  yield takeEvery(types.UPDATE_CANCEL_OBS, updateCancelEncounterObsWorker);
+}
+export function* updateCancelEncounterObsWorker({ formElement, value }) {
+  const state = yield select();
+  const encounter = state.dataEntry.encounterReducer.encounter;
+  const validationResults = state.dataEntry.encounterReducer.validationResults;
+  encounter.cancelObservations = formElementService.updateObservations(
+    encounter.cancelObservations,
+    formElement,
+    value
+  );
+
+  yield put(setEncounter(encounter));
+  yield put(
+    setValidationResults(
+      formElementService.validate(
+        formElement,
+        value,
+        encounter.cancelObservations,
+        validationResults
+      )
+    )
+  );
+}
+
 export function* createCancelEncounterWatcher() {
   yield takeLatest(types.CREATE_CANCEL_ENCOUNTER, createCancelEncounterWorker);
 }
@@ -146,6 +174,15 @@ export function* createCancelEncounterWorker({ encounterUuid }) {
   encounter.cancelDateTime = new Date();
   encounter.cancelObservations = [];
   yield setCancelEncounterDetails(encounter, subjectProfileJson);
+}
+
+export function* editCancelEncounterWatcher() {
+  yield takeLatest(types.EDIT_CANCEL_ENCOUNTER, editCancelEncounterWorker);
+}
+export function* editCancelEncounterWorker({ encounterUuid }) {
+  const encounterJson = yield call(api.fetchEncounter, encounterUuid);
+  const subjectProfileJson = yield call(api.fetchSubjectProfile, encounterJson.subjectUUID);
+  yield setCancelEncounterDetails(mapEncounter(encounterJson), subjectProfileJson);
 }
 
 export function* setCancelEncounterDetails(encounter, subjectProfileJson) {

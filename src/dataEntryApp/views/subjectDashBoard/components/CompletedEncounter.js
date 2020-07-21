@@ -98,7 +98,7 @@ const CompletedEncounter = ({
         {!enableReadOnly ? (
           <>
             {encounter.encounterDateTime && encounter.uuid && !isEmpty(encounterFormMapping) ? (
-              <InternalLink to={`/app/subject/editEncounter?encounterUuid=${encounter.uuid}`}>
+              <InternalLink to={`/app/subject/editEncounter?uuid=${encounter.uuid}`}>
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
                 </Button>

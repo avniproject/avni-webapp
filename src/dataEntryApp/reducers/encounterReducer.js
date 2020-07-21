@@ -15,7 +15,9 @@ export const types = {
   CREATE_ENCOUNTER: `${prefix}CREATE_ENCOUNTER`,
   CREATE_ENCOUNTER_FOR_SCHEDULED: `${prefix}CREATE_ENCOUNTER_FOR_SCHEDULED`,
   EDIT_ENCOUNTER: `${prefix}EDIT_ENCOUNTER`,
-  CREATE_CANCEL_ENCOUNTER: `${prefix}CREATE_CANCEL_ENCOUNTER`
+  UPDATE_CANCEL_OBS: `${prefix}UPDATE_CANCEL_OBS`,
+  CREATE_CANCEL_ENCOUNTER: `${prefix}CREATE_CANCEL_ENCOUNTER`,
+  EDIT_CANCEL_ENCOUNTER: `${prefix}EDIT_CANCEL_ENCOUNTER`
 };
 
 export const setEncounterFormMappings = encounterFormMappings => ({
@@ -88,8 +90,19 @@ export const editEncounter = encounterUuid => ({
   encounterUuid
 });
 
+export const updateCancelObs = (formElement, value) => ({
+  type: types.UPDATE_CANCEL_OBS,
+  formElement,
+  value
+});
+
 export const createCancelEncounter = encounterUuid => ({
   type: types.CREATE_CANCEL_ENCOUNTER,
+  encounterUuid
+});
+
+export const editCancelEncounter = encounterUuid => ({
+  type: types.EDIT_CANCEL_ENCOUNTER,
   encounterUuid
 });
 

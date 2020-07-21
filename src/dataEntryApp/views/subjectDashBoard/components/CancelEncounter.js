@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
   createCancelEncounter,
+  editCancelEncounter,
   updateEncounter,
   setEncounterDateValidation,
   resetState
@@ -30,13 +31,16 @@ const useStyles = makeStyles(theme => ({
 const CancelEncounter = ({ match, encounter, enconterDateValidation, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const encounterUuid = match.queryParams.encounterUuid;
+  const editCancelEncounter = isEqual(match.path, "/app/subject/editCancelEncounter");
+  const encounterUuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.resetState();
-
-    //uuid - encounterTypeUuid
-    props.createCancelEncounter(encounterUuid);
+    if (editCancelEncounter) {
+      props.editCancelEncounter(encounterUuid);
+    } else {
+      props.createCancelEncounter(encounterUuid);
+    }
   }, []);
 
   return (
@@ -101,6 +105,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   createCancelEncounter,
+  editCancelEncounter,
   updateEncounter,
   setEncounterDateValidation,
   resetState
