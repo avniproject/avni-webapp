@@ -136,6 +136,7 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             {profile.relationships != undefined ? (
               <GridCommonList
+                profileUUID={profile.uuid}
                 profileName={profile.firstName + " " + profile.lastName}
                 gridListDetails={profile.relationships}
                 enableReadOnly={enableReadOnly}

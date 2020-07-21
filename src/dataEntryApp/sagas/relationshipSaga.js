@@ -11,24 +11,16 @@ export function* relationshipFetchWatcher() {
   yield takeLatest(types.GET_RELATION, relationshipFetchWorker);
 }
 
-export function* saveRelatioshipWorker(relationData) {
-  // const state = yield select();
-  // const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
-  // let resource = programEncounter;
+export function* saveRelatioshipWorker({ relationData }) {
   yield call(api.saveRelationShip, relationData);
-  // yield put(saveProgramEncounterComplete());
 }
 
 export function* saveRelatioshipWatcher() {
   yield takeLatest(types.SAVE_RELATION, saveRelatioshipWorker);
 }
 
-export function* removeRelatioshipWorker(relationData) {
-  // const state = yield select();
-  // const programEncounter = state.dataEntry.programEncounterReducer.programEncounter;
-  // let resource = programEncounter;
-  yield call(api.removeRelationShip, relationData);
-  // yield put(saveProgramEncounterComplete());
+export function* removeRelatioshipWorker(RelationId) {
+  yield call(api.removeRelationShip, RelationId.relationId);
 }
 
 export function* removeRelatioshipWatcher() {

@@ -31,10 +31,9 @@ export default {
       body: JSON.stringify(Relationaldata)
     }),
 
-  removeRelationShip: Relationaldata =>
-    httpClient.fetchJson(`/web/relationShip/${Relationaldata.relationId}`, {
+  removeRelationShip: RelationId =>
+    httpClient.fetchJson(`/web/relationShip/${RelationId}`, {
       method: "DELETE"
-      // body: JSON.stringify(Relationaldata)
     }),
 
   fetchProgramEncounter: uuid =>

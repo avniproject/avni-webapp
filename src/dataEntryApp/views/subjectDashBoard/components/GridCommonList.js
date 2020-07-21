@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GridCommonList = ({ profileName, gridListDetails, enableReadOnly }) => {
+const GridCommonList = ({ profileUUID, profileName, gridListDetails, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   console.log("gridListDetails---->", gridListDetails);
@@ -79,11 +79,12 @@ const GridCommonList = ({ profileName, gridListDetails, enableReadOnly }) => {
                       <CardActions>
                         {/* <Button color="primary">{t("remove")}</Button> */}
                         <RemoveRelative
+                          mainuuid={profileUUID}
                           relationAname={profileName}
                           relationBname={
                             relative.individualB.firstName + " " + relative.individualB.lastName
                           }
-                          relationId={relative.individualB.uuid}
+                          relationId={relative.id}
                         />
                         <Button color="primary">{t("edit")}</Button>
                       </CardActions>

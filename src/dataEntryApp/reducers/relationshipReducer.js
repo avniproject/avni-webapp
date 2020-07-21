@@ -5,8 +5,7 @@ export const types = {
   SET_RELATION: `${prefix}SET_RELATION`,
   SAVE_RELATION: `${prefix}SAVE_RELATION`,
   REMOVE_RELATION: `${prefix}REMOVE_RELATION`,
-  SET_LISTOFRELATIVES: `${prefix}SET_LISTOFRELATIVES`,
-  GET_LISTOFRELATIVES: `${prefix}GET_LISTOFRELATIVES`
+  SET_LISTOFRELATIVES: `${prefix}SET_LISTOFRELATIVES`
 };
 
 const listOfRelations = {};
@@ -23,11 +22,6 @@ export const setRelations = relationships => ({
 export const setRelationlist = relationData => ({
   type: types.SET_LISTOFRELATIVES,
   relationData
-});
-
-export const getRelationlist = relationData => ({
-  type: types.GET_LISTOFRELATIVES,
-  listOfRelations: relationData
 });
 
 export const saveRelationShip = relationData => ({

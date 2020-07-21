@@ -1,7 +1,5 @@
 import React from "react";
-// import { store } from "../../src/common/store/createStore";
 import { store } from "../../../../../src/common/store/createStore";
-
 import { makeStyles } from "@material-ui/core/styles";
 import { LineBreak } from "common/components/utils";
 import Grid from "@material-ui/core/Grid";
@@ -11,20 +9,12 @@ import { first } from "lodash";
 import { withRouter, useHistory } from "react-router-dom";
 import Modal from "./CommonModal";
 import DialogContent from "@material-ui/core/DialogContent";
-// import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-// import DateFnsUtils from "@date-io/date-fns";
-// import FormControlLabel from "@material-ui/core/FormControlLabel";
-// import Checkbox from "@material-ui/core/Checkbox";
-// import FormLabel from "@material-ui/core/FormLabel";
 import { FormControl, FormGroup, TextField, Typography } from "@material-ui/core";
 import moment from "moment/moment";
 import { noop, isNil, isEmpty } from "lodash";
-import { IconButton, Button, Box } from "@material-ui/core";
 import { searchSubjects, setSubjects } from "../../../reducers/searchReducer";
 import { types } from "../../../reducers/relationshipReducer";
 import FindRelativeTable from "./FindRelativeTable";
-
-// import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -99,16 +89,13 @@ const FindRelative = props => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  // const [searchvalue, setSearchvalue] = React.useState("");
   const [selectRelativeName, setselectRelativeName] = React.useState(null);
   // const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
   const [filterErrors, setfilterErrors] = React.useState({
-    SCHEDULED_DATE: "",
+    // SCHEDULED_DATE: "",
     RELATIVE_NAME: ""
   });
-  // const [msg, setMsg] = React.useState("");
 
-  // const [selectedVisitTypes, setVisitTypes] = React.useState(null);
   console.log("Subjects------>", props.subjects);
 
   const [value, setValue] = React.useState("");
@@ -126,12 +113,12 @@ const FindRelative = props => {
     if (!moment(selectRelativeName).isValid()) setselectRelativeName(null);
     // if (!moment(selectedCompletedDate).isValid()) setSelectedCompletedDate(null);
     filterErrors["RELATIVE_NAME"] = "";
-    filterErrors["SCHEDULED_DATE"] = "";
+    // filterErrors["SCHEDULED_DATE"] = "";
     setfilterErrors({ ...filterErrors });
   };
 
   const applyClick = () => {
-    console.log("Valuee------", value);
+    // console.log("Valuee------", value);
     props.search({ query: value });
   };
   const modifySearch = () => {
@@ -142,9 +129,6 @@ const FindRelative = props => {
     props.setSubjects();
     setValue("");
     let storage = [];
-
-    // store.dispatch({ type: types.SET_LISTOFRELATIVES, value: localSavedSubject });
-    // JSON.parse(sessionStorage.getItem("selectedRelatives"));
     let localSavedSubject = JSON.parse(sessionStorage.getItem("selectedRelative"));
     console.log("localSavedSubject------->", localSavedSubject);
     storage.push(localSavedSubject);
@@ -157,27 +141,7 @@ const FindRelative = props => {
 
   const searchContent = (
     <DialogContent style={{ width: 600, height: "auto" }}>
-      <Grid container direction="row" justify="flex-end" alignItems="flex-start">
-        {/* <IconButton
-          color="secondary"
-          className={classes.resetButton}
-          onClick={resetClick}
-          aria-label="add an alarm"
-        >
-          <CancelIcon className={classes.cancelIcon} /> {t("resetAll")}
-        </IconButton> */}
-        {/* <Box>
-          <Button variant="outlined" className={classes.cancelBtn} color="primary">
-            Patient
-          </Button>
-          <Button variant="contained" className={classes.addBtn} color="primary">
-            Water source
-          </Button>
-          <Button variant="contained" className={classes.addBtn} color="primary">
-            Banyan tree
-          </Button>
-        </Box> */}
-      </Grid>
+      <Grid container direction="row" justify="flex-end" alignItems="flex-start" />
       <form className={classes.form}>
         {props.subjects && props.subjects.content ? (
           ""
@@ -192,10 +156,6 @@ const FindRelative = props => {
                 </Typography>
                 <TextField
                   id="standard-multiline-flexible"
-                  // label="Name"
-                  multiline
-                  // rowsMax={4}
-
                   value={value}
                   onChange={handleChange}
                   error={!isEmpty(filterErrors["RELATIVE_NAME"])}

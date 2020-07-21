@@ -3,13 +3,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getRelations, saveRelationShip } from "../../../reducers/relationshipReducer";
-// import { getEncounter, getProgramEncounter } from "../../../reducers/viewVisitReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
-import { default as UUID } from "uuid";
 import { ModelGeneral as General, EncounterType } from "avni-models";
-
 import {
   Grid,
   Box,
@@ -27,16 +24,15 @@ import {
   Select,
   Button
 } from "@material-ui/core";
-// import Observations from "common/components/Observations";
 import FindRelative from "../components/FindRelative";
-import FindRelativeTable from "../components/FindRelativeTable";
+// import FindRelativeTable from "../components/FindRelativeTable";
 import { InternalLink, LineBreak, RelativeLink } from "../../../../common/components/utils";
-import { isEqual } from "lodash";
-import moment from "moment/moment";
+// import { isEqual } from "lodash";
+// import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
-import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+// import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { Cancel } from "@material-ui/icons";
-import { blue } from "@material-ui/core/colors";
+// import { blue } from "@material-ui/core/colors";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -67,19 +63,19 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 20,
     marginTop: 10
   },
-  findButton: {
-    marginLeft: "8px",
-    color: "white",
-    cursor: "pointer",
-    height: 30,
-    padding: "4px 25px",
-    fontSize: 12,
-    borderRadius: 50
-  },
-  visitButton: {
-    marginLeft: "8px",
-    fontSize: "14px"
-  },
+  // findButton: {
+  //   marginLeft: "8px",
+  //   color: "white",
+  //   cursor: "pointer",
+  //   height: 30,
+  //   padding: "4px 25px",
+  //   fontSize: 12,
+  //   borderRadius: 50
+  // },
+  // visitButton: {
+  //   marginLeft: "8px",
+  //   fontSize: "14px"
+  // },
   cancelBtn: {
     color: "orange",
     width: 110,
@@ -140,23 +136,6 @@ const useStyles = makeStyles(theme => ({
     border: "1px solid lightgray;",
     width: "100%"
   }
-  // selectStyle: {
-  //   width: '100%',
-  //   height: '50px',
-  //   'font-size': '100%',
-  //   'font-weight': 'bold',
-  //   cursor: 'pointer',
-  //   'border-radius': 0,
-  //   'background-color': '#c0392b',
-  //   border: 'none',
-  //   'border-bottom': '2px solid #962d22',
-  //   color: 'white',
-  //   padding: '10px',
-  //   appearance: 'none',
-  //   '-webkit-appearance': 'none',
-  //   '-moz-appearance': 'none',
-  //   padding: '10px'
-  // }
 }));
 
 const AddRelative = ({
@@ -166,69 +145,54 @@ const AddRelative = ({
   getRelations,
   load,
   subjects,
-  saveRelationShip
+  saveRelationShip,
+  RelationsData
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  console.log("Relations------->", Relations);
-  console.log("subjectTypes------->", subjectTypes);
-  console.log("subjects-------->", subjects);
-  console.log("match-------->", match.queryParams.uuid);
+  console.log("RelationsDatafrom store------->", RelationsData);
   let relativeLists = JSON.parse(sessionStorage.getItem("selectedRelativeslist"));
   console.log("relativeLists-------->", relativeLists);
   const profileDetails = relativeLists;
   const [selectname, setSelectname] = React.useState("");
   const duplicatuuid = General.randomUUID();
-  // console.log("General.randomUUID", duplicatuuid);
-  // console.log("randomUUID", UUID.v4());
-
+  const [state, setState] = React.useState({
+    age: "",
+    name: "hai"
+  });
   const [relationData, setRelationData] = React.useState({
     uuid: General.randomUUID(),
-    // uuid: '',
     relationshipTypeUUID: "",
     individualAUUID: match.queryParams.uuid,
     individualBUUID: "",
     enterDateTime: new Date()
-    // exitDateTime: "",
-    // exitObservations: []
   });
 
-  //   {
-  //     "enterDateTime": "2020-07-17T11:20:38.479Z",
-  // "individualAUUID": "35253eab-6594-4bad-9243-ca6ef15fc054",
-
-  // "individualBUUID": "5e5a87fb-c70d-4a50-aeac-5964f04625b2",
-
-  // "relationshipTypeUUID": "1d9c019a-9350-44f9-9ef9-a699f0d94a13",
-  // "uuid":"fc4a0802-1855-4da1-88ed-1b028edf05bf"
-  // }
-
   const handleChange = event => {
-    // console.log("handleChange event target type------->",event.target.value);
-    console.log("handleChange event target type------->", event.target.value);
-    console.log("handleChange event target uuidA------->", event.target.name);
-    // console.log("handleChange event target uuidB------->", event.target.uuidb);
-    // console.log("handleChange event target------->",event.target.value);
-    // const relationshipTypeUUID = event.target.value;
+    const name = event.target.name;
+    setState({
+      ...state,
+      [name]: event.target.value
+    });
     setRelationData({
       ...relationData,
-      // name: event.target.name,
       relationshipTypeUUID: event.target.value,
       individualBUUID: profileDetails[0].uuid
     });
   };
 
   const addRelatives = () => {
-    const itemuuid = UUID.v4();
-    console.log("itemuuid---->", itemuuid);
-    console.log("relationData----->", JSON.stringify(relationData));
-    saveRelationShip(JSON.stringify(relationData));
-    console.log("saveRelationShip---->", relationData);
-
-    // uuid: UUID.v4(),
+    saveRelationShip(relationData);
     sessionStorage.removeItem("selectedRelativeslist");
+    history.goBack();
   };
+  const cancelRelation = () => {
+    // saveRelationShip(relationData);
+    sessionStorage.removeItem("selectedRelativeslist");
+    history.goBack();
+  };
+
   useEffect(() => {
     getRelations();
   }, []);
@@ -239,7 +203,6 @@ const AddRelative = ({
         <div className={classes.innerPaper}>
           <Grid container direction="row" justify="space-between" alignItems="baseline">
             <Typography component={"span"} className={classes.mainHeading}>
-              {/* {t("ViewVisit")}:  */}
               Add Relative
             </Typography>
           </Grid>
@@ -314,11 +277,11 @@ const AddRelative = ({
                                 >
                                   <InputLabel htmlFor="age-native-helper" />
                                   <NativeSelect
-                                    value={""}
+                                    value={state.age}
                                     onChange={handleChange}
                                     inputProps={{
-                                      name: " ",
-                                      id: "age-native-helper"
+                                      name: "age",
+                                      id: "age-native-simple"
                                     }}
                                   >
                                     <option value="" disabled>
@@ -345,30 +308,34 @@ const AddRelative = ({
                       </Grid>
                     </div>
                   </div>
-                  <hr className={classes.horizontalLine} />
+                  {/* <hr className={classes.horizontalLine} /> */}
                 </div>
               ))
             : ""}
 
-          <div>
-            <div className={classes.scheduleddateStyle}>
-              <Typography component={"span"} className={classes.subHeading}>
-                {/* {t("Completed")} */}
-                Find Relative
-              </Typography>
-            </div>
-            <div className={classes.scheduleddateStyle}>
-              {/* <Button variant="contained" className={classes.findButton} color="primary">
+          {profileDetails === null ? (
+            <div>
+              <div className={classes.scheduleddateStyle}>
+                <Typography component={"span"} className={classes.subHeading}>
+                  {/* {t("Completed")} */}
+                  Find Relative
+                </Typography>
+              </div>
+              <div className={classes.scheduleddateStyle}>
+                {/* <Button variant="contained" className={classes.findButton} color="primary">
               Find Relative
             </Button> */}
-              <FindRelative subjectTypes={subjectTypes} />
-              {/* {subjects.content ? (
+                <FindRelative subjectTypes={subjectTypes} />
+                {/* {subjects.content ? (
                 <FindRelative subjectTypes={subjectTypes} />
               ) : ( */}
-              {/* <FindRelativeTable /> */}
-              {/* // )} */}
+                {/* <FindRelativeTable /> */}
+                {/* // )} */}
+              </div>
             </div>
-          </div>
+          ) : (
+            ""
+          )}
         </div>
         <Box
           className={classes.buttomboxstyle}
@@ -382,11 +349,12 @@ const AddRelative = ({
               variant="contained"
               className={classes.addBtn}
               color="primary"
+              // redirectTo = {`/#/app/subject?uuid=${match.queryParams.uuid}`}
               onClick={addRelatives}
             >
               ADD
             </Button>
-            <Button variant="outlined" className={classes.cancelBtn} onClick={history.goBack}>
+            <Button variant="outlined" className={classes.cancelBtn} onClick={cancelRelation}>
               CANCEL
             </Button>
           </Box>
@@ -397,18 +365,15 @@ const AddRelative = ({
 };
 
 const mapStateToProps = state => ({
-  // encounter: state.dataEntry.viewVisitReducer.encounter,
   subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
   Relations: state.dataEntry.relations,
+  RelationsData: state.dataEntry.relations.relationData,
   subjects: state.dataEntry.search.subjects
-  // load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
   getRelations,
   saveRelationShip
-  // getEncounter,
-  // getProgramEncounter
 };
 
 export default withRouter(
