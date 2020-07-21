@@ -9,6 +9,7 @@ import { saveUserInfoWatcher } from "rootApp/saga";
 import programSaga from "./programSaga";
 import viewVisitSaga from "./ViewVisitSaga";
 import completedVisitSaga from "./completedVisitSaga";
+import relationshipSaga from "./relationshipSaga";
 // import translationApiSaga from "../sagas/TranslationSaga"
 
 export default function* rootSaga() {
@@ -23,7 +24,8 @@ export default function* rootSaga() {
       programSaga,
       viewVisitSaga,
       completedVisitSaga,
-      programEncounterSaga
+      programEncounterSaga,
+      relationshipSaga
       // translationApiSaga
     ].map(fork)
   );

@@ -11,6 +11,7 @@ import enrolmentReducer from "./programEnrolReducer";
 import viewVisitReducer from "./viewVisitReducer";
 import completedVisitsReducer from "./completedVisitsReducer";
 import programEncounterReducer from "./programEncounterReducer";
+import relations from "./relationshipReducer";
 import loadReducer from "./loadReducer";
 
 export default combineReducers({
@@ -26,5 +27,6 @@ export default combineReducers({
   viewVisitReducer,
   completedVisitsReducer,
   programEncounterReducer,
+  relations,
   loadReducer
 });

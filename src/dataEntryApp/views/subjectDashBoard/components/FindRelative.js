@@ -1,21 +1,30 @@
 import React from "react";
+// import { store } from "../../src/common/store/createStore";
+import { store } from "../../../../../src/common/store/createStore";
+
 import { makeStyles } from "@material-ui/core/styles";
 import { LineBreak } from "common/components/utils";
 import Grid from "@material-ui/core/Grid";
 import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import { first } from "lodash";
 import { withRouter, useHistory } from "react-router-dom";
 import Modal from "./CommonModal";
 import DialogContent from "@material-ui/core/DialogContent";
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormLabel from "@material-ui/core/FormLabel";
-import { FormControl, FormGroup } from "@material-ui/core";
+// import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+// import DateFnsUtils from "@date-io/date-fns";
+// import FormControlLabel from "@material-ui/core/FormControlLabel";
+// import Checkbox from "@material-ui/core/Checkbox";
+// import FormLabel from "@material-ui/core/FormLabel";
+import { FormControl, FormGroup, TextField, Typography } from "@material-ui/core";
 import moment from "moment/moment";
 import { noop, isNil, isEmpty } from "lodash";
 import { IconButton, Button, Box } from "@material-ui/core";
-import CancelIcon from "@material-ui/icons/Cancel";
+import { searchSubjects, setSubjects } from "../../../reducers/searchReducer";
+import { types } from "../../../reducers/relationshipReducer";
+import FindRelativeTable from "./FindRelativeTable";
+
+// import CancelIcon from "@material-ui/icons/Cancel";
 
 const useStyles = makeStyles(theme => ({
   filterButtonStyle: {
@@ -48,8 +57,8 @@ const useStyles = makeStyles(theme => ({
   form: {
     display: "flex",
     flexDirection: "column",
-    margin: "auto",
-    width: "fit-content"
+    margin: "auto"
+    // width: "fit-content"
   },
   resetButton: {
     fontSize: "13px",
@@ -86,89 +95,68 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FindRelative = ({ subjectTypes }) => {
+const FindRelative = props => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  const [selectedScheduleDate, setSelectedScheduleDate] = React.useState(null);
-  const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
-  const [filterDateErrors, setFilterDateErrors] = React.useState({
+  // const [searchvalue, setSearchvalue] = React.useState("");
+  const [selectRelativeName, setselectRelativeName] = React.useState(null);
+  // const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
+  const [filterErrors, setfilterErrors] = React.useState({
     SCHEDULED_DATE: "",
-    COMPLETED_DATE: ""
+    RELATIVE_NAME: ""
   });
-  const [msg, setMsg] = React.useState("");
+  // const [msg, setMsg] = React.useState("");
 
-  const [selectedVisitTypes, setVisitTypes] = React.useState(null);
+  // const [selectedVisitTypes, setVisitTypes] = React.useState(null);
+  console.log("Subjects------>", props.subjects);
 
-  const visitTypesChange = event => {
-    if (event.target.checked) {
-      setVisitTypes({ ...selectedVisitTypes, [event.target.name]: event.target.checked });
-    } else {
-      setVisitTypes({ ...selectedVisitTypes, [event.target.name]: event.target.checked });
+  const [value, setValue] = React.useState("");
+
+  const handleChange = event => {
+    setValue(event.target.value);
+    filterErrors["RELATIVE_NAME"] = "";
+    if (isEmpty(event.target.value) || event.target.value === "") {
+      filterErrors["RELATIVE_NAME"] = "Name is mandatory";
     }
+    setfilterErrors({ ...filterErrors });
   };
 
   const close = () => {
-    if (!moment(selectedScheduleDate).isValid()) setSelectedScheduleDate(null);
-    if (!moment(selectedCompletedDate).isValid()) setSelectedCompletedDate(null);
-    filterDateErrors["COMPLETED_DATE"] = "";
-    filterDateErrors["SCHEDULED_DATE"] = "";
-    setFilterDateErrors({ ...filterDateErrors });
-  };
-
-  const scheduleDateChange = scheduledDate => {
-    setSelectedScheduleDate(scheduledDate);
-    filterDateErrors["SCHEDULED_DATE"] = "";
-    if (!isNil(scheduledDate) && !moment(scheduledDate).isValid()) {
-      filterDateErrors["SCHEDULED_DATE"] = "invalidDateFormat";
-    }
-    setFilterDateErrors({ ...filterDateErrors });
-  };
-
-  const completedDateChange = completedDate => {
-    setSelectedCompletedDate(completedDate);
-    filterDateErrors["COMPLETED_DATE"] = "";
-    if (!isNil(completedDate) && !moment(completedDate).isValid()) {
-      filterDateErrors["COMPLETED_DATE"] = "invalidDateFormat";
-    }
-    setFilterDateErrors({ ...filterDateErrors });
+    if (!moment(selectRelativeName).isValid()) setselectRelativeName(null);
+    // if (!moment(selectedCompletedDate).isValid()) setSelectedCompletedDate(null);
+    filterErrors["RELATIVE_NAME"] = "";
+    filterErrors["SCHEDULED_DATE"] = "";
+    setfilterErrors({ ...filterErrors });
   };
 
   const applyClick = () => {
-    let filterParams = {};
-    if (selectedScheduleDate != null) {
-      let dateformat = moment(selectedScheduleDate).format("YYYY-MM-DD");
-      let earliestVisitDateTime = moment(dateformat).format("YYYY-MM-DDT00:00:00.000") + "Z";
-      filterParams.earliestVisitDateTime = earliestVisitDateTime;
-    }
-    if (selectedCompletedDate != null) {
-      let dateformat = moment(selectedCompletedDate).format("YYYY-MM-DD");
-      let encounterDateTime = moment(dateformat).format("YYYY-MM-DDT00:00:00.000") + "Z";
-      filterParams.encounterDateTime = encounterDateTime;
-    }
+    console.log("Valuee------", value);
+    props.search({ query: value });
+  };
+  const modifySearch = () => {
+    props.setSubjects();
+    setValue("");
+  };
+  const okClick = () => {
+    props.setSubjects();
+    setValue("");
+    let storage = [];
 
-    const SelectedvisitTypesListSort =
-      selectedVisitTypes != null
-        ? Object.keys(selectedVisitTypes)
-            .filter(selectedId => selectedVisitTypes[selectedId])
-            .map(String)
-        : [];
-
-    if (SelectedvisitTypesListSort.length > 0) {
-      const SelectedvisitTypesList = [...new Set(SelectedvisitTypesListSort.map(item => item))];
-      filterParams.encounterTypeUuids = SelectedvisitTypesList.join();
-    }
-    // setFilterParams(filterParams);
+    // store.dispatch({ type: types.SET_LISTOFRELATIVES, value: localSavedSubject });
+    // JSON.parse(sessionStorage.getItem("selectedRelatives"));
+    let localSavedSubject = JSON.parse(sessionStorage.getItem("selectedRelative"));
+    console.log("localSavedSubject------->", localSavedSubject);
+    storage.push(localSavedSubject);
+    store.dispatch({ type: types.SET_LISTOFRELATIVES, value: localSavedSubject });
+    sessionStorage.setItem("selectedRelativeslist", JSON.stringify(storage));
+    console.log("localstorage----->", storage);
+    sessionStorage.removeItem("selectedRelative");
+    // sessionStorage.clear("selectedRelatives");
   };
 
-  const resetClick = () => {
-    setSelectedScheduleDate(null);
-    setSelectedCompletedDate(null);
-    setVisitTypes(null);
-  };
-
-  const content = (
-    <DialogContent>
+  const searchContent = (
+    <DialogContent style={{ width: 600, height: "auto" }}>
       <Grid container direction="row" justify="flex-end" alignItems="flex-start">
         {/* <IconButton
           color="secondary"
@@ -178,7 +166,7 @@ const FindRelative = ({ subjectTypes }) => {
         >
           <CancelIcon className={classes.cancelIcon} /> {t("resetAll")}
         </IconButton> */}
-        <Box>
+        {/* <Box>
           <Button variant="outlined" className={classes.cancelBtn} color="primary">
             Patient
           </Button>
@@ -188,79 +176,47 @@ const FindRelative = ({ subjectTypes }) => {
           <Button variant="contained" className={classes.addBtn} color="primary">
             Banyan tree
           </Button>
-        </Box>
+        </Box> */}
       </Grid>
-      <form className={classes.form} noValidate>
-        <FormControl className={classes.formControl}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid
-              container
-              direction="row"
-              spacing={3}
-              justify="flex-start"
-              alignItems="flex-start"
-            >
-              <Grid item xs={6}>
-                <KeyboardDatePicker
-                  allowKeyboardControl
-                  margin="normal"
-                  id="date-picker-dialog"
-                  label={t("visitscheduledate")}
-                  format="dd/MM/yyyy"
-                  autoComplete="off"
-                  value={selectedScheduleDate}
-                  onChange={scheduleDateChange}
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                    color: "primary"
-                  }}
-                  error={!isEmpty(filterDateErrors["SCHEDULED_DATE"])}
+      <form className={classes.form}>
+        {props.subjects && props.subjects.content ? (
+          ""
+        ) : (
+          <Grid container direction="row" justify="space-between" alignItems="center">
+            <Grid item xs={12}>
+              <FormControl>
+                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
+
+                <Typography variant="subtitle2" gutterBottom>
+                  Name
+                </Typography>
+                <TextField
+                  id="standard-multiline-flexible"
+                  // label="Name"
+                  multiline
+                  // rowsMax={4}
+
+                  value={value}
+                  onChange={handleChange}
+                  error={!isEmpty(filterErrors["RELATIVE_NAME"])}
                   helperText={
-                    !isEmpty(filterDateErrors["SCHEDULED_DATE"]) &&
-                    t(filterDateErrors["SCHEDULED_DATE"])
+                    !isEmpty(filterErrors["RELATIVE_NAME"]) && t(filterErrors["RELATIVE_NAME"])
                   }
                 />
-              </Grid>
-              <Grid item xs={6}>
-                <KeyboardDatePicker
-                  allowKeyboardControl
-                  margin="normal"
-                  id="date-picker-dialog"
-                  label={t("visitcompleteddate")}
-                  format="dd/MM/yyyy"
-                  autoComplete="off"
-                  value={selectedCompletedDate}
-                  onChange={completedDateChange}
-                  error={!isEmpty(filterDateErrors["COMPLETED_DATE"])}
-                  helperText={
-                    !isEmpty(filterDateErrors["COMPLETED_DATE"]) &&
-                    t(filterDateErrors["COMPLETED_DATE"])
-                  }
-                  KeyboardButtonProps={{
-                    "aria-label": "change date",
-                    color: "primary"
-                  }}
-                />
-              </Grid>
+              </FormControl>
             </Grid>
-          </MuiPickersUtilsProvider>
-        </FormControl>
+          </Grid>
+        )}
         <LineBreak num={1} />
-        <FormLabel component="legend">{t("visitType")}</FormLabel>
+        {/* <FormLabel component="legend">{t("visitType")}</FormLabel> */}
         <FormGroup row>
-          {/* {encounterTypes.map(visitType => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectedVisitTypes != null ? selectedVisitTypes[visitType.uuid] : false}
-                  onChange={visitTypesChange}
-                  name={visitType.uuid}
-                  color="primary"
-                />
-              }
-              label={visitType.name}
-            />
-          ))} */}
+          {/* <FindRelativeTable/> */}
+          {/* <Button onClick={() => valueSubmit()}>Find</Button> */}
+          {props.subjects && props.subjects.content ? (
+            <FindRelativeTable subjectData={props.subjects} />
+          ) : (
+            ""
+          )}
         </FormGroup>
       </form>
     </DialogContent>
@@ -268,7 +224,7 @@ const FindRelative = ({ subjectTypes }) => {
 
   return (
     <Modal
-      content={content}
+      content={searchContent}
       handleError={noop}
       buttonsSet={[
         {
@@ -276,27 +232,67 @@ const FindRelative = ({ subjectTypes }) => {
           label: t("filterResults"),
           classes: classes.filterButtonStyle
         },
-        {
-          buttonType: "applyButton",
-          label: t("apply"),
-          classes: classes.btnCustom,
-          redirectTo: `/app/completeVisit`,
-          click: applyClick,
-          disabled:
-            !isEmpty(filterDateErrors["COMPLETED_DATE"]) ||
-            !isEmpty(filterDateErrors["SCHEDULED_DATE"])
-        },
-        {
-          buttonType: "cancelButton",
-          label: t("cancel"),
-          classes: classes.cancelBtnCustom
-        }
+        props.subjects && props.subjects.content
+          ? {
+              buttonType: "applyButton",
+              label: "OK",
+              classes: classes.btnCustom,
+              // redirectTo: return <FindRelativeTable subjectData={props.subjects} />,
+              click: okClick,
+              disabled:
+                !isEmpty(filterErrors["RELATIVE_NAME"]) || !isEmpty(filterErrors["SCHEDULED_DATE"])
+            }
+          : "",
+        props.subjects && props.subjects.content
+          ? ""
+          : {
+              buttonType: "findButton",
+              label: "Find",
+              classes: classes.btnCustom,
+              click: applyClick
+              // disabled:
+              //   !isEmpty(filterErrors["RELATIVE_NAME"]) || !isEmpty(filterErrors["SCHEDULED_DATE"])
+            },
+        props.subjects && props.subjects.content
+          ? {
+              buttonType: "modifysearch",
+              label: "Modify search",
+              classes: classes.btnCustom,
+              click: modifySearch,
+              disabled:
+                !isEmpty(filterErrors["RELATIVE_NAME"]) || !isEmpty(filterErrors["SCHEDULED_DATE"])
+            }
+          : "",
+
+        props.subjects && props.subjects.content
+          ? ""
+          : {
+              buttonType: "cancelButton",
+              label: t("cancel"),
+              classes: classes.cancelBtnCustom
+            }
       ]}
-      // title={t("filterResults")}
       title="Find Relative"
       btnHandleClose={close}
     />
   );
 };
 
-export default FindRelative;
+const mapStateToProps = state => ({
+  Relations: state.dataEntry.relations,
+  subjects: state.dataEntry.search.subjects,
+  searchParams: state.dataEntry.search.subjectSearchParams,
+  subjectTypes: first(state.dataEntry.metadata.operationalModules.subjectTypes)
+});
+
+const mapDispatchToProps = {
+  search: searchSubjects,
+  setSubjects
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(FindRelative)
+);

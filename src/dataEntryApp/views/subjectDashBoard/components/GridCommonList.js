@@ -9,6 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
+import RemoveRelative from "../components/RemoveRelative";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -33,9 +34,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
+const GridCommonList = ({ profileName, gridListDetails, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  console.log("gridListDetails---->", gridListDetails);
 
   return (
     <Grid item xs={12} container className={classes.gridBottomBorder}>
@@ -75,7 +77,14 @@ const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
                     </CardContent>
                     {!enableReadOnly ? (
                       <CardActions>
-                        <Button color="primary">{t("remove")}</Button>
+                        {/* <Button color="primary">{t("remove")}</Button> */}
+                        <RemoveRelative
+                          relationAname={profileName}
+                          relationBname={
+                            relative.individualB.firstName + " " + relative.individualB.lastName
+                          }
+                          relationId={relative.individualB.uuid}
+                        />
                         <Button color="primary">{t("edit")}</Button>
                       </CardActions>
                     ) : (

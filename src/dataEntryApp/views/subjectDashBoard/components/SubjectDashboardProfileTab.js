@@ -80,6 +80,7 @@ const useStyles = makeStyles(theme => ({
 const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  console.log("profile-----", profile);
 
   return (
     <Fragment>
@@ -135,6 +136,7 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
             {profile.relationships != undefined ? (
               <GridCommonList
+                profileName={profile.firstName + " " + profile.lastName}
                 gridListDetails={profile.relationships}
                 enableReadOnly={enableReadOnly}
               />
@@ -147,7 +149,10 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
           </ExpansionPanelDetails>
           {!enableReadOnly ? (
             <Button color="primary">
-              <InternalLink to={`/app/subject/addRelative`}> {t("addARelative")} </InternalLink>{" "}
+              <InternalLink to={`/app/subject/addRelative?uuid=${profile.uuid}`}>
+                {" "}
+                {t("addARelative")}{" "}
+              </InternalLink>{" "}
             </Button>
           ) : (
             ""
