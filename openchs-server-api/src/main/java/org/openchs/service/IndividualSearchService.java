@@ -58,13 +58,16 @@ public class IndividualSearchService {
                     individualContract.setFirstName((String) individualRecord[0]);
                     individualContract.setLastName((String) individualRecord[1]);
                     individualContract.setFullName((String) individualRecord[2]);
+                    if(null!=individualRecord[3] && !"".equals(individualRecord[3].toString().trim()))
                     individualContract.setId(new Long(individualRecord[3].toString()));
                     individualContract.setUuid((String) individualRecord[4]);
                     individualContract.setAddressLevel((String) individualRecord[5]);
                     individualContract.setSubjectTypeName((String) individualRecord[6]);
                     individualContract.setGender((String) individualRecord[7]);
+                    if(null!=individualRecord[8] && !"".equals(individualRecord[8].toString().trim()))
                     individualContract.setDateOfBirth(new LocalDate(individualRecord[8].toString()));
                     individualContract.setEnrolments(constructEnrolments((String) individualRecord[9]));
+                    if(null!=individualRecord[10] && !"".equals(individualRecord[10].toString().trim()))
                     individualContract.setTotalElements(new BigInteger(individualRecord[10].toString()));
 
 
