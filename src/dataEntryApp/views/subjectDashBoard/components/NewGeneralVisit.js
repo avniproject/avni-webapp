@@ -38,7 +38,7 @@ const NewGeneralVisit = ({ match, ...props }) => {
   // Creating New Encounter Object for Plan Encounter
   props.subjectGeneral &&
     props.subjectGeneral
-      .filter(e => isNil(e.encounterDateTime))
+      .filter(e => isNil(e.encounterDateTime) && isNil(e.cancelDateTime))
       .map(pe => {
         const encounter = new Encounter();
         encounter.encounterType = pe.encounterType;

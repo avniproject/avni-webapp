@@ -244,16 +244,19 @@ function* loadEditProgramEncounterWatcher() {
   yield takeLatest(types.ON_LOAD_EDIT_PROGRAM_ENCOUNTER, loadEditProgramEncounterWorker);
 }
 
-export function* loadEditProgramEncounterWorker({ programEncounterUuid, enrolUuid }) {
+export function* loadEditProgramEncounterWorker({ programEncounterUuid }) {
   const programEncounterJson = yield call(api.fetchProgramEncounter, programEncounterUuid);
-  const programEnrolmentJson = yield call(api.fetchProgramEnrolment, enrolUuid);
+  const programEnrolmentJson = yield call(
+    api.fetchProgramEnrolment,
+    programEncounterJson.enrolmentUUID
+  );
   const programEncounter = mapProgramEncounter(programEncounterJson);
   const formMapping = yield select(
     selectFormMappingByEncounterTypeUuid(programEncounter.encounterType.uuid)
   );
   const programEncounterForm = yield call(api.fetchForm, formMapping.formUUID);
   const programEnrolment = new ProgramEnrolment();
-  programEnrolment.uuid = enrolUuid;
+  programEnrolment.uuid = programEnrolmentJson.uuid;
   programEnrolment.enrolmentDateTime = new Date(programEnrolmentJson.enrolmentDateTime);
   programEncounter.programEnrolment = programEnrolment;
 

@@ -20,6 +20,8 @@ const mapFormStateToProps = state => ({
   validationResults: state.dataEntry.encounterReducer.validationResults,
   message: state.dataEntry.encounterReducer.encounter.name
     ? `${state.dataEntry.encounterReducer.encounter.name} Encounter Canceled`
+    : state.dataEntry.encounterReducer.encounter.encounterType.name
+    ? `${state.dataEntry.encounterReducer.encounter.encounterType.name} Encounter Canceled`
     : `Encounter Canceled`,
   additionalRows: [
     {
