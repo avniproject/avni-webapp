@@ -11,7 +11,6 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import { getAllLocations, getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
 import { getSearchFilters } from "../../reducers/searchFilterReducer";
 import Button from "@material-ui/core/Button";
@@ -20,7 +19,9 @@ import BasicForm from "../GlobalSearch/BasicForm";
 import NonCodedConceptForm from "../GlobalSearch/NonCodedConceptForm";
 import NonConceptForm from "../GlobalSearch/NonConceptForm";
 import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
+import IncludeVoiedForm from "../GlobalSearch/IncludeVoiedForm";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import Grid from "@material-ui/core/Grid";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -158,27 +159,83 @@ function SearchFilterForm({
 
   // address
   const [selectedAddress, setSelectedAddress] = React.useState(null);
-  const onAddressSelect = (event, value) => {
+  const onAddressSelect = value => {
     setSelectedAddress({ ...selectedAddress, address: value });
   };
-
+  // date
   const [selectedDate, setSelectedDate] = useState({
-    registrationDate: {
+    RegistrationDate: {
+      minValue: null,
+      maxValue: null
+    },
+    EnrolmentDate: {
+      minValue: null,
+      maxValue: null
+    },
+    ProgramEncounterDate: {
+      minValue: null,
+      maxValue: null
+    },
+    EncounterDate: {
       minValue: null,
       maxValue: null
     }
   });
 
-  // date
-  const searchFilterDates = date => {
-    // console.log( event);
+  const searchFilterDates = (minDate, maxDate, type) => {
     setSelectedDate({
       ...selectedDate,
-      registrationDate: {
-        minValue: date,
-        maxValue: null
+      [type]: {
+        minValue: minDate,
+        maxValue: maxDate
       }
     });
+  };
+
+  // noncoded concept
+  const [selectedConcept, setSelectedConcept] = useState({
+    concept: [
+      // {
+      //   uuid: "",
+      //   minValue: null,
+      //   maxValue: null,
+      //   searchScope:"",
+      //   dataType:"",
+      //   widget:""
+      // }
+    ]
+  });
+
+  const searchFilterConcept = (minDate, maxDate, searchFilterForm) => {
+    const conceptCheck = selectedConcept.concept.filter(
+      conceptUUID => conceptUUID.uuid === searchFilterForm.conceptUUID
+    );
+    conceptCheck.length > 0 && conceptCheck[0].widget === "Default"
+      ? setSelectedConcept({
+          concept: [
+            {
+              uuid: searchFilterForm.conceptUUID,
+              minValue: minDate,
+              maxValue: maxDate,
+              searchScope: searchFilterForm.scope,
+              dataType: searchFilterForm.conceptDataType,
+              widget: searchFilterForm.widget
+            }
+          ]
+        })
+      : setSelectedConcept({
+          concept: [
+            ...selectedConcept.concept,
+            {
+              uuid: searchFilterForm.conceptUUID,
+              minValue: minDate,
+              maxValue: maxDate,
+              searchScope: searchFilterForm.scope,
+              dataType: searchFilterForm.conceptDataType,
+              widget: searchFilterForm.widget
+            }
+          ]
+        });
   };
 
   // is voided
@@ -198,7 +255,9 @@ function SearchFilterForm({
   console.log("enter value", enterValue);
   console.log("Gender", selectedGender);
   console.log("Address", selectedAddress);
+  console.log("selectedDate", selectedDate);
   console.log("includeVoied", includeVoied);
+  console.log("selectedConcept", selectedConcept);
 
   // const searchResult = (subjectTypeUUID, name) => {
   //   const request = {
@@ -238,46 +297,49 @@ function SearchFilterForm({
                 ))
               : ""}
           </RadioGroup>
-          {selectedSearchFilter ? (
+          {selectedSearchFilter && selectedSearchFilter.length > 0 ? (
             <div>
-              <BasicForm
-                searchFilterForms={selectedSearchFilter}
-                onChange={searchFilterValue}
-                operationalModules={operationalModules}
-                genders={genders}
-                allLocation={allLocations}
-                onGenderChange={onGenderChange}
-                selectedGender={selectedGender}
-                onAddressSelect={onAddressSelect}
-              />
-              <NonCodedConceptForm
-                searchFilterForms={selectedSearchFilter}
-                onChange={searchFilterValue}
-                onDateChange={searchFilterDates}
-              />
-              <NonConceptForm
-                searchFilterForms={selectedSearchFilter}
-                selectedDate={selectedDate}
-                onDateChange={searchFilterDates}
-              />
-              <CodedConceptForm
-                searchFilterForms={selectedSearchFilter}
-                onChange={searchFilterValue}
-                conceptList={organisationConfigs.conceptList}
-              />
-              <FormControl component="fieldset">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={includeVoied}
-                      onChange={includeVoiedChange}
-                      color="primary"
-                    />
-                  }
-                  label="Include Voided"
-                  labelPlacement="end"
-                />
-              </FormControl>
+              <Grid container>
+                <Grid xs={12}>
+                  <BasicForm
+                    searchFilterForms={selectedSearchFilter}
+                    onChange={searchFilterValue}
+                    operationalModules={operationalModules}
+                    genders={genders}
+                    allLocation={allLocations}
+                    onGenderChange={onGenderChange}
+                    selectedGender={selectedGender}
+                    onAddressSelect={onAddressSelect}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <NonCodedConceptForm
+                    searchFilterForms={selectedSearchFilter}
+                    onChange={searchFilterConcept}
+                    selectedConcept={selectedConcept}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <NonConceptForm
+                    searchFilterForms={selectedSearchFilter}
+                    selectedDate={selectedDate}
+                    onDateChange={searchFilterDates}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <CodedConceptForm
+                    searchFilterForms={selectedSearchFilter}
+                    onChange={searchFilterValue}
+                    conceptList={organisationConfigs.conceptList}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <IncludeVoiedForm
+                    includeVoied={includeVoied}
+                    includeVoiedChange={includeVoiedChange}
+                  />
+                </Grid>
+              </Grid>
             </div>
           ) : (
             ""

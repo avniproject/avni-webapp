@@ -23,6 +23,10 @@ const useStyles = makeStyles(theme => ({
   lableStyle: {
     marginBottom: 10,
     color: "rgba(0, 0, 0, 0.54)"
+  },
+  componentSpacing: {
+    marginTop: "1%",
+    marginBottom: "1%"
   }
 }));
 
@@ -49,10 +53,10 @@ function BasicForm({
 
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Name" ? (
-            <Grid item xs={3} key={index}>
+            <Grid item key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
@@ -73,7 +77,7 @@ function BasicForm({
 
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Age" ? (
-            <Grid item xs={3} key={index}>
+            <Grid item key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
@@ -94,7 +98,7 @@ function BasicForm({
 
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "SearchAll" ? (
-            <Grid item xs={3} key={index}>
+            <Grid item key={index}>
               <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                 {t(searchFilterForm.titleKey)}
               </Typography>
@@ -113,7 +117,7 @@ function BasicForm({
           )
         )}
       </Grid>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Gender" ? (
             <Grid item xs={12} key={index}>
@@ -143,7 +147,7 @@ function BasicForm({
         )}
       </Grid>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Address" ? (
             <Grid item xs={12} key={index}>

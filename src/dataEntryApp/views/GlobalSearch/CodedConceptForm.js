@@ -14,6 +14,10 @@ const useStyles = makeStyles(theme => ({
   lableStyle: {
     marginBottom: 10,
     color: "rgba(0, 0, 0, 0.54)"
+  },
+  componentSpacing: {
+    marginTop: "1%",
+    marginBottom: "1%"
   }
 }));
 
@@ -22,7 +26,7 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList }) {
   const { t } = useTranslation();
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} className={classes.componentSpacing}>
         {searchFilterForms.map((searchFilterForm, index) =>
           searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType === "Coded" ? (
             <Grid item xs={12} key={index}>
