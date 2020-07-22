@@ -43,7 +43,7 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails, enableReadO
     <Grid item xs={12} container className={classes.gridBottomBorder}>
       {gridListDetails
         ? gridListDetails.map((relative, index) => {
-            if (relative !== undefined) {
+            if (relative !== undefined && relative.exitDateTime === undefined) {
               return (
                 <Grid key={index} item xs={3} className={classes.rightBorder}>
                   <Card className={classes.card}>
@@ -79,12 +79,15 @@ const GridCommonList = ({ profileUUID, profileName, gridListDetails, enableReadO
                       <CardActions>
                         {/* <Button color="primary">{t("remove")}</Button> */}
                         <RemoveRelative
-                          mainuuid={profileUUID}
+                          relationAuuid={profileUUID}
                           relationAname={profileName}
                           relationBname={
                             relative.individualB.firstName + " " + relative.individualB.lastName
                           }
-                          relationId={relative.id}
+                          relationBId={relative.id}
+                          relationuuid={relative.uuid}
+                          relationBuuid={relative.individualB.uuid}
+                          relationBTypeuuid={relative.relationship.uuid}
                         />
                         <Button color="primary">{t("edit")}</Button>
                       </CardActions>

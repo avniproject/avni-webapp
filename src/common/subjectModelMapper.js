@@ -123,7 +123,7 @@ export const mapRelations = relationShipJson => {
   const individualRelationship = General.assignFields(
     relationShipJson,
     new IndividualRelationship(),
-    ["uuid", "id"]
+    ["uuid", "id", "exitDateTime", "enterDateTime"]
   );
   individualRelationship.relationship = mapIndividualRelationshipType(
     relationShipJson["relationshipType"]

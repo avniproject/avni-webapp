@@ -89,37 +89,32 @@ const FindRelative = props => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  const [selectRelativeName, setselectRelativeName] = React.useState(null);
-  // const [selectedCompletedDate, setSelectedCompletedDate] = React.useState(null);
   const [filterErrors, setfilterErrors] = React.useState({
     // SCHEDULED_DATE: "",
     RELATIVE_NAME: ""
   });
-
-  console.log("Subjects------>", props.subjects);
 
   const [value, setValue] = React.useState("");
 
   const handleChange = event => {
     setValue(event.target.value);
     filterErrors["RELATIVE_NAME"] = "";
-    if (isEmpty(event.target.value) || event.target.value === "") {
+    if (event.target.value === "") {
       filterErrors["RELATIVE_NAME"] = "Name is mandatory";
     }
     setfilterErrors({ ...filterErrors });
   };
 
-  const close = () => {
-    if (!moment(selectRelativeName).isValid()) setselectRelativeName(null);
-    // if (!moment(selectedCompletedDate).isValid()) setSelectedCompletedDate(null);
-    filterErrors["RELATIVE_NAME"] = "";
-    // filterErrors["SCHEDULED_DATE"] = "";
-    setfilterErrors({ ...filterErrors });
-  };
+  const close = () => {};
 
-  const applyClick = () => {
-    // console.log("Valuee------", value);
-    props.search({ query: value });
+  const applyClick = e => {
+    if (value === "") {
+      filterErrors["RELATIVE_NAME"] = "Name is mandatory";
+      setfilterErrors({ ...filterErrors });
+      return false;
+    } else {
+      props.search({ query: value });
+    }
   };
   const modifySearch = () => {
     props.setSubjects();
@@ -128,15 +123,12 @@ const FindRelative = props => {
   const okClick = () => {
     props.setSubjects();
     setValue("");
-    let storage = [];
-    let localSavedSubject = JSON.parse(sessionStorage.getItem("selectedRelative"));
-    console.log("localSavedSubject------->", localSavedSubject);
-    storage.push(localSavedSubject);
-    store.dispatch({ type: types.SET_LISTOFRELATIVES, value: localSavedSubject });
-    sessionStorage.setItem("selectedRelativeslist", JSON.stringify(storage));
-    console.log("localstorage----->", storage);
+    let localSavedRelativeData = [];
+    let localsSelctedRelative = JSON.parse(sessionStorage.getItem("selectedRelative"));
+    localSavedRelativeData.push(localsSelctedRelative);
+    // store.dispatch({ type: types.SET_LISTOFRELATIVES, value: localsSelctedRelative });
+    sessionStorage.setItem("selectedRelativeslist", JSON.stringify(localSavedRelativeData));
     sessionStorage.removeItem("selectedRelative");
-    // sessionStorage.clear("selectedRelatives");
   };
 
   const searchContent = (

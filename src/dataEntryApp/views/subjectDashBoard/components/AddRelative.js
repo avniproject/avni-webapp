@@ -25,14 +25,9 @@ import {
   Button
 } from "@material-ui/core";
 import FindRelative from "../components/FindRelative";
-// import FindRelativeTable from "../components/FindRelativeTable";
 import { InternalLink, LineBreak, RelativeLink } from "../../../../common/components/utils";
-// import { isEqual } from "lodash";
-// import moment from "moment/moment";
 import { useTranslation } from "react-i18next";
-// import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 import { Cancel } from "@material-ui/icons";
-// import { blue } from "@material-ui/core/colors";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,19 +58,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 20,
     marginTop: 10
   },
-  // findButton: {
-  //   marginLeft: "8px",
-  //   color: "white",
-  //   cursor: "pointer",
-  //   height: 30,
-  //   padding: "4px 25px",
-  //   fontSize: 12,
-  //   borderRadius: 50
-  // },
-  // visitButton: {
-  //   marginLeft: "8px",
-  //   fontSize: "14px"
-  // },
+
   cancelBtn: {
     color: "orange",
     width: 110,

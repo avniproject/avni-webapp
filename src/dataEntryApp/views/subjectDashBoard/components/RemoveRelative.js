@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,8 @@ import Modal from "./CommonModal";
 import DialogContent from "@material-ui/core/DialogContent";
 import { FormControl, FormGroup, TextField, Typography } from "@material-ui/core";
 import { noop, isNil, isEmpty } from "lodash";
-import { removeRelationShip } from "../../../reducers/relationshipReducer";
+import { removeRelationShip, saveRelationShip } from "../../../reducers/relationshipReducer";
+import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 
 const useStyles = makeStyles(theme => ({
   removeButtonStyle: {
@@ -49,11 +50,19 @@ const useStyles = makeStyles(theme => ({
 const RemoveRelative = props => {
   const { t } = useTranslation();
   const classes = useStyles();
-
   const close = () => {};
 
   const removeClick = () => {
-    props.removeRelationShip(props.relationId);
+    const RelationData = {
+      exitDateTime: new Date(),
+      individualAUUID: props.relationAuuid,
+      individualBUUID: props.relationBuuid,
+      relationshipTypeUUID: props.relationBTypeuuid,
+      uuid: props.relationuuid
+    };
+    props.saveRelationShip(RelationData);
+    props.getSubjectProfile(props.relationAuuid);
+    // window.location.reload(false);
   };
 
   const searchContent = (
@@ -80,7 +89,7 @@ const RemoveRelative = props => {
         {
           buttonType: "applyButton",
           label: "Remove",
-          redirectTo: `/app/subject?uuid=${props.mainuuid}`,
+          redirectTo: `/app/subject?uuid=${props.relationAuuid}`,
           classes: classes.btnCustom,
           click: removeClick
         },
@@ -104,7 +113,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  removeRelationShip
+  removeRelationShip,
+  saveRelationShip,
+  getSubjectProfile
 };
 
 export default withRouter(

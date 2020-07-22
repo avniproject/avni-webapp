@@ -77,16 +77,6 @@ const FindRelativeTable = ({ subjectData }) => {
         // size={dense ? "small" : "medium"}
         aria-label="enhanced table"
       >
-        {/* <EnhancedTableHead
-            classes={classes}
-            numSelected={selected.length}
-            order={order}
-            orderBy={orderBy}
-            onSelectAllClick={handleSelectAllClick}
-            onRequestSort={handleRequestSort}
-            rowCount={rows.length}
-          /> */}
-
         <TableHead>
           <TableRow>
             <TableCell />

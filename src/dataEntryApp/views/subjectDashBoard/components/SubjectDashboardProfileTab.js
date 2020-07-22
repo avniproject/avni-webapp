@@ -82,6 +82,21 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
   const { t } = useTranslation();
   console.log("profile-----", profile);
 
+  let relativeList = [];
+
+  if (profile && profile.relationships) {
+    profile.relationships.forEach(function(row, index) {
+      if (row.exitDateTime === undefined) {
+        let sub = {
+          enterDateTime: row.enterDateTime,
+          id: row.id,
+          uuid: row.id
+        };
+        relativeList.push(sub);
+      }
+    });
+  }
+
   return (
     <Fragment>
       <Paper className={classes.root}>
@@ -134,7 +149,7 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            {profile.relationships != undefined ? (
+            {profile.relationships != undefined && relativeList.length !== 0 ? (
               <GridCommonList
                 profileUUID={profile.uuid}
                 profileName={profile.firstName + " " + profile.lastName}
