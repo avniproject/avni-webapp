@@ -1,76 +1,62 @@
 package org.openchs.service;
 
 import org.openchs.application.Platform;
-import org.openchs.dao.OrganisationConfigRepository;
 import org.openchs.dao.PlatformTranslationRepository;
 import org.openchs.dao.TranslationRepository;
 import org.openchs.domain.*;
 import org.openchs.domain.Locale;
-import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
 public class TranslationService {
     private final TranslationRepository translationRepository;
-    private final OrganisationConfigRepository organisationConfigRepository;
     private final PlatformTranslationRepository platformTranslationRepository;
 
     @Autowired
-    public TranslationService(TranslationRepository translationRepository, OrganisationConfigRepository organisationConfigRepository, PlatformTranslationRepository platformTranslationRepository) {
+    public TranslationService(TranslationRepository translationRepository, PlatformTranslationRepository platformTranslationRepository) {
         this.translationRepository = translationRepository;
-        this.organisationConfigRepository = organisationConfigRepository;
         this.platformTranslationRepository = platformTranslationRepository;
     }
 
-    public Map<String, Map<String, JsonObject>> createTransactionAndPlatformTransaction(String locale) throws IOException {
-        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
-        
-        Map<String, Map<String, JsonObject>> responseObject = new HashMap<>();
-        if(organisation == null) 
-            return responseObject;
-        
-        OrganisationConfig organisationConfig = organisationConfigRepository.findByOrganisationId(organisation.getId());
+    public Map<String, Map<String, JsonObject>> createTransactionAndPlatformTransaction(String locale, OrganisationConfig organisationConfig) {
         if (organisationConfig != null && organisationConfig.getSettings() != null) {
-            List<String> languages = (ArrayList<String>) organisationConfig.getSettings().get("languages");
-            List<String> localeLanguages = new ArrayList<>();
-            localeLanguages.addAll(languages);
-            if (!Objects.nonNull(localeLanguages)) {
-                return null;
+            List<String> allSupportedLanguages = (ArrayList<String>) organisationConfig.getSettings().get("languages");
+            Set<String> languages = new HashSet<>(allSupportedLanguages);
+            if (locale != null) {
+                return getSingleLanguageTranslation(languages, locale, organisationConfig);
             }
-            if (locale != null && !localeLanguages.contains(locale)) {
-                return null;
-            }
-            if (locale != null && localeLanguages.contains(locale)) {
-                localeLanguages.clear();
-                localeLanguages.add(locale);
-            }
-            for (String language : localeLanguages) {
-                if (!responseObject.containsKey(language)) {
-                    Map<String, JsonObject> translationMap = new HashMap<>();
-                    Translation translation = translationRepository.findByOrganisationIdAndLanguage(organisationConfig.getOrganisationId(), Locale.valueOf(language));
-                    PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatformAndLanguage(Platform.Web, Locale.valueOf(language));
-                    if (Objects.nonNull(translation) && Objects.nonNull(platformTranslation)) {
-                        JsonObject platformTranslationMap = platformTranslation.getTranslationJson();
-                        translation.getTranslationJson().entrySet().stream().forEach(entry -> {
-                            platformTranslationMap.put(entry.getKey(), entry.getValue());
-                        });
-                        translationMap.put("translations", platformTranslationMap);
-                        responseObject.put(language, translationMap);
-                    } else if (Objects.nonNull(translation)) {
-                        translationMap.put("translations", translation.getTranslationJson());
-                        responseObject.put(language, translationMap);
-                    } else if (Objects.nonNull(platformTranslation)) {
-                        translationMap.put("translations", platformTranslation.getTranslationJson());
-                        responseObject.put(language, translationMap);
-                    }
-                }
-            }
+            return getMergedTranslations(languages, organisationConfig);
         }
-        return responseObject;
+        return new HashMap<>();
+    }
 
+    private Map<String, Map<String, JsonObject>> getSingleLanguageTranslation(Set<String> allLanguages, String passedLanguage, OrganisationConfig organisationConfig) {
+        if (!allLanguages.contains(passedLanguage)) {
+            return null;
+        }
+        allLanguages.clear();
+        allLanguages.add(passedLanguage);
+        return getMergedTranslations(allLanguages, organisationConfig);
+    }
+
+    private Map<String, Map<String, JsonObject>> getMergedTranslations(Set<String> languages, OrganisationConfig organisationConfig) {
+        Map<String, Map<String, JsonObject>> responseMap = new HashMap<>();
+        for (String language : languages) {
+            Map<String, JsonObject> translationMap = new HashMap<>();
+            Translation implementationTranslations = translationRepository.findByOrganisationIdAndLanguage(organisationConfig.getOrganisationId(), Locale.valueOf(language));
+            PlatformTranslation platformTranslation = platformTranslationRepository.findByPlatformAndLanguage(Platform.Web, Locale.valueOf(language));
+            JsonObject jsonObject = new JsonObject();
+            if (platformTranslation != null) {
+                jsonObject.putAll(platformTranslation.getTranslationJson());
+            } if (implementationTranslations != null) {
+                jsonObject.putAll(implementationTranslations.getTranslationJson());
+            }
+            translationMap.put("translations", jsonObject);
+            responseMap.put(language, translationMap);
+        }
+        return responseMap;
     }
 }
