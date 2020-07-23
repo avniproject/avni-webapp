@@ -78,7 +78,7 @@ const NewGeneralVisit = ({ match, ...props }) => {
           {t("newGeneralVisit")}
         </Typography>
         <LineBreak num={1} />
-        <NewVisitMenuView sections={sections} uuid={subjectUuid} isForEncounters={true} />
+        <NewVisitMenuView sections={sections} uuid={subjectUuid} />
       </Paper>
     </Fragment>
   );

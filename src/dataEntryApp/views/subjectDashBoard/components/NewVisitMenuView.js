@@ -28,9 +28,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewVisitMenuView = ({ sections, uuid, isForEncounters }) => {
+const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const scheduledVisitUrl = isForProgramEncounters
+    ? `/app/subject/programEncounter`
+    : `/app/subject/encounter`;
+  const actualVisitUrl = isForProgramEncounters
+    ? `/app/subject/programEncounter?enrolUuid=${uuid}`
+    : `/app/subject/encounter?subjectUuid=${uuid}`;
 
   return (
     <Fragment>
@@ -63,33 +69,15 @@ const NewVisitMenuView = ({ sections, uuid, isForEncounters }) => {
                                 scope="row"
                                 width="50%"
                               >
-                                {isEqual(section.title, t("plannedVisits")) ? (
-                                  <InternalLink
-                                    to={
-                                      isForEncounters
-                                        ? `/app/subject/encounter?encounterUuid=${encounter.uuid}`
-                                        : `/app/subject/programEncounter?uuid=${
-                                            encounter.encounterType.uuid
-                                          }&enrolUuid=${uuid}`
-                                    }
-                                  >
-                                    {encounter.name}
-                                  </InternalLink>
-                                ) : (
-                                  <InternalLink
-                                    to={
-                                      isForEncounters
-                                        ? `/app/subject/encounter?uuid=${
-                                            encounter.encounterType.uuid
-                                          }&subjectUuid=${uuid}`
-                                        : `/app/subject/programEncounter?uuid=${
-                                            encounter.encounterType.uuid
-                                          }&enrolUuid=${uuid}`
-                                    }
-                                  >
-                                    {encounter.name}
-                                  </InternalLink>
-                                )}
+                                <InternalLink
+                                  to={
+                                    isEqual(section.title, t("plannedVisits"))
+                                      ? `${scheduledVisitUrl}?encounterUuid=${encounter.uuid}`
+                                      : `${actualVisitUrl}&uuid=${encounter.encounterType.uuid}`
+                                  }
+                                >
+                                  {encounter.name}
+                                </InternalLink>
                               </TableCell>
                             ) : (
                               ""

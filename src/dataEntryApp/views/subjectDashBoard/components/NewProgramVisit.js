@@ -43,7 +43,9 @@ const NewProgramVisit = ({ match, ...props }) => {
       planVisit.encounterType = planEncounter.encounterType;
       planVisit.encounterDateTime = planEncounter.encounterDateTime;
       planVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
+      planVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
       planVisit.name = planEncounter.name;
+      planVisit.uuid = planEncounter.uuid;
       planEncounterList.push(planVisit);
     });
 
@@ -74,7 +76,7 @@ const NewProgramVisit = ({ match, ...props }) => {
           {t("newProgramVisit")}
         </Typography>
         <LineBreak num={1} />
-        <NewVisitMenuView sections={sections} uuid={enrolmentUuid} />
+        <NewVisitMenuView sections={sections} uuid={enrolmentUuid} isForProgramEncounters={true} />
       </Paper>
     </Fragment>
   );

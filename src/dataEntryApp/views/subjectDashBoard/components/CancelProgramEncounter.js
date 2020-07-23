@@ -12,11 +12,11 @@ import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { ModelGeneral as General, ValidationResult } from "avni-models";
 import moment from "moment";
 import {
-  getCancelProgramEncounterForm,
   updateProgramEncounter,
   setEncounterDateValidation,
   resetState,
-  onLoadEditCancelProgramEncounter
+  createCancelProgramEncounter,
+  editCancelProgramEncounter
 } from "../../../reducers/programEncounterReducer";
 import CancelProgramEncounterForm from "./CancelProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -34,15 +34,14 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
   const classes = useStyles();
   const CANCEL_DATE_TIME = "CANCEL_DATE_TIME";
   const editCancelProgramEncounter = isEqual(match.path, "/app/subject/editCancelProgramEncounter");
-  const enrolUuid = match.queryParams.enrolUuid;
-  const uuid = match.queryParams.uuid;
+  const encounterUuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.resetState();
     if (editCancelProgramEncounter) {
-      props.onLoadEditCancelProgramEncounter(uuid, enrolUuid);
+      props.editCancelProgramEncounter(encounterUuid);
     } else {
-      props.getCancelProgramEncounterForm(uuid, enrolUuid);
+      props.createCancelProgramEncounter(encounterUuid);
     }
   }, []);
 
@@ -118,7 +117,7 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
 };
 
 const mapStateToProps = state => ({
-  cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm,
+  cancelProgramEncounterForm: state.dataEntry.programEncounterReducer.programEncounterForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
   enconterDateValidation: state.dataEntry.programEncounterReducer.enconterDateValidation
@@ -127,8 +126,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   updateProgramEncounter,
   setEncounterDateValidation,
-  onLoadEditCancelProgramEncounter,
-  getCancelProgramEncounterForm,
+  createCancelProgramEncounter,
+  editCancelProgramEncounter,
   resetState
 };
 

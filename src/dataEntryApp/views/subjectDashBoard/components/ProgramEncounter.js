@@ -10,12 +10,13 @@ import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
-  getProgramEncounterForm,
   onLoad,
   updateProgramEncounter,
   setEncounterDateValidation,
-  onLoadEditProgramEncounter,
-  resetState
+  editProgramEncounter,
+  resetState,
+  createProgramEncounter,
+  createProgramEncounterForScheduled
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -33,21 +34,21 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
   const classes = useStyles();
   const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
+  const encounterUuid = match.queryParams.encounterUuid;
   const enrolUuid = match.queryParams.enrolUuid;
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.resetState();
-    (async function fetchData() {
-      if (editProgramEncounter) {
-        //uuid - programEncounterUuid
-        await props.onLoadEditProgramEncounter(uuid);
-      } else {
-        //uuid - encounterTypeUuid
-        await props.onLoad(enrolUuid);
-        props.getProgramEncounterForm(uuid, enrolUuid);
-      }
-    })();
+    if (editProgramEncounter) {
+      props.editProgramEncounter(uuid);
+    } else if (encounterUuid) {
+      //encounterUuid - programEncounterUuid
+      props.createProgramEncounterForScheduled(encounterUuid);
+    } else {
+      //uuid - encounterTypeUuid
+      props.createProgramEncounter(uuid, enrolUuid);
+    }
   }, []);
 
   const validationResultForEncounterDate =
@@ -123,12 +124,13 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  getProgramEncounterForm,
   onLoad,
   updateProgramEncounter,
   setEncounterDateValidation,
-  onLoadEditProgramEncounter,
-  resetState
+  editProgramEncounter,
+  resetState,
+  createProgramEncounter,
+  createProgramEncounterForScheduled
 };
 
 export default withRouter(
