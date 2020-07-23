@@ -254,6 +254,7 @@ export const mapEncounter = encounterDetails => {
     );
     encounter.encounterType = mapEncounterType(encounterDetails.encounterType);
     encounter.observations = mapObservation(encounterDetails["observations"]);
+    encounter.cancelObservations = mapObservation(encounterDetails["cancelObservations"]);
     encounter.subjectUuid = encounterDetails["subjectUUID"];
     return encounter;
   }

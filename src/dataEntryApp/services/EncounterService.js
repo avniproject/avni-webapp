@@ -20,5 +20,23 @@ export default {
       return new ValidationResult(true, ENCOUNTER_DATE_TIME, null);
     }
     return failure;
+  },
+  validateCancelDate(encounter) {
+    const CANCEL_DATE_TIME = "CANCEL_DATE_TIME";
+    const failure = new ValidationResult(false, CANCEL_DATE_TIME);
+    if (isNil(encounter.cancelDateTime)) {
+      failure.messageKey = "emptyValidationMessage";
+    } else if (
+      General.dateAIsBeforeB(encounter.cancelDateTime, encounter.individual.registrationDate)
+    ) {
+      failure.messageKey = "cancelDateBeforeRegistrationDate";
+    } else if (General.dateIsAfterToday(encounter.cancelDateTime)) {
+      failure.messageKey = "cancelDateInFuture";
+    } else if (!moment(encounter.cancelDateTime).isValid()) {
+      failure.messageKey = "invalidDateFormat";
+    } else {
+      return new ValidationResult(true, CANCEL_DATE_TIME, null);
+    }
+    return failure;
   }
 };

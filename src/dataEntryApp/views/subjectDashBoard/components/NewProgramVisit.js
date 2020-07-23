@@ -37,7 +37,7 @@ const NewProgramVisit = ({ match, ...props }) => {
 
   //Creating New programEncounter Object for Plan Encounter
   props.planEncounters
-    .filter(pe => isNil(pe.encounterDateTime))
+    .filter(pe => isNil(pe.encounterDateTime) && isNil(pe.cancelDateTime))
     .map(planEncounter => {
       const planVisit = new ProgramEncounter();
       planVisit.encounterType = planEncounter.encounterType;

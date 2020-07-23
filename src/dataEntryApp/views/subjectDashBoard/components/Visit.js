@@ -173,9 +173,7 @@ const Visit = ({
         {!enableReadOnly ? (
           <>
             {encounterDateTime && uuid && enrolUuid && !isEmpty(programEncounterFormMapping) ? (
-              <InternalLink
-                to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
-              >
+              <InternalLink to={`/app/subject/editProgramEncounter?uuid=${uuid}`}>
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
                 </Button>

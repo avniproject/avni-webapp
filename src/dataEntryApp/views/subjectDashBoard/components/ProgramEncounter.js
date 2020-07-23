@@ -41,7 +41,7 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
     (async function fetchData() {
       if (editProgramEncounter) {
         //uuid - programEncounterUuid
-        await props.onLoadEditProgramEncounter(uuid, enrolUuid);
+        await props.onLoadEditProgramEncounter(uuid);
       } else {
         //uuid - encounterTypeUuid
         await props.onLoad(enrolUuid);

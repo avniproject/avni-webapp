@@ -3,10 +3,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, Grid, List, ListItem, ListItemText } from "@material-ui/core";
 import moment from "moment/moment";
 import { InternalLink } from "../../../../common/components/utils";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 import { connect } from "react-redux";
-import { selectFormMappingForEncounter } from "../../../sagas/encounterSelector";
+import {
+  selectFormMappingForEncounter,
+  selectFormMappingForCancelEncounter
+} from "../../../sagas/encounterSelector";
+import clsx from "clsx";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,6 +36,10 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: "#ffeaea",
     fontSize: "12px",
     padding: "2px 5px"
+  },
+  cancelLabel: {
+    color: "gray",
+    backgroundColor: "#DCDCDC"
   },
   listItem: {
     paddingBottom: "0px",
@@ -68,7 +76,8 @@ const PlannedEncounter = ({
   subjectUuid,
   enableReadOnly,
   subjectTypeUuid,
-  encounterFormMapping
+  encounterFormMapping,
+  cancelEncounterFormMapping
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -108,22 +117,37 @@ const PlannedEncounter = ({
           {status && (
             <ListItem className={classes.listItem}>
               <ListItemText>
-                <label className={classes.programStatusStyle}>{statusMap[status]}</label>
+                <label
+                  className={clsx(classes.programStatusStyle, {
+                    [classes.cancelLabel]: isEqual(statusMap[status], "Cancelled")
+                  })}
+                >
+                  {statusMap[status]}
+                </label>
               </ListItemText>
             </ListItem>
           )}
         </List>
         {!enableReadOnly ? (
           <>
-            {encounter.cancelDateTime ? (
-              <Button color="primary" className={classes.visitButton}>
-                {t("edit visit")}
-              </Button>
+            {encounter.cancelDateTime && encounter.uuid && !isEmpty(cancelEncounterFormMapping) ? (
+              <InternalLink to={`/app/subject/editCancelEncounter?uuid=${encounter.uuid}`}>
+                <Button color="primary" className={classes.visitButton}>
+                  {t("edit visit")}
+                </Button>
+              </InternalLink>
             ) : (
               <div className={classes.visitButton}>
                 {encounter.uuid && !isEmpty(encounterFormMapping) ? (
                   <InternalLink to={`/app/subject/encounter?encounterUuid=${encounter.uuid}`}>
                     <Button color="primary">{t("do visit")}</Button>
+                  </InternalLink>
+                ) : (
+                  ""
+                )}
+                {encounter.uuid && !isEmpty(cancelEncounterFormMapping) ? (
+                  <InternalLink to={`/app/subject/cancelEncounter?uuid=${encounter.uuid}`}>
+                    <Button color="primary">{t("cancel Visit")}</Button>
                   </InternalLink>
                 ) : (
                   ""
@@ -141,6 +165,10 @@ const PlannedEncounter = ({
 
 const mapStateToProps = (state, props) => ({
   encounterFormMapping: selectFormMappingForEncounter(
+    props.encounter.encounterType.uuid,
+    props.subjectTypeUuid
+  )(state),
+  cancelEncounterFormMapping: selectFormMappingForCancelEncounter(
     props.encounter.encounterType.uuid,
     props.subjectTypeUuid
   )(state)

@@ -16,6 +16,7 @@ import ProgramEncounter from "./views/subjectDashBoard/components/ProgramEncount
 import CancelProgramEncounter from "./views/subjectDashBoard/components/CancelProgramEncounter";
 import NewGeneralVisit from "./views/subjectDashBoard/components/NewGeneralVisit";
 import Encounter from "./views/subjectDashBoard/components/Encounter";
+import CancelEncounter from "./views/subjectDashBoard/components/CancelEncounter";
 import AppBar from "dataEntryApp/components/AppBar";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
@@ -88,6 +89,8 @@ const DataEntry = ({
             <Route exact path={`${path}/subject/newGeneralVisit`} component={NewGeneralVisit} />
             <Route exact path={`${path}/subject/encounter`} component={Encounter} />
             <Route path={`${path}/subject/editEncounter`} component={Encounter} />
+            <Route path={`${path}/subject/cancelEncounter`} component={CancelEncounter} />
+            <Route path={`${path}/subject/editCancelEncounter`} component={CancelEncounter} />
           </Grid>
         </Grid>
       </div>

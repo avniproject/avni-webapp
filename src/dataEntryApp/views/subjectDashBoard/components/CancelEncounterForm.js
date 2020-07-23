@@ -4,7 +4,7 @@ import moment from "moment";
 import { ObservationsHolder } from "avni-models";
 import FormWizard from "dataEntryApp/views/registration/FormWizard";
 import {
-  updateObs,
+  updateCancelObs,
   saveEncounter,
   setValidationResults
 } from "dataEntryApp/reducers/encounterReducer";
@@ -12,38 +12,36 @@ import {
 const mapFormStateToProps = state => ({
   form: state.dataEntry.encounterReducer.encounterForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,
-  observations: state.dataEntry.encounterReducer.encounter.observations,
-  obsHolder: new ObservationsHolder(state.dataEntry.encounterReducer.encounter.observations),
+  observations: state.dataEntry.encounterReducer.encounter.cancelObservations,
+  obsHolder: new ObservationsHolder(state.dataEntry.encounterReducer.encounter.cancelObservations),
   saved: state.dataEntry.encounterReducer.saved,
   onSaveGoto: "/app/subject?uuid=" + state.dataEntry.subjectProfile.subjectProfile.uuid,
   staticValidationResults: state.dataEntry.encounterReducer.enconterDateValidation,
   validationResults: state.dataEntry.encounterReducer.validationResults,
   message: state.dataEntry.encounterReducer.encounter.name
-    ? `${state.dataEntry.encounterReducer.encounter.name} Encounter Saved`
+    ? `${state.dataEntry.encounterReducer.encounter.name} Encounter Canceled`
     : state.dataEntry.encounterReducer.encounter.encounterType.name
-    ? `${state.dataEntry.encounterReducer.encounter.encounterType.name} Encounter Saved`
-    : `Encounter Saved`,
+    ? `${state.dataEntry.encounterReducer.encounter.encounterType.name} Encounter Canceled`
+    : `Encounter Canceled`,
   additionalRows: [
     {
-      label: "Visit Date",
-      value: moment(state.dataEntry.encounterReducer.encounter.encounterDateTime).format(
-        "DD-MMM-YYYY"
-      )
+      label: "Cancel Date",
+      value: moment(state.dataEntry.encounterReducer.encounter.cancelDateTime).format("DD-MMM-YYYY")
     }
   ]
 });
 
 const mapFormDispatchToProps = {
-  updateObs,
+  updateObs: updateCancelObs,
   onSave: saveEncounter,
   setValidationResults
 };
 
-const EncounterForm = withRouter(
+const CancelEncounterForm = withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
   )(FormWizard)
 );
 
-export default EncounterForm;
+export default CancelEncounterForm;
