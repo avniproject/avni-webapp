@@ -137,7 +137,8 @@ const ProgramView = ({
   subjectUuid,
   undoExitEnrolment,
   handleUpdateComponent,
-  enableReadOnly
+  enableReadOnly,
+  subjectTypeUuid
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -362,6 +363,9 @@ const ProgramView = ({
                       enrolUuid={programData.uuid}
                       encounterTypeUuid={row.encounterType.uuid}
                       enableReadOnly={enableReadOnly}
+                      cancelDateTime={row.cancelDateTime}
+                      programUuid={programData.program.uuid}
+                      subjectTypeUuid={subjectTypeUuid}
                     />
                   ) : (
                     ""
@@ -413,6 +417,10 @@ const ProgramView = ({
                       encounterDateTime={row.encounterDateTime}
                       enrolUuid={programData.uuid}
                       enableReadOnly={enableReadOnly}
+                      cancelDateTime={row.cancelDateTime}
+                      encounterTypeUuid={row.encounterType.uuid}
+                      programUuid={programData.program.uuid}
+                      subjectTypeUuid={subjectTypeUuid}
                     />
                   ) : (
                     ""

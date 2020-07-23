@@ -8,8 +8,14 @@ import ListItemText from "@material-ui/core/ListItemText";
 import moment from "moment/moment";
 import Button from "@material-ui/core/Button";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
+import { find, isEmpty, isNil } from "lodash";
+import {
+  selectCancelProgramEncounterFormMapping,
+  selectFormMappingByEncounterTypeUuid
+} from "../../../sagas/programEncounterSelector";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,6 +39,12 @@ const useStyles = makeStyles(theme => ({
   programStatusStyle: {
     color: "red",
     backgroundColor: "#ffeaea",
+    fontSize: "12px",
+    padding: "2px 5px"
+  },
+  cancelLabel: {
+    color: "gray",
+    backgroundColor: "#DCDCDC",
     fontSize: "12px",
     padding: "2px 5px"
   },
@@ -75,8 +87,13 @@ const Visit = ({
   uuid,
   enrolUuid,
   encounterTypeUuid,
+  cancelDateTime,
   enableReadOnly,
-  type
+  type,
+  programUuid,
+  subjectTypeUuid,
+  programEncounterFormMapping,
+  cancelProgramEncounterFormMapping
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -127,7 +144,13 @@ const Visit = ({
               />
             )}
           </ListItem>
-          {overdueDate && new Date() > new Date(overdueDate) ? (
+          {cancelDateTime ? (
+            <ListItem className={classes.listItem}>
+              <ListItemText>
+                <label className={classes.cancelLabel}>{t("Cancelled")}</label>
+              </ListItemText>
+            </ListItem>
+          ) : overdueDate && new Date() > new Date(overdueDate) ? (
             <ListItem className={classes.listItem}>
               <ListItemText>
                 <label className={classes.programStatusStyle}>{t("Overdue")}</label>
@@ -145,13 +168,22 @@ const Visit = ({
             </ListItem>
           ) : (
             ""
-          )} */}
+          )}  */}
         </List>
         {!enableReadOnly ? (
           <>
-            {encounterDateTime ? (
+            {encounterDateTime && uuid && enrolUuid && !isEmpty(programEncounterFormMapping) ? (
+              <InternalLink to={`/app/subject/editProgramEncounter?uuid=${uuid}`}>
+                <Button color="primary" className={classes.visitButton}>
+                  {t("edit visit")}
+                </Button>
+              </InternalLink>
+            ) : cancelDateTime &&
+              uuid &&
+              enrolUuid &&
+              !isEmpty(cancelProgramEncounterFormMapping) ? (
               <InternalLink
-                to={`/app/subject/editProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
+                to={`/app/subject/editCancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
               >
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
@@ -159,7 +191,7 @@ const Visit = ({
               </InternalLink>
             ) : (
               <div className={classes.visitButton}>
-                {encounterTypeUuid && enrolUuid ? (
+                {encounterTypeUuid && enrolUuid && !isEmpty(programEncounterFormMapping) ? (
                   <InternalLink
                     to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
                   >
@@ -168,7 +200,15 @@ const Visit = ({
                 ) : (
                   ""
                 )}
-                <Button color="primary">{t("cancelVisit")}</Button>
+                {uuid && enrolUuid && !isEmpty(cancelProgramEncounterFormMapping) ? (
+                  <InternalLink
+                    to={`/app/subject/cancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
+                  >
+                    <Button color="primary">{t("cancel Visit")}</Button>
+                  </InternalLink>
+                ) : (
+                  ""
+                )}
               </div>
             )}
           </>
@@ -180,4 +220,13 @@ const Visit = ({
   );
 };
 
-export default Visit;
+const mapStateToProps = (state, props) => ({
+  programEncounterFormMapping: selectFormMappingByEncounterTypeUuid(props.encounterTypeUuid)(state),
+  cancelProgramEncounterFormMapping: selectCancelProgramEncounterFormMapping(
+    props.encounterTypeUuid,
+    props.programUuid,
+    props.subjectTypeUuid
+  )(state)
+});
+
+export default withRouter(connect(mapStateToProps)(Visit));

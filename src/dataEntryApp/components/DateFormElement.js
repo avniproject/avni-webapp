@@ -12,7 +12,8 @@ import {
   FormControlLabel,
   FormControl,
   TextField,
-  FormLabel
+  FormLabel,
+  Typography
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
@@ -26,6 +27,11 @@ const useStyles = makeStyles(theme => ({
       margin: theme.spacing(1),
       width: "20ch"
     }
+  },
+  lableStyle: {
+    width: "50%",
+    marginBottom: 10,
+    color: "rgba(0, 0, 0, 0.54)"
   }
 }));
 
@@ -37,6 +43,7 @@ export const DateTimeFormElement = ({
   uuid
 }) => {
   const { t } = useTranslation();
+  const classes = useStyles();
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -44,10 +51,13 @@ export const DateTimeFormElement = ({
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+        {t(fe.display || fe.name)}
+      </Typography>
       <KeyboardDateTimePicker
         autoOk
         ampm={true}
-        label={fe.display || fe.name}
+        // label={fe.display || fe.name}
         required={fe.mandatory}
         value={value}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
@@ -74,6 +84,7 @@ const getValue = (keyValues, key) => {
 export const DateFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   let durationValue = getValue(fe.keyValues, "durationOptions");
   const { t } = useTranslation();
+  const classes = useStyles();
   const validationResult = find(
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
@@ -88,9 +99,12 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
     />
   ) : (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+        {t(fe.display || fe.name)}
+      </Typography>
       <KeyboardDatePicker
         autoOk
-        label={fe.display || fe.name}
+        // label={fe.display || fe.name}
         required={fe.mandatory}
         value={value}
         onChange={update}
@@ -116,7 +130,6 @@ export const DateAndDurationFormElement = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
   let durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
   const [units, setUnit] = React.useState(durationValue[0]);
   const today = moment();
@@ -154,9 +167,12 @@ export const DateAndDurationFormElement = ({
     <FormControl style={{ width: "100%" }}>
       <FormLabel>{fe.display || fe.name}</FormLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+          Select Date
+        </Typography>
         <KeyboardDatePicker
           autoOk
-          label="Select Date"
+          // label="Select Date"
           required={fe.mandatory}
           value={date}
           onChange={dateValue => onDateChange(dateValue)}
@@ -175,10 +191,13 @@ export const DateAndDurationFormElement = ({
         <FormLabel>OR</FormLabel>
       </div>
       <form>
+        <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+          Enter Duration
+        </Typography>
         <RadioGroup row aria-label="gender" name="gender1" value={units} onChange={onChangeUnit}>
           <TextField
             id="standard-number"
-            label="Enter Duration"
+            // label="Enter Duration"
             type="number"
             InputLabelProps={{
               shrink: true
@@ -188,7 +207,12 @@ export const DateAndDurationFormElement = ({
             onChange={durationValue => onDurationChange(durationValue)}
           />
           {durationValue.map(item => (
-            <FormControlLabel value={item} control={<Radio color="primary" />} label={item} />
+            <FormControlLabel
+              value={item}
+              style={{ marginLeft: 20 }}
+              control={<Radio color="primary" />}
+              label={item}
+            />
           ))}
         </RadioGroup>
       </form>

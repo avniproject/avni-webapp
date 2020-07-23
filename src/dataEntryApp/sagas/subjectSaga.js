@@ -32,17 +32,13 @@ import {
 } from "./enrolmentSelectors";
 import { mapForm } from "../../common/adapters";
 import {
-  onLoad,
   setEnrolForm,
   setProgramEnrolment,
   saveProgramComplete,
-  getProgramEnrolment,
   types as enrolmentTypes
 } from "../reducers/programEnrolReducer";
 import { setLoad } from "../reducers/loadReducer";
 import _ from "lodash";
-import BrowserStore from "../api/browserStore";
-import { disableSession } from "../../common/constants";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { mapProfile } from "common/subjectModelMapper";
 
@@ -219,19 +215,8 @@ export function* loadEditRegistrationPageWorker({ subjectUuid }) {
   yield put.resolve(getRegistrationForm(subject.subjectType.name));
   yield put.resolve(getGenders());
 
-  if (disableSession) {
-    yield put.resolve(setSubject(subject));
-    yield put.resolve(setLoaded());
-  } else {
-    let subjectFromSession = BrowserStore.fetchSubject();
-    if (subjectFromSession) {
-      yield put.resolve(setSubject(subjectFromSession));
-      yield put.resolve(setLoaded());
-    } else {
-      yield put.resolve(setSubject(subject));
-      yield put.resolve(setLoaded());
-    }
-  }
+  yield put.resolve(setSubject(subject));
+  yield put.resolve(setLoaded());
 }
 
 /*
@@ -275,7 +260,6 @@ export function* updateObsWorker({ formElement, value }) {
   yield put(
     setValidationResults(validate(formElement, value, subject.observations, validationResults))
   );
-  sessionStorage.setItem("subject", JSON.stringify(subject));
 }
 
 function* updateEnrolmentObsWatcher() {

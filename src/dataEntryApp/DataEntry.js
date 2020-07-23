@@ -14,6 +14,10 @@ import AddRelative from "./views/subjectDashBoard/components/AddRelative";
 import CompletedVisits from "./views/subjectDashBoard/components/CompletedVisits";
 import NewProgramVisit from "./views/subjectDashBoard/components/NewProgramVisit";
 import ProgramEncounter from "./views/subjectDashBoard/components/ProgramEncounter";
+import CancelProgramEncounter from "./views/subjectDashBoard/components/CancelProgramEncounter";
+import NewGeneralVisit from "./views/subjectDashBoard/components/NewGeneralVisit";
+import Encounter from "./views/subjectDashBoard/components/Encounter";
+import CancelEncounter from "./views/subjectDashBoard/components/CancelEncounter";
 import AppBar from "dataEntryApp/components/AppBar";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
@@ -75,11 +79,20 @@ const DataEntry = ({
             />
             <Route exact path={`${path}/subject/newProgramVisit`} component={NewProgramVisit} />
             <Route exact path={`${path}/subject/programEncounter`} component={ProgramEncounter} />
+            <Route path={`${path}/subject/editProgramEncounter`} component={ProgramEncounter} />
             <Route
-              exact
-              path={`${path}/subject/editProgramEncounter`}
-              component={ProgramEncounter}
+              path={`${path}/subject/cancelProgramEncounter`}
+              component={CancelProgramEncounter}
             />
+            <Route
+              path={`${path}/subject/editCancelProgramEncounter`}
+              component={CancelProgramEncounter}
+            />
+            <Route exact path={`${path}/subject/newGeneralVisit`} component={NewGeneralVisit} />
+            <Route exact path={`${path}/subject/encounter`} component={Encounter} />
+            <Route path={`${path}/subject/editEncounter`} component={Encounter} />
+            <Route path={`${path}/subject/cancelEncounter`} component={CancelEncounter} />
+            <Route path={`${path}/subject/editCancelEncounter`} component={CancelEncounter} />
           </Grid>
         </Grid>
       </div>

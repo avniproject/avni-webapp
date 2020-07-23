@@ -3,6 +3,7 @@ import Autosuggest from "react-autosuggest";
 import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
+import { AddressLevel } from "avni-models";
 
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {
@@ -24,14 +25,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const LocationAutosuggest = ({
-  onSelect,
-  selectedLocation,
-  data,
-  errorMsg,
-  placeholder,
-  typeId
-}) => {
+const LocationAutosuggest = ({ onSelect, selectedLocation, subjectProps, placeholder, typeId }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -60,6 +54,15 @@ const LocationAutosuggest = ({
 
   const onChange = (event, { newValue }) => {
     setValue(newValue);
+    subjectProps.updateSubject(
+      "lowestAddressLevel",
+      AddressLevel.create({
+        uuid: newValue.uuid,
+        title: newValue.title,
+        level: newValue.level,
+        typeString: newValue.typeString
+      })
+    );
   };
 
   const onSuggestionSelected = (event, { suggestion }) => onSelect(suggestion);

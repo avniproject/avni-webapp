@@ -302,7 +302,6 @@
     "visitType": "यात्रा प्रकार",
     "filterResult": "फ़िल्टर का परिणाम",
     "apply": "अर्ज लागू",
-    "Name": "नाम",
     "Date": "तारीख",
     "Age": "आयु",
     "Village": "गाव",
@@ -342,6 +341,7 @@
     "noRelativesAdded": "कोई रिश्तेदार नहीं जोड़ा गया",
     "viewAllCompletedVisits": "सभी पूर्ण देखे गए दृश्य",
     "registrationDetails": "पंजीकरण विवरण",
-    "filterResults": "फिल्टर परिणाम"
+    "filterResults": "फिल्टर परिणाम",
+    "invalidDateFormat": "वैध तिथि नहीं है"
   }
 }

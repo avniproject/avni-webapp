@@ -38,7 +38,17 @@ const Breadcrumbs = ({ path, match, ...props }) => {
     VIEW_VISIT: "viewProgramEncounter",
     COMPLETED_VISITS: "completedProgramEncounters",
     VIEW_ENCOUNTER: "viewEncounter",
-    COMPLETED_ENCOUNTERS: "completedEncounters"
+    COMPLETED_ENCOUNTERS: "completedEncounters",
+    PROGRAM_ENCOUNTER: "programEncounter",
+    EDIT_PROGRAM_ENCOUNTER: "editProgramEncounter",
+    CANCEL_PROGRAM_ENCOUNTER: "cancelProgramEncounter",
+    EDIT_CANCEL_PROGRAM_ENCOUNTER: "editCancelProgramEncounter",
+    NEW_PROGRAM_VISIT: "newProgramVisit",
+    NEW_GENERAL_VISIT: "newGeneralVisit",
+    ENCOUNTER: "encounter",
+    EDIT_ENCOUNTER: "editEncounter",
+    CANCEL_ENCOUNTER: "cancelEncounter",
+    EDIT_CANCEL_ENCOUNTER: "editCancelEncounter"
   };
   const urlMapper = part => {
     switch (part) {
@@ -83,6 +93,36 @@ const Breadcrumbs = ({ path, match, ...props }) => {
       }
       case urlPartLabels.COMPLETED_ENCOUNTERS: {
         return { breadcrumb: t("completedVisits"), url: "#/app" };
+      }
+      case urlPartLabels.EDIT_CANCEL_PROGRAM_ENCOUNTER: {
+        return { breadcrumb: t("Edit Cancel Program Encounter"), url: "#/app" };
+      }
+      case urlPartLabels.CANCEL_PROGRAM_ENCOUNTER: {
+        return { breadcrumb: t("Cancel Program Encounter"), url: "#/app" };
+      }
+      case urlPartLabels.PROGRAM_ENCOUNTER: {
+        return { breadcrumb: t("Program Encounter"), url: "#/app" };
+      }
+      case urlPartLabels.EDIT_PROGRAM_ENCOUNTER: {
+        return { breadcrumb: t("Edit Program Encounter"), url: "#/app" };
+      }
+      case urlPartLabels.NEW_PROGRAM_VISIT: {
+        return { breadcrumb: t("newProgramVisit"), url: "#/app" };
+      }
+      case urlPartLabels.NEW_GENERAL_VISIT: {
+        return { breadcrumb: t("newGeneralVisit"), url: "#/app" };
+      }
+      case urlPartLabels.ENCOUNTER: {
+        return { breadcrumb: t("Encounter"), url: "#/app" };
+      }
+      case urlPartLabels.EDIT_ENCOUNTER: {
+        return { breadcrumb: t("Edit Encounter"), url: "#/app" };
+      }
+      case urlPartLabels.CANCEL_ENCOUNTER: {
+        return { breadcrumb: t("Cancel Encounter"), url: "#/app" };
+      }
+      case urlPartLabels.EDIT_CANCEL_ENCOUNTER: {
+        return { breadcrumb: t("Edit Cancel Encounter"), url: "#/app" };
       }
       default:
         return { breadcrumb: part, url: "#/app" };

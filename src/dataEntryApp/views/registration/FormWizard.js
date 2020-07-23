@@ -8,7 +8,6 @@ import Form from "../../components/Form";
 import Summary from "./Summary";
 import { Box, Button, Paper, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import BrowserStore from "../../api/browserStore";
 import { FormElementGroup, ValidationResults } from "avni-models";
 import { InternalLink, RelativeLink } from "common/components/utils";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
@@ -197,6 +196,7 @@ const FormWizard = ({
   validationResults,
   staticValidationResults,
   setValidationResults,
+  additionalRows,
   registrationFlow,
   children
 }) => {
@@ -205,7 +205,6 @@ const FormWizard = ({
   const classes = useStyle();
   const { t } = useTranslation();
   if (saved) {
-    BrowserStore.clear("subject");
     setTimeout(() => {
       setRedirect(true);
     }, 2500);
@@ -297,7 +296,7 @@ const FormWizard = ({
           </Box>
           <Paper className={classes.form}>
             {isOnSummaryPage ? (
-              <Summary observations={observations} />
+              <Summary observations={observations} additionalRows={additionalRows} />
             ) : (
               <Form
                 current={currentFormElementGroup}

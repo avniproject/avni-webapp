@@ -113,9 +113,6 @@ const NewCompletedVisitsTable = ({ apiUrl, viewEncounterUrl, filterParams, entit
           render: row => {
             return (
               <Box margin={1}>
-                <Typography variant="h6" gutterBottom component="div">
-                  {t("summary")}
-                </Typography>
                 <Table size="small" aria-label="purchases">
                   <TableBody>
                     <List>

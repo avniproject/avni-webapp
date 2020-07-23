@@ -36,6 +36,12 @@ export default {
       method: "DELETE"
     }),
 
+  saveEncounter: encounter =>
+    httpClient.fetchJson("/encounters", {
+      method: "POST",
+      body: JSON.stringify(encounter)
+    }),
+
   fetchProgramEncounter: uuid =>
     httpClient.fetchJson(`/web/programEncounter/${uuid}`).then(response => {
       return response.json;

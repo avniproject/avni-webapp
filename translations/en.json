@@ -360,7 +360,6 @@
     "visitType": "Visit Type",
     "filterResult": "Filter Result",
     "apply": "Apply",
-    "Name": "Name",
     "Date": "Date",
     "Age": "Age",
     "Village": "Village",
@@ -369,7 +368,7 @@
     "Enrol in program": "Enrol in program",
     "activeprograms": "Active Programs",
     "exitedProgram": "Exited Program",
-    "newform": "New From",
+    "newform": "New Form",
     "completedVisits": "Completed Visits",
     "programdetails": "Program Details",
     "viewAllVisits": "View All Visits",
@@ -390,6 +389,7 @@
     "notEnroledInAnyProgram": "Not enroled in any program",
     "noRelativesAdded": "No Relatives Added",
     "registrationDetails": "Registration details",
-    "filterResults": "Filter results"
+    "filterResults": "Filter results",
+    "invalidDateFormat": "Is not a valid date"
   }
 }

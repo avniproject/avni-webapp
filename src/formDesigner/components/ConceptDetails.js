@@ -226,7 +226,7 @@ function ConceptDetails(props) {
                   return (
                     <>
                       <li key={concept.uuid}>
-                        <a href={`#/appDesigner/concept/${concept.uuid}/edit`}>{concept.name}</a>
+                        <a href={`#/appDesigner/concept/${concept.uuid}/show`}>{concept.name}</a>
                       </li>
                     </>
                   );

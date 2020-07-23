@@ -107,6 +107,7 @@ export default ({ profile, general, program, handleUpdateComponent, enableReadOn
             program={program}
             handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
+            subjectTypeUuid={profile.subjectType.uuid}
           />
         </Paper>
       </TabContent>
@@ -121,6 +122,7 @@ export default ({ profile, general, program, handleUpdateComponent, enableReadOn
             subjectUuid={profile.uuid}
             general={general}
             enableReadOnly={enableReadOnly}
+            subjectTypeUuid={profile.subjectType.uuid}
           />
         </Paper>
       </TabContent>

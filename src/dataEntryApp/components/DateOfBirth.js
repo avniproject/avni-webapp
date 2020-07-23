@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Box, TextField } from "@material-ui/core";
+import { Box, TextField, Typography } from "@material-ui/core";
 import moment from "moment/moment";
 import _ from "lodash";
 import { LineBreak } from "../../../src/common/components/utils";
@@ -41,6 +41,13 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
     <Fragment>
       <Box display="flex" flexDirection="column">
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <Typography
+            variant="body1"
+            gutterBottom
+            style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}
+          >
+            {t("date of birth")}
+          </Typography>
           <KeyboardDatePicker
             error={!_.isEmpty(dobErrorMsg)}
             helperText={t(dobErrorMsg)}
@@ -52,7 +59,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             format="MM/dd/yyyy"
             style={{ width: "30%" }}
             name="dateOfBirth"
-            label={t("date of birth")}
+            // label={t("date of birth")}
             value={_.isNil(dateOfBirth) ? new Date() : dateOfBirth}
             onChange={date => onChange(date)}
             InputLabelProps={{
@@ -65,8 +72,15 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
           />
         </MuiPickersUtilsProvider>
         <LineBreak num={1} />
+        <Typography
+          variant="body1"
+          gutterBottom
+          style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}
+        >
+          {t("age")}
+        </Typography>
         <TextField
-          label={t("age")}
+          // label={t("age")}
           type={"numeric"}
           autoComplete="off"
           required
