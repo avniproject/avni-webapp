@@ -9,6 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { bold } from "ansi-colors";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
+import RemoveRelative from "../components/RemoveRelative";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -33,15 +34,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
+const GridCommonList = ({ profileUUID, profileName, gridListDetails, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  console.log("gridListDetails---->", gridListDetails);
 
   return (
     <Grid item xs={12} container className={classes.gridBottomBorder}>
       {gridListDetails
         ? gridListDetails.map((relative, index) => {
-            if (relative !== undefined) {
+            if (relative !== undefined && relative.exitDateTime === undefined) {
               return (
                 <Grid key={index} item xs={3} className={classes.rightBorder}>
                   <Card className={classes.card}>
@@ -75,7 +77,18 @@ const GridCommonList = ({ gridListDetails, enableReadOnly }) => {
                     </CardContent>
                     {!enableReadOnly ? (
                       <CardActions>
-                        <Button color="primary">{t("remove")}</Button>
+                        {/* <Button color="primary">{t("remove")}</Button> */}
+                        <RemoveRelative
+                          relationAuuid={profileUUID}
+                          relationAname={profileName}
+                          relationBname={
+                            relative.individualB.firstName + " " + relative.individualB.lastName
+                          }
+                          relationBId={relative.id}
+                          relationuuid={relative.uuid}
+                          relationBuuid={relative.individualB.uuid}
+                          relationBTypeuuid={relative.relationship.uuid}
+                        />
                         <Button color="primary">{t("edit")}</Button>
                       </CardActions>
                     ) : (

@@ -147,6 +147,8 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
   const saveButton = buttonsSet.filter(element => element.buttonType === "saveButton").shift();
   const cancelButton = buttonsSet.filter(element => element.buttonType === "cancelButton").shift();
   const applyButton = buttonsSet.filter(element => element.buttonType === "applyButton").shift();
+  const findButton = buttonsSet.filter(element => element.buttonType === "findButton").shift();
+  const modifysearch = buttonsSet.filter(element => element.buttonType === "modifysearch").shift();
 
   return (
     <React.Fragment>
@@ -217,6 +219,32 @@ const CommonModal = ({ content, buttonsSet, title, handleError, btnHandleClose }
                 handleClose();
               }}
               btnDisabled={applyButton.disabled}
+            />
+          ) : (
+            ""
+          )}
+          {findButton ? (
+            <SubjectButton
+              btnLabel={findButton.label}
+              btnClass={findButton.classes}
+              btnClick={() => {
+                findButton.click();
+                // handleClose();
+              }}
+              btnDisabled={findButton.disabled}
+            />
+          ) : (
+            ""
+          )}
+          {modifysearch ? (
+            <SubjectButton
+              btnLabel={modifysearch.label}
+              btnClass={modifysearch.classes}
+              btnClick={() => {
+                modifysearch.click();
+                // handleClose();
+              }}
+              btnDisabled={modifysearch.disabled}
             />
           ) : (
             ""

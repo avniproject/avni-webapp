@@ -80,6 +80,22 @@ const useStyles = makeStyles(theme => ({
 const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  console.log("profile-----", profile);
+
+  let relativeList = [];
+
+  if (profile && profile.relationships) {
+    profile.relationships.forEach(function(row, index) {
+      if (row.exitDateTime === undefined) {
+        let sub = {
+          enterDateTime: row.enterDateTime,
+          id: row.id,
+          uuid: row.id
+        };
+        relativeList.push(sub);
+      }
+    });
+  }
 
   return (
     <Fragment>
@@ -133,8 +149,10 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
             </Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            {profile.relationships != undefined ? (
+            {profile.relationships != undefined && relativeList.length !== 0 ? (
               <GridCommonList
+                profileUUID={profile.uuid}
+                profileName={profile.firstName + " " + profile.lastName}
                 gridListDetails={profile.relationships}
                 enableReadOnly={enableReadOnly}
               />
@@ -145,7 +163,16 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
               </Typography>
             )}
           </ExpansionPanelDetails>
-          {!enableReadOnly ? <Button color="primary"> {t("addARelative")}</Button> : ""}
+          {!enableReadOnly ? (
+            <Button color="primary">
+              <InternalLink to={`/app/subject/addRelative?uuid=${profile.uuid}`}>
+                {" "}
+                {t("addARelative")}{" "}
+              </InternalLink>{" "}
+            </Button>
+          ) : (
+            ""
+          )}
         </ExpansionPanel>
       </Paper>
     </Fragment>
