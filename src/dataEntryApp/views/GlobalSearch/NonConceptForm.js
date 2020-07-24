@@ -24,36 +24,6 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  // const [selectedDates, setSelectedDate] = React.useState({
-  //   RegistrationDate: {
-  //     minValue: null,
-  //     maxValue: null
-  //   },
-  //   EnrolmentDate: {
-  //     minValue: null,
-  //     maxValue: null
-  //   },
-  //   ProgramEncounterDate: {
-  //     minValue: null,
-  //     maxValue: null
-  //   },
-  //   EncounterDate: {
-  //     minValue: null,
-  //     maxValue: null
-  //   }
-  // });
-
-  // const handleDateChange = (minDate, maxnDate, type) => {
-  //   setSelectedDate({
-  //     ...selectedDates,
-  //     [type]: {
-  //       minValue: minDate,
-  //       maxValue: maxnDate
-  //     }
-  //   });
-  // };
-  // console.log(selectedDates)
-
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
       <Grid container spacing={3} className={classes.componentSpacing}>

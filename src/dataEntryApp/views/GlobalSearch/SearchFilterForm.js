@@ -22,6 +22,7 @@ import CodedConceptForm from "../GlobalSearch/CodedConceptForm";
 import IncludeVoiedForm from "../GlobalSearch/IncludeVoiedForm";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import Grid from "@material-ui/core/Grid";
+import moment from "moment/moment";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -159,20 +160,23 @@ function SearchFilterForm({
     }
   };
 
-  const SelectedGenderSort =
+  const selectedGenderSort =
     selectedGender != null
       ? Object.keys(selectedGender)
           .filter(selectedId => selectedGender[selectedId])
           .map(String)
       : [];
 
-  console.log("SelectedGenderSort", SelectedGenderSort);
+  console.log("SelectedGenderSort", selectedGenderSort);
 
   // address
   const [selectedAddress, setSelectedAddress] = React.useState(null);
-  const onAddressSelect = value => {
+  const onAddressSelect = (event, value) => {
     setSelectedAddress({ ...selectedAddress, address: value });
   };
+  const selectedAddressSort =
+    selectedAddress !== null ? selectedAddress.address.map(address => address.id) : [];
+  console.log("selectedAddressSort", selectedAddressSort);
   // date
   const [selectedDate, setSelectedDate] = useState({
     RegistrationDate: {
@@ -197,11 +201,13 @@ function SearchFilterForm({
     setSelectedDate({
       ...selectedDate,
       [type]: {
-        minValue: minDate,
-        maxValue: maxDate
+        minValue: minDate !== null ? moment(minDate).format("YYYY-MM-DD") : null,
+        maxValue: maxDate !== null ? moment(maxDate).format("YYYY-MM-DD") : null
       }
     });
   };
+
+  console.log("selectedDate" + selectedDate);
 
   const conceptList =
     organisationConfigs &&
@@ -233,7 +239,7 @@ function SearchFilterForm({
     }
   });
 
-  const [selectedConcept, setSelectedConcept] = useState(InitialConceptList);
+  const [selectedConcepts, setSelectedConcept] = useState(InitialConceptList);
   const [selectedCodedValue, setSelectedCodedValue] = useState(null);
   const searchFilterConcept = (
     event,
@@ -244,9 +250,9 @@ function SearchFilterForm({
   ) => {
     console.log("fieldName", fieldName);
     console.log("selectedValue", selectedValue);
-    console.log("cuurent state", selectedConcept);
+    console.log("cuurent state", selectedConcepts);
     setSelectedConcept(
-      selectedConcept.map(conceptElement => {
+      selectedConcepts.map(conceptElement => {
         const concept = conceptElement;
         if (concept.conceptDataType === null) {
         } else {
@@ -254,7 +260,7 @@ function SearchFilterForm({
             if (concept.conceptUUID === searchFilterForm.conceptUUID) {
               return {
                 ...concept,
-                [fieldName]: selectedValue
+                [fieldName]: event
               };
             } else {
               return {
@@ -309,37 +315,37 @@ function SearchFilterForm({
   console.log("Address", selectedAddress);
   console.log("selectedDate", selectedDate);
   console.log("includeVoied", includeVoied);
-  console.log("selectedConcept", selectedConcept);
+  console.log("selectedConcepts", selectedConcepts);
 
   const searchResult = (subjectTypeUUID, enterValue) => {
     const request = {
-      subjectType: "9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3",
+      subjectType: selectedSubjectType,
       name: enterValue.name,
       age: {
-        minValue: 5,
+        minValue: enterValue.age,
         maxValue: null
       },
       includeVoided: includeVoied,
-      addressIds: [23],
+      addressIds: selectedAddressSort,
       concept: [],
-      gender: ["ad7d1d14-54fd-45a2-86b7-ea329b744484", "840de9fb-e565-4d7d-b751-90335ba20490"],
+      gender: selectedGenderSort,
       registrationDate: {
-        minValue: "2020-01-13",
-        maxValue: "2020-02-29"
+        minValue: selectedDate.RegistrationDate.minValue,
+        maxValue: selectedDate.RegistrationDate.maxValue
       },
       encounterDate: {
-        minValue: "2020-01-13",
-        maxValue: "2020-02-29"
+        minValue: selectedDate.EncounterDate.minValue,
+        maxValue: selectedDate.EncounterDate.maxValue
       },
       programEncounterDate: {
-        minValue: "2020-01-13",
-        maxValue: "2020-02-29"
+        minValue: selectedDate.ProgramEncounterDate.minValue,
+        maxValue: selectedDate.ProgramEncounterDate.maxValue
       },
       programEnrolmentDate: {
-        minValue: "2020-01-13",
-        maxValue: "2020-02-29"
+        minValue: selectedDate.EnrolmentDate.minValue,
+        maxValue: selectedDate.EnrolmentDate.maxValue
       },
-      searchAll: "",
+      searchAll: enterValue.searchAll,
       pageElement: {
         pageNumber: 1,
         numberOfRecordPerPage: 10,
@@ -434,7 +440,7 @@ function SearchFilterForm({
                   <NonCodedConceptForm
                     searchFilterForms={selectedSearchFilter}
                     onChange={searchFilterConcept}
-                    selectedConcept={selectedConcept}
+                    selectedConcepts={selectedConcepts}
                   />
                 </Grid>
                 <Grid xs={12}>
@@ -449,7 +455,7 @@ function SearchFilterForm({
                     searchFilterForms={selectedSearchFilter}
                     conceptList={organisationConfigs.conceptList}
                     onChange={searchFilterConcept}
-                    selectedConcept={selectedConcept}
+                    selectedConcepts={selectedConcepts}
                   />
                 </Grid>
                 <Grid xs={12}>

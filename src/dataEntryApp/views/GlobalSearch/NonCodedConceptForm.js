@@ -25,10 +25,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function NonCodedConceptForm({ searchFilterForms, selectedConcept, onChange }) {
+function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) {
   const classes = useStyles();
   const { t } = useTranslation();
-  // const [value, setvalue] = React.useState(null);
 
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
@@ -44,15 +43,26 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcept, onChange }) {
                     </Typography>
                     <KeyboardDatePicker
                       id="date-picker-dialog"
+                      placeholder="Form"
                       format="dd/MM/yyyy"
-                      value={null}
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].minValue
+                          : null
+                      }
                       onChange={(event, selectedValue) =>
                         onChange(
                           event,
                           searchFilterForm,
                           "minValue",
                           selectedValue,
-                          selectedConcept
+                          selectedConcepts
                         )
                       }
                       style={{ width: "14%", marginRight: "1%" }}
@@ -63,15 +73,26 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcept, onChange }) {
                     />
                     <KeyboardDatePicker
                       id="date-picker-dialog"
+                      placeholder="To"
                       format="dd/MM/yyyy"
-                      value={null}
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].maxValue
+                          : null
+                      }
                       onChange={(event, selectedValue) =>
                         onChange(
                           event,
                           searchFilterForm,
                           "maxValue",
                           selectedValue,
-                          selectedConcept
+                          selectedConcepts
                         )
                       }
                       style={{ width: "14%", marginLeft: "1%" }}
@@ -82,262 +103,313 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcept, onChange }) {
                     />
                   </MuiPickersUtilsProvider>
                 </Grid>
+              ) : searchFilterForm.conceptDataType === "DateTime" ? (
+                <Grid item xs={12} key={index}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t(searchFilterForm.titleKey)}
+                    </Typography>
+                    <KeyboardDateTimePicker
+                      id="date-picker-dialog"
+                      placeholder="Form"
+                      format="dd/MM/yyyy HH:mm"
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].minValue
+                          : null
+                      }
+                      onChange={(event, selectedValue) =>
+                        onChange(
+                          event,
+                          searchFilterForm,
+                          "minValue",
+                          selectedValue,
+                          selectedConcepts
+                        )
+                      }
+                      style={{ width: "14%", marginRight: "1%" }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                    <KeyboardDateTimePicker
+                      id="date-picker-dialog"
+                      placeholder="To"
+                      format="dd/MM/yyyy HH:mm"
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].maxValue
+                          : null
+                      }
+                      onChange={(event, selectedValue) =>
+                        onChange(
+                          event,
+                          searchFilterForm,
+                          "maxValue",
+                          selectedValue,
+                          selectedConcepts
+                        )
+                      }
+                      style={{ width: "14%", marginLeft: "1%" }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </Grid>
+              ) : searchFilterForm.conceptDataType === "Time" ? (
+                <Grid item xs={12} key={index}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t(searchFilterForm.titleKey)}
+                    </Typography>
+                    <KeyboardTimePicker
+                      id="date-picker-dialog"
+                      placeholder="Form"
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].minValue
+                          : null
+                      }
+                      onChange={(event, selectedValue) =>
+                        onChange(
+                          event,
+                          searchFilterForm,
+                          "minValue",
+                          selectedValue,
+                          selectedConcepts
+                        )
+                      }
+                      style={{ width: "14%", marginRight: "1%" }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                    <KeyboardTimePicker
+                      id="date-picker-dialog"
+                      placeholder="To"
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].maxValue
+                          : null
+                      }
+                      onChange={(event, selectedValue) =>
+                        onChange(
+                          event,
+                          searchFilterForm,
+                          "maxValue",
+                          selectedValue,
+                          selectedConcepts
+                        )
+                      }
+                      style={{ width: "14%", marginLeft: "1%" }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </Grid>
+              ) : searchFilterForm.conceptDataType === "Numeric" ||
+                searchFilterForm.conceptDataType === "Duration" ? (
+                <Grid item xs={12} key={index}>
+                  <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                    {t(searchFilterForm.titleKey)}
+                  </Typography>
+                  <TextField
+                    key={index}
+                    id={searchFilterForm.titleKey}
+                    autoComplete="off"
+                    type="number"
+                    placeholder="Form"
+                    style={{ width: "14%", marginRight: "1%" }}
+                    onChange={event => onChange(event, searchFilterForm)}
+                  />
+                  <TextField
+                    key={index}
+                    id={searchFilterForm.titleKey}
+                    autoComplete="off"
+                    type="number"
+                    placeholder="To"
+                    style={{ width: "14%", marginLeft: "1%" }}
+                    onChange={event => onChange(event, searchFilterForm)}
+                  />
+                </Grid>
               ) : (
-                // : searchFilterForm.conceptDataType === "DateTime" ? (
-                //   <Grid item xs={12} key={index}>
-                //     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                //       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                //         {t(searchFilterForm.titleKey)}
-                //       </Typography>
-                //       <KeyboardDateTimePicker
-                //         id="date-picker-dialog"
-                //         format="dd/MM/yyyy HH:mm"
-                //         value={
-                //           selectedConcept.concept.filter(
-                //             concept => concept.uuid === searchFilterForm.conceptUUID
-                //           ).length > 0
-                //             ? selectedConcept.concept.filter(
-                //                 concept => concept.uuid === searchFilterForm.conceptUUID
-                //               )[0].minValue
-                //             : null
-                //         }
-                //         onChange={minDate =>
-                //           onChange(
-                //             minDate,
-                //             selectedConcept.concept.filter(
-                //               concept => concept.uuid === searchFilterForm.conceptUUID
-                //             ).length > 0
-                //               ? selectedConcept.concept.filter(
-                //                   concept => concept.uuid === searchFilterForm.conceptUUID
-                //                 )[0].maxValue
-                //               : null,
-                //             searchFilterForm
-                //           )
-                //         }
-                //         style={{ width: "14%", marginRight: "1%" }}
-                //         KeyboardButtonProps={{
-                //           "aria-label": "change date",
-                //           color: "primary"
-                //         }}
-                //       />
-                //       <KeyboardDateTimePicker
-                //         id="date-picker-dialog"
-                //         format="dd/MM/yyyy HH:mm"
-                //         value={
-                //           selectedConcept.concept.filter(
-                //             concept => concept.uuid === searchFilterForm.conceptUUID
-                //           ).length > 0
-                //             ? selectedConcept.concept.filter(
-                //                 concept => concept.uuid === searchFilterForm.conceptUUID
-                //               )[0].maxValue
-                //             : null
-                //         }
-                //         onChange={maxDate =>
-                //           onChange(
-                //             selectedConcept.concept.filter(
-                //               concept => concept.uuid === searchFilterForm.conceptUUID
-                //             ).length > 0
-                //               ? selectedConcept.concept.filter(
-                //                   concept => concept.uuid === searchFilterForm.conceptUUID
-                //                 )[0].minValue
-                //               : null,
-                //             maxDate,
-                //             searchFilterForm
-                //           )
-                //         }
-                //         style={{ width: "14%", marginLeft: "1%" }}
-                //         KeyboardButtonProps={{
-                //           "aria-label": "change date",
-                //           color: "primary"
-                //         }}
-                //       />
-                //     </MuiPickersUtilsProvider>
-                //   </Grid>
-                // )
-                // : searchFilterForm.conceptDataType === "Time" ? (
-                //   <Grid item xs={12} key={index}>
-                //     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                //       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                //         {t(searchFilterForm.titleKey)}
-                //       </Typography>
-                //       <KeyboardTimePicker
-                //         id="date-picker-dialog"
-                //         value={
-                //           selectedConcept.filter(
-                //             concept => concept.uuid === searchFilterForm.conceptUUID
-                //           ).length > 0
-                //             ? selectedConcept.filter(
-                //                 concept => concept.uuid === searchFilterForm.conceptUUID
-                //               )[0].minValue
-                //             : null
-                //         }
-                //         onChange={minDate =>
-                //           onChange(
-                //             minDate,
-                //             selectedConcept.concept.filter(
-                //               concept => concept.uuid === searchFilterForm.conceptUUID
-                //             ).length > 0
-                //               ? selectedConcept.concept.filter(
-                //                   concept => concept.uuid === searchFilterForm.conceptUUID
-                //                 )[0].maxValue
-                //               : null,
-                //             searchFilterForm
-                //           )
-                //         }
-                //         style={{ width: "14%", marginRight: "1%" }}
-                //         KeyboardButtonProps={{
-                //           "aria-label": "change date",
-                //           color: "primary"
-                //         }}
-                //       />
-                //       <KeyboardTimePicker
-                //         id="date-picker-dialog"
-                //         value={
-                //           selectedConcept.concept.filter(
-                //             concept => concept.uuid === searchFilterForm.conceptUUID
-                //           ).length > 0
-                //             ? selectedConcept.concept.filter(
-                //                 concept => concept.uuid === searchFilterForm.conceptUUID
-                //               )[0].maxValue
-                //             : null
-                //         }
-                //         onChange={maxDate =>
-                //           onChange(
-                //             selectedConcept.concept.filter(
-                //               concept => concept.uuid === searchFilterForm.conceptUUID
-                //             ).length > 0
-                //               ? selectedConcept.concept.filter(
-                //                   concept => concept.uuid === searchFilterForm.conceptUUID
-                //                 )[0].minValue
-                //               : null,
-                //             maxDate,
-                //             searchFilterForm
-                //           )
-                //         }
-                //         style={{ width: "14%", marginLeft: "1%" }}
-                //         KeyboardButtonProps={{
-                //           "aria-label": "change date",
-                //           color: "primary"
-                //         }}
-                //       />
-                //     </MuiPickersUtilsProvider>
-                //   </Grid>
-                // )
                 ""
               )
-            ) : searchFilterForm.conceptDataType === "Text" ||
+            ) : searchFilterForm.widget === "Default" ? (
+              searchFilterForm.conceptDataType === "Text" ||
               searchFilterForm.conceptDataType === "Notes" ? (
-              <Grid item xs={12} key={index}>
-                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                  {t(searchFilterForm.titleKey)}
-                </Typography>
-                <TextField
-                  key={index}
-                  id={searchFilterForm.titleKey}
-                  autoComplete="off"
-                  type="text"
-                  style={{ width: "30%" }}
-                  onChange={event => onChange(event, searchFilterForm)}
-                />
-              </Grid>
-            ) : searchFilterForm.conceptDataType === "Duration" ? (
-              <Grid item xs={12} key={index}>
-                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                  {t(searchFilterForm.titleKey)}
-                </Typography>
-                <TextField
-                  key={index}
-                  id={searchFilterForm.titleKey}
-                  autoComplete="off"
-                  type="number"
-                  style={{ width: "30%" }}
-                  onChange={event => onChange(event, searchFilterForm)}
-                />
-              </Grid>
+                <Grid item xs={12} key={index}>
+                  <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                    {t(searchFilterForm.titleKey)}
+                  </Typography>
+                  <TextField
+                    key={index}
+                    id={searchFilterForm.titleKey}
+                    autoComplete="off"
+                    type="text"
+                    style={{ width: "30%" }}
+                    onChange={event => onChange(event, searchFilterForm)}
+                  />
+                </Grid>
+              ) : searchFilterForm.conceptDataType === "Duration" ||
+                searchFilterForm.conceptDataType === "Numeric" ? (
+                <Grid item xs={12} key={index}>
+                  <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                    {t(searchFilterForm.titleKey)}
+                  </Typography>
+                  <TextField
+                    key={index}
+                    id={searchFilterForm.titleKey}
+                    autoComplete="off"
+                    type="number"
+                    style={{ width: "30%" }}
+                    onChange={event => onChange(event, searchFilterForm)}
+                  />
+                </Grid>
+              ) : searchFilterForm.conceptDataType === "Date" ? (
+                <Grid item xs={12} key={index}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t(searchFilterForm.titleKey)}
+                    </Typography>
+                    <KeyboardDatePicker
+                      id="date-picker-dialog"
+                      format="dd/MM/yyyy"
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].minValue
+                          : null
+                      }
+                      onChange={(event, selectedValue) =>
+                        onChange(
+                          event,
+                          searchFilterForm,
+                          "minValue",
+                          selectedValue,
+                          selectedConcepts
+                        )
+                      }
+                      style={{ width: "30%" }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </Grid>
+              ) : searchFilterForm.conceptDataType === "DateTime" ? (
+                <Grid item xs={12} key={index}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t(searchFilterForm.titleKey)}
+                    </Typography>
+                    <KeyboardDateTimePicker
+                      id="date-picker-dialog"
+                      format="dd/MM/yyyy HH:mm"
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].minValue
+                          : null
+                      }
+                      onChange={(event, selectedValue) =>
+                        onChange(
+                          event,
+                          searchFilterForm,
+                          "minValue",
+                          selectedValue,
+                          selectedConcepts
+                        )
+                      }
+                      style={{ width: "30%" }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </Grid>
+              ) : searchFilterForm.conceptDataType === "Time" ? (
+                <Grid item xs={12} key={index}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                      {t(searchFilterForm.titleKey)}
+                    </Typography>
+                    <KeyboardTimePicker
+                      id="date-picker-dialog"
+                      value={
+                        selectedConcepts.filter(
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                        ).length > 0
+                          ? selectedConcepts.filter(
+                              selectedConcept =>
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                            )[0].minValue
+                          : null
+                      }
+                      onChange={(event, selectedValue) =>
+                        onChange(
+                          event,
+                          searchFilterForm,
+                          "minValue",
+                          selectedValue,
+                          selectedConcepts
+                        )
+                      }
+                      style={{ width: "30%" }}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                        color: "primary"
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </Grid>
+              ) : (
+                ""
+              )
             ) : (
-              //  : searchFilterForm.conceptDataType === "Date" ? (
-              //   <Grid item xs={12} key={index}>
-              //     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              //       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-              //         {t(searchFilterForm.titleKey)}
-              //       </Typography>
-              //       <KeyboardDatePicker
-              //         id="date-picker-dialog"
-              //         format="dd/MM/yyyy"
-              //         value={
-              //           selectedConcept.concept.filter(
-              //             concept => concept.uuid === searchFilterForm.conceptUUID
-              //           ).length > 0
-              //             ? selectedConcept.concept.filter(
-              //                 concept => concept.uuid === searchFilterForm.conceptUUID
-              //               )[0].minValue
-              //             : null
-              //         }
-              //         onChange={minDate => onChange(minDate, null, searchFilterForm)}
-              //         style={{ width: "30%" }}
-              //         KeyboardButtonProps={{
-              //           "aria-label": "change date",
-              //           color: "primary"
-              //         }}
-              //       />
-              //     </MuiPickersUtilsProvider>
-              //   </Grid>
-              // )
-              // : searchFilterForm.conceptDataType === "DateTime" ? (
-              //   <Grid item xs={12} key={index}>
-              //     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              //       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-              //         {t(searchFilterForm.titleKey)}
-              //       </Typography>
-              //       <KeyboardDateTimePicker
-              //         id="date-picker-dialog"
-              //         format="dd/MM/yyyy HH:mm"
-              //         value={
-              //           selectedConcept.concept.filter(
-              //             concept => concept.uuid === searchFilterForm.conceptUUID
-              //           ).length > 0
-              //             ? selectedConcept.concept.filter(
-              //                 concept => concept.uuid === searchFilterForm.conceptUUID
-              //               )[0].minValue
-              //             : null
-              //         }
-              //         onChange={minDate => onChange(minDate, null, searchFilterForm)}
-              //         style={{ width: "30%" }}
-              //         KeyboardButtonProps={{
-              //           "aria-label": "change date",
-              //           color: "primary"
-              //         }}
-              //       />
-              //     </MuiPickersUtilsProvider>
-              //   </Grid>
-              // )
-              // : searchFilterForm.conceptDataType === "Time" ? (
-              //   <Grid item xs={12} key={index}>
-              //     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              //       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-              //         {t(searchFilterForm.titleKey)}
-              //       </Typography>
-              //       <KeyboardTimePicker
-              //         id="date-picker-dialog"
-              //         value={
-              //           selectedConcept.concept.filter(
-              //             concept => concept.uuid === searchFilterForm.conceptUUID
-              //           ).length > 0
-              //             ? selectedConcept.concept.filter(
-              //                 concept => concept.uuid === searchFilterForm.conceptUUID
-              //               )[0].minValue
-              //             : null
-              //         }
-              //         onChange={minDate => onChange(minDate, null, searchFilterForm)}
-              //         style={{ width: "30%" }}
-              //         KeyboardButtonProps={{
-              //           "aria-label": "change date",
-              //           color: "primary"
-              //         }}
-              //       />
-              //     </MuiPickersUtilsProvider>
-              //   </Grid>
-              // )
               ""
             )
           ) : (
