@@ -191,7 +191,7 @@ const SearchResult = ({ searchResults }) => {
 
   const emptyRows =
     rowsPerPage -
-    Math.min(rowsPerPage, searchResults && searchResults.json.content.length - page * rowsPerPage);
+    Math.min(rowsPerPage, searchResults && searchResults.json.length - page * rowsPerPage);
 
   return searchResults ? (
     <div className={classes.root}>
@@ -208,10 +208,10 @@ const SearchResult = ({ searchResults }) => {
             order={order}
             orderBy={orderBy}
             onRequestSort={handleRequestSort}
-            rowCount={searchResults.json.content.length}
+            rowCount={searchResults.json.length}
           />
           <TableBody>
-            {stableSort(searchResults.json.content, getComparator(order, orderBy))
+            {stableSort(searchResults.json, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
                 return (
@@ -219,15 +219,15 @@ const SearchResult = ({ searchResults }) => {
                     <TableCell component="th" scope="row" padding="none">
                       <Link to={`/app/subject?uuid=${row.uuid}`}> {row.fullName}</Link>
                     </TableCell>
-                    <TableCell align="left">{row.gender.name}</TableCell>
-                    <TableCell align="left">{row.subjectType.name}</TableCell>
+                    <TableCell align="left">{row.gender}</TableCell>
+                    <TableCell align="left">{row.subjectTypeName}</TableCell>
                     <TableCell align="left">
                       {new Date().getFullYear() -
                         new Date(row.dateOfBirth).getFullYear() +
                         " " +
                         `${t("years")}`}
                     </TableCell>
-                    <TableCell align="left">{row.addressLevel.titleLineage}</TableCell>
+                    <TableCell align="left">{row.addressLevel}</TableCell>
                   </TableRow>
                 );
               })}
@@ -241,7 +241,7 @@ const SearchResult = ({ searchResults }) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={searchResults.json.content.length}
+          count={searchResults.json.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

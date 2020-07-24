@@ -22,7 +22,7 @@ export default {
     }),
 
   searchResult: searchData =>
-    httpClient.fetchJson("/individual/search/v2", {
+    httpClient.fetchJson("/web/searchAPI/v2", {
       method: "POST",
       body: JSON.stringify(searchData)
     }),

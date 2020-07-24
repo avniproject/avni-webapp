@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function CodedConceptForm({ searchFilterForms, onChange, conceptList }) {
+function CodedConceptForm({ searchFilterForms, onChange, conceptList, selectedConcept }) {
   const classes = useStyles();
   const { t } = useTranslation();
   return searchFilterForms ? (
@@ -38,7 +38,13 @@ function CodedConceptForm({ searchFilterForms, onChange, conceptList }) {
                   concept.uuid === searchFilterForm.conceptUUID
                     ? concept.conceptAnswers.map((conceptAnswer, index) => (
                         <FormControlLabel
-                          control={<Checkbox onChange={onChange} name="male" color="primary" />}
+                          control={
+                            <Checkbox
+                              onChange={event => onChange(event, searchFilterForm)}
+                              name={conceptAnswer.answerConcept.uuid}
+                              color="primary"
+                            />
+                          }
                           label={conceptAnswer.answerConcept.name}
                           key={index}
                         />

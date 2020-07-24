@@ -69,6 +69,7 @@ function SearchFilterFormContainer({
         allLocations={allLocations}
         genders={genders}
         organisationConfigs={organisationConfigs}
+        getSearchFilters={getSearchFilters}
       />
     );
   }
@@ -105,7 +106,8 @@ function SearchFilterForm({
   operationalModules,
   allLocations,
   genders,
-  organisationConfigs
+  organisationConfigs,
+  getSearchFilters
 }) {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -157,6 +159,15 @@ function SearchFilterForm({
     }
   };
 
+  const SelectedGenderSort =
+    selectedGender != null
+      ? Object.keys(selectedGender)
+          .filter(selectedId => selectedGender[selectedId])
+          .map(String)
+      : [];
+
+  console.log("SelectedGenderSort", SelectedGenderSort);
+
   // address
   const [selectedAddress, setSelectedAddress] = React.useState(null);
   const onAddressSelect = value => {
@@ -192,65 +203,106 @@ function SearchFilterForm({
     });
   };
 
-  // noncoded concept
-  const [selectedConcept, setSelectedConcept] = useState({
-    concept: [
-      // {
-      //   uuid: "",
-      //   minValue: null,
-      //   maxValue: null,
-      //   searchScope:"",
-      //   dataType:"",
-      //   widget:""
-      // }
-    ]
+  const conceptList =
+    organisationConfigs &&
+    organisationConfigs.organisationConfig.searchFilters.filter(
+      searchElement => searchElement.type === "Concept"
+    );
+
+  // console.log("conceptList", conceptList);
+  const InitialConceptList = conceptList.map(concept => {
+    if (concept.conceptDataType === null) {
+    } else {
+      if (["Date", "DateTime", "Time", "Numeric"].includes(concept.conceptDataType)) {
+        return {
+          ...concept,
+          minValue: null,
+          maxValue: null
+        };
+      } else if (concept.conceptDataType === "Coded") {
+        return {
+          ...concept,
+          values: []
+        };
+      } else if (["Text", "Notes"].includes(concept.conceptDataType)) {
+        return {
+          ...concept,
+          value: ""
+        };
+      }
+    }
   });
 
-  const searchFilterConcept = (minDate, maxDate, searchFilterForm) => {
-    const conceptCheck = selectedConcept.concept.filter(
-      conceptUUID => conceptUUID.uuid === searchFilterForm.conceptUUID
+  const [selectedConcept, setSelectedConcept] = useState(InitialConceptList);
+  const [selectedCodedValue, setSelectedCodedValue] = useState(null);
+  const searchFilterConcept = (
+    event,
+    searchFilterForm,
+    fieldName,
+    selectedValue,
+    selectedConcepts
+  ) => {
+    console.log("fieldName", fieldName);
+    console.log("selectedValue", selectedValue);
+    console.log("cuurent state", selectedConcept);
+    setSelectedConcept(
+      selectedConcept.map(conceptElement => {
+        const concept = conceptElement;
+        if (concept.conceptDataType === null) {
+        } else {
+          if (["Date", "DateTime", "Time", "Numeric"].includes(concept.conceptDataType)) {
+            if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+              return {
+                ...concept,
+                [fieldName]: selectedValue
+              };
+            } else {
+              return {
+                ...concept
+              };
+            }
+          } else if (concept.conceptDataType === "Coded") {
+            if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+              setSelectedCodedValue({
+                ...selectedCodedValue,
+                [event.target.name]: event.target.checked
+              });
+              return {
+                ...concept,
+                values:
+                  selectedCodedValue != null
+                    ? Object.keys(selectedCodedValue)
+                        .filter(selectedId => selectedCodedValue[selectedId])
+                        .map(String)
+                    : []
+              };
+            } else {
+              return {
+                ...concept
+              };
+            }
+          } else if (["Text", "Notes"].includes(concept.conceptDataType)) {
+            if (concept.conceptUUID === searchFilterForm.conceptUUID) {
+              return {
+                ...concept,
+                value: event.target.value
+              };
+            } else {
+              return {
+                ...concept
+              };
+            }
+          }
+        }
+      })
     );
-    conceptCheck.length > 0 && conceptCheck[0].widget === "Default"
-      ? setSelectedConcept({
-          concept: [
-            {
-              uuid: searchFilterForm.conceptUUID,
-              minValue: minDate,
-              maxValue: maxDate,
-              searchScope: searchFilterForm.scope,
-              dataType: searchFilterForm.conceptDataType,
-              widget: searchFilterForm.widget
-            }
-          ]
-        })
-      : setSelectedConcept({
-          concept: [
-            ...selectedConcept.concept,
-            {
-              uuid: searchFilterForm.conceptUUID,
-              minValue: minDate,
-              maxValue: maxDate,
-              searchScope: searchFilterForm.scope,
-              dataType: searchFilterForm.conceptDataType,
-              widget: searchFilterForm.widget
-            }
-          ]
-        });
   };
-
   // is voided
   const [includeVoied, setIncludeVoied] = React.useState(false);
 
   const includeVoiedChange = event => {
     setIncludeVoied(event.target.checked);
   };
-
-  // const [enterDateValue, setEnterDateValue] = useState(null);
-  // console.log("enter value", enterValue);
-
-  // const searchFilterDateValue = date => {
-  //   setEnterValue(date);
-  // };
 
   console.log("enter value", enterValue);
   console.log("Gender", selectedGender);
@@ -259,13 +311,79 @@ function SearchFilterForm({
   console.log("includeVoied", includeVoied);
   console.log("selectedConcept", selectedConcept);
 
-  // const searchResult = (subjectTypeUUID, name) => {
-  //   const request = {
-  //     subjectType: subjectTypeUUID,
-  //     name: name
-  //   };
-  //   getSearchFilters(request);
-  // };
+  const searchResult = (subjectTypeUUID, enterValue) => {
+    const request = {
+      subjectType: "9f2af1f9-e150-4f8e-aad3-40bb7eb05aa3",
+      name: enterValue.name,
+      age: {
+        minValue: 5,
+        maxValue: null
+      },
+      includeVoided: includeVoied,
+      addressIds: [23],
+      concept: [],
+      gender: ["ad7d1d14-54fd-45a2-86b7-ea329b744484", "840de9fb-e565-4d7d-b751-90335ba20490"],
+      registrationDate: {
+        minValue: "2020-01-13",
+        maxValue: "2020-02-29"
+      },
+      encounterDate: {
+        minValue: "2020-01-13",
+        maxValue: "2020-02-29"
+      },
+      programEncounterDate: {
+        minValue: "2020-01-13",
+        maxValue: "2020-02-29"
+      },
+      programEnrolmentDate: {
+        minValue: "2020-01-13",
+        maxValue: "2020-02-29"
+      },
+      searchAll: "",
+      pageElement: {
+        pageNumber: 1,
+        numberOfRecordPerPage: 10,
+        sortColumn: "first_name",
+        sortOrder: "ASC"
+      }
+    };
+    // const request = {
+    //   subjectType: subjectTypeUUID,
+    //   name: enterValue.name,
+    //   age: {
+    //     minValue: 0,
+    //     maxValue: 0
+    //   },
+    //   includeVoided: true,
+    //   addressIds: [],
+    //   concept: [],
+    //   gender: [],
+    //   registrationDate: {
+    //     minValue: "",
+    //     maxValue: ""
+    //   },
+    //   encounterDate: {
+    //     minValue: "",
+    //     maxValue: ""
+    //   },
+    //   programEncounterDate: {
+    //     minValue: "",
+    //     maxValue: ""
+    //   },
+    //   programEnrolmentDate: {
+    //     minValue: "",
+    //     maxValue: ""
+    //   },
+    //   searchAll: "",
+    //   pageElement: {
+    //     pageNumber: 1,
+    //     numberOfRecordPerPage: 10,
+    //     sortColumn: "first_name",
+    //     sortOrder: "ASC"
+    //   }
+    // };
+    getSearchFilters(request);
+  };
 
   console.log("orgnization search filter", selectedSearchFilter);
 
@@ -329,8 +447,9 @@ function SearchFilterForm({
                 <Grid xs={12}>
                   <CodedConceptForm
                     searchFilterForms={selectedSearchFilter}
-                    onChange={searchFilterValue}
                     conceptList={organisationConfigs.conceptList}
+                    onChange={searchFilterConcept}
+                    selectedConcept={selectedConcept}
                   />
                 </Grid>
                 <Grid xs={12}>
@@ -348,7 +467,7 @@ function SearchFilterForm({
             <Button
               variant="contained"
               color="primary"
-              // onClick={() => searchResult(selectedSubjectType, enterValue)}
+              onClick={() => searchResult(selectedSubjectType, enterValue)}
               component={Link}
               to="/app/searchResult"
             >
