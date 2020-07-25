@@ -240,20 +240,13 @@ function SearchFilterForm({
   });
 
   const [selectedConcepts, setSelectedConcept] = useState(InitialConceptList);
-  const [selectedCodedValue, setSelectedCodedValue] = useState(null);
-  const searchFilterConcept = (
-    event,
-    searchFilterForm,
-    fieldName,
-    selectedValue,
-    selectedConcepts
-  ) => {
+  const [selectedCodedValue, setSelectedCodedValue] = useState({});
+  const searchFilterConcept = (event, searchFilterForm, fieldName, selectedValue) => {
     console.log("fieldName", fieldName);
     console.log("selectedValue", selectedValue);
     console.log("cuurent state", selectedConcepts);
     setSelectedConcept(
-      selectedConcepts.map(conceptElement => {
-        const concept = conceptElement;
+      selectedConcepts.map(concept => {
         if (concept.conceptDataType === null) {
         } else {
           if (["Date", "DateTime", "Time", "Numeric"].includes(concept.conceptDataType)) {
@@ -273,10 +266,11 @@ function SearchFilterForm({
                 ...selectedCodedValue,
                 [event.target.name]: event.target.checked
               });
+
               return {
                 ...concept,
                 values:
-                  selectedCodedValue != null
+                  selectedCodedValue && selectedCodedValue != null
                     ? Object.keys(selectedCodedValue)
                         .filter(selectedId => selectedCodedValue[selectedId])
                         .map(String)
@@ -348,46 +342,11 @@ function SearchFilterForm({
       searchAll: enterValue.searchAll,
       pageElement: {
         pageNumber: 1,
-        numberOfRecordPerPage: 10,
+        numberOfRecordPerPage: 100,
         sortColumn: "first_name",
         sortOrder: "ASC"
       }
     };
-    // const request = {
-    //   subjectType: subjectTypeUUID,
-    //   name: enterValue.name,
-    //   age: {
-    //     minValue: 0,
-    //     maxValue: 0
-    //   },
-    //   includeVoided: true,
-    //   addressIds: [],
-    //   concept: [],
-    //   gender: [],
-    //   registrationDate: {
-    //     minValue: "",
-    //     maxValue: ""
-    //   },
-    //   encounterDate: {
-    //     minValue: "",
-    //     maxValue: ""
-    //   },
-    //   programEncounterDate: {
-    //     minValue: "",
-    //     maxValue: ""
-    //   },
-    //   programEnrolmentDate: {
-    //     minValue: "",
-    //     maxValue: ""
-    //   },
-    //   searchAll: "",
-    //   pageElement: {
-    //     pageNumber: 1,
-    //     numberOfRecordPerPage: 10,
-    //     sortColumn: "first_name",
-    //     sortOrder: "ASC"
-    //   }
-    // };
     getSearchFilters(request);
   };
 
