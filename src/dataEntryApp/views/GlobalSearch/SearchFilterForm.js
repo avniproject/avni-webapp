@@ -209,11 +209,9 @@ function SearchFilterForm({
 
   console.log("selectedDate" + selectedDate);
 
-  const conceptList =
-    organisationConfigs &&
-    organisationConfigs.organisationConfig.searchFilters.filter(
-      searchElement => searchElement.type === "Concept"
-    );
+  const conceptList = selectedSearchFilter.filter(
+    searchElement => searchElement.type === "Concept"
+  );
 
   // console.log("conceptList", conceptList);
   const InitialConceptList = conceptList.map(concept => {
@@ -240,7 +238,6 @@ function SearchFilterForm({
   });
 
   const [selectedConcepts, setSelectedConcept] = useState(InitialConceptList);
-  const [selectedCodedValue, setSelectedCodedValue] = useState({});
   const searchFilterConcept = (event, searchFilterForm, fieldName, selectedValue) => {
     console.log("fieldName", fieldName);
     console.log("selectedValue", selectedValue);
@@ -262,19 +259,17 @@ function SearchFilterForm({
             }
           } else if (concept.conceptDataType === "Coded") {
             if (concept.conceptUUID === searchFilterForm.conceptUUID) {
-              setSelectedCodedValue({
-                ...selectedCodedValue,
-                [event.target.name]: event.target.checked
+              const selectedCodedValue = {};
+              concept.values.forEach(element => {
+                selectedCodedValue[element] = true;
               });
+              selectedCodedValue[event.target.name] = event.target.checked;
 
               return {
                 ...concept,
-                values:
-                  selectedCodedValue && selectedCodedValue != null
-                    ? Object.keys(selectedCodedValue)
-                        .filter(selectedId => selectedCodedValue[selectedId])
-                        .map(String)
-                    : []
+                values: Object.keys(selectedCodedValue).filter(
+                  selectedId => selectedCodedValue[selectedId]
+                )
               };
             } else {
               return {
