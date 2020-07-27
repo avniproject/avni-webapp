@@ -160,7 +160,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public List<IndividualContract> getSearch(@RequestBody String searchQuery) {
-        return individualSearchService.getsearch(searchQuery);
+        return individualSearchService.getsearchResult(searchQuery);
     }
 
     @GetMapping(value = "/web/individual/{uuid}")
