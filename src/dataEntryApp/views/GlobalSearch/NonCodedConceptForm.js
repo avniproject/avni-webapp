@@ -47,24 +47,15 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format="dd/MM/yyyy"
                       value={
                         selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                          selectedConcept => selectedConcept.uuid === searchFilterForm.conceptUUID
                         ).length > 0
                           ? selectedConcepts.filter(
                               selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+                                selectedConcept.uuid === searchFilterForm.conceptUUID
                             )[0].minValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "minValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -86,15 +77,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                             )[0].maxValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "maxValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "maxValue")}
                       style={{ width: "14%", marginLeft: "1%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -124,15 +107,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                             )[0].minValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "minValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -154,15 +129,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                             )[0].maxValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "maxValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "maxValue")}
                       style={{ width: "14%", marginLeft: "1%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -191,15 +158,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                             )[0].minValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "minValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -220,15 +179,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                             )[0].maxValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "maxValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "maxValue")}
                       style={{ width: "14%", marginLeft: "1%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -237,8 +188,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     />
                   </MuiPickersUtilsProvider>
                 </Grid>
-              ) : searchFilterForm.conceptDataType === "Numeric" ||
-                searchFilterForm.conceptDataType === "Duration" ? (
+              ) : searchFilterForm.conceptDataType === "Numeric" ? (
                 <Grid item xs={12} key={index}>
                   <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                     {t(searchFilterForm.titleKey)}
@@ -250,7 +200,10 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     type="number"
                     placeholder="Form"
                     style={{ width: "14%", marginRight: "1%" }}
-                    onChange={event => onChange(event, searchFilterForm)}
+                    onChange={event => {
+                      event.persist();
+                      onChange(event, searchFilterForm, "minValue");
+                    }}
                   />
                   <TextField
                     key={index}
@@ -259,15 +212,17 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     type="number"
                     placeholder="To"
                     style={{ width: "14%", marginLeft: "1%" }}
-                    onChange={event => onChange(event, searchFilterForm)}
+                    onChange={event => {
+                      event.persist();
+                      onChange(event, searchFilterForm, "maxValue");
+                    }}
                   />
                 </Grid>
               ) : (
                 ""
               )
             ) : searchFilterForm.widget === "Default" ? (
-              searchFilterForm.conceptDataType === "Text" ||
-              searchFilterForm.conceptDataType === "Notes" ? (
+              searchFilterForm.conceptDataType === "Text" ? (
                 <Grid item xs={12} key={index}>
                   <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                     {t(searchFilterForm.titleKey)}
@@ -278,11 +233,13 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     autoComplete="off"
                     type="text"
                     style={{ width: "30%" }}
-                    onChange={event => onChange(event, searchFilterForm)}
+                    onChange={event => {
+                      event.persist();
+                      onChange(event, searchFilterForm);
+                    }}
                   />
                 </Grid>
-              ) : searchFilterForm.conceptDataType === "Duration" ||
-                searchFilterForm.conceptDataType === "Numeric" ? (
+              ) : searchFilterForm.conceptDataType === "Numeric" ? (
                 <Grid item xs={12} key={index}>
                   <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                     {t(searchFilterForm.titleKey)}
@@ -293,7 +250,10 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     autoComplete="off"
                     type="number"
                     style={{ width: "30%" }}
-                    onChange={event => onChange(event, searchFilterForm)}
+                    onChange={event => {
+                      event.persist();
+                      onChange(event, searchFilterForm, "minValue");
+                    }}
                   />
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Date" ? (
@@ -316,15 +276,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                             )[0].minValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "minValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "30%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -353,15 +305,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                             )[0].minValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "minValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "30%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -389,15 +333,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                             )[0].minValue
                           : null
                       }
-                      onChange={(event, selectedValue) =>
-                        onChange(
-                          event,
-                          searchFilterForm,
-                          "minValue",
-                          selectedValue,
-                          selectedConcepts
-                        )
-                      }
+                      onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "30%" }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
