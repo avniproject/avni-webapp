@@ -61,8 +61,12 @@ const RemoveRelative = props => {
       uuid: props.relationuuid
     };
     props.saveRelationShip(RelationData);
-    props.getSubjectProfile(props.relationAuuid);
-    // window.location.reload(false);
+    (async function fetchData() {
+      await setTimeout(() => {
+        props.getSubjectProfile(props.relationAuuid);
+      }, 100);
+      // await props.getSubjectProfile(props.relationAuuid);
+    })();
   };
 
   const searchContent = (

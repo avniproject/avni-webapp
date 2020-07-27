@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -15,6 +15,7 @@ import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
+import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -81,6 +82,17 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
   const classes = useStyles();
   const { t } = useTranslation();
   console.log("profile-----", profile);
+
+  useEffect(() => {
+    (async function fetchData() {
+      await getSubjectProfile(profile.uuid);
+    })();
+    // (async function fetchData() {
+    //   await setTimeout(() => {
+    //     getSubjectProfile(profile.uuid);
+    //   }, 1000);
+    // })();
+  }, []);
 
   let relativeList = [];
 

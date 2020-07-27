@@ -223,7 +223,7 @@ const ProfileDetails = ({
                 )}
                 {isEqual(profileDetails.subjectType.name, "Individual") && (
                   <TableCell className={classes.tableCell}>{t("Age")}</TableCell>
-                )}{" "}
+                )}
                 <TableCell className={classes.tableCell}>
                   {t(profileDetails.lowestAddressLevel.type)}
                 </TableCell>

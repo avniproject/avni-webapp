@@ -43,7 +43,6 @@ const FindRelativeTable = ({ subjectData }) => {
   const classes = useStyles();
   const [selected, setSelected] = React.useState([]);
   const [value, setValue] = React.useState("");
-  // let selectedRelatives = [];
   const handleClick = (event, uuid, row) => {
     const selectedIndex = selected.indexOf(uuid);
     let newSelected = [];
@@ -102,7 +101,7 @@ const FindRelativeTable = ({ subjectData }) => {
                   key={row.uuid}
                   selected={isItemSelected}
                 >
-                  <TableCell padding="radio">
+                  <TableCell padding="default">
                     <Radio checked={isItemSelected} inputProps={{ "aria-labelledby": labelId }} />
                   </TableCell>
                   <TableCell align="left" scope="row" id={labelId}>
