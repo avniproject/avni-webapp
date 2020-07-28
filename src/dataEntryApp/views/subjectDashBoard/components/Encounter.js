@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Paper } from "@material-ui/core";
+import { Grid, Paper, Typography } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import { isNil, isEmpty, first, isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
@@ -58,9 +58,15 @@ const Encounter = ({ match, encounter, enconterDateValidation, ...props }) => {
             {props.encounterForm && encounter && props.subjectProfile ? (
               <EncounterForm>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <Typography
+                    variant="body1"
+                    gutterBottom
+                    style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
+                  >
+                    Visit Date
+                  </Typography>
                   <KeyboardDatePicker
                     style={{ width: "30%" }}
-                    label="Visit Date"
                     margin="none"
                     size="small"
                     id="date-picker-dialog"

@@ -21,6 +21,7 @@ import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapProgramEncounter } from "common/subjectModelMapper";
 import { mapProfile } from "../../common/subjectModelMapper";
 import formElementService from "../services/FormElementService";
+import { setLoad } from "../reducers/loadReducer";
 
 export default function*() {
   yield all(
@@ -43,6 +44,7 @@ export function* programEncouterOnLoadWatcher() {
 }
 
 export function* programEncouterOnLoadWorker({ enrolmentUuid }) {
+  yield put.resolve(setLoad(false));
   const programEnrolment = yield call(api.fetchProgramEnrolment, enrolmentUuid);
   yield put(setProgramEnrolment(programEnrolment));
 
@@ -56,6 +58,7 @@ export function* programEncouterOnLoadWorker({ enrolmentUuid }) {
     )
   );
   yield put(setUnplanProgramEncounters(programEncounterFormMapping));
+  yield put.resolve(setLoad(true));
 }
 
 export function* createProgramEncounterWatcher() {
