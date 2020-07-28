@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { remove, isNil, isEqual } from "lodash";
+import { isNil, isEqual, isEmpty, first } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -20,6 +20,7 @@ import {
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import programEncounterService from "../../../services/ProgramEncounterService";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -51,9 +52,6 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
     }
   }, []);
 
-  const validationResultForEncounterDate =
-    enconterDateValidation &&
-    enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === ENCOUNTER_DATE_TIME);
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -76,28 +74,19 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
                     required
                     value={new Date(programEncounter.encounterDateTime)}
                     error={
-                      !isNil(validationResultForEncounterDate) &&
-                      !validationResultForEncounterDate.success
+                      !isEmpty(enconterDateValidation) && !first(enconterDateValidation).success
                     }
                     helperText={
-                      !isNil(validationResultForEncounterDate) &&
-                      t(validationResultForEncounterDate.messageKey)
+                      !isEmpty(enconterDateValidation) &&
+                      t(first(enconterDateValidation).messageKey)
                     }
                     onChange={date => {
                       const visitDate = isNil(date) ? undefined : new Date(date);
-                      props.updateProgramEncounter("encounterDateTime", visitDate);
                       programEncounter.encounterDateTime = visitDate;
-                      remove(
-                        enconterDateValidation,
-                        vr => vr.formIdentifier === ENCOUNTER_DATE_TIME
-                      );
-                      const result = programEncounter
-                        .validate()
-                        .find(vr => !vr.success && vr.formIdentifier === ENCOUNTER_DATE_TIME);
-                      result
-                        ? enconterDateValidation.push(result)
-                        : enconterDateValidation.push(...programEncounter.validate());
-                      props.setEncounterDateValidation(enconterDateValidation);
+                      props.updateProgramEncounter("encounterDateTime", visitDate);
+                      props.setEncounterDateValidation([
+                        programEncounterService.validateVisitDate(programEncounter)
+                      ]);
                     }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
