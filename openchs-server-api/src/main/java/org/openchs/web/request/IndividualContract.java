@@ -19,7 +19,6 @@ public class IndividualContract extends CommonIndividualRequest {
     private String subjectTypeName;
     private String fullName;
 
-    private BigInteger totalElements;
 
     public String getFullName() {
         return fullName;
@@ -27,14 +26,6 @@ public class IndividualContract extends CommonIndividualRequest {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
-    }
-
-    public BigInteger getTotalElements() {
-        return totalElements;
-    }
-
-    public void setTotalElements(BigInteger totalElements) {
-        this.totalElements = totalElements;
     }
 
     public String getSubjectTypeName() {

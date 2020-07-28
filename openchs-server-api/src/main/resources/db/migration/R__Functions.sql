@@ -67,7 +67,7 @@ CREATE OR REPLACE FUNCTION create_audit()
           RETURN returnSql;
   END;
   $BODY$
-    LANGUAGE plpgsql VOLATILE
+    LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION get_outer_query(searchjson text)
@@ -85,11 +85,14 @@ offsetVal numeric;
 tempVal text;
 
 BEGIN
+
 offsetVal:=0;
 limitVal:=10;
 sqlOuterQuery:='';
 select searchJSON::json->>'pageElement' into pageElement;
+
 	IF pageElement IS NOT NULL   THEN
+
 		select pageElement->>'pageNumber' into tempVal;
 
 			IF tempVal IS NOT NULL AND TRIM(tempVal)!='' THEN
@@ -110,8 +113,16 @@ select searchJSON::json->>'pageElement' into pageElement;
 
 			IF tempVal IS NOT NULL AND TRIM(tempVal)!='' AND TRIM(UPPER(tempVal))='ID' THEN
 			sortColumn:=tempVal||'::NUMERIC ' ;
-			ELSEIF tempVal IS NOT NULL AND TRIM(tempVal)!='' THEN
-			sortColumn:=tempVal;
+			ELSEIF tempVal IS NOT NULL AND TRIM(upper(tempVal))=upper('fullName') THEN
+			sortColumn:='fullname';
+			ELSEIF tempVal IS NOT NULL AND TRIM(upper(tempVal))=upper('subjectType') THEN
+			sortColumn:='subject_type_name';
+			ELSEIF tempVal IS NOT NULL AND TRIM(upper(tempVal))=upper('gender') THEN
+			sortColumn:='gender_name';
+			ELSEIF tempVal IS NOT NULL AND TRIM(upper(tempVal))=upper('dateOfBirth') THEN
+			sortColumn:='date_of_birth::DATE';
+			ELSEIF tempVal IS NOT NULL AND TRIM(upper(tempVal))=upper('addressLevel') THEN
+			sortColumn:='title_lineage';
 			ELSE
 			sortColumn:='firstname';
 			END IF;
@@ -122,6 +133,7 @@ select searchJSON::json->>'pageElement' into pageElement;
 			ELSE
 			sortOrder:=' DESC ';
 			END IF;
+
 				ELSE
 				numberOfRecordPerPage:=10;
 				pageNumber:=1;
@@ -135,8 +147,7 @@ select searchJSON::json->>'pageElement' into pageElement;
         RETURN sqlOuterQuery;
 END;
 $BODY$
-  LANGUAGE plpgsql VOLATILE
-
+  LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION web_search_function(IN searchtext text)
   RETURNS TABLE(id text, firstname text, lastname text, fullname text, uuid text, title_lineage text, subject_type_name text, gender_name text, date_of_birth date, enrolments text, age numeric, total_elements bigint) AS
@@ -528,6 +539,6 @@ sqlQuery:=' WITH cte AS ( ' || sqlQuery || ' ) ' || sqlOuterQuery;
   return QUERY EXECUTE sqlQuery;
 END;
 $BODY$
-  LANGUAGE plpgsql IMMUTABLE
+  LANGUAGE plpgsql;
 
 

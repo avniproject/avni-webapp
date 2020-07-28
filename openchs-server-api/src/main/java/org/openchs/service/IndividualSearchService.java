@@ -16,6 +16,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,13 +34,13 @@ public class IndividualSearchService {
         objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
-    public List<IndividualContract> getsearchResult(String jsonSearch) {
+    public LinkedHashMap<String, Object> getsearchResult(String jsonSearch) {
         Query q = entityManager.createNativeQuery("select firstname,lastname,fullname,id,uuid,title_lineage,subject_type_name" +
                 ",gender_name,date_of_birth,enrolments,total_elements " +
-                "from web_search_function (?1)");
+                "from search_function_111 (?1)");
         q.setParameter(1, jsonSearch);
-        List<Object[]> obj = q.getResultList();
-        return constructIndividual(obj);
+        List<Object[]> listOfObject = q.getResultList();
+        return constructIndividual(listOfObject);
     }
 
 
@@ -53,8 +54,10 @@ public class IndividualSearchService {
     }
 
 
-    private List<IndividualContract> constructIndividual(List<Object[]> individualList) {
-        return individualList.stream()
+    private LinkedHashMap<String, Object> constructIndividual(List<Object[]> individualList) {
+        BigInteger totalElements= new BigInteger("0");
+        LinkedHashMap<String, Object> recordsMap=new LinkedHashMap<String, Object>();
+        List<IndividualContract> individualRecordList= individualList.stream()
                 .map(individualRecord -> {
                     IndividualContract individualContract = new IndividualContract();
                     individualContract.setFirstName((String) individualRecord[0]);
@@ -69,12 +72,16 @@ public class IndividualSearchService {
                     if(null!=individualRecord[8] && !"".equals(individualRecord[8].toString().trim()))
                     individualContract.setDateOfBirth(new LocalDate(individualRecord[8].toString()));
                     individualContract.setEnrolments(constructEnrolments((String) individualRecord[9]));
-                    if(null!=individualRecord[10] && !"".equals(individualRecord[10].toString().trim()))
-                    individualContract.setTotalElements(new BigInteger(individualRecord[10].toString()));
-
 
                     return individualContract;
                 }).collect(Collectors.toList());
+                 if(null!=individualList && individualList.size()>0){
+                        Object[] firstRecord=individualList.get(0);
+                        totalElements=new BigInteger(firstRecord[10].toString());
+        }
+        recordsMap.put("totalElements",totalElements);
+        recordsMap.put("listOfRecords",individualRecordList);
+        return recordsMap;
     }
 
     private List<EnrolmentContract> constructEnrolments(String enrolment) {

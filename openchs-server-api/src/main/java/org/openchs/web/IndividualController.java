@@ -29,10 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -159,8 +156,8 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PostMapping(value= "/web/searchAPI/v2")
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
-    public List<IndividualContract> getSearch(@RequestBody String searchQuery) {
-        return individualSearchService.getsearchResult(searchQuery);
+    public ResponseEntity<LinkedHashMap<String, Object>> getSearch(@RequestBody String searchQuery) {
+        return new ResponseEntity<>(individualSearchService.getsearchResult(searchQuery), HttpStatus.OK);
     }
 
     @GetMapping(value = "/web/individual/{uuid}")
