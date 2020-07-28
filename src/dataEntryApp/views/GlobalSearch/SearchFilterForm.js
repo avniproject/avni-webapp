@@ -23,6 +23,8 @@ import IncludeVoiedForm from "../GlobalSearch/IncludeVoiedForm";
 import CustomizedBackdrop from "../../components/CustomizedBackdrop";
 import Grid from "@material-ui/core/Grid";
 import moment from "moment/moment";
+import { store } from "../../../common/store/createStore";
+import { types } from "../../reducers/searchFilterReducer";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -50,15 +52,20 @@ function SearchFilterFormContainer({
   getGenders,
   genders,
   getOrganisationConfig,
-  organisationConfigs
+  organisationConfigs,
+  searchResultData
 }) {
-  // console.log(organisationConfigs);
+  console.log("searchResults", JSON.stringify(searchResultData));
 
   useEffect(() => {
     getOrganisationConfig();
     getAllLocations();
     getGenders();
   }, []);
+
+  var searchResultsApi = localStorage.getItem("searchApiRequest");
+  let modifySearchData = JSON.parse(searchResultsApi);
+  console.log("searchResultsApis", modifySearchData);
 
   if (!(operationalModules && allLocations && genders && organisationConfigs)) {
     return <CustomizedBackdrop load={false} />;
@@ -71,6 +78,7 @@ function SearchFilterFormContainer({
         genders={genders}
         organisationConfigs={organisationConfigs}
         getSearchFilters={getSearchFilters}
+        modifySearchData={modifySearchData}
       />
     );
   }
@@ -108,7 +116,8 @@ function SearchFilterForm({
   allLocations,
   genders,
   organisationConfigs,
-  getSearchFilters
+  getSearchFilters,
+  modifySearchData
 }) {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -316,14 +325,7 @@ function SearchFilterForm({
   const includeVoiedChange = event => {
     setIncludeVoied(event.target.checked);
   };
-
-  // console.log("enter value", enterValue);
-  // console.log("Gender", selectedGender);
-  // console.log("Address", selectedAddress);
-  // console.log("selectedDate", selectedDate);
-  // console.log("includeVoied", includeVoied);
-  // console.log("selectedConcepts", selectedConcepts);
-
+  //concept
   const selectedConceptApi = selectedConcepts.filter(selectedConcept => {
     if (selectedConcept.conceptDataType === null) {
     } else {
@@ -394,7 +396,7 @@ function SearchFilterForm({
   console.log("selectedConceptApi", selectedConceptApi);
   console.log("conceptRequests", conceptRequests);
   const searchResult = () => {
-    const request = {
+    const searchRequest = {
       subjectType: selectedSubjectType,
       name: enterValue.name,
       age: {
@@ -421,15 +423,12 @@ function SearchFilterForm({
         minValue: selectedDate.EnrolmentDate.minValue,
         maxValue: selectedDate.EnrolmentDate.maxValue
       },
-      searchAll: enterValue.searchAll,
-      pageElement: {
-        pageNumber: 1,
-        numberOfRecordPerPage: 100,
-        sortColumn: "first_name",
-        sortOrder: "ASC"
-      }
+      searchAll: enterValue.searchAll
     };
-    getSearchFilters(request);
+    // localStorage.setItem("searchApiRequest", JSON.stringify(request));
+    // addSearchResultFilters(request);
+    //  getSearchFilters(request);
+    store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: searchRequest });
   };
 
   console.log("orgnization search filter", selectedSearchFilter);
@@ -475,6 +474,7 @@ function SearchFilterForm({
                     onGenderChange={onGenderChange}
                     selectedGender={selectedGender}
                     onAddressSelect={onAddressSelect}
+                    modifySearchData={modifySearchData}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -516,7 +516,7 @@ function SearchFilterForm({
               color="primary"
               onClick={() => searchResult()}
               component={Link}
-              to="/app/searchResult"
+              to="/app/search"
             >
               Search
             </Button>

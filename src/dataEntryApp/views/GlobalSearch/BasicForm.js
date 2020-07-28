@@ -38,7 +38,8 @@ function BasicForm({
   allLocation,
   onGenderChange,
   selectedGender,
-  onAddressSelect
+  onAddressSelect,
+  modifySearchData
 }) {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -68,6 +69,7 @@ function BasicForm({
                 type="text"
                 style={{ width: "100%" }}
                 onChange={onChange}
+                value={modifySearchData ? modifySearchData.name : null}
               />
             </Grid>
           ) : (

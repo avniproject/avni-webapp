@@ -47,11 +47,12 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       format="dd/MM/yyyy"
                       value={
                         selectedConcepts.filter(
-                          selectedConcept => selectedConcept.uuid === searchFilterForm.conceptUUID
+                          selectedConcept =>
+                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
                         ).length > 0
                           ? selectedConcepts.filter(
                               selectedConcept =>
-                                selectedConcept.uuid === searchFilterForm.conceptUUID
+                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
                             )[0].minValue
                           : null
                       }

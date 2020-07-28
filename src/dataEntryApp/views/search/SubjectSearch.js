@@ -1,15 +1,19 @@
-import React, { useEffect } from "react";
-import { FormControl, Input, InputLabel, Paper } from "@material-ui/core";
+import React from "react";
+import { Paper } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { first } from "lodash";
 import { searchSubjects } from "../../reducers/searchReducer";
 import RegistrationMenu from "./RegistrationMenu";
-import PrimaryButton from "../../components/PrimaryButton";
+// import PrimaryButton from "../../components/PrimaryButton";
 import { useTranslation } from "react-i18next";
-import { SubjectsTable } from "./SubjectSearchTable";
-import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import { store } from "../../../common/store/createStore";
+
+// import { SubjectsTable } from "./SubjectSearchTable";
+// import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+// import { addSearchResultFilters } from "../../reducers/searchFilterReducer";
+
 import NewSubjectSearchTable from "dataEntryApp/views/search/NewSubjectSearchTable";
 
 const useStyle = makeStyles(theme => ({
@@ -52,33 +56,35 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectSearch = props => {
+const SubjectSearch = ({ searchRequest }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [searchvalue, setSearchvalue] = React.useState("");
+  // const [page, setPage] = React.useState(0);
+  // const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  // const [searchvalue, setSearchvalue] = React.useState("");
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    props.search({ page: page, query: searchvalue, size: rowsPerPage });
-  };
-  const resethandleSubmit = event => {
-    event.preventDefault();
-    setSearchvalue("");
-    props.search({ page: 0, query: "", size: rowsPerPage });
-  };
+  // const handleSubmit = event => {
+  //   event.preventDefault();
+  //   props.search({ page: page, query: searchvalue, size: rowsPerPage });
+  // };
+  // const resethandleSubmit = event => {
+  //   event.preventDefault();
+  //   setSearchvalue("");
+  //   props.search({ page: 0, query: "", size: rowsPerPage });
+  // };
 
-  const valueSubmit = e => {
-    setSearchvalue(e.target.value);
-  };
-
+  // const valueSubmit = e => {
+  //   setSearchvalue(e.target.value);
+  // };
+  // const searchRequest = store.getState().dataEntry.searchFilterReducer.request;
+  // // const searchRequest = {};
+  // console.log("searchResultData", searchRequest);
   return (
     <Paper className={classes.searchBox}>
       <div className={classes.searchCreateToolbar}>
         <RegistrationMenu className={classes.createButtonHolder} />
       </div>
-      <NewSubjectSearchTable />
+      <NewSubjectSearchTable searchRequest={searchRequest} />
     </Paper>
   );
 };
@@ -88,7 +94,9 @@ const mapStateToProps = state => {
     user: state.app.user,
     subjects: state.dataEntry.search.subjects,
     searchParams: state.dataEntry.search.subjectSearchParams,
-    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes)
+    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes),
+    searchRequest: state.dataEntry.searchFilterReducer.request
+    // searchResultData: state.dataEntry.searchFilterReducer.selectedSearchResultFilters
   };
 };
 
