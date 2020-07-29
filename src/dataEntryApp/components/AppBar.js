@@ -230,7 +230,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
                   onClick={handleToggle}
                   style={{ color: "#0e6eff" }}
                 >
-                  {t("new")}
+                  {t("create")}
                   <ExpandMoreIcon />
                 </Button>
                 <Popper

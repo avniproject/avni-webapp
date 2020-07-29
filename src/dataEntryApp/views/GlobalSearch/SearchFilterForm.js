@@ -231,6 +231,7 @@ function SearchFilterForm({
 
   const [selectedConcepts, setSelectedConcept] = useState(InitialConceptList);
   const searchFilterConcept = (event, searchFilterForm, fieldName) => {
+    console.log("selectedConcepts", selectedConcepts);
     setSelectedConcept(previousSelectedConcepts =>
       previousSelectedConcepts.map(concept => {
         if (concept.conceptDataType === null) {
@@ -488,9 +489,7 @@ function SearchFilterForm({
             >
               Search
             </Button>
-            <Button variant="contained" color="secondary">
-              Cancel
-            </Button>
+            <Button variant="contained">Cancel</Button>
           </div>
         </FormControl>
       </Paper>

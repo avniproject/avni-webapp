@@ -48,11 +48,13 @@ const useStyle = makeStyles(theme => ({
 
 const SubjectSearch = ({ searchRequest }) => {
   const classes = useStyle();
+
   return (
     <Paper className={classes.searchBox}>
-      <div className={classes.searchCreateToolbar}>
+      {/* <div className={classes.searchCreateToolbar}>
         <RegistrationMenu className={classes.createButtonHolder} />
-      </div>
+      </div> */}
+
       <NewSubjectSearchTable searchRequest={searchRequest} />
     </Paper>
   );
