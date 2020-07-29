@@ -12,7 +12,6 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { getAllLocations, getGenders, getOrganisationConfig } from "../../reducers/metadataReducer";
-import { getSearchFilters } from "../../reducers/searchFilterReducer";
 import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
 import BasicForm from "../GlobalSearch/BasicForm";
@@ -45,27 +44,18 @@ const useStyles = makeStyles(theme => ({
 function SearchFilterFormContainer({
   match,
   operationalModules,
-  getSearchFilters,
-  searchResults,
   getAllLocations,
   allLocations,
   getGenders,
   genders,
   getOrganisationConfig,
-  organisationConfigs,
-  searchResultData
+  organisationConfigs
 }) {
-  console.log("searchResults", JSON.stringify(searchResultData));
-
   useEffect(() => {
     getOrganisationConfig();
     getAllLocations();
     getGenders();
   }, []);
-
-  var searchResultsApi = localStorage.getItem("searchApiRequest");
-  let modifySearchData = JSON.parse(searchResultsApi);
-  console.log("searchResultsApis", modifySearchData);
 
   if (!(operationalModules && allLocations && genders && organisationConfigs)) {
     return <CustomizedBackdrop load={false} />;
@@ -77,8 +67,6 @@ function SearchFilterFormContainer({
         allLocations={allLocations}
         genders={genders}
         organisationConfigs={organisationConfigs}
-        getSearchFilters={getSearchFilters}
-        modifySearchData={modifySearchData}
       />
     );
   }
@@ -87,7 +75,6 @@ function SearchFilterFormContainer({
 const mapStateToProps = state => {
   return {
     operationalModules: state.dataEntry.metadata.operationalModules,
-    searchResults: state.dataEntry.searchFilterReducer.searchFilters,
     allLocations: state.dataEntry.metadata.allLocations,
     genders: state.dataEntry.metadata.genders,
     organisationConfigs: state.dataEntry.metadata.organisationConfigs
@@ -95,7 +82,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  getSearchFilters,
   getAllLocations,
   getGenders,
   getOrganisationConfig
@@ -115,9 +101,7 @@ function SearchFilterForm({
   operationalModules,
   allLocations,
   genders,
-  organisationConfigs,
-  getSearchFilters,
-  modifySearchData
+  organisationConfigs
 }) {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -139,7 +123,6 @@ function SearchFilterForm({
       organisationConfigs.organisationConfig.searchFilters.filter(
         serarchFilter => serarchFilter.subjectTypeUUID === event.target.value
       );
-    console.log("slectedSubjetTypeSearchFilter", slectedSubjetTypeSearchFilter);
     setSelectedSearchFilter(slectedSubjetTypeSearchFilter);
   };
 
@@ -176,8 +159,6 @@ function SearchFilterForm({
           .map(String)
       : [];
 
-  console.log("SelectedGenderSort", selectedGenderSort);
-
   // address
   const [selectedAddress, setSelectedAddress] = React.useState(null);
   const onAddressSelect = (event, value) => {
@@ -185,7 +166,6 @@ function SearchFilterForm({
   };
   const selectedAddressSort =
     selectedAddress !== null ? selectedAddress.address.map(address => address.id) : [];
-  console.log("selectedAddressSort", selectedAddressSort);
   // date
   const [selectedDate, setSelectedDate] = useState({
     RegistrationDate: {
@@ -216,13 +196,10 @@ function SearchFilterForm({
     });
   };
 
-  console.log("selectedDate" + selectedDate);
-
   const conceptList = selectedSearchFilter.filter(
     searchElement => searchElement.type === "Concept"
   );
 
-  // console.log("conceptList", conceptList);
   const InitialConceptList = conceptList.map(concept => {
     if (concept.conceptDataType === null) {
     } else {
@@ -254,8 +231,6 @@ function SearchFilterForm({
 
   const [selectedConcepts, setSelectedConcept] = useState(InitialConceptList);
   const searchFilterConcept = (event, searchFilterForm, fieldName) => {
-    console.log("fieldName", fieldName);
-    console.log("cuurent state", selectedConcepts);
     setSelectedConcept(previousSelectedConcepts =>
       previousSelectedConcepts.map(concept => {
         if (concept.conceptDataType === null) {
@@ -393,8 +368,6 @@ function SearchFilterForm({
     }
   });
 
-  console.log("selectedConceptApi", selectedConceptApi);
-  console.log("conceptRequests", conceptRequests);
   const searchResult = () => {
     const searchRequest = {
       subjectType: selectedSubjectType,
@@ -425,13 +398,9 @@ function SearchFilterForm({
       },
       searchAll: enterValue.searchAll
     };
-    // localStorage.setItem("searchApiRequest", JSON.stringify(request));
-    // addSearchResultFilters(request);
-    //  getSearchFilters(request);
+
     store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: searchRequest });
   };
-
-  console.log("orgnization search filter", selectedSearchFilter);
 
   return (
     <Fragment>
@@ -474,7 +443,6 @@ function SearchFilterForm({
                     onGenderChange={onGenderChange}
                     selectedGender={selectedGender}
                     onAddressSelect={onAddressSelect}
-                    modifySearchData={modifySearchData}
                   />
                 </Grid>
                 <Grid item xs={12}>

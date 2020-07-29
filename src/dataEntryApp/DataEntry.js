@@ -22,7 +22,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import qs from "query-string";
 import i18n from "i18next";
 import { I18nextProvider } from "react-i18next";
-import SearchResult from "../dataEntryApp/views/GlobalSearch/SearchResult";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -88,7 +87,6 @@ const DataEntry = ({
             />
             <Route exact path={`${path}/subject/newGeneralVisit`} component={NewGeneralVisit} />
             <Route exact path={`${path}/searchFilter`} component={SearchFilterFormContainer} />
-            <Route exact path={`${path}/searchResult`} component={SearchResult} />
           </Grid>
         </Grid>
       </div>
