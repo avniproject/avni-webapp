@@ -64,7 +64,7 @@ const RemoveRelative = props => {
     (async function fetchData() {
       await setTimeout(() => {
         props.getSubjectProfile(props.relationAuuid);
-      }, 100);
+      }, 500);
       // await props.getSubjectProfile(props.relationAuuid);
     })();
   };

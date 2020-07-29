@@ -47,6 +47,7 @@ export const DateOfBirth = ({ dateOfBirth, onChange, dobErrorMsg }) => {
             style={{ width: "50%", marginBottom: 5, color: "rgba(0, 0, 0, 0.54)" }}
           >
             {t("date of birth")}
+            {"*"}
           </Typography>
           <KeyboardDatePicker
             error={!_.isEmpty(dobErrorMsg)}

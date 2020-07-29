@@ -53,6 +53,7 @@ export const DateTimeFormElement = ({
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.display || fe.name)}
+        {"*"}
       </Typography>
       <KeyboardDateTimePicker
         autoOk
@@ -101,6 +102,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.display || fe.name)}
+        {"*"}
       </Typography>
       <KeyboardDatePicker
         autoOk
@@ -168,7 +170,7 @@ export const DateAndDurationFormElement = ({
       <FormLabel>{fe.display || fe.name}</FormLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-          Select Date
+          Select Date*
         </Typography>
         <KeyboardDatePicker
           autoOk
@@ -192,7 +194,7 @@ export const DateAndDurationFormElement = ({
       </div>
       <form>
         <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-          Enter Duration
+          Enter Duration*
         </Typography>
         <RadioGroup row aria-label="gender" name="gender1" value={units} onChange={onChangeUnit}>
           <TextField
