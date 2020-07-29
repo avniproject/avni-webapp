@@ -64,7 +64,7 @@ const NewSubjectSearchTable = ({ searchRequest }) => {
     new Promise(resolve => {
       let apiUrl = "/web/searchAPI/v2";
       const pageElement = {};
-      pageElement.pageNumber = query.page + 1;
+      pageElement.pageNumber = query.page;
       pageElement.numberOfRecordPerPage = query.pageSize;
       pageElement.sortColumn = query.orderBy.field;
       pageElement.sortOrder = query.orderDirection;
@@ -80,7 +80,7 @@ const NewSubjectSearchTable = ({ searchRequest }) => {
         .then(result => {
           resolve({
             data: result.listOfRecords,
-            page: query.page + 1,
+            page: query.page,
             totalCount: result.totalElements
           });
         })
@@ -105,8 +105,7 @@ const NewSubjectSearchTable = ({ searchRequest }) => {
               addRowPosition: "first",
               sorting: true,
               debounceInterval: 500,
-              searchFieldAlignment: "left",
-              searchFieldStyle: { width: "100%", marginLeft: "-8%" }
+              search: false
             }}
           />
         </div>
