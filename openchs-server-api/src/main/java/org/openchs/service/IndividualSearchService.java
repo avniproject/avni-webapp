@@ -37,7 +37,7 @@ public class IndividualSearchService {
     public LinkedHashMap<String, Object> getsearchResult(String jsonSearch) {
         Query q = entityManager.createNativeQuery("select firstname,lastname,fullname,id,uuid,title_lineage,subject_type_name" +
                 ",gender_name,date_of_birth,enrolments,total_elements " +
-                "from search_function_111 (?1)");
+                "from web_search_function (?1)");
         q.setParameter(1, jsonSearch);
         List<Object[]> listOfObject = q.getResultList();
         return constructIndividual(listOfObject);
