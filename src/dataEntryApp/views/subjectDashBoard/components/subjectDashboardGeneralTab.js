@@ -7,14 +7,13 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Typography from "@material-ui/core/Typography";
-import Visit from "./Visit";
 import SubjectButton from "./Button";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "common/components/utils";
 import Button from "@material-ui/core/Button";
 import PlannedEncounter from "dataEntryApp/views/subjectDashBoard/components/PlannedEncounter";
 import CompletedEncounter from "dataEntryApp/views/subjectDashBoard/components/CompletedEncounter";
-import { isEmpty, isNil, filter } from "lodash";
+import { isEmpty } from "lodash";
 import { connect } from "react-redux";
 import { selectFormMappingsForSubjectType } from "../../../sagas/encounterSelector";
 

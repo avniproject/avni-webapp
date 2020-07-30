@@ -2,6 +2,7 @@ import { all, call, fork, put, takeLatest, select } from "redux-saga/effects";
 import { types, setCompletedVisits, setEncounterTypes } from "../reducers/completedVisitsReducer";
 import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { mapProfile } from "../../common/subjectModelMapper";
+import { setProgramEnrolment } from "../reducers/programEncounterReducer";
 
 import api from "../api";
 import {
@@ -42,6 +43,7 @@ export function* loadProgramEncountersWorker({ enrolmentUuid, filterQueryString 
   yield put(setCompletedVisits(completedVisits));
   yield put(setSubjectProfile(subjectProfile));
   yield put(setEncounterTypes(encounterTypes));
+  yield put(setProgramEnrolment(programEnrolment));
   yield put.resolve(setLoad(true));
 }
 

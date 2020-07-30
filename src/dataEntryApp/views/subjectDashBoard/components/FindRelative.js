@@ -105,7 +105,11 @@ const FindRelative = props => {
     setfilterErrors({ ...filterErrors });
   };
 
-  const close = () => {};
+  const close = () => {
+    props.setSubjects();
+    setValue("");
+    sessionStorage.removeItem("selectedRelative");
+  };
 
   const applyClick = e => {
     if (value === "") {
@@ -119,15 +123,20 @@ const FindRelative = props => {
   const modifySearch = () => {
     props.setSubjects();
     setValue("");
+    sessionStorage.removeItem("selectedRelative");
   };
   const okClick = () => {
     props.setSubjects();
     setValue("");
     let localSavedRelativeData = [];
     let localsSelctedRelative = JSON.parse(sessionStorage.getItem("selectedRelative"));
+    console.log("localsSelctedRelative-------->", localsSelctedRelative);
     localSavedRelativeData.push(localsSelctedRelative);
     // store.dispatch({ type: types.SET_LISTOFRELATIVES, value: localsSelctedRelative });
-    sessionStorage.setItem("selectedRelativeslist", JSON.stringify(localSavedRelativeData));
+    if (localsSelctedRelative !== null) {
+      sessionStorage.setItem("selectedRelativeslist", JSON.stringify(localSavedRelativeData));
+    }
+
     sessionStorage.removeItem("selectedRelative");
   };
 
@@ -144,7 +153,7 @@ const FindRelative = props => {
                 {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
 
                 <Typography variant="subtitle2" gutterBottom>
-                  Name
+                  {t("name")}
                 </Typography>
                 <TextField
                   id="standard-multiline-flexible"

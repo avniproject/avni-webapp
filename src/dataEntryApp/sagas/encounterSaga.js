@@ -20,6 +20,7 @@ import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../reducers/generalSubjectDashboardReducer";
 import { mapProfile, mapEncounter } from "../../common/subjectModelMapper";
 import formElementService from "../services/FormElementService";
+import { setLoad } from "../reducers/loadReducer";
 
 export default function*() {
   yield all(
@@ -41,6 +42,7 @@ export function* encouterOnLoadWatcher() {
   yield takeLatest(types.ON_LOAD, encouterOnLoadWorker);
 }
 export function* encouterOnLoadWorker({ subjectUuid }) {
+  yield put.resolve(setLoad(false));
   yield put.resolve(getSubjectGeneral(subjectUuid));
   const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
   const encounterFormMappings = yield select(
@@ -48,6 +50,7 @@ export function* encouterOnLoadWorker({ subjectUuid }) {
   );
   yield put.resolve(setEncounterFormMappings(encounterFormMappings));
   yield put.resolve(setSubjectProfile(mapProfile(subjectProfileJson)));
+  yield put.resolve(setLoad(true));
 }
 
 export function* createEncounterWatcher() {

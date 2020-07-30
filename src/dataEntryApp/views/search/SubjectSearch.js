@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
-import { FormControl, Input, InputLabel, Paper } from "@material-ui/core";
+import React from "react";
+import { Paper } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import { first } from "lodash";
-import { searchSubjects } from "../../reducers/searchReducer";
-import RegistrationMenu from "./RegistrationMenu";
-import PrimaryButton from "../../components/PrimaryButton";
-import { useTranslation } from "react-i18next";
-import { SubjectsTable } from "./SubjectSearchTable";
-import CustomizedBackdrop from "../../components/CustomizedBackdrop";
+import CancelIcon from "@material-ui/icons/Cancel";
 import NewSubjectSearchTable from "dataEntryApp/views/search/NewSubjectSearchTable";
+import { useTranslation } from "react-i18next";
+import { store } from "../../../common/store/createStore";
+import { types } from "../../reducers/searchFilterReducer";
+import { Link } from "react-router-dom";
+import { Typography } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -52,49 +52,51 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const SubjectSearch = props => {
+const SubjectSearch = ({ searchRequest }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [searchvalue, setSearchvalue] = React.useState("");
-
-  const handleSubmit = event => {
-    event.preventDefault();
-    props.search({ page: page, query: searchvalue, size: rowsPerPage });
-  };
-  const resethandleSubmit = event => {
-    event.preventDefault();
-    setSearchvalue("");
-    props.search({ page: 0, query: "", size: rowsPerPage });
-  };
-
-  const valueSubmit = e => {
-    setSearchvalue(e.target.value);
+  const resetClick = () => {
+    store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: {} });
   };
 
   return (
     <Paper className={classes.searchBox}>
-      <div className={classes.searchCreateToolbar}>
-        <RegistrationMenu className={classes.createButtonHolder} />
-      </div>
-      <NewSubjectSearchTable />
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="baseline"
+        style={{ marginBottom: "1%" }}
+      >
+        <Typography
+          component={"span"}
+          style={{
+            fontSize: "22px",
+            fontWeight: "500",
+            float: "left",
+            paddingTop: "1%",
+            paddingLeft: "4px"
+          }}
+        >
+          {t("searchResults")}
+        </Typography>
+        <Link onClick={() => resetClick()} aria-label="add an alarm" style={{ color: "#212529" }}>
+          <CancelIcon Style={{ fontSize: "12px" }} /> Reset Filter
+        </Link>
+      </Grid>
+
+      <NewSubjectSearchTable searchRequest={searchRequest} />
     </Paper>
   );
 };
 
 const mapStateToProps = state => {
   return {
-    user: state.app.user,
-    subjects: state.dataEntry.search.subjects,
-    searchParams: state.dataEntry.search.subjectSearchParams,
-    subjectType: first(state.dataEntry.metadata.operationalModules.subjectTypes)
+    searchRequest: state.dataEntry.searchFilterReducer.request
   };
 };
 
-const mapDispatchToProps = {
-  search: searchSubjects
-};
+const mapDispatchToProps = {};
 
 export default withRouter(
   connect(

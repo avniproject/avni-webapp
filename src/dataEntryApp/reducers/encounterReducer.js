@@ -165,7 +165,8 @@ export default function(state = initialState, action) {
         validationResults: [],
         enconterDateValidation: [],
         encounter: null,
-        encounterForm: null
+        encounterForm: null,
+        encounterFormMappings: null
       };
     }
     default:

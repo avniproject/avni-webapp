@@ -5,6 +5,10 @@ export default {
     httpClient.fetchJson("/web/operationalModules").then(response => response.json),
   fetchForm: uuid => httpClient.fetchJson(`/web/form/${uuid}`).then(response => response.json),
   fetchGenders: () => httpClient.fetchJson("/web/gender").then(response => response.json),
+  fetchAllLocation: () => httpClient.fetchJson("/web/locations").then(response => response.json),
+  fetchOrganisationConfigs: () =>
+    httpClient.fetchJson("/web/organisationConfig").then(response => response.json),
+
   fetchRelations: () =>
     httpClient.fetchJson("/web/relationshipType").then(response => response.json),
   saveSubject: subject =>
@@ -17,6 +21,12 @@ export default {
     httpClient.fetchJson("/programEnrolments", {
       method: "POST",
       body: JSON.stringify(programEnrolment)
+    }),
+
+  searchResult: searchData =>
+    httpClient.fetchJson("/web/searchAPI/v2", {
+      method: "POST",
+      body: JSON.stringify(searchData)
     }),
 
   saveProgramEncouter: programEncounter =>

@@ -177,7 +177,9 @@ export default function(state = initialState, action) {
         validationResults: [],
         enconterDateValidation: [],
         programEncounter: null,
-        programEncounterForm: null
+        programEncounterForm: null,
+        programEnrolment: null,
+        unplanProgramEncounters: null
       };
     }
     default:

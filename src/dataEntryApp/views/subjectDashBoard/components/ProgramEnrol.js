@@ -107,7 +107,7 @@ const ProgramEnrol = ({
                       gutterBottom
                       style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
                     >
-                      Enrolment Date
+                      Enrolment Date*
                     </Typography>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}
@@ -147,7 +147,7 @@ const ProgramEnrol = ({
                       gutterBottom
                       style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
                     >
-                      Exit Enrolment Date
+                      Exit Enrolment Date*
                     </Typography>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}

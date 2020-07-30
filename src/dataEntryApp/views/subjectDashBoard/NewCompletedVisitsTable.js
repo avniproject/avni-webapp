@@ -1,15 +1,26 @@
 import React, { Fragment, useEffect, useRef } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 import Observations from "common/components/Observations";
 import { mapObservation } from "common/subjectModelMapper";
-import { Typography, Table, TableBody, List, Box } from "@material-ui/core";
+import { Table, TableBody, List, Box } from "@material-ui/core";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import { Link } from "react-router-dom";
 import moment from "moment/moment";
+import { selectFormMappingForEncounter } from "../../sagas/encounterSelector";
+import { selectFormMappingForProgramEncounter } from "../../sagas/programEncounterSelector";
+import { connect } from "react-redux";
+
+const useStyles = makeStyles(theme => ({
+  editLabel: {
+    textTransform: "uppercase",
+    fontWeight: 500
+  }
+}));
 
 function usePrevious(value) {
   const ref = useRef();
@@ -25,7 +36,54 @@ const transformApiResponse = response => {
   response.observations = mapObservation(response.observations);
 };
 
-const NewCompletedVisitsTable = ({ apiUrl, viewEncounterUrl, filterParams, entityUuid }) => {
+const EditVisitLink = ({
+  editEncounterUrl,
+  encounter,
+  isForProgramEncounters,
+  encounterFormMapping,
+  programEncounterFormMapping
+}) => {
+  const { t } = useTranslation();
+  const classes = useStyles();
+  const isFormAvailable = isForProgramEncounters
+    ? programEncounterFormMapping
+    : encounterFormMapping;
+
+  return isFormAvailable ? (
+    <Link to={`${editEncounterUrl}?uuid=${encounter.uuid}`} className={classes.editLabel}>
+      {" "}
+      {t("edit visit")}
+    </Link>
+  ) : (
+    "-"
+  );
+};
+
+const mapStateToProps = (state, props) => ({
+  encounterFormMapping: selectFormMappingForEncounter(
+    props.encounter.encounterType.uuid,
+    state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
+  )(state),
+  programEncounterFormMapping:
+    props.isForProgramEncounters &&
+    selectFormMappingForProgramEncounter(
+      props.encounter.encounterType.uuid,
+      state.dataEntry.programEncounterReducer.programEnrolment.program.uuid,
+      state.dataEntry.subjectProfile.subjectProfile.subjectType.uuid
+    )(state)
+});
+
+const EditVisit = connect(mapStateToProps)(EditVisitLink);
+
+const NewCompletedVisitsTable = ({
+  apiUrl,
+  viewEncounterUrl,
+  filterParams,
+  entityUuid,
+  editEncounterUrl,
+  isForProgramEncounters,
+  enableReadOnly
+}) => {
   const { t } = useTranslation();
   const prev = usePrevious(filterParams);
   const columns = [
@@ -47,6 +105,19 @@ const NewCompletedVisitsTable = ({ apiUrl, viewEncounterUrl, filterParams, entit
       title: t("visitscheduledate"),
       field: "earliestVisitDateTime",
       render: row => formatDate(row.earliestVisitDateTime)
+    },
+    {
+      title: t("actions"),
+      field: "actions",
+      hidden: enableReadOnly,
+      sorting: false,
+      render: row => (
+        <EditVisit
+          editEncounterUrl={editEncounterUrl}
+          encounter={row}
+          isForProgramEncounters={isForProgramEncounters}
+        />
+      )
     }
   ];
 
