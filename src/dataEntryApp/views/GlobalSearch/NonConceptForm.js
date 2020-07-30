@@ -64,6 +64,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                 <KeyboardDatePicker
                   id="date-picker-dialog"
                   format="dd/MM/yyyy"
+                  placeholder="Form"
                   value={selectedDate[`${searchFilterForm.type}`].minValue}
                   onChange={minDate =>
                     onDateChange(
@@ -83,6 +84,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
                 <KeyboardDatePicker
                   id="date-picker-dialog"
                   format="dd/MM/yyyy"
+                  placeholder="To"
                   value={selectedDate[`${searchFilterForm.type}`].maxValue}
                   onChange={maxDate =>
                     onDateChange(

@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
@@ -60,6 +60,10 @@ const NewSubjectSearchTable = ({ searchRequest }) => {
   const tableRef = React.createRef();
   const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
+  useEffect(() => {
+    refreshTable(tableRef);
+  });
+
   const fetchData = query =>
     new Promise(resolve => {
       let apiUrl = "/web/searchAPI/v2";
@@ -69,11 +73,6 @@ const NewSubjectSearchTable = ({ searchRequest }) => {
       pageElement.sortColumn = query.orderBy.field;
       pageElement.sortOrder = query.orderDirection;
       searchRequest.pageElement = pageElement;
-      // apiUrl += "size=" + query.pageSize;
-      // apiUrl += "&page=" + query.page;
-      // if (!_.isEmpty(query.search)) apiUrl += "&query=" + encodeURIComponent(query.search);
-      // if (!_.isEmpty(query.orderBy.field))
-      //   apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .post(apiUrl, searchRequest)
         .then(response => response.data)
@@ -89,26 +88,24 @@ const NewSubjectSearchTable = ({ searchRequest }) => {
 
   return (
     <>
-      <div className="container">
-        <div>
-          <MaterialTable
-            title=""
-            components={{
-              Container: props => <Fragment>{props.children}</Fragment>
-            }}
-            tableRef={tableRef}
-            columns={columns}
-            data={fetchData}
-            options={{
-              pageSize: 10,
-              pageSizeOptions: [10, 15, 20],
-              addRowPosition: "first",
-              sorting: true,
-              debounceInterval: 500,
-              search: false
-            }}
-          />
-        </div>
+      <div>
+        <MaterialTable
+          title=""
+          components={{
+            Toolbar: props => <Fragment>{props.children}</Fragment>
+          }}
+          tableRef={tableRef}
+          columns={columns}
+          data={fetchData}
+          options={{
+            pageSize: 10,
+            pageSizeOptions: [10, 15, 20],
+            addRowPosition: "first",
+            sorting: true,
+            debounceInterval: 500,
+            search: false
+          }}
+        />
       </div>
     </>
   );

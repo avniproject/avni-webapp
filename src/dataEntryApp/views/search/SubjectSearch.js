@@ -3,8 +3,14 @@ import { Paper } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
-import RegistrationMenu from "./RegistrationMenu";
+import CancelIcon from "@material-ui/icons/Cancel";
 import NewSubjectSearchTable from "dataEntryApp/views/search/NewSubjectSearchTable";
+import { useTranslation } from "react-i18next";
+import { store } from "../../../common/store/createStore";
+import { types } from "../../reducers/searchFilterReducer";
+import { Link } from "react-router-dom";
+import { Typography } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -48,12 +54,36 @@ const useStyle = makeStyles(theme => ({
 
 const SubjectSearch = ({ searchRequest }) => {
   const classes = useStyle();
+  const { t } = useTranslation();
+  const resetClick = () => {
+    store.dispatch({ type: types.ADD_SEARCH_REQUEST, value: {} });
+  };
 
   return (
     <Paper className={classes.searchBox}>
-      {/* <div className={classes.searchCreateToolbar}>
-        <RegistrationMenu className={classes.createButtonHolder} />
-      </div> */}
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="baseline"
+        style={{ marginBottom: "1%" }}
+      >
+        <Typography
+          component={"span"}
+          style={{
+            fontSize: "22px",
+            fontWeight: "500",
+            float: "left",
+            paddingTop: "1%",
+            paddingLeft: "4px"
+          }}
+        >
+          {t("searchResults")}
+        </Typography>
+        <Link onClick={() => resetClick()} aria-label="add an alarm" style={{ color: "#212529" }}>
+          <CancelIcon Style={{ fontSize: "12px" }} /> Reset Filter
+        </Link>
+      </Grid>
 
       <NewSubjectSearchTable searchRequest={searchRequest} />
     </Paper>

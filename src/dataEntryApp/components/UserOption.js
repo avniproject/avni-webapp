@@ -139,7 +139,7 @@ const UserOption = ({
         component="nav"
         aria-labelledby="nested-list-subheader"
         className={classes.root}
-        style={{ boxShadow: "3px 3px 5px #aaaaaa" }}
+        style={{ boxShadow: "3px 3px 5px #aaaaaa", padding: "1%" }}
       >
         <ListItem
           button

@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import { getUserInfo } from "rootApp/ducks";
 import { InternalLink } from "common/components/utils";
 import { selectEnableReadonly } from "dataEntryApp/sagas/selectors";
+import Icon from "@material-ui/core/Icon";
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -100,6 +101,9 @@ const useStyles = makeStyles(theme => ({
   },
   ListItemText: {
     color: "blue"
+  },
+  button: {
+    margin: theme.spacing(1)
   }
 }));
 
@@ -197,28 +201,7 @@ const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
               <img src={logo} alt="logo" />
             </InternalLink>
           </Typography>
-          {!enableReadOnly ? (
-            <form noValidate autoComplete="off">
-              <InternalLink to={"/app/searchFilter"}>
-                <Input
-                  className={classes.inputSearch}
-                  placeholder={t("search")}
-                  id="standard-adornment-search"
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <ExpandMoreIcon />
-                    </InputAdornment>
-                  }
-                  aria-describedby="standard-weight-helper-text"
-                  inputProps={{
-                    "aria-label": "search"
-                  }}
-                />
-              </InternalLink>
-            </form>
-          ) : (
-            ""
-          )}
+
           {!enableReadOnly ? (
             <ClickAwayListener onClickAway={newHandleclose}>
               <div>
@@ -230,11 +213,11 @@ const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
                   onClick={handleToggle}
                   style={{ color: "#0e6eff" }}
                 >
-                  {t("create")}
+                  {t("new")}
                   <ExpandMoreIcon />
                 </Button>
                 <Popper
-                  style={{ zIndex: 9 }}
+                  style={{ zIndex: 100 }}
                   open={open}
                   anchorEl={anchorRef.current}
                   role={undefined}
@@ -260,7 +243,25 @@ const PrimarySearchAppBar = ({ enableReadOnly, user }) => {
             ""
           )}
 
-          <div className={classes.grow} />
+          <Button
+            variant="contained"
+            className={classes.button}
+            endIcon={<Icon>search</Icon>}
+            component={Link}
+            to="/app/searchFilter"
+            style={{
+              marginRight: "2%",
+              marginLeft: "2%",
+              color: "white",
+              background: "blue",
+              padding: "2px",
+              paddingLeft: "10px",
+              paddingRight: "10px",
+              borderRadius: "3px"
+            }}
+          >
+            {t("Search")}
+          </Button>
           <div className={classes.users}>
             <Typography component={"div"} color="inherit">
               <p className={classes.userName}>{user.username}</p>
