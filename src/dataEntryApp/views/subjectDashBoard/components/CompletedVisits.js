@@ -101,6 +101,9 @@ const CompleteVisit = ({
   const viewEncounterUrl = isForProgramEncounters
     ? `/app/subject/viewProgramEncounter`
     : `/app/subject/viewEncounter`;
+  const editEncounterUrl = isForProgramEncounters
+    ? `/app/subject/editProgramEncounter`
+    : `/app/subject/editEncounter`;
 
   useEffect(() => {
     isForProgramEncounters
@@ -114,15 +117,10 @@ const CompleteVisit = ({
         <Breadcrumbs path={match.path} />
         <Paper className={classes.searchBox}>
           <Grid container spacing={3}>
-            <Grid item xs={6} alignItems="left">
-              <div align="left">
-                <Typography variant="h6" gutterBottom className={classes.completedVsits}>
-                  {t("completedVisits")}
-                </Typography>
-                {/* <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
-                  {totalVisits} {t("resultfound")}
-                </Typography> */}
-              </div>
+            <Grid item xs={6} alignItems="flex-start">
+              <Typography variant="h6" gutterBottom className={classes.completedVsits}>
+                {t("completedVisits")}
+              </Typography>
             </Grid>
             <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
               <FilterResult encounterTypes={encounterTypes} setFilterParams={setFilterParams} />
@@ -134,6 +132,9 @@ const CompleteVisit = ({
               viewEncounterUrl={viewEncounterUrl}
               filterParams={filterParams}
               entityUuid={match.queryParams.uuid}
+              editEncounterUrl={editEncounterUrl}
+              isForProgramEncounters={isForProgramEncounters}
+              enableReadOnly={enableReadOnly}
             />
           </Paper>
         </Paper>
@@ -148,7 +149,7 @@ const mapStateToProps = state => {
   return {
     // completedVisits: state.dataEntry.completedVisitsReducer.completedVisits,
     encounterTypes: state.dataEntry.completedVisitsReducer.encounterTypes,
-    // enableReadOnly: selectEnableReadonly(state),
+    enableReadOnly: selectEnableReadonly(state),
     load: state.dataEntry.loadReducer.load
   };
 };

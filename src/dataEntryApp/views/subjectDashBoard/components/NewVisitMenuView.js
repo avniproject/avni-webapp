@@ -61,7 +61,7 @@ const NewVisitMenuView = ({ sections, uuid, isForProgramEncounters }) => {
                       {section.data
                         .filter(e => !isNil(e.encounterType))
                         .map(encounter => (
-                          <TableRow>
+                          <TableRow key={encounter.uuid}>
                             {encounter.encounterType ? (
                               <TableCell
                                 className={classes.tableCell}
