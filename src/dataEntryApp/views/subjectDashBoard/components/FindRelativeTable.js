@@ -76,10 +76,10 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
           <TableHead>
             <TableRow>
               <TableCell />
-              <TableCell align="left">Name</TableCell>
-              <TableCell align="left">Age</TableCell>
-              <TableCell align="left">Village</TableCell>
-              <TableCell align="left">Subject type</TableCell>
+              <TableCell align="left">{t("name")}</TableCell>
+              <TableCell align="left">{t("Age")}</TableCell>
+              <TableCell align="left">{t("Village")}</TableCell>
+              <TableCell align="left">{t("subjectType")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -101,11 +101,11 @@ const FindRelativeTable = ({ subjectData, errormsg }) => {
                     </TableCell>
 
                     <TableCell align="left" scope="row" id={labelId}>
-                      {row.fullName}
+                      {t(row.fullName)}
                     </TableCell>
                     <TableCell align="left">{row.dateOfBirth}</TableCell>
-                    <TableCell align="left">{row.addressLevel.title}</TableCell>
-                    <TableCell align="left">{row.subjectType.name}</TableCell>
+                    <TableCell align="left">{t(row.addressLevel.title)}</TableCell>
+                    <TableCell align="left">{t(row.subjectType.name)}</TableCell>
                   </TableRow>
                 );
               })}

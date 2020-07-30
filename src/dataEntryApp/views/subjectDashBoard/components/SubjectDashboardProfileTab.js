@@ -87,11 +87,7 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
     (async function fetchData() {
       await getSubjectProfile(profile.uuid);
     })();
-    // (async function fetchData() {
-    //   await setTimeout(() => {
-    //     getSubjectProfile(profile.uuid);
-    //   }, 1000);
-    // })();
+    sessionStorage.removeItem("selectedRelativeslist");
   }, []);
 
   let relativeList = [];

@@ -153,7 +153,7 @@ const FindRelative = props => {
                 {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> */}
 
                 <Typography variant="subtitle2" gutterBottom>
-                  Name
+                  {t("name")}
                 </Typography>
                 <TextField
                   id="standard-multiline-flexible"
