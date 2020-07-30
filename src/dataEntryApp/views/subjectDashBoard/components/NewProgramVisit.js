@@ -8,9 +8,10 @@ import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
-import { onLoad } from "../../../reducers/programEncounterReducer";
+import { onLoad, resetState } from "../../../reducers/programEncounterReducer";
 import { ProgramEncounter } from "avni-models";
 import NewVisitMenuView from "./NewVisitMenuView";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,6 +32,7 @@ const NewProgramVisit = ({ match, ...props }) => {
   const enrolmentUuid = match.queryParams.enrolUuid;
 
   useEffect(() => {
+    props.resetState();
     //Get Plan & Unplan Encounters
     props.onLoad(enrolmentUuid);
   }, []);
@@ -43,7 +45,9 @@ const NewProgramVisit = ({ match, ...props }) => {
       planVisit.encounterType = planEncounter.encounterType;
       planVisit.encounterDateTime = planEncounter.encounterDateTime;
       planVisit.earliestVisitDateTime = planEncounter.earliestVisitDateTime;
+      planVisit.maxVisitDateTime = planEncounter.maxVisitDateTime;
       planVisit.name = planEncounter.name;
+      planVisit.uuid = planEncounter.uuid;
       planEncounterList.push(planVisit);
     });
 
@@ -66,17 +70,32 @@ const NewProgramVisit = ({ match, ...props }) => {
     sections.push({ title: t("unplannedVisits"), data: unplanEncounterList });
   }
 
-  return (
+  return props.load ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Typography component={"span"} className={classes.mainHeading}>
-          {t("newProgramVisit")}
-        </Typography>
-        <LineBreak num={1} />
-        <NewVisitMenuView sections={sections} uuid={enrolmentUuid} />
+        {!isEmpty(sections) ? (
+          <>
+            <Typography component={"span"} className={classes.mainHeading}>
+              {t("newProgramVisit")}
+            </Typography>
+            <LineBreak num={1} />
+            <NewVisitMenuView
+              sections={sections}
+              uuid={enrolmentUuid}
+              isForProgramEncounters={true}
+            />
+          </>
+        ) : (
+          <Typography variant="caption" gutterBottom>
+            {" "}
+            {t("no")} {t("plannedVisits")} / {t("unplannedVisits")}{" "}
+          </Typography>
+        )}
       </Paper>
     </Fragment>
+  ) : (
+    <CustomizedBackdrop load={props.load} />
   );
 };
 
@@ -87,11 +106,13 @@ const mapStateToProps = state => ({
   unplanEncounters: state.dataEntry.programEncounterReducer.unplanProgramEncounters
     ? state.dataEntry.programEncounterReducer.unplanProgramEncounters
     : [],
-  operationalModules: state.dataEntry.metadata.operationalModules
+  operationalModules: state.dataEntry.metadata.operationalModules,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
-  onLoad
+  onLoad,
+  resetState
 };
 
 export default withRouter(

@@ -13,8 +13,8 @@ import { connect } from "react-redux";
 import { InternalLink } from "../../../../common/components/utils";
 import { find, isEmpty, isNil } from "lodash";
 import {
-  selectCancelProgramEncounterFormMapping,
-  selectFormMappingByEncounterTypeUuid
+  selectFormMappingForCancelProgramEncounter,
+  selectFormMappingForProgramEncounter
 } from "../../../sagas/programEncounterSelector";
 
 const useStyles = makeStyles(theme => ({
@@ -172,44 +172,39 @@ const Visit = ({
         </List>
         {!enableReadOnly ? (
           <>
-            {encounterDateTime && uuid && enrolUuid && !isEmpty(programEncounterFormMapping) ? (
+            {encounterDateTime && uuid && !isEmpty(programEncounterFormMapping) ? (
               <InternalLink to={`/app/subject/editProgramEncounter?uuid=${uuid}`}>
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
                 </Button>
               </InternalLink>
-            ) : cancelDateTime &&
-              uuid &&
-              enrolUuid &&
-              !isEmpty(cancelProgramEncounterFormMapping) ? (
-              <InternalLink
-                to={`/app/subject/editCancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
-              >
+            ) : cancelDateTime && uuid && !isEmpty(cancelProgramEncounterFormMapping) ? (
+              <InternalLink to={`/app/subject/editCancelProgramEncounter?uuid=${uuid}`}>
                 <Button color="primary" className={classes.visitButton}>
                   {t("edit visit")}
                 </Button>
               </InternalLink>
             ) : (
-              <div className={classes.visitButton}>
-                {encounterTypeUuid && enrolUuid && !isEmpty(programEncounterFormMapping) ? (
-                  <InternalLink
-                    to={`/app/subject/programEncounter?uuid=${encounterTypeUuid}&enrolUuid=${enrolUuid}`}
-                  >
-                    <Button color="primary">{t("do visit")}</Button>
+              <>
+                {uuid && !isEmpty(programEncounterFormMapping) ? (
+                  <InternalLink to={`/app/subject/programEncounter?encounterUuid=${uuid}`}>
+                    <Button color="primary" className={classes.visitButton}>
+                      {t("do visit")}
+                    </Button>
                   </InternalLink>
                 ) : (
                   ""
                 )}
-                {uuid && enrolUuid && !isEmpty(cancelProgramEncounterFormMapping) ? (
-                  <InternalLink
-                    to={`/app/subject/cancelProgramEncounter?uuid=${uuid}&enrolUuid=${enrolUuid}`}
-                  >
-                    <Button color="primary">{t("cancel Visit")}</Button>
+                {uuid && !isEmpty(cancelProgramEncounterFormMapping) ? (
+                  <InternalLink to={`/app/subject/cancelProgramEncounter?uuid=${uuid}`}>
+                    <Button color="primary" className={classes.visitButton}>
+                      {t("cancel Visit")}
+                    </Button>
                   </InternalLink>
                 ) : (
                   ""
                 )}
-              </div>
+              </>
             )}
           </>
         ) : (
@@ -221,8 +216,12 @@ const Visit = ({
 };
 
 const mapStateToProps = (state, props) => ({
-  programEncounterFormMapping: selectFormMappingByEncounterTypeUuid(props.encounterTypeUuid)(state),
-  cancelProgramEncounterFormMapping: selectCancelProgramEncounterFormMapping(
+  programEncounterFormMapping: selectFormMappingForProgramEncounter(
+    props.encounterTypeUuid,
+    props.programUuid,
+    props.subjectTypeUuid
+  )(state),
+  cancelProgramEncounterFormMapping: selectFormMappingForCancelProgramEncounter(
     props.encounterTypeUuid,
     props.programUuid,
     props.subjectTypeUuid

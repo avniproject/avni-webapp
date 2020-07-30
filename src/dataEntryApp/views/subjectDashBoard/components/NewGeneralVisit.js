@@ -8,9 +8,10 @@ import { withParams } from "common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Typography, Paper } from "@material-ui/core";
 import { LineBreak } from "../../../../common/components/utils";
-import { onLoad } from "../../../reducers/encounterReducer";
+import { onLoad, resetState } from "../../../reducers/encounterReducer";
 import { Encounter } from "avni-models";
 import NewVisitMenuView from "./NewVisitMenuView";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -31,6 +32,7 @@ const NewGeneralVisit = ({ match, ...props }) => {
   const subjectUuid = match.queryParams.subjectUuid;
 
   useEffect(() => {
+    props.resetState();
     // Get Plan & Unplan Encounters
     props.onLoad(subjectUuid);
   }, []);
@@ -70,28 +72,41 @@ const NewGeneralVisit = ({ match, ...props }) => {
     sections.push({ title: t("unplannedVisits"), data: actualEncounters });
   }
 
-  return (
+  return props.load ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
-        <Typography component={"span"} className={classes.mainHeading}>
-          {t("newGeneralVisit")}
-        </Typography>
-        <LineBreak num={1} />
-        <NewVisitMenuView sections={sections} uuid={subjectUuid} isForEncounters={true} />
+        {!isEmpty(sections) ? (
+          <>
+            <Typography component={"span"} className={classes.mainHeading}>
+              {t("newGeneralVisit")}
+            </Typography>
+            <LineBreak num={1} />
+            <NewVisitMenuView sections={sections} uuid={subjectUuid} />
+          </>
+        ) : (
+          <Typography variant="caption" gutterBottom>
+            {" "}
+            {t("no")} {t("plannedVisits")} / {t("unplannedVisits")}{" "}
+          </Typography>
+        )}
       </Paper>
     </Fragment>
+  ) : (
+    <CustomizedBackdrop load={props.load} />
   );
 };
 
 const mapStateToProps = state => ({
   subjectGeneral: state.dataEntry.subjectGenerel.subjectGeneral,
   operationalModules: state.dataEntry.metadata.operationalModules,
-  encounterFormMappings: state.dataEntry.encounterReducer.encounterFormMappings
+  encounterFormMappings: state.dataEntry.encounterReducer.encounterFormMappings,
+  load: state.dataEntry.loadReducer.load
 });
 
 const mapDispatchToProps = {
-  onLoad
+  onLoad,
+  resetState
 };
 
 export default withRouter(

@@ -10,7 +10,7 @@ import {
 } from "dataEntryApp/reducers/programEncounterReducer";
 
 const mapFormStateToProps = state => ({
-  form: state.dataEntry.programEncounterReducer.cancelProgramEncounterForm,
+  form: state.dataEntry.programEncounterReducer.programEncounterForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,
   observations: state.dataEntry.programEncounterReducer.programEncounter.cancelObservations,
   obsHolder: new ObservationsHolder(

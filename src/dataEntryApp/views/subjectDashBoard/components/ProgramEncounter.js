@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, Paper } from "@material-ui/core";
+import { Grid, Paper, Typography } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import { remove, isNil, isEqual } from "lodash";
 import { withRouter } from "react-router-dom";
@@ -10,12 +10,13 @@ import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import {
-  getProgramEncounterForm,
   onLoad,
   updateProgramEncounter,
   setEncounterDateValidation,
-  onLoadEditProgramEncounter,
-  resetState
+  editProgramEncounter,
+  resetState,
+  createProgramEncounter,
+  createProgramEncounterForScheduled
 } from "../../../reducers/programEncounterReducer";
 import ProgramEncounterForm from "./ProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
@@ -33,21 +34,21 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
   const classes = useStyles();
   const ENCOUNTER_DATE_TIME = "ENCOUNTER_DATE_TIME";
   const editProgramEncounter = isEqual(match.path, "/app/subject/editProgramEncounter");
+  const encounterUuid = match.queryParams.encounterUuid;
   const enrolUuid = match.queryParams.enrolUuid;
   const uuid = match.queryParams.uuid;
 
   useEffect(() => {
     props.resetState();
-    (async function fetchData() {
-      if (editProgramEncounter) {
-        //uuid - programEncounterUuid
-        await props.onLoadEditProgramEncounter(uuid);
-      } else {
-        //uuid - encounterTypeUuid
-        await props.onLoad(enrolUuid);
-        props.getProgramEncounterForm(uuid, enrolUuid);
-      }
-    })();
+    if (editProgramEncounter) {
+      props.editProgramEncounter(uuid);
+    } else if (encounterUuid) {
+      //encounterUuid - programEncounterUuid
+      props.createProgramEncounterForScheduled(encounterUuid);
+    } else {
+      //uuid - encounterTypeUuid
+      props.createProgramEncounter(uuid, enrolUuid);
+    }
   }, []);
 
   const validationResultForEncounterDate =
@@ -62,9 +63,15 @@ const ProgramEncounter = ({ match, programEncounter, enconterDateValidation, ...
             {props.programEncounterForm && programEncounter && props.subjectProfile ? (
               <ProgramEncounterForm>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <Typography
+                    variant="body1"
+                    gutterBottom
+                    style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
+                  >
+                    Visit Date
+                  </Typography>
                   <KeyboardDatePicker
                     style={{ width: "30%" }}
-                    label="Visit Date"
                     margin="none"
                     size="small"
                     id="date-picker-dialog"
@@ -123,12 +130,13 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  getProgramEncounterForm,
   onLoad,
   updateProgramEncounter,
   setEncounterDateValidation,
-  onLoadEditProgramEncounter,
-  resetState
+  editProgramEncounter,
+  resetState,
+  createProgramEncounter,
+  createProgramEncounterForScheduled
 };
 
 export default withRouter(
