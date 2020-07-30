@@ -29,10 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
@@ -50,9 +47,10 @@ public class IndividualController extends AbstractController<Individual> impleme
     private ConceptRepository conceptRepository;
     private ConceptService conceptService;
     private final EncounterService encounterService;
+    private final IndividualSearchService individualSearchService;
 
     @Autowired
-    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService, ConceptRepository conceptRepository, ConceptService conceptService,EncounterService encounterService) {
+    public IndividualController(IndividualRepository individualRepository, LocationRepository locationRepository, GenderRepository genderRepository, ObservationService observationService, UserService userService, SubjectTypeRepository subjectTypeRepository, ProjectionFactory projectionFactory, IndividualService individualService, ConceptRepository conceptRepository, ConceptService conceptService,EncounterService encounterService,IndividualSearchService individualSearchService) {
         this.individualRepository = individualRepository;
         this.locationRepository = locationRepository;
         this.genderRepository = genderRepository;
@@ -64,6 +62,7 @@ public class IndividualController extends AbstractController<Individual> impleme
         this.conceptRepository = conceptRepository;
         this.conceptService = conceptService;
         this.encounterService = encounterService;
+        this.individualSearchService=individualSearchService;
     }
 
     @RequestMapping(value = "/api/subjects", method = RequestMethod.GET)
@@ -152,6 +151,13 @@ public class IndividualController extends AbstractController<Individual> impleme
                 where(repo.getFilterSpecForName(query))
                 , pageable)
                 .map(t -> projectionFactory.createProjection(IndividualWebProjection.class, t));
+    }
+
+    @PostMapping(value= "/web/searchAPI/v2")
+    @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
+    @ResponseBody
+    public ResponseEntity<LinkedHashMap<String, Object>> getSearch(@RequestBody String searchQuery) {
+        return new ResponseEntity<>(individualSearchService.getsearchResult(searchQuery), HttpStatus.OK);
     }
 
     @GetMapping(value = "/web/individual/{uuid}")

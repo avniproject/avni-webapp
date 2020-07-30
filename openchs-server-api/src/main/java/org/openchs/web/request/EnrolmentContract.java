@@ -21,6 +21,15 @@ public class EnrolmentContract extends ReferenceDataContract{
     private Set<ProgramEncountersContract> programEncounters = new HashSet<>();
 
     private List<ObservationContract> observations = new ArrayList<>();
+    private String programColor;
+
+    public String getProgramColor() {
+        return programColor;
+    }
+
+    public void setProgramColor(String programColor) {
+        this.programColor = programColor;
+    }
 
     public List<ObservationContract> getExitObservations() {
         return exitObservations;
