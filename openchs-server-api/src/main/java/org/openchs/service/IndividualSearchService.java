@@ -77,6 +77,7 @@ public class IndividualSearchService {
                 }).collect(Collectors.toList());
                  if(null!=individualList && individualList.size()>0){
                         Object[] firstRecord=individualList.get(0);
+                        if(null!=firstRecord[10] && !"".equals(firstRecord[10].toString().trim()))
                         totalElements=new BigInteger(firstRecord[10].toString());
         }
         recordsMap.put("totalElements",totalElements);
