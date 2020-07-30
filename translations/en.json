@@ -390,6 +390,7 @@
     "noRelativesAdded": "No Relatives Added",
     "registrationDetails": "Registration details",
     "filterResults": "Filter results",
-    "invalidDateFormat": "Is not a valid date"
+    "invalidDateFormat": "Is not a valid date",
+    "resetFilter": "Reset Filter"
   }
 }

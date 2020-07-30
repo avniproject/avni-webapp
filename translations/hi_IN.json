@@ -342,6 +342,7 @@
     "viewAllCompletedVisits": "सभी पूर्ण देखे गए दृश्य",
     "registrationDetails": "पंजीकरण विवरण",
     "filterResults": "फिल्टर परिणाम",
-    "invalidDateFormat": "वैध तिथि नहीं है"
+    "invalidDateFormat": "वैध तिथि नहीं है",
+    "resetFilter": "फ़िल्टर रीसेट करें"
   }
 }

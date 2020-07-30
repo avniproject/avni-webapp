@@ -81,7 +81,7 @@ const SubjectSearch = ({ searchRequest }) => {
           {t("searchResults")}
         </Typography>
         <Link onClick={() => resetClick()} aria-label="add an alarm" style={{ color: "#212529" }}>
-          <CancelIcon Style={{ fontSize: "12px" }} /> Reset Filter
+          <CancelIcon Style={{ fontSize: "12px" }} /> {t("resetFilter")}
         </Link>
       </Grid>
 
