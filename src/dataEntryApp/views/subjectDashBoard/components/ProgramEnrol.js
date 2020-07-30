@@ -11,7 +11,7 @@ import {
   setInitialState,
   setEnrolDateValidation
 } from "../../../reducers/programEnrolReducer";
-import { isNil, remove } from "lodash";
+import { isNil, isEmpty, first } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -21,6 +21,7 @@ import ProgramExitEnrolmentForm from "./ProgramExitEnrolmentForm";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
+import programEnrolmentService from "../../../services/ProgramEnrolmentService";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -85,10 +86,6 @@ const ProgramEnrol = ({
     })();
   }, []);
 
-  const validationResultForEnrolDate =
-    enrolDateValidation &&
-    enrolDateValidation.find(vr => !vr.success && vr.formIdentifier === ENROLMENT_DATE);
-
   return (
     <Fragment>
       <Breadcrumbs path={match.path} />
@@ -114,7 +111,6 @@ const ProgramEnrol = ({
                     </Typography>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}
-                      // label="Enrolment Date"
                       margin="none"
                       size="small"
                       id="date-picker-dialog"
@@ -124,26 +120,17 @@ const ProgramEnrol = ({
                       value={new Date(programEnrolment.enrolmentDateTime)}
                       autoComplete="off"
                       required
-                      error={
-                        !isNil(validationResultForEnrolDate) &&
-                        !validationResultForEnrolDate.success
-                      }
+                      error={!isEmpty(enrolDateValidation) && !first(enrolDateValidation).success}
                       helperText={
-                        !isNil(validationResultForEnrolDate) &&
-                        t(validationResultForEnrolDate.messageKey)
+                        !isEmpty(enrolDateValidation) && t(first(enrolDateValidation).messageKey)
                       }
                       onChange={date => {
                         const enrolDate = isNil(date) ? undefined : new Date(date);
-                        updateProgramEnrolment("enrolmentDateTime", enrolDate);
                         programEnrolment.enrolmentDateTime = enrolDate;
-                        remove(enrolDateValidation, vr => vr.formIdentifier === ENROLMENT_DATE);
-                        const result = programEnrolment
-                          .validateEnrolment()
-                          .find(vr => !vr.success && vr.formIdentifier === ENROLMENT_DATE);
-                        result
-                          ? enrolDateValidation.push(result)
-                          : enrolDateValidation.push(...programEnrolment.validateEnrolment());
-                        setEnrolDateValidation(enrolDateValidation);
+                        updateProgramEnrolment("enrolmentDateTime", enrolDate);
+                        setEnrolDateValidation([
+                          programEnrolmentService.validateEnrolmentDate(programEnrolment)
+                        ]);
                       }}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -164,7 +151,6 @@ const ProgramEnrol = ({
                     </Typography>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}
-                      // label="Exit Enrolment Date"
                       margin="none"
                       size="small"
                       id="date-picker-dialog"

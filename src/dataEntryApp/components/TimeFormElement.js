@@ -2,8 +2,9 @@ import React, { Fragment } from "react";
 import DateFnsUtils from "@date-io/date-fns";
 import { Typography } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardTimePicker } from "@material-ui/pickers";
-import { find } from "lodash";
+import { find, isNil } from "lodash";
 import { useTranslation } from "react-i18next";
+import moment from "moment";
 
 const TimeFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   const { t } = useTranslation();
@@ -11,6 +12,9 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
     validationResults,
     validationResult => validationResult.formIdentifier === uuid
   );
+  const toFormatTime = !isNil(value) && moment(value).format("HH:mm");
+  const hrs = toFormatTime && toFormatTime.split(":")[0];
+  const mins = toFormatTime && toFormatTime.split(":")[1];
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -24,12 +28,15 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
       <KeyboardTimePicker
         // label={fe.display || fe.name}
         required={fe.mandatory}
-        value={value}
-        onChange={update}
+        value={!isNil(value) ? new Date().setHours(hrs, mins) : value}
+        ampm={false}
+        onChange={value => {
+          update(value);
+        }}
         onError={console.log}
         helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
         error={validationResult && !validationResult.success}
-        mask="__:__ _M"
+        placeholder="hh:mm"
         style={{ width: "30%" }}
         KeyboardButtonProps={{
           "aria-label": "change time",

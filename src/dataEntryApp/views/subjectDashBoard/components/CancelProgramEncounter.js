@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Paper, Typography } from "@material-ui/core";
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import { remove, isNil, isEqual } from "lodash";
+import { isNil, isEqual, isEmpty, first } from "lodash";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -20,6 +20,7 @@ import {
 } from "../../../reducers/programEncounterReducer";
 import CancelProgramEncounterForm from "./CancelProgramEncounterForm";
 import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
+import programEncounterService from "../../../services/ProgramEncounterService";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,24 +45,6 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
       props.createCancelProgramEncounter(encounterUuid);
     }
   }, []);
-
-  const validateCancelDate = cancelDateTime => {
-    const failure = new ValidationResult(false, CANCEL_DATE_TIME);
-    if (isNil(cancelDateTime)) failure.messageKey = "emptyValidationMessage";
-    else if (
-      General.dateAIsBeforeB(cancelDateTime, programEncounter.programEnrolment.enrolmentDateTime) ||
-      General.dateAIsAfterB(cancelDateTime, programEncounter.programEnrolment.programExitDateTime)
-    )
-      failure.messageKey = "cancelDateNotInBetweenEnrolmentAndExitDate";
-    else if (General.dateIsAfterToday(cancelDateTime)) failure.messageKey = "cancelDateInFuture";
-    else if (!moment(cancelDateTime).isValid()) failure.messageKey = "invalidDateFormat";
-    else return new ValidationResult(true, CANCEL_DATE_TIME, null);
-    return failure;
-  };
-
-  const validationResultForCancelDate =
-    enconterDateValidation &&
-    enconterDateValidation.find(vr => !vr.success && vr.formIdentifier === CANCEL_DATE_TIME);
 
   return (
     <Fragment>
@@ -91,19 +74,19 @@ const CancelProgramEncounter = ({ match, programEncounter, enconterDateValidatio
                     required
                     value={new Date(programEncounter.cancelDateTime)}
                     error={
-                      !isNil(validationResultForCancelDate) &&
-                      !validationResultForCancelDate.success
+                      !isEmpty(enconterDateValidation) && !first(enconterDateValidation).success
                     }
                     helperText={
-                      !isNil(validationResultForCancelDate) &&
-                      t(validationResultForCancelDate.messageKey)
+                      !isEmpty(enconterDateValidation) &&
+                      t(first(enconterDateValidation).messageKey)
                     }
                     onChange={date => {
                       const cancelDate = isNil(date) ? undefined : new Date(date);
+                      programEncounter.cancelDateTime = cancelDate;
                       props.updateProgramEncounter("cancelDateTime", cancelDate);
-                      remove(enconterDateValidation, vr => vr.formIdentifier === CANCEL_DATE_TIME);
-                      enconterDateValidation.push(validateCancelDate(cancelDate));
-                      props.setEncounterDateValidation(enconterDateValidation);
+                      props.setEncounterDateValidation([
+                        programEncounterService.validateCancelDate(programEncounter)
+                      ]);
                     }}
                     KeyboardButtonProps={{
                       "aria-label": "change date",
