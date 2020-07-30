@@ -5,6 +5,8 @@ export default {
     httpClient.fetchJson("/web/operationalModules").then(response => response.json),
   fetchForm: uuid => httpClient.fetchJson(`/web/form/${uuid}`).then(response => response.json),
   fetchGenders: () => httpClient.fetchJson("/web/gender").then(response => response.json),
+  fetchRelations: () =>
+    httpClient.fetchJson("/web/relationshipType").then(response => response.json),
   saveSubject: subject =>
     httpClient.fetchJson("/individuals", {
       method: "POST",
@@ -21,6 +23,17 @@ export default {
     httpClient.fetchJson("/programEncounters", {
       method: "POST",
       body: JSON.stringify(programEncounter)
+    }),
+
+  saveRelationShip: Relationaldata =>
+    httpClient.fetchJson("/individualRelationships", {
+      method: "POST",
+      body: JSON.stringify(Relationaldata)
+    }),
+
+  removeRelationShip: RelationId =>
+    httpClient.fetchJson(`/web/relationShip/${RelationId}`, {
+      method: "DELETE"
     }),
 
   saveEncounter: encounter =>
