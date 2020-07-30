@@ -10,7 +10,6 @@ import TableHead from "@material-ui/core/TableHead";
 import Radio from "@material-ui/core/Radio";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
-import Checkbox from "@material-ui/core/Checkbox";
 import { useTranslation } from "react-i18next";
 import { Row } from "reactstrap";
 
@@ -38,84 +37,83 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FindRelativeTable = ({ subjectData }) => {
+const FindRelativeTable = ({ subjectData, errormsg }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [selected, setSelected] = React.useState([]);
-  const [value, setValue] = React.useState("");
-  // let selectedRelatives = [];
-  const handleClick = (event, uuid, row) => {
-    const selectedIndex = selected.indexOf(uuid);
-    let newSelected = [];
+  const [errorvalue, setErrorValue] = React.useState(errormsg);
+  const [selectedValue, setSelectedValue] = React.useState("1");
+
+  const handleChange = (event, uuid, row) => {
+    setSelectedValue(event.target.value);
     let sub = row;
     sessionStorage.setItem("selectedRelative", JSON.stringify(sub));
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, uuid);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
   };
 
-  const isSelected = uuid => selected.indexOf(uuid) !== -1;
+  // const isSelected = uuid => selected.indexOf(uuid) !== -1;
 
   return (
     <div className={classes.root}>
       <Typography variant="subtitle2" gutterBottom>
-        {subjectData && subjectData.content ? subjectData.content.length : ""} Result selected
+        {subjectData && subjectData.content
+          ? subjectData.content.length === 0
+            ? "No"
+            : subjectData.content.length
+          : ""}{" "}
+        Results found
       </Typography>
-      <Table
-        className={classes.table}
-        aria-labelledby="tableTitle"
-        // size={dense ? "small" : "medium"}
-        aria-label="enhanced table"
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell align="left">Name</TableCell>
-            <TableCell align="left">Age</TableCell>
-            <TableCell align="left">Village</TableCell>
-            <TableCell align="left">Subject type</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {subjectData &&
-            subjectData.content.map((row, index) => {
-              const isItemSelected = isSelected(row.uuid);
-              const labelId = `enhanced-table-checkbox-${index}`;
+      <Typography variant="subtitle2" gutterBottom>
+        {errorvalue}
+      </Typography>
 
-              return (
-                <TableRow
-                  hover
-                  onClick={event => handleClick(event, row.uuid, row)}
-                  role="radio"
-                  aria-checked={isItemSelected}
-                  tabIndex={-1}
-                  key={row.uuid}
-                  selected={isItemSelected}
-                >
-                  <TableCell padding="radio">
-                    <Radio checked={isItemSelected} inputProps={{ "aria-labelledby": labelId }} />
-                  </TableCell>
-                  <TableCell align="left" scope="row" id={labelId}>
-                    {row.fullName}
-                  </TableCell>
-                  <TableCell align="left">{row.dateOfBirth}</TableCell>
-                  <TableCell align="left">{row.addressLevel.title}</TableCell>
-                  <TableCell align="left">{row.subjectType.name}</TableCell>
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </Table>
+      {subjectData && subjectData.content && subjectData.content.length !== 0 ? (
+        <Table
+          className={classes.table}
+          aria-labelledby="tableTitle"
+          // size={dense ? "small" : "medium"}
+          aria-label="enhanced table"
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell align="left">{t("name")}</TableCell>
+              <TableCell align="left">{t("Age")}</TableCell>
+              <TableCell align="left">{t("Village")}</TableCell>
+              <TableCell align="left">{t("subjectType")}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {subjectData &&
+              subjectData.content.map((row, index) => {
+                // const isItemSelected = isSelected(row.uuid);
+                const labelId = `enhanced-table-checkbox-${index}`;
+
+                return (
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Radio
+                        checked={selectedValue === row.uuid}
+                        onChange={event => handleChange(event, row.uuid, row)}
+                        value={row.uuid}
+                        name="radio-button-demo"
+                        inputProps={{ "aria-label": "A" }}
+                      />
+                    </TableCell>
+
+                    <TableCell align="left" scope="row" id={labelId}>
+                      {t(row.fullName)}
+                    </TableCell>
+                    <TableCell align="left">{row.dateOfBirth}</TableCell>
+                    <TableCell align="left">{t(row.addressLevel.title)}</TableCell>
+                    <TableCell align="left">{t(row.subjectType.name)}</TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

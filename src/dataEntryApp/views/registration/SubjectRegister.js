@@ -232,6 +232,7 @@ const DefaultPage = props => {
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                     {t("Date of registration")}
+                    {"*"}
                   </Typography>
                   <KeyboardDatePicker
                     autoComplete="off"
@@ -269,6 +270,7 @@ const DefaultPage = props => {
                   <React.Fragment>
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t("firstName")}
+                      {"*"}
                     </Typography>
                     <TextField
                       type="text"
@@ -289,6 +291,7 @@ const DefaultPage = props => {
                     <LineBreak num={1} />
                     <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                       {t("lastName")}
+                      {"*"}
                     </Typography>
                     <TextField
                       type="text"
@@ -336,7 +339,7 @@ const DefaultPage = props => {
                     />
                     <LineBreak num={1} />
                     <RadioButtonsGroup
-                      label={t("Address")}
+                      label={t("Address*")}
                       items={props.addressLevelTypes.map(a => ({ id: a.id, name: a.name }))}
                       value={props.selectedAddressLevelType.id}
                       onChange={item => props.selectAddressLevelType(item)}

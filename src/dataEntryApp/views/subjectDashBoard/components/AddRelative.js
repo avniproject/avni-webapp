@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import NativeSelect from "@material-ui/core/NativeSelect";
 import Breadcrumbs from "dataEntryApp/components/Breadcrumbs";
 import { getRelations, saveRelationShip } from "../../../reducers/relationshipReducer";
+import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
 import { withRouter, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { withParams } from "common/components/utils";
@@ -129,17 +130,16 @@ const AddRelative = ({
   load,
   subjects,
   saveRelationShip,
-  RelationsData
+  RelationsData,
+  getSubjectProfile
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  console.log("RelationsDatafrom store------->", RelationsData);
+  //  console.log("RelationsDatafrom store------->", Relations);
   let relativeLists = JSON.parse(sessionStorage.getItem("selectedRelativeslist"));
-  console.log("relativeLists-------->", relativeLists);
+  // console.log("relativeLists-------->", relativeLists);
   const profileDetails = relativeLists;
-  const [selectname, setSelectname] = React.useState("");
-  const duplicatuuid = General.randomUUID();
   const [state, setState] = React.useState({
     age: "",
     name: "hai"
@@ -168,6 +168,9 @@ const AddRelative = ({
   const addRelatives = () => {
     saveRelationShip(relationData);
     sessionStorage.removeItem("selectedRelativeslist");
+    (async function fetchData() {
+      await getSubjectProfile(match.queryParams.uuid);
+    })();
     history.goBack();
   };
   const cancelRelation = () => {
@@ -191,8 +194,8 @@ const AddRelative = ({
           </Grid>
 
           {profileDetails !== null
-            ? profileDetails.map(row => (
-                <div>
+            ? profileDetails.map((row, index) => (
+                <div key={index}>
                   <div className={classes.scheduleddateStyle}>
                     <Typography component={"span"} className={classes.subHeading}>
                       {/* {t("Completed")} */}
@@ -207,31 +210,37 @@ const AddRelative = ({
                             <TableHead>
                               <TableRow className={classes.tableHeader}>
                                 <TableCell className={classes.tableCell} style={{ width: "25%" }}>
-                                  Name
+                                  {t("name")}
                                 </TableCell>
                                 <TableCell className={classes.tableCell} style={{ width: "20%" }}>
                                   {t("gender")}
                                 </TableCell>
                                 <TableCell className={classes.tableCell} style={{ width: "20%" }}>
                                   {t("Age")}
-                                </TableCell>{" "}
+                                </TableCell>
                                 <TableCell className={classes.tableCell} style={{ width: "35%" }}>
-                                  Village
+                                  {t("Village")}
                                   {/* {t(profileDetails.addressLevelTypeName)} */}
                                 </TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
                               <TableRow>
-                                <TableCell className={classes.tableCellDetails}>
+                                <TableCell key={row.fullName} className={classes.tableCellDetails}>
                                   {t(row.fullName)}
                                 </TableCell>
 
-                                <TableCell className={classes.tableCellDetails}>
+                                <TableCell
+                                  key={row.gender.name}
+                                  className={classes.tableCellDetails}
+                                >
                                   {t(row.gender.name)}
                                 </TableCell>
 
-                                <TableCell className={classes.tableCellDetails}>
+                                <TableCell
+                                  key={row.dateOfBirth}
+                                  className={classes.tableCellDetails}
+                                >
                                   {row.dateOfBirth
                                     ? new Date().getFullYear() -
                                       new Date(row.dateOfBirth).getFullYear() +
@@ -240,8 +249,11 @@ const AddRelative = ({
                                     : "-"}
                                 </TableCell>
 
-                                <TableCell className={classes.tableCellDetails}>
-                                  {row.addressLevel.title}
+                                <TableCell
+                                  key={row.addressLevel.title}
+                                  className={classes.tableCellDetails}
+                                >
+                                  {t(row.addressLevel.title)}
                                 </TableCell>
                               </TableRow>
                             </TableBody>
@@ -271,11 +283,13 @@ const AddRelative = ({
                                       Select relation
                                     </option>
                                     {Relations.relationships
-                                      ? Relations.relationships.map(row1 =>
-                                          row.gender.name ===
-                                          row1.individualAIsToBRelation.gender ? (
-                                            <option value={row1.uuid}>
-                                              {row1.individualBIsToARelation.name}
+                                      ? Relations.relationships.map((row1, index) =>
+                                          (row.gender.name ===
+                                            row1.individualAIsToBRelation.gender) &
+                                          (row.gender.name ===
+                                            row1.individualBIsToARelation.gender) ? (
+                                            <option key={index} value={row1.uuid}>
+                                              {t(row1.individualBIsToARelation.name)}
                                             </option>
                                           ) : (
                                             ""
@@ -304,7 +318,7 @@ const AddRelative = ({
                   Find Relative
                 </Typography>
               </div>
-              <div className={classes.scheduleddateStyle}>
+              <div className={classes.scheduleddateStyle} style={{ marginLeft: 10 }}>
                 {/* <Button variant="contained" className={classes.findButton} color="primary">
               Find Relative
             </Button> */}
@@ -356,7 +370,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   getRelations,
-  saveRelationShip
+  saveRelationShip,
+  getSubjectProfile
 };
 
 export default withRouter(
