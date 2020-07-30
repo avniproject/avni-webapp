@@ -89,31 +89,6 @@ function NewMenu({ operationalModules }) {
           );
         })}
       </List>
-      <FormControl className={classes.FormControlRadio} component="fieldset">
-        {/* <label className={classes.FormLabel}>Register and Enrollment For</label> */}
-        {operationalModules.programs.map((element, index) => {
-          return (
-            <React.Fragment>
-              <RadioGroup
-                key={index}
-                aria-label="position"
-                name="position"
-                value={value}
-                onChange={handleChange}
-                row
-              >
-                <FormControlLabel
-                  value="end"
-                  control={<Radio color="primary" />}
-                  label={t(element.operationalProgramName)}
-                  labelPlacement="end"
-                />
-              </RadioGroup>
-              <Divider className={classes.dividerColor} />
-            </React.Fragment>
-          );
-        })}
-      </FormControl>
     </div>
   );
 }

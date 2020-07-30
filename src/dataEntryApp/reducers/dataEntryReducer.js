@@ -14,6 +14,7 @@ import programEncounterReducer from "./programEncounterReducer";
 import relations from "./relationshipReducer";
 import encounterReducer from "./encounterReducer";
 import loadReducer from "./loadReducer";
+import searchFilterReducer from "./searchFilterReducer";
 
 export default combineReducers({
   search,
@@ -30,5 +31,6 @@ export default combineReducers({
   programEncounterReducer,
   relations,
   encounterReducer,
-  loadReducer
+  loadReducer,
+  searchFilterReducer
 });

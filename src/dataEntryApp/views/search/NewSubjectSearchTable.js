@@ -1,25 +1,26 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
 import _ from "lodash";
 import Chip from "@material-ui/core/Chip";
 import { useTranslation } from "react-i18next";
 
-const NewSubjectSearchTable = () => {
+const NewSubjectSearchTable = ({ searchRequest }) => {
   const { t } = useTranslation();
+
   const columns = [
     {
       title: t("name"),
-      field: "firstName",
+      field: "fullName",
       defaultSort: "asc",
       render: rowData => <a href={`/#/app/subject?uuid=${rowData.uuid}`}>{rowData.fullName}</a>
     },
     {
       title: t("subjectType"),
-      field: "subjectType.name",
-      render: row => row.subjectType && t(row.subjectType.name)
+      field: "subjectType",
+      render: row => row.subjectTypeName && t(row.subjectTypeName)
     },
-    { title: t("gender"), field: "gender.name", render: row => row.gender && t(row.gender.name) },
+    { title: t("gender"), field: "gender", render: row => row.gender && t(row.gender) },
     {
       title: t("age"),
       field: "dateOfBirth",
@@ -30,27 +31,28 @@ const NewSubjectSearchTable = () => {
     },
     {
       title: t("Address"),
-      field: "addressLevel.title",
-      render: row => row.addressLevel.titleLineage
+      field: "addressLevel",
+      render: row => row.addressLevel
     },
     {
       title: t("enrolments"),
       field: "activePrograms",
       sorting: false,
       render: row => {
-        return row.activePrograms.map((p, key) => (
-          <Chip
-            key={key}
-            size="small"
-            label={t(p.operationalProgramName)}
-            style={{
-              margin: 2,
-              backgroundColor: p.colour,
-              color: "white"
-            }}
-            disabled
-          />
-        ));
+        return row.enrolments
+          ? row.enrolments.map((p, key) => (
+              <Chip
+                key={key}
+                size="small"
+                label={t(p.operationalProgramName)}
+                style={{
+                  margin: 2,
+                  backgroundColor: p.programColor,
+                  color: "white"
+                }}
+              />
+            ))
+          : "";
       }
     }
   ];
@@ -58,21 +60,26 @@ const NewSubjectSearchTable = () => {
   const tableRef = React.createRef();
   const refreshTable = ref => ref.current && ref.current.onQueryChange();
 
+  useEffect(() => {
+    refreshTable(tableRef);
+  });
+
   const fetchData = query =>
     new Promise(resolve => {
-      let apiUrl = "/individual/search?";
-      apiUrl += "size=" + query.pageSize;
-      apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.search)) apiUrl += "&query=" + encodeURIComponent(query.search);
-      if (!_.isEmpty(query.orderBy.field))
-        apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
+      let apiUrl = "/web/searchAPI/v2";
+      const pageElement = {};
+      pageElement.pageNumber = query.page;
+      pageElement.numberOfRecordPerPage = query.pageSize;
+      pageElement.sortColumn = query.orderBy.field;
+      pageElement.sortOrder = query.orderDirection;
+      searchRequest.pageElement = pageElement;
       http
-        .get(apiUrl)
+        .post(apiUrl, searchRequest)
         .then(response => response.data)
         .then(result => {
           resolve({
-            data: result.content,
-            page: result.number,
+            data: result.listOfRecords,
+            page: query.page,
             totalCount: result.totalElements
           });
         })
@@ -81,27 +88,24 @@ const NewSubjectSearchTable = () => {
 
   return (
     <>
-      <div className="container">
-        <div>
-          <MaterialTable
-            title=""
-            components={{
-              Container: props => <Fragment>{props.children}</Fragment>
-            }}
-            tableRef={tableRef}
-            columns={columns}
-            data={fetchData}
-            options={{
-              pageSize: 10,
-              pageSizeOptions: [10, 15, 20],
-              addRowPosition: "first",
-              sorting: true,
-              debounceInterval: 500,
-              searchFieldAlignment: "left",
-              searchFieldStyle: { width: "100%", marginLeft: "-8%" }
-            }}
-          />
-        </div>
+      <div>
+        <MaterialTable
+          title=""
+          components={{
+            Toolbar: props => <Fragment>{props.children}</Fragment>
+          }}
+          tableRef={tableRef}
+          columns={columns}
+          data={fetchData}
+          options={{
+            pageSize: 10,
+            pageSizeOptions: [10, 15, 20],
+            addRowPosition: "first",
+            sorting: true,
+            debounceInterval: 500,
+            search: false
+          }}
+        />
       </div>
     </>
   );
