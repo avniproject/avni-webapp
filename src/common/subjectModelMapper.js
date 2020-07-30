@@ -123,7 +123,7 @@ export const mapRelations = relationShipJson => {
   const individualRelationship = General.assignFields(
     relationShipJson,
     new IndividualRelationship(),
-    ["uuid"]
+    ["uuid", "id", "exitDateTime", "enterDateTime"]
   );
   individualRelationship.relationship = mapIndividualRelationshipType(
     relationShipJson["relationshipType"]
@@ -254,6 +254,7 @@ export const mapEncounter = encounterDetails => {
     );
     encounter.encounterType = mapEncounterType(encounterDetails.encounterType);
     encounter.observations = mapObservation(encounterDetails["observations"]);
+    encounter.cancelObservations = mapObservation(encounterDetails["cancelObservations"]);
     encounter.subjectUuid = encounterDetails["subjectUUID"];
     return encounter;
   }

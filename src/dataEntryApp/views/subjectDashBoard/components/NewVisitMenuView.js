@@ -28,21 +28,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const NewVisitMenuView = ({ sections, enrolmentUuid, isForEncounters }) => {
+const NewVisitMenuView = ({ sections, uuid, isForEncounters }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
   return (
     <Fragment>
       {sections
-        ? sections.map(section => (
-            <div>
+        ? sections.map((section, index) => (
+            <>
               <Paper className={classes.root}>
                 <Typography gutterBottom>{section.title}</Typography>
                 <Paper>
                   <Table className={classes.table} size="small" aria-label="a dense table">
                     <TableHead>
-                      <TableRow>
+                      <TableRow key={index}>
                         <TableCell className={classes.tableHeader}>{t("Name")}</TableCell>
                         {isEqual(section.title, t("plannedVisits")) ? (
                           <TableCell className={classes.tableHeader}>{t("Date")}</TableCell>
@@ -63,17 +63,33 @@ const NewVisitMenuView = ({ sections, enrolmentUuid, isForEncounters }) => {
                                 scope="row"
                                 width="50%"
                               >
-                                <InternalLink
-                                  to={
-                                    isForEncounters
-                                      ? `/app`
-                                      : `/app/subject/programEncounter?uuid=${
-                                          encounter.encounterType.uuid
-                                        }&enrolUuid=${enrolmentUuid}`
-                                  }
-                                >
-                                  {encounter.name}
-                                </InternalLink>
+                                {isEqual(section.title, t("plannedVisits")) ? (
+                                  <InternalLink
+                                    to={
+                                      isForEncounters
+                                        ? `/app/subject/encounter?encounterUuid=${encounter.uuid}`
+                                        : `/app/subject/programEncounter?uuid=${
+                                            encounter.encounterType.uuid
+                                          }&enrolUuid=${uuid}`
+                                    }
+                                  >
+                                    {encounter.name}
+                                  </InternalLink>
+                                ) : (
+                                  <InternalLink
+                                    to={
+                                      isForEncounters
+                                        ? `/app/subject/encounter?uuid=${
+                                            encounter.encounterType.uuid
+                                          }&subjectUuid=${uuid}`
+                                        : `/app/subject/programEncounter?uuid=${
+                                            encounter.encounterType.uuid
+                                          }&enrolUuid=${uuid}`
+                                    }
+                                  >
+                                    {encounter.name}
+                                  </InternalLink>
+                                )}
                               </TableCell>
                             ) : (
                               ""
@@ -89,7 +105,7 @@ const NewVisitMenuView = ({ sections, enrolmentUuid, isForEncounters }) => {
                 </Paper>
               </Paper>
               <LineBreak num={1} />
-            </div>
+            </>
           ))
         : ""}
     </Fragment>

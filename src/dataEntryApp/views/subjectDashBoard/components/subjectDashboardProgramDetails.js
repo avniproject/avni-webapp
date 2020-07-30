@@ -18,7 +18,13 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-const programDetails = ({ tabPanelValue, programData, handleUpdateComponent, enableReadOnly }) => {
+const programDetails = ({
+  tabPanelValue,
+  programData,
+  handleUpdateComponent,
+  enableReadOnly,
+  subjectTypeUuid
+}) => {
   return (
     <div>
       {programData && programData.enrolments
@@ -31,6 +37,7 @@ const programDetails = ({ tabPanelValue, programData, handleUpdateComponent, ena
                   key={index}
                   handleUpdateComponent={handleUpdateComponent}
                   enableReadOnly={enableReadOnly}
+                  subjectTypeUuid={subjectTypeUuid}
                 />
               </TabPanel>
             </Fragment>

@@ -19,7 +19,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, enableReadOnly }) => {
+const SubjectDashboardProgramTab = ({
+  program,
+  handleUpdateComponent,
+  enableReadOnly,
+  subjectTypeUuid
+}) => {
   let flagActive = false;
   let flagExited = false;
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -101,6 +106,7 @@ const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, enableRead
             programData={program}
             handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
+            subjectTypeUuid={subjectTypeUuid}
           />
         ) : (
           <ProgramDetails
@@ -108,6 +114,7 @@ const SubjectDashboardProgramTab = ({ program, handleUpdateComponent, enableRead
             programData={program}
             handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
+            subjectTypeUuid={subjectTypeUuid}
           />
         )}
       </Paper>

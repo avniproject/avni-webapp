@@ -37,7 +37,7 @@ const NewProgramVisit = ({ match, ...props }) => {
 
   //Creating New programEncounter Object for Plan Encounter
   props.planEncounters
-    .filter(pe => isNil(pe.encounterDateTime))
+    .filter(pe => isNil(pe.encounterDateTime) && isNil(pe.cancelDateTime))
     .map(planEncounter => {
       const planVisit = new ProgramEncounter();
       planVisit.encounterType = planEncounter.encounterType;
@@ -74,7 +74,7 @@ const NewProgramVisit = ({ match, ...props }) => {
           {t("newProgramVisit")}
         </Typography>
         <LineBreak num={1} />
-        <NewVisitMenuView sections={sections} enrolmentUuid={enrolmentUuid} />
+        <NewVisitMenuView sections={sections} uuid={enrolmentUuid} />
       </Paper>
     </Fragment>
   );

@@ -88,10 +88,9 @@ export const setEncounterDateValidation = enconterDateValidation => ({
   enconterDateValidation
 });
 
-export const onLoadEditProgramEncounter = (programEncounterUuid, enrolUuid) => ({
+export const onLoadEditProgramEncounter = programEncounterUuid => ({
   type: types.ON_LOAD_EDIT_PROGRAM_ENCOUNTER,
-  programEncounterUuid,
-  enrolUuid
+  programEncounterUuid
 });
 
 export const onLoadEditCancelProgramEncounter = (programEncounterUuid, enrolUuid) => ({

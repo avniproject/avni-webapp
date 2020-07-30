@@ -360,7 +360,6 @@
     "visitType": "Visit Type",
     "filterResult": "Filter Result",
     "apply": "Apply",
-    "Name": "Name",
     "Date": "Date",
     "Age": "Age",
     "Village": "Village",
@@ -390,6 +389,7 @@
     "notEnroledInAnyProgram": "Not enroled in any program",
     "noRelativesAdded": "No Relatives Added",
     "registrationDetails": "Registration details",
-    "filterResults": "Filter results"
+    "filterResults": "Filter results",
+    "invalidDateFormat": "Is not a valid date"
   }
 }
