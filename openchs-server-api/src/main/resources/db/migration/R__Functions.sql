@@ -150,6 +150,8 @@ END;
 $BODY$
   LANGUAGE plpgsql;
 
+
+
 CREATE OR REPLACE FUNCTION web_search_function(IN searchtext text)
   RETURNS TABLE(id text, firstname text, lastname text, fullname text, uuid text, title_lineage text, subject_type_name text, gender_name text, date_of_birth date, enrolments text, age numeric, total_elements bigint) AS
 $BODY$
@@ -314,6 +316,7 @@ WHEN (_key ='concept') THEN
 
 		select textConceptObj::json->>'dataType' into conceptDataType;
 
+
 		IF conceptDataType!='' AND trim(upper(conceptDataType))='CODED' THEN
 			select textConceptObj::json->>'values' into valueTxt;
 			select textConceptObj::json->>'uuid' into uuidKey;
@@ -414,44 +417,44 @@ END IF;
 			select textConceptObj::json->>'uuid' into uuidKey;
 			select textConceptObj::json->>'searchScope' into searchScope;
 -- for individual concept search start
-		IF trim(searchScope)='registration' AND trim(widgetType)='RANGE'  THEN
+		IF trim(searchScope)='registration' AND trim(upper(widgetType))='RANGE'  THEN
 			select textConceptObj::json->>'minValue' into minValue;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			whereClause:=whereClause || ' and (ind.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric >= ' || minValue||'::numeric ' ;
 			whereClause:=whereClause || ' and (ind.observations ->> ' ||''''|| trim(uuidKey) ||''''|| ' )::numeric  <=  ' || maxValue||'::numeric ' ;
-			ELSIF trim(searchScope)='registration' AND trim(widgetType)='DEFAULT' THEN
+			ELSIF trim(searchScope)='registration' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (ind.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric = ' || minValue||'::numeric ' ;
 		END IF;
 
 
-		IF trim(searchScope)='programEnrolment' AND trim(widgetType)='RANGE'  THEN
+		IF trim(searchScope)='programEnrolment' AND trim(upper(widgetType))='RANGE'  THEN
 			select textConceptObj::json->>'minValue' into minValue;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			whereClause:=whereClause || ' and (penr.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric >= ' || minValue||'::numeric ' ;
 			whereClause:=whereClause || ' and (penr.observations ->> ' ||''''|| trim(uuidKey) ||''''|| ' )::numeric  <=  ' || maxValue||'::numeric ' ;
-			ELSIF trim(searchScope)='programEnrolment' AND trim(widgetType)='DEFAULT' THEN
+			ELSIF trim(searchScope)='programEnrolment' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (penr.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric = ' || minValue||'::numeric ' ;
 		END IF;
 
-		IF trim(searchScope)='encounter' AND trim(widgetType)='RANGE'  THEN
+		IF trim(searchScope)='encounter' AND trim(upper(widgetType))='RANGE'  THEN
 			select textConceptObj::json->>'minValue' into minValue;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			whereClause:=whereClause || ' and (enc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric >= ' || minValue||'::numeric ' ;
 			whereClause:=whereClause || ' and (enc.observations ->> ' ||''''|| trim(uuidKey) ||''''|| ' )::numeric  <=  ' || maxValue||'::numeric ' ;
-			ELSIF trim(searchScope)='encounter' AND trim(widgetType)='DEFAULT' THEN
+			ELSIF trim(searchScope)='encounter' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (enc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric = ' || minValue||'::numeric ' ;
 
 		END IF;
 
-		IF trim(searchScope)='programEncounter' AND trim(widgetType)='RANGE'  THEN
+		IF trim(searchScope)='programEncounter' AND trim(upper(widgetType))='RANGE'  THEN
 			select textConceptObj::json->>'minValue' into minValue;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			whereClause:=whereClause || ' and (penc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric >= ' || minValue||'::numeric ' ;
 			whereClause:=whereClause || ' and (penc.observations ->> ' ||''''|| trim(uuidKey) ||''''|| ' )::numeric  <=  ' || maxValue||'::numeric ' ;
-			ELSIF trim(searchScope)='programEncounter' AND trim(widgetType)='DEFAULT' THEN
+			ELSIF trim(searchScope)='programEncounter' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (penc.observations ->>  ' ||''''|| trim(uuidKey) ||''''|| ') ::numeric = ' || minValue||'::numeric ' ;
 
@@ -468,48 +471,48 @@ END IF;
 			select textConceptObj::json->>'uuid' into uuidKey;
 			select textConceptObj::json->>'searchScope' into searchScope;
 -- for individual concept search start
-		IF trim(searchScope)='registration' AND trim(widgetType)='RANGE'  THEN
+		IF trim(searchScope)='registration' AND trim(upper(widgetType))='RANGE'  THEN
 			select textConceptObj::json->>'minValue' into minValue;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			select string_agg(quote_literal(trim(elem)), ',')from unnest(string_to_array(textArray, ',')) elem into valueTxt;
 			whereClause:=whereClause || ' and (ind.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE >= '||'''' || minValue||''''||'::DATE ' ;
 			whereClause:=whereClause || ' and (ind.observations ->> ' ||''''|| uuidKey ||''''|| ' )::DATE  <=  '||'''' || maxValue||''''||'::DATE ' ;
-			ELSIF trim(searchScope)='registration' AND trim(widgetType)='DEFAULT' THEN
+			ELSIF trim(searchScope)='registration' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (ind.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE = '||'''' || minValue||''''||'::DATE ' ;
 		END IF;
 
 
-		IF trim(searchScope)='programEnrolment' AND trim(widgetType)='RANGE'  THEN
+		IF trim(searchScope)='programEnrolment' AND trim(upper(widgetType))='RANGE'  THEN
 			select textConceptObj::json->>'minValue' into minValue;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			select string_agg(quote_literal(trim(elem)), ',')from unnest(string_to_array(textArray, ',')) elem into valueTxt;
 			whereClause:=whereClause || ' and (penr.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE >= ' || '''' || minValue||'''' || '::DATE ' ;
 			whereClause:=whereClause || ' and (penr.observations ->> ' ||''''|| uuidKey ||''''|| ' )::DATE  <=  ' || ''''  || maxValue||''''||'::DATE ' ;
-			ELSIF trim(searchScope)='programEnrolment' AND trim(widgetType)='DEFAULT' THEN
+			ELSIF trim(searchScope)='programEnrolment' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (penr.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE = ' ||''''|| minValue||''''||'::DATE ' ;
 		END IF;
 
-		IF trim(searchScope)='encounter' AND trim(widgetType)='RANGE'  THEN
+		IF trim(searchScope)='encounter' AND trim(upper(widgetType))='RANGE'  THEN
 			select textConceptObj::json->>'minValue' into minValue;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			select string_agg(quote_literal(trim(elem)), ',')from unnest(string_to_array(textArray, ',')) elem into valueTxt;
 			whereClause:=whereClause || ' and (enc.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE >= ' ||''''|| minValue||''''||'::DATE ' ;
 			whereClause:=whereClause || ' and (enc.observations ->> ' ||''''|| uuidKey ||''''|| ' )::DATE  <=  ' ||''''|| maxValue||''''||'::DATE ' ;
-			ELSIF trim(searchScope)='encounter' AND trim(widgetType)='DEFAULT' THEN
+			ELSIF trim(searchScope)='encounter' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (enc.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE = '||'''' || minValue||''''||'::DATE ' ;
 
 		END IF;
 
-		IF trim(searchScope)='programEncounter' AND trim(widgetType)='RANGE'  THEN
+		IF trim(searchScope)='programEncounter' AND trim(upper(widgetType))='RANGE'  THEN
 			select textConceptObj::json->>'minValue' into minValue;
 			select textConceptObj::json->>'maxValue' into maxValue;
 			select string_agg(quote_literal(trim(elem)), ',')from unnest(string_to_array(textArray, ',')) elem into valueTxt;
 			whereClause:=whereClause || ' and (penc.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE >= '||'''' || minValue||''''||'::DATE ' ;
 			whereClause:=whereClause || ' and (penc.observations ->> ' ||''''|| uuidKey ||''''|| ' )::DATE  <=  '||'''' || maxValue||''''||'::DATE ' ;
-			ELSIF trim(searchScope)='programEncounter' AND trim(widgetType)='DEFAULT' THEN
+			ELSIF trim(searchScope)='programEncounter' AND trim(upper(widgetType))='DEFAULT' THEN
 				select textConceptObj::json->>'minValue' into minValue;
 				whereClause:=whereClause || ' and (penc.observations ->>  ' ||''''|| uuidKey ||''''|| ') ::DATE = '||'''' || minValue||''''||'::DATE ' ;
 
@@ -538,10 +541,11 @@ whereClause:=whereClause || ' or penr.observations::text ilike '|| '''' || '%' |
 
 sqlQuery:=sqlQueryBase || sqlQueryJoins || whereClause ;
 sqlQuery:=' WITH cte AS ( ' || sqlQuery || ' ) ' || sqlOuterQuery;
-
+ --RAISE NOTICE '%', sqlQuery;
   return QUERY EXECUTE sqlQuery;
 END;
 $BODY$
   LANGUAGE plpgsql;
+
 
 
