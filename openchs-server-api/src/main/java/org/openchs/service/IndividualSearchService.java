@@ -3,11 +3,9 @@ package org.openchs.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.LocalDate;
 import org.openchs.dao.IndividualRepository;
-import org.openchs.domain.SubjectType;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.IndividualContract;
-import org.openchs.web.request.SubjectTypeContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,16 +39,6 @@ public class IndividualSearchService {
         q.setParameter(1, jsonSearch);
         List<Object[]> listOfObject = q.getResultList();
         return constructIndividual(listOfObject);
-    }
-
-
-
-    private SubjectTypeContract constructSubjectType(SubjectType subjectType) {
-        SubjectTypeContract subjectTypeContract = new SubjectTypeContract();
-        //subjectTypeContract.setUuid(subjectType.getUuid());
-        subjectTypeContract.setName(subjectType.getName());
-        //subjectTypeContract.setVoided(subjectType.isVoided());
-        return subjectTypeContract;
     }
 
 
