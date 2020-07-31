@@ -3,6 +3,9 @@ package org.openchs.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.LocalDate;
 import org.openchs.dao.IndividualRepository;
+import org.openchs.domain.Organisation;
+import org.openchs.domain.UserContext;
+import org.openchs.framework.security.UserContextHolder;
 import org.openchs.util.ObjectMapperSingleton;
 import org.openchs.web.request.EnrolmentContract;
 import org.openchs.web.request.IndividualContract;
@@ -33,10 +36,14 @@ public class IndividualSearchService {
     }
 
     public LinkedHashMap<String, Object> getsearchResult(String jsonSearch) {
+        UserContext userContext = UserContextHolder.getUserContext();
+        Organisation organisation = userContext.getOrganisation();
+        String dbUser = organisation.getDbUser();
         Query q = entityManager.createNativeQuery("select firstname,lastname,fullname,id,uuid,title_lineage,subject_type_name" +
                 ",gender_name,date_of_birth,enrolments,total_elements " +
-                "from web_search_function (?1)");
+                "from web_search_function (?1,?2)");
         q.setParameter(1, jsonSearch);
+        q.setParameter(2,dbUser);
         List<Object[]> listOfObject = q.getResultList();
         return constructIndividual(listOfObject);
     }
