@@ -9,7 +9,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControl from "@material-ui/core/FormControl";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+// import Autocomplete from "@material-ui/lab/Autocomplete";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 
@@ -149,67 +149,67 @@ function BasicForm({
         )}
       </Grid>
 
-      <Grid container spacing={3} className={classes.componentSpacing}>
-        {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "Address" ? (
-            <Grid item xs={12} key={index}>
-              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                {t(searchFilterForm.titleKey)}
-              </Typography>
-              <FormControl component="fieldset">
-                <RadioGroup
-                  row
-                  aria-label="position"
-                  name="position"
-                  onChange={onAddressLevelTypeChange}
-                  defaultValue={selectedAddressLevelType}
-                >
-                  {operationalModules.addressLevelTypes
-                    ? operationalModules.addressLevelTypes.map((addressLevelType, index) => (
-                        <FormControlLabel
-                          key={index}
-                          value={addressLevelType.name}
-                          control={<Radio color="primary" />}
-                          label={addressLevelType.name}
-                        />
-                      ))
-                    : ""}
-                </RadioGroup>
-              </FormControl>
-              <Autocomplete
-                multiple
-                id="checkboxes-tags-demo"
-                options={location}
-                disableCloseOnSelect
-                getOptionLabel={option => option.name}
-                onChange={onAddressSelect}
-                renderOption={(option, { selected }) => (
-                  <React.Fragment>
-                    <Checkbox
-                      icon={icon}
-                      checkedIcon={checkedIcon}
-                      style={{ marginRight: 8 }}
-                      checked={selected}
-                    />
-                    {option.name}
-                  </React.Fragment>
-                )}
-                style={{ width: "30%" }}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    variant="outlined"
-                    label={selectedAddressLevelType}
-                    placeholder={selectedAddressLevelType}
-                  />
-                )}
-              />
-            </Grid>
-          ) : (
-            ""
-          )
-        )}
-      </Grid>
+      {/*<Grid container spacing={3} className={classes.componentSpacing}>*/}
+      {/*{searchFilterForms.map((searchFilterForm, index) =>*/}
+      {/*searchFilterForm.type === "Address" ? (*/}
+      {/*<Grid item xs={12} key={index}>*/}
+      {/*<Typography variant="body1" gutterBottom className={classes.lableStyle}>*/}
+      {/*{t(searchFilterForm.titleKey)}*/}
+      {/*</Typography>*/}
+      {/*<FormControl component="fieldset">*/}
+      {/*<RadioGroup*/}
+      {/*row*/}
+      {/*aria-label="position"*/}
+      {/*name="position"*/}
+      {/*onChange={onAddressLevelTypeChange}*/}
+      {/*defaultValue={selectedAddressLevelType}*/}
+      {/*>*/}
+      {/*{operationalModules.addressLevelTypes*/}
+      {/*? operationalModules.addressLevelTypes.map((addressLevelType, index) => (*/}
+      {/*<FormControlLabel*/}
+      {/*key={index}*/}
+      {/*value={addressLevelType.name}*/}
+      {/*control={<Radio color="primary" />}*/}
+      {/*label={addressLevelType.name}*/}
+      {/*/>*/}
+      {/*))*/}
+      {/*: ""}*/}
+      {/*</RadioGroup>*/}
+      {/*</FormControl>*/}
+      {/*<Autocomplete*/}
+      {/*multiple*/}
+      {/*id="checkboxes-tags-demo"*/}
+      {/*options={location}*/}
+      {/*disableCloseOnSelect*/}
+      {/*getOptionLabel={option => option.name}*/}
+      {/*onChange={onAddressSelect}*/}
+      {/*renderOption={(option, { selected }) => (*/}
+      {/*<React.Fragment>*/}
+      {/*<Checkbox*/}
+      {/*icon={icon}*/}
+      {/*checkedIcon={checkedIcon}*/}
+      {/*style={{ marginRight: 8 }}*/}
+      {/*checked={selected}*/}
+      {/*/>*/}
+      {/*{option.name}*/}
+      {/*</React.Fragment>*/}
+      {/*)}*/}
+      {/*style={{ width: "30%" }}*/}
+      {/*renderInput={params => (*/}
+      {/*<TextField*/}
+      {/*{...params}*/}
+      {/*variant="outlined"*/}
+      {/*label={selectedAddressLevelType}*/}
+      {/*placeholder={selectedAddressLevelType}*/}
+      {/*/>*/}
+      {/*)}*/}
+      {/*/>*/}
+      {/*</Grid>*/}
+      {/*) : (*/}
+      {/*""*/}
+      {/*)*/}
+      {/*)}*/}
+      {/*</Grid>*/}
     </Fragment>
   ) : (
     ""
