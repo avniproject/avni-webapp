@@ -355,7 +355,7 @@ function SearchFilterForm({
         searchScope: conceptRequest.scope,
         dataType: conceptRequest.conceptDataType,
         widget: conceptRequest.widget,
-        values: conceptRequest.value
+        value: conceptRequest.value
       };
     } else if (conceptRequest.conceptDataType === "Numeric") {
       return {
