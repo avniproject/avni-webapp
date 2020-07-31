@@ -489,7 +489,9 @@ function SearchFilterForm({
             >
               Search
             </Button>
-            <Button variant="contained">Cancel</Button>
+            <Button variant="contained" component={Link} to="/app/">
+              Cancel
+            </Button>
           </div>
         </FormControl>
       </Paper>
