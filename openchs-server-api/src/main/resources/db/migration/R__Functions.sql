@@ -152,7 +152,7 @@ $BODY$
 
 
 
-CREATE OR REPLACE FUNCTION web_search_function(IN searchtext text)
+CREATE OR REPLACE FUNCTION web_search_function(IN searchtext text,IN dbUser text)
   RETURNS TABLE(id text, firstname text, lastname text, fullname text, uuid text, title_lineage text, subject_type_name text, gender_name text, date_of_birth date, enrolments text, age numeric, total_elements bigint) AS
 $BODY$
 DECLARE
@@ -177,8 +177,12 @@ searchAll text;
 widgetType text;
 minValue text;
 maxValue  text;
+sqlRoleQuery text;
 BEGIN
-
+sqlRoleQuery:='set role ';
+IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = dbUser) THEN
+    EXECUTE sqlRoleQuery || quote_ident(trim(dbUser));
+END IF;
 whereClause:=' where true=true ';
 select searchText::JSONB into searchJSON;-- to cast json text to jsonb object
 sqlQueryBase:='select distinct ind.id::text as id, ind.first_name::text as firstname ,ind.last_name::text as lastname,concat(ind.first_name,'' '',ind.last_name)::text as fullname,ind.uuid::text as uuid,tlv.title_lineage::text as title_lineage ,st.name::text as subject_type_name,gender.name ::text as gender_name,ind.date_of_birth::date as date_of_birth,enrolments.program_name::text as enrolments, date_part(''year''::text, age(now(), ind.date_of_birth::timestamp with time zone))::numeric as age   from individual ind ';
