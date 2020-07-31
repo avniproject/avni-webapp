@@ -11,7 +11,6 @@ import Radio from "@material-ui/core/Radio";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
-import { Row } from "reactstrap";
 
 const useStyles = makeStyles(theme => ({
   root: {

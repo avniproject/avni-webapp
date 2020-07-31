@@ -3,9 +3,6 @@ import { Provider } from "react-redux";
 import { HashRouter } from "react-router-dom";
 
 import "./index.css";
-import "jquery";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap";
 import "./formDesigner/App.css";
 import { store } from "./common/store";
 import { cognitoInDev, isProdEnv } from "./common/constants";
