@@ -355,7 +355,7 @@ function SearchFilterForm({
         searchScope: conceptRequest.scope,
         dataType: conceptRequest.conceptDataType,
         widget: conceptRequest.widget,
-        values: conceptRequest.value
+        value: conceptRequest.value
       };
     } else if (conceptRequest.conceptDataType === "Numeric") {
       return {
@@ -489,7 +489,9 @@ function SearchFilterForm({
             >
               Search
             </Button>
-            <Button variant="contained">Cancel</Button>
+            <Button variant="contained" component={Link} to="/app/">
+              Cancel
+            </Button>
           </div>
         </FormControl>
       </Paper>

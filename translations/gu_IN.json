@@ -330,6 +330,7 @@
     "viewAllCompletedVisits": "બધી પૂર્ણ મુલાકાતો જુઓ",
     "registrationDetails": "નોંધણી વિગતો",
     "filterResults": "ફિલ્ટર પરિણામો",
-    "invalidDateFormat": "માન્ય તારીખ નથી"
+    "invalidDateFormat": "માન્ય તારીખ નથી",
+    "resetFilter": "ફિલ્ટર ફરીથી સેટ કરો"
   }
 }
