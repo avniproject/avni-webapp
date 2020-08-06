@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,19 +24,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class IndividualSearchService {
-    private final IndividualRepository individualRepository;
     private final EntityManager entityManager;
-    private ObjectMapper objectMapper;
 
     @Autowired
     public IndividualSearchService(IndividualRepository individualRepository, EntityManagerFactory entityManagerFactory)
     {
-        this.individualRepository = individualRepository;
         this.entityManager = entityManagerFactory.createEntityManager();
-        objectMapper = ObjectMapperSingleton.getObjectMapper();
     }
 
-    public LinkedHashMap<String, Object> getsearchResult(String jsonSearch) {
+    @Transactional
+    public LinkedHashMap<String, Object> getSearchResult(String jsonSearch) {
         UserContext userContext = UserContextHolder.getUserContext();
         Organisation organisation = userContext.getOrganisation();
         String dbUser = organisation.getDbUser();

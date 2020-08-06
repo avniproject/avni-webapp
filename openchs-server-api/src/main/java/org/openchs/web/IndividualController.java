@@ -157,7 +157,7 @@ public class IndividualController extends AbstractController<Individual> impleme
     @PreAuthorize(value = "hasAnyAuthority('user', 'organisation_admin')")
     @ResponseBody
     public ResponseEntity<LinkedHashMap<String, Object>> getSearch(@RequestBody String searchQuery) {
-        return new ResponseEntity<>(individualSearchService.getsearchResult(searchQuery), HttpStatus.OK);
+        return new ResponseEntity<>(individualSearchService.getSearchResult(searchQuery), HttpStatus.OK);
     }
 
     @GetMapping(value = "/web/individual/{uuid}")
