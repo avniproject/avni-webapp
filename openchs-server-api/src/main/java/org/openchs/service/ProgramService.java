@@ -49,7 +49,7 @@ public class ProgramService {
         program.setName(programRequest.getName());
         program.setColour(programRequest.getColour());
         program.setEnrolmentSummaryRule(programRequest.getEnrolmentSummaryRule());
-        program.setEnrolmentEligibilityCheckRule(program.getEnrolmentEligibilityCheckRule());
+        program.setEnrolmentEligibilityCheckRule(programRequest.getEnrolmentEligibilityCheckRule());
         program.setActive(programRequest.getActive());
         programRepository.save(program);
     }
