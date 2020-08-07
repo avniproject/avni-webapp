@@ -26,7 +26,7 @@
     "moment": "^2.22.2",
     "openchs-idi": "github:openchs/openchs-idi#b6c57e051b91ed4bc2634f4f087dba51cc3a01c8",
     "popper.js": "^1.14.3",
-    "prismjs": "^1.17.1",
+    "prismjs": "^1.21.0",
     "prop-types": "^15.7.2",
     "query-string": "^6.12.0",
     "ra-data-json-server": "^2.7.2",
