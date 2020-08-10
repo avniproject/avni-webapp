@@ -21,6 +21,7 @@ import { DocumentationContainer } from "../common/components/DocumentationContai
 import { AvniTextInput } from "./components/AvniTextInput";
 import { AvniSelectInput } from "./components/AvniSelectInput";
 import { AvniFormDataConsumer } from "./components/AvniFormDataConsumer";
+import { FormDataConsumer } from "react-admin";
 
 const sourceType = {
   userBasedIdentifierGenerator: {
@@ -137,12 +138,20 @@ const IdentifierSourceForm = props => (
     <AvniTextInput source="minimumBalance" required toolTipKey={"ADMIN_ID_SOURCE_MIN_BALANCE"} />
     <AvniTextInput source="minLength" required toolTipKey={"ADMIN_ID_SOURCE_MIN_LENGTH"} />
     <AvniTextInput source="maxLength" required toolTipKey={"ADMIN_ID_SOURCE_MAX_LENGTH"} />
-    <Fragment>
-      <Typography variant="title" component="h3">
-        Options
-      </Typography>
-      <AvniTextInput source="options.prefix" label="Prefix" toolTipKey={"ADMIN_ID_SOURCE_PREFIX"} />
-    </Fragment>
+    <FormDataConsumer {...props}>
+      {({ formData, ...rest }) => {
+        return (
+          formData.type === "userPoolBasedIdentifierGenerator" && (
+            <AvniTextInput
+              source="options.prefix"
+              label="Prefix"
+              toolTipKey={"ADMIN_ID_SOURCE_PREFIX"}
+              {...rest}
+            />
+          )
+        );
+      }}
+    </FormDataConsumer>
   </SimpleForm>
 );
 
