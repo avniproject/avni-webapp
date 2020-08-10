@@ -35,7 +35,7 @@ public interface IdentifierSourceRepository extends ReferenceDataRepository<Iden
             Pageable pageable);
 
     @Query("select isource from IdentifierSource isource " +
-            "where (catchment is null or (:catchment is not null and catchment = :catchment)) and " +
+            "where isource.voided=false and (catchment is null or (:catchment is not null and catchment = :catchment)) and " +
             "(facility is null or (:facility is not null and facility = :facility)) ")
     List<IdentifierSource> getAllAuthorisedIdentifierSources(@Param("catchment") Catchment catchment,
                                                              @Param("facility") Facility facility);
