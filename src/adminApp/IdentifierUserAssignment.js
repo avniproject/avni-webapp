@@ -32,7 +32,8 @@ const Title = ({ record }) => {
 export const IdentifierUserAssignmentList = props => (
   <List {...props} bulkActions={false} title={"Identifier User Assignment"}>
     <Datagrid rowClick="show">
-      <TextField source="identifierSource.name" label="Source name" />
+      <TextField source="name" label="Source name" />
+      <TextField source="userName" label="User name" />
       <TextField source="identifierStart" />
       <TextField source="identifierEnd" />
     </Datagrid>
