@@ -1,8 +1,7 @@
 package org.openchs.web.request.webapp;
 
+import org.openchs.domain.IdentifierSource;
 import org.openchs.domain.IdentifierUserAssignment;
-import org.openchs.web.request.CHSRequest;
-import org.openchs.domain.JsonObject;
 import org.springframework.hateoas.core.Relation;
 
 @Relation(collectionRelation = "identifierUserAssignment")
@@ -14,6 +13,8 @@ public class IdentifierUserAssignmentContractWeb {
     private boolean voided;
     private Long organisationId;
     private Long id;
+    private String name;
+    private String userName;
 
     public Long getIdentifierSourceId() {
         return identifierSourceId;
@@ -47,10 +48,15 @@ public class IdentifierUserAssignmentContractWeb {
 
     public static IdentifierUserAssignmentContractWeb fromIdentifierUserAssignment(IdentifierUserAssignment identifierUserAssignment) {
         IdentifierUserAssignmentContractWeb contract = new IdentifierUserAssignmentContractWeb();
-        if(identifierUserAssignment.getAssignedTo() != null)
+        if(identifierUserAssignment.getAssignedTo() != null) {
             contract.setUserId(identifierUserAssignment.getAssignedTo().getId());
-        if(identifierUserAssignment.getIdentifierSource() != null)
-            contract.setIdentifierSourceId(identifierUserAssignment.getIdentifierSource().getId());
+            contract.setUserName(identifierUserAssignment.getAssignedTo().getUsername());
+        }
+        IdentifierSource identifierSource = identifierUserAssignment.getIdentifierSource();
+        if(identifierSource != null) {
+            contract.setIdentifierSourceId(identifierSource.getId());
+            contract.setName(identifierSource.getName());
+        }
         contract.setIdentifierStart(identifierUserAssignment.getIdentifierStart());
         contract.setIdentifierEnd(identifierUserAssignment.getIdentifierEnd());
         contract.setVoided(identifierUserAssignment.isVoided());
@@ -80,5 +86,21 @@ public class IdentifierUserAssignmentContractWeb {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 }

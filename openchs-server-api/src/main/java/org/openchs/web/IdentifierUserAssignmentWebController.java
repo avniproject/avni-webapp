@@ -1,5 +1,6 @@
 package org.openchs.web;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 import org.openchs.dao.IdentifierSourceRepository;
 import org.openchs.dao.IdentifierUserAssignmentRepository;
@@ -22,7 +23,7 @@ import javax.transaction.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class IdentifierUserAssignmentWebController extends AbstractController<IdentifierUserAssignment> implements RestControllerResourceProcessor<IdentifierUserAssignment> {
+public class IdentifierUserAssignmentWebController extends AbstractController<IdentifierUserAssignment> implements RestControllerResourceProcessor<IdentifierUserAssignmentContractWeb> {
     private IdentifierUserAssignmentRepository identifierUserAssignmentRepository;
     private UserRepository userRepository;
     private IdentifierSourceRepository identifierSourceRepository;
@@ -37,8 +38,10 @@ public class IdentifierUserAssignmentWebController extends AbstractController<Id
     @GetMapping(value = "/web/identifierUserAssignment")
     @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
     @ResponseBody
-    public PagedResources<Resource<IdentifierUserAssignment>> getAll(Pageable pageable) {
-        return wrap(identifierUserAssignmentRepository.findPageByIsVoidedFalse(pageable));
+    public PagedResources<Resource<IdentifierUserAssignmentContractWeb>> getAll(Pageable pageable) {
+        Page<IdentifierUserAssignment> nonVoided = identifierUserAssignmentRepository.findPageByIsVoidedFalse(pageable);
+        Page<IdentifierUserAssignmentContractWeb> response = nonVoided.map(identifierUserAssignment -> IdentifierUserAssignmentContractWeb.fromIdentifierUserAssignment(identifierUserAssignment));
+        return wrap(response);
     }
 
     @GetMapping(value = "/web/identifierUserAssignment/{id}")
