@@ -53,7 +53,7 @@ export const DateTimeFormElement = ({
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.display || fe.name)}
-        {"*"}
+        {fe.mandatory ? "*" : ""}
       </Typography>
       <KeyboardDateTimePicker
         autoOk
@@ -102,7 +102,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.display || fe.name)}
-        {"*"}
+        {fe.mandatory ? "*" : ""}
       </Typography>
       <KeyboardDatePicker
         autoOk

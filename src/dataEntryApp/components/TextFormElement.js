@@ -1,5 +1,5 @@
 import React from "react";
-import { TextField, Typography } from "@material-ui/core";
+import { FormControl, TextField, Typography } from "@material-ui/core";
 import { isEmpty, find } from "lodash";
 import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
@@ -22,6 +22,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
     <div>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.display || fe.name)}
+        {fe.mandatory ? "*" : ""}
       </Typography>
       <TextField
         // label={t(fe.display || fe.name)}

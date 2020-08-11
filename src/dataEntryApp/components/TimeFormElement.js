@@ -24,6 +24,7 @@ const TimeFormElement = ({ formElement: fe, value, update, validationResults, uu
         style={{ width: "50%", marginBottom: 10, color: "rgba(0, 0, 0, 0.54)" }}
       >
         {t(fe.display || fe.name)}
+        {fe.mandatory ? "*" : ""}
       </Typography>
       <KeyboardTimePicker
         // label={fe.display || fe.name}

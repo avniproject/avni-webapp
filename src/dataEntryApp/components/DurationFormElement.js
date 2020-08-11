@@ -63,7 +63,10 @@ const CompositeDurationFormElement = ({
 
   return (
     <FormControl>
-      <FormLabel>{fe.display || fe.name}</FormLabel>
+      <FormLabel>
+        {t(fe.display || fe.name)}
+        {fe.mandatory ? "*" : ""}
+      </FormLabel>
       <form className={classes.root} noValidate autoComplete="off">
         {fe.durationOptions.map((durationUnit, index) => {
           return (

@@ -73,7 +73,7 @@ export const AccessDenied = () => (
   </ScreenWithAppBar>
 );
 
-export const LineBreak = ({ num = 1 }) => _(num).times(idx => <br key={idx} />);
+export const LineBreak = ({ num = 1 }) => _(num).times(idx => <p key={idx} />);
 
 export const None = ({ displayText = "None" }) => (
   <div>

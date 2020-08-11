@@ -23,6 +23,7 @@ export default ({ formElement: fe, value, update, validationResults, uuid }) => 
     <Fragment>
       <Typography variant="body1" gutterBottom className={classes.lableStyle}>
         {t(fe.display || fe.name)}
+        {fe.mandatory ? "*" : ""}
       </Typography>
       <TextField
         // label={t(fe.display || fe.name)}
