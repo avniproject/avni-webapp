@@ -21,7 +21,7 @@ const Summary = ({ observations, additionalRows }) => {
 
   return (
     <div className={classes.form}>
-      <Typography variant="button" display="block" gutterBottom>
+      {/*<Typography variant="button" display="block" gutterBottom>
         {t("SYSTEM RECOMMENDATIONS")}
       </Typography>
       <Table className={classes.table} aria-label="simple table">
@@ -32,7 +32,7 @@ const Summary = ({ observations, additionalRows }) => {
             </TableCell>
           </TableRow>
         </TableBody>
-      </Table>
+      </Table>*/}
 
       <LineBreak num={2} />
       <Typography variant="button" display="block" gutterBottom>
