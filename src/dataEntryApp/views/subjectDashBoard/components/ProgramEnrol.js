@@ -22,6 +22,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import DateFnsUtils from "@date-io/date-fns";
 import { useTranslation } from "react-i18next";
 import programEnrolmentService from "../../../services/ProgramEnrolmentService";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,30 +64,23 @@ const ProgramEnrol = ({
   updateProgramEnrolment,
   setInitialState,
   setEnrolDateValidation,
-  enrolDateValidation
+  enrolDateValidation,
+  load
 }) => {
-  const [value, setValue] = React.useState("Yes");
   const { t } = useTranslation();
-  const ENROLMENT_DATE = "ENROLMENT_DATE";
-  const handleChange = event => {
-    setValue(event.target.value);
-  };
   const classes = useStyles();
   const formType = match.queryParams.formType;
   useEffect(() => {
-    (async function fetchData() {
-      await setInitialState();
-      await onLoad(
-        "Individual",
-        match.queryParams.programName,
-        formType,
-        match.queryParams.programEnrolmentUuid
-      );
-      await getSubjectProfile(match.queryParams.uuid);
-    })();
+    onLoad(
+      "Individual",
+      match.queryParams.programName,
+      formType,
+      match.queryParams.programEnrolmentUuid,
+      match.queryParams.uuid
+    );
   }, []);
 
-  return (
+  return load ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
@@ -175,6 +169,8 @@ const ProgramEnrol = ({
         </div>
       </Paper>
     </Fragment>
+  ) : (
+    <CustomizedBackdrop load={load} />
   );
 };
 
@@ -182,7 +178,8 @@ const mapStateToProps = state => ({
   enrolForm: state.dataEntry.enrolmentReducer.enrolForm,
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
   programEnrolment: state.dataEntry.enrolmentReducer.programEnrolment,
-  enrolDateValidation: state.dataEntry.enrolmentReducer.enrolDateValidation
+  enrolDateValidation: state.dataEntry.enrolmentReducer.enrolDateValidation,
+  load: state.dataEntry.enrolmentReducer.load
 });
 
 const mapDispatchToProps = {

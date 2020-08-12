@@ -35,12 +35,15 @@ import {
   setEnrolForm,
   setProgramEnrolment,
   saveProgramComplete,
-  types as enrolmentTypes
+  types as enrolmentTypes,
+  setInitialState,
+  setLoaded as setEnrolmentLoaded
 } from "../reducers/programEnrolReducer";
 import { setLoad } from "../reducers/loadReducer";
 import _ from "lodash";
 import { mapProgramEnrolment } from "../../common/subjectModelMapper";
 import { mapProfile } from "common/subjectModelMapper";
+import { setSubjectProfile } from "../reducers/subjectDashboardReducer";
 
 function* dataEntryLoadRegistrationFormWorker({ subjectTypeName }) {
   const formMapping = yield select(selectRegistrationFormMappingForSubjectType(subjectTypeName));
@@ -56,28 +59,30 @@ function* setupNewEnrolmentWorker({
   subjectTypeName,
   programName,
   formType,
-  programEnrolmentUuid
+  programEnrolmentUuid,
+  subjectUuid
 }) {
+  yield put.resolve(setInitialState());
   const formMapping = yield select(
     selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
   );
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
-  yield put(setEnrolForm(mapForm(enrolForm)));
+  yield put.resolve(setEnrolForm(mapForm(enrolForm)));
   const program = yield select(selectProgram(programName));
   const state = yield select();
   const subject = state.dataEntry.subjectProfile.subjectProfile;
-  subject.subjectType = SubjectType.create("Individual");
-
-  if (formType == "ProgramEnrolment" && programEnrolmentUuid) {
+  //subject.subjectType = SubjectType.create("Individual");
+  if (formType === "ProgramEnrolment" && programEnrolmentUuid) {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment);
     programEnrolment.individual = subject;
     programEnrolment.programExitObservations = [];
+    _.assign(programEnrolment, { program });
     yield put.resolve(setProgramEnrolment(programEnrolment));
-  } else if (formType == "ProgramEnrolment") {
+  } else if (formType === "ProgramEnrolment") {
     let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
     yield put.resolve(setProgramEnrolment(programEnrolment));
-  } else if (formType == "ProgramExit" && programEnrolmentUuid) {
+  } else if (formType === "ProgramExit" && programEnrolmentUuid) {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment);
     programEnrolment.individual = subject;
@@ -86,7 +91,7 @@ function* setupNewEnrolmentWorker({
       programEnrolment.programExitObservations = [];
       programEnrolment.programExitDateTime = new Date();
     }
-
+    _.assign(programEnrolment, { program });
     yield put.resolve(setProgramEnrolment(programEnrolment));
   } else {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
@@ -94,8 +99,15 @@ function* setupNewEnrolmentWorker({
     programEnrolment.programExitObservations = [];
     programEnrolment.programExitDateTime = new Date();
     programEnrolment.individual = subject;
+    _.assign(programEnrolment, { program });
     yield put.resolve(setProgramEnrolment(programEnrolment));
   }
+
+  yield put.resolve(setSubjectProfile());
+  const subjectProfileJson = yield call(api.fetchSubjectProfile, subjectUuid);
+  const subjectProfile = mapProfile(subjectProfileJson);
+  yield put.resolve(setSubjectProfile(subjectProfile));
+  yield put.resolve(setEnrolmentLoaded());
 }
 
 export function* dataEntrySearchWatcher() {

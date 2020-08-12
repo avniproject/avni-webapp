@@ -14,7 +14,8 @@ export const types = {
   GET_PROGRAM_ENROLMENT: `${prefix}GET_PROGRAM_ENROLMENT`,
   UPDATE_PROGRAM_ENROLMENT: `${prefix}UPDATE_PROGRAM_ENROLMENT`,
   SET_INITIAL_STATE: `${prefix}SET_INITIAL_STATE`,
-  SET_ENROL_DATE_VALIDATION: `${prefix}SET_ENROL_DATE_VALIDATION`
+  SET_ENROL_DATE_VALIDATION: `${prefix}SET_ENROL_DATE_VALIDATION`,
+  SET_LOADED: `${prefix}SET_LOADED`
 };
 
 export const getProgramEnrolment = programEnrolmentUuid => ({
@@ -35,12 +36,19 @@ export const saveProgramEnrolment = () => ({
   type: types.SAVE_PROGRAM_ENROLMENT
 });
 
-export const onLoad = (subjectTypeName, programName, formType, programEnrolmentUuid) => ({
+export const onLoad = (
+  subjectTypeName,
+  programName,
+  formType,
+  programEnrolmentUuid,
+  subjectUuid
+) => ({
   type: types.ON_LOAD,
   subjectTypeName,
   programName,
   formType,
-  programEnrolmentUuid
+  programEnrolmentUuid,
+  subjectUuid
 });
 
 export const undoExitEnrolment = programEnrolmentUuid => ({
@@ -84,6 +92,10 @@ export const setEnrolDateValidation = enrolDateValidation => ({
   enrolDateValidation
 });
 
+export const setLoaded = () => ({
+  type: types.SET_LOADED
+});
+
 const initialState = {
   saved: false,
   enrolDateValidation: []
@@ -102,7 +114,8 @@ export default function(state = initialState, action) {
     case types.SET_INITIAL_STATE: {
       return {
         ...state,
-        saved: false
+        saved: false,
+        load: false
       };
     }
 
@@ -130,6 +143,12 @@ export default function(state = initialState, action) {
       return {
         ...state,
         enrolDateValidation: action.enrolDateValidation
+      };
+    }
+    case types.SET_LOADED: {
+      return {
+        ...state,
+        load: true
       };
     }
     default:
