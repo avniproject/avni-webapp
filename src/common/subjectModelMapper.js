@@ -24,7 +24,7 @@ export const mapIndividual = individualDetails => {
   const individual = General.assignFields(
     individualDetails,
     new Individual(),
-    ["uuid", "firstName", "lastName"],
+    ["uuid", "firstName", "lastName", "voided"],
     ["dateOfBirth", "registrationDate"]
   );
   const gender = new Gender();

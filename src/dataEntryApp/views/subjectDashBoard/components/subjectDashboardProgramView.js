@@ -138,7 +138,8 @@ const ProgramView = ({
   undoExitEnrolment,
   handleUpdateComponent,
   enableReadOnly,
-  subjectTypeUuid
+  subjectTypeUuid,
+  subjectVoided
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -209,7 +210,7 @@ const ProgramView = ({
         </Grid>
 
         <Grid item xs={8} container direction="row" justify="flex-end" alignItems="flex-start">
-          {!enableReadOnly ? (
+          {!enableReadOnly && !subjectVoided ? (
             <InternalLink
               to={`/app/subject/newProgramVisit?enrolUuid=${programData.uuid}`}
               noUnderline

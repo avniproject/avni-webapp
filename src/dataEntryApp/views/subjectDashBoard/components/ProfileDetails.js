@@ -254,7 +254,7 @@ const ProfileDetails = ({
           </Table>
         </Grid>
         <Grid item xs={7} align="right">
-          {!enableReadOnly ? (
+          {!enableReadOnly && !profileDetails.voided ? (
             <div>
               <Modal
                 content={content}

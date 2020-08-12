@@ -15,7 +15,9 @@ import GridCommonList from "../components/GridCommonList";
 import { Paper } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { InternalLink } from "../../../../common/components/utils";
-import { getSubjectProfile } from "../../../reducers/subjectDashboardReducer";
+import { getSubjectProfile, unVoidSubject } from "../../../reducers/subjectDashboardReducer";
+import ConfirmDialog from "../../../components/ConfirmDialog";
+import SubjectVoided from "../../../components/SubjectVoided";
 
 const useStyles = makeStyles(theme => ({
   expansionHeading: {
@@ -78,10 +80,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
+const SubjectDashboardProfileTab = ({
+  profile,
+  path,
+  enableReadOnly,
+  voidSubject,
+  unVoidSubject
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  console.log("profile-----", profile);
+
+  const [voidConfirmation, setVoidConfirmation] = React.useState(false);
+  const [unVoidConfirmation, setUnVoidConfirmation] = React.useState(false);
 
   useEffect(() => {
     (async function fetchData() {
@@ -105,84 +115,132 @@ const SubjectDashboardProfileTab = ({ profile, path, enableReadOnly }) => {
     });
   }
 
+  function renderSubjectProfile() {
+    return (
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+          aria-controls="registrationPanelbh-content"
+          id="registrationPanelbh-header"
+        >
+          <Typography component={"span"}>
+            <p className={classes.expansionHeading}>{t("registrationDetails")}</p>
+            <p className={classes.expansionSubHeading}>
+              {t("registrationDate")}:{" "}
+              {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
+            </p>
+            {profile.dateOfBirth && (
+              <p className={classes.expansionSubHeading}>
+                {t("dateOfBirth")}: {moment(new Date(profile.dateOfBirth)).format("DD-MM-YYYY")}
+              </p>
+            )}
+          </Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <Grid item xs={12}>
+            <List>
+              <Observations observations={profile ? profile.observations : ""} />
+            </List>
+            {!enableReadOnly ? (
+              <Button color="primary" onClick={() => setVoidConfirmation(true)}>
+                {t("void")}
+              </Button>
+            ) : (
+              ""
+            )}
+            {/* <Button color="primary">{t("edit")}</Button> */}
+            {!enableReadOnly ? (
+              <Button color="primary">
+                <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
+                  {t("edit")}{" "}
+                </InternalLink>
+              </Button>
+            ) : (
+              ""
+            )}
+          </Grid>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+    );
+  }
+
+  function renderRelatives() {
+    return (
+      <ExpansionPanel className={classes.expansionPanel}>
+        <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
+          aria-controls="relativesPanelbh-content"
+          id="relativesPanelbh-header"
+        >
+          <Typography component={"span"} className={classes.expansionHeading}>
+            {t("Relatives")}
+          </Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
+          {profile.relationships != undefined && relativeList.length !== 0 ? (
+            <GridCommonList
+              profileUUID={profile.uuid}
+              profileName={profile.firstName + " " + profile.lastName}
+              gridListDetails={profile.relationships}
+              enableReadOnly={enableReadOnly}
+            />
+          ) : (
+            <Typography variant="caption" gutterBottom className={classes.infomsg}>
+              {" "}
+              {t("noRelativesAdded")}{" "}
+            </Typography>
+          )}
+        </ExpansionPanelDetails>
+        {!enableReadOnly ? (
+          <Button color="primary">
+            <InternalLink to={`/app/subject/addRelative?uuid=${profile.uuid}`}>
+              {" "}
+              {t("addARelative")}{" "}
+            </InternalLink>{" "}
+          </Button>
+        ) : (
+          ""
+        )}
+      </ExpansionPanel>
+    );
+  }
+
+  const renderDialog = (title, open, setOpen, message, onConfirm) => (
+    <ConfirmDialog
+      title={title}
+      open={open}
+      setOpen={setOpen}
+      message={message}
+      onConfirm={onConfirm}
+    />
+  );
+
   return (
     <Fragment>
-      <Paper className={classes.root}>
-        <ExpansionPanel className={classes.expansionPanel}>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-            aria-controls="registrationPanelbh-content"
-            id="registrationPanelbh-header"
-          >
-            <Typography component={"span"}>
-              <p className={classes.expansionHeading}>{t("registrationDetails")}</p>
-              <p className={classes.expansionSubHeading}>
-                {t("registrationDate")}:{" "}
-                {moment(new Date(profile.registrationDate)).format("DD-MM-YYYY")}
-              </p>
-              {profile.dateOfBirth && (
-                <p className={classes.expansionSubHeading}>
-                  {t("dateOfBirth")}: {moment(new Date(profile.dateOfBirth)).format("DD-MM-YYYY")}
-                </p>
-              )}
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails>
-            <Grid item xs={12}>
-              <List>
-                <Observations observations={profile ? profile.observations : ""} />
-              </List>
-              {!enableReadOnly ? <Button color="primary">{t("void")}</Button> : ""}
-              {/* <Button color="primary">{t("edit")}</Button> */}
-              {!enableReadOnly ? (
-                <Button color="primary">
-                  <InternalLink to={`/app/editSubject?uuid=${profile.uuid}`}>
-                    {t("edit")}{" "}
-                  </InternalLink>
-                </Button>
-              ) : (
-                ""
-              )}
-            </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-        <ExpansionPanel className={classes.expansionPanel}>
-          <ExpansionPanelSummary
-            expandIcon={<ExpandMoreIcon className={classes.expandMoreIcon} />}
-            aria-controls="relativesPanelbh-content"
-            id="relativesPanelbh-header"
-          >
-            <Typography component={"span"} className={classes.expansionHeading}>
-              {t("Relatives")}
-            </Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ paddingTop: "0px" }}>
-            {profile.relationships != undefined && relativeList.length !== 0 ? (
-              <GridCommonList
-                profileUUID={profile.uuid}
-                profileName={profile.firstName + " " + profile.lastName}
-                gridListDetails={profile.relationships}
-                enableReadOnly={enableReadOnly}
-              />
-            ) : (
-              <Typography variant="caption" gutterBottom className={classes.infomsg}>
-                {" "}
-                {t("noRelativesAdded")}{" "}
-              </Typography>
-            )}
-          </ExpansionPanelDetails>
-          {!enableReadOnly ? (
-            <Button color="primary">
-              <InternalLink to={`/app/subject/addRelative?uuid=${profile.uuid}`}>
-                {" "}
-                {t("addARelative")}{" "}
-              </InternalLink>{" "}
-            </Button>
-          ) : (
-            ""
+      {profile && profile.voided ? (
+        <Paper className={classes.root}>
+          <SubjectVoided onUnVoid={() => setUnVoidConfirmation(true)} showUnVoid={true} />
+          {renderDialog(
+            "Un-Void the subject",
+            unVoidConfirmation,
+            setUnVoidConfirmation,
+            "Are you sure you want to un-void this subject?",
+            unVoidSubject
           )}
-        </ExpansionPanel>
-      </Paper>
+        </Paper>
+      ) : (
+        <Paper className={classes.root}>
+          {renderSubjectProfile()}
+          {renderRelatives()}
+          {renderDialog(
+            "Void the subject",
+            voidConfirmation,
+            setVoidConfirmation,
+            "Are you sure you want to void this subject?",
+            voidSubject
+          )}
+        </Paper>
+      )}
     </Fragment>
   );
 };

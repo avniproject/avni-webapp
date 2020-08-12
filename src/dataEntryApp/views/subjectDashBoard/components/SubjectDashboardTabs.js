@@ -66,7 +66,15 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export default ({ profile, general, program, handleUpdateComponent, enableReadOnly }) => {
+export default ({
+  profile,
+  general,
+  program,
+  handleUpdateComponent,
+  enableReadOnly,
+  voidSubject,
+  unVoidSubject
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -108,12 +116,18 @@ export default ({ profile, general, program, handleUpdateComponent, enableReadOn
             handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
             subjectTypeUuid={profile.subjectType.uuid}
+            subjectVoided={profile.voided}
           />
         </Paper>
       </TabContent>
       <TabContent value={value} index={1}>
         <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardProfileTab profile={profile} enableReadOnly={enableReadOnly} />
+          <SubjectDashboardProfileTab
+            profile={profile}
+            enableReadOnly={enableReadOnly}
+            voidSubject={voidSubject}
+            unVoidSubject={unVoidSubject}
+          />
         </Paper>
       </TabContent>
       <TabContent value={value} index={2}>
@@ -123,6 +137,7 @@ export default ({ profile, general, program, handleUpdateComponent, enableReadOn
             general={general}
             enableReadOnly={enableReadOnly}
             subjectTypeUuid={profile.subjectType.uuid}
+            subjectVoided={profile.voided}
           />
         </Paper>
       </TabContent>

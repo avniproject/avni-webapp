@@ -3,7 +3,11 @@ import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import ProfileDetails from "./components/ProfileDetails";
 import SubjectDashboardTabs from "./components/SubjectDashboardTabs";
-import { getSubjectProfile } from "../../reducers/subjectDashboardReducer";
+import {
+  getSubjectProfile,
+  unVoidSubject,
+  voidSubject
+} from "../../reducers/subjectDashboardReducer";
 import { getSubjectGeneral } from "../../reducers/generalSubjectDashboardReducer";
 import { getSubjectProgram } from "../../reducers/programSubjectDashboardReducer";
 import { withRouter } from "react-router-dom";
@@ -30,6 +34,8 @@ const SubjectDashboard = ({
   getSubjectProgram,
   subjectProgram,
   enableReadOnly,
+  voidSubject,
+  unVoidSubject,
   load
 }) => {
   const classes = useStyles();
@@ -57,6 +63,8 @@ const SubjectDashboard = ({
           program={subjectProgram}
           handleUpdateComponent={handleUpdateComponent}
           enableReadOnly={enableReadOnly}
+          voidSubject={voidSubject}
+          unVoidSubject={unVoidSubject}
         />
       </Paper>
     );
@@ -88,7 +96,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   getSubjectProfile,
   getSubjectGeneral,
-  getSubjectProgram
+  getSubjectProgram,
+  voidSubject,
+  unVoidSubject
 };
 
 export default withRouter(

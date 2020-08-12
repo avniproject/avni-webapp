@@ -23,7 +23,8 @@ const programDetails = ({
   programData,
   handleUpdateComponent,
   enableReadOnly,
-  subjectTypeUuid
+  subjectTypeUuid,
+  subjectVoided
 }) => {
   return (
     <div>
@@ -38,6 +39,7 @@ const programDetails = ({
                   handleUpdateComponent={handleUpdateComponent}
                   enableReadOnly={enableReadOnly}
                   subjectTypeUuid={subjectTypeUuid}
+                  subjectVoided={subjectVoided}
                 />
               </TabPanel>
             </Fragment>

@@ -4,7 +4,9 @@ export const types = {
   GET_SUBJECT_PROFILE: `${prefix}GET_SUBJECT_PROFILE`,
   SET_SUBJECT_PROFILE: `${prefix}SET_SUBJECT_PROFILE`,
   GET_PROGRAMS: `${prefix}GET_PROGRAMS`,
-  SET_PROGRAMS: `${prefix}SET_PROGRAMS`
+  SET_PROGRAMS: `${prefix}SET_PROGRAMS`,
+  VOID_SUBJECT: `${prefix}VOID_SUBJECT`,
+  UN_VOID_SUBJECT: `${prefix}UN_VOID_SUBJECT`
 };
 
 export const getSubjectProfile = subjectUUID => ({
@@ -15,6 +17,16 @@ export const getSubjectProfile = subjectUUID => ({
 export const setSubjectProfile = subjectProfile => ({
   type: types.SET_SUBJECT_PROFILE,
   subjectProfile
+});
+
+export const voidSubject = () => ({
+  type: types.VOID_SUBJECT,
+  voided: true
+});
+
+export const unVoidSubject = () => ({
+  type: types.UN_VOID_SUBJECT,
+  voided: false
 });
 
 export const getPrograms = subjectUUID => ({

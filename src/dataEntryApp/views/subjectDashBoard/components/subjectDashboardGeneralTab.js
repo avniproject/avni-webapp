@@ -16,6 +16,7 @@ import CompletedEncounter from "dataEntryApp/views/subjectDashBoard/components/C
 import { isEmpty } from "lodash";
 import { connect } from "react-redux";
 import { selectFormMappingsForSubjectType } from "../../../sagas/encounterSelector";
+import SubjectVoided from "../../../components/SubjectVoided";
 
 const useStyles = makeStyles(theme => ({
   label: {
@@ -69,7 +70,8 @@ const SubjectDashboardGeneralTab = ({
   subjectUuid,
   enableReadOnly,
   subjectTypeUuid,
-  encounterFormMappings
+  encounterFormMappings,
+  subjectVoided
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -89,8 +91,11 @@ const SubjectDashboardGeneralTab = ({
   return (
     <Fragment>
       <Paper className={classes.root}>
+        {subjectVoided && <SubjectVoided showUnVoid={false} />}
         <Grid container justify="flex-end">
-          {!enableReadOnly && !(isEmpty(plannedVisits) && isEmpty(encounterFormMappings)) ? (
+          {!enableReadOnly &&
+          !(isEmpty(plannedVisits) && isEmpty(encounterFormMappings)) &&
+          !subjectVoided ? (
             <InternalLink
               to={`/app/subject/newGeneralVisit?subjectUuid=${subjectUuid}`}
               noUnderline

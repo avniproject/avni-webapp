@@ -5,6 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import ProgramDetails from "./subjectDashboardProgramDetails";
 import Program from "./Program";
 import { useTranslation } from "react-i18next";
+import SubjectVoided from "../../../components/SubjectVoided";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,7 +24,8 @@ const SubjectDashboardProgramTab = ({
   program,
   handleUpdateComponent,
   enableReadOnly,
-  subjectTypeUuid
+  subjectTypeUuid,
+  subjectVoided
 }) => {
   let flagActive = false;
   let flagExited = false;
@@ -65,6 +67,7 @@ const SubjectDashboardProgramTab = ({
   return (
     <Fragment>
       <Paper className={classes.root}>
+        {subjectVoided && <SubjectVoided showUnVoid={false} />}
         <div className={classes.programBar}>
           <Grid container spacing={1}>
             {flagActive ? (
@@ -107,6 +110,7 @@ const SubjectDashboardProgramTab = ({
             handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
             subjectTypeUuid={subjectTypeUuid}
+            subjectVoided={subjectVoided}
           />
         ) : (
           <ProgramDetails
@@ -115,6 +119,7 @@ const SubjectDashboardProgramTab = ({
             handleUpdateComponent={handleUpdateComponent}
             enableReadOnly={enableReadOnly}
             subjectTypeUuid={subjectTypeUuid}
+            subjectVoided={subjectVoided}
           />
         )}
       </Paper>

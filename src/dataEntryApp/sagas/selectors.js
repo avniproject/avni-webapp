@@ -21,6 +21,8 @@ export const selectRegistrationFormMappingForSubjectType = subjectTypeName => st
 
 export const selectRegistrationSubject = state => get(state, "dataEntry.registration.subject");
 
+export const selectSubjectProfile = state => get(state, "dataEntry.subjectProfile.subjectProfile");
+
 export const selectProgramEncounterTypes = (subjectTypeUuid, programUuid) => state => {
   const formMappings = filter(
     get(state, "dataEntry.metadata.operationalModules.formMappings"),
