@@ -1,6 +1,5 @@
 package org.openchs.service;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.openchs.dao.LocationRepository;
 import org.openchs.domain.AddressLevel;
 import org.openchs.web.request.AddressLevelContract;
@@ -12,19 +11,22 @@ import java.util.stream.Collectors;
 @Service
 public class AddressLevelService {
     private final LocationRepository locationRepository;
-    public AddressLevelService(  LocationRepository locationRepository) {
-        this.locationRepository=locationRepository;
-    }
-    public List<AddressLevelContract> getAllLocations(){
-        List<AddressLevel> locationList=locationRepository.getAllByIsVoidedFalse();
-        return locationList.stream().map(adderssLevel-> {
 
-                    AddressLevelContract addressLevelContract   =    new AddressLevelContract();
-                    addressLevelContract.setId(adderssLevel.getId());
-                    addressLevelContract.setUuid(adderssLevel.getUuid());
-                    addressLevelContract.setName(adderssLevel.getTitle());
-                    addressLevelContract.setType(adderssLevel.getType().getName());
-            return addressLevelContract;
+    public AddressLevelService(LocationRepository locationRepository) {
+        this.locationRepository = locationRepository;
+    }
+
+    public List<AddressLevelContract> getAllLocations() {
+        List<AddressLevel> locationList = locationRepository.getAllByIsVoidedFalse();
+        return locationList.stream()
+                .filter(al -> !al.getType().isVoided())
+                .map(addressLevel -> {
+                    AddressLevelContract addressLevelContract = new AddressLevelContract();
+                    addressLevelContract.setId(addressLevel.getId());
+                    addressLevelContract.setUuid(addressLevel.getUuid());
+                    addressLevelContract.setName(addressLevel.getTitle());
+                    addressLevelContract.setType(addressLevel.getType().getName());
+                    return addressLevelContract;
                 }).collect(Collectors.toList());
     }
 }
