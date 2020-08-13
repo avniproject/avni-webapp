@@ -41,8 +41,8 @@ const Summary = ({ observations, additionalRows }) => {
       <Grid item xs={8}>
         <List>
           <Observations
-            observations={observations ? observations : ""}
-            additionalRows={additionalRows ? additionalRows : ""}
+            observations={observations ? observations : []}
+            additionalRows={additionalRows ? additionalRows : []}
           />
         </List>
         {/* <Button color="primary">{t("void")}</Button>

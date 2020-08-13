@@ -240,9 +240,7 @@ const ProgramView = ({
                   observations={
                     programData && !programData.programExitDateTime
                       ? programData.observations
-                      : programData
-                      ? programData.exitObservations
-                      : ""
+                      : (programData && programData.exitObservations) || []
                   }
                   additionalRows={
                     programData && !programData.programExitDateTime

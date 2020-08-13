@@ -83,7 +83,7 @@ const Row = props => {
               <Table size="small" aria-label="purchases">
                 <TableBody>
                   <List>
-                    <Observations observations={row.observations ? row.observations : ""} />
+                    <Observations observations={row.observations ? row.observations : []} />
                   </List>
                 </TableBody>
               </Table>

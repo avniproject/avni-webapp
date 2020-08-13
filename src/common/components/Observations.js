@@ -9,6 +9,7 @@ import { ConceptService, i18n } from "../../dataEntryApp/services/ConceptService
 import { useTranslation } from "react-i18next";
 import ErrorIcon from "@material-ui/icons/Error";
 import PropTypes from "prop-types";
+import { isEmpty } from "lodash";
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -25,6 +26,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Observations = ({ observations, additionalRows }) => {
+  if (isEmpty(observations)) {
+    return <div />;
+  }
+
   const conceptService = new ConceptService();
   const i = new i18n();
   const { t } = useTranslation();

@@ -115,7 +115,7 @@ const ViewVisit = ({ match, getEncounter, getProgramEncounter, encounter, load }
             {t("summary")}
           </Typography>
           <LineBreak num={2} />
-          <Observations observations={encounter ? encounter.observations : ""} />
+          <Observations observations={encounter ? encounter.observations : []} />
         </Paper>
 
         <InternalLink to={viewAllCompletedUrl}>

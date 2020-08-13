@@ -139,7 +139,7 @@ const SubjectDashboardProfileTab = ({
         <ExpansionPanelDetails>
           <Grid item xs={12}>
             <List>
-              <Observations observations={profile ? profile.observations : ""} />
+              <Observations observations={profile ? profile.observations : []} />
             </List>
             {!enableReadOnly ? (
               <Button color="primary" onClick={() => setVoidConfirmation(true)}>
