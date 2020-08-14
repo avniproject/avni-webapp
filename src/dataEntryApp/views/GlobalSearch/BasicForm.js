@@ -9,12 +9,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControl from "@material-ui/core/FormControl";
-// import Autocomplete from "@material-ui/lab/Autocomplete";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
+import Select from "react-select";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -39,17 +34,19 @@ function BasicForm({
   onGenderChange,
   selectedGender,
   onAddressSelect,
-  modifySearchData
+  selectedAddress,
+  addressLevelType,
+  enterValue
 }) {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [selectedAddressLevelType, setSelectedAddressLevelType] = useState("Address");
+  const [selectedAddressLevelType, setSelectedAddressLevelType] = useState(addressLevelType);
   const onAddressLevelTypeChange = event => {
-    console.log(event.target.value);
     setSelectedAddressLevelType(event.target.value);
+    onAddressSelect(null);
   };
   const location = allLocation.filter(
-    locationType => locationType.type === selectedAddressLevelType
+    location => location.type === selectedAddressLevelType && !location.voided
   );
 
   return searchFilterForms ? (
@@ -69,7 +66,7 @@ function BasicForm({
                 type="text"
                 style={{ width: "100%" }}
                 onChange={onChange}
-                value={modifySearchData ? modifySearchData.name : null}
+                value={enterValue.name}
               />
             </Grid>
           ) : (
@@ -91,6 +88,7 @@ function BasicForm({
                 type="number"
                 style={{ width: "100%" }}
                 onChange={onChange}
+                value={enterValue.age}
               />
             </Grid>
           ) : (
@@ -112,6 +110,7 @@ function BasicForm({
                 type="text"
                 style={{ width: "100%" }}
                 onChange={onChange}
+                value={enterValue.searchAll}
               />
             </Grid>
           ) : (
@@ -149,70 +148,49 @@ function BasicForm({
         )}
       </Grid>
 
-      {/*<Grid container spacing={3} className={classes.componentSpacing}>*/}
-      {/*{searchFilterForms.map((searchFilterForm, index) =>*/}
-      {/*searchFilterForm.type === "Address" ? (*/}
-      {/*<Grid item xs={12} key={index}>*/}
-      {/*<Typography variant="body1" gutterBottom className={classes.lableStyle}>*/}
-      {/*{t(searchFilterForm.titleKey)}*/}
-      {/*</Typography>*/}
-      {/*<FormControl component="fieldset">*/}
-      {/*<RadioGroup*/}
-      {/*row*/}
-      {/*aria-label="position"*/}
-      {/*name="position"*/}
-      {/*onChange={onAddressLevelTypeChange}*/}
-      {/*defaultValue={selectedAddressLevelType}*/}
-      {/*>*/}
-      {/*{operationalModules.addressLevelTypes*/}
-      {/*? operationalModules.addressLevelTypes.map((addressLevelType, index) => (*/}
-      {/*<FormControlLabel*/}
-      {/*key={index}*/}
-      {/*value={addressLevelType.name}*/}
-      {/*control={<Radio color="primary" />}*/}
-      {/*label={addressLevelType.name}*/}
-      {/*/>*/}
-      {/*))*/}
-      {/*: ""}*/}
-      {/*</RadioGroup>*/}
-      {/*</FormControl>*/}
-      {/*<Autocomplete*/}
-      {/*multiple*/}
-      {/*id="checkboxes-tags-demo"*/}
-      {/*options={location}*/}
-      {/*disableCloseOnSelect*/}
-      {/*getOptionLabel={option => option.name}*/}
-      {/*onChange={onAddressSelect}*/}
-      {/*renderOption={(option, { selected }) => (*/}
-      {/*<React.Fragment>*/}
-      {/*<Checkbox*/}
-      {/*icon={icon}*/}
-      {/*checkedIcon={checkedIcon}*/}
-      {/*style={{ marginRight: 8 }}*/}
-      {/*checked={selected}*/}
-      {/*/>*/}
-      {/*{option.name}*/}
-      {/*</React.Fragment>*/}
-      {/*)}*/}
-      {/*style={{ width: "30%" }}*/}
-      {/*renderInput={params => (*/}
-      {/*<TextField*/}
-      {/*{...params}*/}
-      {/*variant="outlined"*/}
-      {/*label={selectedAddressLevelType}*/}
-      {/*placeholder={selectedAddressLevelType}*/}
-      {/*/>*/}
-      {/*)}*/}
-      {/*/>*/}
-      {/*</Grid>*/}
-      {/*) : (*/}
-      {/*""*/}
-      {/*)*/}
-      {/*)}*/}
-      {/*</Grid>*/}
+      <Grid container spacing={3} className={classes.componentSpacing}>
+        {searchFilterForms.map((searchFilterForm, index) =>
+          searchFilterForm.type === "Address" ? (
+            <Grid item xs={12} key={index}>
+              <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                {t(searchFilterForm.titleKey)}
+              </Typography>
+              <FormControl component="fieldset">
+                <RadioGroup
+                  row
+                  aria-label="position"
+                  name="position"
+                  onChange={onAddressLevelTypeChange}
+                  defaultValue={selectedAddressLevelType}
+                >
+                  {operationalModules.addressLevelTypes
+                    ? operationalModules.addressLevelTypes.map((addressLevelType, index) => (
+                        <FormControlLabel
+                          key={index}
+                          value={addressLevelType.name}
+                          control={<Radio color="primary" />}
+                          label={addressLevelType.name}
+                        />
+                      ))
+                    : ""}
+                </RadioGroup>
+              </FormControl>
+              <Select
+                isMulti
+                placeholder={"Select location"}
+                value={selectedAddress}
+                options={location.map(({ name, id }) => ({ label: name, value: id }))}
+                onChange={onAddressSelect}
+              />
+            </Grid>
+          ) : (
+            ""
+          )
+        )}
+      </Grid>
     </Fragment>
   ) : (
-    ""
+    <div />
   );
 }
 

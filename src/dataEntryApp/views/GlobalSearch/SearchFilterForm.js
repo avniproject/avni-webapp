@@ -24,6 +24,7 @@ import Grid from "@material-ui/core/Grid";
 import moment from "moment/moment";
 import { store } from "../../../common/store/createStore";
 import { types } from "../../reducers/searchFilterReducer";
+import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,7 +39,12 @@ const useStyles = makeStyles(theme => ({
     "& > *": {
       margin: theme.spacing(1)
     }
-  }
+  },
+  formLabelRoot: {
+    color: "rgba(0, 0, 0, 0.54)",
+    "&$formLabelFocused": { color: "rgba(0, 0, 0, 0.54)" }
+  },
+  formLabelFocused: {}
 }));
 
 function SearchFilterFormContainer({
@@ -49,7 +55,8 @@ function SearchFilterFormContainer({
   getGenders,
   genders,
   getOrganisationConfig,
-  organisationConfigs
+  organisationConfigs,
+  searchRequest
 }) {
   useEffect(() => {
     getOrganisationConfig();
@@ -67,6 +74,7 @@ function SearchFilterFormContainer({
         allLocations={allLocations}
         genders={genders}
         organisationConfigs={organisationConfigs}
+        searchRequest={searchRequest}
       />
     );
   }
@@ -77,7 +85,8 @@ const mapStateToProps = state => {
     operationalModules: state.dataEntry.metadata.operationalModules,
     allLocations: state.dataEntry.metadata.allLocations,
     genders: state.dataEntry.metadata.genders,
-    organisationConfigs: state.dataEntry.metadata.organisationConfigs
+    organisationConfigs: state.dataEntry.metadata.organisationConfigs,
+    searchRequest: state.dataEntry.searchFilterReducer.request
   };
 };
 
@@ -101,36 +110,53 @@ function SearchFilterForm({
   operationalModules,
   allLocations,
   genders,
-  organisationConfigs
+  organisationConfigs,
+  searchRequest
 }) {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [selectedSubjectType, setSelectedSubjectType] = useState(
-    operationalModules.subjectTypes[0].uuid
+  const {
+    subjectType,
+    name,
+    age,
+    includeVoided,
+    addressIds,
+    concept,
+    gender,
+    registrationDate,
+    encounterDate,
+    programEncounterDate,
+    programEnrolmentDate,
+    searchAll
+  } = searchRequest;
+
+  const [selectedSubjectTypeUUID, setSelectedSubjectTypeUUID] = useState(
+    subjectType || operationalModules.subjectTypes[0].uuid
   );
 
-  const initialSubjetTypeSearchFilter =
+  const initialSubjectTypeSearchFilter =
     organisationConfigs &&
     organisationConfigs.organisationConfig.searchFilters &&
     organisationConfigs.organisationConfig.searchFilters.filter(
-      searchFilter => searchFilter.subjectTypeUUID === selectedSubjectType
+      searchFilter => searchFilter.subjectTypeUUID === selectedSubjectTypeUUID
     );
-  const [selectedSearchFilter, setSelectedSearchFilter] = useState(initialSubjetTypeSearchFilter);
+
+  const [selectedSearchFilter, setSelectedSearchFilter] = useState(initialSubjectTypeSearchFilter);
   const onSubjectTypeChange = event => {
-    setSelectedSubjectType(event.target.value);
-    const slectedSubjetTypeSearchFilter =
+    setSelectedSubjectTypeUUID(event.target.value);
+    const selectedSubjectTypeSearchFilter =
       organisationConfigs.organisationConfig.searchFilters &&
       organisationConfigs.organisationConfig.searchFilters.filter(
-        serarchFilter => serarchFilter.subjectTypeUUID === event.target.value
+        searchFilter => searchFilter.subjectTypeUUID === event.target.value
       );
-    setSelectedSearchFilter(slectedSubjetTypeSearchFilter);
+    setSelectedSearchFilter(selectedSubjectTypeSearchFilter);
   };
 
   // name age search all
   const [enterValue, setEnterValue] = useState({
-    name: "",
-    age: "",
-    searchAll: ""
+    name: name || "",
+    age: (age && age.minValue) || "",
+    searchAll: searchAll || ""
   });
 
   const searchFilterValue = event => {
@@ -142,8 +168,9 @@ function SearchFilterForm({
   };
 
   //Gender
-  const [selectedGender, setSelectedGender] = React.useState(null);
-
+  let g = {};
+  _.forEach(gender, gender => _.assign(g, { [gender]: true }));
+  const [selectedGender, setSelectedGender] = React.useState(g);
   const onGenderChange = event => {
     if (event.target.checked) {
       setSelectedGender({ ...selectedGender, [event.target.name]: event.target.checked });
@@ -160,30 +187,29 @@ function SearchFilterForm({
       : [];
 
   // address
-  const [selectedAddress, setSelectedAddress] = React.useState(null);
-  const onAddressSelect = (event, value) => {
-    setSelectedAddress({ ...selectedAddress, address: value });
-  };
+  const previousSelectedLocations =
+    (addressIds && allLocations.filter(({ id }) => _.includes(addressIds, id))) || [];
+  const previousSelectedType = _.get(_.head(previousSelectedLocations), "type", "");
+  const [selectedAddress, setSelectedAddress] = React.useState(
+    previousSelectedLocations.map(({ name, id }) => ({
+      label: name,
+      value: id
+    }))
+  );
+  const onAddressSelect = value => setSelectedAddress(value);
   const selectedAddressSort =
-    selectedAddress !== null ? selectedAddress.address.map(address => address.id) : [];
+    selectedAddress !== null ? selectedAddress.map(address => address.value) : [];
+
+  const setPreviousMinMaxValues = registrationDate => ({
+    minValue: (registrationDate && registrationDate.minValue) || null,
+    maxValue: (registrationDate && registrationDate.maxValue) || null
+  });
   // date
   const [selectedDate, setSelectedDate] = useState({
-    RegistrationDate: {
-      minValue: null,
-      maxValue: null
-    },
-    EnrolmentDate: {
-      minValue: null,
-      maxValue: null
-    },
-    ProgramEncounterDate: {
-      minValue: null,
-      maxValue: null
-    },
-    EncounterDate: {
-      minValue: null,
-      maxValue: null
-    }
+    RegistrationDate: setPreviousMinMaxValues(registrationDate),
+    EnrolmentDate: setPreviousMinMaxValues(programEnrolmentDate),
+    ProgramEncounterDate: setPreviousMinMaxValues(programEncounterDate),
+    EncounterDate: setPreviousMinMaxValues(encounterDate)
   });
 
   const searchFilterDates = (minDate, maxDate, type) => {
@@ -200,7 +226,7 @@ function SearchFilterForm({
     searchElement => searchElement.type === "Concept"
   );
 
-  const InitialConceptList = conceptList.map(concept => {
+  const initialConceptList = conceptList.map(concept => {
     if (concept.conceptDataType === null) {
     } else {
       if (["Date", "DateTime", "Time"].includes(concept.conceptDataType)) {
@@ -229,9 +255,11 @@ function SearchFilterForm({
     }
   });
 
-  const [selectedConcepts, setSelectedConcept] = useState(InitialConceptList);
+  const allConceptRelatedFilters = _.map(initialConceptList, item =>
+    _.merge(item, _.find(concept, { uuid: item.conceptUUID }))
+  );
+  const [selectedConcepts, setSelectedConcept] = useState(allConceptRelatedFilters);
   const searchFilterConcept = (event, searchFilterForm, fieldName) => {
-    console.log("selectedConcepts", selectedConcepts);
     setSelectedConcept(previousSelectedConcepts =>
       previousSelectedConcepts.map(concept => {
         if (concept.conceptDataType === null) {
@@ -296,7 +324,7 @@ function SearchFilterForm({
     );
   };
   // is voided
-  const [includeVoied, setIncludeVoied] = React.useState(false);
+  const [includeVoied, setIncludeVoied] = React.useState(includeVoided || false);
 
   const includeVoiedChange = event => {
     setIncludeVoied(event.target.checked);
@@ -371,7 +399,7 @@ function SearchFilterForm({
 
   const searchResult = () => {
     const searchRequest = {
-      subjectType: selectedSubjectType,
+      subjectType: selectedSubjectTypeUUID,
       name: enterValue.name,
       age: {
         minValue: enterValue.age,
@@ -412,13 +440,21 @@ function SearchFilterForm({
         </Typography>
         <LineBreak num={1} />
         <FormControl component="fieldset">
-          <FormLabel component="legend">Subject Type</FormLabel>
+          <FormLabel
+            component="legend"
+            classes={{
+              root: classes.formLabelRoot,
+              focused: classes.formLabelFocused
+            }}
+          >
+            Subject Type
+          </FormLabel>
           <RadioGroup
             row
             aria-label="subjectType"
             name="subjectType"
             onChange={onSubjectTypeChange}
-            defaultValue={selectedSubjectType}
+            defaultValue={selectedSubjectTypeUUID}
           >
             {operationalModules.subjectTypes
               ? operationalModules.subjectTypes.map((subjectType, index) => (
@@ -431,19 +467,22 @@ function SearchFilterForm({
                 ))
               : ""}
           </RadioGroup>
-          {selectedSearchFilter && selectedSearchFilter.length > 0 ? (
+          {selectedSearchFilter ? (
             <div>
               <Grid container>
                 <Grid item xs={12}>
                   <BasicForm
                     searchFilterForms={selectedSearchFilter}
                     onChange={searchFilterValue}
+                    enterValue={enterValue}
                     operationalModules={operationalModules}
                     genders={genders}
                     allLocation={allLocations}
                     onGenderChange={onGenderChange}
                     selectedGender={selectedGender}
                     onAddressSelect={onAddressSelect}
+                    selectedAddress={selectedAddress}
+                    addressLevelType={previousSelectedType}
                   />
                 </Grid>
                 <Grid item xs={12}>

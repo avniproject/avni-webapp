@@ -110,7 +110,7 @@ function NonConceptForm({ searchFilterForms, selectedDate, onDateChange }) {
       </Grid>
     </Fragment>
   ) : (
-    ""
+    <div />
   );
 }
 

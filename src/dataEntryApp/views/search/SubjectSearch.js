@@ -11,6 +11,7 @@ import { types } from "../../reducers/searchFilterReducer";
 import { Link } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+import { isEmpty } from "lodash";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -78,7 +79,7 @@ const SubjectSearch = ({ searchRequest }) => {
             paddingLeft: "4px"
           }}
         >
-          {t("searchResults")}
+          {!isEmpty(searchRequest.subjectType) ? t("searchResults") : ""}
         </Typography>
         <Link onClick={() => resetClick()} aria-label="add an alarm" style={{ color: "#212529" }}>
           <CancelIcon Style={{ fontSize: "12px" }} /> {t("resetFilter")}

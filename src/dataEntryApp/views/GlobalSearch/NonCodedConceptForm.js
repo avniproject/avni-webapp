@@ -10,6 +10,7 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker
 } from "@material-ui/pickers";
+import _ from "lodash";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,9 +33,33 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
   return searchFilterForms ? (
     <Fragment key={searchFilterForms.uuid}>
       <Grid container spacing={3} className={classes.componentSpacing}>
-        {searchFilterForms.map((searchFilterForm, index) =>
-          searchFilterForm.type === "Concept" && searchFilterForm.conceptDataType !== "Coded" ? (
-            searchFilterForm.widget === "Range" ? (
+        {searchFilterForms.map((searchFilterForm, index) => {
+          const selectedValue = _.head(
+            selectedConcepts.filter(
+              selectedConcept => selectedConcept.conceptUUID === searchFilterForm.conceptUUID
+            )
+          );
+          return searchFilterForm.type === "Concept" &&
+            searchFilterForm.conceptDataType !== "Coded" ? (
+            searchFilterForm.conceptDataType === "Text" ? (
+              <Grid item xs={12} key={index}>
+                <Typography variant="body1" gutterBottom className={classes.lableStyle}>
+                  {t(searchFilterForm.titleKey)}
+                </Typography>
+                <TextField
+                  key={index}
+                  id={searchFilterForm.titleKey}
+                  autoComplete="off"
+                  type="text"
+                  style={{ width: "30%" }}
+                  onChange={event => {
+                    event.persist();
+                    onChange(event, searchFilterForm);
+                  }}
+                  value={(!_.isEmpty(selectedValue) && selectedValue.value) || null}
+                />
+              </Grid>
+            ) : searchFilterForm.widget === "Range" ? (
               searchFilterForm.conceptDataType === "Date" ? (
                 <Grid item xs={12} key={index}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -45,17 +70,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id="date-picker-dialog"
                       placeholder="Form"
                       format="dd/MM/yyyy"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].minValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
                       KeyboardButtonProps={{
@@ -67,17 +82,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id="date-picker-dialog"
                       placeholder="To"
                       format="dd/MM/yyyy"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].maxValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
                       style={{ width: "14%", marginLeft: "1%" }}
                       KeyboardButtonProps={{
@@ -97,17 +102,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id="date-picker-dialog"
                       placeholder="Form"
                       format="dd/MM/yyyy HH:mm"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].minValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
                       KeyboardButtonProps={{
@@ -119,17 +114,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       id="date-picker-dialog"
                       placeholder="To"
                       format="dd/MM/yyyy HH:mm"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].maxValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
                       style={{ width: "14%", marginLeft: "1%" }}
                       KeyboardButtonProps={{
@@ -148,17 +133,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     <KeyboardTimePicker
                       id="date-picker-dialog"
                       placeholder="Form"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].minValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "14%", marginRight: "1%" }}
                       KeyboardButtonProps={{
@@ -169,17 +144,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     <KeyboardTimePicker
                       id="date-picker-dialog"
                       placeholder="To"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].maxValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "maxValue")}
                       style={{ width: "14%", marginLeft: "1%" }}
                       KeyboardButtonProps={{
@@ -205,6 +170,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       event.persist();
                       onChange(event, searchFilterForm, "minValue");
                     }}
+                    value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                   />
                   <TextField
                     key={index}
@@ -217,30 +183,14 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       event.persist();
                       onChange(event, searchFilterForm, "maxValue");
                     }}
+                    value={(!_.isEmpty(selectedValue) && selectedValue.maxValue) || null}
                   />
                 </Grid>
               ) : (
                 ""
               )
             ) : searchFilterForm.widget === "Default" ? (
-              searchFilterForm.conceptDataType === "Text" ? (
-                <Grid item xs={12} key={index}>
-                  <Typography variant="body1" gutterBottom className={classes.lableStyle}>
-                    {t(searchFilterForm.titleKey)}
-                  </Typography>
-                  <TextField
-                    key={index}
-                    id={searchFilterForm.titleKey}
-                    autoComplete="off"
-                    type="text"
-                    style={{ width: "30%" }}
-                    onChange={event => {
-                      event.persist();
-                      onChange(event, searchFilterForm);
-                    }}
-                  />
-                </Grid>
-              ) : searchFilterForm.conceptDataType === "Numeric" ? (
+              searchFilterForm.conceptDataType === "Numeric" ? (
                 <Grid item xs={12} key={index}>
                   <Typography variant="body1" gutterBottom className={classes.lableStyle}>
                     {t(searchFilterForm.titleKey)}
@@ -255,6 +205,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                       event.persist();
                       onChange(event, searchFilterForm, "minValue");
                     }}
+                    value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                   />
                 </Grid>
               ) : searchFilterForm.conceptDataType === "Date" ? (
@@ -266,17 +217,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     <KeyboardDatePicker
                       id="date-picker-dialog"
                       format="dd/MM/yyyy"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].minValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "30%" }}
                       KeyboardButtonProps={{
@@ -295,17 +236,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     <KeyboardDateTimePicker
                       id="date-picker-dialog"
                       format="dd/MM/yyyy HH:mm"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].minValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "30%" }}
                       KeyboardButtonProps={{
@@ -323,17 +254,7 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
                     </Typography>
                     <KeyboardTimePicker
                       id="date-picker-dialog"
-                      value={
-                        selectedConcepts.filter(
-                          selectedConcept =>
-                            selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                        ).length > 0
-                          ? selectedConcepts.filter(
-                              selectedConcept =>
-                                selectedConcept.conceptUUID === searchFilterForm.conceptUUID
-                            )[0].minValue
-                          : null
-                      }
+                      value={(!_.isEmpty(selectedValue) && selectedValue.minValue) || null}
                       onChange={event => onChange(event, searchFilterForm, "minValue")}
                       style={{ width: "30%" }}
                       KeyboardButtonProps={{
@@ -351,12 +272,12 @@ function NonCodedConceptForm({ searchFilterForms, selectedConcepts, onChange }) 
             )
           ) : (
             ""
-          )
-        )}
+          );
+        })}
       </Grid>
     </Fragment>
   ) : (
-    ""
+    <div />
   );
 }
 
