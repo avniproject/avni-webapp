@@ -29,6 +29,8 @@ import FindRelative from "../components/FindRelative";
 import { InternalLink, LineBreak, RelativeLink } from "../../../../common/components/utils";
 import { useTranslation } from "react-i18next";
 import { Cancel } from "@material-ui/icons";
+import { isEmpty } from "lodash";
+import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -131,8 +133,13 @@ const AddRelative = ({
   subjects,
   saveRelationShip,
   RelationsData,
-  getSubjectProfile
+  getSubjectProfile,
+  subjectProfile
 }) => {
+  useEffect(() => {
+    getSubjectProfile(match.queryParams.uuid);
+  }, []);
+
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
@@ -142,7 +149,7 @@ const AddRelative = ({
   const profileDetails = relativeLists;
   const [state, setState] = React.useState({
     age: "",
-    name: "hai"
+    name: ""
   });
   const [relationData, setRelationData] = React.useState({
     uuid: General.randomUUID(),
@@ -174,7 +181,6 @@ const AddRelative = ({
     history.goBack();
   };
   const cancelRelation = () => {
-    // saveRelationShip(relationData);
     sessionStorage.removeItem("selectedRelativeslist");
     history.goBack();
   };
@@ -182,7 +188,7 @@ const AddRelative = ({
   useEffect(() => {
     getRelations();
   }, []);
-  return (
+  return subjectProfile ? (
     <Fragment>
       <Breadcrumbs path={match.path} />
       <Paper className={classes.root}>
@@ -322,7 +328,7 @@ const AddRelative = ({
                 {/* <Button variant="contained" className={classes.findButton} color="primary">
               Find Relative
             </Button> */}
-                <FindRelative subjectTypes={subjectTypes} />
+                <FindRelative />
                 {/* {subjects.content ? (
                 <FindRelative subjectTypes={subjectTypes} />
               ) : ( */}
@@ -346,8 +352,8 @@ const AddRelative = ({
               variant="contained"
               className={classes.addBtn}
               color="primary"
-              // redirectTo = {`/#/app/subject?uuid=${match.queryParams.uuid}`}
               onClick={addRelatives}
+              disabled={isEmpty(relationData.relationshipTypeUUID)}
             >
               ADD
             </Button>
@@ -358,6 +364,8 @@ const AddRelative = ({
         </Box>
       </Paper>
     </Fragment>
+  ) : (
+    <CustomizedBackdrop load={isEmpty(subjectProfile)} />
   );
 };
 
@@ -365,7 +373,8 @@ const mapStateToProps = state => ({
   subjectTypes: state.dataEntry.metadata.operationalModules.subjectTypes,
   Relations: state.dataEntry.relations,
   RelationsData: state.dataEntry.relations.relationData,
-  subjects: state.dataEntry.search.subjects
+  subjects: state.dataEntry.search.subjects,
+  subjectProfile: state.dataEntry.subjectProfile.subjectProfile
 });
 
 const mapDispatchToProps = {

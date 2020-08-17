@@ -85,24 +85,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FindRelative = props => {
+const FindRelative = ({ subjectType, ...props }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  const [filterErrors, setfilterErrors] = React.useState({
-    // SCHEDULED_DATE: "",
-    RELATIVE_NAME: ""
-  });
-
   const [value, setValue] = React.useState("");
 
   const handleChange = event => {
     setValue(event.target.value);
-    filterErrors["RELATIVE_NAME"] = "";
-    if (event.target.value === "") {
-      filterErrors["RELATIVE_NAME"] = "Name is mandatory";
-    }
-    setfilterErrors({ ...filterErrors });
   };
 
   const close = () => {
@@ -112,13 +102,7 @@ const FindRelative = props => {
   };
 
   const applyClick = e => {
-    if (value === "") {
-      filterErrors["RELATIVE_NAME"] = "Name is mandatory";
-      setfilterErrors({ ...filterErrors });
-      return false;
-    } else {
-      props.search({ query: value });
-    }
+    props.search({ name: value, subjectTypeUUID: subjectType.uuid });
   };
   const modifySearch = () => {
     props.setSubjects();
@@ -130,7 +114,6 @@ const FindRelative = props => {
     setValue("");
     let localSavedRelativeData = [];
     let localsSelctedRelative = JSON.parse(sessionStorage.getItem("selectedRelative"));
-    console.log("localsSelctedRelative-------->", localsSelctedRelative);
     localSavedRelativeData.push(localsSelctedRelative);
     // store.dispatch({ type: types.SET_LISTOFRELATIVES, value: localsSelctedRelative });
     if (localsSelctedRelative !== null) {
@@ -141,7 +124,7 @@ const FindRelative = props => {
   };
 
   const searchContent = (
-    <DialogContent style={{ width: 600, height: "auto" }}>
+    <DialogContent style={{ width: "80%", height: "auto" }}>
       <Grid container direction="row" justify="flex-end" alignItems="flex-start" />
       <form className={classes.form}>
         {props.subjects && props.subjects.content ? (
@@ -155,15 +138,7 @@ const FindRelative = props => {
                 <Typography variant="subtitle2" gutterBottom>
                   {t("name")}
                 </Typography>
-                <TextField
-                  id="standard-multiline-flexible"
-                  value={value}
-                  onChange={handleChange}
-                  error={!isEmpty(filterErrors["RELATIVE_NAME"])}
-                  helperText={
-                    !isEmpty(filterErrors["RELATIVE_NAME"]) && t(filterErrors["RELATIVE_NAME"])
-                  }
-                />
+                <TextField id="standard-multiline-flexible" value={value} onChange={handleChange} />
               </FormControl>
             </Grid>
           </Grid>
@@ -190,7 +165,7 @@ const FindRelative = props => {
       buttonsSet={[
         {
           buttonType: "openButton",
-          label: t("filterResults"),
+          label: t("filterRelative"),
           classes: classes.filterButtonStyle
         },
         props.subjects && props.subjects.content
@@ -199,9 +174,7 @@ const FindRelative = props => {
               label: "OK",
               classes: classes.btnCustom,
               // redirectTo: return <FindRelativeTable subjectData={props.subjects} />,
-              click: okClick,
-              disabled:
-                !isEmpty(filterErrors["RELATIVE_NAME"]) || !isEmpty(filterErrors["SCHEDULED_DATE"])
+              click: okClick
             }
           : "",
         props.subjects && props.subjects.content
@@ -219,9 +192,7 @@ const FindRelative = props => {
               buttonType: "modifysearch",
               label: "Modify search",
               classes: classes.btnCustom,
-              click: modifySearch,
-              disabled:
-                !isEmpty(filterErrors["RELATIVE_NAME"]) || !isEmpty(filterErrors["SCHEDULED_DATE"])
+              click: modifySearch
             }
           : "",
 
@@ -243,7 +214,7 @@ const mapStateToProps = state => ({
   Relations: state.dataEntry.relations,
   subjects: state.dataEntry.search.subjects,
   searchParams: state.dataEntry.search.subjectSearchParams,
-  subjectTypes: first(state.dataEntry.metadata.operationalModules.subjectTypes)
+  subjectType: state.dataEntry.subjectProfile.subjectProfile.subjectType
 });
 
 const mapDispatchToProps = {
