@@ -349,8 +349,12 @@ const ProgramView = ({
               spacing={2}
             >
               {programData && programData.encounters && plannedVisits.length !== 0 ? (
-                programData.encounters.map((row, index) =>
-                  !row.encounterDateTime ? (
+                programData.encounters
+                  .filter(
+                    ({ encounterDateTime, cancelDateTime, voided }) =>
+                      !voided && !encounterDateTime && !cancelDateTime
+                  )
+                  .map((row, index) => (
                     <Visit
                       type={"programEncounter"}
                       uuid={row.uuid}
@@ -366,10 +370,7 @@ const ProgramView = ({
                       programUuid={programData.program.uuid}
                       subjectTypeUuid={subjectTypeUuid}
                     />
-                  ) : (
-                    ""
-                  )
-                )
+                  ))
               ) : (
                 <Typography variant="caption" gutterBottom className={classes.infomsg}>
                   {" "}
@@ -403,8 +404,13 @@ const ProgramView = ({
               }
             >
               {programData && programData.encounters && completedVisits.length !== 0 ? (
-                programData.encounters.map((row, index) =>
-                  row.encounterDateTime && row.encounterType && index <= 3 ? (
+                programData.encounters
+                  .filter(
+                    ({ encounterDateTime, cancelDateTime, voided }) =>
+                      (cancelDateTime || encounterDateTime) && !voided
+                  )
+                  .slice(0, 3)
+                  .map((row, index) => (
                     <Visit
                       uuid={row.uuid}
                       type={"programEncounter"}
@@ -421,10 +427,7 @@ const ProgramView = ({
                       programUuid={programData.program.uuid}
                       subjectTypeUuid={subjectTypeUuid}
                     />
-                  ) : (
-                    ""
-                  )
-                )
+                  ))
               ) : (
                 <Typography variant="caption" gutterBottom className={classes.infomsg}>
                   {" "}

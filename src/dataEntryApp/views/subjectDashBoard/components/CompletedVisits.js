@@ -98,12 +98,14 @@ const CompleteVisit = ({
   const apiUrl = isForProgramEncounters
     ? `/web/programEnrolment/${entityUuid}/completed`
     : `/web/subject/${entityUuid}/completed`;
-  const viewEncounterUrl = isForProgramEncounters
-    ? `/app/subject/viewProgramEncounter`
-    : `/app/subject/viewEncounter`;
-  const editEncounterUrl = isForProgramEncounters
-    ? `/app/subject/editProgramEncounter`
-    : `/app/subject/editEncounter`;
+  const viewEncounterUrl = (action = "") =>
+    isForProgramEncounters
+      ? `/app/subject/view${action}ProgramEncounter`
+      : `/app/subject/view${action}Encounter`;
+  const editEncounterUrl = (action = "") =>
+    isForProgramEncounters
+      ? `/app/subject/edit${action}ProgramEncounter`
+      : `/app/subject/edit${action}Encounter`;
 
   useEffect(() => {
     isForProgramEncounters

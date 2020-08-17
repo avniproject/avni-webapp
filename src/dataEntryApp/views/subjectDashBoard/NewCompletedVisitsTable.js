@@ -34,6 +34,7 @@ const formatDate = aDate => (aDate ? moment(aDate).format("DD-MM-YYYY") : "-");
 
 const transformApiResponse = response => {
   response.observations = mapObservation(response.observations);
+  response.cancelObservations = mapObservation(response.cancelObservations);
 };
 
 const EditVisitLink = ({
@@ -93,13 +94,19 @@ const NewCompletedVisitsTable = ({
       defaultSort: "asc",
       render: row => {
         const valueToDisplay = row.name ? t(row.name) : t(row.encounterType.name);
-        return <Link to={`${viewEncounterUrl}?uuid=${row.uuid}`}>{valueToDisplay}</Link>;
+        const action = row.cancelDateTime ? "cancel" : "";
+        return <Link to={`${viewEncounterUrl(action)}?uuid=${row.uuid}`}>{valueToDisplay}</Link>;
       }
     },
     {
       title: t("visitcompleteddate"),
       field: "encounterDateTime",
       render: row => formatDate(row.encounterDateTime)
+    },
+    {
+      title: t("visitCanceldate"),
+      field: "cancelDateTime",
+      render: row => formatDate(row.cancelDateTime)
     },
     {
       title: t("visitscheduledate"),
@@ -113,7 +120,7 @@ const NewCompletedVisitsTable = ({
       sorting: false,
       render: row => (
         <EditVisit
-          editEncounterUrl={editEncounterUrl}
+          editEncounterUrl={editEncounterUrl(row.cancelDateTime ? "cancel" : "")}
           encounter={row}
           isForProgramEncounters={isForProgramEncounters}
         />
@@ -187,7 +194,11 @@ const NewCompletedVisitsTable = ({
                 <Table size="small" aria-label="purchases">
                   <TableBody>
                     <List>
-                      <Observations observations={row.observations ? row.observations : []} />
+                      <Observations
+                        observations={
+                          row.encounterDateTime ? row.observations : row.cancelObservations || []
+                        }
+                      />
                     </List>
                   </TableBody>
                 </Table>
