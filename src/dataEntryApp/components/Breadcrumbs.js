@@ -23,15 +23,25 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Breadcrumbs = ({ path, match, ...props }) => {
+const Breadcrumbs = ({
+  path,
+  match,
+  programEncounter,
+  subjectProfile,
+  encounter,
+  viewVisit,
+  ...props
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
   const parts = path.split(/\/+/g).filter(Boolean);
   const clickableParts = parts.slice(0, parts.length - 1);
   const currentpage = parts[parts.length - 1];
-  const subjectName = props.subjectProfile && props.subjectProfile.nameString;
-  const subjectUuid = props.subjectProfile && props.subjectProfile.uuid;
-  const visitName = props.encounter && props.encounter.encounterType.name;
+  const subjectName = subjectProfile && subjectProfile.nameString;
+  const subjectUuid = subjectProfile && subjectProfile.uuid;
+  const viewVisitName = viewVisit && viewVisit.encounterType.name;
+  const programEncounterName = programEncounter && programEncounter.encounterType.name;
+  const encounterName = encounter && encounter.encounterType.name;
   const urlPartLabels = {
     APP: "app",
     SUBJECT: "subject",
@@ -69,9 +79,9 @@ const Breadcrumbs = ({ path, match, ...props }) => {
         }
       }
       case urlPartLabels.VIEW_VISIT: {
-        if (visitName) {
+        if (viewVisitName) {
           return {
-            breadcrumb: `${t("ViewVisit")} ${t(visitName)}`,
+            breadcrumb: `${t("ViewVisit")} : ${t(viewVisitName)}`,
             url: "#/app"
           };
         } else {
@@ -82,9 +92,9 @@ const Breadcrumbs = ({ path, match, ...props }) => {
         return { breadcrumb: t("completedVisits"), url: "#/app" };
       }
       case urlPartLabels.VIEW_ENCOUNTER: {
-        if (visitName) {
+        if (viewVisitName) {
           return {
-            breadcrumb: `${t("ViewVisit")} ${t(visitName)}`,
+            breadcrumb: `${t("ViewVisit")} : ${t(viewVisitName)}`,
             url: "#/app"
           };
         } else {
@@ -95,34 +105,46 @@ const Breadcrumbs = ({ path, match, ...props }) => {
         return { breadcrumb: t("completedVisits"), url: "#/app" };
       }
       case urlPartLabels.EDIT_CANCEL_PROGRAM_ENCOUNTER: {
-        return { breadcrumb: t("Edit Cancel Program Encounter"), url: "#/app" };
+        return {
+          breadcrumb: `${t("Edit Cancel Program Encounter")} : ${t(programEncounterName)}`,
+          url: "#/app"
+        };
       }
       case urlPartLabels.CANCEL_PROGRAM_ENCOUNTER: {
-        return { breadcrumb: t("Cancel Program Encounter"), url: "#/app" };
+        return {
+          breadcrumb: `${t("Cancel Program Encounter")} : ${t(programEncounterName)}`,
+          url: "#/app"
+        };
       }
       case urlPartLabels.PROGRAM_ENCOUNTER: {
-        return { breadcrumb: t("Program Encounter"), url: "#/app" };
+        return {
+          breadcrumb: `${t("Program Encounter")} : ${t(programEncounterName)}`,
+          url: "#/app"
+        };
       }
       case urlPartLabels.EDIT_PROGRAM_ENCOUNTER: {
-        return { breadcrumb: t("Edit Program Encounter"), url: "#/app" };
+        return {
+          breadcrumb: `${t("Edit Program Encounter")} : ${t(programEncounterName)}`,
+          url: "#/app"
+        };
       }
       case urlPartLabels.NEW_PROGRAM_VISIT: {
         return { breadcrumb: t("newProgramVisit"), url: "#/app" };
       }
       case urlPartLabels.NEW_GENERAL_VISIT: {
-        return { breadcrumb: t("newGeneralVisit"), url: "#/app" };
+        return { breadcrumb: `${t("newGeneralVisit")} : ${t(encounterName)}`, url: "#/app" };
       }
       case urlPartLabels.ENCOUNTER: {
-        return { breadcrumb: t("Encounter"), url: "#/app" };
+        return { breadcrumb: `${t("Encounter")} : ${t(encounterName)}`, url: "#/app" };
       }
       case urlPartLabels.EDIT_ENCOUNTER: {
-        return { breadcrumb: t("Edit Encounter"), url: "#/app" };
+        return { breadcrumb: `${t("Edit Encounter")} : ${t(encounterName)}`, url: "#/app" };
       }
       case urlPartLabels.CANCEL_ENCOUNTER: {
-        return { breadcrumb: t("Cancel Encounter"), url: "#/app" };
+        return { breadcrumb: `${t("Cancel Encounter")} : ${t(encounterName)}`, url: "#/app" };
       }
       case urlPartLabels.EDIT_CANCEL_ENCOUNTER: {
-        return { breadcrumb: t("Edit Cancel Encounter"), url: "#/app" };
+        return { breadcrumb: `${t("Edit Cancel Encounter")} : ${t(encounterName)}`, url: "#/app" };
       }
       default:
         return { breadcrumb: part, url: "#/app" };
@@ -145,7 +167,9 @@ const Breadcrumbs = ({ path, match, ...props }) => {
 
 const mapStateToProps = state => ({
   subjectProfile: state.dataEntry.subjectProfile.subjectProfile,
-  encounter: state.dataEntry.viewVisitReducer.encounter
+  viewVisit: state.dataEntry.viewVisitReducer.encounter,
+  programEncounter: state.dataEntry.programEncounterReducer.programEncounter,
+  encounter: state.dataEntry.encounterReducer.encounter
 });
 
 export default withRouter(
