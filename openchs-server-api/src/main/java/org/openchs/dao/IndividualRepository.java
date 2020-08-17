@@ -87,7 +87,7 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     default Specification<Individual> getFilterSpecForName(String value) {
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            if (value != null){
+            if (value != null && !value.isEmpty()){
                 Predicate[] predicates = new Predicate[2];
                 String[] values = value.trim().split(" ");
                 if (values.length > 0) {
@@ -101,6 +101,11 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
             }
             return cb.and();
         };
+    }
+
+    default Specification<Individual> getFilterSpecForSubjectTypeId(String subjectTypeUUID) {
+        return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
+                subjectTypeUUID == null ? cb.and() : root.get("subjectType").get("uuid").in(subjectTypeUUID);
     }
 
     default Specification<Individual> getFilterSpecForObs(String value) {
