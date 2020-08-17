@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -45,12 +46,14 @@ public class EncounterService {
             encounterTypeIdList = Arrays.asList(encounterTypeUuids.split(","));
         }
         Individual individual = individualRepository.findByUuid(uuid);
+        Specification<Encounter> completedEncounterSpecification = Specification.where(encounterRepository.withNotNullEncounterDateTime())
+                .or(encounterRepository.withNotNullCancelDateTime());
         encountersContract = encounterRepository.findAll(
                 where(encounterRepository.withIndividualId(individual.getId()))
                         .and(encounterRepository.withEncounterTypeIdUuids(encounterTypeIdList))
                         .and(encounterRepository.withEncounterEarliestVisitDateTime(earliestVisitDateTime))
                         .and(encounterRepository.withEncounterDateTime(encounterDateTime))
-                        .and(encounterRepository.withNotNullEncounterDateTime())
+                        .and(completedEncounterSpecification)
                 ,pageable).map(encounter -> constructEncounters(encounter));
         return encountersContract;
     }

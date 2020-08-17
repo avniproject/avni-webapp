@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -86,12 +87,14 @@ public class ProgramEnrolmentService {
             encounterTypeIdList = Arrays.asList(encounterTypeUuids.split(","));
         }
         ProgramEnrolment programEnrolment = programEnrolmentRepository.findByUuid(uuid);
+        Specification<ProgramEncounter> completedEncounterSpecification = Specification.where(programEncounterRepository.withNotNullEncounterDateTime())
+                .or(programEncounterRepository.withNotNullCancelDateTime());
         programEncountersContract = programEncounterRepository.findAll(
                 where(programEncounterRepository.withProgramEncounterId(programEnrolment.getId()))
                         .and(programEncounterRepository.withProgramEncounterTypeIdUuids(encounterTypeIdList))
                         .and(programEncounterRepository.withProgramEncounterEarliestVisitDateTime(earliestVisitDateTime))
                         .and(programEncounterRepository.withProgramEncounterDateTime(encounterDateTime))
-                        .and(programEncounterRepository.withNotNullEncounterDateTime())
+                        .and(completedEncounterSpecification)
                 ,pageable).map(programEncounter -> programEncounterService.constructProgramEncounters(programEncounter));
         return programEncountersContract;
     }

@@ -92,6 +92,10 @@ public interface EncounterRepository extends TransactionalDataRepository<Encount
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("encounterDateTime"));
     }
 
+    default Specification<Encounter> withNotNullCancelDateTime() {
+        return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> cb.isNotNull(root.get("cancelDateTime"));
+    }
+
     default Specification<Encounter> withEncounterTypeIdUuids(List<String> encounterTypeUuids) {
         return (Root<Encounter> root, CriteriaQuery<?> query, CriteriaBuilder cb) ->
                 encounterTypeUuids.isEmpty() ? null : root.get("encounterType").get("uuid").in(encounterTypeUuids);
