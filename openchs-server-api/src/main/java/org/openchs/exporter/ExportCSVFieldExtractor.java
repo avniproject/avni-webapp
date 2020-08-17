@@ -230,7 +230,7 @@ public class ExportCSVFieldExtractor implements FieldExtractor<ExportItemRow>, F
     private List<Object> getObs(ObservationCollection observations, LinkedHashMap<String, FormElement> obsMap) {
         List<Object> values = new ArrayList<>(obsMap.size());
         obsMap.forEach((conceptUUID, formElement) -> {
-            Object val = observations.getOrDefault(conceptUUID, null);
+            Object val = observations == null ? null : observations.getOrDefault(conceptUUID, null);
             if (formElement.getConcept().getDataType().equals(ConceptDataType.Coded.toString())) {
                 values.addAll(processCodedObs(formElement.getType(), val, formElement));
             } else {
