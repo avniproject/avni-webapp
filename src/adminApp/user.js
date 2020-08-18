@@ -169,26 +169,6 @@ export const UserDetail = ({ user, ...props }) => (
         }
       />
       <FunctionField
-        label="Hide Exit"
-        render={user => (!isNil(user.settings) ? (user.settings.hideExit ? "True" : "False") : "")}
-      />
-      <FunctionField
-        label="Hide Enrol"
-        render={user => (!isNil(user.settings) ? (user.settings.hideEnrol ? "True" : "False") : "")}
-      />
-      <FunctionField
-        label="Hide Register"
-        render={user =>
-          !isNil(user.settings) ? (user.settings.hideRegister ? "True" : "False") : ""
-        }
-      />
-      <FunctionField
-        label="Hide Unplanned"
-        render={user =>
-          !isNil(user.settings) ? (user.settings.hideUnplanned ? "True" : "False") : ""
-        }
-      />
-      <FunctionField
         label="Beneficiary Mode"
         render={user =>
           !isNil(user.settings) ? (user.settings.showBeneficiaryMode ? "True" : "False") : ""
@@ -362,26 +342,6 @@ const UserForm = ({ edit, user, nameSuffix, ...props }) => {
           source="settings.trackLocation"
           label="Track location"
           toolTipKey={"ADMIN_USER_SETTINGS_TRACK_LOCATION"}
-        />
-        <AvniBooleanInput
-          source="settings.hideExit"
-          label="Hide exit"
-          toolTipKey={"ADMIN_USER_SETTINGS_HIDE_EXIT"}
-        />
-        <AvniBooleanInput
-          source="settings.hideEnrol"
-          label="Hide enrol"
-          toolTipKey={"ADMIN_USER_SETTINGS_HIDE_ENROL"}
-        />
-        <AvniBooleanInput
-          source="settings.hideRegister"
-          label="Hide register"
-          toolTipKey={"ADMIN_USER_SETTINGS_HIDE_REGISTER"}
-        />
-        <AvniBooleanInput
-          source="settings.hideUnplanned"
-          label="Hide unplanned"
-          toolTipKey={"ADMIN_USER_SETTINGS_HIDE_UNPLANNED"}
         />
         <AvniBooleanInput
           source="settings.showBeneficiaryMode"
