@@ -2,6 +2,7 @@ package org.openchs;
 
 import org.openchs.domain.User;
 import org.openchs.framework.jpa.CHSAuditorAware;
+import org.openchs.framework.security.UserContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -12,11 +13,17 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Objects;
+
 @Configuration
 @EnableJpaAuditing
 @EnableWebMvc
 public class OpenCHSSpringConfiguration extends WebMvcAutoConfiguration {
     private final Environment environment;
+
+    private static final Long DEFAULT_CATCHMENT_ID_FOR_DEV = 1L;
 
     @Autowired
     public OpenCHSSpringConfiguration(Environment environment) {
@@ -37,5 +44,12 @@ public class OpenCHSSpringConfiguration extends WebMvcAutoConfiguration {
     public Boolean isDev() {
         String[] activeProfiles = environment.getActiveProfiles();
         return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
+    }
+
+    @Bean
+    public Long getCatchmentId() {
+        User user = UserContextHolder.getUser();
+        Objects.requireNonNull(user, "User not available from UserContext. Check for Auth errors");
+        return user.getCatchmentId().orElse(isDev() ? DEFAULT_CATCHMENT_ID_FOR_DEV : null);
     }
 }

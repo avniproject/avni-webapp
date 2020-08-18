@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,15 +16,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class TransactionalResourceInterceptor extends AbstractResourceInterceptor {
+public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter {
 
     private final Map<String, Integer> nowMap = new HashMap<String, Integer>() {{
         put("live", 10);
     }};
+    private final Environment environment;
+    private final Long catchmentId;
 
     @Autowired
-    public TransactionalResourceInterceptor(Environment environment) {
-        super(environment);
+    public TransactionalResourceInterceptor(Long catchmentId, Environment environment) {
+        this.catchmentId = catchmentId;
+        this.environment = environment;
     }
 
     @Override
@@ -36,7 +40,6 @@ public class TransactionalResourceInterceptor extends AbstractResourceIntercepto
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "User not available from UserContext. Check for Auth errors");
                 return false;
             }
-            Long catchmentId = getCatchmentId(response);
             ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(catchmentId));
         }
         return true;
@@ -51,7 +54,7 @@ public class TransactionalResourceInterceptor extends AbstractResourceIntercepto
      *
      */
     private DateTime getNowMinus10Seconds() {
-        return new DateTime().minusSeconds(nowMap.getOrDefault(getEnvironment().getActiveProfiles()[0], 0));
+        return new DateTime().minusSeconds(nowMap.getOrDefault(environment.getActiveProfiles()[0], 0));
     }
 
 }
