@@ -16,70 +16,80 @@ import java.util.stream.Stream;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class SyncConfiguration extends WebMvcConfigurerAdapter {
     private final TransactionalResourceInterceptor transactionalResourceInterceptor;
+    private final MetadataResourceInterceptor metadataResourceInterceptor;
     private DummyInterceptor dummyInterceptor;
 
-    private final String[] paths = Stream.of("addressLevel",
-            "locations",
-            "locationMapping",
-            "catchment",
+    private final String[] transactionalPathList = Stream.of(
             "checklist",
             "txNewChecklistEntity",
             "checklistItem",
             "txNewChecklistItemEntity",
+            "encounter",
+            "individual",
+            "individualRelationship",
+            "programEncounter",
+            "programEnrolment",
+            "videotelemetric",
+            "identifierAssignmentPool",
+            "api",
+            "groupSubject"
+    ).map(path-> "/" + path + "/**").toArray(String[]::new);
+
+    private final String[] metadataPathList = Stream.of("addressLevel",
+            "locations",
+            "locationMapping",
+            "catchment",
             "concept",
             "conceptAnswer",
-            "encounter",
             "encounterType",
             "form",
             "formElement",
             "formElementGroup",
             "formMapping",
             "gender",
-            "individual",
             "individualRelation",
             "individualRelationGenderMapping",
             "individualRelationshipType",
-            "individualRelationship",
             "operationalEncounterType",
             "operationalProgram",
             "program",
             "programConfig",
-            "programEncounter",
-            "programEnrolment",
             "programOutcome",
             "ruleDependency",
             "checklistDetail",
             "checklistItemDetail",
             "rule",
             "video",
-            "videotelemetric",
             "userInfo",
             "me",
             "subjectType",
             "operationalSubjectType",
             "identifierSource",
-            "identifierAssignmentPool",
             "organisationConfig",
             "translation",
             "platformTranslation",
-            "api",
             "groups",
             "myGroups",
             "groupPrivilege",
             "privilege",
-            "groupRole",
-            "groupSubject"
+            "groupRole"
     ).map(path-> "/" + path + "/**").toArray(String[]::new);
 
     @Autowired
-    public SyncConfiguration(TransactionalResourceInterceptor transactionalResourceInterceptor, DummyInterceptor dummyInterceptor) {
+    public SyncConfiguration(TransactionalResourceInterceptor transactionalResourceInterceptor, MetadataResourceInterceptor metadataResourceInterceptor, DummyInterceptor dummyInterceptor) {
         this.transactionalResourceInterceptor = transactionalResourceInterceptor;
+        this.metadataResourceInterceptor = metadataResourceInterceptor;
         this.dummyInterceptor = dummyInterceptor;
     }
 
     @Bean("mappedTransactionalResourceInterceptor")
     public MappedInterceptor mappedTransactionalResourceInterceptor() {
-        return new MappedInterceptor(paths, transactionalResourceInterceptor);
+        return new MappedInterceptor(transactionalPathList, transactionalResourceInterceptor);
+    }
+
+    @Bean("mappedMetadataResourceInterceptor")
+    public MappedInterceptor mappedMetadataResourceInterceptor() {
+        return new MappedInterceptor(metadataPathList, metadataResourceInterceptor);
     }
 
     @Override

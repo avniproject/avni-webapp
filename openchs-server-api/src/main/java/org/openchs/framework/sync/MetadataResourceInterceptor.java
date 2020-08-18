@@ -11,18 +11,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
-public class TransactionalResourceInterceptor extends AbstractResourceInterceptor {
-
-    private final Map<String, Integer> nowMap = new HashMap<String, Integer>() {{
-        put("live", 10);
-    }};
+public class MetadataResourceInterceptor extends AbstractResourceInterceptor {
 
     @Autowired
-    public TransactionalResourceInterceptor(Environment environment) {
+    public MetadataResourceInterceptor(Environment environment) {
         super(environment);
     }
 
@@ -30,7 +24,7 @@ public class TransactionalResourceInterceptor extends AbstractResourceIntercepto
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object object) throws Exception {
         if (request.getMethod().equals(RequestMethod.GET.name())) {
-            ((MutableRequestWrapper) request).addParameter("now", getNowMinus10Seconds().toString(ISODateTimeFormat.dateTime()));
+            ((MutableRequestWrapper) request).addParameter("now", new DateTime().toString(ISODateTimeFormat.dateTime()));
             User user = UserContextHolder.getUser();
             if (user == null) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "User not available from UserContext. Check for Auth errors");
@@ -40,18 +34,6 @@ public class TransactionalResourceInterceptor extends AbstractResourceIntercepto
             ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(catchmentId));
         }
         return true;
-    }
-
-    /**
-     * This is a hack to fix the problem of missing data when multiple users sync at the same time.
-     * During sync, it is possible that the tables being sync GETted are also being updated concurrently.
-     *
-     * By retrieving data that is slightly old, we ensure that any data that was updated during the sync
-     * is retrieved completely during the next sync process, and we do not miss any data.
-     *
-     */
-    private DateTime getNowMinus10Seconds() {
-        return new DateTime().minusSeconds(nowMap.getOrDefault(getEnvironment().getActiveProfiles()[0], 0));
     }
 
 }
