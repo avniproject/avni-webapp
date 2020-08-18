@@ -18,7 +18,6 @@ import ImplementationBundle from "../formDesigner/views/ImplementationBundle";
 import FormSettings from "../formDesigner/components/FormSettings";
 import customFilters from "./CustomFilters";
 import { WorklistUpdationRule } from "./WorklistUpdationRule";
-import Footer from "../common/components/Footer";
 import Relationships from "../formDesigner/components/Relationships/Relationships";
 import { ChecklistDetails } from "../formDesigner/views/ChecklistDetails";
 import RelationshipTypeList from "../formDesigner/components/RelationshipTypes/RelationshipTypeList";
@@ -83,7 +82,6 @@ class OrgManagerAppDesigner extends Component {
           />
           <Resource name="video" options={{ label: "Video Playlist" }} list={VideoList} />
         </Admin>
-        <Footer />
       </React.Fragment>
     );
   }

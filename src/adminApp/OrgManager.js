@@ -57,7 +57,6 @@ import {
 import { ROLES } from "../common/constants";
 import { getAdminOrgs } from "../rootApp/ducks";
 import UserGroups from "../userGroups/UserGroups";
-import Footer from "../common/components/Footer";
 import { OrganisationDetail } from "./OrganisationDetail";
 
 class OrgManager extends Component {
@@ -80,7 +79,6 @@ class OrgManager extends Component {
         {!isEmpty(httpClient.getOrgUUID()) || isEmpty(intersection(user.roles, [ROLES.ADMIN]))
           ? this.renderOrgAdminResources(user, organisation)
           : this.renderAdminResources(user)}
-        <Footer />
       </React.Fragment>
     );
   }

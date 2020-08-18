@@ -6,6 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 
 import CardActionArea from "@material-ui/core/CardActionArea";
+import FreshChat from "../../common/components/FreshChat";
 
 const Homepage = () => {
   const classes = {
@@ -54,6 +55,7 @@ const Homepage = () => {
         {renderCard("/#/translations", "Translations")}
         {renderCard("/#/export", "Reports")},{renderCard("/#/app", "Data Entry App")},
       </Grid>
+      {!window.location.href.includes("localhost") && <FreshChat />}
     </ScreenWithAppBar>
   );
 };
