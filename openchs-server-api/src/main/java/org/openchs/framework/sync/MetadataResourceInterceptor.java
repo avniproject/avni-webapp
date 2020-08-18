@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -16,11 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class MetadataResourceInterceptor extends HandlerInterceptorAdapter {
 
-    private final Long catchmentId;
+    private UserUtil userUtil;
 
     @Autowired
-    public MetadataResourceInterceptor(Long catchmentId) {
-        this.catchmentId = catchmentId;
+    public MetadataResourceInterceptor(UserUtil userUtil) {
+        this.userUtil = userUtil;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class MetadataResourceInterceptor extends HandlerInterceptorAdapter {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "User not available from UserContext. Check for Auth errors");
                 return false;
             }
-            ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(catchmentId));
+            ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(userUtil.getCatchmentId()));
         }
         return true;
     }

@@ -23,8 +23,6 @@ import java.util.Objects;
 public class OpenCHSSpringConfiguration extends WebMvcAutoConfiguration {
     private final Environment environment;
 
-    private static final Long DEFAULT_CATCHMENT_ID_FOR_DEV = 1L;
-
     @Autowired
     public OpenCHSSpringConfiguration(Environment environment) {
         this.environment = environment;
@@ -46,10 +44,4 @@ public class OpenCHSSpringConfiguration extends WebMvcAutoConfiguration {
         return activeProfiles.length == 1 && (activeProfiles[0].equals("dev") || activeProfiles[0].equals("test"));
     }
 
-    @Bean
-    public Long getCatchmentId() {
-        User user = UserContextHolder.getUser();
-        Objects.requireNonNull(user, "User not available from UserContext. Check for Auth errors");
-        return user.getCatchmentId().orElse(isDev() ? DEFAULT_CATCHMENT_ID_FOR_DEV : null);
-    }
 }

@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openchs.domain.User;
 import org.openchs.framework.security.UserContextHolder;
+import org.openchs.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -22,11 +23,11 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
         put("live", 10);
     }};
     private final Environment environment;
-    private final Long catchmentId;
+    private UserUtil userUtil;
 
     @Autowired
-    public TransactionalResourceInterceptor(Long catchmentId, Environment environment) {
-        this.catchmentId = catchmentId;
+    public TransactionalResourceInterceptor(UserUtil userUtil, Environment environment) {
+        this.userUtil = userUtil;
         this.environment = environment;
     }
 
@@ -40,7 +41,7 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "User not available from UserContext. Check for Auth errors");
                 return false;
             }
-            ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(catchmentId));
+            ((MutableRequestWrapper) request).addParameter("catchmentId", String.valueOf(userUtil.getCatchmentId()));
         }
         return true;
     }
@@ -48,10 +49,9 @@ public class TransactionalResourceInterceptor extends HandlerInterceptorAdapter 
     /**
      * This is a hack to fix the problem of missing data when multiple users sync at the same time.
      * During sync, it is possible that the tables being sync GETted are also being updated concurrently.
-     *
+     * <p>
      * By retrieving data that is slightly old, we ensure that any data that was updated during the sync
      * is retrieved completely during the next sync process, and we do not miss any data.
-     *
      */
     private DateTime getNowMinus10Seconds() {
         return new DateTime().minusSeconds(nowMap.getOrDefault(environment.getActiveProfiles()[0], 0));
