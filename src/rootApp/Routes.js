@@ -11,6 +11,7 @@ import Homepage from "./views/Homepage";
 import Translations from "../translations";
 import Export from "../reports/Export";
 import OrgManagerAppDesigner from "../adminApp/OrgManagerAppDesigner";
+import Tutorials from "../tutorials/Tutorials";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -80,6 +81,13 @@ const Routes = ({ user, organisation }) => (
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Export)}
+    />
+    <RestrictedRoute
+      exact
+      path="/tutorials"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, Tutorials)}
     />
     <Route
       component={() => (

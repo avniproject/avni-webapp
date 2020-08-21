@@ -53,7 +53,9 @@ const Homepage = () => {
         {renderCard("/#/admin/user", "Admin")}
         {renderCard("/#/appdesigner", "App Designer")}
         {renderCard("/#/translations", "Translations")}
-        {renderCard("/#/export", "Reports")},{renderCard("/#/app", "Data Entry App")},
+        {renderCard("/#/export", "Reports")}
+        {renderCard("/#/app", "Data Entry App")}
+        {renderCard("/#/tutorials", "Support And Training")}
       </Grid>
     </ScreenWithAppBar>
   );
