@@ -55,7 +55,6 @@ const Homepage = () => {
         {renderCard("/#/translations", "Translations")}
         {renderCard("/#/export", "Reports")},{renderCard("/#/app", "Data Entry App")},
       </Grid>
-      {!window.location.href.includes("localhost") && <FreshChat />}
     </ScreenWithAppBar>
   );
 };

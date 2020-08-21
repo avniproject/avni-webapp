@@ -10,6 +10,7 @@ import { initCognito, setCognitoUser } from "./ducks";
 import { customAmplifyErrorMsgs } from "./utils";
 
 import CustomSignIn from "./CustomSignIn";
+import FreshChat from "../common/components/FreshChat";
 
 class SecureApp extends Component {
   constructor(props) {
@@ -45,6 +46,7 @@ class SecureApp extends Component {
             <CustomSignIn />
           </Authenticator>
         )}
+        {!window.location.href.includes("localhost") && <FreshChat />}
       </div>
     );
   }
