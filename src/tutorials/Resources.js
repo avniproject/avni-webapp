@@ -3,6 +3,15 @@ import TutorialCard from "./TutorialCard";
 import React from "react";
 
 const Resources = () => {
+  const sessionFooter = (
+    <span style={{ fontWeight: "bold" }}>
+      <p />
+      ~15 min session
+      <br />
+      Via Screenshare
+    </span>
+  );
+
   return (
     <Grid container alignItems={"center"} spacing={3}>
       <Grid item xs={6}>
@@ -26,8 +35,9 @@ const Resources = () => {
       <Grid item xs={6}>
         <TutorialCard
           title={"Coaching/support session"}
-          content={"Book a time with us"}
-          href={"https://calendly.com/avniproject/discuss-demo"}
+          content={"Looking for best practices or troubleshooting assistance?"}
+          href={"https://calendly.com/openchssupport-customersuccess/support-session"}
+          footer={sessionFooter}
         />
       </Grid>
       <Grid item xs={6}>

@@ -84,7 +84,7 @@ const Routes = ({ user, organisation }) => (
     />
     <RestrictedRoute
       exact
-      path="/tutorials"
+      path="/help"
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Tutorials)}

@@ -12,7 +12,7 @@ const useStyles = makeStyles({
   }
 });
 
-const TutorialCard = ({ href, title, content }) => {
+const TutorialCard = ({ href, title, content, footer }) => {
   const classes = useStyles();
 
   return (
@@ -28,6 +28,7 @@ const TutorialCard = ({ href, title, content }) => {
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
             {content}
+            {footer}
           </Typography>
         </CardContent>
       </CardActionArea>

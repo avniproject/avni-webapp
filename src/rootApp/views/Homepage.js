@@ -55,7 +55,7 @@ const Homepage = ({ user }) => {
         {renderCard("/#/translations", "Translations")}
         {renderCard("/#/export", "Reports")}
         {renderCard("/#/app", "Data Entry App")}
-        {renderCard("/#/tutorials", "Support And Training")}
+        {renderCard("/#/help", "Support And Training")}
       </Grid>
       {!window.location.href.includes("localhost") && <FreshChat user={user} />}
     </ScreenWithAppBar>
