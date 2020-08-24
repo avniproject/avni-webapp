@@ -1,19 +1,16 @@
 import React from "react";
 import AppBar from "../common/components/AppBar";
 import { Box } from "@material-ui/core";
-import Header from "./Header";
 import Resources from "./Resources";
-import Body from "./Body";
+import Header from "./Header";
 
 const Tutorials = () => {
   return (
     <React.Fragment>
-      <AppBar title={`Customer training and resources `} />
-      <div style={{ backgroundColor: "#FFFFFF", height: "100vh" }}>
-        <Header />
+      <AppBar title={`Customer training and resources `} component={Header} />
+      <div style={{ backgroundColor: "#FFFFFF", height: "100vh", paddingTop: 25 }}>
         <div style={{ marginRight: "20%", marginLeft: "20%" }}>
-          <Body />
-          <Box mt={5} />
+          <Box mt={25} />
           <Resources />
         </div>
       </div>

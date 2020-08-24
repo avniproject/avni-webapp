@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { OrganisationOptions } from "./OrganisationOptions";
 import { getUserInfo } from "../../rootApp/ducks";
+import { Box } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -27,8 +28,16 @@ const useStyle = makeStyles(theme => ({
     flex: 1
   },
   toolbar: {
+    flex: 1,
     display: "flex",
+    flexDirection: "column",
     minHeight: theme.spacing(6)
+  },
+  options: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center"
   },
   profile: {
     flex: 1,
@@ -45,10 +54,11 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const AppBar = ({ getUserInfo, ...props }) => {
+const AppBar = ({ getUserInfo, component, ...props }) => {
   const { organisation, user, history, organisations } = props;
   const classes = useStyle();
   const [anchorEl, setAnchorEl] = React.useState(null);
+
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
   }
@@ -57,62 +67,69 @@ const AppBar = ({ getUserInfo, ...props }) => {
     setAnchorEl(null);
   }
 
+  const CustomComponent = component ? component : Box;
+
   return (
     <div className={classes.root}>
       <MuiAppBar position="fixed">
-        <Toolbar className={classes.toolbar}>
-          {props.enableLeftMenuButton && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={props.handleDrawer}
-              edge="start"
-              style={{ outline: "none" }}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <div className={classes.title}>
-            <Typography variant="h5" className={classes.titlet}>
-              {props.title}
-            </Typography>
-          </div>
-          <div className={classes.profile}>
-            <OrganisationOptions
-              getUserInfo={getUserInfo}
-              user={user}
-              organisation={organisation}
-              styles={classes}
-              history={history}
-              organisations={organisations}
-            />
-            <div style={{ marginTop: "2%" }}>
-              <b>{props.organisation.name} </b> ({props.user.username})
+        <Toolbar>
+          <div className={classes.toolbar}>
+            <div className={classes.options}>
+              {props.enableLeftMenuButton && (
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={props.handleDrawer}
+                  edge="start"
+                  style={{ outline: "none" }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              )}
+              <div className={classes.title}>
+                <Typography variant="h5" className={classes.titlet}>
+                  {props.title}
+                </Typography>
+              </div>
+              <div className={classes.profile}>
+                <OrganisationOptions
+                  getUserInfo={getUserInfo}
+                  user={user}
+                  organisation={organisation}
+                  styles={classes}
+                  history={history}
+                  organisations={organisations}
+                />
+                <div style={{ marginTop: "2%" }}>
+                  <b>{props.organisation.name} </b> ({props.user.username})
+                </div>
+                <IconButton
+                  onClick={() => props.history.push("/home")}
+                  aria-label="Home"
+                  color="inherit"
+                >
+                  <HomeIcon />
+                </IconButton>
+                <IconButton
+                  aria-label="Profile"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={handleClick}
+                >
+                  <UserIcon className={classes.profileButton} />
+                </IconButton>
+                <Menu
+                  id="long-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={!!anchorEl}
+                  onClose={handleClose}
+                >
+                  <LogoutButton />
+                </Menu>
+              </div>
             </div>
-            <IconButton
-              onClick={() => props.history.push("/home")}
-              aria-label="Home"
-              color="inherit"
-            >
-              <HomeIcon />
-            </IconButton>
-            <IconButton
-              aria-label="Profile"
-              aria-controls="long-menu"
-              aria-haspopup="true"
-              onClick={handleClick}
-            >
-              <UserIcon className={classes.profileButton} />
-            </IconButton>
-            <Menu
-              id="long-menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={!!anchorEl}
-              onClose={handleClose}
-            >
-              <LogoutButton />
-            </Menu>
+            <CustomComponent />
           </div>
         </Toolbar>
       </MuiAppBar>
