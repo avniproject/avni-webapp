@@ -87,6 +87,7 @@ class FreshChat extends React.Component {
     this.init({
       host: "https://wchat.in.freshchat.com",
       token: "774f28b3-1a88-426b-a3f8-42308714f820",
+      tags: ["support"],
       ...moreProps
     });
   }
