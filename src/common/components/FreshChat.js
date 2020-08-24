@@ -134,8 +134,12 @@ class FreshChat extends React.Component {
   setUserProperties(user) {
     window.fcWidget.setExternalId((user && user.username) || "");
     window.fcWidget.user.setFirstName((user && user.username) || "");
-    window.fcWidget.user.setEmail((user && user.cognito.attributes.email) || "");
-    window.fcWidget.user.setPhone((user && user.cognito.attributes.phone_number) || "");
+    window.fcWidget.user.setEmail(
+      (user && user.cognito.attributes && user.cognito.attributes.email) || ""
+    );
+    window.fcWidget.user.setPhone(
+      (user && user.cognito.attributes && user.cognito.attributes.phone_number) || ""
+    );
   }
 
   render() {
