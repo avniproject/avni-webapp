@@ -91,7 +91,7 @@ class FreshChat extends React.Component {
     });
   }
 
-  init(settings) {
+  init({ user, ...settings }) {
     if (settings.onInit) {
       let tmp = settings.onInit;
       settings.onInit = () => tmp(widget());
@@ -102,12 +102,13 @@ class FreshChat extends React.Component {
       if (settings.onInit) {
         settings.onInit();
       }
+      this.setUserProperties(user);
     } else {
-      this.lazyInit(settings);
+      this.lazyInit(user, settings);
     }
   }
 
-  lazyInit(settings) {
+  lazyInit(user, settings) {
     widget().init(settings); // Can't use window.fcSettings because sometimes it doesn't work
 
     loadScript();
@@ -125,8 +126,16 @@ class FreshChat extends React.Component {
         if (settings.onInit) {
           settings.onInit();
         }
+        this.setUserProperties(user);
       }
     }, 1000);
+  }
+
+  setUserProperties(user) {
+    window.fcWidget.setExternalId((user && user.username) || "");
+    window.fcWidget.user.setFirstName((user && user.username) || "");
+    window.fcWidget.user.setEmail((user && user.cognito.attributes.email) || "");
+    window.fcWidget.user.setPhone((user && user.cognito.attributes.phone_number) || "");
   }
 
   render() {

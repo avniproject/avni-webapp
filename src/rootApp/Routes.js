@@ -58,7 +58,7 @@ const Routes = ({ user, organisation }) => (
       path="/home"
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
-      component={Homepage}
+      component={WithProps({ user }, Homepage)}
     />
     <Route path="/appdesigner">
       <RestrictedRoute
