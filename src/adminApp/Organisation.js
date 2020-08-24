@@ -130,7 +130,7 @@ export const OrganisationCreate = props => {
       <SimpleForm redirect="list">
         <TextInput source="name" validate={isRequired} />
         <TextInput source="dbUser" validate={isRequired} />
-        <TextInput source="mediaDirectory" />
+        <TextInput source="mediaDirectory" validate={isRequired} />
         <TextInput source="usernameSuffix" validate={isRequired} />
         <ReferenceInput
           resource="account"
