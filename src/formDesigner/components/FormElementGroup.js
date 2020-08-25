@@ -71,7 +71,7 @@ const useStyles = makeStyles(theme => ({
     lineHeight: "56px"
   }
 }));
-const ExpansionPanel = withStyles({
+export const ExpansionPanel = withStyles({
   root: {
     "&$expanded": {
       margin: 0
@@ -88,7 +88,7 @@ const ExpansionPanelDetails = withStyles({
   }
 })(MuiExpansionPanelDetails);
 
-const ExpansionPanelSummary = withStyles({
+export const ExpansionPanelSummary = withStyles({
   root: {
     paddingRight: 0,
     backgroundColor: "#dbdbdb",

@@ -15,7 +15,6 @@ import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import produce from "immer";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
-import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { Redirect } from "react-router-dom";
@@ -23,6 +22,7 @@ import { Redirect } from "react-router-dom";
 import { SaveComponent } from "../../common/components/SaveComponent";
 import FormLevelRules from "../components/FormLevelRules";
 import { Audit } from "../components/Audit";
+import StaticFormElementGroup from "../components/StaticFormElementGroup";
 
 export const isNumeric = concept => concept.dataType === "Numeric";
 
@@ -170,7 +170,14 @@ class FormDetails extends Component {
           });
         });
         let dataGroupFlag = this.countGroupElements(form);
-        this.setState({ form: form, name: form.name, createFlag: dataGroupFlag, dataLoaded: true });
+        this.setState({
+          form: form,
+          name: form.name,
+          createFlag: dataGroupFlag,
+          formType: form.formType,
+          subjectType: form.subjectType,
+          dataLoaded: true
+        });
         if (dataGroupFlag) {
           this.btnGroupClick();
         }
@@ -1124,6 +1131,40 @@ class FormDetails extends Component {
       }
     };
 
+    const personStaticFormElements = [
+      { name: "First name", dataType: "Text" },
+      { name: "Last name", dataType: "Text" },
+      { name: "Date of birth", dataType: "Date" },
+      { name: "Age", dataType: "Numeric" },
+      { name: "Gender", dataType: "Coded" },
+      { name: "Address", dataType: "Coded" }
+    ];
+
+    const nonPersonStaticFormElements = [
+      { name: "Name", dataType: "Text" },
+      { name: "Address", dataType: "Coded" }
+    ];
+
+    const householdStaticFormElements = [
+      { name: "Name", dataType: "Text" },
+      { name: "Total members", dataType: "Numeric" },
+      { name: "Address", dataType: "Coded" }
+    ];
+
+    const getStaticFormElements = () => {
+      if (_.isEmpty(this.state.subjectType)) {
+        return [];
+      }
+      switch (this.state.subjectType.type) {
+        case "Person":
+          return personStaticFormElements;
+        case "Household":
+          return householdStaticFormElements;
+        default:
+          return nonPersonStaticFormElements;
+      }
+    };
+
     const form = (
       <Grid container>
         <Grid container alignContent="flex-end">
@@ -1190,7 +1231,14 @@ class FormDetails extends Component {
                 )}
               </Grid>
             </Grid>
-
+            {this.state.formType === "IndividualProfile" && !_.isEmpty(getStaticFormElements()) && (
+              <div style={{ marginBottom: 30 }}>
+                <StaticFormElementGroup
+                  name={"Non editable questions"}
+                  formElements={getStaticFormElements()}
+                />
+              </div>
+            )}
             <DragDropContext onDragEnd={this.onDragEnd}>
               <Droppable droppableId="all-columns" direction="vertical" type="row">
                 {provided => (

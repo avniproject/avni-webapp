@@ -72,7 +72,7 @@ const useStyles = makeStyles(theme => ({
     color: "red"
   }
 }));
-const ExpansionPanel = withStyles({
+export const ExpansionPanel = withStyles({
   root: {
     "&$expanded": {
       margin: 0
@@ -85,7 +85,7 @@ const ExpansionPanelActions = withStyles({
   root: {}
 })(MuiExpansionPanelActions);
 
-const ExpansionPanelDetails = withStyles({
+export const ExpansionPanelDetails = withStyles({
   root: {
     backgroundColor: "#fff",
     border: "2px solid #bdc6cf",
@@ -93,7 +93,7 @@ const ExpansionPanelDetails = withStyles({
   }
 })(MuiExpansionPanelDetails);
 
-const ExpansionPanelSummary = withStyles({
+export const ExpansionPanelSummary = withStyles({
   root: {
     paddingRight: 0,
     paddingLeft: "10px",
@@ -114,7 +114,7 @@ const ExpansionPanelSummary = withStyles({
   },
   expanded: {}
 })(MuiExpansionPanelSummary);
-const dataTypeIcons = {
+export const dataTypeIcons = {
   concept: {
     SingleSelect: <RadioButtonCheckedIcon />,
     MultiSelect: <CheckCircleOutlineIcon />,
