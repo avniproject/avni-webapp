@@ -98,9 +98,9 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
 
         Page<Form> forms = formRepository.findAll((root, query, builder) -> {
             Predicate predicate = builder.equal(root.get("organisationId"), organisationId);
-            if(name != null)
+            if (name != null)
                 predicate = builder.and(predicate, builder.like(builder.upper(root.get("name")), "%" + name.toUpperCase() + "%"));
-            if(!includeVoided)
+            if (!includeVoided)
                 predicate = builder.and(predicate, builder.equal(root.get("isVoided"), false));
             return predicate;
         }, pageRequest);
@@ -189,7 +189,7 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         form.setFormType(FormType.valueOf(request.getFormType()));
 
         formRepository.save(form);
-        formMappingRequests.forEach(formMappingRequest ->{
+        formMappingRequests.forEach(formMappingRequest -> {
             FormMappingContract formMappingContract = new FormMappingContract();
             formMappingContract.setEncounterTypeUUID(formMappingRequest.getEncounterTypeUuid());
             formMappingContract.setProgramUUID(formMappingRequest.getProgramUuid());
@@ -262,7 +262,11 @@ public class FormController implements RestControllerResourceProcessor<BasicForm
         formContract.setValidationRule(form.getValidationRule());
         formContract.setChecklistsRule(form.getChecklistsRule());
         formContract.setOrganisationId(form.getOrganisationId());
-
+        if (form.getFormType().equals(FormType.IndividualProfile)) {
+            //Assuming that we'll have single registration form per subject types
+            List<FormMapping> formMappings = formMappingRepository.findByFormIdAndIsVoidedFalse(form.getId());
+            formContract.setSubjectType(formMappings.isEmpty() ? null : formMappings.get(0).getSubjectType());
+        }
         form.getFormElementGroups().stream().sorted(Comparator.comparingDouble(FormElementGroup::getDisplayOrder)).forEach(formElementGroup -> {
             FormElementGroupContract formElementGroupContract = new FormElementGroupContract(formElementGroup.getUuid(), null, formElementGroup.getName(), formElementGroup.getDisplayOrder());
             formElementGroupContract.setDisplay(formElementGroup.getDisplay());

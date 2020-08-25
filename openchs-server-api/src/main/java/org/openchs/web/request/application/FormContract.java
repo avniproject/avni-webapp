@@ -3,6 +3,7 @@ package org.openchs.web.request.application;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.openchs.application.Form;
+import org.openchs.domain.SubjectType;
 import org.openchs.web.request.ReferenceDataContract;
 
 import java.io.InvalidObjectException;
@@ -22,7 +23,7 @@ public class FormContract extends ReferenceDataContract {
     private String formType;
     private List<FormElementGroupContract> formElementGroups;
     private Long organisationId;
-    private String subjectType;
+    private SubjectType subjectType;
     private String programName;
     private List<String> encounterTypes;
     private String decisionRule;
@@ -98,11 +99,11 @@ public class FormContract extends ReferenceDataContract {
         }
     }
 
-    public String getSubjectType() {
+    public SubjectType getSubjectType() {
         return subjectType;
     }
 
-    public void setSubjectType(String subjectType) {
+    public void setSubjectType(SubjectType subjectType) {
         this.subjectType = subjectType;
     }
 
@@ -132,7 +133,7 @@ public class FormContract extends ReferenceDataContract {
         formContract.setVisitScheduleRule(form.getVisitScheduleRule());
         formContract.setValidationRule(form.getValidationRule());
         formContract.setChecklistsRule(form.getChecklistsRule());
-      
+
         List<FormElementGroupContract> fegContracts = form.getFormElementGroups().stream()
                 .map(FormElementGroupContract::fromFormElementGroup)
                 .sorted(Comparator.comparingDouble(FormElementGroupContract::getDisplayOrder))

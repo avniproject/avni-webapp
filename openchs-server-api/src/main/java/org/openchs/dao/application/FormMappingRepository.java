@@ -23,6 +23,8 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
 
     List<FormMapping> findByFormId(Long formId);
 
+    List<FormMapping> findByFormIdAndIsVoidedFalse(Long formId);
+
     List<FormMapping> findAllByProgramIdIsNotNull();
 
     List<FormMapping> findAllByProgramIdIsNullAndEncounterTypeIdIsNotNull();
