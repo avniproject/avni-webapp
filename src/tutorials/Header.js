@@ -13,7 +13,7 @@ const Header = () => {
         </Grid>
         <Grid item xs={4}>
           <Typography variant="body2" align={"center"}>
-            While you can always email avni@samanvayfoundation.org, you can also search our help
+            While you can always email support@avni.freshdesk.com, you can also search our help
             articles, check out our YouTube channel, or schedule time with our product experts for
             you and your team.
           </Typography>
