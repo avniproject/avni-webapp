@@ -27,6 +27,7 @@ import VideocamIcon from "@material-ui/icons/Videocam";
 import FormElementTabs from "./FormElementTabs";
 import { isEqual } from "lodash";
 import { ToolTip } from "../../common/components/ToolTip";
+import DragHandleIcon from "@material-ui/icons/DragHandle";
 
 function areEqual(prevProps, nextProps) {
   return isEqual(prevProps, nextProps);
@@ -137,6 +138,14 @@ function FormElement(props) {
   const classes = useStyles();
   const panel = "panel" + props.groupIndex.toString + props.index.toString();
 
+  const [dragElement, setDragElement] = React.useState(false);
+
+  const DragHandler = props => (
+    <div style={{ height: 5 }} {...props} hidden={!dragElement}>
+      <DragHandleIcon />
+    </div>
+  );
+
   const handleDelete = event => {
     props.deleteGroup(props.groupIndex, props.index);
     event.stopPropagation();
@@ -156,66 +165,77 @@ function FormElement(props) {
           props.index
         )
       }
+      onMouseEnter={() => setDragElement(true)}
+      onMouseLeave={() => setDragElement(false)}
     >
-      <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
-        <div className={classes.iconlay}>
-          <Typography component={"div"} className={classes.secondaryHeading}>
-            {[
-              "Date",
-              "Numeric",
-              "Text",
-              "Notes",
-              "Image",
-              "DateTime",
-              "Time",
-              "Duration",
-              "Video",
-              "Id"
-            ].includes(props.formElementData.concept.dataType) && (
-              <div className={classes.iconDataType}>
-                <Tooltip title={props.formElementData.concept.dataType}>
-                  {dataTypeIcons[props.formElementData.concept.dataType]}
-                </Tooltip>
-              </div>
-            )}
-            {props.formElementData.concept.dataType === "Coded" && (
-              <div className={classes.iconDataType}>
-                <Tooltip
-                  title={
-                    props.formElementData.concept.dataType + " : " + props.formElementData.type
-                  }
-                >
-                  {dataTypeIcons["concept"][props.formElementData.type]}
-                </Tooltip>
-              </div>
-            )}
-          </Typography>
-        </div>
-        <Grid container sm={12} alignItems={"center"}>
-          <Grid item sm={11} style={{ paddingTop: "10px" }}>
-            <Typography component={"span"} className={classes.heading}>
-              <span className={classes.expandIcon}>
-                {props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              </span>
-              <InputLabel
-                name={"name" + panel}
-                style={{ display: "inline-block" }}
-                required={props.formElementData.mandatory}
-                classes={{ asterisk: classes.asterisk }}
-              >
-                {props.formElementData.name}
-              </InputLabel>
-            </Typography>
+      <ExpansionPanelSummary
+        aria-controls={panel + "bh-content"}
+        id={panel + "bh-header"}
+        {...props.dragHandleProps}
+      >
+        <Grid container direction={"row"}>
+          <Grid container item alignItems={"center"} justify={"center"}>
+            <DragHandler />
           </Grid>
-          <Grid item sm={1} direction={"row"}>
-            <IconButton aria-label="delete" onClick={handleDelete}>
-              <DeleteIcon />
-            </IconButton>
-            <ToolTip
-              toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"}
-              onHover
-              displayPosition={"bottom"}
-            />
+          <Grid container item sm={12} alignItems={"center"}>
+            <Grid item>
+              <Typography component={"div"} className={classes.secondaryHeading}>
+                {[
+                  "Date",
+                  "Numeric",
+                  "Text",
+                  "Notes",
+                  "Image",
+                  "DateTime",
+                  "Time",
+                  "Duration",
+                  "Video",
+                  "Id"
+                ].includes(props.formElementData.concept.dataType) && (
+                  <div className={classes.iconDataType}>
+                    <Tooltip title={props.formElementData.concept.dataType}>
+                      {dataTypeIcons[props.formElementData.concept.dataType]}
+                    </Tooltip>
+                  </div>
+                )}
+                {props.formElementData.concept.dataType === "Coded" && (
+                  <div className={classes.iconDataType}>
+                    <Tooltip
+                      title={
+                        props.formElementData.concept.dataType + " : " + props.formElementData.type
+                      }
+                    >
+                      {dataTypeIcons["concept"][props.formElementData.type]}
+                    </Tooltip>
+                  </div>
+                )}
+              </Typography>
+            </Grid>
+            <Grid item sm={10} style={{ paddingTop: "10px" }}>
+              <Typography component={"span"} className={classes.heading}>
+                <span className={classes.expandIcon}>
+                  {props.formElementData.expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </span>
+                <InputLabel
+                  name={"name" + panel}
+                  style={{ display: "inline-block" }}
+                  required={props.formElementData.mandatory}
+                  classes={{ asterisk: classes.asterisk }}
+                >
+                  {props.formElementData.name}
+                </InputLabel>
+              </Typography>
+            </Grid>
+            <Grid item sm={1} direction={"row"}>
+              <IconButton aria-label="delete" onClick={handleDelete}>
+                <DeleteIcon />
+              </IconButton>
+              <ToolTip
+                toolTipKey={"APP_DESIGNER_FORM_ELEMENT_NAME"}
+                onHover
+                displayPosition={"bottom"}
+              />
+            </Grid>
           </Grid>
         </Grid>
       </ExpansionPanelSummary>

@@ -18,13 +18,12 @@ import { Draggable, Droppable } from "react-beautiful-dnd";
 
 import FormElementWithAddButton from "./FormElementWithAddButton";
 import GroupIcon from "@material-ui/icons/ViewList";
+import DragHandleIcon from "@material-ui/icons/DragHandle";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import { FormElementGroupRule } from "./FormElementGroupRule";
 import { ToolTip } from "../../common/components/ToolTip";
 import Tooltip from "@material-ui/core/Tooltip";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles(theme => ({
   parent: {
@@ -149,10 +148,12 @@ function FormElementGroup(props) {
   //Display/Hide Add Group button
   const hoverDisplayAddGroup = event => {
     setHover(true);
+    setDragGroup(true);
   };
 
   const hoverHideAddGroup = event => {
     setHover(false);
+    setDragGroup(false);
   };
 
   const renderFormElements = () => {
@@ -195,12 +196,11 @@ function FormElementGroup(props) {
             index={index}
           >
             {provided => (
-              <div
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                ref={provided.innerRef}
-              >
-                <FormElementWithAddButton {...propsElement} />
+              <div {...provided.draggableProps} ref={provided.innerRef}>
+                <FormElementWithAddButton
+                  {...propsElement}
+                  dragHandleProps={provided.dragHandleProps}
+                />
               </div>
             )}
           </Draggable>
@@ -209,6 +209,14 @@ function FormElementGroup(props) {
     });
     return formElements;
   };
+
+  const [dragGroup, setDragGroup] = React.useState(false);
+
+  const DragHandler = props => (
+    <div style={{ height: 5 }} {...props} hidden={!dragGroup}>
+      <DragHandleIcon />
+    </div>
+  );
 
   return (
     <Draggable
@@ -226,7 +234,6 @@ function FormElementGroup(props) {
         >
           <Grid item>
             <ExpansionPanel
-              {...provided.dragHandleProps}
               TransitionProps={{ mountOnEnter: true, unmountOnExit: true }}
               expanded={props.groupData.expanded}
               className={props.groupData.error ? classes.rootError : classes.root}
@@ -234,52 +241,61 @@ function FormElementGroup(props) {
                 props.handleGroupElementChange(props.index, "expanded", !props.groupData.expanded)
               }
             >
-              <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
-                <Grid container sm={12} alignItems={"center"}>
-                  <Grid item sm={1}>
-                    <Tooltip title={"Grouped Questions"}>
-                      <GroupIcon style={{ marginLeft: 12, marginRight: 4 }} />
-                    </Tooltip>
-                    {props.groupData.expanded ? (
-                      <ExpandLessIcon classes={{ root: classes.icon }} />
-                    ) : (
-                      <ExpandMoreIcon classes={{ root: classes.icon }} />
-                    )}
+              <ExpansionPanelSummary
+                aria-controls={panel + "bh-content"}
+                id={panel + "bh-header"}
+                {...provided.dragHandleProps}
+              >
+                <Grid container direction={"row"}>
+                  <Grid container item alignItems={"center"} justify={"center"}>
+                    <DragHandler />
                   </Grid>
-                  <Grid item sm={6}>
-                    <Typography className={classes.heading}>
-                      {props.groupData.error && (
-                        <div style={{ color: "red" }}>Please enter group name.</div>
+                  <Grid container item sm={12} alignItems={"center"}>
+                    <Grid item sm={1}>
+                      <Tooltip title={"Grouped Questions"}>
+                        <GroupIcon style={{ marginLeft: 12, marginRight: 4 }} />
+                      </Tooltip>
+                      {props.groupData.expanded ? (
+                        <ExpandLessIcon classes={{ root: classes.icon }} />
+                      ) : (
+                        <ExpandMoreIcon classes={{ root: classes.icon }} />
                       )}
-                      <FormControl fullWidth>
-                        <Input
-                          classes={{ input: classes.formElementGroupInputText }}
-                          type="text"
-                          placeholder="Group name"
-                          name={"name" + panel}
-                          disableUnderline={true}
-                          onClick={stopPropagation}
-                          value={props.groupData.name}
-                          onChange={event => eventCall(props.index, "name", event.target.value)}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                    </Typography>
-                  </Grid>
-                  <Grid item sm={4}>
-                    <Typography component={"div"} className={classes.questionCount}>
-                      {questionCount} questions
-                    </Typography>
-                  </Grid>
-                  <Grid item sm={1}>
-                    <IconButton aria-label="delete" onClick={handleDelete}>
-                      <DeleteIcon />
-                    </IconButton>
-                    <ToolTip
-                      toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
-                      onHover
-                      displayPosition={"bottom"}
-                    />
+                    </Grid>
+                    <Grid item sm={6}>
+                      <Typography className={classes.heading}>
+                        {props.groupData.error && (
+                          <div style={{ color: "red" }}>Please enter group name.</div>
+                        )}
+                        <FormControl fullWidth>
+                          <Input
+                            classes={{ input: classes.formElementGroupInputText }}
+                            type="text"
+                            placeholder="Group name"
+                            name={"name" + panel}
+                            disableUnderline={true}
+                            onClick={stopPropagation}
+                            value={props.groupData.name}
+                            onChange={event => eventCall(props.index, "name", event.target.value)}
+                            autoComplete="off"
+                          />
+                        </FormControl>
+                      </Typography>
+                    </Grid>
+                    <Grid item sm={4}>
+                      <Typography component={"div"} className={classes.questionCount}>
+                        {questionCount} questions
+                      </Typography>
+                    </Grid>
+                    <Grid item sm={1}>
+                      <IconButton aria-label="delete" onClick={handleDelete}>
+                        <DeleteIcon />
+                      </IconButton>
+                      <ToolTip
+                        toolTipKey={"APP_DESIGNER_FORM_ELEMENT_GROUP_NAME"}
+                        onHover
+                        displayPosition={"bottom"}
+                      />
+                    </Grid>
                   </Grid>
                 </Grid>
               </ExpansionPanelSummary>
