@@ -142,7 +142,7 @@ function FormElement(props) {
 
   const DragHandler = props => (
     <div style={{ height: 5 }} {...props} hidden={!dragElement}>
-      <DragHandleIcon />
+      <DragHandleIcon color={"disabled"} />
     </div>
   );
 
