@@ -1234,7 +1234,7 @@ class FormDetails extends Component {
             {this.state.formType === "IndividualProfile" && !_.isEmpty(getStaticFormElements()) && (
               <div style={{ marginBottom: 30 }}>
                 <StaticFormElementGroup
-                  name={"Non editable questions"}
+                  name={"First page questions (non editable)"}
                   formElements={getStaticFormElements()}
                 />
               </div>

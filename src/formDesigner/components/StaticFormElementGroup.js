@@ -47,6 +47,7 @@ const StaticFormElementGroup = ({ name, formElements, ...props }) => {
         expanded={expanded}
         className={classes.root}
         onChange={() => setExpanded(!expanded)}
+        style={{ backgroundColor: "#E0E0E0" }}
       >
         <ExpansionPanelSummary aria-controls={panel + "bh-content"} id={panel + "bh-header"}>
           <Grid container sm={12} alignItems={"center"}>
@@ -71,6 +72,7 @@ const StaticFormElementGroup = ({ name, formElements, ...props }) => {
                     disableUnderline={true}
                     value={name}
                     autoComplete="off"
+                    disabled={true}
                   />
                 </FormControl>
               </Typography>
