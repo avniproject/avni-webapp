@@ -54,7 +54,7 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const AppBar = ({ getUserInfo, component, ...props }) => {
+const AppBar = ({ getUserInfo, component, position, ...props }) => {
   const { organisation, user, history, organisations } = props;
   const classes = useStyle();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -71,7 +71,7 @@ const AppBar = ({ getUserInfo, component, ...props }) => {
 
   return (
     <div className={classes.root}>
-      <MuiAppBar position="fixed">
+      <MuiAppBar position={position || "fixed"}>
         <Toolbar>
           <div className={classes.toolbar}>
             <div className={classes.options}>
