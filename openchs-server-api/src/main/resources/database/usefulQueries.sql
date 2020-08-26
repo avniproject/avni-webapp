@@ -359,3 +359,22 @@ FROM  pg_catalog.pg_locks         blocked_locks
 
         JOIN pg_catalog.pg_stat_activity blocking_activity ON blocking_activity.pid = blocking_locks.pid
 WHERE NOT blocked_locks.GRANTED;
+
+
+-- To get Form element groups, form element,isMandatory, datatype and concept answers for form with specified id
+select form_group.name "Form element group", 
+       group_element.name "Form element",
+       concept.data_type::text "Datatype",
+       (is_mandatory)::text  "Is mandatory",
+        string_agg(distinct answer_concept_name,',') "Concept answers"
+       
+
+from form_element_group form_group
+
+left join form_element group_element on group_element.form_element_group_id = form_group.id
+left join concept concept on concept.id = group_element.concept_id
+left join concept_concept_answer concept_answer on concept_answer.concept_uuid = concept.uuid
+
+where form_id = '480' and form_group.is_voided = false and group_element.is_voided= false
+group by  form_group.name,group_element.name, concept.data_type,is_mandatory, form_group.display_order,group_element.display_order
+order by  form_group.display_order, group_element.display_order;
