@@ -4,6 +4,7 @@ import org.openchs.domain.Organisation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -40,4 +41,17 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Lon
     @PreAuthorize("hasAnyAuthority('admin')")
     @RestResource(path = "findAllById", rel = "findAllById")
     Page<Organisation> findAllByIdInAndIsVoidedFalse(List<Long> ids, Pageable pageable);
+
+    @PreAuthorize("hasAnyAuthority('admin', 'organisation_admin')")
+    @Procedure(value = "create_view")
+    void createView(String viewName, String sqlQuery);
+
+    @PreAuthorize("hasAnyAuthority('admin', 'organisation_admin')")
+    @Query(value = "select viewname from pg_views where viewowner = :dbUser", nativeQuery = true)
+    List<String> getAllViewNamesOwnedBy(String dbUser);
+
+    @PreAuthorize("hasAnyAuthority('admin', 'organisation_admin')")
+    @Procedure(value = "drop_view")
+    void dropView(String viewName);
+
 }

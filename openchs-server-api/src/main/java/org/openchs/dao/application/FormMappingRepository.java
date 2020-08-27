@@ -80,4 +80,17 @@ public interface FormMappingRepository extends ReferenceDataRepository<FormMappi
             "and (:formType is null or f.formType = :formType) " +
             "and fm.isVoided = false ")
     List<FormMapping> findRequiredFormMappings(String subjectTypeUUID, String programUUID, String encounterTypeUUID, FormType formType);
+
+    @Query("select fm from FormMapping fm " +
+            "left join fetch fm.form f " +
+            "where fm.subjectType.uuid = :subjectTypeUUID and fm.program <> null " +
+            "and f.formType = 'ProgramEnrolment' and fm.isVoided = false")
+    List<FormMapping> getAllEnrolmentFormMappings(String subjectTypeUUID);
+
+    @Query("select fm from FormMapping fm " +
+            "left join fetch fm.form f " +
+            "where fm.subjectType.uuid = :subjectTypeUUID and fm.program = null and fm.encounterType <> null " +
+            "and f.formType = 'Encounter' and fm.isVoided = false")
+    List<FormMapping> getAllGeneralEncounterFormMappings(String subjectTypeUUID);
+
 }

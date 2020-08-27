@@ -31,7 +31,7 @@ SELECT individual.id                                                            
        encounter.cancel_date_time                                                             "EncCancel.cancel_date_time",
        encounter.cancel_location                                                              "EncCancel.cancel_location",
        ${individual},
-       ${encounter}
+       ${encounterCancellation}
 FROM encounter encounter
          LEFT OUTER JOIN operational_encounter_type oet on encounter.encounter_type_id = oet.encounter_type_id
          LEFT OUTER JOIN individual individual ON encounter.individual_id = individual.id
@@ -39,4 +39,5 @@ FROM encounter encounter
          LEFT OUTER JOIN gender g ON g.id = individual.gender_id
          LEFT OUTER JOIN address_level a ON individual.address_id = a.id
 WHERE oet.uuid = '${encounterTypeUuid}'
-  AND ost.uuid = '${operationalSubjectTypeUuid}';
+  AND ost.uuid = '${operationalSubjectTypeUuid}'
+  AND encounter.cancel_date_time notnull;

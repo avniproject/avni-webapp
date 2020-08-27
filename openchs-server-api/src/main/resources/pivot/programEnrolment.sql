@@ -17,26 +17,23 @@ SELECT individual.id                                                            
        ost.name                                                                               "Ind.subject_type_name",
        a.title                                                                                "Ind.location_name",
        individual.is_voided                                                                   "Ind.is_voided",
-       oet.name                                                                               "Enc.encounter_type_name",
-       oet.encounter_type_id                                                                  "Enc.encounter_type_id",
-       encounter.id                                                                           "Enc.Id",
-       encounter.earliest_visit_date_time                                                     "Enc.earliest_visit_date_time",
-       encounter.encounter_date_time                                                          "Enc.encounter_date_time",
-       encounter.uuid                                                                         "Enc.uuid",
-       encounter.name                                                                         "Enc.name",
-       encounter.max_visit_date_time                                                          "Enc.max_visit_date_time",
-       encounter.is_voided                                                                    "Enc.is_voided",
-       encounter.encounter_location                                                           "Enc.encounter_location",
-       encounter.audit_id                                                                     "Enc.audit_id",
-       encounter.cancel_date_time                                                             "EncCancel.cancel_date_time",
-       encounter.cancel_location                                                              "EncCancel.cancel_location",
+       op.name                                                                                "Enl.program_name",
+       op.program_id                                                                          "Enl.program_id",
+       programEnrolment.id                                                                    "Enl.Id",
+       programEnrolment.uuid                                                                  "Enl.uuid",
+       programEnrolment.enrolment_date_time                                                   "Enl.enrolment_date_time",
+       programEnrolment.enrolment_location                                                    "Enl.enrolment_location",
+       programEnrolment.is_voided                                                             "Enl.is_voided",
+       programEnrolment.audit_id                                                              "Enl.audit_id",
+       programEnrolment.program_exit_date_time                                                "Enl.program_exit_date_time",
+       programEnrolment.exit_location                                                         "Enl.exit_location",
        ${individual},
-       ${encounter}
-FROM encounter encounter
-         LEFT OUTER JOIN operational_encounter_type oet on encounter.encounter_type_id = oet.encounter_type_id
-         LEFT OUTER JOIN individual individual ON encounter.individual_id = individual.id
+       ${programEnrolment}
+FROM program_enrolment programEnrolment
+         LEFT OUTER JOIN operational_program op ON op.program_id = programEnrolment.program_id
+         LEFT OUTER JOIN individual individual ON programEnrolment.individual_id = individual.id
          LEFT OUTER JOIN operational_subject_type ost ON ost.subject_type_id = individual.subject_type_id
          LEFT OUTER JOIN gender g ON g.id = individual.gender_id
          LEFT OUTER JOIN address_level a ON individual.address_id = a.id
-WHERE oet.uuid = '${encounterTypeUuid}'
+WHERE op.uuid = '${operationalProgramUuid}'
   AND ost.uuid = '${operationalSubjectTypeUuid}';

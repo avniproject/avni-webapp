@@ -553,3 +553,21 @@ $BODY$
 
 
 
+CREATE OR REPLACE FUNCTION create_view(view_name text, sql_query text)
+    RETURNS BIGINT AS
+$BODY$
+BEGIN
+    EXECUTE 'DROP VIEW IF EXISTS ' || view_name;
+    EXECUTE 'CREATE OR REPLACE VIEW ' || view_name || ' AS ' || sql_query;
+    RETURN 1;
+END
+$BODY$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION drop_view(view_name text)
+    RETURNS BIGINT AS
+$BODY$
+BEGIN
+    EXECUTE 'DROP VIEW IF EXISTS ' || view_name;
+    RETURN 1;
+END
+$BODY$ LANGUAGE PLPGSQL;
