@@ -1,5 +1,6 @@
 package org.openchs.dao;
 
+import org.openchs.application.projections.ReportingViewProjection;
 import org.openchs.domain.Organisation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,8 +48,8 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Lon
     void createView(String viewName, String sqlQuery);
 
     @PreAuthorize("hasAnyAuthority('admin', 'organisation_admin')")
-    @Query(value = "select viewname from pg_views where viewowner = :dbUser", nativeQuery = true)
-    List<String> getAllViewNamesOwnedBy(String dbUser);
+    @Query(value = "select viewname, definition from pg_views where viewowner = :dbUser", nativeQuery = true)
+    List<ReportingViewProjection> getAllViewsWithDdlOwnedBy(String dbUser);
 
     @PreAuthorize("hasAnyAuthority('admin', 'organisation_admin')")
     @Procedure(value = "drop_view")

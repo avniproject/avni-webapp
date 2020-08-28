@@ -79,7 +79,8 @@ public class ViewGenService {
         String sql = REGISTRATION_TEMPLATE.replace("${selections}",
                 buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs))
                 .replace("${operationalSubjectTypeUuid}", operationalSubjectTypeRepository.findByNameIgnoreCase(subjectTypeName).getUuid())
-                .replaceAll("[,\\s]+FROM", "\nFROM");
+                .replaceAll("[,\\s]+FROM", "\nFROM")
+                .replaceAll("[,\\s]+,", ",");
         return new HashMap<String, String>() {{
             put("Registration", sql);
         }};
@@ -89,14 +90,19 @@ public class ViewGenService {
     public Map<String, String> enrolmentReport(String subjectTypeName, String operationalProgramName) {
         OperationalSubjectType operationalSubjectType = getOperationalSubjectType(subjectTypeName);
         OperationalProgram operationalProgram = operationalProgramRepository.findByNameIgnoreCase(operationalProgramName);
+        if (operationalProgram == null) {
+            return new HashMap<>();
+        }
         Long subjectTypeId = operationalSubjectType.getSubjectType().getId();
         List<FormElement> enrolmentFormElements = getProgramEnrolmentFormElements(operationalProgram, subjectTypeId);
         List<FormElement> registrationFormElements = getRegistrationFormElements(subjectTypeId);
         String enrolmentSql = replaceSubjectAndEnrolmentObsInTemplate(PROGRAM_ENROLMENT_TEMPLATE, false, operationalSubjectType.getUuid(), registrationFormElements, enrolmentFormElements, operationalProgram.getUuid())
-                .replaceAll("[,\\s]+FROM", "\nFROM");
+                .replaceAll("[,\\s]+FROM", "\nFROM")
+                .replaceAll("[,\\s]+,", ",");
         String enrolmentExitSql = replaceSubjectAndEnrolmentObsInTemplate(PROGRAM_ENROLMENT_EXIT_TEMPLATE, false, operationalSubjectType.getUuid(), registrationFormElements, enrolmentFormElements, operationalProgram.getUuid())
                 .replace("${programEnrolmentExit}", buildExitObservationSelection(getProgramEnrolmentExitFormElements(operationalProgram, subjectTypeId)))
-                .replaceAll("[,\\s]+FROM", "\nFROM");
+                .replaceAll("[,\\s]+FROM", "\nFROM")
+                .replaceAll("[,\\s]+,", ",");
         return new HashMap<String, String>() {{
             put(operationalProgramName, enrolmentSql);
             put(operationalProgramName.concat(" exit"), enrolmentExitSql);
@@ -116,13 +122,6 @@ public class ViewGenService {
         }
         throw new IllegalArgumentException(String.format("Not found OperationalProgram{name='%s'}", operationalProgramName));
     }
-
-    public void dropViewsOwnedBy(String dbUser) {
-        List<String> allViewsOwnedByUser = organisationRepository.getAllViewNamesOwnedBy(dbUser);
-        List<String> viewsToBeDropped = allViewsOwnedByUser.stream().filter(name -> !ReportingViews.legacyViews.contains(name)).collect(Collectors.toList());
-        viewsToBeDropped.forEach(organisationRepository::dropView);
-    }
-
 
     private Map<String, String> getProgramEncounterSqls(OperationalProgram operationalProgram, List<OperationalEncounterType> types, boolean spreadMultiSelectObs, Long subjectTypeId, String operationalSubjectTypeUUID) {
         List<FormElement> registrationFormElements = getRegistrationFormElements(subjectTypeId);
@@ -177,28 +176,32 @@ public class ViewGenService {
         return mainViewQuery
                 .replace("${operationalEncounterTypeUuid}", operationalEncounterType.getUuid())
                 .replace("${programEncounter}", buildObservationSelection("programEncounter", formElements, "Enc", spreadMultiSelectObs))
-                .replaceAll("[,\\s]+FROM", "\nFROM");
+                .replaceAll("[,\\s]+FROM", "\nFROM")
+                .replaceAll("[,\\s]+,", ",");
     }
 
     private String getSqlForProgramEncounterCancel(String mainViewQuery, OperationalEncounterType operationalEncounterType, boolean spreadMultiSelectObs, List<FormElement> cancelFormElements) {
         return mainViewQuery
                 .replace("${operationalEncounterTypeUuid}", operationalEncounterType.getUuid())
                 .replace("${programEncounterCancellation}", buildCancelObservationSelection("programEncounter", cancelFormElements, spreadMultiSelectObs))
-                .replaceAll("[,\\s]+FROM", "\nFROM");
+                .replaceAll("[,\\s]+FROM", "\nFROM")
+                .replaceAll("[,\\s]+,", ",");
     }
 
     private String getSqlForGeneralEncounter(String mainViewQuery, OperationalEncounterType operationalEncounterType, boolean spreadMultiSelectObs, List<FormElement> formElements) {
         return mainViewQuery
                 .replace("${encounterTypeUuid}", operationalEncounterType.getUuid())
                 .replace("${encounter}", buildObservationSelection("encounter", formElements, "Enc", spreadMultiSelectObs))
-                .replaceAll("[,\\s]+FROM", "\nFROM");
+                .replaceAll("[,\\s]+FROM", "\nFROM")
+                .replaceAll("[,\\s]+,", ",");
     }
 
     private String getSqlForGeneralEncounterCancel(String mainViewQuery, OperationalEncounterType operationalEncounterType, boolean spreadMultiSelectObs, List<FormElement> cancelFormElements) {
         return mainViewQuery
                 .replace("${encounterTypeUuid}", operationalEncounterType.getUuid())
                 .replace("${encounterCancellation}", buildCancelObservationSelection("encounter", cancelFormElements, spreadMultiSelectObs))
-                .replaceAll("[,\\s]+FROM", "\nFROM");
+                .replaceAll("[,\\s]+FROM", "\nFROM")
+                .replaceAll("[,\\s]+,", ",");
     }
 
     private List<FormElement> getRegistrationFormElements(Long subjectTypeId) {

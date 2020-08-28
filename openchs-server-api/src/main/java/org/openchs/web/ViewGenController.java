@@ -1,6 +1,7 @@
 package org.openchs.web;
 
 import org.openchs.application.FormMapping;
+import org.openchs.application.projections.ReportingViewProjection;
 import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.SubjectTypeRepository;
 import org.openchs.dao.application.FormMappingRepository;
@@ -12,11 +13,9 @@ import org.openchs.web.request.ViewConfig;
 import org.openchs.web.response.ReportingViewResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,7 +60,6 @@ public class ViewGenController {
     public List<ReportingViewResponse> createViews() {
         UserContext userContext = UserContextHolder.getUserContext();
         Organisation organisation = userContext.getOrganisation();
-        viewGenService.dropViewsOwnedBy(organisation.getDbUser());
         List<SubjectType> allSubjectTypes = subjectTypeRepository.findAllByIsVoidedFalse();
         allSubjectTypes.forEach(subjectType -> createRequiredViews(organisation, subjectType));
         return getAllReportingViews(organisation);
@@ -73,6 +71,13 @@ public class ViewGenController {
         UserContext userContext = UserContextHolder.getUserContext();
         Organisation organisation = userContext.getOrganisation();
         return getAllReportingViews(organisation);
+    }
+
+    @DeleteMapping(value = "/reportingView/{viewName}")
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    public ResponseEntity deleteView(@PathVariable String viewName) {
+        organisationRepository.dropView(viewName);
+        return ResponseEntity.ok().build();
     }
 
     private void createRequiredViews(Organisation organisation, SubjectType subjectType) {
@@ -129,10 +134,10 @@ public class ViewGenController {
     }
 
     private List<ReportingViewResponse> getAllReportingViews(Organisation organisation) {
-        List<String> allViewsOwnedByUser = organisationRepository.getAllViewNamesOwnedBy(organisation.getDbUser());
+        List<ReportingViewProjection> allViewsOwnedByUser = organisationRepository.getAllViewsWithDdlOwnedBy(organisation.getDbUser());
         return allViewsOwnedByUser
                 .stream()
-                .map(name -> new ReportingViewResponse(name, ReportingViews.legacyViews.contains(name)))
+                .map(rp -> new ReportingViewResponse(rp.getViewname(), ReportingViews.legacyViews.contains(rp.getViewname()), rp.getDefinition()))
                 .collect(Collectors.toList());
     }
 }

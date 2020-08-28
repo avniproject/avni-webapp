@@ -3,11 +3,13 @@ package org.openchs.web.response;
 public class ReportingViewResponse {
 
     private String viewName;
+    private String viewDefinition;
     private boolean isLegacyView;
 
-    public ReportingViewResponse(String viewName, boolean isLegacyView) {
+    public ReportingViewResponse(String viewName, boolean isLegacyView, String viewDefinition) {
         this.viewName = viewName;
         this.isLegacyView = isLegacyView;
+        this.viewDefinition = viewDefinition;
     }
 
     public String getViewName() {
@@ -24,5 +26,13 @@ public class ReportingViewResponse {
 
     public void setLegacyView(boolean legacyView) {
         isLegacyView = legacyView;
+    }
+
+    public String getViewDefinition() {
+        return viewDefinition;
+    }
+
+    public void setViewDefinition(String viewDefinition) {
+        this.viewDefinition = viewDefinition;
     }
 }
