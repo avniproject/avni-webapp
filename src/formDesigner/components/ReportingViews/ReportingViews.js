@@ -104,9 +104,12 @@ const ReportingViews = () => {
           data={result}
           options={{
             addRowPosition: "first",
+            pageSize: 10,
+            pageSizeOptions: [10, 15, 20],
             sorting: true,
             debounceInterval: 500,
-            search: false,
+            searchFieldAlignment: "left",
+            searchFieldStyle: { width: "100%", marginLeft: "-8%" },
             rowStyle: rowData => ({
               backgroundColor: rowData["legacyView"] ? "#DBDBDB" : "#FFF"
             })
