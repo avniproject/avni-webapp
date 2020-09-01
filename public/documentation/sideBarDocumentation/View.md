@@ -1,0 +1,1 @@
+The views on this page are automatically generated or refreshed on click of `Create/Refresh View` button. There is one view corresponding to each form with every form field available as a column. These views help in writing the reports easily without having to understand the complex underlying Avni schema. Once generated, the views are available in Metabase for use.
