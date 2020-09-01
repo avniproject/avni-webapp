@@ -13,6 +13,8 @@ import { findRegistrationForm } from "../domain/formMapping";
 import { useFormMappings } from "./effects";
 import { ActiveStatusInShow } from "../../common/components/ActiveStatus";
 import { Audit } from "../../formDesigner/components/Audit";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
 
 const SubjectTypeShow = props => {
   const [subjectType, setSubjectType] = useState({});
@@ -73,6 +75,24 @@ const SubjectTypeShow = props => {
               <FormLabel style={{ fontSize: "13px" }}>Organisation Id</FormLabel>
               <br />
               <span style={{ fontSize: "15px" }}>{subjectType.organisationId}</span>
+            </div>
+            <p />
+            <div>
+              <FormLabel style={{ fontSize: "13px" }}>Subject Summary Rule</FormLabel>
+              <br />
+              <Editor
+                readOnly
+                value={subjectType.subjectSummaryRule || ""}
+                highlight={code => highlight(code, languages.js)}
+                padding={10}
+                style={{
+                  fontFamily: '"Fira code", "Fira Mono", monospace',
+                  fontSize: 15,
+                  height: "auto",
+                  borderStyle: "solid",
+                  borderWidth: "1px"
+                }}
+              />
             </div>
             <p />
             {subjectType.group && <GroupRoleShow groupRoles={subjectType.groupRoles} />}

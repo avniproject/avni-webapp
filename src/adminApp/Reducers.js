@@ -110,8 +110,11 @@ export function subjectTypeReducer(subjectType, action) {
         type: action.payload.type,
         memberSubjectType: Types.isHousehold(action.payload.type)
           ? _.map(action.payload.groupRoles, ({ subjectMemberName }) => subjectMemberName)[0]
-          : ""
+          : "",
+        subjectSummaryRule: action.payload.subjectSummaryRule
       };
+    case "subjectSummaryRule":
+      return { ...subjectType, subjectSummaryRule: action.payload };
     default:
       return subjectType;
   }

@@ -23,6 +23,9 @@ import Types from "./Types";
 import MenuItem from "@material-ui/core/MenuItem";
 import { AvniSelect } from "../../common/components/AvniSelect";
 import { AvniFormLabel } from "../../common/components/AvniFormLabel";
+import Editor from "react-simple-code-editor";
+import { highlight, languages } from "prismjs/components/prism-core";
+import { sampleSubjectSummaryRule } from "../../formDesigner/common/SampleRule";
 
 const SubjectTypeEdit = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
@@ -80,7 +83,8 @@ const SubjectTypeEdit = props => {
             household: subjectType.household,
             groupRoles: subjectType.groupRoles,
             registrationFormUuid: _.get(subjectType, "registrationForm.formUUID"),
-            type: subjectType.type
+            type: subjectType.type,
+            subjectSummaryRule: subjectType.subjectSummaryRule
           })
           .then(response => {
             if (response.status === 200) {
@@ -196,6 +200,21 @@ const SubjectTypeEdit = props => {
               />
             </>
           )}
+          <p />
+          <AvniFormLabel label={"Subject Summary Rule"} toolTipKey={"SUBJECT_SUMMARY_RULE"} />
+          <Editor
+            value={subjectType.subjectSummaryRule || sampleSubjectSummaryRule()}
+            onValueChange={event => dispatch({ type: "subjectSummaryRule", payload: event })}
+            highlight={code => highlight(code, languages.js)}
+            padding={10}
+            style={{
+              fontFamily: '"Fira code", "Fira Mono", monospace',
+              fontSize: 15,
+              height: "auto",
+              borderStyle: "solid",
+              borderWidth: "1px"
+            }}
+          />
           <div />
           {nameValidation && (
             <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>

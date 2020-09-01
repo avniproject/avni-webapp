@@ -14,6 +14,7 @@
   "APP_DESIGNER_PROGRAM_ENROLMENT_FORM": "Filled when enrolling someone into a program",
   "APP_DESIGNER_PROGRAM_EXIT_FORM": "Filled when exiting someone from a program",
   "APP_DESIGNER_PROGRAM_SUMMARY_RULE": "Program summary is dynamically computed when user opens subject dashboard",
+  "SUBJECT_SUMMARY_RULE": "Subject summary is dynamically computed when user opens subject profile",
   "APP_DESIGNER_PROGRAM_ELIGIBILITY_RULE": "This hides/shows the program enrolment option",
   "APP_DESIGNER_PROGRAM_ACTIVE": "Switch off program if you don't want to use it anymore.",
   "APP_DESIGNER_ENCOUNTER_TYPE_NAME": "Encounter type name",

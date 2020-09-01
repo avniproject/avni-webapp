@@ -45,6 +45,18 @@ export const sampleEnrolmentSummaryRule = () => {
 };`;
 };
 
+export const sampleSubjectSummaryRule = () => {
+  return `//SAMPLE RULE EXAMPLE
+'use strict';
+({params, imports}) =>  {
+  const {summaries, individual} = params;
+  //if(true){
+  //summaries.push({name: CONCEPT_NAME, value: someValue})
+  //}
+  return summaries;
+};`;
+};
+
 export const sampleEnrolmentEligibilityCheckRule = () => {
   return `//SAMPLE RULE EXAMPLE
 'use strict';

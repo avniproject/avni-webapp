@@ -13,7 +13,8 @@ export const encounterTypeInitialState = {
 
 export const subjectTypeInitialState = {
   name: "",
-  groupRoles: []
+  groupRoles: [],
+  subjectSummaryRule: ""
 };
 
 export const colorPickerCSS = {
