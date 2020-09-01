@@ -54,6 +54,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     @RestResource(path = "findAllById", rel = "findAllById")
     List<User> findByIdIn(@Param("ids") Long[] ids);
 
+    List<User> findAllByOrganisationIdAndIsVoidedFalse(Long organisationId);
+
     @Query(value = "SELECT u FROM User u left join u.accountAdmin as aa " +
             "where u.isVoided = false and " +
             "(((:organisationIds) is not null and u.organisationId in (:organisationIds) and u.isOrgAdmin = true) or aa.account.id in (:accountIds)) " +

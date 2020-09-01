@@ -4,9 +4,6 @@ import com.amazonaws.services.cognitoidp.model.AWSCognitoIdentityProviderExcepti
 import com.amazonaws.services.cognitoidp.model.UsernameExistsException;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.openchs.dao.*;
-import org.openchs.domain.OperatingIndividualScope;
-import org.openchs.domain.User;
-import org.openchs.domain.UserFacilityMapping;
 import org.openchs.domain.*;
 import org.openchs.framework.security.UserContextHolder;
 import org.openchs.service.AccountAdminService;
@@ -307,6 +304,14 @@ public class UserController {
         UserContract userContract = UserContract.fromEntity(userRepository.getOne(id, userAccountIds, queryParam));
         setAccountIds(userContract);
         return userContract;
+    }
+
+    @GetMapping(value = "/user/search/findAll")
+    @PreAuthorize(value = "hasAnyAuthority('admin', 'organisation_admin')")
+    @ResponseBody
+    public List<User> getAll() {
+        Organisation organisation = UserContextHolder.getUserContext().getOrganisation();
+        return userRepository.findAllByOrganisationIdAndIsVoidedFalse(organisation.getId());
     }
 
     private List<Long> getOwnedAccountIds(User user) {
