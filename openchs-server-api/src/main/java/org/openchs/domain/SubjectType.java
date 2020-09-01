@@ -41,6 +41,9 @@ public class SubjectType extends OrganisationAwareEntity {
 
     private Boolean active;
 
+    @Column(name = "subject_summary_rule")
+    private String subjectSummaryRule;
+
     public Set<GroupRole> getGroupRoles() {
         return groupRoles;
     }
@@ -87,6 +90,14 @@ public class SubjectType extends OrganisationAwareEntity {
 
     public void setType(Subject type) {
         this.type = type;
+    }
+
+    public String getSubjectSummaryRule() {
+        return subjectSummaryRule;
+    }
+
+    public void setSubjectSummaryRule(String subjectSummaryRule) {
+        this.subjectSummaryRule = subjectSummaryRule;
     }
 
     @JsonIgnore

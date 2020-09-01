@@ -38,6 +38,7 @@ public class SubjectTypeService {
         subjectType.setHousehold(subjectTypeRequest.isHousehold());
         subjectType.setActive(subjectTypeRequest.getActive());
         subjectType.setType(Subject.valueOf(subjectTypeRequest.getType()));
+        subjectType.setSubjectSummaryRule(subjectTypeRequest.getSubjectSummaryRule());
         subjectTypeRepository.save(subjectType);
     }
 

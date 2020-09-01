@@ -19,6 +19,8 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     private String type;
 
+    private String subjectSummaryRule;
+
 
     public static SubjectTypeContract fromSubjectType(SubjectType subjectType) {
         SubjectTypeContract contract = new SubjectTypeContract();
@@ -29,6 +31,7 @@ public class SubjectTypeContract extends ReferenceDataContract {
         contract.setHousehold(subjectType.isHousehold());
         contract.setActive(subjectType.getActive());
         contract.setType(subjectType.getType().name());
+        contract.setSubjectSummaryRule(subjectType.getSubjectSummaryRule());
         return contract;
     }
 
@@ -62,5 +65,13 @@ public class SubjectTypeContract extends ReferenceDataContract {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getSubjectSummaryRule() {
+        return subjectSummaryRule;
+    }
+
+    public void setSubjectSummaryRule(String subjectSummaryRule) {
+        this.subjectSummaryRule = subjectSummaryRule;
     }
 }

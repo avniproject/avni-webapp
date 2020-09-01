@@ -61,6 +61,10 @@ public class OperationalSubjectType extends OrganisationAwareEntity {
         return subjectType.getType();
     }
 
+    public String getSubjectSummaryRule() {
+        return subjectType.getSubjectSummaryRule();
+    }
+
     public DateTime getLastModifiedDateTime() {
         return getSubjectType().getLastModifiedDateTime().isAfter(getAudit().getLastModifiedDateTime()) ? getSubjectType().getLastModifiedDateTime() : getAudit().getLastModifiedDateTime();
     }

@@ -27,6 +27,7 @@ public class SubjectTypeContractWeb {
     private List<GroupRoleContract> groupRoles;
     private String registrationFormUuid;
     private String type;
+    private String subjectSummaryRule;
 
     public static SubjectTypeContractWeb fromOperationalSubjectType(OperationalSubjectType operationalSubjectType) {
         SubjectTypeContractWeb contract = new SubjectTypeContractWeb();
@@ -45,6 +46,7 @@ public class SubjectTypeContractWeb {
         contract.setGroupRoles(operationalSubjectType.getSubjectType().getGroupRolesContract());
         contract.setActive(operationalSubjectType.getSubjectType().getActive());
         contract.setType(operationalSubjectType.getType().name());
+        contract.setSubjectSummaryRule(operationalSubjectType.getSubjectSummaryRule());
         return contract;
     }
 
@@ -174,5 +176,13 @@ public class SubjectTypeContractWeb {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public String getSubjectSummaryRule() {
+        return subjectSummaryRule;
+    }
+
+    public void setSubjectSummaryRule(String subjectSummaryRule) {
+        this.subjectSummaryRule = subjectSummaryRule;
     }
 }

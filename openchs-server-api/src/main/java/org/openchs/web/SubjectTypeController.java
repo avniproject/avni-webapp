@@ -105,6 +105,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.setName(request.getName());
         subjectType.setActive(request.getActive());
         subjectType.setType(Subject.valueOf(request.getType()));
+        subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
         if (Subject.Household.toString().equals(request.getType())) {
             subjectType.setGroup(true);
@@ -151,6 +152,7 @@ public class SubjectTypeController implements RestControllerResourceProcessor<Su
         subjectType.setName(request.getName());
         subjectType.setActive(request.getActive());
         subjectType.setType(Subject.valueOf(request.getType()));
+        subjectType.setSubjectSummaryRule(request.getSubjectSummaryRule());
         SubjectType savedSubjectType = subjectTypeRepository.save(subjectType);
         if (Subject.Household.toString().equals(request.getType())) {
             subjectType.setGroup(true);
