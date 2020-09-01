@@ -1,6 +1,5 @@
 import http from "common/utils/httpClient";
 import { get } from "lodash";
-import SpringResponse from "../adminApp/react-admin-config/SpringResponse";
 
 export default {
   fetchAllGroups: () => http.fetchJson("/web/groups").then(response => response.json),
@@ -15,10 +14,7 @@ export default {
       .putJson("web/group", { id, name, hasAllPrivileges })
       .then(r => [r.data, null])
       .catch(r => [null, `${get(r, "response.data") || get(r, "message") || "unknown error"}`]),
-  fetchAllUsers: () =>
-    http
-      .fetchJson("/user/search/find")
-      .then(response => SpringResponse.toReactAdminResourceListResponse(response.json, null)),
+  fetchAllUsers: () => http.fetchJson("/user/search/findAll").then(response => response.json),
   fetchGroupUsers: group_id =>
     http.fetchJson(`/groups/${group_id}/users`).then(response => response.json),
   fetchGroupPrivileges: group_id =>

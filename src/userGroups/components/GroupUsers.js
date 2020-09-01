@@ -20,9 +20,7 @@ const GroupUsers = ({ getGroupUsers, getAllUsers, groupId, allUsers, groupUsers,
   React.useEffect(() => {
     if (allUsers && groupUsers) {
       setOtherUsers(
-        allUsers.data.filter(
-          user => !groupUsers.map(groupUser => groupUser.userId).includes(user.id)
-        )
+        allUsers.filter(user => !groupUsers.map(groupUser => groupUser.userId).includes(user.id))
       );
     }
   }, [allUsers, groupUsers]);
