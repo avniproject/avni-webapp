@@ -4,9 +4,8 @@ import Typography from "@material-ui/core/Typography";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import React from "react";
 import { makeStyles } from "@material-ui/core";
-import Grid from "@material-ui/core/es/Grid/Grid";
+import Grid from "@material-ui/core/Grid";
 import Icon from "@material-ui/core/Icon";
-import { red } from "@material-ui/core/colors";
 
 const useStyles = makeStyles({
   root: {
