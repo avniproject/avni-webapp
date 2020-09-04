@@ -3,12 +3,41 @@ import ScreenWithAppBar from "../../common/components/ScreenWithAppBar";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import Grid from "@material-ui/core/Grid";
+import Icon from "@material-ui/core/Icon";
 
 import CardActionArea from "@material-ui/core/CardActionArea";
 import FreshChat from "../../common/components/FreshChat";
 
 const Homepage = ({ user }) => {
+  const renderCard = (href, name, customicon) => (
+    <CardActionArea style={classes.cardArea} href={href}>
+      <Card style={classes.card} raised={true}>
+        <CardContent style={{ marginTop: 10 }}>
+          <Grid container direction="column" justify="center" alignItems="center">
+            <Grid item>
+              <Icon color="primary" style={{ fontSize: 100 }}>
+                {customicon}
+              </Icon>
+            </Grid>
+            <Grid item>
+              <Typography
+                variant="h5"
+                component="h2"
+                align="center"
+                color="secondary"
+                style={{ marginTop: 5 }}
+              >
+                {name}
+              </Typography>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    </CardActionArea>
+  );
+
   const classes = {
     card: {
       width: 220,
@@ -28,34 +57,15 @@ const Homepage = ({ user }) => {
     }
   };
 
-  const renderCard = (href, name) => (
-    <CardActionArea style={classes.cardArea} href={href}>
-      <Card style={classes.card} raised={true}>
-        <CardContent>
-          <Typography align="center" color="primary" />
-        </CardContent>
-        <Typography
-          variant="h5"
-          component="h2"
-          align="center"
-          color="primary"
-          style={{ marginTop: 30 }}
-        >
-          {name}
-        </Typography>
-      </Card>
-    </CardActionArea>
-  );
-
   return (
     <ScreenWithAppBar appbarTitle={"Avni Web Console"}>
       <Grid container justify="center">
-        {renderCard("/#/admin/user", "Admin")}
-        {renderCard("/#/appdesigner", "App Designer")}
-        {renderCard("/#/translations", "Translations")}
-        {renderCard("/#/export", "Reports")}
-        {renderCard("/#/app", "Data Entry App")}
-        {renderCard("/#/help", "Support And Training")}
+        {renderCard("/#/admin/user", "Admin", "supervisor_account")}
+        {renderCard("/#/appdesigner", "App Designer", "architecture")}
+        {renderCard("/#/translations", "Translations", "translate")}
+        {renderCard("/#/export", "Reports", "show_chart")}
+        {renderCard("/#/app", "Data Entry App", "keyboard")}
+        {renderCard("/#/help", "Support And Training", "help")}
       </Grid>
       {!window.location.href.includes("localhost") && <FreshChat user={user} />}
     </ScreenWithAppBar>
