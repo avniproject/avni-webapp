@@ -1,6 +1,10 @@
 package org.openchs.exporter;
 
-import org.openchs.dao.*;
+import org.openchs.dao.IndividualRepository;
+import org.openchs.dao.LocationRepository;
+import org.openchs.dao.ProgramEnrolmentRepository;
+import org.openchs.domain.AddressLevel;
+import org.openchs.domain.CHSBaseEntity;
 import org.openchs.framework.security.AuthService;
 import org.openchs.service.ExportS3Service;
 import org.springframework.batch.core.Job;
@@ -22,10 +26,9 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Sort;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableBatchProcessing
@@ -45,19 +48,23 @@ public class ExportBatchConfiguration {
 
     private ExportS3Service exportS3Service;
 
+    private LocationRepository locationRepository;
+
     @Autowired
     public ExportBatchConfiguration(JobBuilderFactory jobBuilderFactory,
                                     StepBuilderFactory stepBuilderFactory,
                                     ProgramEnrolmentRepository programEnrolmentRepository,
                                     IndividualRepository individualRepository,
                                     AuthService authService,
-                                    ExportS3Service exportS3Service) {
+                                    ExportS3Service exportS3Service,
+                                    LocationRepository locationRepository) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.programEnrolmentRepository = programEnrolmentRepository;
         this.individualRepository = individualRepository;
         this.authService = authService;
         this.exportS3Service = exportS3Service;
+        this.locationRepository = locationRepository;
     }
 
     @Bean
@@ -101,13 +108,25 @@ public class ExportBatchConfiguration {
     public RepositoryItemReader<Object> reader(@Value("#{jobParameters['userId']}") Long userId,
                                                @Value("#{jobParameters['organisationUUID']}") String organisationUUID,
                                                @Value("#{jobParameters['programUUID']}") String programUUID,
-                                               @Value("#{jobParameters['subjectTypeUUID']}") String subjectTypeUUID) {
+                                               @Value("#{jobParameters['subjectTypeUUID']}") String subjectTypeUUID,
+                                               @Value("#{jobParameters['addressIds']}") String addressIds) {
         authService.authenticateByUserId(userId, organisationUUID);
+        List<Long> locationIds = addressIds.isEmpty() ? Collections.emptyList() : Arrays.stream(addressIds.split(",")).map(Long::valueOf).collect(Collectors.toList());
+        List<AddressLevel> selectedAddressLevels = locationRepository.findAllById(locationIds);
+        List<AddressLevel> allAddressLevels = locationRepository.findAllByIsVoidedFalse();
+        List<Long> selectedAddressIds = selectedAddressLevels
+                .stream()
+                .flatMap(al -> findLowestAddresses(al, allAddressLevels))
+                .map(CHSBaseEntity::getId)
+                .collect(Collectors.toList());
+
         final Map<String, Sort.Direction> sorts = new HashMap<>();
         sorts.put("id", Sort.Direction.ASC);
+        List<Long> addressParam = selectedAddressIds.isEmpty() ? null : selectedAddressIds;
         if (programUUID != null) {
-            List<String> params = new ArrayList<>();
+            List<Object> params = new ArrayList<>();
             params.add(programUUID);
+            params.add(addressParam);
             return new RepositoryItemReaderBuilder<Object>()
                     .name("reader")
                     .repository(programEnrolmentRepository)
@@ -117,8 +136,9 @@ public class ExportBatchConfiguration {
                     .sorts(sorts)
                     .build();
         } else {
-            List<String> params = new ArrayList<>();
+            List<Object> params = new ArrayList<>();
             params.add(subjectTypeUUID);
+            params.add(addressParam);
             return new RepositoryItemReaderBuilder<Object>()
                     .name("reader")
                     .repository(individualRepository)
@@ -129,6 +149,12 @@ public class ExportBatchConfiguration {
                     .build();
         }
 
+    }
+
+    private Stream<AddressLevel> findLowestAddresses(AddressLevel selectedAddress, List<AddressLevel> allAddresses) {
+        return allAddresses
+                .stream()
+                .filter(al -> al.getLineage().startsWith(selectedAddress.getLineage()));
     }
 
 }

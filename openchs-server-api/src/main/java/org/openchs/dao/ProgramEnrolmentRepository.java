@@ -67,8 +67,9 @@ public interface ProgramEnrolmentRepository extends TransactionalDataRepository<
     @Query("select enl from ProgramEnrolment enl " +
             "join enl.individual i " +
             "where enl.program.uuid = :programUUID and enl.isVoided = false and " +
-            "i.isVoided = false ")
-    Page<ProgramEnrolment> findEnrolments(String programUUID, Pageable pageable);
+            "i.isVoided = false " +
+            "and (coalesce(:locationIds, null) is null OR i.addressLevel.id in :locationIds)")
+    Page<ProgramEnrolment> findEnrolments(String programUUID, List<Long> locationIds, Pageable pageable);
 
     Page<ProgramEnrolment> findByAuditLastModifiedDateTimeIsBetweenAndProgramNameOrderByAuditLastModifiedDateTimeAscIdAsc(
             DateTime lastModifiedDateTime,

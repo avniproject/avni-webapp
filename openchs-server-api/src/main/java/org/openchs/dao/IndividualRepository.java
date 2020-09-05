@@ -30,9 +30,9 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
                                                                                                       Pageable pageable);
 
     Page<Individual> findByAuditLastModifiedDateTimeIsBetweenAndSubjectTypeNameOrderByAuditLastModifiedDateTimeAscIdAsc(DateTime lastModifiedDateTime,
-                                                                                                      DateTime now,
-                                                                                                      String subjectType,
-                                                                                                      Pageable pageable);
+                                                                                                                        DateTime now,
+                                                                                                                        String subjectType,
+                                                                                                                        Pageable pageable);
 
     Page<Individual> findByAddressLevelVirtualCatchmentsIdAndAuditLastModifiedDateTimeIsBetweenOrderByAuditLastModifiedDateTimeAscIdAsc(
             long catchmentId,
@@ -87,15 +87,15 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     default Specification<Individual> getFilterSpecForName(String value) {
         return (Root<Individual> root, CriteriaQuery<?> query, CriteriaBuilder cb) -> {
-            if (value != null && !value.isEmpty()){
+            if (value != null && !value.isEmpty()) {
                 Predicate[] predicates = new Predicate[2];
                 String[] values = value.trim().split(" ");
                 if (values.length > 0) {
-                    predicates[0] = cb.like(cb.upper(root.get("firstName")),  values[0].toUpperCase() + "%");
-                    predicates[1] = cb.like(cb.upper(root.get("lastName")),  values[0].toUpperCase() + "%");
+                    predicates[0] = cb.like(cb.upper(root.get("firstName")), values[0].toUpperCase() + "%");
+                    predicates[1] = cb.like(cb.upper(root.get("lastName")), values[0].toUpperCase() + "%");
                 }
                 if (values.length > 1) {
-                    predicates[1] = cb.like(cb.upper(root.get("lastName")),  values[1].toUpperCase() + "%");
+                    predicates[1] = cb.like(cb.upper(root.get("lastName")), values[1].toUpperCase() + "%");
                 }
                 return cb.or(predicates[0], predicates[1]);
             }
@@ -144,8 +144,9 @@ public interface IndividualRepository extends TransactionalDataRepository<Indivi
 
     @Query("select ind from Individual ind " +
             "where ind.isVoided = false " +
-            "and ind.subjectType.uuid = :subjectTypeUUID")
-    Page<Individual> findIndividuals(String subjectTypeUUID, Pageable pageable);
+            "and ind.subjectType.uuid = :subjectTypeUUID " +
+            "and (coalesce(:locationIds,NULL) is null OR ind.addressLevel.id in :locationIds)")
+    Page<Individual> findIndividuals(String subjectTypeUUID, List<Long> locationIds, Pageable pageable);
 
     Individual findByLegacyId(String legacyId);
 }

@@ -9,6 +9,7 @@ import org.openchs.domain.AddressLevel;
 import org.openchs.service.LocationService;
 import org.openchs.service.UserService;
 import org.openchs.util.ReactAdminUtil;
+import org.openchs.web.request.AddressLevelContractWeb;
 import org.openchs.web.request.LocationContract;
 import org.openchs.web.request.LocationEditContract;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RepositoryRestController
 public class LocationController implements OperatingIndividualScopeAwareController<AddressLevel>, RestControllerResourceProcessor<AddressLevel> {
@@ -121,6 +123,15 @@ public class LocationController implements OperatingIndividualScopeAwareControll
         locationRepository.save(location);
 
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping(value = "/locations/web/getAll")
+    @PreAuthorize(value = "hasAnyAuthority('admin','organisation_admin')")
+    @ResponseBody
+    public List<AddressLevelContractWeb> getAllLocations() {
+        return locationRepository.getAllByIsVoidedFalse().stream()
+                .map(AddressLevelContractWeb::fromEntity)
+                .collect(Collectors.toList());
     }
 
     @Override

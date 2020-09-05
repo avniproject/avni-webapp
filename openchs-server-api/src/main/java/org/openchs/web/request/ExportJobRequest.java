@@ -1,6 +1,9 @@
 package org.openchs.web.request;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ExportJobRequest {
 
@@ -10,6 +13,20 @@ public class ExportJobRequest {
     private Date startDate;
     private Date endDate;
     private ReportType reportType;
+    private List<Long> addressLevelIds = new ArrayList<>();
+
+    public List<Long> getAddressLevelIds() {
+        return addressLevelIds;
+    }
+
+    public void setAddressLevelIds(List<Long> addressLevelIds) {
+        this.addressLevelIds = addressLevelIds;
+    }
+
+    public String getAddressLevelString() {
+        List<String> stringIds = this.addressLevelIds.stream().map(Object::toString).collect(Collectors.toList());
+        return String.join(",", stringIds);
+    }
 
     public ReportType getReportType() {
         return reportType;

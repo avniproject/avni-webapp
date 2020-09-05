@@ -83,6 +83,7 @@ public class ExportController {
                         .addDate("startDate", exportJobRequest.getStartDate(), false)
                         .addDate("endDate", exportJobRequest.getEndDate(), false)
                         .addString("reportType", exportJobRequest.getReportType().name())
+                        .addString("addressIds", exportJobRequest.getAddressLevelString())
                         .toJobParameters();
 
         try {
