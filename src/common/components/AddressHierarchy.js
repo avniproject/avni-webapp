@@ -23,7 +23,7 @@ const AddressHierarchy = ({ setLowestAddressLevels, lowestAddressLevels }) => {
   const [levelsToRender, setLevelsToRender] = React.useState([]);
 
   React.useEffect(() => {
-    httpClient.get("/web/locations/getAll").then(res => {
+    httpClient.get("/locations/web/getAll").then(res => {
       const data = res.data;
       setData(data);
       setLevelsToRender(data);

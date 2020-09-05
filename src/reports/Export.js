@@ -21,6 +21,7 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "../dataEntryApp/components/Radio";
 import { DocumentationContainer } from "../common/components/DocumentationContainer";
+import AddressLevelsByType from "../common/components/AddressLevelsByType";
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -48,6 +49,8 @@ const Export = ({
   const [selectedEncounterType, setSelectedEncounterType] = React.useState({});
   const [startDate, setStartDate] = React.useState(currentDate);
   const [endDate, setEndDate] = React.useState(currentDate);
+  const [addressLevelsIds, setAddressLevelsIds] = React.useState([]);
+  const [addressLevelError, setAddressLevelError] = React.useState();
 
   const resetAllParams = () => {
     setSelectedSubjectType({});
@@ -66,7 +69,8 @@ const Export = ({
       encounterTypeUUID: selectedEncounterType.uuid,
       startDate: dateParamsRequired() ? startDate.setHours(0, 0, 0, 0) : null,
       endDate: dateParamsRequired() ? endDate.setHours(23, 59, 59, 999) : null,
-      reportType: ReportTypes.getCode(reportType.name)
+      reportType: ReportTypes.getCode(reportType.name),
+      addressLevelIds: addressLevelsIds
     };
     const [ok, error] = await api.startExportJob(request);
     if (!ok && error) {
@@ -140,6 +144,23 @@ const Export = ({
     setSelectedProgram({});
     setSelectedEncounterType({});
     setSelectedSubjectType(option);
+  };
+
+  const renderAddressLevel = () => {
+    return (
+      <Grid container direction={"row"}>
+        <Grid item xs={12}>
+          <AddressLevelsByType
+            addressLevelsIds={addressLevelsIds}
+            setAddressLevelsIds={setAddressLevelsIds}
+            setError={setAddressLevelError}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <div style={{ color: "red", marginBottom: "10px" }}>{addressLevelError}</div>
+        </Grid>
+      </Grid>
+    );
   };
 
   const subjectTypes = () => {
@@ -219,6 +240,7 @@ const Export = ({
               <ReportOptions />
               {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}
               {reportType.name === ReportTypes.getName("All") && renderAllTypes()}
+              {!_.isEmpty(reportType.name) && renderAddressLevel()}
             </Grid>
             <Grid container direction="row" justify="flex-start">
               <Button
