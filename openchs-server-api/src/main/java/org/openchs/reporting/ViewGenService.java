@@ -6,7 +6,6 @@ import org.openchs.application.FormType;
 import org.openchs.dao.OperationalEncounterTypeRepository;
 import org.openchs.dao.OperationalProgramRepository;
 import org.openchs.dao.OperationalSubjectTypeRepository;
-import org.openchs.dao.OrganisationRepository;
 import org.openchs.dao.application.FormMappingRepository;
 import org.openchs.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,16 +37,17 @@ public class ViewGenService {
     private final OperationalEncounterTypeRepository operationalEncounterTypeRepository;
     private final OperationalSubjectTypeRepository operationalSubjectTypeRepository;
     private final FormMappingRepository formMappingRepository;
-    private final OrganisationRepository organisationRepository;
     private final String PLACE_HOLDER_FOR_COUNSELLING_FORM_ELEMENT = "b4e5a662-97bf-4846-b9b7-9baeab4d89c4";
 
     @Autowired
-    public ViewGenService(OperationalProgramRepository operationalProgramRepository, OperationalEncounterTypeRepository operationalEncounterTypeRepository, OperationalSubjectTypeRepository operationalSubjectTypeRepository, FormMappingRepository formMappingRepository, OrganisationRepository organisationRepository) throws IOException {
+    public ViewGenService(OperationalProgramRepository operationalProgramRepository,
+                          OperationalEncounterTypeRepository operationalEncounterTypeRepository,
+                          OperationalSubjectTypeRepository operationalSubjectTypeRepository,
+                          FormMappingRepository formMappingRepository) throws IOException {
         this.operationalProgramRepository = operationalProgramRepository;
         this.operationalEncounterTypeRepository = operationalEncounterTypeRepository;
         this.operationalSubjectTypeRepository = operationalSubjectTypeRepository;
         this.formMappingRepository = formMappingRepository;
-        this.organisationRepository = organisationRepository;
 
         ENCOUNTER_TEMPLATE = new BufferedReader(new InputStreamReader(new ClassPathResource("/pivot/programEncounter.sql").getInputStream()))
                 .lines()
@@ -77,7 +77,7 @@ public class ViewGenService {
         List<FormElement> registrationFormElements = getRegistrationFormElements(getOperationalSubjectType(subjectTypeName).getSubjectType().getId());
 
         String sql = REGISTRATION_TEMPLATE.replace("${selections}",
-                buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs))
+                buildObservationSelection("individual", registrationFormElements, spreadMultiSelectObs))
                 .replace("${operationalSubjectTypeUuid}", operationalSubjectTypeRepository.findByNameIgnoreCase(subjectTypeName).getUuid())
                 .replaceAll("[,\\s]+FROM", "\nFROM")
                 .replaceAll("[,\\s]+,", ",");
@@ -105,7 +105,7 @@ public class ViewGenService {
                 .replaceAll("[,\\s]+,", ",");
         return new HashMap<String, String>() {{
             put(operationalProgramName, enrolmentSql);
-            put(operationalProgramName.concat(" exit"), enrolmentExitSql);
+            put(operationalProgramName.concat(" EXIT"), enrolmentExitSql);
         }};
     }
 
@@ -138,7 +138,7 @@ public class ViewGenService {
                 })
                 .forEach(type -> {
                     programEncounterSqlMap.put(type.getName(), getSqlForProgramEncounter(programEncounterQuery, type, spreadMultiSelectObs, getProgramEncounterFormElements(operationalProgram, type, subjectTypeId)));
-                    programEncounterSqlMap.put(type.getName().concat(" Cancel"), getSqlForProgramEncounterCancel(programEncounterCancelQuery, type, spreadMultiSelectObs, getProgramEncounterCancelFormElements(operationalProgram, type, subjectTypeId)));
+                    programEncounterSqlMap.put(type.getName().concat(" CANCEL"), getSqlForProgramEncounterCancel(programEncounterCancelQuery, type, spreadMultiSelectObs, getProgramEncounterCancelFormElements(operationalProgram, type, subjectTypeId)));
                 });
         return programEncounterSqlMap;
     }
@@ -146,14 +146,12 @@ public class ViewGenService {
     private String replaceSubjectAndEnrolmentObsInTemplate(String template, boolean spreadMultiSelectObs, String operationalSubjectTypeUUID, List<FormElement> registrationFormElements, List<FormElement> enrolmentFormElements, String uuid) {
         return template.replace("${operationalProgramUuid}", uuid)
                 .replace("${operationalSubjectTypeUuid}", operationalSubjectTypeUUID)
-                .replace("${individual}", buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs))
-                .replace("${programEnrolment}", buildObservationSelection("programEnrolment", enrolmentFormElements, "Enl", spreadMultiSelectObs));
+                .replace("${programEnrolment}", buildObservationSelection("programEnrolment", enrolmentFormElements, spreadMultiSelectObs));
     }
 
     private Map<String, String> getGeneralEncounterSqls(List<OperationalEncounterType> types, boolean spreadMultiSelectObs, Long subjectTypeId, String operationalSubjectTypeUUID) {
-        List<FormElement> registrationFormElements = getRegistrationFormElements(subjectTypeId);
-        String generalEncounterQuery = replaceSubjectObsToQuery(GENERAL_ENCOUNTER_TEMPLATE, spreadMultiSelectObs, operationalSubjectTypeUUID, registrationFormElements);
-        String generalEncounterCancelQuery = replaceSubjectObsToQuery(GENERAL_ENCOUNTER_CANCEL_TEMPLATE, spreadMultiSelectObs, operationalSubjectTypeUUID, registrationFormElements);
+        String generalEncounterQuery = replaceSubjectTypeUUID(GENERAL_ENCOUNTER_TEMPLATE, operationalSubjectTypeUUID);
+        String generalEncounterCancelQuery = replaceSubjectTypeUUID(GENERAL_ENCOUNTER_CANCEL_TEMPLATE, operationalSubjectTypeUUID);
         Map<String, String> generalEncounterSqlMap = new HashMap<>();
         types.stream()
                 .filter(type -> {
@@ -162,20 +160,19 @@ public class ViewGenService {
                 })
                 .forEach(type -> {
                     generalEncounterSqlMap.put(type.getName(), getSqlForGeneralEncounter(generalEncounterQuery, type, spreadMultiSelectObs, getGeneralEncounterFormElements(subjectTypeId, type)));
-                    generalEncounterSqlMap.put(type.getName().concat(" Cancel"), getSqlForGeneralEncounterCancel(generalEncounterCancelQuery, type, spreadMultiSelectObs, getGeneralEncounterCancelFormElements(subjectTypeId, type)));
+                    generalEncounterSqlMap.put(type.getName().concat(" CANCEL"), getSqlForGeneralEncounterCancel(generalEncounterCancelQuery, type, spreadMultiSelectObs, getGeneralEncounterCancelFormElements(subjectTypeId, type)));
                 });
         return generalEncounterSqlMap;
     }
 
-    private String replaceSubjectObsToQuery(String template, boolean spreadMultiSelectObs, String operationalSubjectTypeUUID, List<FormElement> registrationFormElements) {
-        return template.replace("${individual}", buildObservationSelection("individual", registrationFormElements, "Ind", spreadMultiSelectObs))
-                .replace("${operationalSubjectTypeUuid}", operationalSubjectTypeUUID);
+    private String replaceSubjectTypeUUID(String template, String operationalSubjectTypeUUID) {
+        return template.replace("${operationalSubjectTypeUuid}", operationalSubjectTypeUUID);
     }
 
     private String getSqlForProgramEncounter(String mainViewQuery, OperationalEncounterType operationalEncounterType, boolean spreadMultiSelectObs, List<FormElement> formElements) {
         return mainViewQuery
                 .replace("${operationalEncounterTypeUuid}", operationalEncounterType.getUuid())
-                .replace("${programEncounter}", buildObservationSelection("programEncounter", formElements, "Enc", spreadMultiSelectObs))
+                .replace("${programEncounter}", buildObservationSelection("programEncounter", formElements, spreadMultiSelectObs))
                 .replaceAll("[,\\s]+FROM", "\nFROM")
                 .replaceAll("[,\\s]+,", ",");
     }
@@ -191,7 +188,7 @@ public class ViewGenService {
     private String getSqlForGeneralEncounter(String mainViewQuery, OperationalEncounterType operationalEncounterType, boolean spreadMultiSelectObs, List<FormElement> formElements) {
         return mainViewQuery
                 .replace("${encounterTypeUuid}", operationalEncounterType.getUuid())
-                .replace("${encounter}", buildObservationSelection("encounter", formElements, "Enc", spreadMultiSelectObs))
+                .replace("${encounter}", buildObservationSelection("encounter", formElements, spreadMultiSelectObs))
                 .replaceAll("[,\\s]+FROM", "\nFROM")
                 .replaceAll("[,\\s]+,", ",");
     }
@@ -238,19 +235,19 @@ public class ViewGenService {
         return formElements.stream().filter(fe -> !PLACE_HOLDER_FOR_COUNSELLING_FORM_ELEMENT.equals(fe.getConcept().getUuid())).collect(Collectors.toList());
     }
 
-    private String buildObservationSelection(String entity, List<FormElement> elements, String columnPrefix, boolean spreadMultiSelectObs) {
-        return buildObservationSelection(entity, elements, columnPrefix, spreadMultiSelectObs, "observations");
+    private String buildObservationSelection(String entity, List<FormElement> elements, boolean spreadMultiSelectObs) {
+        return buildObservationSelection(entity, elements, spreadMultiSelectObs, "observations");
     }
 
     private String buildCancelObservationSelection(String entity, List<FormElement> elements, boolean spreadMultiSelectObs) {
-        return buildObservationSelection(entity, elements, "EncCancel", spreadMultiSelectObs, "cancel_observations");
+        return buildObservationSelection(entity, elements, spreadMultiSelectObs, "cancel_observations");
     }
 
     private String buildExitObservationSelection(List<FormElement> elements) {
-        return buildObservationSelection("programEnrolment", elements, "EnlExit", false, "program_exit_observations");
+        return buildObservationSelection("programEnrolment", elements, false, "program_exit_observations");
     }
 
-    private String buildObservationSelection(String entity, List<FormElement> elements, String columnPrefix, Boolean spreadMultiSelectObs, String obsColumnName) {
+    private String buildObservationSelection(String entity, List<FormElement> elements, Boolean spreadMultiSelectObs, String obsColumnName) {
         String obsColumn = entity + "." + obsColumnName;
         return elements.parallelStream().map(formElement -> {
             Concept concept = formElement.getConcept();
@@ -259,31 +256,34 @@ public class ViewGenService {
             switch (ConceptDataType.valueOf(concept.getDataType())) {
                 case Coded: {
                     if (formElement.isSingleSelect()) {
-                        return String.format("single_select_coded(%s->>'%s')::TEXT as \"%s.%s\"",
-                                obsColumn, conceptUUID, columnPrefix, conceptName);
+                        return String.format("single_select_coded(%s->>'%s')::TEXT as \"%s\"",
+                                obsColumn, conceptUUID, conceptName);
                     }
                     if (spreadMultiSelectObs) {
-                        return spreadMultiSelectSQL(obsColumn, concept, columnPrefix);
+                        return spreadMultiSelectSQL(obsColumn, concept);
                     }
-                    return String.format("multi_select_coded(%s->'%s')::TEXT as \"%s.%s\"",
-                            obsColumn, conceptUUID, columnPrefix, conceptName);
+                    return String.format("multi_select_coded(%s->'%s')::TEXT as \"%s\"",
+                            obsColumn, conceptUUID, conceptName);
                 }
                 case Date:
                 case DateTime: {
-                    return String.format("(%s->>'%s')::DATE as \"%s.%s\"", obsColumn, conceptUUID, columnPrefix, conceptName);
+                    return String.format("(%s->>'%s')::DATE as \"%s\"", obsColumn, conceptUUID, conceptName);
+                }
+                case Numeric: {
+                    return String.format("(%s->>'%s')::NUMERIC as \"%s\"", obsColumn, conceptUUID, conceptName);
                 }
                 default: {
-                    return String.format("(%s->>'%s')::TEXT as \"%s.%s\"", obsColumn, conceptUUID, columnPrefix, conceptName);
+                    return String.format("(%s->>'%s')::TEXT as \"%s\"", obsColumn, conceptUUID, conceptName);
                 }
             }
         }).collect(Collectors.joining(",\n"));
     }
 
-    private String spreadMultiSelectSQL(String obsColumn, Concept concept, String columnPrefix) {
+    private String spreadMultiSelectSQL(String obsColumn, Concept concept) {
         String obsSubColumn = String.format("(%s->'%s')", obsColumn, concept.getUuid());
         return concept.getConceptAnswers().stream().map(ConceptAnswer::getAnswerConcept)
-                .map(aConcept -> String.format("boolean_txt(%s ? '%s') as \"%s.%s(%s)\"",
-                        obsSubColumn, aConcept.getUuid(), columnPrefix, aConcept.getName(), concept.getName()))
+                .map(aConcept -> String.format("boolean_txt(%s ? '%s') as \"%s(%s)\"",
+                        obsSubColumn, aConcept.getUuid(), aConcept.getName(), concept.getName()))
                 .collect(Collectors.joining(",\n"));
     }
 
