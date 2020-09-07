@@ -9,6 +9,7 @@ import { Grid } from "@material-ui/core";
 const AddressLevelsByType = ({ addressLevelsIds, setAddressLevelsIds, setError }) => {
   const [data, setData] = React.useState([]);
   const [selectedAddresses, setSelectedAddresses] = React.useState([]);
+  const [openMenu, setOpenMenu] = React.useState(false);
 
   React.useEffect(() => {
     httpClient.get("/locations/web/getAll").then(res => {
@@ -31,11 +32,21 @@ const AddressLevelsByType = ({ addressLevelsIds, setAddressLevelsIds, setError }
     }
   }
 
+  const onInputChange = value => {
+    let menuIsOpen = false;
+    if (value) {
+      menuIsOpen = true;
+    }
+    setOpenMenu(menuIsOpen);
+  };
+
   return (
     !_.isEmpty(data) && (
       <Grid item xs={6} style={{ marginBottom: "10px" }}>
         <FormControl fullWidth component="fieldset">
-          <FormLabel component="legend">{"Address"}</FormLabel>
+          <FormLabel component="legend">
+            {"Address (By default all addresses will get populated)"}
+          </FormLabel>
           <Select
             isMulti
             isSearchable
@@ -43,6 +54,8 @@ const AddressLevelsByType = ({ addressLevelsIds, setAddressLevelsIds, setError }
             value={selectedAddresses}
             options={createListOptions()}
             onChange={event => setSelectedAddresses(event)}
+            onInputChange={onInputChange}
+            menuIsOpen={openMenu}
           />
         </FormControl>
       </Grid>
