@@ -44,18 +44,17 @@ const AddressLevelsByType = ({ addressLevelsIds, setAddressLevelsIds, setError }
     !_.isEmpty(data) && (
       <Grid item xs={6} style={{ marginBottom: "10px" }}>
         <FormControl fullWidth component="fieldset">
-          <FormLabel component="legend">
-            {"Address (By default all addresses will get populated)"}
-          </FormLabel>
+          <FormLabel component="legend">{"Address (Leave blank to consider all)"}</FormLabel>
           <Select
             isMulti
             isSearchable
-            placeholder={`Select Addresses`}
+            placeholder={`Start typing and select`}
             value={selectedAddresses}
             options={createListOptions()}
             onChange={event => setSelectedAddresses(event)}
             onInputChange={onInputChange}
             menuIsOpen={openMenu}
+            components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
           />
         </FormControl>
       </Grid>
