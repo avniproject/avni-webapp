@@ -12,6 +12,8 @@ import Translations from "../translations";
 import Export from "../reports/Export";
 import OrgManagerAppDesigner from "../adminApp/OrgManagerAppDesigner";
 import Tutorials from "../tutorials/Tutorials";
+import AdhocReports from "../reports/AdhocReports";
+import CannedReports from "../reports/CannedReports";
 
 const RestrictedRoute = ({ component: C, allowedRoles, currentUserRoles, ...rest }) => (
   <Route
@@ -81,6 +83,20 @@ const Routes = ({ user, organisation }) => (
       allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
       currentUserRoles={user.roles}
       component={WithProps({ user, organisation }, Export)}
+    />
+    <RestrictedRoute
+      exact
+      path="/adhocreports"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, AdhocReports)}
+    />
+    <RestrictedRoute
+      exact
+      path="/cannedreports"
+      allowedRoles={[ROLES.ORG_ADMIN, ROLES.ADMIN]}
+      currentUserRoles={user.roles}
+      component={WithProps({ user, organisation }, CannedReports)}
     />
     <RestrictedRoute
       exact

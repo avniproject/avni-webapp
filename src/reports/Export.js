@@ -15,7 +15,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import Box from "@material-ui/core/Box";
 import { DateSelector } from "./DateSelector";
 import { ExportOptions } from "./ExportOptions";
-import DescriptionIcon from "@material-ui/icons/Description";
+import { sideBarOptions } from "./ReportUtils";
 import ReportTypes from "./ReportTypes";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -213,8 +213,6 @@ const Export = ({
       </FormControl>
     );
   };
-
-  const sideBarOptions = [{ href: "#/export", name: "Longitudinal Export", Icon: DescriptionIcon }];
 
   const enableReportGeneration = () => {
     switch (reportType.name) {
