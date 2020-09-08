@@ -6,7 +6,7 @@ export const DateSelector = ({ label, value, onChange }) => {
   return (
     <Box m={2}>
       <KeyboardDatePicker
-        disableToolbar
+        autoOk
         variant="inline"
         format="dd/MM/yyyy"
         margin="normal"

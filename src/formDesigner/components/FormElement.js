@@ -141,8 +141,10 @@ function FormElement(props) {
   const [dragElement, setDragElement] = React.useState(false);
 
   const DragHandler = props => (
-    <div style={{ height: 5 }} {...props} hidden={!dragElement}>
-      <DragHandleIcon color={"disabled"} />
+    <div style={{ height: 5 }} {...props}>
+      <div hidden={!dragElement}>
+        <DragHandleIcon color={"disabled"} />
+      </div>
     </div>
   );
 

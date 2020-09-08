@@ -213,8 +213,10 @@ function FormElementGroup(props) {
   const [dragGroup, setDragGroup] = React.useState(false);
 
   const DragHandler = props => (
-    <div style={{ height: 5 }} {...props} hidden={!dragGroup}>
-      <DragHandleIcon color={"disabled"} />
+    <div style={{ height: 5 }} {...props}>
+      <div hidden={!dragGroup}>
+        <DragHandleIcon color={"disabled"} />
+      </div>
     </div>
   );
 
