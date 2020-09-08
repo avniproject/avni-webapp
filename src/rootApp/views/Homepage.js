@@ -62,7 +62,7 @@ const Homepage = ({ user }) => {
         {renderCard("/#/admin/user", "Admin", "supervisor_account")}
         {renderCard("/#/appdesigner", "App Designer", "architecture")}
         {renderCard("/#/translations", "Translations", "translate")}
-        {renderCard("/#/export", "Reports", "show_chart")}
+        {renderCard("/#/export", "Reports", "assessment")}
         {renderCard("/#/app", "Data Entry App", "keyboard")}
         {renderCard("/#/help", "Support And Training", "help")}
       </Grid>
