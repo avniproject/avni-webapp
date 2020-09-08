@@ -4,7 +4,6 @@ import { sideBarOptions } from "./ReportUtils";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import { makeStyles } from "@material-ui/core";
@@ -28,11 +27,11 @@ const useStyles = makeStyles({
   }
 });
 
-const AdhocReports = () => {
+const SelfServiceReports = () => {
   const classes = useStyles();
   return (
     <ScreenWithAppBar
-      appbarTitle={`Ad hoc Reports`}
+      appbarTitle={`Self Service Reports`}
       enableLeftMenuButton={true}
       sidebarOptions={sideBarOptions}
     >
@@ -52,8 +51,9 @@ const AdhocReports = () => {
                   Metabase
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                  Avni uses Metabase as the default ad hoc reports tool. Click here to start
-                  exploring your data.
+                  Metabase provides a graphical interface to create business intelligence and
+                  analytics graphs in minutes. Avni integrates with Metabase to support ad hoc and
+                  self serviced reports. Click here to start exploring your data.
                 </Typography>
               </Grid>
             </Grid>
@@ -64,4 +64,4 @@ const AdhocReports = () => {
   );
 };
 
-export default AdhocReports;
+export default SelfServiceReports;

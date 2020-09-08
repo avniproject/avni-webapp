@@ -5,5 +5,5 @@ import AssessmentIcon from "@material-ui/icons/Assessment";
 export const sideBarOptions = [
   { href: "#/export", name: "Longitudinal Export", Icon: PlayForWorkIcon },
   { href: "#/cannedreports", name: "Canned Reports", Icon: AssessmentIcon },
-  { href: "#/adhocreports", name: "Ad hoc Reports", Icon: ExploreIcon }
+  { href: "#/selfservicereports", name: "Self-service Reports", Icon: ExploreIcon }
 ];
