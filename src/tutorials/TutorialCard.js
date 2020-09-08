@@ -25,18 +25,20 @@ const TutorialCard = ({ href, title, content, footer, icon, iconColor }) => {
         style={{ color: "inherit", textDecoration: "inherit" }}
       >
         <CardContent>
-          <Grid container wrap="nowrap" spacing={2}>
-            <Grid item>
-              <Icon style={{ fontSize: 60, color: iconColor }}>{icon}</Icon>
-            </Grid>
-            <Grid item>
-              <Typography gutterBottom variant="h5" component="h2">
-                {title}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                {content}
-                {footer}
-              </Typography>
+          <Grid container wrap={"wrap"}>
+            <Grid item container direction={"row"} spacing={1}>
+              <Grid item>
+                <Icon style={{ fontSize: 60, color: iconColor }}>{icon}</Icon>
+              </Grid>
+              <Grid item xs={10}>
+                <Typography gutterBottom variant="h5" component="h2">
+                  {title}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="p">
+                  {content}
+                  {footer}
+                </Typography>
+              </Grid>
             </Grid>
           </Grid>
         </CardContent>

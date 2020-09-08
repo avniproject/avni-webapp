@@ -14,7 +14,7 @@ const Resources = () => {
 
   return (
     <Grid container alignItems={"center"} spacing={3}>
-      <Grid item xs={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
         <TutorialCard
           title={"Self service help articles"}
           content={
@@ -25,7 +25,7 @@ const Resources = () => {
           iconColor={"#009688"}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
         <TutorialCard
           title={"Avni youtube channel"}
           content={
@@ -36,7 +36,7 @@ const Resources = () => {
           iconColor={"#d50000"}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
         <TutorialCard
           title={"Coaching/support session"}
           content={"Looking for best practices or troubleshooting assistance?"}
@@ -46,7 +46,7 @@ const Resources = () => {
           iconColor={"#40c4ff"}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
         <TutorialCard
           title={"Submit a support ticket"}
           content={
@@ -57,7 +57,7 @@ const Resources = () => {
           iconColor={"#66bb6a"}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
         <TutorialCard
           title={"Ask the community"}
           content={
