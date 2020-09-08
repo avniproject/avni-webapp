@@ -99,8 +99,7 @@ const ReportingViews = () => {
           const errorMessage = `${get(error, "response.data") ||
             get(error, "message") ||
             "unknown error"}`;
-          setMessage(`Error occurred while creating views ${errorMessage}`);
-          setShowAlert(true);
+          alert(errorMessage);
         });
     }
   };
