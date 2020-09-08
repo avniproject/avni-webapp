@@ -144,7 +144,7 @@ public class ViewGenController {
     private String buildProperViewName(List<String> entities) {
         List<String> list = entities.stream()
                 .map(String::toLowerCase)
-                .map(e -> e.replaceAll("[^a-z_\\s]", "").replaceAll("\\s+", "_"))
+                .map(e -> e.replaceAll("[^a-z0-9_\\s]", "").replaceAll("\\s+", "_"))
                 .collect(Collectors.toList());
         return String.join("_", list);
     }
