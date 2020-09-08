@@ -54,10 +54,6 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
         Locale locale = Locale.valueByName(row.get("Language"));
         Boolean trackLocation = row.getBool("Track Location");
         String datePickerMode = row.get("Date picker mode");
-        Boolean hideEnrol = row.getBool("Hide enrol");
-        Boolean hideExit = row.getBool("Hide exit");
-        Boolean hideRegister = row.getBool("Hide register");
-        Boolean hideUnplanned = row.getBool("Hide unplanned");
         Boolean beneficiaryMode = row.getBool("Enable Beneficiary mode");
         String idPrefix = row.get("Beneficiary ID Prefix");
 
@@ -85,10 +81,6 @@ public class UserAndCatchmentWriter implements ItemWriter<Row>, Serializable {
                 .with("locale", locale)
                 .with("trackLocation", trackLocation)
                 .with("datePickerMode", datePickerMode)
-                .with("hideEnrol", hideEnrol)
-                .with("hideExit", hideExit)
-                .with("hideRegister", hideRegister)
-                .with("hideUnplanned", hideUnplanned)
                 .with("showBeneficiaryMode", beneficiaryMode)
                 .with("idPrefix", idPrefix));
 
