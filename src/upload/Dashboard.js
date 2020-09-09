@@ -134,7 +134,7 @@ const Dashboard = ({ getStatuses, getUploadTypes, uploadTypes = new UploadTypes(
         </Paper>
       </Grid>
       <Grid item>
-        <Paper>
+        <Paper style={{ marginBottom: 100 }}>
           <Status />
         </Paper>
       </Grid>

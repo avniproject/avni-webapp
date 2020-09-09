@@ -115,7 +115,7 @@ const Status = ({ viewVersion, statuses, getStatuses, page }) => {
       <TablePagination
         rowsPerPageOptions={[5]}
         component="div"
-        count={get(statuses, "page.totalElements") || 0}
+        count={get(statuses, "totalElements") || 0}
         rowsPerPage={5}
         page={page}
         backIconButtonProps={{ "aria-label": "previous page" }}
