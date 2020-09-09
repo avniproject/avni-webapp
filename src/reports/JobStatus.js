@@ -7,7 +7,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
-import { get, isNil, map } from "lodash";
+import { find, get, isNil, map } from "lodash";
 import moment from "moment";
 import http from "common/utils/httpClient";
 import fileDownload from "js-file-download";
@@ -18,38 +18,47 @@ import TablePagination from "@material-ui/core/TablePagination";
 import Button from "@material-ui/core/Button";
 import CloudDownload from "@material-ui/icons/CloudDownload";
 
-const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
+const JobStatus = ({
+  exportJobStatuses,
+  getUploadStatuses,
+  operationalModules: { subjectTypes, programs, encounterTypes }
+}) => {
   React.useEffect(() => {
     getUploadStatuses(0);
   }, []);
+
   const rowsPerPage = 10;
   const [page, setPage] = React.useState(0);
+
   const formatDate = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD HH:mm"));
   const IsoDateFormat = date => (isNil(date) ? date : moment(date).format("YYYY-MM-DD"));
-  const getDateParams = ({ startDateParam, endDateParam }) =>
-    isNil(startDateParam) || isNil(endDateParam)
+  const getDateParams = ({ startDate, endDate }) =>
+    isNil(startDate) || isNil(endDate)
       ? ""
-      : `${IsoDateFormat(startDateParam)} to ${IsoDateFormat(endDateParam)}`;
+      : `${IsoDateFormat(startDate)} to ${IsoDateFormat(endDate)}`;
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     getUploadStatuses(newPage);
   };
 
+  const findEntityByUUID = (entities, statusEntityTypeUUID) =>
+    find(entities, ({ uuid }) => uuid === statusEntityTypeUUID) || {};
+
   const onDownloadHandler = ({
     fileName,
-    subjectTypeName,
-    programName,
-    encounterTypeName,
-    startDateParam,
-    endDateParam
+    subjectTypeUUID,
+    programUUID,
+    encounterTypeUUID,
+    startDate,
+    endDate
   }) => {
     const outFileName = [
-      subjectTypeName,
-      programName,
-      encounterTypeName,
-      IsoDateFormat(startDateParam),
-      IsoDateFormat(endDateParam)
+      findEntityByUUID(subjectTypes, subjectTypeUUID).name,
+      findEntityByUUID(programs, programUUID).operationalProgramName,
+      findEntityByUUID(encounterTypes, encounterTypeUUID).operationalEncounterTypeName,
+      IsoDateFormat(startDate),
+      IsoDateFormat(endDate)
     ]
       .filter(Boolean)
       .join("_");
@@ -90,11 +99,18 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {map(get(exportJobStatuses, "_embedded.exportJobStatuses"), status => (
+          {map(get(exportJobStatuses, "content"), status => (
             <TableRow key={status.uuid}>
-              <TableCell>{status.subjectTypeName}</TableCell>
-              <TableCell>{status.programName}</TableCell>
-              <TableCell>{status.encounterTypeName}</TableCell>
+              <TableCell>{findEntityByUUID(subjectTypes, status.subjectTypeUUID).name}</TableCell>
+              <TableCell>
+                {findEntityByUUID(programs, status.programUUID).operationalProgramName}
+              </TableCell>
+              <TableCell>
+                {
+                  findEntityByUUID(encounterTypes, status.encounterTypeUUID)
+                    .operationalEncounterTypeName
+                }
+              </TableCell>
               <TableCell>{getDateParams(status)}</TableCell>
               <TableCell align="right">{formatDate(status.endTime)}</TableCell>
               <TableCell align="right">{status.status}</TableCell>
@@ -115,7 +131,7 @@ const JobStatus = ({ exportJobStatuses, getUploadStatuses }) => {
       <TablePagination
         rowsPerPageOptions={[10]}
         component="div"
-        count={get(exportJobStatuses, "page.totalElements") || 0}
+        count={get(exportJobStatuses, "totalElements") || 0}
         rowsPerPage={rowsPerPage}
         page={page}
         backIconButtonProps={{ "aria-label": "previous page" }}

@@ -232,34 +232,39 @@ const Export = ({
       sidebarOptions={sideBarOptions}
     >
       {operationalModules && (
-        <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
-          <DocumentationContainer filename={"Report.md"}>
-            <Grid>
-              <ReportOptions />
-              {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}
-              {reportType.name === ReportTypes.getName("All") && renderAllTypes()}
-              {!_.isEmpty(reportType.name) && renderAddressLevel()}
-            </Grid>
-            <Grid container direction="row" justify="flex-start">
-              <Button
-                variant="contained"
-                color="primary"
-                aria-haspopup="false"
-                onClick={onStartExportHandler}
-                disabled={!enableReportGeneration()}
-                className={classes.item}
-              >
-                Generate Export
-              </Button>
-            </Grid>
-          </DocumentationContainer>
-        </Box>
+        <div>
+          <Box border={1} mb={2} borderColor={"#ddd"} p={2}>
+            <DocumentationContainer filename={"Report.md"}>
+              <Grid>
+                <ReportOptions />
+                {reportType.name === ReportTypes.getName("Registration") && subjectTypes()}
+                {reportType.name === ReportTypes.getName("All") && renderAllTypes()}
+                {!_.isEmpty(reportType.name) && renderAddressLevel()}
+              </Grid>
+              <Grid container direction="row" justify="flex-start">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  aria-haspopup="false"
+                  onClick={onStartExportHandler}
+                  disabled={!enableReportGeneration()}
+                  className={classes.item}
+                >
+                  Generate Export
+                </Button>
+              </Grid>
+            </DocumentationContainer>
+          </Box>
+          <Grid item>
+            <Paper style={{ marginBottom: 100 }}>
+              <JobStatus
+                exportJobStatuses={exportJobStatuses}
+                operationalModules={operationalModules}
+              />
+            </Paper>
+          </Grid>
+        </div>
       )}
-      <Grid item>
-        <Paper>
-          <JobStatus exportJobStatuses={exportJobStatuses} />
-        </Paper>
-      </Grid>
     </ScreenWithAppBar>
   );
 };
