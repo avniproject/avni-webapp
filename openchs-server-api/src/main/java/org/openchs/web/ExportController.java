@@ -2,7 +2,7 @@ package org.openchs.web;
 
 
 import org.apache.commons.io.IOUtils;
-import org.openchs.dao.ExportJobStatus;
+import org.openchs.dao.JobStatus;
 import org.openchs.domain.Organisation;
 import org.openchs.domain.User;
 import org.openchs.domain.UserContext;
@@ -22,9 +22,8 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,9 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 public class ExportController {
@@ -95,17 +92,9 @@ public class ExportController {
     }
 
     @RequestMapping(value = "/export/status", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyAuthority('organisation_admin')")
-    public PagedResources<?> getUploadStatus(Pageable pageable) {
-        List<ExportJobStatus> jobStatuses = exportJobService.getAll();
-        PagedResources.PageMetadata pageMetadata = new PagedResources.PageMetadata(pageable.getPageSize(), pageable.getPageNumber(), jobStatuses.size());
-        List<Resource<ExportJobStatus>> pagedContent = jobStatuses
-                .stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .map(it -> new Resource<>(it))
-                .collect(Collectors.toList());
-        return new PagedResources<>(pagedContent, pageMetadata);
+    @PreAuthorize(value = "hasAnyAuthority('organisation_admin', 'admin')")
+    public Page<JobStatus> getUploadStatus(Pageable pageable) {
+        return exportJobService.getAll(pageable);
     }
 
     @RequestMapping(value = "/export/download", method = RequestMethod.GET)

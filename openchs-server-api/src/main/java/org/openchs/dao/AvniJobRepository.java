@@ -20,7 +20,7 @@ public class AvniJobRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Page<JobStatus> getJobStatuses(User user, Pageable pageable) {
+    public Page<JobStatus> getJobStatuses(User user, String jobFilterCondition, Pageable pageable) {
         Integer pageNumber = pageable.getPageNumber();
         Integer pageSize = pageable.getPageSize();
         Integer offset = pageNumber * pageSize;
@@ -39,6 +39,11 @@ public class AvniJobRepository {
                 "       string_agg(case when bjep.key_name = 's3Key' then bjep.string_val else '' end::text, '') s3Key,\n" +
                 "       sum(case when bjep.key_name = 'userId' then bjep.long_val else 0 end) userId,\n" +
                 "       string_agg(case when bjep.key_name = 'type' then bjep.string_val::text else '' end::text, '') job_type,\n" +
+                "       max(case when bjep.key_name = 'startDate' then bjep.date_val::timestamp else null::timestamp end::timestamp) startDate,\n" +
+                "       max(case when bjep.key_name = 'endDate' then bjep.date_val::timestamp else null::timestamp end::timestamp) endDate,\n" +
+                "       string_agg(case when bjep.key_name = 'subjectTypeUUID' then bjep.string_val::text else '' end::text, '') subjectTypeUUID,\n" +
+                "       string_agg(case when bjep.key_name = 'programUUID' then bjep.string_val::text else '' end::text, '') programUUID,\n" +
+                "       string_agg(case when bjep.key_name = 'encounterTypeUUID' then bjep.string_val::text else '' end::text, '') encounterTypeUUID,\n" +
                 "       max(bse.read_count) read_count,\n" +
                 "       max(bse.write_count) write_count,\n" +
                 "       max(bse.write_skip_count) write_skip_count\n" +
@@ -49,14 +54,15 @@ public class AvniJobRepository {
                 "order by bje.create_time desc) jobs\n" +
                 "where jobs.userId = :userId\n";
 
-        String query = basicQuery.concat(" offset :offset limit :limit;");
+        String jobFilterQuery = basicQuery.concat(jobFilterCondition);
+        String query = jobFilterQuery.concat(" offset :offset limit :limit;");
         Map<String, Object> jobStatusParams = new HashMap<>();
         jobStatusParams.put("limit", limit);
         jobStatusParams.put("offset", offset);
         jobStatusParams.put("userId", userId);
         List<JobStatus> jobStatuses = jdbcTemplate.query(query, jobStatusParams, new JobStatusMapper());
 
-        String countQuery = String.format("select count(*) from (%s) items;", basicQuery);
+        String countQuery = String.format("select count(*) from (%s) items;", jobFilterQuery);
         Map<String, Object> countParams = new HashMap<>();
         countParams.put("userId", userId);
         Long count = jdbcTemplate.queryForObject(countQuery, countParams, Long.class);

@@ -22,6 +22,11 @@ public class JobStatusMapper implements RowMapper<JobStatus> {
         jobStatus.setTotal(rs.getInt("read_count"));
         jobStatus.setCompleted(rs.getInt("write_count"));
         jobStatus.setSkipped(rs.getInt("write_skip_count"));
+        jobStatus.setStartDate(rs.getTimestamp("startDate"));
+        jobStatus.setEndDate(rs.getTimestamp("endDate"));
+        jobStatus.setSubjectTypeUUID(rs.getString("subjectTypeUUID"));
+        jobStatus.setProgramUUID(rs.getString("programUUID"));
+        jobStatus.setEncounterTypeUUID(rs.getString("encounterTypeUUID"));
         return jobStatus;
     }
 }

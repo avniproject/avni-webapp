@@ -89,6 +89,7 @@ public class JobService {
 
     @Transactional
     public Page<JobStatus> getAll(@NotNull Pageable pageable) {
-        return avniJobRepository.getJobStatuses(UserContextHolder.getUser(), pageable);
+        String jobFilterCondition = " and subjectTypeUUID = '' ";
+        return avniJobRepository.getJobStatuses(UserContextHolder.getUser(), jobFilterCondition, pageable);
     }
 }

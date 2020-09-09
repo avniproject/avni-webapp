@@ -27,6 +27,51 @@ public class JobStatus {
     private int skipped;
     private Date createTime;
     private Long noOfLines;
+    private Date startDate;
+    private Date endDate;
+    private String subjectTypeUUID;
+    private String programUUID;
+    private String encounterTypeUUID;
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getSubjectTypeUUID() {
+        return subjectTypeUUID;
+    }
+
+    public void setSubjectTypeUUID(String subjectTypeUUID) {
+        this.subjectTypeUUID = subjectTypeUUID;
+    }
+
+    public String getProgramUUID() {
+        return programUUID;
+    }
+
+    public void setProgramUUID(String programUUID) {
+        this.programUUID = programUUID;
+    }
+
+    public String getEncounterTypeUUID() {
+        return encounterTypeUUID;
+    }
+
+    public void setEncounterTypeUUID(String encounterTypeUUID) {
+        this.encounterTypeUUID = encounterTypeUUID;
+    }
 
     public String getUuid() {
         return uuid;
